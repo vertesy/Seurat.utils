@@ -1,8 +1,8 @@
 ######################################################################
 # plotting.dim.reduction.3D.R
 ######################################################################
-# source ('~/GitHub/SeuratUtil/plotting.dim.reduction.3D.R')
-# Source: self + web
+# source ('~/GitHub/Seurat.utils/plotting.dim.reduction.3D.R')
+# Source: self + https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0
 
 # Requirements ------------------------
 library(plotly)
@@ -14,7 +14,7 @@ library(plotly)
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 
-plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the meta data columns. Uses plotly.
+plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the meta data columns. Uses plotly. Based on github.com/Dragonmasterx87.
   category="v.project", AutoAnnotByCluster=c(FALSE, category, "integrated_snn_res.0.7")[3]) {
   stopifnot(category %in% colnames(obj@meta.data))
   stopifnot("UMAP_3" %in% colnames(obj@reductions$umap))

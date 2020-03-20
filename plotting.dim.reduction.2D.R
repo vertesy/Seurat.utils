@@ -1,7 +1,7 @@
 ######################################################################
 # plotting.dim.reduction.2D.R
 ######################################################################
-# source ('~/GitHub/SeuratUtil/plotting.dim.reduction.2D.R')
+# source ('~/GitHub/Seurat.utils/plotting.dim.reduction.2D.R')
 # Source: self + web
 
 # Requirements ------------------------

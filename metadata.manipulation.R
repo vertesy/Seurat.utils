@@ -1,7 +1,7 @@
 ######################################################################
 # metadata.manipulation.R
 ######################################################################
-# source ('~/GitHub/SeuratUtil/Seurat.object.manipulations.etc.R')
+# source ('~/GitHub/Seurat.utils/Seurat.object.manipulations.etc.R')
 # Source: self + web
 
 # Requirements ------------------------
@@ -56,3 +56,13 @@ seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix =
 
   return(obj)
 } # x=seu.add.meta.from.table()
+
+
+# sampleNpc ------------------------------------------------------------------------
+
+sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of a dataframe (obj@metadata), and return the cell IDs.
+  cellIDs = rownames(metaDF)
+  nr_cells = floor(l(cellIDs) * pc)
+  cellIDs.keep = sample(cellIDs, size = nr_cells, replace = FALSE)
+  return(cellIDs.keep)
+}

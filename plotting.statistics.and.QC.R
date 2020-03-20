@@ -1,7 +1,7 @@
 ######################################################################
 # plotting.statistics.and.QC.R
 ######################################################################
-# source ('~/GitHub/SeuratUtil/plotting.statistics.and.QC.R')
+# source ('~/GitHub/Seurat.utils/plotting.statistics.and.QC.R')
 # Source: self + web
 
 # Requirements ------------------------
