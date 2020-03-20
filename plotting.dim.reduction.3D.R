@@ -14,7 +14,8 @@ library(plotly)
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 
-plot3D.umap <- function(obj=combined.obj, category="v.project", AutoAnnotByCluster=c(FALSE, category, "integrated_snn_res.0.7")[3]) {
+plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the meta data columns. Uses plotly.
+  category="v.project", AutoAnnotByCluster=c(FALSE, category, "integrated_snn_res.0.7")[3]) {
   stopifnot(category %in% colnames(obj@meta.data))
   stopifnot("UMAP_3" %in% colnames(obj@reductions$umap))
   plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", category))

@@ -14,14 +14,14 @@ require(SoupX)
 
 
 # PCA percent of variation associated with each PC ------------------------------------------------------------
-seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of variation associated with each PC
+seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of variation associated with each PC.
   pct <- obj@reductions$pca@stdev / sum(obj@reductions$pca@stdev) * 100
   names(pct) =1:length(obj@reductions$pca@stdev)
   return(pct)
 }
 
 # plot percent of variation associated with each PC ------------------------------------------------------------
-seu.plot.PC.var.explained <- function(obj =  combined.obj) { # Plot the percent of variation associated with each PC
+seu.plot.PC.var.explained <- function(obj =  combined.obj) { # Plot the percent of variation associated with each PC.
   pct <- seu.PC.var.explained(obj)
   wbarplot(pct, ylab= "% of variation explained" , xlab="Principal Components")
   barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex=.5 )
@@ -30,7 +30,8 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj) { # Plot the percent 
 
 # BarplotCellsPerObject ------------------------------------------------------------
 
-BarplotCellsPerObject <- function(ls.Seu = ls.Seurat, plotname="Nr.Cells.After.Filtering", names=F ) {
+BarplotCellsPerObject <- function(ls.Seu = ls.Seurat, # Take a List of Seurat objects and draw a barplot for the number of cells per object.
+  plotname="Nr.Cells.After.Filtering", names=F ) {
   cellCounts = unlapply(ls.Seu, ncol)
   names(cellCounts) = if (l(names) == l(ls.Seurat)) names else names(ls.Seurat)
   wbarplot(cellCounts, plotname = plotname,tilted_text = T, ylab="Cells")
@@ -39,8 +40,8 @@ BarplotCellsPerObject <- function(ls.Seu = ls.Seurat, plotname="Nr.Cells.After.F
 
 
 # sgCellFractionsBarplot.Mseq ------------------------------------------------------------------------
-sgCellFractionsBarplot.Mseq <- function(data, seedNr=1989, group_by = "genotype",
-                                        plotname="Cell proportions") { # Cell Fractions Barplot for MULTI-seq. sg stands for "seurat ggplot".
+sgCellFractionsBarplot.Mseq <- function(data # Cell fractions Barplot for MULTI-seq. sg stands for "seurat ggplot".
+  , seedNr=1989, group_by = "genotype", plotname="Cell proportions") {
   set.seed(seedNr)
   data %>%
     group_by( genotype ) %>% #eval(substitute(group_by))
@@ -49,8 +50,8 @@ sgCellFractionsBarplot.Mseq <- function(data, seedNr=1989, group_by = "genotype"
 }
 
 # ssgCellFractionsBarplot.CORE ------------------------------------------------------------------------
-ssgCellFractionsBarplot.CORE <- function(data, plotname="Cell proportions per ...",
-                                         ClLabelExists = p$'clusternames.are.defined', AltLabel = p$'res.MetaD.colname') { # Cell Fractions Barplots, basic. sg stands for "seurat ggplot".
+ssgCellFractionsBarplot.CORE <- function(data # Cell Fractions Barplots, basic. sg stands for "seurat ggplot".
+  , plotname="Cell proportions per ...", ClLabelExists = p$'clusternames.are.defined', AltLabel = p$'res.MetaD.colname') {
   LabelExists = ww.variable.exists.and.true(var = eval(ClLabelExists))
 
   data %>%
@@ -64,9 +65,9 @@ ssgCellFractionsBarplot.CORE <- function(data, plotname="Cell proportions per ..
 }
 
 # sgCellFractionsBarplot ------------------------------------------------------------------------
-sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident", fill_by="experiment",
-                                   label_sample_count=T, plotname="Cell proportions per ...",
-                                   ClLabelExists = p$'clusternames.are.defined', AltLabel =p$'res.MetaD.colname' ) { # Cell Fractions Barplots. sg stands for "seurat ggplot".
+sgCellFractionsBarplot <- function(data  # Cell Fractions Barplots. sg stands for "seurat ggplot".
+  , seedNr=1989, group_by = "orig.ident", fill_by="experiment",label_sample_count=T, plotname="Cell proportions per ...",
+                                   ClLabelExists = p$'clusternames.are.defined', AltLabel =p$'res.MetaD.colname' ) {
   LabelExists = ww.variable.exists.and.true(var = eval(ClLabelExists))
   if (LabelExists) iprint("Cl Labels found")
   set.seed(seedNr)
@@ -88,7 +89,7 @@ sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident", f
 
 
 # plotTheSoup ------------------------------------------------------------------------
-plotTheSoup <- function(CellR.OutputDir = "~/Dropbox/Abel.IMBA/Data/SoupX_pbmc4k_demo/") {
+plotTheSoup <- function(CellR.OutputDir = "~/Dropbox/Abel.IMBA/Data/SoupX_pbmc4k_demo/") { # Plot the ambient RNA content of droplets without a cell (background droplets).
   # Read In ------------------------
   sc = load10X(CellR.OutputDir, keepDroplets = TRUE)
   # Profiling the soup ------------------------

@@ -4,7 +4,8 @@
 # source ('~/GitHub/SeuratUtil/Read.Write.Save.Load.functions.R')
 
 # Convert10Xfolders ------------------------------------------------------------------------
-Convert10Xfolders <- function(InputDir, min.cells=10, min.features=200, updateHGNC=T) {
+Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
+  , min.cells=10, min.features=200, updateHGNC=T) {
   fin <- list.dirs(InputDir)[-1]
   for (i in 1:l(fin)) { print(fin[i])
     pathIN = fin[i]
@@ -21,7 +22,7 @@ Convert10Xfolders <- function(InputDir, min.cells=10, min.features=200, updateHG
 # Convert10Xfolders(InputDir = InputDir)
 
 # LoadAllSeurats ------------------------------------------------------------------------
-LoadAllSeurats <- function(InputDir) {
+LoadAllSeurats <- function(InputDir) { # Load a Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
   fin <- list.files(InputDir, include.dirs = F, pattern = "*.Rds")
   ls.Seu <- list.fromNames(fin)
   for (i in 1:l(fin)) {print(fin[i]); ls.Seu[[i]] <- readRDS(p0(InputDir, fin[i]))}
@@ -30,7 +31,7 @@ LoadAllSeurats <- function(InputDir) {
 # ls.Seu <- LoadAllSeurats(InputDir = InputDir)
 
 # ------------------------------------------------------------------------------------------------
-read10x <- function(dir) { # read10x from gzipped and using features.tsv
+read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv
   tictoc::tic()
   names <- c("barcodes.tsv", "features.tsv", "matrix.mtx")
   for (i in 1:length(names)) {
@@ -48,21 +49,8 @@ read10x <- function(dir) { # read10x from gzipped and using features.tsv
 
 #### Functions in Saving.and.loading.R
 
-# - `isave.RDS()` # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
-# - `isave.RDS.pigz()` # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
-# - `isave.image()` # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
-# - `subsetSeuObj.and.Save()` # subset a compressed Seurat Obj and save it in wd.
-# - `seuSaveRds()` # Save a compressed Seurat Object, with parallel gzip by pgzip
-# - `sampleNpc()` # Sample N % of a dataframe (obj@metadata), and return the cell IDs.
-# - `rrRDS()` # Load a list of RDS files with parallel ungzip by pgzip.
-# - `sssRDS()` #  Save multiple objects into a list of RDS files using parallel gzip by pgzip (optional).
-# - `ssaveRDS()` # Save an object with parallel gzip by pgzip.
-# - `rreadRDS()` # Read an object with parallel ungzip by pgzip.
-# - `snappy_pipe()` # Alternative, fast compression. Low compression rate, lightning fast.
-# - `pigz_pipe()` # Alternative: normal gzip output (& compression rate), ~*cores faster in zipping.
-
 # Save an object -----------------------------------------------
-isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))
   dir.create(path_rdata)
 
@@ -83,7 +71,7 @@ isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, savePa
 
 
 # Save an object -----------------------------------------------
-isave.RDS.pigz <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+isave.RDS.pigz <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))
   dir.create(path_rdata)
 
@@ -105,7 +93,7 @@ isave.RDS.pigz <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, s
 # requires MarkdownReportsDev (github) and defining OutDir
 # requires github/vertesy/CodeAndRoll.r
 
-isave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+isave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
   path_rdata = paste0("~/Documents/Rdata.files/", basename(OutDir))
   dir.create(path_rdata)
 
@@ -120,7 +108,7 @@ isave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
 
 # ------------------------------------------------------------------------
 
-subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25 ) { # subset a compressed Seurat Obj and save it in wd.
+subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25 ) { # Subset a compressed Seurat Obj and save it in wd.
   cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction)
 
   obj_Xpc <- subset(obj, cells = cellIDs.keep) # downsample
@@ -179,7 +167,7 @@ rrRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org"), ...) { # L
 
 
 # Save multiple objects using pigz by default ---------------------------------------------
-sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org"), name.suffix =NULL, ...) { #  Save multiple objects into a list of RDS files using parallel gzip by pgzip (optional).
+sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org"), name.suffix =NULL, ...) { # Save multiple objects into a list of RDS files using parallel gzip by pgzip (optional).
   tictoc::tic()
   base_name <- character()
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))

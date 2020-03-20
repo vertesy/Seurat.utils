@@ -7,7 +7,7 @@
 clip10Xcellname <- function(cellnames) str_split_fixed(cellnames, "_", n = 2)[,1] # Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration).
 
 # ------------------------------------------------------------------------
-make10Xcellname <- function(cellnames, suffix="_1") p0(cellnames, suffix) # Add a suffix
+make10Xcellname <- function(cellnames, suffix="_1") p0(cellnames, suffix) # Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1".
 
 
 # ------------------------------------------------------------------------
@@ -20,9 +20,9 @@ seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) { # Take a named
 #                            clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname)  )
 
 # FeaturePlot with different defaults ------------------------------------------------------------------
-GetMostVarGenes <- function(obj=org, nGenes = p$nVarGenes) head(rownames(slot(object = obj, name = "hvg.info")), n = nGenes)
-
-
+GetMostVarGenes <- function(obj=org, nGenes = p$nVarGenes) { # Get the most variable rGenes
+  head(rownames(slot(object = obj, name = "hvg.info")), n = nGenes)
+}
 
 # gene.name.check for read .mtx /write .rds script ---------------------------------------
 gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) { # Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files.

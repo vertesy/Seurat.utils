@@ -12,7 +12,7 @@ library(plotly)
 
 
 # Quick umaps# ------------------------------------------------------------------------
-qUMAP <- function(f= 'TOP2A', obj =  combined.obj, splitby = NULL, qlow = "q10", qhigh = "q90") { # Quick umaps
+qUMAP <- function(f= 'TOP2A', obj =  combined.obj, splitby = NULL, qlow = "q10", qhigh = "q90") { # The quickest way to a draw a UMAP
   FeaturePlot(combined.obj, reduction = 'umap'
               , min.cutoff = qlow, max.cutoff = qhigh
               , split.by = splitby
@@ -21,21 +21,21 @@ qUMAP <- function(f= 'TOP2A', obj =  combined.obj, splitby = NULL, qlow = "q10",
 # qUMAP(  )
 
 # ------------------------------------------------------------------------
-gg_color_hue <- function(n) {
+gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
   hues = seq(15, 375, length = n + 1)
   hcl(h = hues, l = 65, c = 100)[1:n]
 }
 # https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
 
 # ------------------------------------------------------------------------
-save2umaps.A4 <- function(plot_list, pname = F) { # Save 2 umaps on A4.
+save2umaps.A4 <- function(plot_list, pname = F) { # Save 2 umaps on an A4 page.
   if (pname ==F) pname = substitute(plot_list)
   p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 1, labels = LETTERS[1:l(plot_list)]  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = hA4, base_width = wA4)
 }
 
 # ------------------------------------------------------------------------
-save4umaps.A4 <- function(plot_list, pname = F) { # Save 4 umaps on A4.
+save4umaps.A4 <- function(plot_list, pname = F) { # Save 4 umaps on an A4 page.
   if (pname==F) pname = substitute(plot_list)
   p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:l(plot_list)]  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = wA4, base_width = hA4)
@@ -58,8 +58,8 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
 # ------------------------------------------------------------------------
 
 # umapHiLightSel highlight a set of cells based on clusterIDs provided---------------
-umapHiLightSel <- function(obj = combined.obj, COI =  c("0", "2", "4", "5",  "11"),
-                           res.cl = 'integrated_snn_res.0.3') { # Highlight a set of cells based on clusterIDs provided.
+umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based on clusterIDs provided.
+                          COI =  c("0", "2", "4", "5",  "11"), res.cl = 'integrated_snn_res.0.3') {
   cellsSel = getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
   DimPlot(combined.obj, reduction = "umap", group.by = res.cl,
           label = T, cells.highlight = cellsSel)
@@ -69,10 +69,11 @@ umapHiLightSel <- function(obj = combined.obj, COI =  c("0", "2", "4", "5",  "11
 
 
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
-multiFeaturePlot.A4 <- function(obj = combined.obj, list.of.genes, plot.reduction='umap', intersectionAssay = c('RNA', 'integrated')[1]
+multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
+                                , list.of.genes, plot.reduction='umap', intersectionAssay = c('RNA', 'integrated')[1]
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
-                                , jpeg.res = 225, jpeg.q = 90) { # Save multiple FeaturePlot from a list of genes on A4 jpeg
+                                , jpeg.res = 225, jpeg.q = 90) {
   tictoc::tic()
   ParentDir = OutDir
   if (subdir) create_set_SubDir(... = p0(substitute(list.of.genes),'.', plot.reduction),'/')
@@ -112,11 +113,12 @@ multiFeaturePlot.A4 <- function(obj = combined.obj, list.of.genes, plot.reductio
 # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
 # code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
 
-multiFeatureHeatmap.A4 <- function(obj = combined.obj, list.of.genes, gene.per.page=5
+multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
+                                   , list.of.genes, gene.per.page=5
                                    , group.cells.by= "batch", plot.reduction='umap'
                                    , cex = iround(3/gene.per.page), sep_scale = F
                                    , gene.min.exp = 'q5', gene.max.exp = 'q95'
-                                   , jpeg.res = 225, jpeg.q = 90) { # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
+                                   , jpeg.res = 225, jpeg.q = 90) {
 
   tictoc::tic()
   list.of.genes = check.genes(list.of.genes, obj = obj)
@@ -142,7 +144,7 @@ multiFeatureHeatmap.A4 <- function(obj = combined.obj, list.of.genes, gene.per.p
 
 # plot.UMAP.tSNE.sidebyside ---------------------------------------------------------------------
 
-plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6',
+plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6',  # Plot a UMAP and tSNE sidebyside
                                       no_legend = F,
                                       do_return = TRUE,
                                       do_label = T,
@@ -152,7 +154,7 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6',
                                       no_axes = T,
                                       pt_size = 0.5,
                                       name.suffix = NULL,
-                                      width = hA4, heigth = 1.75*wA4, filetype = "pdf") { # plot a UMAP and tSNE sidebyside
+                                      width = hA4, heigth = 1.75*wA4, filetype = "pdf") {
 
   p1 <- DimPlot(object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
                 , no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size
