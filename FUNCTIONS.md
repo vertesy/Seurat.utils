@@ -3,33 +3,47 @@
 
 
 - #### `Convert10Xfolders()`
-Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
+  Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
+
 - #### `LoadAllSeurats()`
-Load a Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
+  Load a Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
+
 - #### `read10x()`
-read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv
+  read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv
+
 - #### `isave.RDS()`
-Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+
 - #### `isave.RDS.pigz()`
-Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+
 - #### `isave.image()`
-Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+
 - #### `subsetSeuObj.and.Save()`
 Subset a compressed Seurat Obj and save it in wd.
+
+#### *The functions below are now part of the [Seurat.multicore](https://github.com/vertesy/Seurat.multicore) library:*
+
+
 - #### `seuSaveRds()`
-Save a compressed Seurat Object, with parallel gzip by pgzip
-- #### `sampleNpc()`
-Sample N % of a dataframe (obj@metadata), and return the cell IDs.
+  Save a compressed Seurat Object, with parallel gzip by pgzip
+
 - #### `rrRDS()`
-Load a list of RDS files with parallel ungzip by pgzip.
+  Load a list of RDS files with parallel ungzip by pgzip.
+
 - #### `sssRDS()`
-Save multiple objects into a list of RDS files using parallel gzip by pgzip (optional).
+  Save multiple objects into a list of RDS files using parallel gzip by pgzip (optional).
+
 - #### `ssaveRDS()`
-Save an object with parallel gzip by pgzip.
+  Save an object with parallel gzip by pgzip.
+
 - #### `rreadRDS()`
-Read an object with parallel ungzip by pgzip.
+  Read an object with parallel ungzip by pgzip.
+
 - #### `snappy_pipe()`
-Alternative, fast compression. Low compression rate, lightning fast.
+  Alternative, fast compression. Low compression rate, lightning fast.
+
 - #### `pigz_pipe()`
 Alternative
 normal gzip output (& compression rate), ~*cores faster in zipping.
@@ -65,13 +79,20 @@ Plot the Update Statistcs. Works on the data frame returned by `UpdateGenesSeura
 ## metadata.manipulation.R
 
 - #### `getMetadataColumn <- mmeta()`
-Get a metadata column from a Seurat object as a named vector
+  Get a metadata column from a Seurat object as a named vector
+
 - #### `getCellIDs.from.meta()`
-Get cellIDs from a metadata column, matching a list of values (using %in%).
+  Get cellIDs from a metadata column, matching a list of values (using %in%).
+
 - #### `seu.add.meta.from.vector()`
-Add a new metadata column to a Seurat  object
+  Add a new metadata column to a Seurat  object
+
 - #### `seu.add.meta.from.table()`
 Add multiple new metadata columns to a Seurat object from a table.
+
+- #### `sampleNpc()`
+
+  Sample N % of a dataframe (obj@metadata), and return the cell IDs.
 
 ## plotting.dim.reduction.2D.R
 
