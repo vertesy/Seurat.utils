@@ -1,0 +1,61 @@
+######################################################################
+# plotting.dim.reduction.3D.R
+######################################################################
+# source ('~/GitHub/SeuratUtil/plotting.dim.reduction.3D.R')
+# Source: self + web
+
+# Requirements ------------------------
+library(plotly)
+# May also require
+# try (source ('~/GitHub/TheCorvinas/R/CodeAndRoll.R'),silent= F) # generic utilities funtions
+# require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
+
+
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+
+plot3D.umap <- function(obj=combined.obj, category="v.project", AutoAnnotByCluster=c(FALSE, category, "integrated_snn_res.0.7")[3]) {
+  stopifnot(category %in% colnames(obj@meta.data))
+  stopifnot("UMAP_3" %in% colnames(obj@reductions$umap))
+  plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", category))
+  colnames(plotting.data)[4] = "category"
+  plotting.data$label <- paste(rownames(plotting.data))   # Make a column of row name identities (these will be your cell/barcode names)
+
+  if (AutoAnnotByCluster != FALSE) {
+    # https://plot.ly/r/text-and-annotations/#3d-annotations
+    stopifnot(AutoAnnotByCluster %in% colnames(obj@meta.data))
+
+    plotting.data$'annot' <- FetchData(object = obj, vars = c(AutoAnnotByCluster))[,1]
+
+    auto_annot <-
+      plotting.data %>%
+      group_by(annot)%>%
+      summarise(showarrow=F
+                , xanchor = "left"
+                , xshift = 10
+                , opacity = 0.7
+                ,"x" = mean(UMAP_1)
+                , "y" = mean(UMAP_2)
+                , "z" = mean(UMAP_3)
+
+      )
+    names(auto_annot)[1]="text"
+    ls.ann.auto = apply(auto_annot, 1, as.list)
+  } else {ls.ann.auto <- NULL}
+
+  plot_ly(data = plotting.data
+          , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
+          , color = ~category
+          , colors = gg_color_hue(length(unique(plotting.data$'category')))
+          , type = "scatter3d"
+          , mode = "markers"
+          , marker = list(size = 1)
+          , text=~label
+          # , hoverinfo="text"
+  ) %>%  layout(scene = list(title=category, annotations=ls.ann.auto))
+
+}
+
+
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
