@@ -23,7 +23,7 @@ getMetadataColumn <- mmeta <- function(ColName.metadata = 'batch', obj = combine
 # GetCellIDs from metadata ---------------
 getCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = NA) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
   idx.matching.cells = which(obj@meta.data[ , ColName.meta] %in% values)
-  iprint(l(idx.matching.cells), 'cells found.')
+  iprint(length(idx.matching.cells), 'cells found.')
   return(rownames(obj@meta.data)[idx.matching.cells])
 }
 # getCellIDs.from.meta()
@@ -42,13 +42,13 @@ seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.c
 seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix = ".fromMeta") { # Add multiple new metadata columns to a Seurat object from a table.
   NotFound  = setdiff(colnames(obj), rownames(meta))
   Found     = intersect(colnames(obj), rownames(meta))
-  if (l(NotFound)) iprint(l(NotFound), 'cells were not found in meta, e.g.: ', trail(NotFound, N=10))
+  if (length(NotFound)) iprint(length(NotFound), 'cells were not found in meta, e.g.: ', trail(NotFound, N=10))
 
   mCols.new = colnames(meta)
   mCols.old = colnames(obj@meta.data)
   overlap = intersect(mCols.new, mCols.old)
-  if (l(overlap)) {
-    iprint(l(overlap), 'metadata columns already exist in the seurat object: ', overlap, '. These are tagged as: *', suffix)
+  if (length(overlap)) {
+    iprint(length(overlap), 'metadata columns already exist in the seurat object: ', overlap, '. These are tagged as: *', suffix)
     colnames(meta)[overlap] = p0(overlap, suffix)
   }
   mCols.add = colnames(meta)
@@ -62,7 +62,7 @@ seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix =
 
 sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of a dataframe (obj@metadata), and return the cell IDs.
   cellIDs = rownames(metaDF)
-  nr_cells = floor(l(cellIDs) * pc)
+  nr_cells = floor(length(cellIDs) * pc)
   cellIDs.keep = sample(cellIDs, size = nr_cells, replace = FALSE)
   return(cellIDs.keep)
 }

@@ -30,14 +30,14 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 # ------------------------------------------------------------------------
 save2umaps.A4 <- function(plot_list, pname = F) { # Save 2 umaps on an A4 page.
   if (pname ==F) pname = substitute(plot_list)
-  p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 1, labels = LETTERS[1:l(plot_list)]  )
+  p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 1, labels = LETTERS[1:length(plot_list)]  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = hA4, base_width = wA4)
 }
 
 # ------------------------------------------------------------------------
 save4umaps.A4 <- function(plot_list, pname = F) { # Save 4 umaps on an A4 page.
   if (pname==F) pname = substitute(plot_list)
-  p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:l(plot_list)]  )
+  p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:length(plot_list)]  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = wA4, base_width = hA4)
 }
 
@@ -79,8 +79,8 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
   if (subdir) create_set_SubDir(... = p0(substitute(list.of.genes),'.', plot.reduction),'/')
 
   list.of.genes = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay)
-  lsG = iterBy.over(1:l(list.of.genes), by=nr.Row*nr.Col)
-  for (i in 1:l(lsG)) {
+  lsG = iterBy.over(1:length(list.of.genes), by=nr.Row*nr.Col)
+  for (i in 1:length(lsG)) {
     genes = list.of.genes[lsG[[i]]]
     iprint(i,genes )
     plotname = kpp(c(plot.reduction,i, genes, 'jpg' ))
@@ -123,8 +123,8 @@ multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHea
   tictoc::tic()
   list.of.genes = check.genes(list.of.genes, obj = obj)
 
-  lsG = iterBy.over(1:l(list.of.genes), by=gene.per.page)
-  for (i in 1:l(lsG)) { print(i )
+  lsG = iterBy.over(1:length(list.of.genes), by=gene.per.page)
+  for (i in 1:length(lsG)) { print(i )
     genes = list.of.genes[lsG[[i]]]
     plotname = kpp(c("FeatureHeatmap",plot.reduction,i, genes, 'jpg' ))
     print(plotname)

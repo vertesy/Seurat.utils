@@ -33,7 +33,7 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj) { # Plot the percent 
 BarplotCellsPerObject <- function(ls.Seu = ls.Seurat, # Take a List of Seurat objects and draw a barplot for the number of cells per object.
   plotname="Nr.Cells.After.Filtering", names=F ) {
   cellCounts = unlapply(ls.Seu, ncol)
-  names(cellCounts) = if (l(names) == l(ls.Seurat)) names else names(ls.Seurat)
+  names(cellCounts) = if (length(names) == length(ls.Seurat)) names else names(ls.Seurat)
   wbarplot(cellCounts, plotname = plotname,tilted_text = T, ylab="Cells")
   barplot_label(cellCounts, TopOffset = 500, w = 4)
 }
