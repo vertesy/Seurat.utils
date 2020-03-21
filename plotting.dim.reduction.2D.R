@@ -42,7 +42,7 @@ save4umaps.A4 <- function(plot_list, pname = F) { # Save 4 umaps on an A4 page.
 }
 
 # ------------------------------------------------------------------------
-umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, ext = "png") { # Plot and save umap based on metadata column.
+umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, ext = "png") { # Plot and save umap based on a metadata column.
   fname = ppp("Named.clusters", metaD.colname, ext)
   p.named =
     DimPlot(obj, reduction = "umap", group.by = metaD.colname, label = T) +

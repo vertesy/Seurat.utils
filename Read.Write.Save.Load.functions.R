@@ -26,7 +26,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 # Convert10Xfolders(InputDir = InputDir)
 
 # LoadAllSeurats ------------------------------------------------------------------------
-LoadAllSeurats <- function(InputDir) { # Load a Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
+LoadAllSeurats <- function(InputDir) { # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
   fin <- list.files(InputDir, include.dirs = F, pattern = "*.Rds")
   ls.Seu <- list.fromNames(fin)
   for (i in 1:length(fin)) {print(fin[i]); ls.Seu[[i]] <- readRDS(p0(InputDir, fin[i]))}
@@ -54,7 +54,7 @@ read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and b
 #### Functions in Saving.and.loading.R
 
 # Save an object -----------------------------------------------
-isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))
   dir.create(path_rdata)
 
@@ -77,7 +77,7 @@ isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, savePa
 # requires MarkdownReportsDev (github) and defining OutDir
 # requires github/vertesy/CodeAndRoll.r
 
-isave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+isave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
   path_rdata = paste0("~/Documents/Rdata.files/", basename(OutDir))
   dir.create(path_rdata)
 

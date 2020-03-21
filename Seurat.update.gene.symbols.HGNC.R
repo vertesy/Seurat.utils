@@ -26,7 +26,7 @@ UpdateGenesSeurat <- function(seu, species_="human") { # Update genes symbols th
 
 
 # updateHGNC plot ------------------------------------------------------------------------------------
-plot.UpdateStats <- function(genes = HGNC.updated[[i]]) { # Plot the Update Statistcs. Works on the data frame returned by `UpdateGenesSeurat()`.
+plot.UpdateStats <- function(genes = HGNC.updated[[i]]) { # Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`.
   (MarkedAsUpdated <- genes[genes$Approved == FALSE, ])
   (AcutallyUpdated <- sum(MarkedAsUpdated[,1] != MarkedAsUpdated[,3]))
   (UpdateStats = c((AcutallyUpdated / nrow(genes)), AcutallyUpdated, nrow(genes)))

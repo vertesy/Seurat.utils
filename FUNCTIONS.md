@@ -6,19 +6,19 @@
   Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
 
 - #### `LoadAllSeurats()`
-  Load a Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
+  Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
 
 - #### `read10x()`
   read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv
 
 - #### `isave.RDS()`
-  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
 
 - #### `isave.RDS.pigz()`
-  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
 
 - #### `isave.image()`
-  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
 
 - #### `subsetSeuObj.and.Save()`
 Subset a compressed Seurat Obj and save it in wd.
@@ -74,7 +74,7 @@ Replace gene names in different slots of a Seurat object. Run this before integr
 - #### `UpdateGenesSeurat()`
 Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
 - #### `plot.UpdateStats()`
-Plot the Update Statistcs. Works on the data frame returned by `UpdateGenesSeurat()`.
+Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`.
 
 ## metadata.manipulation.R
 
@@ -105,7 +105,7 @@ Save 2 umaps on an A4 page.
 - #### `save4umaps.A4()`
 Save 4 umaps on an A4 page.
 - #### `umapNamedClusters()`
-Plot and save umap based on metadata column.
+Plot and save umap based on a metadata column.
 - #### `umapHiLightSel()`
 Highlight a set of cells based on clusterIDs provided.
 - #### `multiFeaturePlot.A4()`
@@ -118,7 +118,7 @@ Plot a UMAP and tSNE sidebyside
 ## plotting.dim.reduction.3D.R
 
 - #### `plot3D.umap()`
-Plot a 3D umap based on one of the meta data columns. Uses plotly.
+Plot a 3D umap based on one of the metadata columns. Uses plotly.
 
 ## plotting.filtering.R
 

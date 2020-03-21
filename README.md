@@ -25,7 +25,7 @@
 
 - #### `LoadAllSeurats()`
 
-  Load a Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
+  Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
 
 - #### `read10x()`
 
@@ -33,15 +33,15 @@
 
 - #### `isave.RDS()`
 
-  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
 
 - #### `isave.RDS.pigz()`
 
-  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
 
 - #### `isave.image()`
 
-  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
 
 - #### `subsetSeuObj.and.Save()`
 
@@ -123,7 +123,7 @@
 
 - #### `plot.UpdateStats()`
 
-  Plot the Update Statistcs. Works on the data frame returned by `UpdateGenesSeurat()`.
+  Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`.
 
 ## metadata.manipulation.R
 
@@ -167,7 +167,7 @@
 
 - #### `umapNamedClusters()`
 
-  Plot and save umap based on metadata column.
+  Plot and save umap based on a metadata column.
 
 - #### `umapHiLightSel()`
 
@@ -189,7 +189,7 @@
 
 - #### `plot3D.umap()`
 
-  Plot a 3D umap based on one of the meta data columns. Uses plotly.
+  Plot a 3D umap based on one of the metadata columns. Uses plotly.
 
 ## plotting.filtering.R
 
