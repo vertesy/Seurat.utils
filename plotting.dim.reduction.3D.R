@@ -59,41 +59,47 @@ plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the m
 
 
 # ------------------------------------------------------------------------
-BackupUMAP <- function(obj = combined.obj, dim=2, reduction="umap") { # Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`.
+BackupReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`.
   dslot=p0(reduction,dim,"d")
-  obj@misc$reductions.backup[[dslot]] <- obj@reductions$umap
+  obj@misc$reductions.backup[[dslot]] <- obj@reductions[[reduction]]
   return(obj)
 }
 # Example
-# obj <- BackupUMAP(obj = obj, dim=2, reduction=umap"")
+# obj <- BackupReduction(obj = obj, dim=2, reduction=umap"")
 
 # ------------------------------------------------------------------------
-Setup2and3Dumap <- function(obj = combined.obj, nPCs = p$'n.PC', dimensions=3:2, reduction="umap") { # Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to `obj@misc$reductions.backup` from @reductions$umap
+SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$'n.PC', dimensions=3:2, reduction="umap") { # Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to `obj@misc$reductions.backup` from @reductions$umap
   red <- reduction
   for (d in dimensions) {
     iprint(d, "dimensional", red, "is calculated")
-    obj <- RunUMAP(obj, dims = 1:nPCs, n.components = d)
-    obj <- BackupUMAP(obj = obj, dim=d, reduction=red)
+    obj <- if (reduction == "umap") {
+      RunUMAP(obj, dims = 1:nPCs, n.components = d)
+    } else if (reduction == "tsne") {
+      RunTSNE(obj, dims = 1:nPCs, n.components = d)
+    } else if (reduction == "pca") {
+      RunPCA(obj, dims = 1:nPCs, n.components = d)
+    }
+    obj <- BackupReduction(obj = obj, dim=d, reduction=red)
   }
   return(obj)
 }
+
 # Example
-# combined.obj <- Setup2and3Dumap(obj = combined.obj, nPCs = p$'n.PC', dimensions=2:3, reduction="umap")
+# combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = p$'n.PC', dimensions=2:3, reduction="umap")
 # qUMAP()
 
-
 # ------------------------------------------------------------------------
-RecallUMAP <- function(obj = combined.obj, dim=2, reduction="umap") { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+RecallReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
   dslot=p0(reduction,dim,"d")
   iprint(dim, "dimensional", reduction, "is set active. Source")
-  obj@reductions$umap <- obj@misc$reductions.backup[[dslot]]
+  obj@reductions[[reduction]] <- obj@misc$reductions.backup[[dslot]]
   return(obj)
 }
 
 # Example
-# combined.obj <- RecallUMAP(obj = combined.obj, dim=2, reduction="umap")
+# combined.obj <- RecallReduction(obj = combined.obj, dim=2, reduction="umap")
 # qUMAP()
-# combined.obj <- RecallUMAP(obj = combined.obj, dim=3, reduction="umap")
+# combined.obj <- RecallReduction(obj = combined.obj, dim=3, reduction="umap")
 # qUMAP()
 
 
