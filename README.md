@@ -12,7 +12,7 @@
 9. `Seurat.update.gene.symbols.HGNC.R`	→ *Seurat update gene symbols HGNC.*
 
 
-# Function descrtiptions
+# Function descriptions
 
 `Fri Mar 20 16:36 2020`
 
