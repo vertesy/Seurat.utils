@@ -189,7 +189,7 @@
 
 - #### `plot3D.umap()`
 
-  Plot a 3D umap based on one of the meta data columns. Uses plotly.
+  Plot a 3D umap based on one of the meta data columns. Uses plotly. Based on [Dragonmasterx87](https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0).
 
 ## plotting.filtering.R
 
