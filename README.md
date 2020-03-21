@@ -12,7 +12,7 @@
 9. `Seurat.update.gene.symbols.HGNC.R`	→ *Seurat update gene symbols HGNC.*
 
 
-# Function descrtiptions
+# Function descriptions
 
 `Fri Mar 20 16:36 2020`
 
@@ -188,8 +188,7 @@
 ## plotting.dim.reduction.3D.R
 
 - #### `plot3D.umap()`
-
-  Plot a 3D umap based on one of the metadata columns. Uses plotly.
+  Plot a 3D umap based on one of the meta data columns. Uses plotly. Based on [Dragonmasterx87](https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0).
 
 ## plotting.filtering.R
 
