@@ -1,4 +1,14 @@
 # Seurat.utils
+#### You most likely also require some functions from CodeAndRoll and MarkdownReports libraries.
+
+```r
+try (source ('https://raw.githubusercontent.com/vertesy/CodeAndRoll/master/CodeAndRoll.R'),silent= F)
+		# generic utilities funtions
+require('MarkdownReports') # require("devtools")
+		# plotting related utilities functions
+		# devtools::install_github(repo = "vertesy/MarkdownReportsDev")
+```
+
 ### Utilities for Seurat v3. Content is organized into files per rough functionalities:
 
 1. `Seurat.Utils.Load.R`								→ *Top level wrapper to source each file below.*
