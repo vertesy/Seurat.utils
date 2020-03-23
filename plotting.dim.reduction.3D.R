@@ -7,6 +7,8 @@
 # Requirements ------------------------
 library(plotly)
 library(MarkdownReportsDev)
+library(htmlwidgets)
+
 # May also require
 # try (source ('~/GitHub/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
@@ -53,10 +55,16 @@ plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the m
           , marker = list(size = 1)
           , text=~label
           # , hoverinfo="text"
-  ) %>%  layout(scene = list(title=category, annotations=ls.ann.auto))
+  ) %>% layout(scene = list(title=category, annotations=ls.ann.auto))
+  SavePlotlyAsHtml(plt)
+  return(plt)
+}
 
-  htmlwidgets::saveWidget(plt, file = kpp("umap.3D",category,idate(),"html"), selfcontained = TRUE)
-
+# ------------------------------------------------------------------------
+SavePlotlyAsHtml <- function(plotly_obj) {
+  OutputDir <- if(exists("OutDir")) OutDir else getwd()
+  fname <- kpp(OutputDir,"/umap.3D",category,idate(),"html"); iprint("Plot saved as:",fname)
+  htmlwidgets::saveWidget(plotly_obj, file = fname, selfcontained = TRUE)
 }
 
 
