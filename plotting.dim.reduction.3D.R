@@ -8,7 +8,7 @@
 library(plotly)
 library(MarkdownReportsDev)
 # May also require
-# try (source ('~/GitHub/TheCorvinas/R/CodeAndRoll.R'),silent= F) # generic utilities funtions
+# try (source ('~/GitHub/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 
@@ -44,7 +44,7 @@ plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the m
     ls.ann.auto = apply(auto_annot, 1, as.list)
   } else {ls.ann.auto <- NULL}
 
-  plot_ly(data = plotting.data
+  plt <- plot_ly(data = plotting.data
           , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
           , color = ~category
           , colors = gg_color_hue(length(unique(plotting.data$'category')))
@@ -54,6 +54,8 @@ plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the m
           , text=~label
           # , hoverinfo="text"
   ) %>%  layout(scene = list(title=category, annotations=ls.ann.auto))
+
+  htmlwidgets::saveWidget(plt, file = kpp("umap.3D",category,idate(),"html"), selfcontained = TRUE)
 
 }
 
