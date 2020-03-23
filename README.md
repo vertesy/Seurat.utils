@@ -9,6 +9,8 @@ require('MarkdownReports') # require("devtools")
 		# devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 ```
 
+`If you use these functions, please star the repo! Thanks :-)`
+
 ### Utilities for Seurat v3. Content is organized into files per rough functionalities:
 
 1. `Seurat.Utils.Load.R`								→ *Top level wrapper to source each file below.*
@@ -235,3 +237,9 @@ require('MarkdownReports') # require("devtools")
 - #### `plotTheSoup()`
 
   Plot the ambient RNA content of droplets without a cell (background droplets).
+  
+-----------
+
+[Get Seurat.utils](https://github.com/vertesy/Seurat.utils). Vertesy, 2020. 
+
+  `If you use these functions, please star the repo! Thanks :-)`
