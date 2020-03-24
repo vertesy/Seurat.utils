@@ -18,8 +18,8 @@ try (source ('~/GitHub/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilitie
 # ------------------------------------------------------------------------
 plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
                              , gene="TOP2A", quantileCutoff = .99, alpha = .5, dotsize=1.25, def.assay = c("integrated", "RNA")[2]
-                             , AutoAnnotBy=c(FALSE, category="v.project", "integrated_snn_res.0.7")[3]) {
-  stopifnot(category %in% colnames(obj@meta.data))
+                             , AutoAnnotBy=c(FALSE, "v.project", "integrated_snn_res.0.7")[3]) {
+  stopifnot(AutoAnnotBy %in% colnames(obj@meta.data))
   stopifnot("UMAP_3" %in% colnames(obj@reductions$umap))
   stopifnot(gene %in% rownames(obj))
 
@@ -89,6 +89,7 @@ SavePlotlyAsHtml <- function(plotly_obj, category.=category) { # Save Plotly 3D 
 
 # ------------------------------------------------------------------------
 BackupReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`.
+  if (is.null(obj@misc$"reductions.backup")) obj@misc$"reductions.backup" <- list()
   dslot=p0(reduction,dim,"d")
   obj@misc$reductions.backup[[dslot]] <- obj@reductions[[reduction]]
   return(obj)
@@ -161,7 +162,6 @@ Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMA
   try(create_set_SubDir(substitute(ListOfGenes)))
   obj. <- obj; rm("obj")
   DefaultAssay(object = obj.) <- default.assay
-
   MissingGenes <- setdiff(ListOfGenes, rownames(obj.))
   if ( length(MissingGenes)) iprint("These genes are not found, and omitted:", MissingGenes, ". Try to change default assay.")
   ListOfGenes <- intersect(ListOfGenes, rownames(obj.))
