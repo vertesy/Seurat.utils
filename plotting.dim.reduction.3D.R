@@ -157,6 +157,8 @@ Annotate4Plotly3D <- function(obj. = combined.obj # Create annotation labels for
 Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
                                , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, default.assay = c("integrated", "RNA")[2]
                                , ListOfGenes=c( "BCL11B" , "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4") ) {
+
+  try(create_set_SubDir(substitute(ListOfGenes)))
   obj. <- obj; rm("obj")
   DefaultAssay(object = obj.) <- default.assay
 
@@ -169,9 +171,10 @@ Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMA
     plot3D.umap.gene(obj = obj., gene = g, AutoAnnotBy = annotate.by, alpha = opacity, def.assay = default.assay)
   }
   try(oo())
+  try(create_set_Original_OutDir(NewOutDir = ParentDir))
 }
-# gois <- c(  "PGK1", "CTIP2" = "BCL11B" , "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4","TOP2A", "PTGDS", "EDNRB", "EGFR", "SCGN", "NR2F2", "EMX2", "GAD2", "DLX2", "SATB2")
-# Plot3D.ListOfGenes(obj = combined.obj, ListOfGenes = gois)
+CellTypeMarkers <- c(  "PGK1", "CTIP2" = "BCL11B" , "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4","TOP2A", "PTGDS", "EDNRB", "EGFR", "SCGN", "NR2F2", "EMX2", "GAD2", "DLX2", "SATB2")
+Plot3D.ListOfGenes(obj = combined.obj, ListOfGenes = CellTypeMarkers)
 
 
 # ------------------------------------------------------------------------
