@@ -1,4 +1,7 @@
+[![DOI](https://zenodo.org/badge/248721133.svg)](https://zenodo.org/badge/latestdoi/248721133) *If you use these functions, please star the repo, or cite via `DOI`. Thanks!*
+
 # Seurat.utils
+
 #### You most likely also require some functions from CodeAndRoll and MarkdownReports libraries.
 
 ```r
@@ -266,7 +269,5 @@ Updated: `Tue Mar 24 10:01 2020`
   Plot the ambient RNA content of droplets without a cell (background droplets).
   
 -----------
-
-[Get Seurat.utils](https://github.com/vertesy/Seurat.utils). Vertesy, 2020. 
-
-  `If you use these functions, please star the repo! Thanks :-)`
+[Get Seurat.utils](https://github.com/vertesy/Seurat.utils). Vertesy, 2020. [![DOI](https://zenodo.org/badge/248721133.svg)](https://zenodo.org/badge/latestdoi/248721133) 
+*If you use these functions, please star the repo, or cite via `DOI`. Thanks!*
