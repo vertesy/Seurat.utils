@@ -10,7 +10,7 @@ library(MarkdownReportsDev)
 library(htmlwidgets)
 
 # May also require
-# try (source ('~/GitHub/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
+try (source ('~/GitHub/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 
@@ -134,9 +134,9 @@ RecallReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Set
 Annotate4Plotly3D <- function(obj. = combined.obj # Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations
                               , plotting.data. = plotting.data
                               , AnnotCateg = AutoAnnotBy) {
-  stopifnot(AnnotCateg %in% colnames(obj@meta.data))
+  stopifnot(AnnotCateg %in% colnames(obj.@meta.data))
 
-  plotting.data.$'annot' <- FetchData(object = obj, vars = c(AnnotCateg))[,1]
+  plotting.data.$'annot' <- FetchData(object = obj., vars = c(AnnotCateg))[,1]
   auto_annot <-
     plotting.data. %>%
     group_by(annot)%>%
@@ -175,5 +175,28 @@ Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMA
 
 
 # ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
+                                    , annotate.by = "integrated_snn_res.0.7", default.assay = c("integrated", "RNA")[2]
+                                    , ListOfCategories=c("v.project","experiment", "Phase", "integrated_snn_res.0.7") ) {
+  try(create_set_SubDir(substitute(ListOfCategories)))
+  obj. <- obj; rm("obj")
+  DefaultAssay(object = obj.) <- default.assay
+
+  MissingCateg <- setdiff(ListOfCategories, colnames(obj.@meta.data))
+  if ( length(MissingCateg)) iprint("These metadata categories are not found, and omitted:", MissingCateg, ". See colnames(obj@meta.data).")
+  ListOfCategories <- intersect(ListOfCategories, colnames(obj.@meta.data))
+
+  for (i in 1:length(ListOfCategories)) {
+    categ <- ListOfCategories[i]; print(categ)
+    plot3D.umap(obj = obj., category = categ, AutoAnnotBy = annotate.by)
+  }
+  try(oo())
+  try(create_set_Original_OutDir(NewOutDir = ParentDir))
+}
+# categ3Dplots <- c("v.project","experiment", "Phase", "integrated_snn_res.0.7", "Area", "Individual", "Type")
+# Plot3D.ListOfCategories(obj = combined.obj, ListOfCategories = categ3Dplots)
+
+
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------

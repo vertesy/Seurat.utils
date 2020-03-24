@@ -2,13 +2,13 @@
 
 # Seurat.utils
 
-#### You most likely also require some functions from CodeAndRoll and MarkdownReports libraries.
+#### Some functionalities require functions from `CodeAndRoll` and `MarkdownReports` libraries.
 
 ```r
 try (source ('https://raw.githubusercontent.com/vertesy/CodeAndRoll/master/CodeAndRoll.R'),silent= F)
-		# generic utilities funtions
+		# generic utility funtions
 require('MarkdownReports') # require("devtools")
-		# plotting related utilities functions
+		# plotting related utility functions
 		# devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 ```
 
@@ -18,8 +18,8 @@ require('MarkdownReports') # require("devtools")
 
 1. `Seurat.Utils.Load.R`								→ *Top level wrapper to source each file below.*
 2. `metadata.manipulation.R`						→ *Metadata manipulation.*
-3. `plotting.dim.reduction.2D.R`				→ *Plotting dim reduction 2D.*
-4. `plotting.dim.reduction.3D.R`				→ *Plotting dim reduction 3D.*
+3. `plotting.dim.reduction.2D.R`				→ *Plotting dimensionality reduction in 2D (UMAP, tSNE, PCA).*
+4. `plotting.dim.reduction.3D.R`				→ *Plotting dimensionality reduction in 3D (UMAP, tSNE, PCA).*
 5. `plotting.filtering.R`								→ *Plotting filtering.*
 6. `plotting.statistics.and.QC.R`				→ *Plotting statistics and QC.*
 7. `Read.Write.Save.Load.functions.R`		→ *Read Write Save Load functions.*
