@@ -9,7 +9,7 @@ require(HGNChelper)
 UpdateGenesSeurat <- function(seu, species_="human", EnforceUnique = T, ShowStats=F ) { # Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
   HGNC.updated <- HGNChelper::checkGeneSymbols(rownames(seu), unmapped.as.na = FALSE, map = NULL, species = species_)
   if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
-  if (ShowStats) dput(GetUpdateStats(HGNC.updated))
+  if (ShowStats) print(GetUpdateStats(HGNC.updated))
   seu <- RenameGenesSeurat(seu, newnames = HGNC.updated)
   return(seu)
 }
@@ -44,15 +44,15 @@ HGNC.EnforceUnique <- function(updatedSymbols) { # Enforce Unique names after HG
 GetUpdateStats <- function(genes = HGNC.updated[[i]]) { # Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`.
   (MarkedAsUpdated <- genes[genes$Approved == FALSE, ])
   (AcutallyUpdated <- sum(MarkedAsUpdated[,1] != MarkedAsUpdated[,3]))
-  (UpdateStats = c((AcutallyUpdated / nrow(genes)), AcutallyUpdated, nrow(genes)))
+  (UpdateStats = c("Updated (%)"=(AcutallyUpdated / nrow(genes)), "Updated Genes"=AcutallyUpdated, "Total Genes"=nrow(genes)))
   return(UpdateStats)
 }
 
 # update stats HGNC plot ------------------------------------------------------------------------------------
 PlotUpdateStats <- function(mat = UpdateStatMat) { # Scatter plot of update stats.
-  HGNC.UpdateStatistics <- mat[, c("percent",  "changed") ]
-  HGNC.UpdateStatistics[, "percent"] <- 100*HGNC.UpdateStatistics[, "percent"]
-  colnames(HGNC.UpdateStatistics) <-  c("Gene Symbols updated (% of total)",  "Number of Gene Symbols updated")
+  HGNC.UpdateStatistics <- mat[, c("Updated (%)",  "Updated (Nr.)") ]
+  HGNC.UpdateStatistics[, "Updated (%)"] <- 100*HGNC.UpdateStatistics[, "Updated (%)"]
+  colnames(HGNC.UpdateStatistics) <-  c("Gene Symbols updated (% of Total Genes)",  "Number of Gene Symbols updated")
   lll <- wcolorize(vector = rownames(HGNC.UpdateStatistics))
   wplot(HGNC.UpdateStatistics, col = lll
         , xlim = c(0,max(HGNC.UpdateStatistics[,1]))
