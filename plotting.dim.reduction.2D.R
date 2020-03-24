@@ -106,10 +106,6 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
 
 
 
-
-
-
-
 # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
 # code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
 
