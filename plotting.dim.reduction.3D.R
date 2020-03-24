@@ -46,7 +46,7 @@ plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene express
                  , colors = c('darkgrey', 'red')
                  #, hoverinfo="text"
   ) %>% layout(title=gene, scene = list(annotations=ls.ann.auto))
-  SavePlotlyAsHtml(plt, category. = gene)
+  SavePlotlyAsHtml(plt, PlottedVariable = gene)
   return(plt)
 }
 # plot3D.umap.gene(obj = combined.obj, gene = "DDIT4", quantileCutoff = .95)
@@ -74,16 +74,16 @@ plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the m
           , colors = gg_color_hue(length(unique(plotting.data$'category')))
           # , hoverinfo="text"
   ) %>% layout(title=category, scene = list(annotations=ls.ann.auto))
-  SavePlotlyAsHtml(plt, category. = category)
+  SavePlotlyAsHtml(plt, PlottedVariable = category)
   return(plt)
 }
 # plot3D.umap(combined.obj, category = "Phase")
 
 # ------------------------------------------------------------------------
-SavePlotlyAsHtml <- function(plotly_obj, category.=category) { # Save Plotly 3D scatterplot as an html file.
+SavePlotlyAsHtml <- function(plotly_obj, PlottedVariable=category) { # Save Plotly 3D scatterplot as an html file.
   OutputDir <- if(exists("OutDir")) OutDir else getwd()
-  fname <- kpp(OutputDir,"/umap.3D",category.,idate(),"html"); iprint("Plot saved as:",fname)
-  htmlwidgets::saveWidget(plotly_obj, file = fname, selfcontained = TRUE, title = category.)
+  fname <- kpp(OutputDir,"/umap.3D",PlottedVariable,idate(),"html"); iprint("Plot saved as:",fname)
+  htmlwidgets::saveWidget(plotly_obj, file = fname, selfcontained = TRUE, title = PlottedVariable)
 }
 
 
