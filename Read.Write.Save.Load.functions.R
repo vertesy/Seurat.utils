@@ -9,17 +9,17 @@
 
 # Convert10Xfolders ------------------------------------------------------------------------
 Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
-  , min.cells=10, min.features=200, updateHGNC=T) {
+                              , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T ) {
   fin <- list.dirs(InputDir)[-1]
-  for (i in 1:length(fin)) { print(fin[i])
-    pathIN = fin[i]
+  for (i in 1:length(fin)) {
+    pathIN = fin[i]; print(pathIN)
     fnameIN = basename(fin[i])
-    fnameOUT = ppp(p0(InputDir, 'filtered.', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
+    fnameOUT = ppp(p0(InputDir, '/filtered.', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
     x <- Read10X(pathIN)
     seu <- CreateSeuratObject(counts = x, project = fnameIN,
                               min.cells = min.cells, min.features = min.features)
     # update----
-    if (updateHGNC) seu <- UpdateGenesSeurat(seu)
+    if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
     saveRDS(seu, file = fnameOUT)
   }
 }
