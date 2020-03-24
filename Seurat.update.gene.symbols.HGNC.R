@@ -4,7 +4,17 @@
 # source ('~/GitHub/Seurat.utils/Seurat.update.gene.symbols.HGNC.R')
 require(HGNChelper)
 
-# updateHGNC helper ------------------------------------------------------------------------------------
+
+# updateHGNC ------------------------------------------------------------------------------------
+UpdateGenesSeurat <- function(seu, species_="human", EnforceUnique = T, ShowStats=F ) { # Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
+  HGNC.updated <- HGNChelper::checkGeneSymbols(rownames(seu), unmapped.as.na = FALSE, map = NULL, species = species_)
+  if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
+  if (ShowStats) dput(GetUpdateStats(HGNC.updated))
+  seu <- RenameGenesSeurat(seu, newnames = HGNC.updated)
+  return(seu)
+}
+
+# HELPER updateHGNC  ------------------------------------------------------------------------------------
 RenameGenesSeurat <- function(SeuObj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]) { # Replace gene names in different slots of a Seurat object. Run this before integration. It only changes SeuObj@assays$RNA@counts, @data and @scale.data.
   print("Run this before integration. It only changes SeuObj@assays$RNA@counts, @data and @scale.data")
   RNA <- SeuObj@assays$RNA
@@ -18,13 +28,7 @@ RenameGenesSeurat <- function(SeuObj = ls.Seurat[[i]], newnames = HGNC.updated[[
   return(SeuObj)
 }
 
-# updateHGNC ------------------------------------------------------------------------------------
-UpdateGenesSeurat <- function(seu, species_="human") { # Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
-  HGNC.updated <- HGNChelper::checkGeneSymbols(rownames(seu), unmapped.as.na = FALSE, map = NULL, species = species_)
-  seu <- RenameGenesSeurat(seu, newnames = HGNC.updated)
-}
-
-# Enforce Unique names ------------------------------------------------------------------------------------
+# HELPER Enforce Unique names ------------------------------------------------------------------------------------
 HGNC.EnforceUnique <- function(updatedSymbols) { # Enforce Unique names after HGNC symbol update. updatedSymbols is the output of HGNChelper::checkGeneSymbols.
     NGL <- updatedSymbols[,3]
     if (any.duplicated(NGL)) {
@@ -32,7 +36,7 @@ HGNC.EnforceUnique <- function(updatedSymbols) { # Enforce Unique names after HG
       }
     return(updatedSymbols)
 }
-x <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
+# x <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
 # While "make.unique" is not the ideal solution, because it generates mismatched, in my integration example it does reduce the mismatching genes from ~800 to 4
 
 
