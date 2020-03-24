@@ -63,7 +63,7 @@ isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, savePa
     try(object@misc$p <- p, silent = T)
     try(object@misc$all.genes  <- all.genes, silent = T)
   }
-  fnameBase = kppu(prefix, substitute(object), suffix, idate())
+  fnameBase = kppu(prefix, substitute(object), suffix, idate(Format = "%Y.%m.%d_%H:%M"))
   fname = MarkdownReportsDev::kollapse(path_rdata, "/",fnameBase , ".Rds")
   tictoc::tic()
   saveRDS(object, file = fname, compress=F)
