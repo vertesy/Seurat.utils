@@ -16,55 +16,73 @@ library(htmlwidgets)
 
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
+plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
+                             , gene="TOP2A", quantileCutoff = .99, alpha = .5
+                             , AutoAnnotBy=c(FALSE, category="v.project", "integrated_snn_res.0.7")[3]) {
+  stopifnot(category %in% colnames(obj@meta.data))
+  stopifnot("UMAP_3" %in% colnames(obj@reductions$umap))
+  stopifnot(gene %in% rownames(obj))
+
+  plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", "Expression"=gene), slot = 'data')
+  Cutoff <- quantile(plotting.data[,gene], probs = quantileCutoff)
+  plotting.data$'Expression' <- ifelse(test = plotting.data[,gene] < Cutoff, yes = plotting.data[,gene], no = Cutoff)
+  plotting.data$'label' <- paste(rownames(plotting.data)," - ", plotting.data[,gene], sep="")
+
+  ls.ann.auto <- if (AutoAnnotBy != FALSE) {
+    Annotate4Plotly3D(obj. = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
+  } else { NULL }
+
+  plt <- plot_ly(data = plotting.data
+                 , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
+                 , type = "scatter3d"
+                 , mode = "markers"
+                 , marker = list(size = 1)
+                 , text=~label
+                 , color = ~Expression
+                 , opacity = alpha
+                 , colors = c('darkgrey', 'red')
+                 #, hoverinfo="text"
+  ) %>% layout(title=gene, scene = list(annotations=ls.ann.auto))
+  SavePlotlyAsHtml(plt, category. = gene)
+  return(plt)
+}
+plot3D.umap.gene(gene = "DLX6-AS1")
+
+# ------------------------------------------------------------------------
 plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
-  category="v.project", AutoAnnotByCluster=c(FALSE, category, "integrated_snn_res.0.7")[3]) {
+  category="v.project", AutoAnnotBy=c(FALSE, category, "integrated_snn_res.0.7")[3]) {
   stopifnot(category %in% colnames(obj@meta.data))
   stopifnot("UMAP_3" %in% colnames(obj@reductions$umap))
   plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", category))
   colnames(plotting.data)[4] = "category"
   plotting.data$label <- paste(rownames(plotting.data))   # Make a column of row name identities (these will be your cell/barcode names)
 
-  if (AutoAnnotByCluster != FALSE) {
-    # https://plot.ly/r/text-and-annotations/#3d-annotations
-    stopifnot(AutoAnnotByCluster %in% colnames(obj@meta.data))
-
-    plotting.data$'annot' <- FetchData(object = obj, vars = c(AutoAnnotByCluster))[,1]
-
-    auto_annot <-
-      plotting.data %>%
-      group_by(annot)%>%
-      summarise(showarrow=F
-                , xanchor = "left"
-                , xshift = 10
-                , opacity = 0.7
-                ,"x" = mean(UMAP_1)
-                , "y" = mean(UMAP_2)
-                , "z" = mean(UMAP_3)
-
-      )
-    names(auto_annot)[1]="text"
-    ls.ann.auto = apply(auto_annot, 1, as.list)
-  } else {ls.ann.auto <- NULL}
+  ls.ann.auto <- if (AutoAnnotBy != FALSE) {
+    Annotate4Plotly3D(obj. = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
+  } else { NULL }
 
   plt <- plot_ly(data = plotting.data
           , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
-          , color = ~category
-          , colors = gg_color_hue(length(unique(plotting.data$'category')))
           , type = "scatter3d"
           , mode = "markers"
           , marker = list(size = 1)
           , text=~label
+          , color = ~category
+          , colors = gg_color_hue(length(unique(plotting.data$'category')))
           # , hoverinfo="text"
-  ) %>% layout(scene = list(title=category, annotations=ls.ann.auto))
-  SavePlotlyAsHtml(plt)
+  ) %>% layout(title=category, scene = list(annotations=ls.ann.auto))
+  SavePlotlyAsHtml(plt, category. = category)
   return(plt)
 }
+plot3D.umap(combined.obj, category = "Phase")
 
 # ------------------------------------------------------------------------
-SavePlotlyAsHtml <- function(plotly_obj) {
+
+
+SavePlotlyAsHtml <- function(plotly_obj, category.=category) { # Save Plotly 3D scatterplot as an html file.
   OutputDir <- if(exists("OutDir")) OutDir else getwd()
-  fname <- kpp(OutputDir,"/umap.3D",category,idate(),"html"); iprint("Plot saved as:",fname)
-  htmlwidgets::saveWidget(plotly_obj, file = fname, selfcontained = TRUE)
+  fname <- kpp(OutputDir,"/umap.3D",category.,idate(),"html"); iprint("Plot saved as:",fname)
+  htmlwidgets::saveWidget(plotly_obj, file = fname, selfcontained = TRUE, title = category.)
 }
 
 
@@ -112,5 +130,28 @@ RecallReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Set
 # combined.obj <- RecallReduction(obj = combined.obj, dim=3, reduction="umap")
 # qUMAP()
 
+
+# ------------------------------------------------------------------------
+Annotate4Plotly3D <- function(obj. = combined.obj # Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations
+                              , plotting.data. = plotting.data
+                              , AnnotCateg = AutoAnnotBy) {
+  stopifnot(AnnotCateg %in% colnames(obj@meta.data))
+
+  plotting.data.$'annot' <- FetchData(object = obj, vars = c(AnnotCateg))[,1]
+  auto_annot <-
+    plotting.data. %>%
+    group_by(annot)%>%
+    summarise(showarrow=F
+              , xanchor = "left"
+              , xshift = 10
+              , opacity = 0.7
+              ,"x" = mean(UMAP_1)
+              , "y" = mean(UMAP_2)
+              , "z" = mean(UMAP_3)
+    )
+  names(auto_annot)[1]="text"
+  ls.ann.auto = apply(auto_annot, 1, as.list)
+  return(ls.ann.auto)
+}
 
 # ------------------------------------------------------------------------

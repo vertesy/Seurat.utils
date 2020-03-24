@@ -26,7 +26,7 @@ require('MarkdownReports') # require("devtools")
 
 # Function descriptions
 
-`Fri Mar 20 16:36 2020`
+Updated: `Tue Mar 24 10:01 2020`
 
 ## Read.Write.Save.Load.functions.R
 
@@ -199,8 +199,35 @@ require('MarkdownReports') # require("devtools")
 
 ## plotting.dim.reduction.3D.R
 
-- #### `plot3D.umap()`
-  Plot a 3D umap based on one of the meta data columns. Uses plotly. Based on [Dragonmasterx87](https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0).
+ - #### `plot3D.umap.gene` 
+
+   Plot a 3D umap with gene expression. Uses plotly. Based on [Dragonmasterx87](https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0).
+
+ - #### `plot3D.umap` 
+
+   Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on [Dragonmasterx87](https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0).
+
+ - #### `SavePlotlyAsHtml` 
+
+   Save Plotly 3D scatterplot as an html file.
+
+ - #### `BackupReduction` 
+
+   Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`.
+
+ - #### `SetupReductionsNtoKdimensions` 
+
+   Calculate N-to-K dimensional umaps (default 
+
+ - #### `RecallReduction` 
+
+   Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+
+ - #### `Annotate4Plotly3D` 
+
+   Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations
+
+
 
 ## plotting.filtering.R
 

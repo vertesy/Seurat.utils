@@ -1,5 +1,5 @@
 ## Read.Write.Save.Load.functions.R
-`Fri Mar 20 14:56:41 2020`
+Updated: `Tue Mar 24 10:01 2020`
 
 
 - #### `Convert10Xfolders()`
@@ -97,28 +97,58 @@ Add multiple new metadata columns to a Seurat object from a table.
 ## plotting.dim.reduction.2D.R
 
 - #### `qUMAP()`
-The quickest way to a draw a UMAP
+  The quickest way to a draw a UMAP
+
 - #### `gg_color_hue()`
-reproduce the ggplot2 default color palette
+  reproduce the ggplot2 default color palette
+
 - #### `save2umaps.A4()`
-Save 2 umaps on an A4 page.
+  Save 2 umaps on an A4 page.
+
 - #### `save4umaps.A4()`
-Save 4 umaps on an A4 page.
+  Save 4 umaps on an A4 page.
+
 - #### `umapNamedClusters()`
-Plot and save umap based on a metadata column.
+  Plot and save umap based on a metadata column.
+
 - #### `umapHiLightSel()`
-Highlight a set of cells based on clusterIDs provided.
+  Highlight a set of cells based on clusterIDs provided.
+
 - #### `multiFeaturePlot.A4()`
-Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
+  Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
+
 - #### `multiFeatureHeatmap.A4()`
-Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
+  Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
+
 - #### `plot.UMAP.tSNE.sidebyside()`
 Plot a UMAP and tSNE sidebyside
 
+
+
 ## plotting.dim.reduction.3D.R
 
-- #### `plot3D.umap()`
-Plot a 3D umap based on one of the metadata columns. Uses plotly.
+ - #### `plot3D.umap.gene` 
+ Plot a 3D umap with gene expression. Uses plotly. Based on [Dragonmasterx87](https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0).
+ 
+ - #### `plot3D.umap` 
+    Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on [Dragonmasterx87](https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0).
+    
+ - #### `SavePlotlyAsHtml` 
+ Save Plotly 3D scatterplot as an html file.
+ 
+ - #### `BackupReduction` 
+ Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`.
+ 
+ - #### `SetupReductionsNtoKdimensions` 
+ Calculate N-to-K dimensional umaps (default 
+ 
+ - #### `RecallReduction` 
+ Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+ 
+ - #### `Annotate4Plotly3D` 
+ Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations
+ 
+ 
 
 ## plotting.filtering.R
 
