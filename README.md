@@ -27,6 +27,23 @@ require('MarkdownReports') # require("devtools")
 9. `Seurat.update.gene.symbols.HGNC.R`	→ *Seurat update gene symbols HGNC.*
 
 
+
+# Install
+
+1. Download (clone) this repo locally, 
+2. change the file path in each `.R` script (to where you keep them on your computer), and
+3.  `source("~/path/to/Seurat.Utils.Load.R")` (Make sure you also change the path's inside this file):
+
+
+
+Alternative: Directly source each `.R` script from the web, e.g:
+
+```R
+source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Seurat.update.gene.symbols.HGNC.R")
+```
+
+
+
 # Function descriptions
 
 Updated: `Tue Mar 24 10:01 2020`
