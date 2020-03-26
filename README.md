@@ -2,19 +2,11 @@
 
 # Seurat.utils
 
-#### Some functionalities require functions from `CodeAndRoll` and `MarkdownReports` libraries.
+`Seurat.utils` Is a collection of utility functions for Seurat v3. Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics & QC, interaction with the Seurat object, etc. 
 
-```r
-try (source ('https://raw.githubusercontent.com/vertesy/CodeAndRoll/master/CodeAndRoll.R'),silent= F)
-		# generic utility funtions
-require('MarkdownReports') # require("devtools")
-		# plotting related utility functions
-		# devtools::install_github(repo = "vertesy/MarkdownReportsDev")
-```
 
-`If you use these functions, please star the repo! Thanks :-)`
 
-### Utilities for Seurat v3. Content is organized into files per rough functionalities:
+### The content of this repo is organized into files per rough functionalities:
 
 1. `Seurat.Utils.Load.R`								→ *Top level wrapper to source each file below.*
 2. `metadata.manipulation.R`						→ *Metadata manipulation.*
@@ -34,13 +26,31 @@ require('MarkdownReports') # require("devtools")
 2. change the file path in each `.R` script (to where you keep them on your computer), and
 3.  `source("~/path/to/Seurat.Utils.Load.R")` (Make sure you also change the path's inside this file):
 
-
-
 Alternative: Directly source each `.R` script from the web, e.g:
 
 ```R
 source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Seurat.update.gene.symbols.HGNC.R")
 ```
+
+
+
+#### Some functionalities require functions from `CodeAndRoll` and `MarkdownReports` libraries.
+
+Load or install them as follows:
+
+```r
+try (source ('https://raw.githubusercontent.com/vertesy/CodeAndRoll/master/CodeAndRoll.R'),silent= F)
+		# generic utility funtions
+require('MarkdownReports') # require("devtools")
+		# plotting related utility functions
+		# devtools::install_github(repo = "vertesy/MarkdownReportsDev")
+```
+
+
+
+# Usage
+
+After `source("~/path/to/Seurat.Utils.Load.R")`  you can use any of the functions listed below. Most functions have a minimal example written in the `.R` scripts, just below each functions definition.
 
 
 
@@ -128,7 +138,7 @@ Updated: `Tue Mar 24 10:01 2020`
 
 - #### `GetMostVarGenes()`
 
-  Get the most variable rGenes
+  Get the most variable Genes
 
 - #### `gene.name.check()`
 
@@ -147,7 +157,7 @@ Updated: `Tue Mar 24 10:01 2020`
 
 - #### `RenameGenesSeurat()`
 
-  Replace gene names in different slots of a Seurat object. Run this before integration. It only changes SeuObj@assays$RNA@counts, @data and @scale.data.
+  Replace gene names in different slots of a Seurat object. Run this before integration. It only changes `SeuObj@assays$RNA@counts`, `@data` and `@scale.data.`
 
 - #### `UpdateGenesSeurat()`
 
@@ -177,7 +187,7 @@ Updated: `Tue Mar 24 10:01 2020`
 
 - #### `sampleNpc()`
 
-  Sample N % of a dataframe (obj@metadata), and return the cell IDs.
+  Sample N % of a dataframe (`obj@metadata`), and return the cell IDs.
 
 ## plotting.dim.reduction.2D.R
 
@@ -275,7 +285,7 @@ Updated: `Tue Mar 24 10:01 2020`
 
 - #### `ssgCellFractionsBarplot.CORE()`
 
-  Cell Fractions Barplots, basic. sg stands for "seurat ggplot".
+  Cell Fractions Barplots, basic. sg stands for "seurat ggplot". May require `ggMarkdownReports`.
 
 - #### `sgCellFractionsBarplot()`
 
