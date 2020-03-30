@@ -152,6 +152,12 @@ Updated: `Tue Mar 24 10:01 2020`
 - #### `fixZeroIndexing.seurat()`
 
   Fix zero indexing in seurat clustering, to 1-based indexing
+  
+ - #### `CalculateFractionInTrome()`
+
+  Calculate the fraction of a set of genes within the full Transcriptome of each cell.
+
+
 
 ## Seurat.update.gene.symbols.HGNC.R
 

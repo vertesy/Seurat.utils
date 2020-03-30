@@ -51,21 +51,33 @@ normal gzip output (& compression rate), ~*cores faster in zipping.
 ## Seurat.object.manipulations.etc.R
 
 - #### `clip10Xcellname()`
-Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration).
+  Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration).
+
 - #### `make10Xcellname()`
-Add a suffix to cell names, so that it mimics the lane-suffix, e.g.
-"_1".
+  Add a suffix to cell names, so that it mimics the lane-suffix, e.g.
+  "_1".
+
 - #### `seu.Make.Cl.Label.per.cell()`
-Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID".
+  Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID".
+
 - #### `GetMostVarGenes()`
-Get the most variable rGenes
+  Get the most variable rGenes
+
 - #### `gene.name.check()`
-Check gene names in a seurat object, for naming conventions (e.g.
-mitochondrial reads have - or .). Use for reading .mtx & writing .rds files.
+  Check gene names in a seurat object, for naming conventions (e.g.
+  mitochondrial reads have - or .). Use for reading .mtx & writing .rds files.
+
 - #### `check.genes()`
-Check if genes exist in your dataset.
+  Check if genes exist in your dataset.
+
 - #### `fixZeroIndexing.seurat()`
-Fix zero indexing in seurat clustering, to 1-based indexing
+  Fix zero indexing in seurat clustering, to 1-based indexing
+
+- #### `CalculateFractionInTrome()`
+
+  Calculate the fraction of a set of genes within the full Transcriptome of each cell.
+
+
 
 ## Seurat.update.gene.symbols.HGNC.R
 
