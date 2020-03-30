@@ -129,25 +129,25 @@ Plot a UMAP and tSNE sidebyside
 
  - #### `plot3D.umap.gene` 
  Plot a 3D umap with gene expression. Uses plotly. Based on [Dragonmasterx87](https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0).
- 
+
  - #### `plot3D.umap` 
     Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on [Dragonmasterx87](https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0).
     
  - #### `SavePlotlyAsHtml` 
  Save Plotly 3D scatterplot as an html file.
- 
+
  - #### `BackupReduction` 
  Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`.
- 
+
  - #### `SetupReductionsNtoKdimensions` 
  Calculate N-to-K dimensional umaps (default 
- 
+
  - #### `RecallReduction` 
  Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
- 
+
  - #### `Annotate4Plotly3D` 
  Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations
- 
+
  
 
 ## plotting.filtering.R
@@ -171,3 +171,27 @@ Cell Fractions Barplots, basic. sg stands for "seurat ggplot".
 Cell Fractions Barplots. sg stands for "seurat ggplot".
 - #### `plotTheSoup()`
 Plot the ambient RNA content of droplets without a cell (background droplets).
+
+
+
+
+
+
+## Cluster.Auto-naming.DE.R
+
+- #### `StoreAllMarkers()`
+
+  Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
+
+- #### `AutoLabelTop.logFC()`
+
+  Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of`
+   the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.  
+
+- #### `AutoLabel.KnownMarkers()`
+
+  Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.  
+
+- #### `DimPlot.ClusterNames()`
+
+  Plot UMAP with Cluster names.	

@@ -295,6 +295,30 @@ Updated: `Tue Mar 24 10:01 2020`
 
   Plot the ambient RNA content of droplets without a cell (background droplets).
   
+
+
+
+## Cluster.Auto-naming.DE.R
+
+- #### `StoreAllMarkers()`
+
+  Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
+
+- #### `AutoLabelTop.logFC()`
+
+  Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of`
+   the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.  
+
+- #### `AutoLabel.KnownMarkers()`
+
+  Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.  
+
+- #### `DimPlot.ClusterNames()`
+
+  Plot UMAP with Cluster names.	
+  
+  
+
 -----------
 [Get Seurat.utils](https://github.com/vertesy/Seurat.utils). Vertesy, 2020. [![DOI](https://zenodo.org/badge/248721133.svg)](https://zenodo.org/badge/latestdoi/248721133) 
 *If you use these functions, please star the repo, or cite via `DOI`. Thanks!*
