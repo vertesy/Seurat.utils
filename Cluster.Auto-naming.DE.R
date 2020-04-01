@@ -7,7 +7,7 @@
 
 
 # ------------------------------------------------------------------------------------
-StoreAllMarkers <- function(obj =  combined.obj # Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
+StoreAllMarkers <- function(obj = combined.obj # Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
                             , df_markers = df.markers, res = 0.5, digit=c(0,3)[2]) {
   if (digit) df_markers[,1:5] <- signif(df_markers[,1:5], digits = digit)
   combined.obj@misc$'df.markers'[[ppp('res',res)]] <- df_markers
@@ -15,7 +15,7 @@ StoreAllMarkers <- function(obj =  combined.obj # Save the output table of `Find
 # combined.obj <- StoreAllMarkers(df_markers = df.markers, res = 0.5)
 
 # ------------------------------------------------------------------------------------
-AutoLabelTop.logFC <- function(obj =  combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.  
+AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.  
                                , res = 0.5 , df_markers = combined.obj@misc$"df.markers"[[p0("res.",res)]] ) {
   top.markers <- 
     df_markers %>%
@@ -37,7 +37,7 @@ AutoLabelTop.logFC <- function(obj =  combined.obj # Create a new "named identit
 
 
 # ------------------------------------------------------------------------------------
-AutoLabel.KnownMarkers <- function(obj =  combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.  
+AutoLabel.KnownMarkers <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.  
                                    , KnownMarkers=c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1","SALL4","DDIT4", "PDK1", "SATB2", "FEZF2") 
                                    , res = 0.5 , df_markers = combined.obj@misc$"df.markers"[[p0("res.",res)]] ) {
   matching.clusters <- 
@@ -95,4 +95,26 @@ DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster nam
 }
 # DimPlot.ClusterNames()
 
+# ------------------------------------------------------------------------------------
+StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based on `avg_logFC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
+                              , df_markers = df.markers, res = 0.5) {
+  top25.markers <-
+    df_markers %>%
+    group_by(cluster) %>%
+    top_n(n = 25, wt = avg_logFC) %>%
+    select(gene) %>%
+    col2named.vec.tbl() %>%
+    splitbyitsnames()
+  
+  combined.obj@misc$'top25.markers'[[ppp('res',res)]] <- top25.markers
+}
+# combined.obj <- StoreTop25Markers(df_markers = df.markers, res = 0.)
+
+
+StoreAllMarkers <- function(obj = combined.obj # Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
+                            , df_markers = df.markers, res = 0.5, digit=c(0,3)[2]) {
+  if (digit) df_markers[,1:5] <- signif(df_markers[,1:5], digits = digit)
+  combined.obj@misc$'df.markers'[[ppp('res',res)]] <- df_markers
+}
+# combined.obj <- StoreAllMarkers(df_markers = df.markers, res = 0.5)
 
