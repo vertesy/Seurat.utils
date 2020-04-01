@@ -49,7 +49,7 @@ seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix =
   overlap = intersect(mCols.new, mCols.old)
   if (length(overlap)) {
     iprint(length(overlap), 'metadata columns already exist in the seurat object: ', overlap, '. These are tagged as: *', suffix)
-    colnames(meta)[overlap] = p0(overlap, suffix)
+    colnames(meta)[overlap] = paste0(overlap, suffix)
   }
   mCols.add = colnames(meta)
   obj@meta.data[Found, mCols.add] = meta[ Found,]

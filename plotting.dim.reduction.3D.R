@@ -90,7 +90,7 @@ SavePlotlyAsHtml <- function(plotly_obj, category.=category) { # Save Plotly 3D 
 # ------------------------------------------------------------------------
 BackupReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`.
   if (is.null(obj@misc$"reductions.backup")) obj@misc$"reductions.backup" <- list()
-  dslot=p0(reduction,dim,"d")
+  dslot=paste0(reduction,dim,"d")
   obj@misc$reductions.backup[[dslot]] <- obj@reductions[[reduction]]
   return(obj)
 }
@@ -119,7 +119,7 @@ SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$'n.PC', d
 
 # ------------------------------------------------------------------------
 RecallReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
-  dslot=p0(reduction,dim,"d")
+  dslot=paste0(reduction,dim,"d")
   iprint(dim, "dimensional", reduction, "is set active. Source")
   obj@reductions[[reduction]] <- obj@misc$reductions.backup[[dslot]]
   return(obj)

@@ -76,7 +76,7 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
                                 , jpeg.res = 225, jpeg.q = 90) {
   tictoc::tic()
   ParentDir = OutDir
-  if (subdir) create_set_SubDir(... = p0(substitute(list.of.genes),'.', plot.reduction),'/')
+  if (subdir) create_set_SubDir(... = paste0(substitute(list.of.genes),'.', plot.reduction),'/')
 
   list.of.genes = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay)
   lsG = iterBy.over(1:length(list.of.genes), by=nr.Row*nr.Col)

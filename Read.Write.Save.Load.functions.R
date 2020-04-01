@@ -14,7 +14,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
   for (i in 1:length(fin)) {
     pathIN = fin[i]; print(pathIN)
     fnameIN = basename(fin[i])
-    fnameOUT = ppp(p0(InputDir, '/filtered.', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
+    fnameOUT = ppp(paste0(InputDir, '/filtered.', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
     x <- Read10X(pathIN)
     seu <- CreateSeuratObject(counts = x, project = fnameIN,
                               min.cells = min.cells, min.features = min.features)
@@ -29,7 +29,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 LoadAllSeurats <- function(InputDir) { # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
   fin <- list.files(InputDir, include.dirs = F, pattern = "*.Rds")
   ls.Seu <- list.fromNames(fin)
-  for (i in 1:length(fin)) {print(fin[i]); ls.Seu[[i]] <- readRDS(p0(InputDir, fin[i]))}
+  for (i in 1:length(fin)) {print(fin[i]); ls.Seu[[i]] <- readRDS(paste0(InputDir, fin[i]))}
   return(ls.Seu)
 }
 # ls.Seu <- LoadAllSeurats(InputDir = InputDir)
@@ -97,7 +97,7 @@ subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25 ) { # Subset a compre
 
   obj_Xpc <- subset(obj, cells = cellIDs.keep) # downsample
   saveRDS(obj_Xpc, compress = TRUE,
-          file = ppp(p0(InputDir, 'seu.ORC'), length(cellIDs.keep), 'cells.with.min.features', p$min.features,"Rds" ) )
+          file = ppp(paste0(InputDir, 'seu.ORC'), length(cellIDs.keep), 'cells.with.min.features', p$min.features,"Rds" ) )
   say()
 }
 

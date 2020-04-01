@@ -7,13 +7,13 @@
 clip10Xcellname <- function(cellnames) str_split_fixed(cellnames, "_", n = 2)[,1] # Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration).
 
 # ------------------------------------------------------------------------
-make10Xcellname <- function(cellnames, suffix="_1") p0(cellnames, suffix) # Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1".
+make10Xcellname <- function(cellnames, suffix="_1") paste0(cellnames, suffix) # Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1".
 
 
 # ------------------------------------------------------------------------
 seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) { # Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID".
   Cl.names_class= TopGenes[ clID.per.cell ]
-  Cl.names_wNr = p0(Cl.names_class,' (',names(Cl.names_class),')')
+  Cl.names_wNr = paste0(Cl.names_class,' (',names(Cl.names_class),')')
   return(Cl.names_wNr)
 }
 # seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic,
