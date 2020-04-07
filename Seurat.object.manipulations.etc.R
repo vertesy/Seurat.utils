@@ -78,3 +78,22 @@ CalculateFractionInTrome <- function(obj = combined.obj # Calculate the fraction
   return(gene.fraction.per.cell)
 }
 
+# ------------------------------------------------------------------------
+AddNewAnnotation <- function(obj = obj # Create a new metadata column based on an exisiting metadata column and a list of mappings (name <- IDs).
+                             , source = "RNA_snn_res.0.5", named.list.of.identities = ls.Subset.ClusterLists) {
+  NewID <- as.named.vector(obj[[source]])
+
+  for (i in 1:length(named.list.of.identities)) {
+    lx <- as.character(named.list.of.identities[[i]])
+    name.lx <- names(named.list.of.identities)[i]
+    NewID <- translate(vec = NewID, oldvalues = lx, newvalues = name.lx)
+  }
+  print(table(NewID))
+  return(NewID)
+}
+# ls.Subset.ClusterLists = list( "hESC.h9" = c("4", "10", "14"), "hESC.176" = c("0", "1", "2")); AddNewAnnotation()
+
+
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
