@@ -95,5 +95,13 @@ AddNewAnnotation <- function(obj = obj # Create a new metadata column based on a
 
 
 # ------------------------------------------------------------------------
+
+IntersectWithExpressed <- function(genes, obj=combined.obj) { # Intersect a set of genes with genes in the Seurat object.
+  diff = setdiff(genes, rownames(obj))
+  iprint(length(diff),"genes (of",l(genes), ") are not found in the Seurat object:",diff)
+  return(intersect(rownames(obj), genes))
+}
+# GO.0010941.regulation.of.cell.death <- IntersectWithExpressed(GO.0010941.regulation.of.cell.death)
+
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
