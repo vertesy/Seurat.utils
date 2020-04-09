@@ -19,7 +19,7 @@ try (source ('~/GitHub/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilitie
 plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
                              , gene="TOP2A", quantileCutoff = .99, alpha = .5, dotsize=1.25, def.assay = c("integrated", "RNA")[2]
                              , AutoAnnotBy=c(FALSE, "v.project", "integrated_snn_res.0.7")[3]) {
-  stopifnot(AutoAnnotBy %in% colnames(obj@meta.data))
+  # stopifnot(AutoAnnotBy %in% colnames(obj@meta.data) | AutoAnnotBy = FALSE)
   stopifnot("UMAP_3" %in% colnames(obj@reductions$umap))
   stopifnot(gene %in% rownames(obj))
 
@@ -53,7 +53,7 @@ plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene express
 
 # ------------------------------------------------------------------------
 plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
-  category="v.project", AutoAnnotBy=c(FALSE, category, "integrated_snn_res.0.7")[3]) {
+  category="v.project", dotsize = 1.25, AutoAnnotBy=c(FALSE, category, "integrated_snn_res.0.7")[3]) {
   stopifnot(category %in% colnames(obj@meta.data))
   stopifnot("UMAP_3" %in% colnames(obj@reductions$umap))
   plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", category))
@@ -68,7 +68,7 @@ plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the m
           , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
           , type = "scatter3d"
           , mode = "markers"
-          , marker = list(size = 1)
+          , marker = list(size = dotsize)
           , text=~label
           , color = ~category
           , colors = gg_color_hue(length(unique(plotting.data$'category')))
@@ -156,7 +156,7 @@ Annotate4Plotly3D <- function(obj. = combined.obj # Create annotation labels for
 
 # ------------------------------------------------------------------------
 Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
-                               , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, default.assay = c("integrated", "RNA")[2]
+                               , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, cex = 1.25, default.assay = c("integrated", "RNA")[2]
                                , ListOfGenes=c( "BCL11B" , "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4") ) {
 
   try(create_set_SubDir(substitute(ListOfGenes)))
@@ -168,7 +168,7 @@ Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMA
 
   for (i in 1:length(ListOfGenes)) {
     g <- ListOfGenes[i]; print(g)
-    plot3D.umap.gene(obj = obj., gene = g, AutoAnnotBy = annotate.by, alpha = opacity, def.assay = default.assay)
+    plot3D.umap.gene(obj = obj., gene = g, AutoAnnotBy = annotate.by, alpha = opacity, def.assay = default.assay, dotsize = cex)
   }
   try(oo())
   try(create_set_Original_OutDir(NewOutDir = ParentDir))
@@ -180,7 +180,7 @@ Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMA
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
-                                    , annotate.by = "integrated_snn_res.0.7", default.assay = c("integrated", "RNA")[2]
+                                    , annotate.by = "integrated_snn_res.0.7", cex = 1.25, default.assay = c("integrated", "RNA")[2]
                                     , ListOfCategories=c("v.project","experiment", "Phase", "integrated_snn_res.0.7") ) {
   try(create_set_SubDir(substitute(ListOfCategories)))
   obj. <- obj; rm("obj")
@@ -192,7 +192,7 @@ Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3
 
   for (i in 1:length(ListOfCategories)) {
     categ <- ListOfCategories[i]; print(categ)
-    plot3D.umap(obj = obj., category = categ, AutoAnnotBy = annotate.by)
+    plot3D.umap(obj = obj., category = categ, AutoAnnotBy = annotate.by, dotsize = cex)
   }
   try(oo())
   try(create_set_Original_OutDir(NewOutDir = ParentDir))
