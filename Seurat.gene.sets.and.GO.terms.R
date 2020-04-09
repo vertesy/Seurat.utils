@@ -3,7 +3,12 @@
 ######################################################################
 # source ('~/GitHub/Seurat.utils/Seurat.gene.sets.and.GO.terms.R')
 
+# require(MarkdownReports)
+# source ('~/GitHub/CodeAndRoll/CodeAndRoll.R')
 
+# Setup ------------------------------------------------------------
+library(biomaRt)
+ensembl = useMart("ensembl", dataset="hsapiens_gene_ensembl") #uses human ensembl annotations
 
 # ------------------------------------------------------------------------
 
@@ -15,7 +20,6 @@ IntersectWithExpressed <- function(genes, obj=combined.obj) { # Intersect a set 
 # GO.0010941.regulation.of.cell.death <- IntersectWithExpressed(GO.0010941.regulation.of.cell.death)
 
 # ------------------------------------------------------------------------
-
 GetGOTerms <- function(obj = combined.obj, GO = 'GO:0034976', web.open = T) { # Get GO terms via Biomart package
   genes <- getBM(attributes=c('hgnc_symbol'), #  'ensembl_transcript_id', 'go_id'
                  filters = "go",  uniqueRows = TRUE,
@@ -30,6 +34,20 @@ GetGOTerms <- function(obj = combined.obj, GO = 'GO:0034976', web.open = T) { # 
 }
 # combined.obj <- GetGOTerms(obj = combined.obj, GO = 'GO:0034976'); combined.obj@misc$GO$GO.0034976
 
+# ------------------------------------------------------------------------
+AddGOGeneList.manual <- function(obj = combined.obj, GO = 'GO:0034976'  # Add GO terms via Biomart package
+                                 , genes =  c("A0A140VKG3", "ARX", "CNTN2", "DRD1", "DRD2", "FEZF2", "LHX6")) {
+  genes <- IntersectWithExpressed(obj = obj, genes = genes)
+
+  if (is.null(obj@misc$GO)) obj@misc$GO <- list()
+  obj@misc$GO[[make.names(GO)]] <- genes
+  iprint("Genes in", GO, "are saved under obj@misc$GO$", make.names(GO))
+  if (web.open) system(paste0("open https://www.ebi.ac.uk/QuickGO/search/", GO))
+  return(obj)
+}
+# combined.obj <- AddGOGeneList.manual(obj = combined.obj, GO = 'GO:1904936'
+#       , genes =  c("A0A140VKG3", "ARX", "CNTN2", "DRD1", "DRD2", "FEZF2", "LHX6")); combined.obj@misc$GO$GO.0034976
+
 
 # ------------------------------------------------------------------------
 AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) { # Call after GetGOTerms. Calculates Score for gene set. Fixes name
@@ -43,7 +61,7 @@ AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) {
            , pattern = paste0(ScoreName,1)
            , replacement = ScoreName
       )
-    print("Trailing '1' in metadata column name is removed")
+    iprint("Trailing '1' in metadata column name is removed. Column name:", ScoreName)
   }
   return(obj)
 }
@@ -64,5 +82,11 @@ FeaturePlotSave <- function(obj = combined.obj, GO = "Score.GO.0034976", h=7, PN
 # FeaturePlotSave()
 
 # ------------------------------------------------------------------------
+PasteUniqueGeneList <- function() {
+  dput(sort(unique(clipr::read_clip())))
+}
 # ------------------------------------------------------------------------
+
 # ------------------------------------------------------------------------
+
+
