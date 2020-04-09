@@ -13,8 +13,9 @@ ensembl = useMart("ensembl", dataset="hsapiens_gene_ensembl") #uses human ensemb
 # ------------------------------------------------------------------------
 
 IntersectWithExpressed <- function(genes, obj=combined.obj) { # Intersect a set of genes with genes in the Seurat object.
+  # print(head(genes, n=15))
   diff = setdiff(genes, rownames(obj))
-  iprint(length(diff),"genes (of",l(genes), ") are not found in the Seurat object:",diff)
+  iprint(length(diff),"genes (of",l(genes), ") are NOT found in the Seurat object:",diff)
   return(intersect(rownames(obj), genes))
 }
 # GO.0010941.regulation.of.cell.death <- IntersectWithExpressed(GO.0010941.regulation.of.cell.death)
@@ -35,8 +36,9 @@ GetGOTerms <- function(obj = combined.obj, GO = 'GO:0034976', web.open = T) { # 
 # combined.obj <- GetGOTerms(obj = combined.obj, GO = 'GO:0034976'); combined.obj@misc$GO$GO.0034976
 
 # ------------------------------------------------------------------------
-AddGOGeneList.manual <- function(obj = combined.obj, GO = 'GO:0034976'  # Add GO terms via Biomart package
+AddGOGeneList.manual <- function(obj = combined.obj, GO = 'GO:0034976', web.open=F  # Add GO terms via Biomart package
                                  , genes =  c("A0A140VKG3", "ARX", "CNTN2", "DRD1", "DRD2", "FEZF2", "LHX6")) {
+  print(head(genes, n =15))
   genes <- IntersectWithExpressed(obj = obj, genes = genes)
 
   if (is.null(obj@misc$GO)) obj@misc$GO <- list()
