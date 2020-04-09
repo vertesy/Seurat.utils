@@ -52,10 +52,10 @@ AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) {
 
 
 # ------------------------------------------------------------------------
-FeaturePlotSave <- function(obj = combined.obj, GO = "Score.GO.0034976", h=7, PNG =F) {
+FeaturePlotSave <- function(obj = combined.obj, GO = "Score.GO.0034976", h=7, PNG =F) { # Plot and save a FeaturePlot, e.g. showing gene set scores.
   ggplot.obj <-
     FeaturePlot(obj, features = make.names(GO)
-                , min.cutoff = "q10", max.cutoff = "q90", reduction = 'umap')
+                , min.cutoff = "q05", max.cutoff = "q95", reduction = 'umap')
   pname = paste0("FeaturePlot.",make.names(GO))
   fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
   save_plot(filename =fname, plot = ggplot.obj, base_height=h)

@@ -206,4 +206,24 @@ Plot the ambient RNA content of droplets without a cell (background droplets).
 
 - #### `DimPlot.ClusterNames()`
 
-  Plot UMAP with Cluster names.	
+  Plot UMAP with Cluster names.
+  
+  ​	
+  
+## Seurat.gene.sets.and.GO.terms.R
+
+  - #### `IntersectWithExpressed()`
+
+   Intersect a set of genes with genes in the Seurat object.
+
+  - #### `GetGOTerms()`
+
+   Get GO terms via Biomart package
+
+  - #### `AddGOScore()`
+
+   Call after GetGOTerms. Calculates Score for gene set. Fixes name
+
+  - #### `FeaturePlotSave()`
+
+   Plot and save a FeaturePlot, e.g. showing gene set scores.	

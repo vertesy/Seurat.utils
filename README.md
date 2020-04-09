@@ -303,7 +303,6 @@ Updated: `Tue Mar 24 10:01 2020`
   
 
 
-
 ## Cluster.Auto-naming.DE.R
 
 - #### `StoreAllMarkers()`
@@ -323,7 +322,23 @@ Updated: `Tue Mar 24 10:01 2020`
 
   Plot UMAP with Cluster names.	
   
-  
+## Seurat.gene.sets.and.GO.terms.R
+
+- #### `IntersectWithExpressed()`
+
+ Intersect a set of genes with genes in the Seurat object.
+
+- #### `GetGOTerms()`
+
+ Get GO terms via Biomart package
+
+- #### `AddGOScore()`
+
+ Call after GetGOTerms. Calculates Score for gene set. Fixes name
+
+- #### `FeaturePlotSave()`
+
+ Plot and save a FeaturePlot, e.g. showing gene set scores.
 
 -----------
 [Get Seurat.utils](https://github.com/vertesy/Seurat.utils). Vertesy, 2020. [![DOI](https://zenodo.org/badge/248721133.svg)](https://zenodo.org/badge/latestdoi/248721133) 
