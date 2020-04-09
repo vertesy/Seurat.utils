@@ -136,3 +136,35 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 
 # combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dimension=1, reduction="umap", res = "integrated_snn_res.0.5" )
 # DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.ordered")
+
+# ------------------------------------------------------------------------------------
+AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
+                                    , dimension=1:2, plotit=T, swap= -1
+                                    , reduction="umap", res = "integrated_snn_res.0.5" ) {
+
+  dim_name <- ppu(toupper(reduction),dimension)
+  coord.umap <- FetchData(object = obj, vars = dim_name)
+  require(princurve)
+  fit <- principal_curve(x = as.matrix(coord.umap))
+  if (plotit) {
+    plot(fit, xlim=range(coord.umap[,1]), ylim=range(coord.umap[,2])
+         , main = "principal_curve")
+    # points(fit)
+    points(coord.umap, pch=18, cex=.25)
+    whiskers(coord.umap, fit$s, lwd=.1)
+    wplot_save_this(plotname = "principal_curve")
+  }
+
+  ls.perCl <- split(swap * fit$lambda, f = obj[[res]])
+  MedianClusterCoordinate <- unlapply(ls.perCl, median)
+  OldLabel <- names(sort(MedianClusterCoordinate))
+  NewLabel <- as.character(0:(length(MedianClusterCoordinate)-1))
+  NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
+  NewMetaCol <- kpp(res,"prin.curve")
+  iprint("NewMetaCol:",NewMetaCol)
+  obj[[NewMetaCol]] <- NewMeta
+  return(obj)
+}
+# DimPlot.ClusterNames(ident = "integrated_snn_res.0.5")
+# combined.obj <- AutoNumber.by.PrinCurve(obj = combined.obj, dimension=1:2, reduction="umap", plotit=T, swap= -1, res = "integrated_snn_res.0.5" )
+# DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.prin.curve")
