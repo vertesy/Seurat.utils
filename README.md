@@ -2,7 +2,7 @@
 
 # Seurat.utils
 
-`Seurat.utils` Is a collection of utility functions for Seurat v3. Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics & QC, interaction with the Seurat object, etc. 
+`Seurat.utils` Is a collection of utility functions for Seurat v3. Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics & QC, interaction with the Seurat object, etc.  Some functionalities require functions from [**CodeAndRoll**](https://vertesy.github.io/CodeAndRoll/) and  [**MarkdownReports**](https://vertesy.github.io/MarkdownReports/) libraries.
 
 
 
@@ -34,16 +34,16 @@ source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Seurat.upd
 
 
 
-#### Some functionalities require functions from `CodeAndRoll` and `MarkdownReports` libraries.
+#### Load or install the dependencies [`CodeAndRoll`](https://vertesy.github.io/CodeAndRoll)  and [`MarkdownReports`](https://vertesy.github.io/MarkdownReports) .
 
-Load or install them as follows:
+Some functionalities require functions from each.
 
 ```r
-try (source ('https://raw.githubusercontent.com/vertesy/CodeAndRoll/master/CodeAndRoll.R'),silent= F)
+try (source ('https://raw.githubusercontent.com/vertesy/CodeAndRoll/master/CodeAndRoll.R'), silent= F)
 		# generic utility funtions
 require('MarkdownReports') # require("devtools")
 		# plotting related utility functions
-		# devtools::install_github(repo = "vertesy/MarkdownReportsDev")
+		# devtools::install_github(repo = "vertesy/MarkdownReports")
 ```
 
 
