@@ -104,4 +104,17 @@ IntersectWithExpressed <- function(genes, obj=combined.obj) { # Intersect a set 
 # GO.0010941.regulation.of.cell.death <- IntersectWithExpressed(GO.0010941.regulation.of.cell.death)
 
 # ------------------------------------------------------------------------
+
+GetGOTerms <- function(obj = combined.obj, GO = 'GO:0034976') { # Get GO terms via Biomart package
+  genes <- getBM(attributes=c('hgnc_symbol'), #  'ensembl_transcript_id', 'go_id'
+                 filters = "go",  uniqueRows = TRUE,
+                 values = GO, mart = ensembl)[,1]
+  genes <- IntersectWithExpressed(obj = obj, genes = genes)
+
+  if (is.null(obj@misc$GO)) obj@misc$GO <- list()
+  obj@misc$GO[[make.names(GO)]] <- genes
+  iprint("Genes in", GO, "are saved under obj@misc$GO$", make.names(GO))
+  return(obj)
+}
+# combined.obj <- GetGOTerms(obj = combined.obj, GO = 'GO:0034976'); combined.obj@misc$GO$GO.0034976
 # ------------------------------------------------------------------------
