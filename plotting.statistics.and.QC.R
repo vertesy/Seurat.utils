@@ -38,54 +38,34 @@ BarplotCellsPerObject <- function(ls.Seu = ls.Seurat, # Take a List of Seurat ob
   barplot_label(cellCounts, TopOffset = 500, w = 4)
 }
 
-
-# sgCellFractionsBarplot.Mseq ------------------------------------------------------------------------
-sgCellFractionsBarplot.Mseq <- function(data # Cell fractions Barplot for MULTI-seq. sg stands for "seurat ggplot".
-  , seedNr=1989, group_by = "genotype", plotname="Cell proportions") {
+# CellFractionsBarplot2 ------------------------------------------------------------
+CellFractionsBarplot2 <- function(obj = combined.obj
+                                  , group.by = "integrated_snn_res.0.5.ordered", fill.by = "age", downsample = T
+                                  , plotname = paste(TitleCase(fill.by), "proportions"), seedNr = 1989) {
   set.seed(seedNr)
-  data %>%
-    group_by( genotype ) %>% #eval(substitute(group_by))
-    sample_n(NrCellsInSmallerDataSet ) %>%
-    ssgCellFractionsBarplot.CORE(plotname = plotname)
-}
+  pname.suffix <- capt.suffix <- NULL
+  if (downsample) {
+    downsample <- min (table(obj@meta.data[[fill.by]]))
+    pname.suffix <- "(downsampled)"
+    capt.suffix <- paste("Downsampled to", downsample, "cells in the smallest", fill.by, "group.")
+  }
+  caption_ <- paste("Numbers denote # cells.", capt.suffix)
+  pname_ <- paste(plotname, pname.suffix)
 
-# ssgCellFractionsBarplot.CORE ------------------------------------------------------------------------
-ssgCellFractionsBarplot.CORE <- function(data # Cell Fractions Barplots, basic. sg stands for "seurat ggplot".
-  , plotname="Cell proportions per ...", ClLabelExists = p$'clusternames.are.defined', AltLabel = p$'res.MetaD.colname') {
-  LabelExists = ww.variable.exists.and.true(var = eval(ClLabelExists))
+  obj@meta.data %>%
+    group_by( (!!as.name(fill.by)) ) %>%
+    { if(downsample) sample_n(., downsample) else . } %>%
+    group_by( (!!as.name(group.by)) ) %>%
+    ggplot( aes(fill=(!!(as.name(fill.by))), x = (!!(as.name(group.by)))) ) +
 
-  data %>%
-    aes(x=if (LabelExists) Cl.names else quote(AltLabel)) + # ggplot(aes(fill= genotype)) +
-    ggtitle(plotname) +
-    geom_bar( position="fill" ) +
-    geom_hline(yintercept=.5, color='darkgrey')  +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    geom_text(aes(label=..count..), stat='count',position = position_fill(vjust=0.5)) +
-    labs(x = "Clusters", y = "Fraction")
-}
-
-# sgCellFractionsBarplot ------------------------------------------------------------------------
-sgCellFractionsBarplot <- function(data  # Cell Fractions Barplots. sg stands for "seurat ggplot".
-  , seedNr=1989, group_by = "orig.ident", fill_by="experiment",label_sample_count=T, plotname="Cell proportions per ...",
-                                   ClLabelExists = p$'clusternames.are.defined', AltLabel =p$'res.MetaD.colname' ) {
-  LabelExists = ww.variable.exists.and.true(var = eval(ClLabelExists))
-  if (LabelExists) iprint("Cl Labels found")
-  set.seed(seedNr)
-  data %>%
-    group_by( eval(substitute(group_by)) ) %>%
-    sample_n(NrCellsInSmallerDataSet ) %>%
-
-    ggplot(aes_string(fill= fill_by)) +
-    aes(x=if (LabelExists) Cl.names else quote(AltLabel)) + # ggplot(aes(fill= genotype)) +
-    # ggplot(aes(fill= genotype, x=Cl.names)) + #OLD way
-    geom_hline(yintercept=.5)  +
+    geom_hline(yintercept=c(.25, .5, .75))  +
     geom_bar( position="fill" ) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    { if (label_sample_count) geom_text(aes(label=..count..), stat='count', position = position_fill(vjust=0.5)) } +
-    ggtitle(plotname) +
-    labs(x = "Clusters", y = "Fraction")
+    geom_text(aes(label=..count..), stat='count',position=position_fill(vjust=0.5)) +
+    labs(title =pname_, x = "Clusters", y = "Fraction", caption = caption_)
 }
-
+# CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
+# CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
 
 
 # plotTheSoup ------------------------------------------------------------------------
