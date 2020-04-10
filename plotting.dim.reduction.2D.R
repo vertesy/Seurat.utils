@@ -54,6 +54,15 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
 
 
 # ------------------------------------------------------------------------
+
+qqsave <- function(ggplot.obj, h=7, PNG =F, title=NULL, plotit = F) { # Quickly save a ggplot object, and optionally display it
+  pname = substitute(ggplot.obj)
+  fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
+  save_plot(filename =fname, plot = ggplot.obj, base_height=h) #, ncol=1, nrow=1
+  if (plotit) ggplot.obj
+}
+
+
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 
