@@ -67,6 +67,58 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 # CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
 # CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
 
+# BulkGEScatterPlot ------------------------------------------------------------------------
+BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to identify differential expressed genes across conditions
+                              , clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = 'age', genes.from.bulk.DE = rownames(df.markers.per.AGE)) {
+
+  (SplitIdents <- unique(combined.obj[[TwoCategIdent]][,1]))
+  stopifnot(length(SplitIdents) == 2)
+
+  Idents(combined.obj) <- clusters
+  (IdentsUsed <- sort.natural(as.character(unique(Idents(combined.obj)))))
+  NrPlots <- l(IdentsUsed)
+  p.clAv <- p.clAv.AutoLabel <- genes.to.label <- list.fromNames(IdentsUsed)
+
+  i=1
+  for (i in 1:NrPlots) {
+    print(IdentsUsed[i])
+    ClX <- subset(combined.obj, idents = IdentsUsed[i])
+    Idents(ClX) <- TwoCategIdent
+    avg.ClX.cells <- log2(AverageExpression(ClX, verbose = FALSE)$RNA+1)
+    avg.ClX.cells$gene <- rownames(avg.ClX.cells)
+
+    # plot ----
+    p.clAv[[i]] <- p.clAv.AutoLabel[[i]] <-
+      ggplot(avg.ClX.cells, aes(x = !!as.name(SplitIdents[1]), y = !!as.name(SplitIdents[2]) )) +
+      geom_point(data = avg.ClX.cells, color=rgb(0,.5,0,0.25), size=1) +
+      FontSize(x.title = 8, x.text = 8, y.title = 8, y.text = 8)+
+      geom_abline(slope = 1, intercept = 0, color='grey') +
+      ggtitle(paste("Cluster", IdentsUsed[i] )) +
+      # ggtitle(p0("Cluster ", i) ) +
+      scale_x_log10() + scale_y_log10() + annotation_logticks()
+    # p.clAv[[i]]
+
+    "Auto identify divergent genes"
+    dist.from.axis = eucl.dist.pairwise(avg.ClX.cells[,1:2])
+    genes.to.label[[i]] = names(head(sort(dist.from.axis, decreasing = T),n = 20))
+    p.clAv.AutoLabel[[i]] <- LabelPoints(plot = p.clAv[[i]], points = genes.to.label[[i]], xnudge = 0, ynudge = 0, repel = TRUE, size=2);
+    p.clAv.AutoLabel[[i]]
+
+    "Pre-identified genes"
+    p.clAv[[i]] <- LabelPoints(plot = p.clAv[[i]], points = genes.from.bulk.DE, repel = TRUE, size=2);
+  }
+
+  PlotIter <- iterBy.over(1:NrPlots, by = 4)
+  for (i in 1:length(PlotIter)) {
+    plotLS = p.clAv.AutoLabel[PlotIter[[i]]]
+    qqSaveGridA4(plotlist = plotLS, plots = 1:4, fname = ppp("BulkGEScatterPlot.AutoGenes",kpp(PlotIter[[i]]), "png"))
+
+    plotLS = p.clAv[PlotIter[[i]]]
+    qqSaveGridA4(plotlist = plotLS, plots = 1:4, fname = ppp("BulkGEScatterPlot.BulkGenes",kpp(PlotIter[[i]]), "png"))
+  }
+}
+# BulkGEScatterPlot(obj = combined.obj, clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = 'age', genes.from.bulk.DE = rownames(df.markers.per.AGE))
+
 
 # plotTheSoup ------------------------------------------------------------------------
 plotTheSoup <- function(CellR.OutputDir = "~/Dropbox/Abel.IMBA/Data/SoupX_pbmc4k_demo/") { # Plot the ambient RNA content of droplets without a cell (background droplets).
