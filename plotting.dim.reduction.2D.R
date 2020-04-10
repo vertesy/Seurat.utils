@@ -55,15 +55,28 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
 
 # ------------------------------------------------------------------------
 
-qqsave <- function(ggplot.obj, h=7, PNG =F, title=NULL, plotit = F) { # Quickly save a ggplot object, and optionally display it
-  pname = substitute(ggplot.obj)
-  fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
+qqsave <- function(ggplot.obj# Quickly save a ggplot object, and optionally display it.
+                   , h=7, PNG =F, plotname = substitute(ggplot.obj), title=NULL, plotit = F) {
+  fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
   save_plot(filename =fname, plot = ggplot.obj, base_height=h) #, ncol=1, nrow=1
   if (plotit) ggplot.obj
 }
 
-
 # ------------------------------------------------------------------------
+qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_grid() on an A4 page
+                         , plots = 1:2, NrPlots = length(plots), height = hA4, width = wA4
+                         , fname = "Fractions.Organoid-to-organoid variation.png") {
+  stopifnot(NrPlots %in% c(2,4))
+  iprint(NrPlots,"plots found,", plots,"are saved.")
+  pg.cf = plot_grid(plotlist = plotlist[plots], nrow = 2, ncol = NrPlots/2, labels = LETTERS[1:NrPlots]  )
+  if (NrPlots == 4) list2env(list(height = width, width = height), envir=as.environment(environment()))
+  save_plot(filename = fname,
+            plot = pg.cf, base_height = height, base_width = width)
+  ww.FnP_parser(fname)
+}
+# qqSaveGridA4(plotlist= pl, plots = 1:2, fname = "Fractions.per.Cl.png")
+# qqSaveGridA4(plotlist= pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
+
 # ------------------------------------------------------------------------
 
 # umapHiLightSel highlight a set of cells based on clusterIDs provided---------------
