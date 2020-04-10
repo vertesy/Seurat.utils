@@ -4,6 +4,7 @@
 # source ('~/GitHub/Seurat.utils/Cluster.Auto-naming.DE.R')
 
 # ------------------------------------------------------------------------
+require(princurve)
 
 # ------------------------------------------------------------------------------------
 StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based on `avg_logFC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
@@ -26,20 +27,35 @@ StoreAllMarkers <- function(obj = combined.obj # Save the output table of `FindA
                             , df_markers = df.markers, res = 0.5, digit=c(0,3)[2]) {
   if (digit) df_markers[,1:5] <- signif(df_markers[,1:5], digits = digit)
   obj@misc$'df.markers'[[ppp('res',res)]] <- df_markers
+  iprint("DF markers are stored under:", 'obj@misc$df.markers$', ppp('res',res))
   return(obj)
 }
 # combined.obj <- StoreAllMarkers(df_markers = df.markers, res = 0.5)
 
 
+# GetTopMarkers ------------------------------------------------------------------------------------
+GetTopMarkers <- function(df = df.markers # Get the vector of N most diff. exp. genes.
+                          , n = p$'n.markers', order.by = c("avg_logFC", "p_val_adj")[1]) {
+  'Works on active Idents() -> thus we call cluster'
+  TopMarkers <- df %>%
+    group_by(cluster) %>%
+    # top_n(n = p$'n.markers', wt = avg_logFC) %>%
+    top_n(n = p$'n.markers', wt = (!!as.name(order.by))) %>%
+    dplyr::select(gene) %>%
+    col2named.vec.tbl()
+  return(TopMarkers)
+}
+# GetTopMarkers(df = df.markers, n=3 )
+
 # ------------------------------------------------------------------------------------
 AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
                                , res = 0.5 , df_markers = combined.obj@misc$"df.markers"[[p0("res.",res)]] ) {
-  top.markers <-
-    df_markers %>%
-    group_by(cluster) %>%
-    top_n(n = 1, wt = avg_logFC) %>%
-    dplyr::select(gene) %>%
-    col2named.vec.tbl()
+  top.markers <- GetTopMarkers(n=1)
+    # df_markers %>%
+    # group_by(cluster) %>%
+    # top_n(n = 1, wt = avg_logFC) %>%
+    # dplyr::select(gene) %>%
+    # col2named.vec.tbl()
   stopifnot(length(unique(Idents(object = obj))) == length(top.markers))
 
   (top.markers.ID <- ppp(names(top.markers), top.markers))
@@ -144,7 +160,6 @@ AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers
 
   dim_name <- ppu(toupper(reduction),dimension)
   coord.umap <- FetchData(object = obj, vars = dim_name)
-  require(princurve)
   fit <- principal_curve(x = as.matrix(coord.umap))
   if (plotit) {
     plot(fit, xlim=range(coord.umap[,1]), ylim=range(coord.umap[,2])
