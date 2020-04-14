@@ -7,7 +7,7 @@
 # Requirements ------------------------
 require(Seurat)
 require(ggplot2)
-require(SoupX)
+try(require(SoupX))
 # May also require
 # try (source ('~/GitHub/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")

@@ -9,6 +9,16 @@
 # try (source ('~/GitHub/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
+# ------------------------------------------------------------------------------------
+GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
+  clustering.results <- grepv(x = colnames(obj@meta.data), pattern = "*snn_res.*[0,1]\\.[0-9]$")
+  print("## Number of clusters: ---------")
+  for (cc in clustering.results) {
+    NrCl <- length(unique(obj@meta.data[[cc]]))
+    iprint( cc, "   ", NrCl)
+  }
+}
+# GetNumberOfClusters()
 
 # get Cells from metadata  ------------------------------------------------
 getMetadataColumn <- mmeta <- function(ColName.metadata = 'batch', obj = combined.obj, as_numeric =F) { # Get a metadata column from a Seurat object as a named vector
