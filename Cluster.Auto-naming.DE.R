@@ -37,12 +37,16 @@ StoreAllMarkers <- function(obj = combined.obj # Save the output table of `FindA
 GetTopMarkers <- function(df = df.markers # Get the vector of N most diff. exp. genes.
                           , n = p$'n.markers', order.by = c("avg_logFC", "p_val_adj")[1]) {
   'Works on active Idents() -> thus we call cluster'
+
   TopMarkers <- df %>%
+    arrange(desc(!!as.name(order.by))) %>%
     group_by(cluster) %>%
-    # top_n(n = p$'n.markers', wt = avg_logFC) %>%
-    top_n(n = p$'n.markers', wt = (!!as.name(order.by))) %>%
+    slice(1:n) %>%
+    # group_by(cluster) %>% # OLD WRONG SOLUTION
+    # top_n(n = n, wt = (!!as.name(order.by))) %>% # OLD WRONG SOLUTION
     dplyr::select(gene) %>%
     col2named.vec.tbl()
+
   return(TopMarkers)
 }
 # GetTopMarkers(df = df.markers, n=3 )
@@ -50,7 +54,7 @@ GetTopMarkers <- function(df = df.markers # Get the vector of N most diff. exp. 
 # ------------------------------------------------------------------------------------
 AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
                                , res = 0.5 , df_markers = combined.obj@misc$"df.markers"[[p0("res.",res)]] ) {
-  top.markers <- GetTopMarkers(n=1)
+  top.markers <- GetTopMarkers(df = df_markers, n=1)
     # df_markers %>%
     # group_by(cluster) %>%
     # top_n(n = 1, wt = avg_logFC) %>%
