@@ -14,7 +14,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
   for (i in 1:length(fin)) {
     pathIN = fin[i]; print(pathIN)
     fnameIN = basename(fin[i])
-    fnameOUT = ppp(paste0(InputDir, '/filtered.', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
+    fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
     x <- Read10X(pathIN)
     seu <- CreateSeuratObject(counts = x, project = fnameIN,
                               min.cells = min.cells, min.features = min.features)
@@ -26,10 +26,15 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 # Convert10Xfolders(InputDir = InputDir)
 
 # LoadAllSeurats ------------------------------------------------------------------------
-LoadAllSeurats <- function(InputDir) { # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
-  fin <- list.files(InputDir, include.dirs = F, pattern = "*.Rds")
+LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
+                           , string.remove1 = c(F, "_feature_bc_matrix")[2]
+                           , string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]) {
+  fin.orig <- list.files(InputDir, include.dirs = F, pattern = "*.Rds")
+  fin <- if (!isFALSE(string.remove1)) sapply(fin, gsub, pattern = string.remove1, replacement = "")
+  fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = "")
+
   ls.Seu <- list.fromNames(fin)
-  for (i in 1:length(fin)) {print(fin[i]); ls.Seu[[i]] <- readRDS(paste0(InputDir, fin[i]))}
+  for (i in 1:length(fin)) {print(fin[i]); ls.Seu[[i]] <- readRDS(paste0(InputDir, fin.orig[i]))}
   return(ls.Seu)
 }
 # ls.Seu <- LoadAllSeurats(InputDir = InputDir)
