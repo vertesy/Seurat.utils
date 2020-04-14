@@ -145,7 +145,7 @@ Annotate4Plotly3D <- function(obj. = combined.obj # Create annotation labels for
               , xanchor = "left"
               , xshift = 10
               , opacity = 0.7
-              ,"x" = mean(UMAP_1)
+              , "x" = mean(UMAP_1)
               , "y" = mean(UMAP_2)
               , "z" = mean(UMAP_3)
     )
