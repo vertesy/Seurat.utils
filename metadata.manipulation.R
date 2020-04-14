@@ -10,8 +10,24 @@
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 # ------------------------------------------------------------------------------------
-GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
+GetClusteringRuns <- function(obj = combined.obj) { # Get Clustering Runs: metadata column names
   clustering.results <- grepv(x = colnames(obj@meta.data), pattern = "*snn_res.*[0,1]\\.[0-9]$")
+  return(clustering.results)
+}
+# GetClusteringRuns()
+
+
+# ------------------------------------------------------------------------------------
+GetNamedClusteringRuns <- function(obj = combined.obj) { # Get Clustering Runs: metadata column names
+  clustering.results <- GetClusteringRuns(obj)
+  return(clustering.results)
+}
+# GetNamedClusteringRuns()
+
+
+# ------------------------------------------------------------------------------------
+GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
+  clustering.results <- GetClusteringRuns(obj)
   print("## Number of clusters: ---------")
   for (cc in clustering.results) {
     NrCl <- length(unique(obj@meta.data[[cc]]))
