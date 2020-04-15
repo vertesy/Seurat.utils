@@ -41,7 +41,7 @@ GetTopMarkers <- function(df = df.markers # Get the vector of N most diff. exp. 
   TopMarkers <- df %>%
     arrange(desc(!!as.name(order.by))) %>%
     group_by(cluster) %>%
-    slice(1:n) %>%
+    dplyr::slice(1:n) %>%
     # group_by(cluster) %>% # OLD WRONG SOLUTION
     # top_n(n = n, wt = (!!as.name(order.by))) %>% # OLD WRONG SOLUTION
     dplyr::select(gene) %>%
@@ -53,13 +53,14 @@ GetTopMarkers <- function(df = df.markers # Get the vector of N most diff. exp. 
 
 # ------------------------------------------------------------------------------------
 AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
-                               , res = 0.5 , df_markers = combined.obj@misc$"df.markers"[[p0("res.",res)]] ) {
+                               , res = 0.5, plot.top.genes = T
+                               , df_markers = combined.obj@misc$"df.markers"[[p0("res.",res)]] ) {
   top.markers <- GetTopMarkers(df = df_markers, n=1)
-    # df_markers %>%
-    # group_by(cluster) %>%
-    # top_n(n = 1, wt = avg_logFC) %>%
-    # dplyr::select(gene) %>%
-    # col2named.vec.tbl()
+  # df_markers %>%
+  # group_by(cluster) %>%
+  # top_n(n = 1, wt = avg_logFC) %>%
+  # dplyr::select(gene) %>%
+  # col2named.vec.tbl()
   stopifnot(length(unique(Idents(object = obj))) == length(top.markers))
 
   (top.markers.ID <- ppp(names(top.markers), top.markers))
@@ -68,6 +69,9 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 
   namedIDslot <- ppp('cl.names.top.gene.res', res )
   obj[[namedIDslot]] = named.ident
+
+  if (plot.top.genes) multiFeaturePlot.A4(list.of.genes = top.markers)
+
   return(obj)
 }
 # combined.obj <- AutoLabelTop.logFC(); combined.obj$"cl.names.top.gene.res.0.5"
