@@ -21,7 +21,7 @@ qUMAP <- function(feature= 'TOP2A', obj =  combined.obj, save.plot=T  # The quic
   if (save.plot) {
     pname = ppp('UMAP',feature)
     fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
-    save_plot(filename =fname, plot = ggplot.obj, base_height=h) #, ncol=1, nrow=1
+    try(save_plot(filename =fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
   }
   return(ggplot.obj)
 }

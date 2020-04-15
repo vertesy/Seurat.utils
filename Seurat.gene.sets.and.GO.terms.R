@@ -1,7 +1,7 @@
 ######################################################################
 # Seurat.gene.sets.and.GO.terms.R
 ######################################################################
-# source ('~/GitHub/Seurat.utils/Seurat.gene.sets.and.GO.terms.R')
+# source('~/GitHub/Seurat.utils/Seurat.gene.sets.and.GO.terms.R')
 
 # require(MarkdownReports)
 # source ('~/GitHub/CodeAndRoll/CodeAndRoll.R')
@@ -10,8 +10,24 @@
 library(biomaRt)
 ensembl = useMart("ensembl", dataset="hsapiens_gene_ensembl") #uses human ensembl annotations
 
-# ------------------------------------------------------------------------
 
+
+# ------------------------------------------------------------------------
+PlotGoTermScores <- function(obj = combined.obj # Automate retrieving, processing and plotting GO term based gene scores
+                             , GO = "GO:0061621", desc = "canonical.glycolysis") {
+  GO.wDot<- make.names(GO)
+
+  obj <- GetGOTerms(obj = obj, GO = GO);
+  iprint(desc, obj@misc$GO[[ GO.wDot ]])
+  obj <- AddGOScore(obj = obj, GO = GO);
+  FeaturePlotSave(obj = obj, GO = p0("Score.", GO.wDot), name_desc = desc)
+  return(obj)
+}
+# "GO:0061621"  "canonical.glycolysis"
+# PlotGoTermScores(GO = "GO:0061621", desc = "canonical.glycolysis")
+
+
+# ------------------------------------------------------------------------
 IntersectWithExpressed <- function(genes, obj=combined.obj) { # Intersect a set of genes with genes in the Seurat object.
   # print(head(genes, n=15))
   diff = setdiff(genes, rownames(obj))
@@ -25,12 +41,14 @@ GetGOTerms <- function(obj = combined.obj, GO = 'GO:0034976', web.open = T) { # 
   genes <- getBM(attributes=c('hgnc_symbol'), #  'ensembl_transcript_id', 'go_id'
                  filters = "go",  uniqueRows = TRUE,
                  values = GO, mart = ensembl)[,1]
-  iprint("Gene symbols downloaded:", genes)
+
+  (GO.wDot<- make.names(GO))
+  iprint(length(genes), "Gene symbols downloaded:", head(genes, n = 25))
   genes <- IntersectWithExpressed(obj = obj, genes = genes)
 
   if (is.null(obj@misc$GO)) obj@misc$GO <- list()
-  obj@misc$GO[[make.names(GO)]] <- genes
-  iprint("Genes in", GO, "are saved under obj@misc$GO$", make.names(GO))
+  obj@misc$GO[[ GO.wDot ]] <- genes
+  iprint("Genes in", GO, "are saved under obj@misc$GO$", GO.wDot)
   if (web.open) system(paste0("open https://www.ebi.ac.uk/QuickGO/search/", GO))
   return(obj)
 }
@@ -54,8 +72,10 @@ AddGOGeneList.manual <- function(obj = combined.obj, GO = 'GO:0034976', web.open
 
 # ------------------------------------------------------------------------
 AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) { # Call after GetGOTerms. Calculates Score for gene set. Fixes name
-  (genes.GO = list(obj@misc$GO[make.names(GO)]))
-  (ScoreName = paste0("Score.",make.names(GO)))
+  GO.wDot<- make.names(GO)
+  (genes.GO = list(obj@misc$GO[[GO.wDot]]))
+  # print(genes.GO)
+  (ScoreName = paste0("Score.", make.names(GO)))
   obj <- AddModuleScore(object = obj, features = genes.GO, name = ScoreName)
 
   if (FixName) {
@@ -74,12 +94,14 @@ AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) {
 
 # ------------------------------------------------------------------------
 # name_desc="esponse to endoplasmic reticulum stress"
-FeaturePlotSave <- function(obj = combined.obj, GO = "Score.GO.0034976", name_desc=NULL, h=7, PNG =F) { # Plot and save a FeaturePlot, e.g. showing gene set scores.
+FeaturePlotSave <- function(obj = combined.obj, GO.score = "Score.GO.0034976", name_desc=NULL, h=7, PNG =F) { # Plot and save a FeaturePlot, e.g. showing gene set scores.
+  proper.GO <- paste(sstrsplit(GO.score, pattern = "\\.", n = 3)[2:3], collapse = ":")
+  (genes.GO = obj@misc$GO[[make.names(proper.GO)]])
+
   ggplot.obj <-
-    FeaturePlot(obj, features = make.names(GO)
-                , min.cutoff = "q05", max.cutoff = "q95", reduction = 'umap') +
-    labs(title = paste(GO, name_desc))
-  pname = paste0("FeaturePlot.",make.names(GO))
+    FeaturePlot(obj, features = GO.score, min.cutoff = "q05", max.cutoff = "q95", reduction = 'umap') +
+    labs(title = paste(GO.score, name_desc), caption = paste("Score calc. from",length(genes.GO), "expr. genes from BioMart.", p0("https://www.ebi.ac.uk/QuickGO/search/", proper.GO)))
+  pname = paste0("FeaturePlot.",(GO.score))
   fname = ww.FnP_parser(kpp(pname,name_desc), if (PNG) "png" else "pdf")
   save_plot(filename =fname, plot = ggplot.obj, base_height=h)
   ggplot.obj
@@ -95,3 +117,4 @@ PasteUniqueGeneList <- function() {
 # ------------------------------------------------------------------------
 
 
+# xxGetGenesGo <- function(obj= combined.obj, GO = 'GO:0034976' ) obj@misc$GO[[  make.names(GO) ]]
