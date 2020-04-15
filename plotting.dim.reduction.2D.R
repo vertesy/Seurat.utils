@@ -12,11 +12,18 @@ library(plotly)
 
 
 # Quick umaps# ------------------------------------------------------------------------
-qUMAP <- function(f= 'TOP2A', obj =  combined.obj, splitby = NULL, qlow = "q10", qhigh = "q90") { # The quickest way to a draw a UMAP
-  FeaturePlot(combined.obj, reduction = 'umap'
+qUMAP <- function(feature= 'TOP2A', obj =  combined.obj, save.plot=T  # The quickest way to a draw a UMAP
+                  , PNG = T, h=7, splitby = NULL, qlow = "q10", qhigh = "q90") {
+  ggplot.obj <- FeaturePlot(combined.obj, reduction = 'umap'
               , min.cutoff = qlow, max.cutoff = qhigh
               , split.by = splitby
-              , features = f)
+              , features = feature)
+  if (save.plot) {
+    pname = ppp('UMAP',feature)
+    fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
+    save_plot(filename =fname, plot = ggplot.obj, base_height=h) #, ncol=1, nrow=1
+  }
+  return(ggplot.obj)
 }
 # qUMAP(  )
 
