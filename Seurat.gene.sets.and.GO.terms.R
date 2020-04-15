@@ -15,7 +15,7 @@ ensembl = useMart("ensembl", dataset="hsapiens_gene_ensembl") #uses human ensemb
 IntersectWithExpressed <- function(genes, obj=combined.obj) { # Intersect a set of genes with genes in the Seurat object.
   # print(head(genes, n=15))
   diff = setdiff(genes, rownames(obj))
-  iprint(length(diff),"genes (of",l(genes), ") are NOT found in the Seurat object:",diff)
+  iprint(length(diff),"genes (of",l(genes), ") are MISSING from the Seurat object:",diff)
   return(intersect(rownames(obj), genes))
 }
 # GO.0010941.regulation.of.cell.death <- IntersectWithExpressed(GO.0010941.regulation.of.cell.death)
@@ -25,6 +25,7 @@ GetGOTerms <- function(obj = combined.obj, GO = 'GO:0034976', web.open = T) { # 
   genes <- getBM(attributes=c('hgnc_symbol'), #  'ensembl_transcript_id', 'go_id'
                  filters = "go",  uniqueRows = TRUE,
                  values = GO, mart = ensembl)[,1]
+  iprint("Gene symbols downloaded:", genes)
   genes <- IntersectWithExpressed(obj = obj, genes = genes)
 
   if (is.null(obj@misc$GO)) obj@misc$GO <- list()
@@ -72,12 +73,14 @@ AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) {
 
 
 # ------------------------------------------------------------------------
-FeaturePlotSave <- function(obj = combined.obj, GO = "Score.GO.0034976", h=7, PNG =F) { # Plot and save a FeaturePlot, e.g. showing gene set scores.
+# name_desc="esponse to endoplasmic reticulum stress"
+FeaturePlotSave <- function(obj = combined.obj, GO = "Score.GO.0034976", name_desc=NULL, h=7, PNG =F) { # Plot and save a FeaturePlot, e.g. showing gene set scores.
   ggplot.obj <-
     FeaturePlot(obj, features = make.names(GO)
-                , min.cutoff = "q05", max.cutoff = "q95", reduction = 'umap')
+                , min.cutoff = "q05", max.cutoff = "q95", reduction = 'umap') +
+    labs(title = paste(GO, name_desc))
   pname = paste0("FeaturePlot.",make.names(GO))
-  fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
+  fname = ww.FnP_parser(kpp(pname,name_desc), if (PNG) "png" else "pdf")
   save_plot(filename =fname, plot = ggplot.obj, base_height=h)
   ggplot.obj
 }
