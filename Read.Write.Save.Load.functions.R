@@ -30,7 +30,7 @@ LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directo
                            , string.remove1 = c(F, "_feature_bc_matrix")[2]
                            , string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]) {
   fin.orig <- list.files(InputDir, include.dirs = F, pattern = "*.Rds")
-  fin <- if (!isFALSE(string.remove1)) sapply(fin, gsub, pattern = string.remove1, replacement = "")
+  fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = "")
   fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = "")
 
   ls.Seu <- list.fromNames(fin)
@@ -69,6 +69,7 @@ isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, savePa
     try(object@misc$all.genes  <- all.genes, silent = T)
   }
   fnameBase = kppu(prefix, substitute(object), suffix, idate(Format = "%Y.%m.%d_%H.%M"))
+  fnameBase = trimws(fnameBase, whitespace = '_')
   fname = MarkdownReportsDev::kollapse(path_rdata, "/",fnameBase , ".Rds")
   tictoc::tic()
   saveRDS(object, file = fname, compress=F)

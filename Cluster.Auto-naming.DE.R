@@ -139,13 +139,13 @@ DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster nam
 
 # ------------------------------------------------------------------------------------
 AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers along a UMAP (or tSNE) axis
-                               , dimension=1, reduction="umap", res = "integrated_snn_res.0.5" ) {
+                               , dimension=1, swap= F, reduction="umap", res = "integrated_snn_res.0.5" ) {
 
   dim_name <- kppu(toupper(reduction),dimension)
   coord.umap <- as.named.vector(FetchData(object = obj, vars = dim_name))
   ls.perCl <- split(coord.umap, f = obj[[res]])
   MedianClusterCoordinate <- unlapply(ls.perCl, median)
-  OldLabel <- names(sort(MedianClusterCoordinate))
+  OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
   NewLabel <- as.character(0:(length(MedianClusterCoordinate)-1))
   NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
   NewMetaCol <- kpp(res,"ordered")
