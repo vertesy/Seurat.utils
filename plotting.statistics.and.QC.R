@@ -41,7 +41,7 @@ BarplotCellsPerObject <- function(ls.Seu = ls.Seurat, # Take a List of Seurat ob
 # CellFractionsBarplot2 ------------------------------------------------------------
 CellFractionsBarplot2 <- function(obj = combined.obj
                                   , group.by = "integrated_snn_res.0.5.ordered", fill.by = "age", downsample = T
-                                  , plotname = paste(TitleCase(fill.by), "proportions"), seedNr = 1989) {
+                                  , plotname = paste(TitleCase(fill.by), "proportions"), hlines = c(.25, .5, .75), seedNr = 1989) {
   set.seed(seedNr)
   pname.suffix <- capt.suffix <- NULL
   if (downsample) {
@@ -58,11 +58,12 @@ CellFractionsBarplot2 <- function(obj = combined.obj
     group_by( (!!as.name(group.by)) ) %>%
     ggplot( aes(fill=(!!(as.name(fill.by))), x = (!!(as.name(group.by)))) ) +
 
-    geom_hline(yintercept=c(.25, .5, .75))  +
+    geom_hline( yintercept = hlines, lwd=1.5)  +
     geom_bar( position="fill" ) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     geom_text(aes(label=..count..), stat='count',position=position_fill(vjust=0.5)) +
-    labs(title =pname_, x = "Clusters", y = "Fraction", caption = caption_)
+    labs(title =pname_, x = "Clusters", y = "Fraction", caption = caption_) +
+    theme_classic()
 }
 # CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
 # CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
