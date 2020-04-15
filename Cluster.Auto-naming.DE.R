@@ -55,6 +55,8 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
     GetTopMarkersDF(df = df_markers, n=1) %>%
     col2named.vec.tbl()
 
+  obj@misc[[ppp("top.markers.res",res)]] <- top.markers
+
   stopifnot(length(unique(Idents(object = obj))) == length(top.markers))
 
   (top.markers.ID <- ppp(names(top.markers), top.markers))
