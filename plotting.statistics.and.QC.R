@@ -63,7 +63,8 @@ CellFractionsBarplot2 <- function(obj = combined.obj
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     geom_text(aes(label=..count..), stat='count',position=position_fill(vjust=0.5)) +
     labs(title =pname_, x = "Clusters", y = "Fraction", caption = caption_) +
-    theme_classic()
+    theme_classic() +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 }
 # CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
 # CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
