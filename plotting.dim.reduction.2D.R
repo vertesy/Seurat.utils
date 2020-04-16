@@ -15,9 +15,9 @@ library(plotly)
 qUMAP <- function(feature= 'TOP2A', obj =  combined.obj, save.plot=T  # The quickest way to a draw a UMAP
                   , PNG = T, h=7, splitby = NULL, qlow = "q10", qhigh = "q90") {
   ggplot.obj <- FeaturePlot(combined.obj, reduction = 'umap'
-              , min.cutoff = qlow, max.cutoff = qhigh
-              , split.by = splitby
-              , features = feature)
+                            , min.cutoff = qlow, max.cutoff = qhigh
+                            , split.by = splitby
+                            , features = feature)
   if (save.plot) {
     pname = ppp('UMAP',feature)
     fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
@@ -26,6 +26,24 @@ qUMAP <- function(feature= 'TOP2A', obj =  combined.obj, save.plot=T  # The quic
   return(ggplot.obj)
 }
 # qUMAP(  )
+
+
+# Quick umaps# ------------------------------------------------------------------------
+clUMAP <- function(obj =  combined.obj   # The quickest way to a draw a clustering UMAP
+                   , ident = "integrated_snn_res.0.5", reduct ="umap",title = ident
+                   , save.plot=T, PNG = T, h=7, splitby = NULL) {
+  ggplot.obj <-
+    DimPlot(object = obj, reduction = reduct, group.by=ident, label=T, repel=T) +
+    NoLegend() + ggtitle(title)
+
+  if (save.plot) {
+    pname = ppp('UMAP',ident)
+    fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
+    try(save_plot(filename =fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
+  }
+  return(ggplot.obj)
+}
+# clUMAP()
 
 # ------------------------------------------------------------------------
 gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
