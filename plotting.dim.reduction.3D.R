@@ -121,7 +121,10 @@ SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$'n.PC', d
 RecallReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
   dslot=paste0(reduction,dim,"d")
   iprint(dim, "dimensional", reduction, "is set active. Source")
-  obj@reductions[[reduction]] <- obj@misc$reductions.backup[[dslot]]
+  reduction.backup <- obj@misc$reductions.backup[[dslot]]
+  stopifnot(exists('reduction.backup'))
+  stopifnot(dim == ncol(reduction.backup))
+  obj@reductions[[reduction]] <- reduction.backup
   return(obj)
 }
 # Example
