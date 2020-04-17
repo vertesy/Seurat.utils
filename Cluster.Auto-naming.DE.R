@@ -33,9 +33,9 @@ StoreAllMarkers <- function(obj = combined.obj # Save the output table of `FindA
 # combined.obj <- StoreAllMarkers(df_markers = df.markers, res = 0.5)
 
 
-# GetTopMarkers ------------------------------------------------------------------------------------
+# GetTopMarkersDF ------------------------------------------------------------------------------------
 GetTopMarkersDF <- function(dfDE = df.markers # Get the vector of N most diff. exp. genes.
-                          , n = p$'n.markers', order.by = c("avg_logFC", "p_val_adj")[1]) {
+                            , n = p$'n.markers', order.by = c("avg_logFC", "p_val_adj")[1]) {
   'Works on active Idents() -> thus we call cluster'
   TopMarkers <- dfDE %>%
     arrange(desc(!!as.name(order.by))) %>%
@@ -47,10 +47,28 @@ GetTopMarkersDF <- function(dfDE = df.markers # Get the vector of N most diff. e
 }
 # GetTopMarkers(df = df.markers, n=3 )
 
+# GetTopMarkers ------------------------------------------------------------------------------------
+GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp. genes.
+                            , n = p$'n.markers', order.by = c("avg_logFC", "p_val_adj")[1]) {
+  'Works on active Idents() -> thus we call cluster'
+  TopMarkers <- dfDE %>%
+    arrange(desc(!!as.name(order.by))) %>%
+    group_by(cluster) %>%
+    dplyr::slice(1:n) %>%
+    dplyr::select(gene) %>%
+    col2named.vec.tbl()
+
+  return(TopMarkers)
+}
+# GetTopMarkers(df = df.markers, n=3 )
+
+
+
 # ------------------------------------------------------------------------------------
 AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
-                               , res = 0.5, plot.top.genes = T
+                               , res = 0.2, plot.top.genes = T
                                , df_markers = combined.obj@misc$"df.markers"[[p0("res.",res)]] ) {
+  stopifnot(!is.null("df_markers"))
   top.markers <-
     GetTopMarkersDF(df = df_markers, n=1) %>%
     col2named.vec.tbl()
@@ -78,14 +96,15 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 # ------------------------------------------------------------------------------------
 AutoLabel.KnownMarkers <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
                                    , KnownMarkers=c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1","SALL4","DDIT4", "PDK1", "SATB2", "FEZF2")
-                                   , res = 0.5, order.by = "avg_logFC"
+                                   , res = 0.5, order.by = "avg_logFC", topN =1
                                    , df_markers = combined.obj@misc$"df.markers"[[p0("res.",res)]] ) {
+  stopifnot(!is.null("df_markers"))
   # TopMarkers <- dfDE %>%
   #   arrange(desc(!!as.name(order.by))) %>%
   #   group_by(cluster) %>%
   #   dplyr::slice(1:n) %>%
   #   # group_by(cluster) %>% # OLD WRONG SOLUTION
-  #   # top_n(n = n, wt = (!!as.name(order.by))) %>% # OLD WRONG SOLUTION
+  #   # top_n(n = topN, wt = (!!as.name(order.by))) %>% # OLD WRONG SOLUTION
   #   dplyr::select(gene) %>%
   #   col2named.vec.tbl()
   # df_markers = df.markers
@@ -95,7 +114,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj # Create a new "named iden
     arrange(desc(!!as.name(order.by))) %>%
     filter(gene %in%  KnownMarkers) %>%
     group_by(gene) %>%
-    dplyr::slice(1:n) %>%
+    dplyr::slice(1:topN) %>%
     arrange(desc(!!as.name(order.by))) %>%
     # top_n(n=1, wt=avg_logFC) %>% # Select the top cluster for each gene
     arrange(cluster)
