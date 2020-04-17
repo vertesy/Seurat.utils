@@ -13,18 +13,22 @@
 GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0,1]\\.[0-9]$") { # Get Clustering Runs: metadata column names
   if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
   clustering.results <- grepv(x = colnames(obj@meta.data), pattern = pat)
+  if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
   return(clustering.results)
 }
 # GetClusteringRuns()
 
 
 # ------------------------------------------------------------------------------------
-GetNamedClusteringRuns <- function(obj = combined.obj, pat = "^cl.names.*[0,1]\\.[0-9]$") { # Get Clustering Runs: metadata column names
+GetNamedClusteringRuns <- function(obj = combined.obj  # Get Clustering Runs: metadata column names
+                                   , res = c(F, 0.5)[1], topgene = F, pat = "^cl.names.Known.*[0,1]\\.[0-9]$") {
+  if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
+  if (topgene) pat = gsub(x = pat, pattern = 'Known', replacement = 'top')
   clustering.results <- grepv(x = colnames(obj@meta.data), pattern = pat)
+  if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
   return(clustering.results)
 }
 # GetNamedClusteringRuns()
-
 
 # ------------------------------------------------------------------------------------
 GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
