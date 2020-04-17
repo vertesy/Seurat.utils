@@ -97,3 +97,41 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of
   cellIDs.keep = sample(cellIDs, size = nr_cells, replace = FALSE)
   return(cellIDs.keep)
 }
+
+
+
+# Calcq90Expression ------------------------------------------------------------------------
+Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
+                              , quantileX=0.9, assay = c("RNA", "integrated")[1]
+                              , slot = "data", max.cells =  100000) {
+  tic()
+  x = GetAssayData(object = obj, assay = assay, slot = slot) #, assay = 'RNA'
+  if (ncol(x) > max.cells) {
+    dsampled = sample(x = 1:ncol(x), size = max.cells)
+    x = x[ , dsampled]
+  }
+  expr.q90 = iround(apply(x, 1, quantile, probs = quantileX) )
+  toc();
+
+  log2.gene.expr.of.the.90th.quantile <- log2(expr.q90+1)
+  suppressWarnings(
+    whist(log2.gene.expr.of.the.90th.quantile, breaks = 30
+          , xlab = "log2(expr.q90+1) [UMI]", ylab = "Cells", vline  = .2, filtercol = T)
+  )
+
+  all.genes = percent_rank(expr.q90); names(all.genes) = names(expr.q90); all.genes <- sort.decreasing(all.genes)
+
+  obj@misc$'all.genes' = all.genes = as.list(all.genes)
+  obj@misc$'expr.q90' = expr.q90
+  iprint('Quantile', quantileX ,'is now stored under obj@misc$all.genes and $expr.q90. Please execute all.genes <- obj@misc$all.genes.')
+  return(obj)
+}
+# combined.obj <- Calcq90Expression(obj = combined.obj)
+# head(sort(as.numeric.wNames(obj@misc$expr.q90), decreasing = T))
+
+# PlotTopGenes ------------------------------------------------------------------------
+PlotTopGenes <- function(obj = combined.obj, n=32 ){ # Plot the highest expressed genes on umaps, in a subfolder. Requires calling Calcq90Expression before.
+  Highest.Expressed.Genes = names(head(sort(obj@misc$expr.q90, decreasing = T), n = n))
+  multiFeaturePlot.A4(list.of.genes = Highest.Expressed.Genes, foldername = "Highest.Expressed.Genes" )
+}
+# PlotTopGenes()

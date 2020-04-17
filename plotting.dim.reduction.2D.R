@@ -14,7 +14,7 @@ library(plotly)
 # Quick umaps# ------------------------------------------------------------------------
 qUMAP <- function(feature= 'TOP2A', obj =  combined.obj, save.plot=T  # The quickest way to a draw a UMAP
                   , PNG = T, h=7, splitby = NULL, qlow = "q10", qhigh = "q90") {
-  ggplot.obj <- FeaturePlot(combined.obj, reduction = 'umap'
+  ggplot.obj <- FeaturePlot(obj, reduction = 'umap'
                             , min.cutoff = qlow, max.cutoff = qhigh
                             , split.by = splitby
                             , features = feature)
@@ -108,7 +108,7 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
 umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based on clusterIDs provided.
                           COI =  c("0", "2", "4", "5",  "11"), res.cl = 'integrated_snn_res.0.3') {
   cellsSel = getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
-  DimPlot(combined.obj, reduction = "umap", group.by = res.cl,
+  DimPlot(obj, reduction = "umap", group.by = res.cl,
           label = T, cells.highlight = cellsSel)
   ggsave(filename = extPNG(kollapse("cells",COI, collapseby = '.')))
 }
@@ -117,13 +117,14 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
 multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
-                                , list.of.genes, plot.reduction='umap', intersectionAssay = c('RNA', 'integrated')[1]
+                                , list.of.genes, foldername = substitute(list.of.genes), plot.reduction='umap', intersectionAssay = c('RNA', 'integrated')[1]
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , jpeg.res = 225, jpeg.q = 90) {
   tictoc::tic()
   ParentDir = OutDir
-  if (subdir) create_set_SubDir(... = paste0(substitute(list.of.genes),'.', plot.reduction),'/')
+
+  if (subdir) create_set_SubDir(... = paste0(foldername,'.', plot.reduction),'/')
 
   list.of.genes = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay)
   lsG = iterBy.over(1:length(list.of.genes), by=nr.Row*nr.Col)
