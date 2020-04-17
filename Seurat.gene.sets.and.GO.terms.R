@@ -13,7 +13,7 @@ ensembl = useMart("ensembl", dataset="hsapiens_gene_ensembl") #uses human ensemb
 
 
 # ------------------------------------------------------------------------
-PlotGoTermScores <- function(obj = combined.obj # Automate retrieving, processing and plotting GO term based gene scores
+PlotGoTermScores <- function(obj = combined.obj # Automate retrieving, processing and plotting GO term based gene scores.
                              , GO = "GO:0061621", desc = "canonical.glycolysis") {
   GO.wDot<- make.names(GO)
 
@@ -55,7 +55,7 @@ GetGOTerms <- function(obj = combined.obj, GO = 'GO:0034976', web.open = T) { # 
 # combined.obj <- GetGOTerms(obj = combined.obj, GO = 'GO:0034976'); combined.obj@misc$GO$GO.0034976
 
 # ------------------------------------------------------------------------
-AddGOGeneList.manual <- function(obj = combined.obj, GO = 'GO:0034976', web.open=F  # Add GO terms via Biomart package
+AddGOGeneList.manual <- function(obj = combined.obj, GO = 'GO:0034976', web.open=F  # Add GO terms via Biomart package.
                                  , genes =  c("A0A140VKG3", "ARX", "CNTN2", "DRD1", "DRD2", "FEZF2", "LHX6")) {
   print(head(genes, n =15))
   genes <- IntersectWithExpressed(obj = obj, genes = genes)
@@ -71,7 +71,7 @@ AddGOGeneList.manual <- function(obj = combined.obj, GO = 'GO:0034976', web.open
 
 
 # ------------------------------------------------------------------------
-AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) { # Call after GetGOTerms. Calculates Score for gene set. Fixes name
+AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) { # Call after GetGOTerms. Calculates Score for gene set. Fixes name.
   GO.wDot<- make.names(GO)
   (genes.GO = list(obj@misc$GO[[GO.wDot]]))
   # print(genes.GO)

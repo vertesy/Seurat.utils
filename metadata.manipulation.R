@@ -10,16 +10,17 @@
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 # ------------------------------------------------------------------------------------
-GetClusteringRuns <- function(obj = combined.obj) { # Get Clustering Runs: metadata column names
-  clustering.results <- grepv(x = colnames(obj@meta.data), pattern = "*snn_res.*[0,1]\\.[0-9]$")
+GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0,1]\\.[0-9]$") { # Get Clustering Runs: metadata column names
+  if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
+  clustering.results <- grepv(x = colnames(obj@meta.data), pattern = pat)
   return(clustering.results)
 }
 # GetClusteringRuns()
 
 
 # ------------------------------------------------------------------------------------
-GetNamedClusteringRuns <- function(obj = combined.obj) { # Get Clustering Runs: metadata column names
-  clustering.results <- GetClusteringRuns(obj)
+GetNamedClusteringRuns <- function(obj = combined.obj, pat = "^cl.names.*[0,1]\\.[0-9]$") { # Get Clustering Runs: metadata column names
+  clustering.results <- grepv(x = colnames(obj@meta.data), pattern = pat)
   return(clustering.results)
 }
 # GetNamedClusteringRuns()
