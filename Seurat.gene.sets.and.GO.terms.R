@@ -20,7 +20,7 @@ PlotGoTermScores <- function(obj = combined.obj # Automate retrieving, processin
   obj <- GetGOTerms(obj = obj, GO = GO);
   iprint(desc, obj@misc$GO[[ GO.wDot ]])
   obj <- AddGOScore(obj = obj, GO = GO);
-  FeaturePlotSave(obj = obj, GO = p0("Score.", GO.wDot), name_desc = desc)
+  FeaturePlotSave(obj = obj, GO = paste0("Score.", GO.wDot), name_desc = desc)
   return(obj)
 }
 # "GO:0061621"  "canonical.glycolysis"
@@ -31,7 +31,7 @@ PlotGoTermScores <- function(obj = combined.obj # Automate retrieving, processin
 IntersectWithExpressed <- function(genes, obj=combined.obj) { # Intersect a set of genes with genes in the Seurat object.
   # print(head(genes, n=15))
   diff = setdiff(genes, rownames(obj))
-  iprint(length(diff),"genes (of",l(genes), ") are MISSING from the Seurat object:",diff)
+  iprint(length(diff),"genes (of",length(genes), ") are MISSING from the Seurat object:",diff)
   return(intersect(rownames(obj), genes))
 }
 # GO.0010941.regulation.of.cell.death <- IntersectWithExpressed(GO.0010941.regulation.of.cell.death)
@@ -100,7 +100,7 @@ FeaturePlotSave <- function(obj = combined.obj, GO.score = "Score.GO.0034976", n
 
   ggplot.obj <-
     FeaturePlot(obj, features = GO.score, min.cutoff = "q05", max.cutoff = "q95", reduction = 'umap') +
-    labs(title = paste(GO.score, name_desc), caption = paste("Score calc. from",length(genes.GO), "expr. genes from BioMart.", p0("https://www.ebi.ac.uk/QuickGO/search/", proper.GO)))
+    labs(title = paste(GO.score, name_desc), caption = paste("Score calc. from",length(genes.GO), "expr. genes from BioMart.", paste0("https://www.ebi.ac.uk/QuickGO/search/", proper.GO)))
   pname = paste0("FeaturePlot.",(GO.score))
   fname = ww.FnP_parser(kpp(pname,name_desc), if (PNG) "png" else "pdf")
   save_plot(filename =fname, plot = ggplot.obj, base_height=h)

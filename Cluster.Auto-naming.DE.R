@@ -67,7 +67,7 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 # ------------------------------------------------------------------------------------
 AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
                                , res = 0.2, plot.top.genes = T
-                               , df_markers = combined.obj@misc$"df.markers"[[p0("res.",res)]] ) {
+                               , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
   top.markers <-
     GetTopMarkersDF(df = df_markers, n=1) %>%
@@ -97,7 +97,7 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 AutoLabel.KnownMarkers <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
                                    , KnownMarkers=c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1","SALL4","DDIT4", "PDK1", "SATB2", "FEZF2")
                                    , res = 0.5, order.by = "avg_logFC", topN =1
-                                   , df_markers = combined.obj@misc$"df.markers"[[p0("res.",res)]] ) {
+                                   , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
   # TopMarkers <- dfDE %>%
   #   arrange(desc(!!as.name(order.by))) %>%

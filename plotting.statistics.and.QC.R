@@ -73,18 +73,18 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to identify differential expressed genes across conditions
                               , clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = 'age', genes.from.bulk.DE = rownames(df.markers.per.AGE)) {
 
-  (SplitIdents <- unique(combined.obj[[TwoCategIdent]][,1]))
+  (SplitIdents <- unique(obj[[TwoCategIdent]][,1]))
   stopifnot(length(SplitIdents) == 2)
 
-  Idents(combined.obj) <- clusters
-  (IdentsUsed <- sort.natural(as.character(unique(Idents(combined.obj)))))
-  NrPlots <- l(IdentsUsed)
+  Idents(obj) <- clusters
+  (IdentsUsed <- sort.natural(as.character(unique(Idents(obj)))))
+  NrPlots <- length(IdentsUsed)
   p.clAv <- p.clAv.AutoLabel <- genes.to.label <- list.fromNames(IdentsUsed)
 
   i=1
   for (i in 1:NrPlots) {
     print(IdentsUsed[i])
-    ClX <- subset(combined.obj, idents = IdentsUsed[i])
+    ClX <- subset(obj, idents = IdentsUsed[i])
     Idents(ClX) <- TwoCategIdent
     avg.ClX.cells <- log2(AverageExpression(ClX, verbose = FALSE)$RNA+1)
     avg.ClX.cells$gene <- rownames(avg.ClX.cells)
@@ -96,7 +96,7 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
       FontSize(x.title = 8, x.text = 8, y.title = 8, y.text = 8)+
       geom_abline(slope = 1, intercept = 0, color='grey') +
       ggtitle(paste("Cluster", IdentsUsed[i] )) +
-      # ggtitle(p0("Cluster ", i) ) +
+      # ggtitle(paste0("Cluster ", i) ) +
       scale_x_log10() + scale_y_log10() + annotation_logticks()
     # p.clAv[[i]]
 
