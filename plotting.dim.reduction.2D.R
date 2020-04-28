@@ -120,7 +120,9 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
                                 , list.of.genes, foldername = substitute(list.of.genes), plot.reduction='umap', intersectionAssay = c('RNA', 'integrated')[1]
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
-                                , jpeg.res = 225, jpeg.q = 90) {
+                                , format = c('jpg', 'pdf', 'png')[1]
+                                # , jpeg.res = 225, jpeg.q = 90
+                                ) {
   tictoc::tic()
   ParentDir = OutDir
 
@@ -131,7 +133,7 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
   for (i in 1:length(lsG)) {
     genes = list.of.genes[lsG[[i]]]
     iprint(i,genes )
-    plotname = kpp(c(plot.reduction,i, genes, 'jpg' ))
+    plotname = kpp(c(plot.reduction,i, genes, format ))
 
     plot.list = FeaturePlot(object = obj, features =genes, reduction = plot.reduction, combine = F
                             , ncol = nr.Col, cols = colors
@@ -150,7 +152,6 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
   if (subdir) create_set_OutDir(... = ParentDir)
   tictoc::toc()
 };
-
 
 
 
