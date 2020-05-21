@@ -94,7 +94,7 @@ AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) {
 
 # ------------------------------------------------------------------------
 # name_desc="esponse to endoplasmic reticulum stress"
-FeaturePlotSave <- function(obj = combined.obj, GO.score = "Score.GO.0034976", name_desc=NULL, h=7, PNG =F) { # Plot and save a FeaturePlot, e.g. showing gene set scores.
+FeaturePlotSave <- function(obj = combined.obj, GO.score = "Score.GO.0034976", name_desc=NULL, h=7, PNG =T) { # Plot and save a FeaturePlot, e.g. showing gene set scores.
   proper.GO <- paste(sstrsplit(GO.score, pattern = "\\.", n = 3)[2:3], collapse = ":")
   (genes.GO = obj@misc$GO[[make.names(proper.GO)]])
 
@@ -112,7 +112,31 @@ FeaturePlotSave <- function(obj = combined.obj, GO.score = "Score.GO.0034976", n
 PasteUniqueGeneList <- function() {
   dput(sort(unique(clipr::read_clip())))
 }
+
+
 # ------------------------------------------------------------------------
+CalcTranscriptomePercentage <- function(obj = combined.obj, genes = genes.GO.0061621.can.glyc) {
+  total_expr = Matrix::colSums(GetAssayData(object = obj))
+  Matrix::colSums(obj[ genes, ]) / total_expr
+}
+
+# genes.GO.0061621.canonical.glycolysis <- c("ENO1", "PKLR", "HK2", "HK3", "FOXK1", "PGAM2", "GCK", "BPGM",
+#   "PGK1", "ALDOB", "PGM2L1", "PFKP", "HK1", "PGAM1", "GAPDH", "TPI1",
+#   "ENO2", "PFKM", "PKM", "ADPGK", "ALDOA", "ENO3", "ALDOC", "FOXK2",
+#   "GPI", "GAPDHS", "PFKL")
+# Percentile.GO.0061621 <- CalcTranscriptomePercentage(genes = genes.GO.0061621.canonical.glycolysis)
+# vioplot::vioplot(Percentile.GO.0061621)
+
+# ------------------------------------------------------------------------
+CalcTranscriptomePercentageGO <- function(obj = combined.obj, GO.score = "GO.0061621") {
+  total_expr = Matrix::colSums(GetAssayData(object = obj))
+  Matrix::colSums(obj[ obj@misc$GO[[GO.score]], ]) / total_expr
+}
+
+# Percentile.GO.0061621 <- CalcTranscriptomePercentageGO(GO.score = "GO.0061621")
+# vioplot::vioplot(Percentile.GO.0061621)
+
+
 
 # ------------------------------------------------------------------------
 
