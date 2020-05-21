@@ -120,9 +120,9 @@ SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$'n.PC', d
 # ------------------------------------------------------------------------
 RecallReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
   dslot=paste0(reduction,dim,"d")
-  iprint(dim, "dimensional", reduction, "is set active. Source")
   reduction.backup <- obj@misc$reductions.backup[[dslot]]
-  stopifnot(exists('reduction.backup'))
+  msg <-  paste(dim, "dimensional", reduction, "from obj@misc$reductions.backup" )
+  stopif(is.null(reduction.backup), message = p0(msg," is NOT FOUND")); iprint(msg, "is set active. " )
   stopifnot(dim == ncol(reduction.backup))
   obj@reductions[[reduction]] <- reduction.backup
   return(obj)
@@ -164,6 +164,8 @@ Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMA
 
   try(create_set_SubDir(substitute(ListOfGenes)))
   obj. <- obj; rm("obj")
+  stopifnot(annotate.by %in% colnames(obj.@meta.data))
+
   DefaultAssay(object = obj.) <- default.assay
   MissingGenes <- setdiff(ListOfGenes, rownames(obj.))
   if ( length(MissingGenes)) iprint("These genes are not found, and omitted:", MissingGenes, ". Try to change default assay.")
@@ -187,6 +189,7 @@ Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3
                                     , ListOfCategories=c("v.project","experiment", "Phase", "integrated_snn_res.0.7") ) {
   try(create_set_SubDir(substitute(ListOfCategories)))
   obj. <- obj; rm("obj")
+  stopifnot(annotate.by %in% colnames(obj.@meta.data))
   DefaultAssay(object = obj.) <- default.assay
 
   MissingCateg <- setdiff(ListOfCategories, colnames(obj.@meta.data))
