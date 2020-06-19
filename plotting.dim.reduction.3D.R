@@ -164,7 +164,7 @@ Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMA
 
   try(create_set_SubDir(substitute(ListOfGenes)))
   obj. <- obj; rm("obj")
-  stopifnot(annotate.by %in% colnames(obj.@meta.data))
+  stopifnot(annotate.by %in% c(colnames(obj.@meta.data), FALSE))
 
   DefaultAssay(object = obj.) <- default.assay
   MissingGenes <- setdiff(ListOfGenes, rownames(obj.))
