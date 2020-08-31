@@ -120,6 +120,10 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
   }
 }
 # BulkGEScatterPlot(obj = combined.obj, clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = 'age', genes.from.bulk.DE = rownames(df.markers.per.AGE))
+
+
+
+
 # plotTheSoup ------------------------------------------------------------------------
 plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot the ambient RNA content of droplets without a cell (background droplets).
 
@@ -128,6 +132,13 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot t
   path.raw <- file.path(CellRangerOutputDir, grep(x = dirz, pattern = "^raw_*", value = T))
   path.filt <- file.path(CellRangerOutputDir, grep(x = dirz, pattern = "^filt_*", value = T))
   CR.matrices <- list.fromNames(c("raw", "filt"))
+
+  # Adapter for Markdownreports background variable "OutDir" ----------------------------------------------------------------
+  if(exists('OutDir')) OutDirBac <- OutDir
+  OutDir <- file.path(CellRangerOutputDir,kpp("SoupStatistics",basename(CellRangerOutputDir),"/"))
+  try(dir.create(OutDir))
+  ww.assign_to_global("OutDir", OutDir, 1)
+
 
   # Read In ------------------------
   print("Reading raw CellRanger output matrices")
@@ -150,10 +161,9 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot t
   CR.matrices$'soup.rel.RC'  <- CR.matrices$'soup.total.RC' / CR.matrices$'soup.total.sum'
 
 
+
   # Plot top gene's expression ----------------------------------------------------------------
   Soup.GEMs.top.Genes = 100*head(sort(CR.matrices$'soup.rel.RC', decreasing = T), n = 20)
-  OutDir <- file.path(CellRangerOutputDir,"SoupStatistics")
-  try(dir.create(OutDir))
 
   wbarplot(Soup.GEMs.top.Genes
            , ylab="% Reads in the Soup"
@@ -203,17 +213,17 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot t
                 , srt = 45, labels = percentage_formatter(Soup.GEMs.top.Genes.summarized/100, digitz = 2)
                 , TopOffset = -1.5)
 
-  Average.RC.soupProfile.summarized <- 100*soupProfile.summarized[1:NrColumns2Show] / CR.matrices$'cells.total.sum'
+  Absolute.fraction.soupProfile.summarized <- 100*soupProfile.summarized[1:NrColumns2Show] / CR.matrices$'cells.total.sum'
   Total.Reads.in.Soup <- CR.matrices$'soup.total.sum' / CR.matrices$'cells.total.sum'
 
-  maxx <- max(Average.RC.soupProfile.summarized)
-  wbarplot(Average.RC.soupProfile.summarized
+  maxx <- max(Absolute.fraction.soupProfile.summarized)
+  wbarplot(Absolute.fraction.soupProfile.summarized
            , ylab="% of Reads in cells", ylim = c(0, maxx*1.33)
            , sub = paste("Dataset:", basename(CellRangerOutputDir), " | % Tot. reads in the Soup: ",percentage_formatter(Total.Reads.in.Soup))
            , tilted_text = T, col = ccc)
-  barplot_label(barplotted_variable = Average.RC.soupProfile.summarized
-                , srt = 45, labels = percentage_formatter(Average.RC.soupProfile.summarized/100, digitz = 2)
-                # formatC(Average.RC.soupProfile.summarized, format="f", big.mark = " ", digits=0)
+  barplot_label(barplotted_variable = Absolute.fraction.soupProfile.summarized
+                , srt = 45, labels = percentage_formatter(Absolute.fraction.soupProfile.summarized/100, digitz = 2)
+                # formatC(Absolute.fraction.soupProfile.summarized, format="f", big.mark = " ", digits=0)
                 , TopOffset = -maxx*0.15)
 
 
@@ -229,6 +239,9 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot t
                 , labels = percentage_formatter(Soup.GEMs.top.Genes.non.summarized/100, digitz = 2)
                 # , labels = p0(round(1e6 * Soup.GEMs.top.Genes.non.summarized), " ppm")
                 , TopOffset = -maxx*0.2, srt = 90, cex=.75)
+
+  # Adapter for Markdownreports background variable "OutDir" ----------------------------------------------------------------
+  if (exists('OutDirBac'))  ww.assign_to_global("OutDir", OutDirBac, 1)
 
 
 } # plotTheSoup
