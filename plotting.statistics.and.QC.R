@@ -123,7 +123,6 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
 
 
 
-
 # plotTheSoup ------------------------------------------------------------------------
 plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot the ambient RNA content of droplets without a cell (background droplets).
 
@@ -160,13 +159,11 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot t
 
   CR.matrices$'soup.rel.RC'  <- CR.matrices$'soup.total.RC' / CR.matrices$'soup.total.sum'
 
-
-
   # Plot top gene's expression ----------------------------------------------------------------
   Soup.GEMs.top.Genes = 100*head(sort(CR.matrices$'soup.rel.RC', decreasing = T), n = 20)
 
   wbarplot(Soup.GEMs.top.Genes
-           , ylab="% Reads in the Soup"
+           , ylab="% mRNA in the Soup"
            , sub = paste("Within the", basename(CellRangerOutputDir), "dataset")
            , tilted_text = T
            , ylim = c(0, max(Soup.GEMs.top.Genes)*1.5))
@@ -206,32 +203,31 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot t
   Soup.GEMs.top.Genes.summarized = 100 * soupProfile.summarized[1:NrColumns2Show] / CR.matrices$'soup.total.sum'
   maxx <- max(Soup.GEMs.top.Genes.summarized)
   wbarplot(Soup.GEMs.top.Genes.summarized
-           , ylab="% Reads in the Soup", ylim = c(0, maxx+3)
+           , ylab="% mRNA in the Soup", ylim = c(0, maxx+3)
            , sub = paste("Within the", basename(CellRangerOutputDir), "dataset")
            , tilted_text = T, col = ccc)
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes.summarized
                 , srt = 45, labels = percentage_formatter(Soup.GEMs.top.Genes.summarized/100, digitz = 2)
                 , TopOffset = -1.5)
 
-  Absolute.fraction.soupProfile.summarized <- 100*soupProfile.summarized[1:NrColumns2Show] / CR.matrices$'cells.total.sum'
-  Total.Reads.in.Soup <- CR.matrices$'soup.total.sum' / CR.matrices$'cells.total.sum'
+  Total.Reads.in.Soup <-  CR.matrices$'soup.total.sum' / (CR.matrices$'cells.total.sum' + CR.matrices$'soup.total.sum')
+  Absolute.fraction.soupProfile.summarized <- 100*soupProfile.summarized[1:NrColumns2Show] * Total.Reads.in.Soup
 
   maxx <- max(Absolute.fraction.soupProfile.summarized)
   wbarplot(Absolute.fraction.soupProfile.summarized
-           , ylab="% of Reads in cells", ylim = c(0, maxx*1.33)
-           , sub = paste("Dataset:", basename(CellRangerOutputDir), " | % Tot. reads in the Soup: ",percentage_formatter(Total.Reads.in.Soup))
+           , ylab="% of mRNA in cells", ylim = c(0, maxx*1.33)
+           , sub = paste("Dataset:", basename(CellRangerOutputDir), " | % Tot. mRNA in the Soup: ",percentage_formatter(Total.Reads.in.Soup))
            , tilted_text = T, col = ccc)
   barplot_label(barplotted_variable = Absolute.fraction.soupProfile.summarized
                 , srt = 45, labels = percentage_formatter(Absolute.fraction.soupProfile.summarized/100, digitz = 2)
                 # formatC(Absolute.fraction.soupProfile.summarized, format="f", big.mark = " ", digits=0)
                 , TopOffset = -maxx*0.15)
 
-
   # -----
   Soup.GEMs.top.Genes.non.summarized <- 100* sort(genes.non.Above, decreasing = T)[1:20]/ CR.matrices$'soup.total.sum'
   maxx <- max(Soup.GEMs.top.Genes.non.summarized)
   wbarplot(Soup.GEMs.top.Genes.non.summarized
-           , ylab="% Reads in the Soup"
+           , ylab="% mRNA in the Soup"
            , sub = paste("Within the", basename(CellRangerOutputDir), "dataset")
            , tilted_text = T, col = "#BF3100"
            , ylim = c(0, maxx*1.5))
