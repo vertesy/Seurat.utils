@@ -27,7 +27,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 
 # LoadAllSeurats ------------------------------------------------------------------------
 LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
-                           , string.remove1 = c(F, "_feature_bc_matrix")[2]
+                           , string.remove1 = c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix." )[2]
                            , string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]) {
   tic()
   InputDir <- AddTrailingSlash(InputDir) # add '/' if necessary
