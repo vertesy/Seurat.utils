@@ -59,7 +59,7 @@ getCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = NA)
 }
 # getCellIDs.from.meta()
 
-# seu.add.meta.from.vector------------------------------------------------------------------------
+# seu.add.meta.from.vector ------------------------------------------------------------------------
 seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell ) { # Add a new metadata column to a Seurat  object
   obj@meta.data[, metaD.colname ] = Label.per.cell
   iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
@@ -67,6 +67,38 @@ seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.c
 }
 # combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell )
 # formerly add.Cl.Label.2.Metadata
+
+
+# seu.map.and.add.new.ident.to.meta ------------------------------------------------------------------------
+
+seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = clusterIDs.GO.process
+                                              , metaD.colname = substitute(ident.table) ) { # Add a new metadata column to a Seurat  object
+  ident.vec <- as.named.vector(ident.table)
+
+  # identities should match ----------------
+  ident.X <- names(ident.vec)
+  ident.Y <- as.character(ident.vec)
+  ident.Seu <- sort.natural(levels(Idents(obj)))
+  iprint("ident.Seu: ", ident.Seu)
+
+  OnlyInIdentVec      <- setdiff(ident.X, ident.Seu)
+  OnlyInSeuratIdents  <- setdiff(ident.Seu, ident.X)
+
+  msg.IdentVec <- kollapse("Rownames of 'ident.table' have entries not found in 'Idents(obj)':"
+                           , OnlyInIdentVec, " not found in ", ident.Seu, collapseby = " ")
+
+  msg.Seu <- kollapse("Rownames of 'Idents(obj)' have entries not found in 'ident.table':"
+                      , OnlyInSeuratIdents, " not found in ", ident.X, collapseby = " ")
+
+  stopif(l(OnlyInIdentVec), message = msg.IdentVec)
+  stopif(l(OnlyInSeuratIdents), message = msg.Seu)
+
+  # identity mapping ----------------
+  new.ident <- translate(vec = as.character(Idents(obj)), oldvalues = ident.X, newvalues = ident.Y)
+  obj@meta.data[[metaD.colname]] = new.ident
+  iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:"); cat(paste0("\t", ident.Y, "\n"))
+}
+# combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj, ident.table = clusterIDs.GO.process)
 
 
 # Add to obj@metadata from an external table ------------------------------------------------------------------------
