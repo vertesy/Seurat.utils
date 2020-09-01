@@ -123,7 +123,6 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
 
 
 
-
 # plotTheSoup ------------------------------------------------------------------------
 plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
                         , SeqRun = gsub('*([0-9]+).*','\\1', x = basename(CellRangerOutputDir))) { # Plot the ambient RNA content of droplets without a cell (background droplets).
@@ -183,16 +182,19 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
   (Soup.VS.Cells.Av.Exp.gg <- as_tibble(Soup.VS.Cells.Av.Exp.gg))
   soup.rate <- Soup.VS.Cells.Av.Exp.gg$Soup / (Soup.VS.Cells.Av.Exp.gg$Cells + Soup.VS.Cells.Av.Exp.gg$Soup)
   cell.rate <- Soup.VS.Cells.Av.Exp.gg$Cells / (Soup.VS.Cells.Av.Exp.gg$Cells + Soup.VS.Cells.Av.Exp.gg$Soup)
-  idx.HE2 <- rowSums(Soup.VS.Cells.Av.Exp) > 100
 
   axl.pfx <- "Total Expression in"
   axl.sfx <- "[log10(mRNA+1)]"
 
   # ggplot ----------------------------------------------------------------
   quantiles <- c(0.025, 0.01, 0.0025)
-  i=1
+
+  i=3
   for (i in 1:l(quantiles)) {
     pr <- quantiles[i]; print(pr)
+    HP.thr <- 2*pr/quantiles[2]
+    idx.HE2 <- rowSums(Soup.VS.Cells.Av.Exp) > HP.thr
+
     fname <- kpp("Soup.VS.Cells.Av.Exp.quantile",pr,"pdf")
 
     Outlier <- idx.HE2 &
@@ -212,6 +214,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
 
   # Per Gene ----------------------------------------------------------------
+  PC.mRNA.in.Soup <- sum(CR.matrices$'soup')/sum(CR.matrices$'raw')
   PC.mRNA.in.Cells <- 100*sum(CR.matrices$'filt')/sum(CR.matrices$'raw')
   wbarplot(variable = PC.mRNA.in.Cells, col ="seagreen", plotname = kppd("PC.mRNA.in.Cells", SeqRun)
            , ylim = c(0,100), ylab = "% mRNA in cells"
@@ -272,13 +275,13 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
                 , srt = 45, labels = percentage_formatter(Soup.GEMs.top.Genes.summarized/100, digitz = 2)
                 , TopOffset = -1.5)
 
-
-  Absolute.fraction.soupProfile.summarized <- Soup.GEMs.top.Genes.summarized * Total.Reads.in.Soup
+  # Absolute.fraction ---------------------------
+  Absolute.fraction.soupProfile.summarized <- Soup.GEMs.top.Genes.summarized * PC.mRNA.in.Soup
 
   maxx <- max(Absolute.fraction.soupProfile.summarized)
   wbarplot(Absolute.fraction.soupProfile.summarized, plotname = kppd("Absolute.fraction.soupProfile.summarized", SeqRun)
            , ylab="% of mRNA in cells", ylim = c(0, maxx*1.33)
-           , sub = paste(percentage_formatter(Total.Reads.in.Soup), "of mRNA counts are in the Soup, in the dataset ", SeqRun)
+           , sub = paste(percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", SeqRun)
            , tilted_text = T, col = ccc)
   barplot_label(barplotted_variable = Absolute.fraction.soupProfile.summarized
                 , srt = 45, labels = percentage_formatter(Absolute.fraction.soupProfile.summarized/100, digitz = 2)
@@ -307,6 +310,9 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
 } # plotTheSoup
 # plotTheSoup()
+
+
+
 
 
 # # plotTheSoup ------------------------------------------------------------------------
