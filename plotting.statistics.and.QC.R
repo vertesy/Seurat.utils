@@ -123,10 +123,14 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
 
 
 
+
 # plotTheSoup ------------------------------------------------------------------------
-plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot the ambient RNA content of droplets without a cell (background droplets).
+plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
+                        , SeqRun = gsub('*([0-9]+).*','\\1', x = basename(CellRangerOutputDir))) { # Plot the ambient RNA content of droplets without a cell (background droplets).
 
   # Setup ------------------------
+  require(Matrix); require(ggrepel)
+
   dirz <- list.dirs(CellRangerOutputDir, full.names = F, recursive = F)
   path.raw <- file.path(CellRangerOutputDir, grep(x = dirz, pattern = "^raw_*", value = T))
   path.filt <- file.path(CellRangerOutputDir, grep(x = dirz, pattern = "^filt_*", value = T))
@@ -134,7 +138,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot t
 
   # Adapter for Markdownreports background variable "OutDir" ----------------------------------------------------------------
   if(exists('OutDir')) OutDirBac <- OutDir
-  OutDir <- file.path(CellRangerOutputDir,kpp("SoupStatistics",basename(CellRangerOutputDir),"/"))
+  OutDir <- file.path(CellRangerOutputDir,p0(kpp("SoupStatistics", SeqRun)))
   try(dir.create(OutDir))
   ww.assign_to_global("OutDir", OutDir, 1)
 
@@ -159,12 +163,70 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot t
 
   CR.matrices$'soup.rel.RC'  <- CR.matrices$'soup.total.RC' / CR.matrices$'soup.total.sum'
 
+  # Diff Exp ----------------------------------------------------------------
+  Soup.VS.Cells.Av.Exp <- cbind(
+    'Soup' = Matrix::rowSums(CR.matrices$'soup'),
+    'Cells' = Matrix::rowSums(CR.matrices$'filt')
+  )
+  colnames(Soup.VS.Cells.Av.Exp)
+  idx.HE <- rowSums(Soup.VS.Cells.Av.Exp)>10; pc_TRUE(idx.HE)
+  Soup.VS.Cells.Av.Exp <- Soup.VS.Cells.Av.Exp[idx.HE,]; idim(Soup.VS.Cells.Av.Exp)
+  Soup.VS.Cells.Av.Exp.log10 <- log10(Soup.VS.Cells.Av.Exp+1)
+  wplot(Soup.VS.Cells.Av.Exp.log10, col = rgb(0,0,0,.25)
+        , xlab = "Total Expression in Soup [log10(mRNA+1)]"
+        , ylab = "Total Expression in Cells [log10(mRNA+1)]"
+  )
+
+
+  # ggplot prepare ----------------------------------------------------------------
+  Soup.VS.Cells.Av.Exp.gg <- tibble::rownames_to_column(as.data.frame(Soup.VS.Cells.Av.Exp.log10), "gene")
+  (Soup.VS.Cells.Av.Exp.gg <- as_tibble(Soup.VS.Cells.Av.Exp.gg))
+  soup.rate <- Soup.VS.Cells.Av.Exp.gg$Soup / (Soup.VS.Cells.Av.Exp.gg$Cells + Soup.VS.Cells.Av.Exp.gg$Soup)
+  cell.rate <- Soup.VS.Cells.Av.Exp.gg$Cells / (Soup.VS.Cells.Av.Exp.gg$Cells + Soup.VS.Cells.Av.Exp.gg$Soup)
+  idx.HE2 <- rowSums(Soup.VS.Cells.Av.Exp) > 100
+
+  axl.pfx <- "Total Expression in"
+  axl.sfx <- "[log10(mRNA+1)]"
+
+  # ggplot ----------------------------------------------------------------
+  quantiles <- c(0.025, 0.01, 0.0025)
+  i=1
+  for (i in 1:l(quantiles)) {
+    pr <- quantiles[i]; print(pr)
+    fname <- kpp("Soup.VS.Cells.Av.Exp.quantile",pr,"pdf")
+
+    Outlier <- idx.HE2 &
+      (cell.rate < quantile(cell.rate, probs = pr) |
+         soup.rate < quantile(soup.rate, probs = pr))
+
+    pgg <-
+      ggplot(Soup.VS.Cells.Av.Exp.gg, aes(x= Soup, y= Cells, label=gene,
+                                          col= Outlier))  +
+      geom_point() + theme(legend.position = "none") +
+      xlab(paste(axl.pfx, "Soup", axl.sfx)) + ylab(paste(axl.pfx, "Cells", axl.sfx)) +
+      ggtitle("Soup VS. Cells", subtitle = pr) +
+      geom_text_repel(aes(label= ifelse(Outlier
+                                        , as.character(gene),'')))
+    ggsave(pgg, filename = file.path(OutDir, fname))
+  }
+
+
+  # Per Gene ----------------------------------------------------------------
+  PC.mRNA.in.Cells <- 100*sum(CR.matrices$'filt')/sum(CR.matrices$'raw')
+  wbarplot(variable = PC.mRNA.in.Cells, col ="seagreen", plotname = kppd("PC.mRNA.in.Cells", SeqRun)
+           , ylim = c(0,100), ylab = "% mRNA in cells"
+           , sub = "% mRNA is more meaningful than % reads reported by CR")
+  barplot_label(barplotted_variable = PC.mRNA.in.Cells
+                , labels = percentage_formatter(PC.mRNA.in.Cells/100, digitz = 2)
+                , TopOffset = 10)
+
+
   # Plot top gene's expression ----------------------------------------------------------------
   Soup.GEMs.top.Genes = 100*head(sort(CR.matrices$'soup.rel.RC', decreasing = T), n = 20)
 
-  wbarplot(Soup.GEMs.top.Genes
+  wbarplot(Soup.GEMs.top.Genes, plotname = kppd("Soup.GEMs.top.Genes", SeqRun)
            , ylab="% mRNA in the Soup"
-           , sub = paste("Within the", basename(CellRangerOutputDir), "dataset")
+           , sub = paste("Within the", SeqRun, "dataset")
            , tilted_text = T
            , ylim = c(0, max(Soup.GEMs.top.Genes)*1.5))
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes
@@ -202,21 +264,21 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot t
 
   Soup.GEMs.top.Genes.summarized = 100 * soupProfile.summarized[1:NrColumns2Show] / CR.matrices$'soup.total.sum'
   maxx <- max(Soup.GEMs.top.Genes.summarized)
-  wbarplot(Soup.GEMs.top.Genes.summarized
+  wbarplot(Soup.GEMs.top.Genes.summarized, plotname = kppd("Soup.GEMs.top.Genes.summarized", SeqRun)
            , ylab="% mRNA in the Soup", ylim = c(0, maxx+3)
-           , sub = paste("Within the", basename(CellRangerOutputDir), "dataset")
+           , sub = paste("Within the", SeqRun, "dataset")
            , tilted_text = T, col = ccc)
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes.summarized
                 , srt = 45, labels = percentage_formatter(Soup.GEMs.top.Genes.summarized/100, digitz = 2)
                 , TopOffset = -1.5)
 
-  Total.Reads.in.Soup <-  CR.matrices$'soup.total.sum' / (CR.matrices$'cells.total.sum' + CR.matrices$'soup.total.sum')
-  Absolute.fraction.soupProfile.summarized <- 100*soupProfile.summarized[1:NrColumns2Show] * Total.Reads.in.Soup
+
+  Absolute.fraction.soupProfile.summarized <- Soup.GEMs.top.Genes.summarized * Total.Reads.in.Soup
 
   maxx <- max(Absolute.fraction.soupProfile.summarized)
-  wbarplot(Absolute.fraction.soupProfile.summarized
+  wbarplot(Absolute.fraction.soupProfile.summarized, plotname = kppd("Absolute.fraction.soupProfile.summarized", SeqRun)
            , ylab="% of mRNA in cells", ylim = c(0, maxx*1.33)
-           , sub = paste("Dataset:", basename(CellRangerOutputDir), " | % Tot. mRNA in the Soup: ",percentage_formatter(Total.Reads.in.Soup))
+           , sub = paste(percentage_formatter(Total.Reads.in.Soup), "of mRNA counts are in the Soup, in the dataset ", SeqRun)
            , tilted_text = T, col = ccc)
   barplot_label(barplotted_variable = Absolute.fraction.soupProfile.summarized
                 , srt = 45, labels = percentage_formatter(Absolute.fraction.soupProfile.summarized/100, digitz = 2)
@@ -226,15 +288,18 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593") { # Plot t
   # -----
   Soup.GEMs.top.Genes.non.summarized <- 100* sort(genes.non.Above, decreasing = T)[1:20]/ CR.matrices$'soup.total.sum'
   maxx <- max(Soup.GEMs.top.Genes.non.summarized)
-  wbarplot(Soup.GEMs.top.Genes.non.summarized
+  wbarplot(Soup.GEMs.top.Genes.non.summarized, plotname = kppd("Soup.GEMs.top.Genes.non.summarized", SeqRun)
            , ylab="% mRNA in the Soup"
-           , sub = paste("Within the", basename(CellRangerOutputDir), "dataset")
+           , sub = paste("Within the", SeqRun, "dataset")
            , tilted_text = T, col = "#BF3100"
            , ylim = c(0, maxx*1.5))
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes.non.summarized
                 , labels = percentage_formatter(Soup.GEMs.top.Genes.non.summarized/100, digitz = 2)
                 # , labels = p0(round(1e6 * Soup.GEMs.top.Genes.non.summarized), " ppm")
                 , TopOffset = -maxx*0.2, srt = 90, cex=.75)
+
+  # Diff Exp ----------------------------------------------------------------
+
 
   # Adapter for Markdownreports background variable "OutDir" ----------------------------------------------------------------
   if (exists('OutDirBac'))  ww.assign_to_global("OutDir", OutDirBac, 1)
