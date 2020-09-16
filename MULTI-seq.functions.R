@@ -43,6 +43,7 @@ aux.plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
   BC.depth <- colSums(bar.table)[1:96]
   if (min(BC.depth) < 1) { BC.depth <- BC.depth+1 }
   log.depth <- log10(BC.depth); range(log.depth)
+  ccc <- colnames(bar.table) %in% BCs.used
 
   wbarplot(log.depth, col = ccc, lwd=1, lcol=1, lty=2, plotname = plotname
            , vline = (range(BCs.used)+c(-1,1))
@@ -59,13 +60,15 @@ aux.plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 # ------------------------------------------------------------------------
 # bar.table.log <- t(log10(bar.table[,BCs.used]+1))
 # bar.table.log <- clip.outliers(bar.table.log)
-#
-# cp <- list()
-# cp$'dist' <- c("correlation", "ward", "manhattan")[3]
-# pheatmap(bar.table.log, clustering_distance_cols = cp$'dist'# , cluster_rows = FALSE
-#          , show_colnames = F, cutree_cols = ncol(bar.table.log), treeheight_col = 0
-#          , filename = kpp("Barcode.log10.RC", cp$'dist',"heatmap", idate(Format = "%Y.%m.%d_%H.%M.%S"), "png"))
 
+# p$'dist' <- c("correlation", "manhattan") # 'canberra', 'binary', 'minkowski', "euclidean")
+# for (i in 1:l(p$'dist')) {
+#   distX <- p$'dist'[i]; print(distX)
+#   pheatmap(bar.table.log, clustering_distance_cols = distX# , cluster_rows = FALSE
+#            , show_colnames = F, cutree_cols = nrow(bar.table.log), treeheight_col = 0
+#            , filename = kpp("Barcode.log10.RC", distX,"heatmap", idate(Format = "%Y.%m.%d_%H.%M.%S"), "png"))
+# }
+# oo()
 
 
 # subset.ReadTable <- function(variables) {
