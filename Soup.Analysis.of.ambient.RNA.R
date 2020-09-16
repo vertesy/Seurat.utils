@@ -224,7 +224,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
 
 } # plotTheSoup
-# plotTheSoup()
+# plotTheSoup(CellRangerOutputDir = "~/Data/114593/114593" , SeqRun = gsub('*([0-9]+).*','\\1', x = basename(CellRangerOutputDir)))
 
 
 
