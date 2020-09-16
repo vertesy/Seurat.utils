@@ -10,7 +10,9 @@
 # Convert10Xfolders ------------------------------------------------------------------------
 Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
                               , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T ) {
-  fin <- list.dirs(InputDir)[-1]
+  fin <- list.dirs(InputDir, recursive = F)
+  fin <- grepv (x = fin, pattern = "filtered" )
+
   for (i in 1:length(fin)) {
     pathIN = fin[i]; print(pathIN)
     fnameIN = basename(fin[i])
@@ -39,12 +41,13 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 
 # LoadAllSeurats ------------------------------------------------------------------------
 LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
+                           , file.pattern = "^filtered.+Rds$"
                            , string.remove1 = c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix." )[2]
                            , string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]) {
   tic()
   InputDir <- AddTrailingSlash(InputDir) # add '/' if necessary
 
-  fin.orig <- list.files(InputDir, include.dirs = F, pattern = "*.Rds")
+  fin.orig <- list.files(InputDir, include.dirs = F, pattern = file.pattern)
   print(fin.orig)
   fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = "")
   fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = "")
@@ -54,7 +57,8 @@ LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directo
   print(toc())
   return(ls.Seu)
 }
-# ls.Seu <- LoadAllSeurats(InputDir = InputDir)
+# ls.Seurat <- LoadAllSeurats(InputDir)
+
 
 # ------------------------------------------------------------------------------------------------
 read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv
