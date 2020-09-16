@@ -49,9 +49,15 @@ for (i in 1:l(v.parentfolder)) {
   # system(paste("gzip", pathDecontMtx),  wait = FALSE) # execute in the background
   plotMarkerDistribution(sc); wplot_save_this(plotname =  "SoupX.Auto.MarkerDistribution" )
   say()
+}
 
-  plotTheSoup(CellRangerOutputDir = InDir)
+strsplit(x = v.parentfolder,split =  '/')
 
-
+DataSets <- c('123062', '123063')
+i=2
+for (i in 1:l(v.parentfolder)) {
+  # Plotting ------------------------
+  plotTheSoup(CellRangerOutputDir = InDir, SeqRun = DataSets[i])
+  say()
 }
 
