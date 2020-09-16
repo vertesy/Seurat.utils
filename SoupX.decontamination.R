@@ -1,48 +1,8 @@
 ######################################################################
-# SoupX
+# SoupX.decontamination.R
 ######################################################################
-# source("~/GitHub/POL/elements/SoupX.R")
+source("~/GitHub/Seurat.utils/SoupX.decontamination.R")
 
-
-# Libraries ------------------------
-require(SoupX)
-require(MarkdownReportsDev)
-
-# Setup ------------------------
-InDir <- '~/Data/POL.full/123062_rnacount'
-OutDir <- OutDirDecont <- file.path(InDir,"SoupX_decont_filt_feature_bc_matrix")
-dir.create(OutDirDecont)
-
-# Metadata ------------------------
-# Parameters ------------------------
-
-
-sc = load10X(InDir, verbose = T)
-sc = autoEstCont(sc, verbose = T);  wplot_save_this(plotname =  "SoupX.contamination.fraciton.rho" )
-plotMarkerDistribution(sc); wplot_save_this(plotname =  "SoupX.Auto.MarkerDistribution" )
-out = adjustCounts(sc, verbose = T)
-
-
-(pathDecontMtx <- file.path(OutDirDecont,"matrix.mtx"))
-Matrix::writeMM(obj = out, file=pathDecontMtx )
-system(paste("gzip", pathDecontMtx),  wait = FALSE) # execute in the background
-
-
-# End ------------------------------------------------------------------------
-say()
-
-
-
-"LOOP IT"
-"LOOP IT"
-"LOOP IT"
-"LOOP IT"
-
-
-######################################################################
-# SoupX
-######################################################################
-# source("~/GitHub/POL/elements/SoupX.R")
 
 # Libraries ------------------------
 require(SoupX)
@@ -89,5 +49,9 @@ for (i in 1:l(v.parentfolder)) {
   # system(paste("gzip", pathDecontMtx),  wait = FALSE) # execute in the background
   plotMarkerDistribution(sc); wplot_save_this(plotname =  "SoupX.Auto.MarkerDistribution" )
   say()
+
+  plotTheSoup(CellRangerOutputDir = InDir)
+
+
 }
 
