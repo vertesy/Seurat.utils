@@ -15,15 +15,27 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
     pathIN = fin[i]; print(pathIN)
     fnameIN = basename(fin[i])
     fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
-    x <- Read10X(pathIN)
-    seu <- CreateSeuratObject(counts = x, project = fnameIN,
-                              min.cells = min.cells, min.features = min.features)
+    count_matrix <- Read10X(pathIN)
+    if (length(count_matrix) == 1) {
+      seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
+                                min.cells = min.cells, min.features = min.features)
+    } else if (length(count_matrix) == 2)  {
+      seu <- CreateSeuratObject(counts = count_matrix[[1]], project = fnameIN,
+                                min.cells = min.cells, min.features = min.features)
+
+    # LSB, Lipid Sample barcode (Multi-seq) --------------------
+      LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
+      LSBnameOUT = ppp(paste0(InputDir, '/LSB.', fnameIN),"Rds")
+      saveRDS(LSB, file = LSBnameOUT)
+    } else { print('More than 2 elements in the list of matrices')}
     # update----
     if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
     saveRDS(seu, file = fnameOUT)
   }
 }
 # Convert10Xfolders(InputDir = InputDir)
+
+
 
 # LoadAllSeurats ------------------------------------------------------------------------
 LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
