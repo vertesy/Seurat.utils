@@ -274,3 +274,95 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 #   remove("sc")
 #   detach(SoupX)
 # } # plotTheSoup
+
+
+
+
+dataDir="/Volumes/copy.your.own.data.here/A.Vertesy/SEO/HNV73DRXX_R10015/HNV73DRXX_R10015/aligned_rna/124851_rnacount"
+
+
+load10Xv3 <- function (dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
+          includeFeatures = c("Gene Expression"), verbose = TRUE,
+          ...)
+{
+
+  # include
+  dirz <- list.dirs(dataDir, full.names = F, recursive = F)
+  path.raw <- file.path(dataDir, grep(x = dirz, pattern = "^raw_*", value = T))
+  path.filt <- file.path(dataDir, grep(x = dirz, pattern = "^filt_*", value = T))
+  CR.matrices <- list.fromNames(c("raw", "filt"))
+
+
+  (isV3 = any(grepl(x = dirz, pattern = "^raw_feature_bc*")))
+  tgt = path.raw
+
+  if (!isV3)
+    tgt = file.path(tgt, list.files(tgt))
+  if (verbose)
+    message(sprintf("Loading raw count data"))
+  dat = do.call(Read10X, c(list(data.dir = tgt), readArgs))
+  if (verbose)
+    message(sprintf("Loading cell-only count data"))
+  if (!is.null(cellIDs)) {
+    if (all(grepl("\\-1$", cellIDs)))
+      cellIDs = gsub("\\-1$", "", cellIDs)
+    if (!all(cellIDs %in% colnames(dat)))
+      stop("Not all supplied cellIDs found in raw data.")
+    datCells = dat[, match(cellIDs, colnames(dat))]
+  }
+  else {
+    tgt = path.filt
+    if (!isV3)
+      tgt = file.path(tgt, list.files(tgt))
+    datCells = do.call(Read10X, c(list(data.dir = tgt),
+                                  readArgs))
+    if (is.list(dat)) {
+      dat = do.call(rbind, dat[includeFeatures])
+      datCells = do.call(rbind, datCells[includeFeatures])
+    }
+  }
+  if (verbose)
+    message(sprintf("Loading extra analysis data where available"))
+  mDat = NULL
+  tgt = file.path(dataDir, "analysis", "clustering", "graphclust",
+                  "clusters.csv")
+  if (file.exists(tgt)) {
+    clusters = read.csv(tgt)
+    mDat = data.frame(clusters = clusters$Cluster, row.names = clusters$Barcode)
+  }
+  tgt = file.path(dataDir, "analysis", "clustering", "kmeans_10_clusters",
+                  "clusters.csv")
+  if (file.exists(tgt)) {
+    clusters = read.csv(tgt)
+    mDat$clustersFine = clusters$Cluster
+  }
+  tgt = file.path(dataDir, "analysis", "tsne", "2_components",
+                  "projection.csv")
+  if (file.exists(tgt)) {
+    tsne = read.csv(tgt)
+    if (is.null(mDat)) {
+      mDat = data.frame(tSNE1 = tsne$TSNE.1, tSNE2 = tsne$TSNE.2,
+                        row.names = tsne$Barcode)
+    }
+    else {
+      mDat$tSNE1 = tsne$TSNE.1[match(rownames(mDat), tsne$Barcode)]
+      mDat$tSNE2 = tsne$TSNE.2[match(rownames(mDat), tsne$Barcode)]
+    }
+    DR = c("tSNE1", "tSNE2")
+  }
+  else {
+    DR = NULL
+  }
+  if (!is.null(mDat) && any(rownames(mDat) != colnames(datCells))) {
+    rownames(mDat) = gsub("-1$", "", rownames(mDat))
+    if (any(rownames(mDat) != colnames(datCells)))
+      stop("Error matching meta-data to cell names.")
+  }
+  if (is.null(channelName))
+    channelName = ifelse(is.null(names(dataDir)), dataDir,
+                         names(dataDir))
+  channel = SoupChannel(tod = dat, toc = datCells, metaData = mDat,
+                        channelName = channelName, dataDir = dataDir, dataType = "10X",
+                        isV3 = isV3, DR = DR, ...)
+  return(channel)
+}
