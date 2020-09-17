@@ -14,10 +14,11 @@ ensembl = useMart("ensembl", dataset="hsapiens_gene_ensembl") #uses human ensemb
 
 # ------------------------------------------------------------------------
 PlotGoTermScores <- function(obj = combined.obj # Automate retrieving, processing and plotting GO term based gene scores.
+                             , openBrowser = F
                              , GO = "GO:0061621", desc = "canonical.glycolysis") {
   GO.wDot<- make.names(GO)
 
-  obj <- GetGOTerms(obj = obj, GO = GO);
+  obj <- GetGOTerms(obj = obj, GO = GO, web.open = openBrowser);
   iprint(desc, obj@misc$GO[[ GO.wDot ]])
   obj <- AddGOScore(obj = obj, GO = GO);
   FeaturePlotSave(obj = obj, GO = paste0("Score.", GO.wDot), name_desc = desc)
