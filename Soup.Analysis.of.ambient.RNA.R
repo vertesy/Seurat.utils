@@ -11,7 +11,7 @@ require(tibble)
 plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
                         , SeqRun = gsub('*([0-9]+).*','\\1', x = basename(CellRangerOutputDir))) { # Plot the ambient RNA content of droplets without a cell (background droplets).
 
-  ls.Alpha=.5
+  ls.Alpha=1
   # Setup ------------------------
   require(Matrix); require(ggrepel)
 
@@ -29,11 +29,11 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
   # Read In ------------------------
   print("Reading raw CellRanger output matrices")
   CR.matrices$'raw' <- Read10X(path.raw)
-  if (length(CR.matrices$'raw') == 2 ) { CR.matrices$'raw' <- CR.matrices$'raw'[1] } # Maybe AB table is present too at slot 2!
+  if (length(CR.matrices$'raw') == 2 ) { CR.matrices$'raw' <- CR.matrices$'raw'[[1]] } # Maybe AB table is present too at slot 2!
 
   print("Reading filtered CellRanger output matrices")
   CR.matrices$'filt' <- Read10X(path.filt)
-  if (length(CR.matrices$'filt') == 2 ) { CR.matrices$'filt' <- CR.matrices$'filt'[1] } # Maybe AB table is present too at slot 2!
+  if (length(CR.matrices$'filt') == 2 ) { CR.matrices$'filt' <- CR.matrices$'filt'[[1]] } # Maybe AB table is present too at slot 2!
 
   # Profiling the soup ------------------------
   print("Profiling the soup")
