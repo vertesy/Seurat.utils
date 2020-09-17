@@ -40,7 +40,7 @@ IntersectWithExpressed <- function(genes, obj=combined.obj) { # Intersect a set 
 # ------------------------------------------------------------------------
 GetGOTerms <- function(obj = combined.obj, GO = 'GO:0034976', web.open = T) { # Get GO terms via Biomart package
   genes <- getBM(attributes=c('hgnc_symbol'), #  'ensembl_transcript_id', 'go_id'
-                 filters = "go",  uniqueRows = TRUE,
+                 filters = "go_parent_term",  uniqueRows = TRUE,
                  values = GO, mart = ensembl)[,1]
 
   (GO.wDot<- make.names(GO))
