@@ -17,10 +17,13 @@ v.parentfolder = c(
   # "/Volumes/copy.your.own.data.here/A.Vertesy/SEO/HNV73DRXX_R10015/HNV73DRXX_R10015/aligned_rna/124851_rnacount",
   # "/Volumes/single.cell.RNA.seq/C.Bosone/2020.06/HN3V3DRXX_R9836/aligned_rna/123062_rnacount",
   # # POL -----
-  # "/Volumes/HN3V3DRXX_R9836/demultiplexed/123062/123062_premRNA_POL/outs/",
-  "/Volumes/HN3V3DRXX_R9836/demultiplexed/123063/123063_premRNA_POL/outs/"
-  # "/Users/abel.vertesy/Data/POL/filtered_feature_bc_matrix.123062"
-  # "/Volumes/single.cell.RNA.seq/C.Bosone/2020.06/HN3V3DRXX_R9836/aligned_rna/123063_rnacount",
+  "/Volumes/HN3V3DRXX_R9836/demultiplexed/123062/123062_premRNA_POL/outs/",
+  "/Volumes/HN3V3DRXX_R9836/demultiplexed/123063/123063_premRNA_POL/outs/".
+    # "/Users/abel.vertesy/Data/POL/filtered_feature_bc_matrix.123062"
+    # "/Volumes/single.cell.RNA.seq/C.Bosone/2020.06/HN3V3DRXX_R9836/aligned_rna/123063_rnacount",
+  # TSC -----
+  "/Volumes/single.cell.RNA.seq/O.Eichmueller/diffmedia.d110/101146/101146_premRNA_POL2/outs/",
+  "/Volumes/single.cell.RNA.seq/O.Eichmueller/diffmedia.d110/101147/101147_premRNA_POL2/outs/"
   # CON -----
   # "/Volumes/single.cell.RNA.seq/A.Vertesy/CONN/Connectome.pilot.1/03.Fulldepth/HKJHKDRXX_R9539/114593/114593_premRNA_local/outs/",
   # INM -----
@@ -53,8 +56,9 @@ for (i in 1:l(v.parentfolder)) {
 
 strsplit(x = v.parentfolder,split =  '/')
 
-DataSets <- c('123062', '123063')
-i=2
+# plotTheSoup ------------------------------------------------------------------------------------------------
+# DataSets <- c('123062', '123063')
+DataSets <- c('123062', '123063', '101146', '101147')
 for (i in 1:l(v.parentfolder)) {
   # Plotting ------------------------
   plotTheSoup(CellRangerOutputDir = InDir, SeqRun = DataSets[i])
