@@ -77,7 +77,8 @@ AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) {
   (genes.GO = list(obj@misc$GO[[GO.wDot]]))
   # print(genes.GO)
   (ScoreName = paste0("Score.", make.names(GO)))
-  obj <- AddModuleScore(object = obj, features = list(genes.GO), name = ScoreName)
+  if (!is.list(genes.GO)) genes.GO<- list(genes.GO) # idk why this structure is not consistent...
+  obj <- AddModuleScore(object = obj, features = genes.GO, name = ScoreName)
 
   if (FixName) {
     colnames(obj@meta.data) <-
