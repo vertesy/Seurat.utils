@@ -6,12 +6,12 @@
 "Multicore read / write (I/O) functions are https://github.com/vertesy/Seurat.multicore"
 "Single core read / write (I/O) functions are in https://github.com/vertesy/Seurat.utils/"
 
-
 # Convert10Xfolders ------------------------------------------------------------------------
 Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
+                              , folderPattern = c("filtered", "SoupX_decont")[1]
                               , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T ) {
   fin <- list.dirs(InputDir, recursive = F)
-  fin <- grepv (x = fin, pattern = "filtered" )
+  fin <- grepv(x = fin, pattern = folderPattern, perl =F)
 
   for (i in 1:length(fin)) {
     pathIN = fin[i]; print(pathIN)
@@ -25,7 +25,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
       seu <- CreateSeuratObject(counts = count_matrix[[1]], project = fnameIN,
                                 min.cells = min.cells, min.features = min.features)
 
-    # LSB, Lipid Sample barcode (Multi-seq) --------------------
+      # LSB, Lipid Sample barcode (Multi-seq) --------------------
       LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
       LSBnameOUT = ppp(paste0(InputDir, '/LSB.', fnameIN),"Rds")
       saveRDS(LSB, file = LSBnameOUT)

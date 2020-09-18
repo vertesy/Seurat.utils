@@ -11,7 +11,6 @@ library(biomaRt)
 ensembl = useMart("ensembl", dataset="hsapiens_gene_ensembl") #uses human ensembl annotations
 
 
-
 # ------------------------------------------------------------------------
 PlotGoTermScores <- function(obj = combined.obj # Automate retrieving, processing and plotting GO term based gene scores.
                              , openBrowser = F
@@ -141,6 +140,4 @@ CalcTranscriptomePercentageGO <- function(obj = combined.obj, GO.score = "GO.006
 
 
 # ------------------------------------------------------------------------
-
-
 # xxGetGenesGo <- function(obj= combined.obj, GO = 'GO:0034976' ) obj@misc$GO[[  make.names(GO) ]]
