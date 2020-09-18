@@ -232,59 +232,6 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
 
 
-
-
-# # plotTheSoup ------------------------------------------------------------------------
-# plotTheSoup.old <- function(CellR.OutputDir = "~/Dropbox/Abel.IMBA/Data/SoupX_pbmc4k_demo/") { # Plot the ambient RNA content of droplets without a cell (background droplets).
-#   # Read In ------------------------
-#   sc = load10X(CellR.OutputDir, keepDroplets = TRUE)
-#   # Profiling the soup ------------------------
-#   sc = estimateSoup(sc)
-#
-#   # Plot top gene's expression ----------------------------------------------------------------
-#   soupProfile = head(sc$soupProfile[order(sc$soupProfile$est, decreasing = TRUE), ], n = 20)
-#   soupX.cellfree.RNA.profile = 100 * col2named.vector(soupProfile[,1,drop=F])
-#   wbarplot(soupX.cellfree.RNA.profile
-#            , ylab="% Reads in the Soup"
-#            , sub = paste("Within the", basename(CellR.OutputDir), "dataset")
-#            , tilted_text = T)
-#   barplot_label(barplotted_variable = soupX.cellfree.RNA.profile
-#                 , labels = percentage_formatter(soupX.cellfree.RNA.profile/100, digitz = 2)
-#                 , TopOffset = .4, srt = 90, cex=.75)
-#
-#   # Plot summarize expression ----------------------------------------------------------------
-#   soup.RP.sum   <- colSums(soupProfile[grep('^RPL|^RPS', rownames(soupProfile)),])
-#   soup.RPL.sum   <- colSums(soupProfile[grep('^RPL', rownames(soupProfile)),])
-#   soup.RPS.sum   <- colSums(soupProfile[grep('^RPS', rownames(soupProfile)),])
-#   soup.mito.sum <- colSums(soupProfile[grep('^MT-', rownames(soupProfile)),])
-#
-#   soupProfile.summarized <- rbind(
-#     'Ribosomal' = soup.RP.sum,
-#     'Ribosomal.L' = soup.RPL.sum,
-#     'Ribosomal.S' = soup.RPS.sum,
-#     'Mitochondial' = soup.mito.sum,
-#     soupProfile[grep('^RPL|^RPS|^MT-', rownames(soupProfile), invert = T),]
-#   )
-#
-#   NrColumns2Show  = min(10, nrow(soupProfile.summarized))
-#   soupX.cellfree.RNA.profile.summarized = 100 * col2named.vector(soupProfile.summarized[1:NrColumns2Show,1,drop=F])
-#   wbarplot(soupX.cellfree.RNA.profile.summarized
-#            , ylab="% Reads in the Soup"
-#            , sub = paste("Within the", basename(CellR.OutputDir), "dataset")
-#            , tilted_text = T)
-#   barplot_label(barplotted_variable = soupX.cellfree.RNA.profile.summarized
-#                 , labels = percentage_formatter(soupX.cellfree.RNA.profile.summarized/100, digitz = 2)
-#                 , TopOffset = .5)
-#   remove("sc")
-#   detach(SoupX)
-# } # plotTheSoup
-
-
-
-
-dataDir="/Volumes/copy.your.own.data.here/A.Vertesy/SEO/HNV73DRXX_R10015/HNV73DRXX_R10015/aligned_rna/124851_rnacount"
-
-
 load10Xv3 <- function (dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
           includeFeatures = c("Gene Expression"), verbose = TRUE,
           ...)
@@ -370,3 +317,56 @@ load10Xv3 <- function (dataDir, cellIDs = NULL, channelName = NULL, readArgs = l
                         isV3 = isV3, DR = DR, ...)
   return(channel)
 }
+
+
+
+# # plotTheSoup ------------------------------------------------------------------------
+# plotTheSoup.old <- function(CellR.OutputDir = "~/Dropbox/Abel.IMBA/Data/SoupX_pbmc4k_demo/") { # Plot the ambient RNA content of droplets without a cell (background droplets).
+#   # Read In ------------------------
+#   sc = load10X(CellR.OutputDir, keepDroplets = TRUE)
+#   # Profiling the soup ------------------------
+#   sc = estimateSoup(sc)
+#
+#   # Plot top gene's expression ----------------------------------------------------------------
+#   soupProfile = head(sc$soupProfile[order(sc$soupProfile$est, decreasing = TRUE), ], n = 20)
+#   soupX.cellfree.RNA.profile = 100 * col2named.vector(soupProfile[,1,drop=F])
+#   wbarplot(soupX.cellfree.RNA.profile
+#            , ylab="% Reads in the Soup"
+#            , sub = paste("Within the", basename(CellR.OutputDir), "dataset")
+#            , tilted_text = T)
+#   barplot_label(barplotted_variable = soupX.cellfree.RNA.profile
+#                 , labels = percentage_formatter(soupX.cellfree.RNA.profile/100, digitz = 2)
+#                 , TopOffset = .4, srt = 90, cex=.75)
+#
+#   # Plot summarize expression ----------------------------------------------------------------
+#   soup.RP.sum   <- colSums(soupProfile[grep('^RPL|^RPS', rownames(soupProfile)),])
+#   soup.RPL.sum   <- colSums(soupProfile[grep('^RPL', rownames(soupProfile)),])
+#   soup.RPS.sum   <- colSums(soupProfile[grep('^RPS', rownames(soupProfile)),])
+#   soup.mito.sum <- colSums(soupProfile[grep('^MT-', rownames(soupProfile)),])
+#
+#   soupProfile.summarized <- rbind(
+#     'Ribosomal' = soup.RP.sum,
+#     'Ribosomal.L' = soup.RPL.sum,
+#     'Ribosomal.S' = soup.RPS.sum,
+#     'Mitochondial' = soup.mito.sum,
+#     soupProfile[grep('^RPL|^RPS|^MT-', rownames(soupProfile), invert = T),]
+#   )
+#
+#   NrColumns2Show  = min(10, nrow(soupProfile.summarized))
+#   soupX.cellfree.RNA.profile.summarized = 100 * col2named.vector(soupProfile.summarized[1:NrColumns2Show,1,drop=F])
+#   wbarplot(soupX.cellfree.RNA.profile.summarized
+#            , ylab="% Reads in the Soup"
+#            , sub = paste("Within the", basename(CellR.OutputDir), "dataset")
+#            , tilted_text = T)
+#   barplot_label(barplotted_variable = soupX.cellfree.RNA.profile.summarized
+#                 , labels = percentage_formatter(soupX.cellfree.RNA.profile.summarized/100, digitz = 2)
+#                 , TopOffset = .5)
+#   remove("sc")
+#   detach(SoupX)
+# } # plotTheSoup
+
+
+
+
+dataDir="/Volumes/copy.your.own.data.here/A.Vertesy/SEO/HNV73DRXX_R10015/HNV73DRXX_R10015/aligned_rna/124851_rnacount"
+
