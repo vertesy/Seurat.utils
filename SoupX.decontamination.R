@@ -74,7 +74,7 @@ for (i in 1:l(v.parentfolder)) {
     # system(paste("gzip", pathDecontMtx),  wait = FALSE) # execute in the background
   }
 
-  # plotMarkerDistribution(sc); wplot_save_this(plotname =  "SoupX.Auto.MarkerDistribution" )
+  plotMarkerDistribution(sc); wplot_save_this(plotname =  "SoupX.Auto.MarkerDistribution" )
   say()
 }
 
