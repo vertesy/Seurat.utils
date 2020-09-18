@@ -14,16 +14,16 @@ try(source("~/GitHub/Seurat.utils/Seurat.Utils.Load.R"));
 # Parameters ------------------------
 v.parentfolder = c(
   # SEO -----
-  # "/Volumes/copy.your.own.data.here/A.Vertesy/SEO/HNV73DRXX_R10015/HNV73DRXX_R10015/aligned_rna/124851_rnacount",
-  # "/Volumes/single.cell.RNA.seq/C.Bosone/2020.06/HN3V3DRXX_R9836/aligned_rna/123062_rnacount",
+  # "/Volumes/single.cell.RNA.seq/A.Vertesy/SEO/HNV73DRXX_R10015/HNV73DRXX_R10015/aligned_rna/124851_rnacount",
+  "/Volumes/single.cell.RNA.seq/A.Vertesy/SEO/HNV73DRXX_R10015/HNV73DRXX_R10015/aligned_rna/124719_rnacount"
   # # POL -----
-  "/Volumes/HN3V3DRXX_R9836/demultiplexed/123062/123062_premRNA_POL/outs/",
-  "/Volumes/HN3V3DRXX_R9836/demultiplexed/123063/123063_premRNA_POL/outs/".
+  # "/Volumes/HN3V3DRXX_R9836/demultiplexed/123062/123062_premRNA_POL/outs/",
+  # "/Volumes/HN3V3DRXX_R9836/demultiplexed/123063/123063_premRNA_POL/outs/",
     # "/Users/abel.vertesy/Data/POL/filtered_feature_bc_matrix.123062"
     # "/Volumes/single.cell.RNA.seq/C.Bosone/2020.06/HN3V3DRXX_R9836/aligned_rna/123063_rnacount",
   # TSC -----
-  "/Volumes/single.cell.RNA.seq/O.Eichmueller/diffmedia.d110/101146/101146_premRNA_POL2/outs/",
-  "/Volumes/single.cell.RNA.seq/O.Eichmueller/diffmedia.d110/101147/101147_premRNA_POL2/outs/"
+  # "/Volumes/single.cell.RNA.seq/O.Eichmueller/diffmedia.d110/101146/101146_premRNA_POL2/outs/",
+  # "/Volumes/single.cell.RNA.seq/O.Eichmueller/diffmedia.d110/101147/101147_premRNA_POL2/outs/"
   # CON -----
   # "/Volumes/single.cell.RNA.seq/A.Vertesy/CONN/Connectome.pilot.1/03.Fulldepth/HKJHKDRXX_R9539/114593/114593_premRNA_local/outs/",
   # INM -----
@@ -50,18 +50,45 @@ for (i in 1:l(v.parentfolder)) {
   (pathDecontMtx <- file.path(OutDirDecont,"matrix.mtx"))
   Matrix::writeMM(obj = out, file=pathDecontMtx )
   # system(paste("gzip", pathDecontMtx),  wait = FALSE) # execute in the background
-  plotMarkerDistribution(sc); wplot_save_this(plotname =  "SoupX.Auto.MarkerDistribution" )
+  # plotMarkerDistribution(sc); wplot_save_this(plotname =  "SoupX.Auto.MarkerDistribution" )
   say()
 }
 
 strsplit(x = v.parentfolder,split =  '/')
 
 # plotTheSoup ------------------------------------------------------------------------------------------------
+
+v.parentfolder = c(
+  # SEO -----
+  # "/Volumes/single.cell.RNA.seq/A.Vertesy/SEO/HNV73DRXX_R10015/HNV73DRXX_R10015/aligned_rna/124851_rnacount",
+  # "/Volumes/single.cell.RNA.seq/A.Vertesy/SEO/HNV73DRXX_R10015/HNV73DRXX_R10015/aligned_rna/124719_rnacount"
+  # # POL -----
+  # "/Volumes/HN3V3DRXX_R9836/demultiplexed/123062/123062_premRNA_POL/outs/",
+  # "/Volumes/HN3V3DRXX_R9836/demultiplexed/123063/123063_premRNA_POL/outs/",
+  # "/Users/abel.vertesy/Data/POL/filtered_feature_bc_matrix.123062"
+  # "/Volumes/single.cell.RNA.seq/C.Bosone/2020.06/HN3V3DRXX_R9836/aligned_rna/123063_rnacount",
+  # TSC -----
+  "/Volumes/single.cell.RNA.seq/O.Eichmueller/diffmedia.d110/101146/101146_premRNA_POL2/outs/",
+  "/Volumes/single.cell.RNA.seq/O.Eichmueller/diffmedia.d110/101147/101147_premRNA_POL2/outs/"
+  # CON -----
+  # "/Volumes/single.cell.RNA.seq/A.Vertesy/CONN/Connectome.pilot.1/03.Fulldepth/HKJHKDRXX_R9539/114593/114593_premRNA_local/outs/",
+  # INM -----
+  # # "/Volumes/single.cell.RNA.seq/S.Bajaj/HJGHFDRXX_all/aligned/104566",
+  # # "/Volumes/single.cell.RNA.seq/S.Bajaj/HJGHFDRXX_all/aligned/104567",
+  # # "/Volumes/single.cell.RNA.seq/S.Bajaj/HJGHFDRXX_all/aligned/104568",
+  # "/Volumes/single.cell.RNA.seq/S.Bajaj/HJGHFDRXX_all/aligned/104569"
+)
+
 # DataSets <- c('123062', '123063')
 DataSets <- c('123062', '123063', '101146', '101147')
-for (i in 1:l(v.parentfolder)) {
+DataSets <- c('101146', '101147')
+
+for (i in 1:l(DataSets)) {
+  # Setup ------------------------
+  InDir <- v.parentfolder[i]; print(InDir)
+
   # Plotting ------------------------
   plotTheSoup(CellRangerOutputDir = InDir, SeqRun = DataSets[i])
-  say()
+  system(paste("say Soup Plot ",i,"Ready"))
 }
 
