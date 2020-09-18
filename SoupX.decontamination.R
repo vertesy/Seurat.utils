@@ -9,6 +9,7 @@ require(SoupX)
 require(Seurat)
 require(MarkdownReportsDev)
 require(DropletUtils)
+require(cowplot)
 
 try(source("~/GitHub/Seurat.utils/Seurat.Utils.Load.R"));
 source ('~/GitHub/Seurat.utils/Soup.Analysis.of.ambient.RNA.R')
@@ -49,11 +50,22 @@ for (i in 1:l(v.parentfolder)) {
   sc = autoEstCont(sc, verbose = T);  wplot_save_this(plotname =  "SoupX.contamination.fraciton.rho" )
   out = adjustCounts(sc, verbose = T)
 
+  # Analyze ------------------------
+
+  p.DCX <- plotChangeMap(sc, out, "DCX") + ggtitle("Change in DCX expression due to soup correction")
+  p.SATB2 <- plotChangeMap(sc, out, "SATB2") + ggtitle("Change in SATB2 expression due to soup correction")
+  p.VIM <- plotChangeMap(sc, out, "VIM") + ggtitle("Change in VIM expression due to soup correction")
+  p.DLX6.AS1 <- plotChangeMap(sc, out, "DLX6-AS1") + ggtitle("Change in DLX6-AS1 expression due to soup correction")
+
+  plgr <- plot_grid(plotlist = list(p.DCX, p.SATB2, p.VIM, p.DLX6.AS1), nrow = 2)
+  save_plot(filename =pps(OutDirDecont, "Change.in.gene.expression.due.to.soup.correction.png")
+              , plot = plgr, base_height = wA4, base_width = wA4)
+
   # Write out ------------------------
   WriteMtxLocal = T
   OutDirDecont_local = "~/Data/Soup.stats"
   if (WriteMtxLocal) {
-    DropletUtils:::write10xCounts(path = OutDirDecont_local, x = out, overwrite = FALSE)
+    DropletUtils:::write10xCounts(path = OutDirDecont_local, x = out, overwrite = TRUE)
     system(paste("gzip", pps(OutDirLocal,"barcodes.tsv.gz")),  wait = FALSE) # execute in the background
     system(paste("gzip", pps(OutDirLocal,"features.tsv.gz")),  wait = FALSE) # execute in the background
     system(paste("gzip", pps(OutDirLocal,"matrix.mtx.gz")),  wait = FALSE) # execute in the background
