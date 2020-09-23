@@ -167,3 +167,50 @@ PlotTopGenes <- function(obj = combined.obj, n=32 ){ # Plot the highest expresse
   multiFeaturePlot.A4(list.of.genes = Highest.Expressed.Genes, foldername = "Highest.Expressed.Genes" )
 }
 # PlotTopGenes()
+
+
+# fix.orig.ident ------------------------------------------------------------------------
+fix.orig.ident <- function(obj = merged.obj) {
+  fixed <- sub(obj$'orig.ident', pattern = 'filtered_feature_bc_matrix.', replacement = '')
+  return(fixed)
+}
+# merged.obj$orig.ident <- fix.orig.ident(obj = merged.obj); table(merged.obj$orig.ident)
+
+# recall.all.genes ------------------------------------------------------------------------
+recall.all.genes <- function(obj = combined.obj) {
+  if(!exists('all.genes')) {
+    all.genes <- obj@misc$all.genes
+    ww.assign_to_global("all.genes", all.genes)
+  } else {print("all.genes exits in namespace")}
+}
+# recall.all.genes(); all.genes
+
+# recall.all.genes ------------------------------------------------------------------------
+plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero=T) {
+  expr.GOI <- obj@misc$expr.q90[gene]
+  expr.all <- unlist(obj@misc$expr.q90)
+  gene.found <- gene %in% names(expr.all)
+  stopifnot(gene.found)
+
+  if (expr.GOI==0) iprint(gene, "is not expressed. q90-av.exp:",expr.GOI) else
+    if (expr.GOI<0.05) iprint(gene, "is lowly expressed. q90-av.exp:",expr.GOI)
+    if (filterZero) {
+      iprint("Zero 'q90 expression' genes (",pc_TRUE(expr.all==0),") are removed.")
+      expr.all <- expr.all[expr.all>0]
+    }
+counts <- sum(obj@assays$RNA@counts[gene,])
+  if (expr.GOI==0) {
+    quantile.GOI <- 0
+    title <- paste(gene, "is too lowly expressed: q90-av.exp is zero. \n There are", counts,"counts." )
+  } else {
+    pos.GOI <- which(names(expr.all)==gene)
+    quantile.GOI <- ecdf(expr.all)(expr.all)[pos.GOI]
+    title <- paste(gene, "is in the", percentage_formatter(quantile.GOI), "quantile of 'q90-av' expression. \n There are", counts,"counts" )
+  }
+  suppressWarnings(
+    whist(expr.all, vline = expr.GOI, breaks = 100, main = title, plotname =   make.names(title)
+          , ylab = "Genes"
+          , xlab = "Av. mRNA in the 10% top expressing cells (q90 av.exp.)")
+  )
+}
+# plot.expression.rank.q90(gene = "SATB2")
