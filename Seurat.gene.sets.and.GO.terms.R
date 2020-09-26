@@ -20,7 +20,7 @@ PlotGoTermScores <- function(obj = combined.obj # Automate retrieving, processin
   obj <- GetGOTerms(obj = obj, GO = GO, web.open = openBrowser);
   iprint(desc, obj@misc$GO[[ GO.wDot ]])
   obj <- AddGOScore(obj = obj, GO = GO);
-  FeaturePlotSave(obj = obj, GO = paste0("Score.", GO.wDot), name_desc = desc)
+  FeaturePlotSaveGO(obj = obj, GO = paste0("Score.", GO.wDot), name_desc = desc)
   return(obj)
 }
 # "GO:0061621"  "canonical.glycolysis"
@@ -69,6 +69,18 @@ AddGOGeneList.manual <- function(obj = combined.obj, GO = 'GO:0034976', web.open
 # combined.obj <- AddGOGeneList.manual(obj = combined.obj, GO = 'GO:1904936'
 #       , genes =  c("A0A140VKG3", "ARX", "CNTN2", "DRD1", "DRD2", "FEZF2", "LHX6")); combined.obj@misc$GO$GO.0034976
 
+# fix.metad.Colname.rm.trailing.1 ------------------------------------------------------------------------------------
+fix.metad.Colname.rm.trailing.1 <- function(obj = obj, colname=ScoreName) { # Helper. When AddGOScore(), a '1' is added to the end of the column name. It is hereby removed.
+  colnames(obj@meta.data) <-
+    gsub(x = colnames(obj@meta.data)
+         , pattern = paste0(colname,1)
+         , replacement = colname
+    )
+  iprint("Trailing '1' in metadata column name is removed. Column name:", ScoreName)
+  return(obj)
+}
+# obj <- fix.metad.Colname.rm.trailing.1(obj = obj, colname=ScoreName)
+
 
 # ------------------------------------------------------------------------
 AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) { # Call after GetGOTerms. Calculates Score for gene set. Fixes name.
@@ -79,14 +91,7 @@ AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) {
   if (!is.list(genes.GO)) genes.GO<- list(genes.GO) # idk why this structure is not consistent...
   obj <- AddModuleScore(object = obj, features = genes.GO, name = ScoreName)
 
-  if (FixName) {
-    colnames(obj@meta.data) <-
-      gsub(x = colnames(obj@meta.data)
-           , pattern = paste0(ScoreName,1)
-           , replacement = ScoreName
-      )
-    iprint("Trailing '1' in metadata column name is removed. Column name:", ScoreName)
-  }
+  if (FixName) obj <- fix.metad.Colname.rm.trailing.1(obj = obj, colname=ScoreName)
   return(obj)
 }
 # combined.obj <- AddGOScore(obj = combined.obj, GO = "GO:0034976", FixName = TRUE)
@@ -95,7 +100,7 @@ AddGOScore <- function(obj = combined.obj, GO = "GO:0034976", FixName = TRUE ) {
 
 # ------------------------------------------------------------------------
 # name_desc="esponse to endoplasmic reticulum stress"
-FeaturePlotSave <- function(obj = combined.obj, GO.score = "Score.GO.0034976", name_desc=NULL, h=7, PNG =T) { # Plot and save a FeaturePlot, e.g. showing gene set scores.
+FeaturePlotSaveGO <- function(obj = combined.obj, GO.score = "Score.GO.0034976", name_desc=NULL, h=7, PNG =T) { # Plot and save a FeaturePlot, e.g. showing gene set scores.
   proper.GO <- paste(sstrsplit(GO.score, pattern = "\\.", n = 3)[2:3], collapse = ":")
   (genes.GO = obj@misc$GO[[make.names(proper.GO)]])
 
@@ -107,7 +112,40 @@ FeaturePlotSave <- function(obj = combined.obj, GO.score = "Score.GO.0034976", n
   save_plot(filename =fname, plot = ggplot.obj, base_height=h)
   ggplot.obj
 }
-# FeaturePlotSave()
+# FeaturePlotSaveGO()
+
+
+
+# AddCustomScore ------------------------------------------------------------------------
+AddCustomScore <- function(obj = combined.obj, genes=ALLEN.FRONTAL.found, FixName = TRUE ) { # Call after GetGOTerms. Calculates Score for gene set. Fixes name.
+  ls.genes = list(genes)
+  if (!is.list(ls.genes)) ls.genes<- list(ls.genes) # idk why this structure is not consistent...
+  (ScoreName = ppp("Score", substitute(genes)) )
+  obj <- AddModuleScore(object = obj, features = ls.genes, name = ScoreName)
+
+  if (FixName) obj <- fix.metad.Colname.rm.trailing.1(obj = obj, colname=ScoreName)
+  return(obj)
+}
+# combined.obj <- AddCustomScore(obj = combined.obj, genes=ALLEN.FRONTAL.found, FixName = F); colnames(combined.obj@meta.data)
+
+
+
+# FeaturePlotSaveCustomScore ------------------------------------------------------------------------
+FeaturePlotSaveCustomScore <- function(obj = combined.obj, genes =ALLEN.FRONTAL.found, name_desc=NULL, h=7, PNG =T) { # Plot and save a FeaturePlot, e.g. showing gene set scores.
+  ScoreName <- p0('Score.',substitute(genes))
+
+  ggplot.obj <-
+    FeaturePlot(obj, features = ScoreName, min.cutoff = "q05", max.cutoff = "q95", reduction = 'umap') +
+    labs(title = paste(ScoreName, name_desc), caption = paste("Score calc. from",length(genes), "expr. genes ."))
+  pname = paste0("FeaturePlot.",ScoreName)
+  fname = ww.FnP_parser(kpp(pname,name_desc), if (PNG) "png" else "pdf")
+  save_plot(filename =fname, plot = ggplot.obj, base_height=h)
+  ggplot.obj
+}
+# FeaturePlotSaveCustomScore()
+
+
+
 
 # ------------------------------------------------------------------------
 PasteUniqueGeneList <- function() {
