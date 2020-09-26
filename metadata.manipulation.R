@@ -155,6 +155,8 @@ Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression
 
   obj@misc$'all.genes' = all.genes = as.list(all.genes)
   obj@misc$'expr.q90' = expr.q90
+  assign('all.genes', all.genes, envir=as.environment(1) )
+
   iprint('Quantile', quantileX ,'is now stored under obj@misc$all.genes and $expr.q90. Please execute all.genes <- obj@misc$all.genes.')
   return(obj)
 }
@@ -175,6 +177,10 @@ fix.orig.ident <- function(obj = merged.obj) {
   return(fixed)
 }
 # merged.obj$orig.ident <- fix.orig.ident(obj = merged.obj); table(merged.obj$orig.ident)
+
+# set.all.genes ------------------------------------------------------------------------
+set.all.genes <- function(obj = combined.obj) iprint("Use Calcq90Expression()")
+# set.all.genes(); all.genes
 
 # recall.all.genes ------------------------------------------------------------------------
 recall.all.genes <- function(obj = combined.obj) {
