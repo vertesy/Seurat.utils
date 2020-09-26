@@ -30,15 +30,15 @@ qUMAP <- function(feature= 'TOP2A', obj =  combined.obj, save.plot=T  # The quic
 
 # Quick umaps  ------------------------------------------------------------------------
 clUMAP <- function(obj =  combined.obj   # The quickest way to a draw a clustering UMAP
-                   , ident = "integrated_snn_res.0.5", reduct ="umap",title = ident
+                   , ident = "integrated_snn_res.0.5", reduct ="umap",title = ident, sub =NULL
+                   , plotname = ppp('UMAP',ident)
                    , save.plot=T, PNG = T, h=7, splitby = NULL, ...) {
   ggplot.obj <-
     DimPlot(object = obj, reduction = reduct, group.by=ident, label=T, repel=T, ...) +
-    NoLegend() + ggtitle(title)
+    NoLegend() + ggtitle(label = title, subtitle = sub)
 
   if (save.plot) {
-    pname = ppp('UMAP',ident)
-    fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
+    fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
     try(save_plot(filename =fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
   }
   return(ggplot.obj)
