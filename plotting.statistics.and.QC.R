@@ -1,14 +1,14 @@
 ######################################################################
 # plotting.statistics.and.QC.R
 ######################################################################
-# source ('~/GitHub/Seurat.utils/plotting.statistics.and.QC.R')
+# source ('~/GitHub/Packages/Seurat.utils/plotting.statistics.and.QC.R')
 # Source: self + web
 
 # Requirements ------------------------
 require(Seurat)
 require(ggplot2)
 # May also require
-# try (source ('~/GitHub/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
+# try (source ('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 

@@ -1,7 +1,7 @@
 ######################################################################
 # plotting.dim.reduction.3D.R
 ######################################################################
-# source ('~/GitHub/Seurat.utils/plotting.dim.reduction.3D.R')
+# source ('~/GitHub/Packages/Seurat.utils/plotting.dim.reduction.3D.R')
 # Source: self + https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0
 
 # Requirements ------------------------
@@ -10,7 +10,7 @@ library(MarkdownReportsDev)
 library(htmlwidgets)
 
 # May also require
-try (source ('~/GitHub/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
+try (source ('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 

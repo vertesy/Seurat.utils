@@ -1,7 +1,7 @@
 ######################################################################
 # Cluster.Auto-naming.DE.R
 ######################################################################
-# source('~/GitHub/Seurat.utils/Cluster.Auto-naming.DE.R')
+# source('~/GitHub/Packages/Seurat.utils/Cluster.Auto-naming.DE.R')
 
 # ------------------------------------------------------------------------
 require(princurve)

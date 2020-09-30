@@ -5,7 +5,7 @@
 # rm(list=ls(all.names = TRUE)); try(dev.off(), silent = T)
 
 # Functions ------------------------
-try (source ('~/GitHub/CodeAndRoll/CodeAndRoll.R'),silent= F)
+try (source ('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F)
 require('MarkdownReportsDev')
 # source ('~/Github/TheCorvinas/R/DatabaseLinke.r')
 

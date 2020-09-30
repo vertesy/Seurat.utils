@@ -1,10 +1,10 @@
 ######################################################################
 # Seurat.gene.sets.and.GO.terms.R
 ######################################################################
-# source('~/GitHub/Seurat.utils/Seurat.gene.sets.and.GO.terms.R')
+# source('~/GitHub/Packages/Seurat.utils/Seurat.gene.sets.and.GO.terms.R')
 
 # require(MarkdownReports)
-# source ('~/GitHub/CodeAndRoll/CodeAndRoll.R')
+# source ('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R')
 
 # Setup ------------------------------------------------------------
 library(biomaRt)
