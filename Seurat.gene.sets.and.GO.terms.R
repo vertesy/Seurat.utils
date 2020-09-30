@@ -76,7 +76,7 @@ fix.metad.Colname.rm.trailing.1 <- function(obj = obj, colname=ScoreName) { # He
          , pattern = paste0(colname,1)
          , replacement = colname
     )
-  iprint("Trailing '1' in metadata column name is removed. Column name:", ScoreName)
+  iprint("Trailing '1' in metadata column name is removed. Column name:", colname)
   return(obj)
 }
 # obj <- fix.metad.Colname.rm.trailing.1(obj = obj, colname=ScoreName)
