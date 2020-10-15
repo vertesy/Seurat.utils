@@ -4,6 +4,7 @@
 # source ('Visualize.Gene.expression.v2.R')
 # rm(list=ls(all.names = TRUE)); try(dev.off(), silent = T)
 
+"This is an example usage script for first time users of Seurat & my associated function libraries."
 
 # 1. Install function libraries ------------------------
 if (FALSE) {
@@ -19,7 +20,6 @@ if (FALSE) {
   install.packages("devtools"); # If you don't have it
   require("devtools")
   devtools::install_github(repo = "vertesy/MarkdownReportsDev")
-
 }
 
 # 2. Load function libraries ------------------------
@@ -40,7 +40,6 @@ require(stringr)
 require(tictoc)
 require(tibble)
 require(ggplot2)
-
 
 
 # 2b Setup ------------------------
@@ -69,7 +68,7 @@ qUMAP(feature = "SATB2", obj = combined.obj)
 combined.obj$integrated_snn_res.0.5
 
 # 6b. plot clusters -----------------------------------------------------------------
-clUMAP(ident = , obj = combined.obj)
+clUMAP(ident = "integrated_snn_res.0.5", obj = combined.obj)
 
 
 
