@@ -98,16 +98,16 @@ BackupReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Bac
 # obj <- BackupReduction(obj = obj, dim=2, reduction=umap"")
 
 # ------------------------------------------------------------------------
-SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$'n.PC', dimensions=3:2, reduction="umap") { # Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to `obj@misc$reductions.backup` from @reductions$umap
+SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$'n.PC', dimensions=3:2, reduction="umap", ...) { # Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to `obj@misc$reductions.backup` from @reductions$umap
   red <- reduction
   for (d in dimensions) {
     iprint(d, "dimensional", red, "is calculated")
     obj <- if (reduction == "umap") {
-      RunUMAP(obj, dims = 1:nPCs, n.components = d)
+      RunUMAP(obj, dims = 1:nPCs, n.components = d, ...)
     } else if (reduction == "tsne") {
-      RunTSNE(obj, dims = 1:nPCs, n.components = d)
+      RunTSNE(obj, dims = 1:nPCs, n.components = d, ...)
     } else if (reduction == "pca") {
-      RunPCA(obj, dims = 1:nPCs, n.components = d)
+      RunPCA(obj, dims = 1:nPCs, n.components = d, ...)
     }
     obj <- BackupReduction(obj = obj, dim=d, reduction=red)
   }
