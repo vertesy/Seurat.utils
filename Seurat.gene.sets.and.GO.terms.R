@@ -131,11 +131,11 @@ AddCustomScore <- function(obj = combined.obj, genes=ALLEN.FRONTAL.found, FixNam
 
 
 # FeaturePlotSaveCustomScore ------------------------------------------------------------------------
-FeaturePlotSaveCustomScore <- function(obj = combined.obj, genes =ALLEN.FRONTAL.found, name_desc=NULL, h=7, PNG =T) { # Plot and save a FeaturePlot, e.g. showing gene set scores.
+FeaturePlotSaveCustomScore <- function(obj = combined.obj, genes =ALLEN.FRONTAL.found, name_desc=NULL, h=7, PNG =T, ...) { # Plot and save a FeaturePlot, e.g. showing gene set scores.
   ScoreName <- p0('Score.',substitute(genes))
 
   ggplot.obj <-
-    FeaturePlot(obj, features = ScoreName, min.cutoff = "q05", max.cutoff = "q95", reduction = 'umap') +
+    FeaturePlot(obj, features = ScoreName, min.cutoff = "q05", max.cutoff = "q95", reduction = 'umap', ...) +
     labs(title = paste(ScoreName, name_desc), caption = paste("Score calc. from",length(genes), "expr. genes ."))
   pname = paste0("FeaturePlot.",ScoreName)
   fname = ww.FnP_parser(kpp(pname,name_desc), if (PNG) "png" else "pdf")
