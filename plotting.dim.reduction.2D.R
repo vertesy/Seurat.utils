@@ -12,15 +12,19 @@ library(plotly)
 
 
 # Quick umaps# ------------------------------------------------------------------------
-qUMAP <- function(feature= 'TOP2A', obj =  combined.obj, save.plot=T  # The quickest way to a draw a UMAP
-                  , PNG = T, h=7, splitby = NULL, qlow = "q10", qhigh = "q90") {
-  ggplot.obj <- FeaturePlot(obj, reduction = 'umap'
+qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to a draw a UMAP
+                  , title = feature, sub =NULL
+                  , reduct ="umap", splitby = NULL
+                  , save.plot=T, PNG = T, h=7
+                  , qlow = "q10", qhigh = "q90", ...) {
+  ggplot.obj <- FeaturePlot(obj, features = feature
+                            , reduction = reduct
                             , min.cutoff = qlow, max.cutoff = qhigh
+                            , plotname = ppp(toupper(reduct), feature)
                             , split.by = splitby
-                            , features = feature)
+                            , ...) + ggtitle(label = title, subtitle = sub)
   if (save.plot) {
-    pname = ppp('UMAP',feature)
-    fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
+    fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
     try(save_plot(filename =fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
   }
   return(ggplot.obj)
@@ -29,12 +33,14 @@ qUMAP <- function(feature= 'TOP2A', obj =  combined.obj, save.plot=T  # The quic
 
 
 # Quick umaps  ------------------------------------------------------------------------
-clUMAP <- function(obj =  combined.obj   # The quickest way to a draw a clustering UMAP
-                   , ident = "integrated_snn_res.0.5", reduct ="umap",title = ident, sub =NULL
-                   , plotname = ppp('UMAP',ident)
-                   , save.plot=T, PNG = T, h=7, splitby = NULL, ...) {
+clUMAP <- function( ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to a draw a clustering UMAP
+                   , reduct ="umap", splitby = NULL
+                   , title = ident, sub =NULL
+                   , plotname = ppp(toupper(reduct), feature)
+                   , save.plot=T, PNG = T, h=7, ...) {
   ggplot.obj <-
-    DimPlot(object = obj, reduction = reduct, group.by=ident, label=T, repel=T, ...) +
+    DimPlot(object = obj, group.by=ident, reduction = reduct
+            , label=T, repel=T, ...) +
     NoLegend() + ggtitle(label = title, subtitle = sub)
 
   if (save.plot) {
