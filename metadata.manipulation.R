@@ -101,6 +101,56 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 # combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj, ident.table = clusterIDs.GO.process)
 
 
+# calc.cluster.averages ------------------------------------------------
+calc.cluster.averages <- function(obj =  combined.obj, simplify=T, plotit = T
+                                  , col_name = "Score.GO.0006096"
+                                  , split_by = GetClusteringRuns()[l(GetClusteringRuns())]
+                                  , quantile.thr = 0.9
+                                  , title = paste("Cluster Average", col_name)
+                                  , subtitle = paste("Clusters above the",percentage_formatter(0.9),"quantile")
+                                  , ylab.text = "Glycolytic Process"
+                                  , ylb = paste(ylab.text, col_name)
+                                  , xlb = paste ( "Clusters", split_by)
+                                  , fname = ppp(col_name,"cluster.average.barplot.pdf")
+) { # calc.cluster.averages of a m
+
+  df.summary <-
+    obj@meta.data %>%
+    select_at(c(col_name, split_by)) %>%
+    group_by_at(split_by) %>%
+    summarize('nr.cells' = n()
+              , 'median' =  median(!!sym(col_name), na.rm = TRUE)
+    )
+
+
+
+  if (simplify) {
+    av.score <- as.named.vector(df_col = df.summary[,"median"])
+    names(av.score) <- (as.numeric(names(av.score))-1)
+
+    if (plotit) {
+      wbarplot(av.score, hline = quantile(av.score, quantile.thr)
+               , plotname = fname
+               , xlab = xlb
+               , ylab = ylb
+               , main = title
+               , sub = subtitle)
+    }
+    av.score
+
+  } else {
+    df.summary
+  }
+}
+
+# calc.cluster.averages(col_name = "Score.GO.0006096", split_by = grepv(pattern = "0.6", GetClusteringRuns())                        )
+# av.score <- as.named.vector(df_col = calc.cluster.averages()[,"median"])
+# names(av.score) <- as.numeric(names(av.score))
+# wbarplot(av.score, hline = quantile(av.score, 0.9)
+#          , ylab = "Glycolytic Process Score (GO.0006096)"
+#          , main = "Two clusters fall above the 90% quantile")
+
+
 # Add to obj@metadata from an external table ------------------------------------------------------------------------
 seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix = ".fromMeta") { # Add multiple new metadata columns to a Seurat object from a table.
   NotFound  = setdiff(colnames(obj), rownames(meta))
