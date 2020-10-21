@@ -15,18 +15,20 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
                         , above.mito = p$"thr.hp.mito"
                         , below.ribo = p$"thr.lp.ribo"
                         , above.ribo = p$"thr.hp.ribo"
-                        , below.nFeature_RNA = p$"thr.hp.nFeature_RNA"
-                        , above.nFeature_RNA = p$"thr.lp.nFeature_RNA"
+                        , below.nFeature_RNA = p$"thr.lp.nFeature_RNA"
+                        , above.nFeature_RNA = p$"thr.hp.nFeature_RNA"
                         , transparency = 0.25
                         , cex = 0.75
+                        , theme.used = theme_bw(base_size = 18)
                         , LabelDistFromTop = 200 # for barplot_label
 ) {
 
+  theme_set(theme.used)
   create_set_OutDir(parentdir, subdir)
   require(ggplot2)
 
   for (i in 1:l(ls.Seurat)) {
-    print(samples[i])
+    print(suffices[i])
 
     mm =  ls.obj[[i]]@meta.data
     filt.nFeature_RNA = (mm$nFeature_RNA < below.nFeature_RNA & mm$nFeature_RNA > above.nFeature_RNA)
@@ -56,7 +58,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
       geom_point(alpha = transparency, size= cex,  show.legend = FALSE,
                  aes(color = filt.nFeature_RNA & filt.below.mito)  ) +
       scale_x_log10() + # scale_y_log10() +
-      # annotation_logticks() +
+      annotation_logticks() +
       geom_hline(yintercept = below.mito) +
       geom_hline(yintercept = above.mito) +
       geom_vline(xintercept = below.nFeature_RNA) +
@@ -65,12 +67,13 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
 
     C = ggplot(mm, aes(x=nFeature_RNA, y = percent.ribo))+
-      ggtitle(paste("Cells below", percentage_formatter(below.mito),
-                    "ribo reads are selected (with A:", pc_TRUE(filt.nFeature_RNA & filt.below.ribo), ")")) +
+      ggtitle(paste("Cells below", percentage_formatter(below.ribo),
+                    "ribo reads are selected (with A:"
+                    , pc_TRUE(filt.nFeature_RNA & filt.below.ribo), ")")) +
       geom_point(alpha = transparency, size= cex,  show.legend = FALSE,
                  aes(color = filt.nFeature_RNA & filt.below.ribo)  ) +
       scale_x_log10() + # scale_y_log10() +
-      # annotation_logticks() +
+      annotation_logticks() +
       geom_hline(yintercept = below.ribo) +
       geom_hline(yintercept = above.ribo) +
       geom_vline(xintercept = below.nFeature_RNA) +
@@ -78,12 +81,13 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
     # C
 
     D = ggplot(mm, aes(x=percent.ribo, y = percent.mito))+
-      ggtitle(paste("Cells below", percentage_formatter(below.ribo),
-                    "ribo reads are selected (with A,B,C:", pc_TRUE(filt.nFeature_RNA & filt.below.mito & filt.below.ribo), ")")) +
+      ggtitle(paste("Cells w/o extremes selected (with A,B,C:"
+                    , pc_TRUE(filt.nFeature_RNA & filt.below.mito & filt.below.ribo), ")")) +
+
       geom_point(alpha = transparency, size= cex,  show.legend = FALSE,
                  aes(color = filt.nFeature_RNA & filt.below.mito & filt.below.ribo)  ) +
       scale_x_log10() + scale_y_log10() +
-      # annotation_logticks() +
+      annotation_logticks() +
       geom_hline(yintercept = below.mito) +
       geom_hline(yintercept = above.mito) +
       geom_vline(xintercept = below.ribo) +
@@ -98,7 +102,6 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
     save_plot(filename = fname, plot = px, base_height=12, ncol=1, nrow=1) #Figure 2
 
   } # for
-  print(11)
 
   Nr.Cells.Before.Filtering = unlapply(ls.Seurat, ncol); names(Nr.Cells.Before.Filtering) = suffices
   wbarplot(Nr.Cells.Before.Filtering, tilted_text = T)
