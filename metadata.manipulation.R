@@ -106,12 +106,12 @@ calc.cluster.averages <- function(obj =  combined.obj, simplify=T, plotit = T
                                   , col_name = "Score.GO.0006096"
                                   , split_by = GetClusteringRuns()[l(GetClusteringRuns())]
                                   , quantile.thr = 0.9
-                                  , title = paste("Cluster Average", col_name)
-                                  , subtitle = paste("Clusters above the",percentage_formatter(0.9),"quantile")
                                   , ylab.text = "Glycolytic Process"
+                                  , title = paste("Cluster Average", col_name, ylab.text)
+                                  , subtitle = paste("Clusters above the",percentage_formatter(0.9),"quantile")
                                   , ylb = paste(ylab.text, col_name)
                                   , xlb = paste ( "Clusters", split_by)
-                                  , fname = ppp(col_name,"cluster.average.barplot.pdf")
+                                  , fname = ppp(col_name,split_by,"cluster.average.barplot.pdf")
 ) { # calc.cluster.averages of a m
 
   df.summary <-
@@ -149,6 +149,7 @@ calc.cluster.averages <- function(obj =  combined.obj, simplify=T, plotit = T
 # wbarplot(av.score, hline = quantile(av.score, 0.9)
 #          , ylab = "Glycolytic Process Score (GO.0006096)"
 #          , main = "Two clusters fall above the 90% quantile")
+
 
 
 # Add to obj@metadata from an external table ------------------------------------------------------------------------
