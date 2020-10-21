@@ -93,5 +93,47 @@ AddNewAnnotation <- function(obj = obj # Create a new metadata column based on a
 }
 # ls.Subset.ClusterLists = list( "hESC.h9" = c("4", "10", "14"), "hESC.176" = c("0", "1", "2")); AddNewAnnotation()
 
+# whitelist.subset.ls.Seurat ------------------------------------------------------------------------
+whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
+                                , metadir = p$'cellWhiteList' #  '~/Dropbox/Abel.IMBA/MetadataD/POL.meta/cell.lists/'
+                                , whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv"
+) {
+  cells.before <- unlapply(ls.obj, ncol)
+  # Find file
+  df.cell.whitelist <- read.simple.tsv(metadir, whitelist.file)
+  dsets <- table(df.cell.whitelist[,1])
 
+  ls.orig.idents <- lapply(lapply(ls.Seurat, getMetadataColumn, ColName.metadata = "orig.ident"), unique)
+  stopif(any(unlapply(ls.orig.idents, l) == l(ls.Seurat)), message = "Some ls.Seurat objects have 1+ orig identity.")
+
+  dsets.in.lsSeu <- unlist(ls.orig.idents)
+  isMathced <- all(dsets.in.lsSeu == names(dsets)) # Stop if either ls.Seurat OR the metadata has identities not found in the other, in the same order.
+  stopif(!isMathced, message = paste("either ls.Seurat OR the metadata has identities not found in the other, or they are not in same order."
+                                     , kpps(dsets.in.lsSeu),"vs.", kpps(names(dsets) ) )
+  )
+
+  # identX <- ls.orig.idents[[1]]
+  for (i in 1:l(ls.orig.idents)) {
+    identX <- ls.orig.idents[[i]]; print(identX)
+
+    # Extract and process cellIDs ----
+    idx.match <- which(df.cell.whitelist[,1] == identX)
+    cell.whitelist <- rownames(df.cell.whitelist)[idx.match]
+    cell.whitelist <- substr(x = cell.whitelist
+                             , start = 1 ,stop = nchar(cell.whitelist)-2)
+
+    # Extract and process cellIDs ----
+    ls.obj[[i]] <- subset(x = ls.obj[[i]], cells = cell.whitelist)
+  }
+  cells.after <- unlapply(ls.obj, ncol)
+  iprint("cells.before",cells.before,"cells.after",cells.after)
+  return(ls.obj)
+}
+
+# ------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
