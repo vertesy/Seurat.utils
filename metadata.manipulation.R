@@ -271,3 +271,20 @@ counts <- sum(obj@assays$RNA@counts[gene,])
   )
 }
 # plot.expression.rank.q90(gene = "SATB2")
+
+
+# SmallestNonZero ------------------------------------------------------------------------
+SmallestNonZero <- function(vec) { # replace 0 with smallest non-zero value (>0)
+  newmin <- min(vec[vec>0])
+  vec[vec==0] <- newmin
+  vec
+}
+# SmallestNonZero(vec = df.markers$"p_val")
+
+# Add.DE.combined.score ------------------------------------------------------------------------
+Add.DE.combined.score <- function(df=df.markers ) { # Score = -LOG10(p_val) * avg_logFC
+  df$'combined.score' <- df$"avg_logFC" * -log10(SmallestNonZero(vec = df$"p_val"))
+  return(df)
+}
+# df.markers <- Add.DE.combined.score(df.markers)
+
