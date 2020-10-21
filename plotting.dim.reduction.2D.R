@@ -17,13 +17,15 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                   , reduct ="umap", splitby = NULL
                   , save.plot=T, PNG = T, h=7
                   , qlow = "q10", qhigh = "q90", ...) {
+
   ggplot.obj <- FeaturePlot(obj, features = feature
                             , reduction = reduct
                             , min.cutoff = qlow, max.cutoff = qhigh
-                            , plotname = ppp(toupper(reduct), feature)
+                            # , plotname = ppp(toupper(reduct), feature)
                             , split.by = splitby
                             , ...) + ggtitle(label = title, subtitle = sub)
   if (save.plot) {
+    plotname <- ppp(toupper(reduct), feature)
     fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
     try(save_plot(filename =fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
   }
@@ -36,7 +38,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 clUMAP <- function( ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to a draw a clustering UMAP
                    , reduct ="umap", splitby = NULL
                    , title = ident, sub =NULL
-                   , plotname = ppp(toupper(reduct), feature)
+                   , plotname = ppp(toupper(reduct), ident)
                    , save.plot=T, PNG = T, h=7, ...) {
   ggplot.obj <-
     DimPlot(object = obj, group.by=ident, reduction = reduct
