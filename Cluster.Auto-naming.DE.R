@@ -6,6 +6,25 @@
 # ------------------------------------------------------------------------
 require(princurve)
 
+
+# SmallestNonZero ------------------------------------------------------------------------
+SmallestNonZero <- function(vec) { # replace 0 with smallest non-zero value (>0)
+  newmin <- min(vec[vec>0])
+  vec[vec==0] <- newmin
+  vec
+}
+# SmallestNonZero(vec = df.markers$"p_val")
+
+
+# Add.DE.combined.score ------------------------------------------------------------------------
+Add.DE.combined.score <- function(df=df.markers ) { # Score = -LOG10(p_val) * avg_logFC
+  df$'combined.score' <- df$"avg_logFC" * -log10(SmallestNonZero(vec = df$"p_val"))
+  return(df)
+}
+# df.markers <- Add.DE.combined.score(df.markers)
+
+
+
 # ------------------------------------------------------------------------------------
 StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based on `avg_logFC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
                               , df_markers = df.markers, res = 0.5) {
@@ -49,7 +68,7 @@ GetTopMarkersDF <- function(dfDE = df.markers # Get the vector of N most diff. e
 
 # GetTopMarkers ------------------------------------------------------------------------------------
 GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp. genes.
-                            , n = p$'n.markers', order.by = c("avg_logFC", "p_val_adj")[1]) {
+                            , n = p$'n.markers', order.by = c("combined.score", "avg_logFC", "p_val_adj")[1]) {
   'Works on active Idents() -> thus we call cluster'
   TopMarkers <- dfDE %>%
     arrange(desc(!!as.name(order.by))) %>%
@@ -67,10 +86,11 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 # ------------------------------------------------------------------------------------
 AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
                                , res = 0.2, plot.top.genes = T
+                               , order_by = c("combined.score", "avg_logFC", "p_val_adj")[1]
                                , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
   top.markers <-
-    GetTopMarkersDF(df = df_markers, n=1) %>%
+    GetTopMarkersDF(df = df_markers, order.by = order_by, n=1) %>%
     col2named.vec.tbl()
 
   obj@misc[[ppp("top.markers.res",res)]] <- top.markers
@@ -94,20 +114,13 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 
 # ------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------
-AutoLabel.KnownMarkers <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
+AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
                                    , KnownMarkers=c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1","SALL4","DDIT4", "PDK1", "SATB2", "FEZF2")
-                                   , res = 0.5, order.by = "avg_logFC", topN =1
+                                   , order.by = c("combined.score", "avg_logFC", "p_val_adj")[1]
+
                                    , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
-  # TopMarkers <- dfDE %>%
-  #   arrange(desc(!!as.name(order.by))) %>%
-  #   group_by(cluster) %>%
-  #   dplyr::slice(1:n) %>%
-  #   # group_by(cluster) %>% # OLD WRONG SOLUTION
-  #   # top_n(n = topN, wt = (!!as.name(order.by))) %>% # OLD WRONG SOLUTION
-  #   dplyr::select(gene) %>%
-  #   col2named.vec.tbl()
-  # df_markers = df.markers
+
   matching.clusters <-
     df_markers %>%
     dplyr::select(avg_logFC, p_val_adj, cluster, gene ) %>%
