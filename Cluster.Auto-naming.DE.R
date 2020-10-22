@@ -7,18 +7,18 @@
 require(princurve)
 
 
-# SmallestNonZero ------------------------------------------------------------------------
-SmallestNonZero <- function(vec) { # replace 0 with smallest non-zero value (>0)
-  newmin <- min(vec[vec>0])
-  vec[vec==0] <- newmin
+# SmallestNonAboveX ------------------------------------------------------------------------
+SmallestNonAboveX <- function(vec, X = 0) { # replace 0 with smallest non-zero value (>0)
+  newmin <- min(vec[vec > X])
+  vec[vec <= X] <- newmin
   vec
 }
 # SmallestNonZero(vec = df.markers$"p_val")
 
 
 # Add.DE.combined.score ------------------------------------------------------------------------
-Add.DE.combined.score <- function(df=df.markers ) { # Score = -LOG10(p_val) * avg_logFC
-  df$'combined.score' <- df$"avg_logFC" * -log10(SmallestNonZero(vec = df$"p_val"))
+Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-100 ) { # Score = -LOG10(p_val) * avg_logFC
+  df$'combined.score' <- round(df$"avg_logFC" * -log10(SmallestNonAboveX(vec = df$"p_val", X = p_val_min)))
   return(df)
 }
 # df.markers <- Add.DE.combined.score(df.markers)
@@ -123,7 +123,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 
   matching.clusters <-
     df_markers %>%
-    dplyr::select(avg_logFC, p_val_adj, cluster, gene ) %>%
+    dplyr::select(avg_logFC, p_val_adj, cluster, combined.score, gene ) %>%
     arrange(desc(!!as.name(order.by))) %>%
     filter(gene %in%  KnownMarkers) %>%
     group_by(gene) %>%
