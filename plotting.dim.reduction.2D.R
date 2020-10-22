@@ -128,6 +128,7 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
                                 , list.of.genes, foldername = substitute(list.of.genes), plot.reduction='umap', intersectionAssay = c('RNA', 'integrated')[1]
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
+                                , prefix = NULL , suffix = NULL
                                 , format = c('jpg', 'pdf', 'png')[1]
                                 # , jpeg.res = 225, jpeg.q = 90
                                 ) {
@@ -141,7 +142,7 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
   for (i in 1:length(lsG)) {
     genes = list.of.genes[lsG[[i]]]
     iprint(i,genes )
-    plotname = kpp(c(plot.reduction,i, genes, format ))
+    plotname = kpp(c(prefix, plot.reduction,i, genes, suffix, format ))
 
     plot.list = FeaturePlot(object = obj, features =genes, reduction = plot.reduction, combine = F
                             , ncol = nr.Col, cols = colors
@@ -231,3 +232,20 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
                      # , base_aspect_ratio = 1.5
   )
 }
+
+# PlotTopGenesPerCluster --------------------------------------------------------------------------------
+PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p$'n.markers'
+                                   , order_by = c("combined.score","avg_logFC", "p_val_adj")[1]
+                                   , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",cl_res)]]) {
+  topX.markers <- GetTopMarkers(df = df_markers,  n= nrGenes
+                                , order.by = order_by )
+  ls.topMarkers <-  splitbyitsnames(topX.markers)
+  for (i in 1:l(ls.topMarkers)) {
+    multiFeaturePlot.A4(list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = F
+                        , prefix = ppp("DEG.markers.res",cl_res,"cluster",names(ls.topMarkers)[i]))
+  }
+
+}
+# PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = p$'n.markers')
+
+
