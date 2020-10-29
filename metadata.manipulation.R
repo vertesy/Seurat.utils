@@ -184,14 +184,12 @@ seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix =
 
 
 # sampleNpc ------------------------------------------------------------------------
-
 sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of a dataframe (obj@metadata), and return the cell IDs.
   cellIDs = rownames(metaDF)
   nr_cells = floor(length(cellIDs) * pc)
   cellIDs.keep = sample(cellIDs, size = nr_cells, replace = FALSE)
   return(cellIDs.keep)
 }
-
 
 
 # Calcq90Expression ------------------------------------------------------------------------

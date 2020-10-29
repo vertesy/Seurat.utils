@@ -129,6 +129,7 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , prefix = NULL , suffix = NULL
+                                , saveGeneList = FALSE
                                 , format = c('jpg', 'pdf', 'png')[1]
                                 # , jpeg.res = 225, jpeg.q = 90
                                 ) {
@@ -156,6 +157,11 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
     ggsave(filename = plotname, width = wA4, height = hA4,
            plot = cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
     )
+  }
+
+  if (saveGeneList) {
+    if (is.null(obj@misc$gene.lists)) obj@misc$gene.lists <- list()
+    obj@misc$gene.lists[[substitute(list.of.genes)]] <- list.of.genes
   }
 
   if (subdir) create_set_OutDir(... = ParentDir)
