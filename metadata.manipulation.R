@@ -30,6 +30,17 @@ GetNamedClusteringRuns <- function(obj = combined.obj  # Get Clustering Runs: me
 }
 # GetNamedClusteringRuns()
 
+
+# ------------------------------------------------------------------------------------
+GetOrderedClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0,1]\\.[0-9].*ordered$") { # Get Clustering Runs: metadata column names
+  if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
+  clustering.results <- grepv(x = colnames(obj@meta.data), pattern = pat)
+  if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
+  return(clustering.results)
+}
+# GetOrderedClusteringRuns(); GetOrderedClusteringRuns(res = 0.7)
+
+
 # ------------------------------------------------------------------------------------
 GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
   clustering.results <- GetClusteringRuns(obj)
@@ -237,12 +248,30 @@ set.all.genes <- function(obj = combined.obj) iprint("Use Calcq90Expression()")
 recall.all.genes <- function(obj = combined.obj) {
   if(!exists('all.genes')) {
     all.genes <- obj@misc$all.genes
-    ww.assign_to_global("all.genes", all.genes)
-  } else {print("all.genes exits in namespace")}
+    print(head(unlist(all.genes)))
+    ww.assign_to_global(name = "all.genes", value = all.genes)
+  } else {print("variable 'all.genes' exits in the global namespace")}
 }
 # recall.all.genes(); all.genes
 
-# recall.all.genes ------------------------------------------------------------------------
+
+# recall.parameters ------------------------------------------------------------------------
+recall.parameters <- function(obj = combined.obj) {
+  if(exists('p')) iprint("variable 'p' exits in the global namespace:"); print(p); print("Now it will be overwritten.")
+  p <- obj@misc$p
+  print(head(unlist(p)))
+  ww.assign_to_global(name = "p", value = p)
+  # if(!exists('p')) {
+  #   all.genes <- obj@misc$all.genes
+  #   ww.assign_to_global(name = "all.genes", value = all.genes)
+  # } else {
+  #   print("variable 'p' exits in the global namespace")
+  # }
+}
+# recall.parameters(); p
+
+
+# plot.expression.rank.q90 ------------------------------------------------------------------------
 plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero=T) {
   expr.GOI <- obj@misc$expr.q90[gene]
   expr.all <- unlist(obj@misc$expr.q90)
