@@ -160,9 +160,11 @@ Annotate4Plotly3D <- function(obj. = combined.obj # Create annotation labels for
 # ------------------------------------------------------------------------
 Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
                                , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, cex = 1.25, default.assay = c("integrated", "RNA")[2]
-                               , ListOfGenes=c( "BCL11B" , "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4") ) {
+                               , ListOfGenes=c( "BCL11B" , "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4")
+                               , SubFolderName=ppp("plot3D", substitute(ListOfGenes))) {
 
-  try(create_set_SubDir(substitute(ListOfGenes)))
+
+  try(create_set_SubDir(SubFolderName))
   obj. <- obj; rm("obj")
   stopifnot(annotate.by %in% c(colnames(obj.@meta.data), FALSE))
 
@@ -186,8 +188,10 @@ Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMA
 # ------------------------------------------------------------------------
 Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
                                     , annotate.by = "integrated_snn_res.0.7", cex = 1.25, default.assay = c("integrated", "RNA")[2]
-                                    , ListOfCategories=c("v.project","experiment", "Phase", "integrated_snn_res.0.7") ) {
-  try(create_set_SubDir(substitute(ListOfCategories)))
+                                    , ListOfCategories=c("v.project","experiment", "Phase", "integrated_snn_res.0.7")
+                                    , SubFolderName=ppp("plot3D", substitute(ListOfCategories))) {
+
+  try(create_set_SubDir(SubFolderName))
   obj. <- obj; rm("obj")
   stopifnot(annotate.by %in% colnames(obj.@meta.data))
   DefaultAssay(object = obj.) <- default.assay
