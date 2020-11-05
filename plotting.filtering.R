@@ -7,7 +7,6 @@
 
 # PlotFilters ------------------------------------------------------------------------------------
 PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.
-                        , subdir="Filtering.plots"
                         , parentdir= OutDirOrig
                         , suffices = names(ls.Seurat)
                         , filetype='.png'
@@ -17,6 +16,10 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
                         , above.ribo = p$"thr.hp.ribo"
                         , below.nFeature_RNA = p$"thr.lp.nFeature_RNA"
                         , above.nFeature_RNA = p$"thr.hp.nFeature_RNA"
+                        , subdir= kpp("Filtering.plots"
+                                      , "mito", above.mito, below.mito
+                                      , "ribo", above.ribo, below.ribo
+                                      , "nFeature", above.nFeature_RNA, below.nFeature_RNA)
                         , transparency = 0.25
                         , cex = 0.75
                         , theme.used = theme_bw(base_size = 18)
