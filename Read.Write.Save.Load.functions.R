@@ -9,19 +9,20 @@
 # Convert10Xfolders ------------------------------------------------------------------------
 Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
                               , folderPattern = c("filtered", "SoupX_decont")[1]
-                              , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T ) {
+                              , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T) {
   fin <- list.dirs(InputDir, recursive = F)
-  fin <- grepv(x = fin, pattern = folderPattern, perl =F)
+  fin <- grepv(x = fin, pattern = folderPattern, perl = F)
 
   for (i in 1:length(fin)) {
     pathIN = fin[i]; print(pathIN)
     fnameIN = basename(fin[i])
     fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
     count_matrix <- Read10X(pathIN)
-    if (length(count_matrix) == 1) {
+
+    if ( !is.list(count_matrix) | length(count_matrix) == 1) {
       seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
                                 min.cells = min.cells, min.features = min.features)
-    } else if (length(count_matrix) == 2)  {
+    } else if (is.list(count_matrix) & length(count_matrix) == 2)  {
       seu <- CreateSeuratObject(counts = count_matrix[[1]], project = fnameIN,
                                 min.cells = min.cells, min.features = min.features)
 
@@ -29,12 +30,15 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
       LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
       LSBnameOUT = ppp(paste0(InputDir, '/LSB.', fnameIN),"Rds")
       saveRDS(LSB, file = LSBnameOUT)
-    } else { print('More than 2 elements in the list of matrices')}
+    } else {
+      print('More than 2 elements in the list of matrices')
+    }
     # update----
     if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
     saveRDS(seu, file = fnameOUT)
   }
 }
+
 # Convert10Xfolders(InputDir = InputDir)
 
 
@@ -93,7 +97,7 @@ isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, savePa
   fnameBase = trimws(fnameBase, whitespace = '_')
   fname = MarkdownReportsDev::kollapse(path_rdata, "/",fnameBase , ".Rds")
   tictoc::tic()
-  saveRDS(object, file = fname, compress=F)
+  saveRDS(object, file = fname, compress = F)
   tictoc::toc()
   MarkdownReportsDev::iprint("Saved, being compressed", fname)
   say()
@@ -112,7 +116,7 @@ isave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
   fname = MarkdownReportsDev::kollapse(path_rdata, "/",idate(),...,".Rdata")
   print(fname)
   if (nchar(fname) > 2000) stop()
-  save.image( file = fname, compress=F)
+  save.image(file = fname, compress = F)
   MarkdownReportsDev::iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
 }
