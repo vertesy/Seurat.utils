@@ -1,8 +1,8 @@
 ######################################################################
 # Visualize Single-cell RNA-seq data using a Seurat object
 ######################################################################
-# source ('Visualize.Gene.expression.v2.R')
-# rm(list=ls(all.names = TRUE)); try(dev.off(), silent = T)
+# source('Visualize.Gene.expression.v2.R')
+# rm(list = ls(all.names = TRUE)); try(dev.off(), silent = T)
 
 "This is an example usage script for first time users of Seurat & my associated function libraries."
 
@@ -23,15 +23,15 @@ if (FALSE) {
 }
 
 # 2. Load function libraries ------------------------
-try (source ('https://raw.githubusercontent.com/vertesy/CodeAndRoll/master/CodeAndRoll.R'),silent= F)
+try (source('https://raw.githubusercontent.com/vertesy/CodeAndRoll/master/CodeAndRoll.R'),silent= F)
 
 try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Seurat.Utils.Load.from.GitHub.R'), silent =   T)
-try(source ('https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Seurat3.Multicore.Load.from.GitHub.R'), silent=T)
+try(source('https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Seurat3.Multicore.Load.from.GitHub.R'), silent=T)
 # If it fails, see alternaitve at the end
 
 require('MarkdownReportsDev')
 # If installation of MarkdownReportsDev did not work:
-# try (source ('https://raw.githubusercontent.com/vertesy/MarkdownReportsDev/master/R/MarkdownReportsDev.R'),silent= F)
+# try (source('https://raw.githubusercontent.com/vertesy/MarkdownReportsDev/master/R/MarkdownReportsDev.R'),silent= F)
 
 require(Seurat)
 require(dplyr)
@@ -135,7 +135,7 @@ if (FALSE) {
   try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Seurat.object.manipulations.etc.R"))
   try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Cluster.Auto-naming.DE.R"))
   try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Seurat.gene.sets.and.GO.terms.R"))
-  try (source ('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/MULTI-seq.functions.R'))
+  try (source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/MULTI-seq.functions.R'))
 
 }
 

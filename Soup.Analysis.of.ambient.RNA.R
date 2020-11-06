@@ -1,7 +1,7 @@
 ######################################################################
 # Soup.Analysis.of.ambient.RNA.R
 ######################################################################
-# source ('~/GitHub/Packages/Seurat.utils/Soup.Analysis.of.ambient.RNA.R')
+# source('~/GitHub/Packages/Seurat.utils/Soup.Analysis.of.ambient.RNA.R')
 # Source: self + web
 
 # Requirements ------------------------

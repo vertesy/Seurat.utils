@@ -1,7 +1,7 @@
 ######################################################################
 # Seurat.object.manipulations.etc.R
 ######################################################################
-# source ('~/GitHub/Packages/Seurat.utils/Seurat.object.manipulations.etc.R')
+# source('~/GitHub/Packages/Seurat.utils/Seurat.object.manipulations.etc.R')
 
 # ------------------------------------------------------------------------
 clip10Xcellname <- function(cellnames) str_split_fixed(cellnames, "_", n = 2)[,1] # Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration).

@@ -1,13 +1,13 @@
 ######################################################################
 # SoupX.Marker.Analysis.R
 ######################################################################
-# source ('SoupX.Marker.Analysis.R')
-# rm(list=ls(all.names = TRUE)); try(dev.off(), silent = T)
+# source('SoupX.Marker.Analysis.R')
+# rm(list = ls(all.names = TRUE)); try(dev.off(), silent = T)
 
 # Functions ------------------------
-try (source ('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F)
+try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F)
 require('MarkdownReportsDev')
-# source ('~/Github/TheCorvinas/R/DatabaseLinke.r')
+# source('~/Github/TheCorvinas/R/DatabaseLinke.r')
 
 # Setup ------------------------
 require(MarkdownReportsDev)

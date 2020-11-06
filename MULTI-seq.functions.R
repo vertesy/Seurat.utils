@@ -1,7 +1,7 @@
 ######################################################################
 # MULTI-seq.functions.R
 ######################################################################
-# source ('~/GitHub/Packages/Seurat.utils/MULTI-seq.functions.R')
+# source('~/GitHub/Packages/Seurat.utils/MULTI-seq.functions.R')
 
 # Requirements ------------------------
 require(MarkdownReportsDev)

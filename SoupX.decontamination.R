@@ -12,7 +12,7 @@ require(DropletUtils)
 require(cowplot)
 
 try(source("~/GitHub/Packages/Seurat.utils/Seurat.Utils.Load.R"));
-source ('~/GitHub/Packages/Seurat.utils/Soup.Analysis.of.ambient.RNA.R')
+source('~/GitHub/Packages/Seurat.utils/Soup.Analysis.of.ambient.RNA.R')
 
 # Parameters ------------------------
 v.parentfolder = c(
