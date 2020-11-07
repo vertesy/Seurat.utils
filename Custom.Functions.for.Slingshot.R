@@ -33,7 +33,9 @@ ggplotColours <- function(n = 6, h = c(0, 360) + 15){
   hcl(h = (seq(h[1], h[2], length = n)), c = 100, l = 65)
 }
 
-# ------------------------
+
+# ggplot for slinshot by @HectorRDB ------------------------
+# https://github.com/kstreet13/slingshot/issues/73#issuecomment-585376827
 
 ### Point on curve function ----
 points_on_curve <- function(curve, lambda, ...) {

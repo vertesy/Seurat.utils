@@ -302,7 +302,7 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
 
 
 
-# ------------------------------------------------------------------------
+# FlipReductionCoordinates ------------------------------------------------------------------------
 FlipReductionCoordinates <- function(obj = combined.obj, dim=2, reduction="umap", flip=c(NULL, 'x', 'y', 'xy')[2]) { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
   dslot = paste0(reduction, dim, "d")
   reduction.backup <- obj@misc$reductions.backup[[dslot]]
@@ -312,3 +312,17 @@ FlipReductionCoordinates <- function(obj = combined.obj, dim=2, reduction="umap"
   obj@reductions[[reduction]] <- reduction.backup
   return(obj)
 }
+
+# SeuratColorVector ------------------------------------------------------------------------
+SeuratColorVector <- function(obj = combined.obj) {
+  colorlevels <- hue_pal()(length(levels(obj@active.ident)))
+  translate(vec = as.character(obj@active.ident)
+            , oldvalues = levels(obj@active.ident)
+            , newvalues = colorlevels)
+}
+
+
+#  ------------------------------------------------------------------------
+#  ------------------------------------------------------------------------
+#  ------------------------------------------------------------------------
+#  ------------------------------------------------------------------------
