@@ -167,7 +167,7 @@ calc.cluster.averages <- function(obj =  combined.obj, simplify=T, plotit = T
 seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix = ".fromMeta") { # Add multiple new metadata columns to a Seurat object from a table.
   NotFound  = setdiff(colnames(obj), rownames(meta))
   Found     = intersect(colnames(obj), rownames(meta))
-  if (length(NotFound)) iprint(length(NotFound), 'cells were not found in meta, e.g.: ', trail(NotFound, N=10))
+  if (length(NotFound)) iprint(length(NotFound), 'cells were not found in meta, e.g.: ', trail(NotFound, N = 10))
 
   mCols.new = colnames(meta)
   mCols.old = colnames(obj@meta.data)
@@ -205,7 +205,7 @@ Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression
   expr.q90 = iround(apply(x, 1, quantile, probs = quantileX) )
   toc();
 
-  log2.gene.expr.of.the.90th.quantile <- log2(expr.q90+1)
+  log2.gene.expr.of.the.90th.quantile <- log2(expr.q90 + 1)
   suppressWarnings(
     whist(log2.gene.expr.of.the.90th.quantile, breaks = 30
           , xlab = "log2(expr.q90+1) [UMI]", ylab = "Cells", vline  = .2, filtercol = T)
@@ -215,7 +215,7 @@ Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression
 
   obj@misc$'all.genes' = all.genes = as.list(all.genes)
   obj@misc$'expr.q90' = expr.q90
-  assign('all.genes', all.genes, envir=as.environment(1) )
+  assign('all.genes', all.genes, envir = as.environment(1))
 
   iprint('Quantile', quantileX ,'is now stored under obj@misc$all.genes and $expr.q90. Please execute all.genes <- obj@misc$all.genes.')
   return(obj)
@@ -276,18 +276,18 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
   gene.found <- gene %in% names(expr.all)
   stopifnot(gene.found)
 
-  if (expr.GOI==0) iprint(gene, "is not expressed. q90-av.exp:",expr.GOI) else
-    if (expr.GOI<0.05) iprint(gene, "is lowly expressed. q90-av.exp:",expr.GOI)
+  if (expr.GOI==0) iprint(gene, "is not expressed. q90-av.exp:", expr.GOI) else
+    if (expr.GOI<0.05) iprint(gene, "is lowly expressed. q90-av.exp:", expr.GOI)
     if (filterZero) {
-      iprint("Zero 'q90 expression' genes (",pc_TRUE(expr.all==0),") are removed.")
-      expr.all <- expr.all[expr.all>0]
+      iprint("Zero 'q90 expression' genes (", pc_TRUE(expr.all == 0), ") are removed.")
+      expr.all <- expr.all[expr.all > 0]
     }
-counts <- sum(obj@assays$RNA@counts[gene,])
-  if (expr.GOI==0) {
+  counts <- sum(obj@assays$RNA@counts[gene,])
+  if (expr.GOI == 0) {
     quantile.GOI <- 0
     title <- paste(gene, "is too lowly expressed: q90-av.exp is zero. \n There are", counts,"counts." )
   } else {
-    pos.GOI <- which(names(expr.all)==gene)
+    pos.GOI <- which(names(expr.all) == gene)
     quantile.GOI <- ecdf(expr.all)(expr.all)[pos.GOI]
     title <- paste(gene, "is in the", percentage_formatter(quantile.GOI), "quantile of 'q90-av' expression. \n There are", counts,"counts" )
   }
@@ -299,3 +299,16 @@ counts <- sum(obj@assays$RNA@counts[gene,])
 }
 # plot.expression.rank.q90(gene = "SATB2")
 
+
+
+
+# ------------------------------------------------------------------------
+FlipReductionCoordinates <- function(obj = combined.obj, dim=2, reduction="umap", flip=c(NULL, 'x', 'y', 'xy')[2]) { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+  dslot = paste0(reduction, dim, "d")
+  reduction.backup <- obj@misc$reductions.backup[[dslot]]
+  msg <-  paste(dim, "dimensional", reduction, "from obj@misc$reductions.backup" )
+  stopif(is.null(reduction.backup), message = p0(msg," is NOT FOUND")); iprint(msg, "is set active. " )
+  stopifnot(dim == ncol(reduction.backup))
+  obj@reductions[[reduction]] <- reduction.backup
+  return(obj)
+}
