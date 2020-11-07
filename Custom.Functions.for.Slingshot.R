@@ -83,6 +83,9 @@ points_on_curve.SlingshotDataSet <- function(curve, lambda, ...) {
 #' @param col The assignation of each cell to a label. If none is provided,
 #' default to the cluster labels provided when creating the \code{\link{SlingshotDataSet}}
 #' @param title Title for the plot.
+#' @param reduction "UMAP"
+#' @param titleFsize title font size, def: 20
+#' @param line.colors line color
 #' @param lineSize Size of the curve lineages. Default to 1.
 #' @param ... Other options passed to \code{\link{geom_point}}
 #' @return A \code{\link{ggplot}} object
@@ -108,8 +111,9 @@ points_on_curve.SlingshotDataSet <- function(curve, lambda, ...) {
 #' @import ggplot2
 #' @export
 
-gg_plot <- function(sds, col = NULL, title = NULL, lineSize = 1
-                    , line.colors = gray.colors(n = length(sds@curves), start = 0, end = .6, alpha = 0 )
+gg_plot <- function(sds, col = NULL, title = NULL, lineSize = 1, reduction = "UMAP"
+                    , titleFsize = 20
+                    , line.colors = gray.colors(n = length(sds@curves), start = 0, end = .6, alpha = 1 )
                     , ...) {
   rd <- reducedDim(sds)
 
@@ -128,17 +132,20 @@ gg_plot <- function(sds, col = NULL, title = NULL, lineSize = 1
   p <- ggplot(df, aes(x = dim1, y = dim2, col = col)) +
     geom_point(...) +
     theme_classic() +
-    labs(title = title, col = "")
-
+    labs(title = title, col = "") +
+    theme(plot.title = element_text(size = titleFsize)) # , face = "bold"
   # Adding the curves
   for (i in seq_along(slingCurves(sds))) {
     curve_i <- slingCurves(sds)[[i]]
     curve_i <- curve_i$s[curve_i$ord, ]
     colnames(curve_i) <- c("dim1", "dim2")
-    p <- p + geom_path(data = as.data.frame(curve_i), col = line.colors[i], size = 1)
+    p <- p + geom_path(data = as.data.frame(curve_i), col = line.colors[i], size = 1) +
+      labs(x = paste(reduction, 1), y = paste(reduction, 1))
   }
   return(p)
 }
+
+
 # ------------------------
 # ------------------------
 # ------------------------
