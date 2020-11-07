@@ -121,12 +121,17 @@ isave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
   system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
 }
 
-# ------------------------------------------------------------------------
+# subsetSeuObj -----------------------------------------------------------------------
+subsetSeuObj <- function(obj=ORC, fraction_ = 0.25, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
+  set.seed(seed_)
+  cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction_)
+  iprint(length(cellIDs.keep), "or",percentage_formatter(fraction_),"of the cells are kept. Seed:", seed_)
+  subset(obj, cells = cellIDs.keep) # downsample
+}
 
-subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25 ) { # Subset a compressed Seurat Obj and save it in wd.
-  cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction)
-
-  obj_Xpc <- subset(obj, cells = cellIDs.keep) # downsample
+# subsetSeuObj.and.Save ------------------------------------------------------------------------
+subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
+  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
   saveRDS(obj_Xpc, compress = TRUE,
           file = ppp(paste0(InputDir, 'seu.ORC'), length(cellIDs.keep), 'cells.with.min.features', p$min.features,"Rds" ) )
   say()
