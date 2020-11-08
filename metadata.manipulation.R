@@ -303,15 +303,16 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
 
 
 # FlipReductionCoordinates ------------------------------------------------------------------------
-FlipReductionCoordinates <- function(obj = combined.obj, dim=2, reduction="umap", flip=c(NULL, 'x', 'y', 'xy')[2]) { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
-  dslot = paste0(reduction, dim, "d")
-  reduction.backup <- obj@misc$reductions.backup[[dslot]]
-  msg <-  paste(dim, "dimensional", reduction, "from obj@misc$reductions.backup" )
-  stopif(is.null(reduction.backup), message = p0(msg," is NOT FOUND")); iprint(msg, "is set active. " )
-  stopifnot(dim == ncol(reduction.backup))
-  obj@reductions[[reduction]] <- reduction.backup
+FlipReductionCoordinates <- function(obj = combined.obj, dim=2, reduction="umap", flip=c('x', 'y', 'xy', NULL)[1]) { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+  coordinates <- Embeddings(obj, reduction = reduction)
+  stopifnot(ncol(coordinates) == dim )
+
+  if (flip %in% c('x', 'xy')) coordinates[,1] = coordinates[,1] * -1
+  if (flip %in% c('y', 'xy')) coordinates[,2] = coordinates[,2] * -1
+  obj@reductions[[reduction]]@cell.embeddings <- coordinates
   return(obj)
 }
+
 
 # SeuratColorVector ------------------------------------------------------------------------
 SeuratColorVector <- function(obj = combined.obj) {
