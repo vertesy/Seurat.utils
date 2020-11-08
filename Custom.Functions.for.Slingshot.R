@@ -147,6 +147,77 @@ gg_plot <- function(sds, col = NULL, title = NULL, lineSize = 1, reduction = "UM
 
 
 # ------------------------
+
+# plotting
+#' @title Plot Gene Expression by Pseudotime
+#' @name plotFittedGenePseudotime
+#' @aliases plotFittedGenePseudotime
+#'
+#' @description Show the gene expression pattern for an individual gene along
+#' lineages inferred by \code{\link{slingshot}}.
+#'
+#' @param data an object containing \code{\link{slingshot}} output, either a
+#'   \code{\link{SlingshotDataSet}} or a \code{\link{SingleCellExperiment}}
+#'   object.
+#'
+#' @export
+setGeneric(
+  name = "plotFittedGenePseudotime",
+  signature = c('data'),
+  def = function(data, ...) {
+    standardGeneric("plotFittedGenePseudotime")
+  }
+)
+
+setMethod(
+  f = "plotFittedGenePseudotime",
+  signature = signature(data = "SlingshotDataSet"),
+  definition = function(data, gene, exprs, lcol = 1:4,
+                        loess = TRUE, loessCI = TRUE, ...) {
+    if(length(gene) > 1 & is.numeric(gene)){
+      y <- gene
+      genename <- deparse(substitute(gene))
+    }
+    if(length(gene) == 1){
+      y <- exprs[gene, ,drop=FALSE][1,]
+      genename <- gene
+    }
+    pst <- slingPseudotime(data)
+    w <- slingCurveWeights(data)
+    L <- length(slingLineages(data))
+
+    # par(mfrow = c(L,1))
+    i = 0
+    for(l in seq_len(L)){
+      i = i +1
+      # print(l)
+      if (l == 1) {
+        plot(pst[,l], y, xlab = 'Pseudotime', ylab = 'Expression', cex = 0,
+             main=paste(genename, ', Lineage ',l, sep=''), ...)
+      }
+      if(loess | loessCI){
+        l <- loess(y ~ pst[,l], weights = w[,l])
+      }
+      if(loessCI){
+        pl <- predict(l, se=TRUE, )
+        polygon(c(l$x[order(l$x)],rev(l$x[order(l$x)])),
+                c((pl$fit+qt(0.975,pl$df)*pl$se)[order(l$x)],
+                  rev((pl$fit-qt(0.975,pl$df)*pl$se)[order(l$x)])),
+                border = NA, col = rgb(0,0,0,.3))
+      }
+      if(loess){
+        lines(l$x[order(l$x)], l$fitted[order(l$x)], lwd=2, col = lcol[i])
+      }
+    }
+    # par(mfrow = c(1,1))
+    invisible(NULL)
+  }
+)
+# plotFittedGenePseudotime(data = sds, gene ="SST", expr = EXPR, loessCI=T
+#                          , col = colz, pch = 20, panel_first = grid(NULL) )
+
+
+
 # ------------------------
 # ------------------------
 
