@@ -332,8 +332,18 @@ SeuratColorVector <- function(obj = combined.obj) {
             , newvalues = colorlevels)
 }
 
+# getClusterColors ------------------------------------------------------------------------
+getClusterColors <- function(obj = combined.obj, ident  =IdentsUsedForSlingshot ) {
+  (identities <- levels(obj[[ident]][,1]))
+  color_palette <- hue_pal()(length(identities))
+  # color_check(color_palette)
+  names(color_palette) <- sort(identities)
+  identvec <- obj[[ident]][,1]
+  colz <- color_palette[identvec]
+  names(colz) <- identvec
+  colz
+}
 
-#  ------------------------------------------------------------------------
 #  ------------------------------------------------------------------------
 #  ------------------------------------------------------------------------
 #  ------------------------------------------------------------------------
