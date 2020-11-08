@@ -301,17 +301,27 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
 
 
 
-
 # FlipReductionCoordinates ------------------------------------------------------------------------
-FlipReductionCoordinates <- function(obj = combined.obj, dim=2, reduction="umap", flip=c('x', 'y', 'xy', NULL)[1]) { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+FlipReductionCoordinates <- function(obj = combined.obj, dim=2, reduction="umap"
+                                     , flip=c('x', 'y', 'xy', NULL)[1], FlipReductionBackupToo = TRUE) { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
   coordinates <- Embeddings(obj, reduction = reduction)
   stopifnot(ncol(coordinates) == dim )
 
   if (flip %in% c('x', 'xy')) coordinates[,1] = coordinates[,1] * -1
   if (flip %in% c('y', 'xy')) coordinates[,2] = coordinates[,2] * -1
   obj@reductions[[reduction]]@cell.embeddings <- coordinates
+
+  if (FlipReductionBackupToo) {
+    bac.slot <- p0(reduction,dim,"d")
+    if (length(obj@misc$reductions.backup[[bac.slot]])) {
+      obj@misc$reductions.backup[[bac.slot]]@cell.embeddings <- coordinates
+      iprint(dim, "dimensional",reduction,"backup flipped too.")
+    }
+  }
   return(obj)
 }
+# clUMAP(); combined.obj <- FlipReductionCoordinates(combined.obj); clUMAP()
+
 
 
 # SeuratColorVector ------------------------------------------------------------------------
