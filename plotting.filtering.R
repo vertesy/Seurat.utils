@@ -17,18 +17,25 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
                         , below.nFeature_RNA = p$"thr.lp.nFeature_RNA"
                         , above.nFeature_RNA = p$"thr.hp.nFeature_RNA"
                         , subdir= kpp("Filtering.plots"
-                                      , "mito", above.mito, below.mito
-                                      , "ribo", above.ribo, below.ribo
-                                      , "nFeature", above.nFeature_RNA, below.nFeature_RNA)
+                                      , "mito", p$"thr.hp.mito", p$"thr.lp.mito"
+                                      , "ribo", p$"thr.hp.ribo", p$"thr.lp.ribo"
+                                      , "nFeature", p$"thr.hp.nFeature_RNA", p$"thr.lp.nFeature_RNA", "/")
                         , transparency = 0.25
                         , cex = 0.75
                         , theme.used = theme_bw(base_size = 18)
                         , LabelDistFromTop = 200 # for barplot_label
 ) {
 
+  llprint(
+    "We filtered for high quality cells based on the number of genes detected [", above.nFeature_RNA, ";" ,below.nFeature_RNA
+    , "] and the fraction of mitochondrial [", percentage_formatter(above.mito), ";" ,percentage_formatter(below.mito)
+    , "] and ribosomal [",percentage_formatter(above.ribo), ";" ,percentage_formatter(below.ribo), "] reads."
+  )
+
   theme_set(theme.used)
   create_set_OutDir(parentdir, subdir)
   require(ggplot2)
+  if (suffices == l(ls.obj)) print("ls.Obj elements have no names (required).")
 
   for (i in 1:l(ls.Seurat)) {
     print(suffices[i])
@@ -48,20 +55,20 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
                                   )
     )
 
-    A = ggplot(data = mm, aes(x=nFeature_RNA, fill=colour.thr.nFeature)) +
+    A = ggplot(data = mm, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
       geom_histogram(binwidth = 100) +
       ggtitle(paste("Cells between", above.nFeature_RNA,"and",below.nFeature_RNA, " UMIs are selected (", pc_TRUE(filt.nFeature_RNA), ")")) +
       geom_vline(xintercept = below.nFeature_RNA) +
       geom_vline(xintercept = above.nFeature_RNA);
     # A
 
-    B = ggplot(mm, aes(x=nFeature_RNA, y = percent.mito))+
+    B = ggplot(mm, aes(x = nFeature_RNA, y = percent.mito)) +
       ggtitle(paste("Cells below", percentage_formatter(below.mito),
                     "mito reads are selected (with A:", pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")")) +
-      geom_point(alpha = transparency, size= cex,  show.legend = FALSE,
+      geom_point(alpha = transparency, size = cex,  show.legend = FALSE,
                  aes(color = filt.nFeature_RNA & filt.below.mito)  ) +
       scale_x_log10() + # scale_y_log10() +
-      annotation_logticks() +
+      # annotation_logticks() +
       geom_hline(yintercept = below.mito) +
       geom_hline(yintercept = above.mito) +
       geom_vline(xintercept = below.nFeature_RNA) +
@@ -69,11 +76,11 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
     # B
 
 
-    C = ggplot(mm, aes(x=nFeature_RNA, y = percent.ribo))+
+    C = ggplot(mm, aes(x = nFeature_RNA, y = percent.ribo)) +
       ggtitle(paste("Cells below", percentage_formatter(below.ribo),
                     "ribo reads are selected (with A:"
                     , pc_TRUE(filt.nFeature_RNA & filt.below.ribo), ")")) +
-      geom_point(alpha = transparency, size= cex,  show.legend = FALSE,
+      geom_point(alpha = transparency, size = cex,   show.legend = FALSE,
                  aes(color = filt.nFeature_RNA & filt.below.ribo)  ) +
       scale_x_log10() + # scale_y_log10() +
       annotation_logticks() +
@@ -83,11 +90,11 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
       geom_vline(xintercept = above.nFeature_RNA);
     # C
 
-    D = ggplot(mm, aes(x=percent.ribo, y = percent.mito))+
+    D = ggplot(mm, aes(x = percent.ribo, y = percent.mito)) +
       ggtitle(paste("Cells w/o extremes selected (with A,B,C:"
                     , pc_TRUE(filt.nFeature_RNA & filt.below.mito & filt.below.ribo), ")")) +
 
-      geom_point(alpha = transparency, size= cex,  show.legend = FALSE,
+      geom_point(alpha = transparency, size =  cex,  show.legend = FALSE,
                  aes(color = filt.nFeature_RNA & filt.below.mito & filt.below.ribo)  ) +
       scale_x_log10() + scale_y_log10() +
       annotation_logticks() +
@@ -100,9 +107,8 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
     plot_list = list(A,B,C,D)
     px = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:4])
-
     fname = ppp("Filtering.thresholds", suffices[i], filetype)
-    save_plot(filename = fname, plot = px, base_height=12, ncol=1, nrow=1) #Figure 2
+    save_plot(filename = fname, plot = px, base_height = 12, ncol = 1, nrow = 1) #Figure 2
 
   } # for
 
@@ -112,6 +118,5 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
   # End ------------------------------------------------------------------------
   create_set_Original_OutDir()
-
 }
-# PlotFilters(ls.obj = ls.Seurat)
+# PlotFilters(ls.Seurat)
