@@ -123,6 +123,7 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 
 
 
+
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
 multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
                                 , list.of.genes, foldername = substitute(list.of.genes), plot.reduction='umap', intersectionAssay = c('RNA', 'integrated')[1]
@@ -130,44 +131,45 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , prefix = NULL , suffix = NULL
                                 , saveGeneList = FALSE
+                                , w = wA4, h = hA4
                                 , format = c('jpg', 'pdf', 'png')[1]
                                 # , jpeg.res = 225, jpeg.q = 90
-                                ) {
+) {
   tictoc::tic()
   ParentDir = OutDir
 
   if (subdir) create_set_SubDir(... = paste0(foldername,'.', plot.reduction),'/')
+  list.of.genes.found = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay)
 
-  list.of.genes = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay)
-  lsG = iterBy.over(1:length(list.of.genes), by=nr.Row*nr.Col)
+  lsG = iterBy.over(1:length(list.of.genes.found), by = nr.Row * nr.Col)
   for (i in 1:length(lsG)) {
-    genes = list.of.genes[lsG[[i]]]
+    genes = list.of.genes.found[lsG[[i]]]
     iprint(i,genes )
     plotname = kpp(c(prefix, plot.reduction,i, genes, suffix, format ))
 
-    plot.list = FeaturePlot(object = obj, features =genes, reduction = plot.reduction, combine = F
+    plot.list = FeaturePlot(object = obj, features = genes, reduction = plot.reduction, combine = F
                             , ncol = nr.Col, cols = colors
                             , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp
                             , pt.size = cex)
 
-    for(i in 1:length(plot.list)) {
+    for (i in 1:length(plot.list)) {
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
     }
 
-    ggsave(filename = plotname, width = wA4, height = hA4,
+    ggsave(filename = plotname, width = w, height = h,
            plot = cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
     )
   }
 
+  if (subdir) create_set_OutDir(... = ParentDir)
   if (saveGeneList) {
     if (is.null(obj@misc$gene.lists)) obj@misc$gene.lists <- list()
-    obj@misc$gene.lists[[substitute(list.of.genes)]] <- list.of.genes
+    obj@misc$gene.lists[[substitute(list.of.genes)]] <- list.of.genes.found
+    print("Genes saved under: obj@misc$gene.lists")
+    return(obj)
   }
-
-  if (subdir) create_set_OutDir(... = ParentDir)
   tictoc::toc()
 };
-
 
 
 # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
