@@ -232,7 +232,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
 
 
-load10Xv3 <- function (dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
+load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
           includeFeatures = c("Gene Expression"), verbose = TRUE,
           ...)
 {
