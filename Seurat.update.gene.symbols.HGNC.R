@@ -9,25 +9,26 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
   HGNC.updated <- HGNChelper::checkGeneSymbols(rownames(obj), unmapped.as.na = FALSE, map = NULL, species = species_)
   if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
   if (ShowStats) print(GetUpdateStats(HGNC.updated))
-  obj <- RenameGenesSeurat(obj, newnames = HGNC.updated)
+  obj <- RenameGenesSeurat(obj, newnames = HGNC.updated$Suggested.Symbol)
   return(obj)
 }
 # UpdateGenesSeurat()
 
-# HELPER updateHGNC  ------------------------------------------------------------------------------------
-RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]) { # Replace gene names in different slots of a Seurat object. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
-  print("Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data")
+# HELPER RenameGenesSeurat  ------------------------------------------------------------------------------------
+RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol) { # Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data.
+  print("Run this before integration. Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data.")
   RNA <- obj@assays$RNA
 
   if (nrow(RNA) == nrow(newnames)) {
-    if (length(RNA@counts)) RNA@counts@Dimnames[[1]] <-         newnames$Suggested.Symbol
-    if (length(RNA@data)) RNA@data@Dimnames[[1]] <-             newnames$Suggested.Symbol
-    if (length(RNA@scale.data)) RNA@scale.data@Dimnames[[1]] <- newnames$Suggested.Symbol
+    if (length(RNA@counts)) RNA@counts@Dimnames[[1]]            <- newnames
+    if (length(RNA@data)) RNA@data@Dimnames[[1]]                <- newnames
+    if (length(RNA@scale.data)) RNA@scale.data@Dimnames[[1]]    <- newnames
+    if (length(obj@meta.data)) rownames(combined.obj@meta.data) <- newnames
   } else {"Unequal gene sets: nrow(RNA) != nrow(newnames)"}
   obj@assays$RNA <- RNA
   return(obj)
 }
-# RenameGenesSeurat(obj = SeuratObj, newnames = HGNC.updated.genes)
+# RenameGenesSeurat(obj = SeuratObj, newnames = HGNC.updated.genes$Suggested.Symbol)
 
 
 # HELPER Enforce Unique names ------------------------------------------------------------------------------------
