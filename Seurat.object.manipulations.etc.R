@@ -131,6 +131,24 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
 }
 
 # ------------------------------------------------------------------------
+FindCorrelatedGenes <- function(gene ="N.RabV.N2c", obj = combined.obj, assay = "RNA", slot = "data"
+                                , HEonly =F , minExpr = 1, minCells = 1000
+                                , trailingNgenes = 1000) {
+  tic()
+  AssayData <- GetAssayData(object = obj, assay = assay, slot = slot )
+  matrix_mod <- iround(as.matrix(AssayData))
+  if (HEonly) {
+    idx.pass <- (matrixStats::rowSums2(matrix_mod > minExpr) > minCells)
+    pc_TRUE(idx.pass)
+    matrix_mod <- matrix_mod[ which(idx.pass), ]
+  }
+  geneExpr <- as.numeric(matrix_mod[gene, ])
+  correlations <- apply(matrix_mod, 1, cor, geneExpr)
+  topGenes <- trail(sort(correlations, decreasing = T), N = trailingNgenes)
+  print(toc())
+  topGenes
+}
+
 
 
 # ------------------------------------------------------------------------
