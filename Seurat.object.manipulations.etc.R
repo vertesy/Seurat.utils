@@ -130,7 +130,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
   return(ls.obj)
 }
 
-# ------------------------------------------------------------------------
+# FindCorrelatedGenes ------------------------------------------------------------------------
 FindCorrelatedGenes <- function(gene ="N.RabV.N2c", obj = combined.obj, assay = "RNA", slot = "data"
                                 , HEonly =F , minExpr = 1, minCells = 1000
                                 , trailingNgenes = 1000) {
@@ -145,10 +145,12 @@ FindCorrelatedGenes <- function(gene ="N.RabV.N2c", obj = combined.obj, assay = 
   geneExpr <- as.numeric(matrix_mod[gene, ])
   correlations <- apply(matrix_mod, 1, cor, geneExpr)
   topGenes <- trail(sort(correlations, decreasing = T), N = trailingNgenes)
-  print(toc())
+  toc()
+  wbarplot(head(topGenes, n =25))
   topGenes
 }
-
+# FindCorrelatedGenes(gene ="N.RabV.N2c", obj = combined.obj)
+# write_clip(names(head(topGenes[-(1:6)], n=50)))
 
 
 # ------------------------------------------------------------------------
