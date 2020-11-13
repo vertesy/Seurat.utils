@@ -174,11 +174,11 @@ setMethod(
   signature = signature(data = "SlingshotDataSet"),
   definition = function(data, gene, exprs, lcol = 1:4,
                         loess = TRUE, loessCI = TRUE, ...) {
-    if(length(gene) > 1 & is.numeric(gene)){
+    if (length(gene) > 1 & is.numeric(gene)){
       y <- gene
       genename <- deparse(substitute(gene))
     }
-    if(length(gene) == 1){
+    if (length(gene) == 1){
       y <- exprs[gene, ,drop=FALSE][1,]
       genename <- gene
     }
@@ -195,17 +195,17 @@ setMethod(
         plot(pst[,l], y, xlab = 'Pseudotime', ylab = 'Expression', cex = 0,
              main=paste(genename, ', Lineage ',l, sep=''), ...)
       }
-      if(loess | loessCI){
+      if (loess | loessCI){
         l <- loess(y ~ pst[,l], weights = w[,l])
       }
-      if(loessCI){
+      if (loessCI){
         pl <- predict(l, se=TRUE, )
         polygon(c(l$x[order(l$x)],rev(l$x[order(l$x)])),
                 c((pl$fit+qt(0.975,pl$df)*pl$se)[order(l$x)],
                   rev((pl$fit-qt(0.975,pl$df)*pl$se)[order(l$x)])),
                 border = NA, col = rgb(0,0,0,.3))
       }
-      if(loess){
+      if (loess){
         lines(l$x[order(l$x)], l$fitted[order(l$x)], lwd=2, col = lcol[i])
       }
     }

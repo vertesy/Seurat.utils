@@ -255,7 +255,7 @@ recall.all.genes <- function(obj = combined.obj) {
 
 # recall.parameters ------------------------------------------------------------------------
 recall.parameters <- function(obj = combined.obj) {
-  if(exists('p')) iprint("variable 'p' exits in the global namespace:"); print(p); print("Now it will be overwritten.")
+  if (exists('p')) iprint("variable 'p' exits in the global namespace:"); print(p); print("Now it will be overwritten.")
   p <- obj@misc$p
   print(head(unlist(p)))
   ww.assign_to_global(name = "p", value = p)

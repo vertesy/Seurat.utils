@@ -81,7 +81,7 @@ plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the m
 
 # ------------------------------------------------------------------------
 SavePlotlyAsHtml <- function(plotly_obj, category.=category) { # Save Plotly 3D scatterplot as an html file.
-  OutputDir <- if(exists("OutDir")) OutDir else getwd()
+  OutputDir <- if (exists("OutDir")) OutDir else getwd()
   fname <- kpp(OutputDir,"/umap.3D",category.,idate(),"html"); iprint("Plot saved as:",fname)
   htmlwidgets::saveWidget(plotly_obj, file = fname, selfcontained = TRUE, title = category.)
 }

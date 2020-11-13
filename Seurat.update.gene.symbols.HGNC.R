@@ -20,9 +20,9 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]
   RNA <- obj@assays$RNA
 
   if (nrow(RNA) == nrow(newnames)) {
-    if(length(RNA@counts)) RNA@counts@Dimnames[[1]] <-         newnames$Suggested.Symbol
-    if(length(RNA@data)) RNA@data@Dimnames[[1]] <-             newnames$Suggested.Symbol
-    if(length(RNA@scale.data)) RNA@scale.data@Dimnames[[1]] <- newnames$Suggested.Symbol
+    if (length(RNA@counts)) RNA@counts@Dimnames[[1]] <-         newnames$Suggested.Symbol
+    if (length(RNA@data)) RNA@data@Dimnames[[1]] <-             newnames$Suggested.Symbol
+    if (length(RNA@scale.data)) RNA@scale.data@Dimnames[[1]] <- newnames$Suggested.Symbol
   } else {"Unequal gene sets: nrow(RNA) != nrow(newnames)"}
   obj@assays$RNA <- RNA
   return(obj)

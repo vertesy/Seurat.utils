@@ -85,7 +85,7 @@ read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and b
 
 # Save an object -----------------------------------------------
 isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T, inOutDir = F){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
-  path_rdata = if(inOutDir) { OutDir } else { paste0( "~/Documents/RDS.files/", basename(OutDir) ) }
+  path_rdata = if (inOutDir) { OutDir } else { paste0( "~/Documents/RDS.files/", basename(OutDir) ) }
   dir.create(path_rdata)
 
   if (showMemObject) { memory.biggest.objects() }

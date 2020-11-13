@@ -21,7 +21,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
   CR.matrices <- list.fromNames(c("raw", "filt"))
 
   # Adapter for Markdownreports background variable "OutDir" ----------------------------------------------------------------
-  if(exists('OutDir')) OutDirBac <- OutDir
+  if (exists('OutDir')) OutDirBac <- OutDir
   OutDir <- file.path(CellRangerOutputDir,p0(kpp("SoupStatistics", SeqRun)))
   try(dir.create(OutDir))
   ww.assign_to_global("OutDir", OutDir, 1)

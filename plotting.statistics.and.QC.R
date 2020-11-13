@@ -53,7 +53,7 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 
   obj@meta.data %>%
     group_by( (!!as.name(fill.by)) ) %>%
-    { if(downsample) sample_n(., downsample) else . } %>%
+    { if (downsample) sample_n(., downsample) else . } %>%
     group_by( (!!as.name(group.by)) ) %>%
     ggplot( aes(fill=(!!(as.name(fill.by))), x = (!!(as.name(group.by)))) ) +
 
