@@ -16,19 +16,55 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
 
 # HELPER RenameGenesSeurat  ------------------------------------------------------------------------------------
 RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol) { # Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data.
-  print("Run this before integration. Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data.")
+  print("Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data.")
   RNA <- obj@assays$RNA
 
   if (nrow(RNA) == nrow(newnames)) {
     if (length(RNA@counts)) RNA@counts@Dimnames[[1]]            <- newnames
     if (length(RNA@data)) RNA@data@Dimnames[[1]]                <- newnames
     if (length(RNA@scale.data)) RNA@scale.data@Dimnames[[1]]    <- newnames
-    if (length(obj@meta.data)) rownames(obj@meta.data) <- newnames
+    if (length(obj@meta.data)) rownames(obj@meta.data)          <- newnames
   } else {"Unequal gene sets: nrow(RNA) != nrow(newnames)"}
   obj@assays$RNA <- RNA
   return(obj)
 }
 # RenameGenesSeurat(obj = SeuratObj, newnames = HGNC.updated.genes$Suggested.Symbol)
+
+
+# RemoveGenesSeurat ------------------------------------------------------------------------------------
+RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A")) { # Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data.
+  print("Run this as the first thing after creating the Seurat object. It only removes genes from: metadata; obj@assays$RNA@counts, @data and @scale.data.")
+  RNA <- obj@assays$RNA
+
+  if (length(RNA@counts)) {
+    NotFound <- setdiff(symbols2remove, RNA@counts@Dimnames[[1]])
+    if (length(NotFound) == 0)  {
+      RNA@counts@Dimnames[[1]] <- symbols2remove
+      print("Genes removed from RNA@counts")
+    } else {print("Not All Genes Found in RNA@counts. Missing:"); print(NotFound)}
+  }
+  if (length(RNA@data)) {
+    if (length(setdiff(symbols2remove, RNA@data@Dimnames[[1]]) ) == 0)  {
+      RNA@data@Dimnames[[1]] <- symbols2remove
+      print("Genes removed from RNA@data.")
+    } else {print("Not All Genes Found in RNA@data")}
+  }
+  if (length(RNA@scale.data)) {
+    if (length(setdiff(symbols2remove, RNA@scale.data@Dimnames[[1]]) ) == 0)  {
+      RNA@scale.data@Dimnames[[1]] <- symbols2remove
+      print("Genes removed from RNA@scale.data.")
+    } else {print("Not All Genes Found in RNA@scale.data")}
+  }
+  if (length(obj@meta.data)) {
+    if (length(setdiff(symbols2remove, rownames(obj@meta.data)) ) == 0)  {
+      rownames(obj@meta.data) <- symbols2remove
+      print("Genes removed from @meta.data.")
+    } else {print("Not All Genes Found in @metadata")}
+  }
+  obj@assays$RNA <- RNA
+  return(obj)
+}
+# RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
 
 
 # HELPER Enforce Unique names ------------------------------------------------------------------------------------
