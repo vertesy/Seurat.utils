@@ -6,6 +6,7 @@
 
 # Requirements ------------------------
 library(plotly)
+try(source("~/GitHub/Packages/ggExpressDev/ggExpress.functions.R"), silent = F)
 # May also require
 # try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
@@ -257,3 +258,14 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
 # PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = p$'n.markers')
 
 
+
+# qFeatureScatter --------------------------------------------------------------------------------
+
+qFeatureScatter <- function(feature1 = "M.RabV.N2c", feature2 = "P.RabV.N2c", obj = combined.obj
+                            , ext ="png", plot = TRUE) {
+  plotname <- kpp(feature1,"VS", feature2)
+  p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2)
+  fname = kpp("FeatureScatter", plotname)
+  qqSave(ggobj = p, title = plotname, ext = ext)
+  if (plot) p
+}
