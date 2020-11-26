@@ -13,6 +13,7 @@ try (source("~/GitHub/Packages/Seurat.utils/Read.Write.Save.Load.functions.R"))
 try (source("~/GitHub/Packages/Seurat.utils/Seurat.object.manipulations.etc.R"))
 try (source("~/GitHub/Packages/Seurat.utils/Cluster.Auto-naming.DE.R"))
 try (source('~/GitHub/Packages/Seurat.utils/MULTI-seq.functions.R'))
+try (source('~/GitHub/Packages/Seurat.utils/Jaccard.toolkit.R'))
 # try (source('~/GitHub/Packages/Seurat.utils/Soup.Analysis.of.ambient.RNA.R'))
 
 try (source('~/GitHub/Projects/SEO/GO-scoring/Seurat.gene.sets.and.GO.terms.R'))
