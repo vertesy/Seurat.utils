@@ -62,24 +62,24 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 # https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
 
 # ------------------------------------------------------------------------
-save2umaps.A4 <- function(plot_list, pname = F) { # Save 2 umaps on an A4 page.
+save2umaps.A4 <- function(plot_list, pname = F, ...) { # Save 2 umaps on an A4 page.
   if (pname ==F) pname = substitute(plot_list)
-  p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 1, labels = LETTERS[1:length(plot_list)]  )
+  p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 1, labels = LETTERS[1:length(plot_list)], ...  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = hA4, base_width = wA4)
 }
 
 # ------------------------------------------------------------------------
-save4umaps.A4 <- function(plot_list, pname = F) { # Save 4 umaps on an A4 page.
+save4umaps.A4 <- function(plot_list, pname = F, ...) { # Save 4 umaps on an A4 page.
   if (pname==F) pname = substitute(plot_list)
-  p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:length(plot_list)]  )
+  p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:length(plot_list)], ...  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = wA4, base_width = hA4)
 }
 
 # ------------------------------------------------------------------------
-umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, ext = "png") { # Plot and save umap based on a metadata column.
+umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, ext = "png", ...) { # Plot and save umap based on a metadata column.
   fname = ppp("Named.clusters", metaD.colname, ext)
   p.named =
-    DimPlot(obj, reduction = "umap", group.by = metaD.colname, label = T) +
+    DimPlot(obj, reduction = "umap", group.by = metaD.colname, label = T, ...) +
     NoLegend() +
     ggtitle(metaD.colname)
   save_plot(p.named, filename = fname); p.named
@@ -89,20 +89,20 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
 
 # ------------------------------------------------------------------------
 
-qqsave <- function(ggplot.obj# Quickly save a ggplot object, and optionally display it.
-                   , h=7, PNG =F, plotname = substitute(ggplot.obj), title=NULL, plotit = F) {
-  fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
-  save_plot(filename =fname, plot = ggplot.obj, base_height=h) #, ncol=1, nrow=1
-  if (plotit) ggplot.obj
-}
+# qqsave <- function(ggplot.obj# Quickly save a ggplot object, and optionally display it.
+#                    , h=7, PNG =F, plotname = substitute(ggplot.obj), title=NULL, plotit = F) {
+#   fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
+#   save_plot(filename =fname, plot = ggplot.obj, base_height=h) #, ncol=1, nrow=1
+#   if (plotit) ggplot.obj
+# }
 
 # ------------------------------------------------------------------------
 qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_grid() on an A4 page
                          , plots = 1:2, NrPlots = length(plots), height = hA4, width = wA4
-                         , fname = "Fractions.Organoid-to-organoid variation.png") {
+                         , fname = "Fractions.Organoid-to-organoid variation.png", ...) {
   stopifnot(NrPlots %in% c(2,4))
   iprint(NrPlots,"plots found,", plots,"are saved.")
-  pg.cf = plot_grid(plotlist = plotlist[plots], nrow = 2, ncol = NrPlots/2, labels = LETTERS[1:NrPlots]  )
+  pg.cf = plot_grid(plotlist = plotlist[plots], nrow = 2, ncol = NrPlots/2, labels = LETTERS[1:NrPlots], ...  )
   if (NrPlots == 4) list2env(list(height = width, width = height), envir=as.environment(environment()))
   save_plot(filename = fname,
             plot = pg.cf, base_height = height, base_width = width)
@@ -134,6 +134,7 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
                                 , saveGeneList = FALSE
                                 , w = wA4, h = hA4
                                 , format = c('jpg', 'pdf', 'png')[1]
+                                , ...
                                 # , jpeg.res = 225, jpeg.q = 90
 ) {
   tictoc::tic()
@@ -151,7 +152,7 @@ multiFeaturePlot.A4 <- function(obj = combined.obj # Save multiple FeaturePlots,
     plot.list = FeaturePlot(object = obj, features = genes, reduction = plot.reduction, combine = F
                             , ncol = nr.Col, cols = colors
                             , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp
-                            , pt.size = cex)
+                            , pt.size = cex, ...)
 
     for (i in 1:length(plot.list)) {
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
@@ -181,7 +182,7 @@ multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHea
                                    , group.cells.by= "batch", plot.reduction='umap'
                                    , cex = iround(3/gene.per.page), sep_scale = F
                                    , gene.min.exp = 'q5', gene.max.exp = 'q95'
-                                   , jpeg.res = 225, jpeg.q = 90) {
+                                   , jpeg.res = 225, jpeg.q = 90, ...) {
 
   tictoc::tic()
   list.of.genes = check.genes(list.of.genes, obj = obj)
@@ -196,7 +197,7 @@ multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHea
       FeatureHeatmap(obj, features.plot =genes , group.by = group.cells.by
                      , reduction.use = plot.reduction, do.return = F
                      , sep.scale = sep_scale, min.exp = gene.min.exp, max.exp = gene.max.exp
-                     , pt.size = cex, key.position = "top")
+                     , pt.size = cex, key.position = "top", ...)
       , silent = F
     )
     try.dev.off()
@@ -217,16 +218,16 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
                                       no_axes = T,
                                       pt_size = 0.5,
                                       name.suffix = NULL,
-                                      width = hA4, heigth = 1.75*wA4, filetype = "pdf") {
+                                      width = hA4, heigth = 1.75*wA4, filetype = "pdf", ...) {
 
   p1 <- DimPlot(object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
                 , no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size
-                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size) +
+                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...) +
     ggtitle("tSNE") + theme(plot.title = element_text(hjust = 0.5))
 
   p2 <- DimPlot(object = obj, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use
                 , no.legend = T, do.return = do_return, do.label = do_label, label.size = label_size
-                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size) +
+                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...) +
     ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
 
   plots = plot_grid(p1, p2, labels=c("A", "B"), ncol = 2)
@@ -262,9 +263,9 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
 # qFeatureScatter --------------------------------------------------------------------------------
 
 qFeatureScatter <- function(feature1 = "M.RabV.N2c", feature2 = "P.RabV.N2c", obj = combined.obj
-                            , ext ="png", plot = TRUE) {
+                            , ext ="png", plot = TRUE, ...) {
   plotname <- kpp(feature1,"VS", feature2)
-  p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2)
+  p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2, ...)
   fname = kpp("FeatureScatter", plotname)
   qqSave(ggobj = p, title = plotname, ext = ext)
   if (plot) p
