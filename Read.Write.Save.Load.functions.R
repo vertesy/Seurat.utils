@@ -42,7 +42,6 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 # Convert10Xfolders(InputDir = InputDir)
 
 
-
 # LoadAllSeurats ------------------------------------------------------------------------
 LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
                            , file.pattern = "^filtered.+Rds$"
@@ -53,8 +52,8 @@ LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directo
 
   fin.orig <- list.files(InputDir, include.dirs = F, pattern = file.pattern)
   print(fin.orig)
-  fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = "")
-  fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = "")
+  fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = "") else fin.orig
+  fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = "") else fin
 
   ls.Seu <- list.fromNames(fin)
   for (i in 1:length(fin)) {print(fin[i]); ls.Seu[[i]] <- readRDS(paste0(InputDir, fin.orig[i]))}
