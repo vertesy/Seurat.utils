@@ -9,6 +9,26 @@
 # try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
+
+# add.meta.fraction ------------------------------------------------------------------------------------------------
+add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-", obj = ls.Seurat[[1]]) {
+  total_expr <- Matrix::colSums(GetAssayData(object = obj))
+  genes.matching <- grepv(pattern = gene.symbol.pattern, x = rownames(obj))
+  genes.expr = GetAssayData(object = obj)[genes.matching, ]
+  target_expr <- if(l(genes.matching) >1) Matrix::colSums(genes.expr) else genes.expr
+  obj <- AddMetaData(object = obj, metadata = target_expr / total_expr, col.name = col.name)
+  colnames(obj@meta.data)
+  return(obj)
+}
+# ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-")
+# ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.ribo", gene.symbol.pattern = "^RPL|^RPS")
+# ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.AC.GenBank", gene.symbol.pattern = "^AC[0-9]{6}\\.")
+# ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.AL.EMBL", gene.symbol.pattern = "^AL[0-9]{6}\\.")
+# ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.LINC", gene.symbol.pattern = "^LINC0")
+# ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.MALAT1", gene.symbol.pattern = "^MALAT1")
+# colnames(ls.Seurat[[1]]@meta.data)
+
+
 # ------------------------------------------------------------------------------------
 GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0,1]\\.[0-9]$") { # Get Clustering Runs: metadata column names
   if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
