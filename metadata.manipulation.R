@@ -9,6 +9,18 @@
 # try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
+
+
+# getMedianMetric ------------------------------------------------------------------------------------------------
+getMedianMetric <- function(ls.Obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito") {
+  medMetric <- vec.fromNames(names(ls.Seurat))
+  for(i in 1:n.datasets ) {
+    medMetric[i] <- median(ls.Seurat[[i]]@meta.data[,mColname])
+  }
+  return(medMetric)
+}
+# ls.Seurat <- getMedianMetric(ls.Obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito")
+
 # add.meta.tags ------------------------------------------------------------------------------------------------
 add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) {  # N is the for which dataset
   stopifnot( length(names(tags)) == length(tags) )
