@@ -37,9 +37,9 @@ add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) {  #
 
 # add.meta.fraction ------------------------------------------------------------------------------------------------
 add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c("^MT\\.|^MT-", F)[1]
-                              , gene.set = F, obj = ls.Seurat[[1]]) {
+                              , gene.set = F, obj = ls.Seurat[[1]], verbose = T) {
   stopif2(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
-  if(!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern)) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
+  if(!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
   total_expr <- Matrix::colSums(GetAssayData(object = obj))
   genes.matching <- if (!isFALSE(gene.set)) intersect(gene.set, rownames(obj)) else grepv(pattern = gene.symbol.pattern, x = rownames(obj))
