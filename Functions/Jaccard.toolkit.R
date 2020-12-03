@@ -2,7 +2,8 @@
 # Jaccard.toolkit.R
 ######################################################################
 # try(source('~/GitHub/Packages/Seurat.utils/Jaccard.toolkit.R'))
-# rm(list = ls(all.names = TRUE)); try(dev.off(), silent = T)
+# try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Jaccard.toolkit.R'))
+
 
 # Functions ------------------------
 try(source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F)

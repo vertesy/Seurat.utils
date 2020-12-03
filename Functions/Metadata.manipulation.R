@@ -2,12 +2,8 @@
 # metadata.manipulation.R
 ######################################################################
 # source('~/GitHub/Packages/Seurat.utils/Seurat.object.manipulations.etc.R')
+# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Metadata.manipulation.R"))
 # Source: self + web
-
-# Requirements ------------------------
-# May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
-# require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 
 

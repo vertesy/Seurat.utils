@@ -2,6 +2,7 @@
 # plotting.dim.reduction.2D.R
 ######################################################################
 # source('~/GitHub/Packages/Seurat.utils/plotting.dim.reduction.2D.R')
+# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.dim.reduction.2D.R"))
 # Source: self + web
 
 # Requirements ------------------------

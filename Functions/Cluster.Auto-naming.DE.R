@@ -2,9 +2,10 @@
 # Cluster.Auto-naming.DE.R
 ######################################################################
 # source('~/GitHub/Packages/Seurat.utils/Cluster.Auto-naming.DE.R')
+# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Cluster.Auto-naming.DE.R"))
 
 # ------------------------------------------------------------------------
-require(princurve)
+# require(princurve) # only for AutoNumber.by.PrinCurve
 
 
 # SmallestNonAboveX ------------------------------------------------------------------------
@@ -200,7 +201,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
                                     , dimension=1:2, plotit=T, swap= -1
                                     , reduction="umap", res = "integrated_snn_res.0.5" ) {
-
+  require(princurve)
   dim_name <- ppu(toupper(reduction),dimension)
   coord.umap <- FetchData(object = obj, vars = dim_name)
   fit <- principal_curve(x = as.matrix(coord.umap))

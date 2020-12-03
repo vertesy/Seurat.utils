@@ -2,7 +2,7 @@
 # Custom.Functions.for.Slingshot.R
 ######################################################################
 # source('~/GitHub/Packages/Seurat.utils/Custom.Functions.for.Slingshot.R')
-
+# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Custom.Functions.for.Slingshot.R"))
 
 # ------------------------
 

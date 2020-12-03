@@ -2,6 +2,7 @@
 # MULTI-seq.functions.R
 ######################################################################
 # source('~/GitHub/Packages/Seurat.utils/MULTI-seq.functions.R')
+# try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/MULTI-seq.functions.R'))
 
 # Requirements ------------------------
 require(MarkdownReportsDev)

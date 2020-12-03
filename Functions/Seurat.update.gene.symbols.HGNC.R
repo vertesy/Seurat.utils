@@ -2,6 +2,7 @@
 # Seurat.update.gene.symbols.HGNC.R
 ######################################################################
 # source('~/GitHub/Packages/Seurat.utils/Seurat.update.gene.symbols.HGNC.R')
+# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Seurat.update.gene.symbols.HGNC.R"))
 require(HGNChelper)
 
 # updateHGNC ------------------------------------------------------------------------------------
