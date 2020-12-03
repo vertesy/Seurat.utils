@@ -112,10 +112,6 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
   } # for
 
-  Nr.Cells.Before.Filtering = unlapply(ls.Seurat, ncol); names(Nr.Cells.Before.Filtering) = suffices
-  wbarplot(Nr.Cells.Before.Filtering, tilted_text = T)
-  barplot_label(Nr.Cells.Before.Filtering, TopOffset = LabelDistFromTop, w = 4)
-
   # End ------------------------------------------------------------------------
   create_set_Original_OutDir()
 }
