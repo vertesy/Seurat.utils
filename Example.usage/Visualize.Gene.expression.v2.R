@@ -24,9 +24,8 @@ if (FALSE) {
 
 # 2. Load function libraries ------------------------
 try (source('https://raw.githubusercontent.com/vertesy/CodeAndRoll/master/CodeAndRoll.R'),silent= F)
-
-try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Seurat.Utils.Load.from.GitHub.R'), silent =   T)
-try(source('https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Seurat3.Multicore.Load.from.GitHub.R'), silent=T)
+try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/00.Load.Seurat.Utils.WEB.R'), silent =   T)
+try(source('https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/00.Load.Seurat3.Multicore.R'), silent=T)
 # If it fails, see alternaitve at the end
 
 require('MarkdownReportsDev')
