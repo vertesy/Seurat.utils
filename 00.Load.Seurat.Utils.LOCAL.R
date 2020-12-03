@@ -1,7 +1,7 @@
 ######################################################################
-# Seurat.Utils.Load.R
+# 00.Load.Seurat.Utils.LOCAL.R
 ######################################################################
-# source('~/GitHub/Packages/Seurat.utils/Seurat.Utils.Load.R')
+# source('~/GitHub/Packages/Seurat.utils/00.Load.Seurat.Utils.LOCAL.R')
 
 try (source("~/GitHub/Packages/Seurat.utils/Functions/Seurat.update.gene.symbols.HGNC.R"))
 try (source("~/GitHub/Packages/Seurat.utils/Functions/Metadata.manipulation.R"))
