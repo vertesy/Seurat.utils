@@ -18,7 +18,8 @@ try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functi
 # try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Soup.Analysis.of.ambient.RNA.R'))
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Custom.Functions.for.Slingshot.R"))
 
-try(source("https://raw.githubusercontent.com/vertesy/SEO/master/Functions/GO-scoring/Seurat.gene.sets.and.GO.terms.R"))
+try(source("https://raw.githubusercontent.com/vertesy/SEO/master/GO-scoring/Seurat.gene.sets.and.GO.terms.R?token=ABG5SV56YUURWCQQ5KZM7I272JHP4"))
+
 
 # Requirements ------------------------
 # May also require
