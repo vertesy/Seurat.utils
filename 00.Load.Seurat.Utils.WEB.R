@@ -1,18 +1,18 @@
 ######################################################################
-# Seurat.Utils.Load.from.GitHub.R
+# 00.Load.Seurat.Utils.WEB.R
 ######################################################################
-# try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Seurat.Utils.Load.from.GitHub.R'), silent =   T)
+# try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/00.Load.Seurat.Utils.WEB.R'), silent =   T)
 
-try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Seurat.update.gene.symbols.HGNC.R"))
-try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/metadata.manipulation.R"))
-try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/plotting.dim.reduction.2D.R"))
-try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/plotting.dim.reduction.3D.R"))
-try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/plotting.filtering.R"))
-try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/plotting.statistics.and.QC.R"))
-try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Read.Write.Save.Load.functions.R"))
-try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Seurat.object.manipulations.etc.R"))
-try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Cluster.Auto-naming.DE.R"))
-try (source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/MULTI-seq.functions.R'))
-try (source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Jaccard.toolkit.R'))
-# try (source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Soup.Analysis.of.ambient.RNA.R'))
-# try (source("https://raw.githubusercontent.com/vertesy/SEO/master/GO-scoring/Seurat.gene.sets.and.GO.terms.R"))
+try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Seurat.update.gene.symbols.HGNC.R"))
+try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Metadata.manipulation.R"))
+try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.dim.reduction.2D.R"))
+try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.dim.reduction.3D.R"))
+try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.filtering.R"))
+try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.statistics.and.QC.R"))
+try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Read.Write.Save.Load.functions.R"))
+try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Seurat.object.manipulations.etc.R"))
+try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Cluster.Auto-naming.DE.R"))
+try (source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/MULTI-seq.functions.R'))
+try (source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Jaccard.toolkit.R'))
+# try (source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Soup.Analysis.of.ambient.RNA.R'))
+# try (source("https://raw.githubusercontent.com/vertesy/SEO/master/Functions/GO-scoring/Seurat.gene.sets.and.GO.terms.R"))
