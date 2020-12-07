@@ -127,12 +127,12 @@ subsetSeuObj <- function(obj=ORC, fraction_ = 0.25, nCells = F, seed_ = 1989 ) {
   if (isFALSE(nCells)) {
     cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction_)
     iprint(length(cellIDs.keep), "or",percentage_formatter(fraction_),"of the cells are kept. Seed:", seed_)
-    obj <- subset(obj, cells = cellIDs.keep) # downsample
   } else if (nCells > 1) {
     nKeep = min(ncol(obj), nCells)
+    cellIDs.keep = sample(obj@meta.data, size = nKeep, replace = F)
     if (nKeep < nCells) iprint("Only",nCells,"cells were found in the object, so downsampling is not possible.")
-    obj
   }
+  obj <- SubsetData(obj, cells = cellIDs.keep) # downsample
   return(obj)
 }
 
