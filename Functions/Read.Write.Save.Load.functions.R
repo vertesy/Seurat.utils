@@ -121,6 +121,22 @@ isave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
   system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
 }
 
+
+# Save workspace -----------------------------------------------
+# requires MarkdownReportsDev (github) and defining OutDir
+# requires github/vertesy/CodeAndRoll.r
+
+qsave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
+  fname = MarkdownReportsDev::kollapse(getwd(), "/",basename(OutDir),idate(),...,".Rdata")
+  print(fname)
+  if (nchar(fname) > 2000) stop()
+  tic()
+  save.image(file = fname, compress = F)
+  MarkdownReportsDev::iprint("Saved, being compressed", fname)
+  system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
+  cat(toc)
+}
+
 # subsetSeuObj -----------------------------------------------------------------------
 subsetSeuObj <- function(obj=ORC, fraction_ = 0.25, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
   set.seed(seed_)
