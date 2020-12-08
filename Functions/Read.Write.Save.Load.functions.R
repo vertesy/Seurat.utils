@@ -138,7 +138,7 @@ qsave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
 }
 
 # subsetSeuObj -----------------------------------------------------------------------
-subsetSeuObj <- function(obj=ORC, fraction_ = 0.25, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
+subsetSeuObj <- function(obj=ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
   set.seed(seed_)
   if (isFALSE(nCells)) {
     cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction_)
@@ -149,7 +149,7 @@ subsetSeuObj <- function(obj=ORC, fraction_ = 0.25, nCells = F, seed_ = 1989 ) {
     cellIDs.keep = sample(colnames(obj), size = nKeep, replace = F)
     if (nKeep < nCells) iprint("Only",nCells,"cells were found in the object, so downsampling is not possible.")
   }
-  obj <- subset(x = obj, subset = cellIDs.keep) # downsample
+  obj <- subset(x = obj, cells = cellIDs.keep) # downsample
   return(obj)
 }
 
@@ -160,4 +160,36 @@ subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989 ) { # Su
           file = ppp(paste0(InputDir, 'seu.ORC'), length(cellIDs.keep), 'cells.with.min.features', p$min.features,"Rds" ) )
   say()
 }
+
+
+# Downsample.Seurat.Objects ------------------------------------------------------------------------
+Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids") {
+  names.ls = names(ls.obj)
+  n.datasets = length(ls.obj)
+  iprint(NrCells, "cells")
+  tic()
+  if (getDoParRegistered() ) {
+    ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
+      iprint(names(ls.obj)[i], percentage_formatter(i/n.datasets, digitz = 2))
+      subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
+    };
+    names(ls.obj)  <- names.ls
+  } else {
+    ls.obj.downsampled <- list.fromNames(names.ls)
+    for (i in 1:n.datasets ) {
+      print(11111)
+      iprint(names(ls.obj)[i], percentage_formatter(i/n.datasets, digitz = 2))
+      ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
+    };
+  } # else
+  toc();
+
+  print(unlapply(ls.obj.downsampled, ncol))
+  print(unlapply(ls.obj, ncol))
+
+  isave.RDS(object = ls.obj.downsampled, suffix = ppp(p$"dSample.Organoids", "cells"), inOutDir = T)
+
+}
+Downsample.Seurat.Objects(NrCells = 250)
+
 
