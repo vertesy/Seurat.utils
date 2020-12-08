@@ -172,24 +172,25 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
     ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
       iprint(names(ls.obj)[i], percentage_formatter(i/n.datasets, digitz = 2))
       subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
-    };
-    names(ls.obj)  <- names.ls
+    }; names(ls.obj.downsampled)  <- names.ls
   } else {
     ls.obj.downsampled <- list.fromNames(names.ls)
     for (i in 1:n.datasets ) {
-      print(11111)
       iprint(names(ls.obj)[i], percentage_formatter(i/n.datasets, digitz = 2))
       ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
     };
   } # else
   toc();
 
-  print(unlapply(ls.obj.downsampled, ncol))
-  print(unlapply(ls.obj, ncol))
+  print(head(unlapply(ls.obj, ncol)))
+  print(head(unlapply(ls.obj.downsampled, ncol)))
 
-  isave.RDS(object = ls.obj.downsampled, suffix = ppp(p$"dSample.Organoids", "cells"), inOutDir = T)
+  isave.RDS(object = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = T)
 
 }
-Downsample.Seurat.Objects(NrCells = 250)
+# Downsample.Seurat.Objects(NrCells = 2000)
+# Downsample.Seurat.Objects(NrCells = 1000)
+# Downsample.Seurat.Objects(NrCells = 500)
+# Downsample.Seurat.Objects(NrCells = 200)
 
 
