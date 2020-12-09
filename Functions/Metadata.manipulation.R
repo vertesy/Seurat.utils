@@ -317,6 +317,13 @@ recall.parameters <- function(obj = combined.obj) {
 }
 # recall.parameters(); p
 
+# save.parameters ------------------------------------------------------------------------
+save.parameters <- function(obj = combined.obj, params = p) {
+  if(!is.null(obj@misc$'p')) print("Overwriting already existing obj@misc$p. Old version:") ; print(head(unlist(obj@misc$'p')))
+  obj@misc$p <- params
+}
+# save.parameters(obj = combined.obj, params = p);
+
 
 # plot.expression.rank.q90 ------------------------------------------------------------------------
 plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero=T) {
