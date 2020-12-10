@@ -244,7 +244,7 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of
 # Calcq90Expression ------------------------------------------------------------------------
 Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
                               , quantileX=0.9, assay = c("RNA", "integrated")[1]
-                              , slot = "data", max.cells =  100000) {
+                              , slot = "data", max.cells =  100000, show = TRUE) {
   tic()
   x = GetAssayData(object = obj, assay = assay, slot = slot) #, assay = 'RNA'
   if (ncol(x) > max.cells) {
@@ -256,13 +256,12 @@ Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression
   expr.q90 = iround(as.named.vector(expr.q90.df))
   toc();
 
-  log2.gene.expr.of.the.90th.quantile <- log2(expr.q90 + 1)
-  suppressWarnings(
-    whist(log2.gene.expr.of.the.90th.quantile, breaks = 30
-          , xlab = "log2(expr.q90+1) [UMI]", ylab = "Cells", vline  = .2, filtercol = T)
-  )
-
-  all.genes = percent_rank(expr.q90); names(all.genes) = names(expr.q90); all.genes <- sort.decreasing(all.genes)
+  log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q90 + 1)) # strip names
+  try(
+    qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30
+          , xlab = "log2(expr.q90+1) [UMI]", ylab = "Cells"
+          , plot = show, save = TRUE, vline  = .2)
+  , silent = TRUE)
 
   obj@misc$'all.genes' = all.genes = as.list(all.genes)
   obj@misc$'expr.q90' = expr.q90
