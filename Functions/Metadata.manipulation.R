@@ -251,7 +251,9 @@ Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression
     dsampled = sample(x = 1:ncol(x), size = max.cells)
     x = x[ , dsampled]
   }
-  expr.q90 = iround(apply(x, 1, quantile, probs = quantileX) )
+  # expr.q90 = iround(apply(x, 1, quantile, probs = quantileX) )
+  expr.q90.df = sparseMatrixStats::rowQuantiles(x, probs = quantileX)
+  expr.q90 = iround(as.named.vector(expr.q90.df))
   toc();
 
   log2.gene.expr.of.the.90th.quantile <- log2(expr.q90 + 1)
