@@ -263,6 +263,8 @@ Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression
           , plot = show, save = TRUE, vline  = .2)
   , silent = TRUE)
 
+  all.genes = percent_rank(expr.q90); names(all.genes) = names(expr.q90); all.genes <- sort.decreasing(all.genes)
+
   obj@misc$'all.genes' = all.genes = as.list(all.genes)
   obj@misc$'expr.q90' = expr.q90
   assign('all.genes', all.genes, envir = as.environment(1))
