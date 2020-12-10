@@ -259,7 +259,7 @@ Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression
   log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q90 + 1)) # strip names
   try(
     qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30
-          , xlab = "log2(expr.q90+1) [UMI]", ylab = "Cells"
+          , xlab = "log2(expr.q90+1) [UMI]", ylab = "Genes"
           , plot = show, save = TRUE, vline  = .2)
   , silent = TRUE)
 
