@@ -6,11 +6,10 @@
 
 # Functions ------------------------
 try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F)
-require('MarkdownReportsDev')
+try(require('MarkdownReportsDev'), silent = T)
 # source('~/Github/TheCorvinas/R/DatabaseLinke.r')
 
 # Setup ------------------------
-require(MarkdownReportsDev)
 setup_MarkdownReports(OutDir = "~/Data/POL.GFP/OLD/mtx.broken/SoupX.Marker.Analysis", scriptname = 'SoupX.Marker.Analysis.R')
 
 # Metadata ------------------------

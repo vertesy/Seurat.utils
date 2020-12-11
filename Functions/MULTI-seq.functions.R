@@ -5,8 +5,8 @@
 # try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/MULTI-seq.functions.R'))
 
 # Requirements ------------------------
-require(MarkdownReportsDev)
-require(pheatmap)
+try(require(MarkdownReportsDev),  silent = T)
+try(require(pheatmap),  silent = T)
 # May also require
 
 

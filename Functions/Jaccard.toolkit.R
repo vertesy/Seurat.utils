@@ -7,8 +7,8 @@
 
 # Functions ------------------------
 try(source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F)
-require('MarkdownReportsDev')
-require('tidyverse')
+try(require('MarkdownReportsDev'),  silent = T)
+try(require('tidyverse'),  silent = T)
 # source('~/Github/TheCorvinas/R/DatabaseLinke.r')
 
 

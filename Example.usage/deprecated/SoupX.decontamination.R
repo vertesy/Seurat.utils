@@ -1,18 +1,18 @@
 ######################################################################
 # SoupX.decontamination.R
 ######################################################################
-source("~/GitHub/Packages/Seurat.utils/SoupX.decontamination.R")
+# source("~/GitHub/Packages/Seurat.utils/SoupX.decontamination.R")
 
 
 # Libraries ------------------------
-require(SoupX)
-require(Seurat)
-require(MarkdownReportsDev)
-require(DropletUtils)
-require(cowplot)
+try(require(SoupX), silent = T)
+try(require(Seurat), silent = T)
+try(require(MarkdownReportsDev), silent = T)
+try(require(DropletUtils), silent = T)
+try(require(cowplot), silent = T)
 
-try(source("~/GitHub/Packages/Seurat.utils/Seurat.Utils.Load.R"));
-source('~/GitHub/Packages/Seurat.utils/Soup.Analysis.of.ambient.RNA.R')
+try(source("~/GitHub/Packages/Seurat.utils/Seurat.Utils.Load.R"), silent = T);
+try(source('~/GitHub/Packages/Seurat.utils/Soup.Analysis.of.ambient.RNA.R'), silent = T)
 
 # Parameters ------------------------
 v.parentfolder = c(

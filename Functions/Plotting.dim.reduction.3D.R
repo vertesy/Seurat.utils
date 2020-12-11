@@ -6,9 +6,9 @@
 # Source: self + https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0
 
 # Requirements ------------------------
-library(plotly)
-library(MarkdownReportsDev)
-library(htmlwidgets)
+try(library(plotly), silent = T)
+try(library(MarkdownReportsDev), silent = T)
+try(library(htmlwidgets), silent = T)
 
 # May also require
 try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= T) # generic utilities funtions
