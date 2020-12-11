@@ -28,7 +28,7 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Pl
     wbarplot(pct , xlab = "Principal Components", ylab = "% of variation explained")
     barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5 )
   } else {
-    qbarplot(vec = pct, xlab = "Principal Components", ylab =  "% of variation explained")
+    qbarplot(vec = pct, xlab = "Principal Components", ylab =  "% of variation explained", w = 10, h = 5, hline = 1 )
   }
 }
 
