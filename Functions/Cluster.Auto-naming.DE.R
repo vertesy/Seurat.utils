@@ -18,8 +18,8 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace 0 with smallest non-zero v
 
 
 # Add.DE.combined.score ------------------------------------------------------------------------
-Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-100 ) { # Score = -LOG10(p_val) * avg_logFC
-  df$'combined.score' <- round(df$"avg_logFC" * -log10(SmallestNonAboveX(vec = df$"p_val", X = p_val_min)))
+Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-100, colLFC = "avg_log2FC", colP = "p_val" ) { # Score = -LOG10(p_val) * avg_logFC
+  df$'combined.score' <- round(df[[colLFC]] * -log10(SmallestNonAboveX(vec = df[[colP]], X = p_val_min)))
   return(df)
 }
 # df.markers <- Add.DE.combined.score(df.markers)
