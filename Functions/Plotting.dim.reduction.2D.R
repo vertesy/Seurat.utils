@@ -248,7 +248,7 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
 
 # PlotTopGenesPerCluster --------------------------------------------------------------------------------
 PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p$'n.markers'
-                                   , order_by = c("combined.score","avg_logFC", "p_val_adj")[1]
+                                   , order_by = c("combined.score","avg_log2FC", "p_val_adj")[1]
                                    , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",cl_res)]]) {
   topX.markers <- GetTopMarkers(df = df_markers,  n= nrGenes
                                 , order.by = order_by )
