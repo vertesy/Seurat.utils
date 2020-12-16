@@ -338,12 +338,10 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
   } else {
     p <- obj@misc$'p'
     print(head(p))
-
-    if (exists('p')) iprint("variable 'p' exits in the global namespace:"); print("Now it will be overwritten.")
+    if (exists('p')) iprint("variable 'p' exits in the global namespace:");
 
     if (!exists('p') | (exists('p') & overwrite == TRUE) ) {
-      all.genes <- obj@misc$all.genes
-      ww.assign_to_global(name = "all.genes", value = all.genes)
+      ww.assign_to_global(name = "p", value = p); print("Overwritten.")
     } else {
       print("Not overwritten.")
     }
