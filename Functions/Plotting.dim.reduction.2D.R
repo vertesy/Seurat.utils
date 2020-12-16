@@ -15,8 +15,8 @@ try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpres
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 
-# Quick umaps# ------------------------------------------------------------------------
-qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to a draw a UMAP
+# Quick gene expression umap ------------------------------------------------------------------------
+qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to draw a gene expression UMAP
                   , title = feature, sub =NULL
                   , reduct ="umap", splitby = NULL
                   , save.plot=T, PNG = T, h=7
@@ -38,16 +38,18 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 # qUMAP(  )
 
 
-# Quick umaps  ------------------------------------------------------------------------
-clUMAP <- function( ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to a draw a clustering UMAP
+# Quick clustering result or categorical umap  ------------------------------------------------------------------------
+clUMAP <- function(ident = "integrated_snn_res.0.7", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
                    , reduct ="umap", splitby = NULL
                    , title = ident, sub =NULL, label.cex = 7
                    , plotname = ppp(toupper(reduct), ident)
+                   , label = T, repel = T, legend = !label
                    , save.plot=T, PNG = T, h=7, ...) {
   ggplot.obj <-
-    DimPlot(object = obj, group.by=ident, reduction = reduct
-            , label=T, repel=T, label.size = label.cex, ...) +
-    NoLegend() + ggtitle(label = title, subtitle = sub)
+    DimPlot(object = obj, group.by = ident, reduction = reduct
+            , label = label, repel = repel, label.size = label.cex, ...) +
+    ggtitle(label = title, subtitle = sub) +
+    if (!legend) NoLegend() else NULL
 
   if (save.plot) {
     fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
@@ -56,6 +58,10 @@ clUMAP <- function( ident = "integrated_snn_res.0.5", obj =  combined.obj   # Th
   return(ggplot.obj)
 }
 # clUMAP()
+# clUMAP(ident = "RNA_snn_res.0.1")
+
+
+
 
 # ------------------------------------------------------------------------
 gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
