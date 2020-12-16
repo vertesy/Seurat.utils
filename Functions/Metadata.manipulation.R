@@ -5,7 +5,31 @@
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Metadata.manipulation.R"))
 # Source: self + web
 
-
+# - getMedianMetric()
+# - add.meta.tags()
+# - add.meta.fraction()
+# - GetClusteringRuns()
+# - GetNamedClusteringRuns()
+# - GetOrderedClusteringRuns()
+# - GetNumberOfClusters()
+# - getMetadataColumn <- mmeta()
+# - getCellIDs.from.meta()
+# - seu.add.meta.from.vector()
+# - seu.map.and.add.new.ident.to.meta()
+# - calc.cluster.averages()
+# - seu.add.meta.from.table()
+# - sampleNpc()
+# - Calcq90Expression()
+# - PlotTopGenes()
+# - fix.orig.ident()
+# - set.all.genes()
+# - recall.all.genes()
+# - recall.parameters()
+# - save.parameters()
+# - plot.expression.rank.q90()
+# - FlipReductionCoordinates()
+# - SeuratColorVector()
+# - getClusterColors()
 
 # getMedianMetric ------------------------------------------------------------------------------------------------
 getMedianMetric <- function(ls.Obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito") {
