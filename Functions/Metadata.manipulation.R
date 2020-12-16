@@ -31,6 +31,7 @@
 # - SeuratColorVector()
 # - getClusterColors()
 
+
 # getMedianMetric ------------------------------------------------------------------------------------------------
 getMedianMetric <- function(ls.Obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito") {
   medMetric <- vec.fromNames(names(ls.Seurat))
@@ -40,6 +41,7 @@ getMedianMetric <- function(ls.Obj = ls.Seurat, n.datasets = length(ls.Seurat), 
   return(medMetric)
 }
 # ls.Seurat <- getMedianMetric(ls.Obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito")
+
 
 # add.meta.tags ------------------------------------------------------------------------------------------------
 add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) {  # N is the for which dataset
