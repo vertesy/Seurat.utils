@@ -62,8 +62,8 @@ CellFractionsBarplot2 <- function(obj = combined.obj
     group_by( (!!as.name(fill.by)) ) %>%
     { if (downsample) sample_n(., downsample) else . } %>%
     group_by( (!!as.name(group.by)) ) %>%
-    ggplot( aes(fill=(!!(as.name(fill.by))), x = (!!(as.name(group.by)))) ) +
 
+    ggplot( aes(fill=(!!(as.name(fill.by))), x = (!!(as.name(group.by)))) ) +
     geom_hline( yintercept = hlines, lwd=1.5)  +
     geom_bar( position="fill" ) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
