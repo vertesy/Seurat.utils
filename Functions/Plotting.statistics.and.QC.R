@@ -9,10 +9,11 @@
 # Requirements ------------------------
 require(Seurat)
 require(ggplot2)
+# tools for tools::toTitleCase
+
 # May also require
 # try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
-
 
 # PCA percent of variation associated with each PC ------------------------------------------------------------
 seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of variation associated with each PC.
@@ -46,7 +47,7 @@ BarplotCellsPerObject <- function(ls.Seu = ls.Seurat, # Take a List of Seurat ob
 # CellFractionsBarplot2 ------------------------------------------------------------
 CellFractionsBarplot2 <- function(obj = combined.obj
                                   , group.by = "integrated_snn_res.0.5.ordered", fill.by = "age", downsample = T
-                                  , plotname = paste(TitleCase(fill.by), "proportions"), hlines = c(.25, .5, .75), seedNr = 1989) {
+                                  , plotname = paste(tools::toTitleCase(fill.by), "proportions"), hlines = c(.25, .5, .75), seedNr = 1989) {
   set.seed(seedNr)
   pname.suffix <- capt.suffix <- NULL
   if (downsample) {
