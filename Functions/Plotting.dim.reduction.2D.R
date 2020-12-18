@@ -46,7 +46,8 @@ clUMAP <- function(ident = "integrated_snn_res.0.7", obj =  combined.obj   # The
                    , label = T, repel = T, legend = !label
                    , save.plot=T, PNG = T, h=7, ...) {
   ggplot.obj <-
-    DimPlot(object = obj, group.by = ident, reduction = reduct
+    DimPlot(object = obj, group.by = ident
+            , reduction = reduct, split.by = splitby
             , label = label, repel = repel, label.size = label.cex, ...) +
     ggtitle(label = title, subtitle = sub) +
     if (!legend) NoLegend() else NULL
