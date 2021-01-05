@@ -287,9 +287,9 @@ Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression
 
   log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q90 + 1)) # strip names
   try(
-    qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30,
-               , plotname = kpp("log2.gene.expr.of.the", qname,"quantile")
-               , subtitle = kollapse(pc_TRUE(expr.q90>0, NumberAndPC = T), " genes have", qname ,"expr. >0.")
+    qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30
+               , plotname = kpp("log2.gene.expr.of.the ", qname," quantile")
+               , subtitle = kollapse(pc_TRUE(expr.q90 > 0, NumberAndPC = T), " genes have ", qname ," expr. > 0.")
                , xlab = p0("log2(expr.",qname,"+1) [UMI]"), ylab = "Genes"
                , plot = show, save = TRUE, vline  = .2)
     , silent = TRUE)
@@ -298,7 +298,7 @@ Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression
 
   if (set.all.genes) obj@misc$'all.genes' = all.genes = as.list(all.genes)
 
-  obj@misc[[slot_name]] = expr.q90
+  obj@misc[[slot_name]] <-  expr.q90
   assign('all.genes', all.genes, envir = as.environment(1))
 
   iprint('Quantile', quantileX ,'is now stored under obj@misc$all.genes and $', slot_name, ' Please execute all.genes <- obj@misc$all.genes.')
