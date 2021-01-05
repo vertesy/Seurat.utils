@@ -147,7 +147,7 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
 
 # ------------------------
 #' sparse.cor
-#' From https://stackoverflow.com/questions/5888287/running-cor-or-any-variant-over-a-sparse-matrix-in-r
+#' Correlation calculation for sparse matrices. From https://stackoverflow.com/questions/5888287/running-cor-or-any-variant-over-a-sparse-matrix-in-r
 #' @param smat sparse matrix
 #'
 #' @return
@@ -158,32 +158,42 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
 sparse.cor <- function(smat){
   n <- nrow(smat)
   cMeans <- colMeans(smat)
-  covmat <- (as.matrix(crossprod(smat)) - n*tcrossprod(cMeans))/(n-1)
+  covmat <- (as.matrix(crossprod(smat)) - n * tcrossprod(cMeans))/(n - 1)
   sdvec <- sqrt(diag(covmat))
-  cormat <- covmat/tcrossprod(sdvec)
-  list(cov=covmat,cor=cormat)
+  cormat <- covmat / tcrossprod(sdvec)
+  list(cov = covmat, cor = cormat)
 }
+
+
+# Calc.Cor.Seurat ------------------------------------------------------------------------
+
+Calc.Cor.Seurat <- function(assay = "RNA", slot = "data"
+                            , digits = 2, obj = combined.obj, ...) {
+  expr.mat <- GetAssayData(slot = slot, assay = assay, object = obj)
+}
+
 
 # plot.Gene.Cor.Heatmap ------------------------------------------------------------------------
 
 plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
-                                  , assay = "RNA", slot = "data"
+                                  , assay.use = "RNA", slot.use = "data"
                                   , min.g.cor =  0.3
-                                  , obj = combined.obj) {
-  expr.mat <- GetAssayData(slot = slot, assay = assay, object = obj)
+                                  , obj = combined.obj, ...) {
+  expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
   genes.found <- check.genes(genes)
   if (l(genes.found) > 200) iprint("Too many genes found in data, cor will be slow: ", l(genes.found))
   ls.cor <- sparse.cor(t(expr.mat[genes.found,]))
 
   # Filter
-  corrz <- cor.mat$cor
+  corrz <- ls.cor$cor
   diag(corrz) <- NaN
   corgene.names <- union(
     which_names(rowMax(corrz) >= min.g.cor),
     which_names(rowMin(corrz) <= -min.g.cor)
   )
 
-  pname = p0("Pearson correlations of ", substitute(genes),"\n min.cor:", min.g.cor, " | ",  assay ,'.', slot )
-  o.heatmap <- pheatmap(corrz[corgene.names,corgene.names],main = pname)
+  pname = p0("Pearson correlations of ", substitute(genes),"\n min.cor:", min.g.cor, " | ",  assay.use ,'.', slot.use )
+  o.heatmap <- pheatmap(corrz[corgene.names,corgene.names],main = pname,..., annota)
   wplot_save_pheatmap(o.heatmap, filename = make.names(pname))
 }
+
