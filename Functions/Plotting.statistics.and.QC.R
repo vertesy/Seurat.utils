@@ -92,7 +92,7 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
     print(IdentsUsed[i])
     ClX <- subset(obj, idents = IdentsUsed[i])
     Idents(ClX) <- TwoCategIdent
-    avg.ClX.cells <- log2(AverageExpression(ClX, verbose = FALSE)$RNA+1)
+    avg.ClX.cells <- log2(AverageExpression(ClX, verbose = FALSE)$RNA + 1)
     avg.ClX.cells$gene <- rownames(avg.ClX.cells)
 
     # plot ----
@@ -143,3 +143,47 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
 # qqSaveGridA4(plotlist= pl, plots = 1:2, fname = "Fractions.per.Cl.png")
 # qqSaveGridA4(plotlist= pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
 
+
+
+# ------------------------
+#' sparse.cor
+#' From https://stackoverflow.com/questions/5888287/running-cor-or-any-variant-over-a-sparse-matrix-in-r
+#' @param smat sparse matrix
+#'
+#' @return
+#' @export
+#'
+#' @examples
+
+sparse.cor <- function(smat){
+  n <- nrow(smat)
+  cMeans <- colMeans(smat)
+  covmat <- (as.matrix(crossprod(smat)) - n*tcrossprod(cMeans))/(n-1)
+  sdvec <- sqrt(diag(covmat))
+  cormat <- covmat/tcrossprod(sdvec)
+  list(cov=covmat,cor=cormat)
+}
+
+# plot.Gene.Cor.Heatmap ------------------------------------------------------------------------
+
+plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
+                                  , assay = "RNA", slot = "data"
+                                  , min.g.cor =  0.3
+                                  , obj = combined.obj) {
+  expr.mat <- GetAssayData(slot = slot, assay = assay, object = obj)
+  genes.found <- check.genes(genes)
+  if (l(genes.found) > 200) iprint("Too many genes found in data, cor will be slow: ", l(genes.found))
+  ls.cor <- sparse.cor(t(expr.mat[genes.found,]))
+
+  # Filter
+  corrz <- cor.mat$cor
+  diag(corrz) <- NaN
+  corgene.names <- union(
+    which_names(rowMax(corrz) >= min.g.cor),
+    which_names(rowMin(corrz) <= -min.g.cor)
+  )
+
+  pname = p0("Pearson correlations of ", substitute(genes),"\n min.cor:", min.g.cor, " | ",  assay ,'.', slot )
+  o.heatmap <- pheatmap(corrz[corgene.names,corgene.names],main = pname)
+  wplot_save_pheatmap(o.heatmap, filename = make.names(pname))
+}
