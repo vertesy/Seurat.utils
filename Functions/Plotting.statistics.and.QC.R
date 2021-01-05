@@ -197,3 +197,19 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
   wplot_save_pheatmap(o.heatmap, filename = make.names(pname))
 }
 
+# Calc.Cor.Seurat ------------------------------------------------
+Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data" # Calc.Cor.Seurat to calculate Pearson correlation across all genes (with q99 expression > 0; ~55% of genes).
+                            , digits = 2, obj = combined.obj) {
+  expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
+  if (is.null(obj@misc$'expr.q99')) iprint("Call combined.obj <- Calcq90Expression(combined.obj, quantileX=0.99 first )")
+  genes.HE = which_names(obj@misc$'expr.q99' > 0)
+  iprint("Pearson correlation is calculated for", l(genes.HE), "HE genes with expr.q99 > 0.")
+  tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, ])); toc()
+  ls.cor <- lapply(ls.cor, round, digits = 2)
+
+  obj@misc[[kpp('cor', slot.use, assay.use)]] <- ls.cor$'cor'
+  obj@misc[[kpp('cov', slot.use, assay.use)]] <- ls.cor$'cov'
+  iprint("Stored under obj@misc$", kpp('cor', slot.use, assay.use), "or cov... ." )
+  return(obj)
+}
+# combined.obj <- Calc.Cor.Seurat(assay.use = "RNA", slot.use = "data", digits = 2, obj = combined.obj)
