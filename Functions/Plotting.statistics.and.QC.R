@@ -205,7 +205,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 
 # Calc.Cor.Seurat ------------------------------------------------
 Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
-                            , quantileX = 0.99, max.cells =  40000, seed = p$"seed"
+                            , quantileX = 0.95, max.cells =  40000, seed = p$"seed"
                             , digits = 2, obj = combined.obj) {
   expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
   if (ncol(expr.mat) > max.cells) {
@@ -214,19 +214,21 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
   }
 
   qname = p0("q", quantileX * 100)
-  slot_name = kpp("expr", qname)
+  quantile_name = kpp("expr", qname)
 
-  if (is.null(obj@misc[[slot_name]])) iprint("Call: combined.obj <- Calcq90Expression(combined.obj, quantileX =",quantileX," first )")
-  genes.HE = which_names(obj@misc[[slot_name]] > 0)
-  iprint("Pearson correlation is calculated for", l(genes.HE), "HE genes with expr.q99 > 0.")
+  if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- Calcq90Expression(combined.obj, quantileX =",quantileX," first )")
+  genes.HE = which_names(obj@misc[[quantile_name]] > 0)
+  iprint("Pearson correlation is calculated for", l(genes.HE), "HE genes with expr.",qname,": > 0.")
   tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
   ls.cor <- lapply(ls.cor, round, digits = 2)
 
-  obj@misc[[kpp('cor', slot.use, assay.use)]] <- ls.cor$'cor'
-  obj@misc[[kpp('cov', slot.use, assay.use)]] <- ls.cor$'cov'
+  slot__name <- kpp(slot.use, assay.use, quantile_name)
+  obj@misc[[kpp('cor', slot__name)]] <- ls.cor$'cor'
+  obj@misc[[kpp('cov', slot__name)]] <- ls.cor$'cov'
   iprint("Stored under obj@misc$", kpp('cor', slot.use, assay.use), "or cov... ." )
   return(obj)
 }
+
 # combined.obj <- Calcq90Expression(combined.obj, quantileX = 0.99, max.cells =  400000, set.all.genes = F)
 # combined.obj <- Calc.Cor.Seurat(assay.use = "RNA", slot.use = "data", digits = 2, obj = combined.obj, quantile = 0.99, max.cells = 40000)
 
