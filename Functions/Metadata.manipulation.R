@@ -269,8 +269,9 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of
 
 # Calcq90Expression ------------------------------------------------------------------------
 Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
-                              , slot = "data", quantileX=0.9, assay = c("RNA", "integrated")[1]
-                              , set.all.genes = TRUE, max.cells =  100000, show = TRUE) {
+                              , quantileX=0.9, max.cells =  100000
+                              , slot = "data", assay = c("RNA", "integrated")[1]
+                              , set.all.genes = TRUE, show = TRUE) {
   tic()
   x = GetAssayData(object = obj, assay = assay, slot = slot) #, assay = 'RNA'
   if (ncol(x) > max.cells) {
