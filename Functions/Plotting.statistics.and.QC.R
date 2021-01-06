@@ -180,6 +180,12 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
                                   , min.g.cor =  0.3
                                   , obj = combined.obj, ...) {
   expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
+
+  slotname_cor.mat <- kpp('cor', slot.use, assay.use)
+  cor.mat <- obj@misc[[slotname_cor.mat]]
+  stopif(is_null(cor.mat), message = kollapse(slotname_cor.mat, " not found in @misc."))
+
+  intersect(genes, rownames(cor.mat))
   genes.found <- check.genes(genes)
   if (l(genes.found) > 200) iprint("Too many genes found in data, cor will be slow: ", l(genes.found))
   ls.cor <- sparse.cor(t(expr.mat[genes.found,]))
