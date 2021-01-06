@@ -174,32 +174,47 @@ Calc.Cor.Seurat <- function(assay = "RNA", slot = "data"
 
 
 # plot.Gene.Cor.Heatmap ------------------------------------------------------------------------
-
 plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
-                                  , assay.use = "RNA", slot.use = "data"
-                                  , min.g.cor =  0.3
+                                  , assay.use = "RNA", slot.use = "data", quantileX = 0.95
+                                  , min.g.cor =  0.3, calc.COR = FALSE
                                   , obj = combined.obj, ...) {
   expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
 
-  slotname_cor.mat <- kpp('cor', slot.use, assay.use)
+  qname = p0("expr.q", quantileX * 100)
+  slotname_cor.mat <- kpp('cor', slot.use, assay.use, qname)
   cor.mat <- obj@misc[[slotname_cor.mat]]
-  stopif(is_null(cor.mat), message = kollapse(slotname_cor.mat, " not found in @misc."))
 
-  intersect(genes, rownames(cor.mat))
-  genes.found <- check.genes(genes)
-  if (l(genes.found) > 200) iprint("Too many genes found in data, cor will be slow: ", l(genes.found))
-  ls.cor <- sparse.cor(t(expr.mat[genes.found,]))
+  if(is_null(cor.mat)) {
+    iprint(slotname_cor.mat, " not found in @misc.")
+    iprint("Correlation slots present in @misc:",grepv(names(combined.obj@misc), pattern = "^cor"))
 
-  # Filter
-  corrz <- ls.cor$cor
-  diag(corrz) <- NaN
+    # Calculate ------------------------------------
+    if(calc.COR){
+      print("Calculating correlation now.")
+      genes.found <- check.genes(genes)
+      iprint(l(genes.found), "genes are found in the object.")
+      if (l(genes.found) > 200) iprint("Too many genes found in data, cor will be slow: ", l(genes.found))
+      ls.cor <- sparse.cor(t(expr.mat[genes.found,]))
+      cor.mat <- ls.cor$cor
+    }
+  } else {
+    print("Correlation is pre-calculated")
+    genes.found <- intersect(genes, rownames(cor.mat))
+    iprint(l(genes.found), "genes are found in the correlation matrix.")
+    cor.mat <- cor.mat[genes.found, genes.found]
+  }
+
+
+  # Filter ------------------------------------
+  diag(cor.mat) <- NaN
   corgene.names <- union(
-    which_names(rowMax(corrz) >= min.g.cor),
-    which_names(rowMin(corrz) <= -min.g.cor)
+    which_names(rowMax(cor.mat) >= min.g.cor),
+    which_names(rowMin(cor.mat) <= -min.g.cor)
   )
+  iprint(l(corgene.names), "genes are more (anti-)correlated than +/-:", min.g.cor)
 
   pname = p0("Pearson correlations of ", substitute(genes),"\n min.cor:", min.g.cor, " | ",  assay.use ,'.', slot.use )
-  o.heatmap <- pheatmap(corrz[corgene.names,corgene.names],main = pname,..., annota)
+  o.heatmap <- pheatmap(cor.mat[corgene.names,corgene.names],main = pname, ...)
   wplot_save_pheatmap(o.heatmap, filename = make.names(pname))
 }
 
