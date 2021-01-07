@@ -31,7 +31,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
   if (save.plot) {
     plotname <- ppp(toupper(reduct), feature)
     fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
-    try(save_plot(filename =fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
+    try(save_plot(filename = fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
   }
   return(ggplot.obj)
 }
@@ -45,6 +45,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.7", obj =  combined.obj   # The
                    , plotname = ppp(toupper(reduct), ident)
                    , label = T, repel = T, legend = !label
                    , save.plot=T, PNG = T, h=7, ...) {
+  if (!(ident %in%  colnames(combined.obj@meta.data))) ident <- GetClusteringRuns(obj = obj, pat = "_res.*[0,1]\\.[0-9]$")[1]
   ggplot.obj <-
     DimPlot(object = obj, group.by = ident
             , reduction = reduct, split.by = splitby
@@ -54,7 +55,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.7", obj =  combined.obj   # The
 
   if (save.plot) {
     fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
-    try(save_plot(filename =fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
+    try(save_plot(filename = fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
   }
   return(ggplot.obj)
 }
