@@ -139,12 +139,12 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
 multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
                                 , obj = combined.obj, foldername = substitute(list.of.genes), plot.reduction='umap', intersectionAssay = c('RNA', 'integrated')[1]
-                                , layout = c('tall', 'wide', NULL)[3]
+                                , layout = c('tall', 'wide', FALSE )[2]
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , prefix = NULL , suffix = NULL
                                 , saveGeneList = FALSE
-                                , w = wA4, h = hA4
+                                , w = wA4, h = hA4, scaling = 1
                                 , format = c('jpg', 'pdf', 'png')[1]
                                 , ...
                                 # , jpeg.res = 225, jpeg.q = 90
@@ -155,8 +155,8 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
   if (subdir) create_set_SubDir( paste0(foldername,'-', plot.reduction),'/')
   list.of.genes.found = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay)
 
-  if (layout == 'tall') { w = wA4; h = hA4; nr.Col = 2; nr.Row = 4}
-  if (layout == 'wide') { w = hA4; h = wA4; nr.Col = 2; nr.Row = 2}
+  if (layout == 'tall') { w = wA4 * scaling; h = hA4 * scaling; nr.Col = 2; nr.Row = 4}
+  if (layout == 'wide') { w = hA4 * scaling; h = wA4 * scaling; nr.Col = 2; nr.Row = 2}
 
   lsG = iterBy.over(1:length(list.of.genes.found), by = nr.Row * nr.Col)
   for (i in 1:length(lsG)) {
