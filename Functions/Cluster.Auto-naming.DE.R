@@ -18,7 +18,7 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 
 
 # Add.DE.combined.score ------------------------------------------------------------------------
-Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-50, pval_scaling = 0.1, colLFC = "avg_log2FC", colP = "p_val" ) { # Score = -LOG10(p_val) * avg_log2FC
+Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-25, pval_scaling = 0.001, colLFC = "avg_log2FC", colP = "p_val" ) { # Score = -LOG10(p_val) * avg_log2FC
   p_cutoff <- SmallestNonAboveX(vec = df[[colP]], X = p_val_min)
   df$'combined.score' <- round(df[[colLFC]] * -log10( p_cutoff / pval_scaling ) )
   return(df)
