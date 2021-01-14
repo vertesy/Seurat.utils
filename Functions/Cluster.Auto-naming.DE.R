@@ -9,7 +9,7 @@
 
 
 # SmallestNonAboveX ------------------------------------------------------------------------
-SmallestNonAboveX <- function(vec, X = 0) { # replace 0 with smallest non-zero value (>0)
+SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next smallest value found, which is >X.
   newmin <- min(vec[vec > X])
   vec[vec <= X] <- newmin
   vec
@@ -18,8 +18,9 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace 0 with smallest non-zero v
 
 
 # Add.DE.combined.score ------------------------------------------------------------------------
-Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-100, colLFC = "avg_log2FC", colP = "p_val" ) { # Score = -LOG10(p_val) * avg_log2FC
-  df$'combined.score' <- round(df[[colLFC]] * -log10(SmallestNonAboveX(vec = df[[colP]], X = p_val_min)))
+Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-50, pval_scaling = 0.1, colLFC = "avg_log2FC", colP = "p_val" ) { # Score = -LOG10(p_val) * avg_log2FC
+  p_cutoff <- SmallestNonAboveX(vec = df[[colP]], X = p_val_min)
+  df$'combined.score' <- round(df[[colLFC]] * -log10( p_cutoff / pval_scaling ) )
   return(df)
 }
 # df.markers <- Add.DE.combined.score(df.markers)
@@ -69,7 +70,7 @@ GetTopMarkersDF <- function(dfDE = df.markers # Get the vector of N most diff. e
 
 # GetTopMarkers ------------------------------------------------------------------------------------
 GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp. genes.
-                            , n = p$'n.markers', order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1]) {
+                            , n = p$'n.markers', order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]) {
   'Works on active Idents() -> thus we call cluster'
   TopMarkers <- dfDE %>%
     arrange(desc(!!as.name(order.by))) %>%
