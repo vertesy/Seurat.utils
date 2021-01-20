@@ -187,13 +187,15 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 # combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj, ident.table = clusterIDs.GO.process)
 
 
+
 # calc.cluster.averages ------------------------------------------------
 calc.cluster.averages <- function(obj =  combined.obj, simplify=T, plotit = T
                                   , col_name = "Score.GO.0006096"
+                                  , stat = c("mean", "median")[2]
                                   , split_by = GetClusteringRuns()[l(GetClusteringRuns())]
                                   , quantile.thr = 0.9
                                   , ylab.text = "Glycolytic Process"
-                                  , title = paste("Cluster Average", col_name, ylab.text)
+                                  , title = paste("Cluster", stat, col_name, ylab.text)
                                   , subtitle = paste("Clusters above the",percentage_formatter(0.9),"quantile")
                                   , ylb = paste(ylab.text, col_name)
                                   , xlb = paste ( "Clusters", split_by)
@@ -205,30 +207,44 @@ calc.cluster.averages <- function(obj =  combined.obj, simplify=T, plotit = T
     select_at(c(col_name, split_by)) %>%
     group_by_at(split_by) %>%
     summarize('nr.cells' = n()
-              , 'median' =  median(!!sym(col_name), na.rm = TRUE)
+              , 'median' = median(!!sym(col_name), na.rm = TRUE)
+              , 'mean' = mean(!!sym(col_name), na.rm = TRUE)
     )
 
 
 
   if (simplify) {
-    av.score <- as.named.vector(df_col = df.summary[,"median"])
-    names(av.score) <- (as.numeric(names(av.score))-1)
+    # av.score <- as.named.vector(df_col = df.summary[,"median"])
+    # names(av.score) <- (as.numeric(names(av.score))-1)
+    av.score <- df.summary[[stat]]
+    names(av.score) <- ppp("cl",df.summary[[1]])
+    av.score <- sortbyitsnames(av.score)
 
     if (plotit) {
-      wbarplot(av.score, hline = quantile(av.score, quantile.thr)
-               , plotname = fname
-               , xlab = xlb
-               , ylab = ylb
-               , main = title
-               , sub = subtitle)
+      p <- qbarplot(vec = av.score, hline = quantile(av.score, quantile.thr),
+                    , title = title
+                    , subtitle = subtitle
+                    , ylab = paste("Cluster", stat, "score.")
+                    , xlab.angle = 45
+                    , ext = "png", w = 7, h = 5
+      )
+      print(p)
     }
+    # else if (plotit == F) {
+    #   wbarplot(av.score, hline = quantile(av.score, quantile.thr)
+    #            , plotname = fname
+    #            , xlab = xlb
+    #            , ylab = ylb
+    #            , main = title
+    #            , sub = subtitle
+    #            # , tilted_text = T
+    #            , incrBottMarginBy = 1)
+    # }
     av.score
-
   } else {
     df.summary
   }
 }
-
 # calc.cluster.averages(col_name = "Score.GO.0006096", split_by = grepv(pattern = "0.6", GetClusteringRuns())                        )
 # av.score <- as.named.vector(df_col = calc.cluster.averages()[,"median"])
 # names(av.score) <- as.numeric(names(av.score))
