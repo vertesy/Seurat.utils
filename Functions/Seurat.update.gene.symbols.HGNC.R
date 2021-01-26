@@ -84,7 +84,7 @@ HGNC.EnforceUnique <- function(updatedSymbols) { # Enforce Unique names after HG
 GetUpdateStats <- function(genes = HGNC.updated[[i]]) { # Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`.
   (MarkedAsUpdated <- genes[genes$Approved == FALSE, ])
   (AcutallyUpdated <- sum(MarkedAsUpdated[,1] != MarkedAsUpdated[,3]))
-  (UpdateStats = c("Updated (%)"=(AcutallyUpdated / nrow(genes)), "Updated Genes"=AcutallyUpdated, "Total Genes"=nrow(genes)))
+  (UpdateStats = c("Updated (%)"=percentage_formatter(AcutallyUpdated / nrow(genes)), "Updated Genes"=floor(AcutallyUpdated), "Total Genes"=floor(nrow(genes))))
   return(UpdateStats)
 }
 # GetUpdateStats(genes = HGNC.updated.genes)
