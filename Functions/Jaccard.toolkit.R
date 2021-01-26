@@ -23,6 +23,11 @@ jJaccardIndexVec <- function(A = 1:3, B = 2:4) length(intersect(A,B)) / length(u
 # jPairwiseJaccardIndexList ----------------------------------------
 
 jPairwiseJaccardIndexList <- function(lsG = ls_genes) { # Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
+  if (l(names(lsG)) < l(lsG)) {
+    iprint("Gene lists were not (all) named, now renamed as:")
+    names(lsG) <- ppp("dataset", 1:l(lsG))
+    print(names(lsG))
+  }
   m = matrix.fromNames(rowname_vec = names(lsG), colname_vec = names(lsG))
   n.sets <- length(lsG)
   for (r in 1:n.sets) {
