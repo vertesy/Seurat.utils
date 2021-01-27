@@ -155,6 +155,38 @@ FindCorrelatedGenes <- function(gene ="N.RabV.N2c", obj = combined.obj, assay = 
 
 
 # ------------------------------------------------------------------------
+Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data", geneset = FALSE
+                            , quantileX = 0.95, max.cells =  10000, seed = p$"seed"
+                            , digits = 2, obj = combined.obj) {
+  expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
+  if (ncol(expr.mat) > max.cells) {
+    set.seed(seed = seed)
+    cells.use <- sample(x = colnames(expr.mat), size = max.cells)
+  } else {
+    cells.use <- colnames(obj)
+  }
+
+  qname = p0("q", quantileX * 100)
+  quantile_name = kpp("expr", qname)
+  if (is.null(obj@misc[[quantile_name]])) { iprint("Quantile data missing! Call: combined.obj <- Calcq90Expression(combined.obj, quantileX =",quantileX,") first!"); stop()}
+
+  genes.HE  <- if (isFALSE(geneset)) {  which_names(obj@misc[[quantile_name]] > 0) } else {
+                                        check.genes(geneset)  }
+  iprint("Pearson correlation is calculated for", l(genes.HE), "HE genes with expr."
+         , qname,": > 0 on a sample of", max.cells, " cells.")
+  tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
+
+  ls.cor <- lapply(ls.cor, round, digits = 2)
+
+  slot__name <- kpp(slot.use, assay.use, quantile_name)
+  obj@misc[[kpp('cor', slot__name)]] <- ls.cor$'cor'
+  obj@misc[[kpp('cov', slot__name)]] <- ls.cor$'cov'
+  iprint("Stored under obj@misc$", kpp('cor', slot.use, assay.use), "or cov... ." )
+  return(obj)
+}
+
+
+
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
