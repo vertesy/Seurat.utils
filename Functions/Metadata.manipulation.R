@@ -198,7 +198,7 @@ calc.cluster.averages <- function(obj =  combined.obj, simplify=T, plotit = T
                                   , subtitle = NULL
                                   , ylb = paste(ylab.text, col_name)
                                   , xlb = paste("Clusters >",percentage_formatter(0.9),"quantile are highlighted. |", split_by)
-                                  , fname = ppp(col_name,split_by,"cluster.average.barplot.pdf")
+                                  , fname = ppp(col_name,split_by,"cluster.average.barplot.pdf", ...)
 ) { # calc.cluster.averages of a m
 
   df.summary <-
@@ -218,8 +218,8 @@ calc.cluster.averages <- function(obj =  combined.obj, simplify=T, plotit = T
     av.score <- sortbyitsnames(av.score)
 
     if (plotit) {
-      p <- qbarplot(vec = av.score,
-                    , hline = quantile(av.score, quantile.thr),
+      p <- qbarplot(vec = av.score
+                    , hline = quantile(av.score, quantile.thr)
                     , title = title
                     , subtitle = subtitle
                     , ylab = ylab.text
