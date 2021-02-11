@@ -18,7 +18,10 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 
 
 # Add.DE.combined.score ------------------------------------------------------------------------
-Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-25, pval_scaling = 0.001, colLFC = "avg_log2FC", colP = "p_val" ) { # Score = -LOG10(p_val) * avg_log2FC
+Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-25, pval_scaling = 0.001, colP = "p_val"
+                                  , colLFC = grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df_markers), perl = T)
+                                  # , colLFC = "avg_log2FC"
+                                  ) { # Score = -LOG10(p_val) * avg_log2FC
   p_cutoff <- SmallestNonAboveX(vec = df[[colP]], X = p_val_min)
   df$'combined.score' <- round(df[[colLFC]] * -log10( p_cutoff / pval_scaling ) )
   return(df)
@@ -88,9 +91,11 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 # ------------------------------------------------------------------------------------
 AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
                                , res = 0.2, plot.top.genes = T
-                               , order_by = c("combined.score", "avg_log2FC", "p_val_adj")[1]
+                               , order_by = c("combined.score", "avg_logFC", "p_val_adj")[1]
                                , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
+  stopifnot(!order_by %in% colnames(df_markers))
+
   top.markers <-
     GetTopMarkersDF(df = df_markers, order.by = order_by, n=1) %>%
     col2named.vec.tbl()
@@ -123,9 +128,13 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
                                    , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
 
+  lfcCOL <- grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df_markers), perl = T)
+  keep <- c(lfcCOL, 'p_val_adj', 'cluster', 'combined.score', 'gene'  )
+
+
   matching.clusters <-
     df_markers %>%
-    dplyr::select(avg_log2FC, avg_logFC, p_val_adj, cluster, combined.score, gene ) %>%
+    dplyr::select(keep) %>%
     arrange(desc(!!as.name(order.by))) %>%
     filter(gene %in%  KnownMarkers) %>%
     group_by(gene) %>%
@@ -145,7 +154,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
   print("Best matches:")
   print(unique.matches)
 
-  top.markers.df <- GetTopMarkersDF(dfDE = df_markers, n = 1)
+  top.markers.df <- GetTopMarkersDF(dfDE = df_markers, order.by = lfcCOL, n = 1)
   top.markers <- top.markers.df %>% col2named.vec.tbl()
 
   missing.annotations <-
