@@ -125,7 +125,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 
   matching.clusters <-
     df_markers %>%
-    dplyr::select(avg_log2FC, p_val_adj, cluster, combined.score, gene ) %>%
+    dplyr::select(avg_log2FC, avg_logFC, p_val_adj, cluster, combined.score, gene ) %>%
     arrange(desc(!!as.name(order.by))) %>%
     filter(gene %in%  KnownMarkers) %>%
     group_by(gene) %>%
