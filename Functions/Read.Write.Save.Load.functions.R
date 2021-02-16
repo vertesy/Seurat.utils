@@ -7,8 +7,53 @@
 "Multicore read / write (I/O) functions are https://github.com/vertesy/Seurat.multicore"
 "Single core read / write (I/O) functions are in https://github.com/vertesy/Seurat.utils/"
 
+
 # Convert10Xfolders ------------------------------------------------------------------------
 Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
+                              , regex = F, folderPattern = c("filtered_feature", "SoupX_decont")[1]
+                              , min.cells=10, min.features=200
+                              , updateHGNC = T, ShowStats = T) {
+
+  # finOrig <- list.dirs(InputDir, recursive = subdirs)
+  finOrig <- list.dirs.depth.n(InputDir, depth = 2)
+  fin <- grepv(x = finOrig, pattern = folderPattern, perl = regex)
+
+  iprint(length(fin), "samples found.")
+  if (l(fin)) {
+    for (i in 2:length(fin)) { print(i)
+      pathIN = fin[i]; print(pathIN)
+      # fnameIN = basename(dirname(xx))
+      fnameIN = strsplit(basename(dirname(fin[i])),split = "_")[[1]][1]
+      print(fnameIN)
+      fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
+      print(fnameOUT)
+      count_matrix <- Read10X(pathIN)
+
+      if ( !is.list(count_matrix) | length(count_matrix) == 1) {
+        seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
+                                  min.cells = min.cells, min.features = min.features)
+      } else if (is.list(count_matrix) & length(count_matrix) == 2)  {
+        seu <- CreateSeuratObject(counts = count_matrix[[1]], project = fnameIN,
+                                  min.cells = min.cells, min.features = min.features)
+
+        # LSB, Lipid Sample barcode (Multi-seq) --------------------
+        LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
+        LSBnameOUT = ppp(paste0(InputDir, '/LSB.', fnameIN),"Rds")
+        saveRDS(LSB, file = LSBnameOUT)
+      } else {
+        print('More than 2 elements in the list of matrices')
+      }
+      # update----
+      if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
+      saveRDS(seu, file = fnameOUT)
+    }
+  } else { iprint("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3]) }
+}
+# Convert10Xfolders(InputDir)
+
+
+# Convert10Xfolders.old ------------------------------------------------------------------------
+Convert10Xfolders.old <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
                               , folderPattern = c("filtered", "SoupX_decont")[1]
                               , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T) {
   fin <- list.dirs(InputDir, recursive = F)
