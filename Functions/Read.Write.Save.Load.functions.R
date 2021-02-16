@@ -44,28 +44,45 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 # ConvertDropSeqfolders ------------------------------------------------------------------------
 ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
                                   , folderPattern = "SRR*", filePattern = "expression.tsv.gz"
-                                  , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T) {
+                                  , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T, minDimension = 10, overwrite = FALSE) {
+  InputDir <- FixPath(InputDir)
   fin <- list.dirs(InputDir, recursive = F)
   fin <- grepv(x = fin, pattern = folderPattern, perl = F)
 
-  for (i in 1:length(fin)) {
-    pathIN = fin[i]; print(pathIN)
-    fnameIN = basename(fin[i])
-    subdir <- kpps(InputDir, fnameIN)
-    fnameOUT = ppp(subdir, 'min.cells', min.cells, 'min.features', min.features,"Rds")
-
+  for (i in 1:length(fin)) { print(i)
+    pathIN <- FixPath(fin[i]); print(pathIN)
+    fnameIN <- basename(fin[i])
+    subdir <- p0(InputDir, fnameIN)
+    fnameOUT <- ppp(subdir, 'min.cells', min.cells, 'min.features', min.features,"Rds"); print(fnameOUT)
+    if (!overwrite) {
+      OutFile <- list.files(InputDir, pattern = basename(fnameOUT), recursive = T)
+      if (length(OutFile) > 0) {
+        if (grepl(pattern = ".Rds$", OutFile, perl = T)) {
+          iprint("      RDS OBJECT ALREADY EXISTS.");
+          next
+        }
+      } # if length
+    }
     CountTable <- list.files(subdir, pattern = filePattern,recursive = F)
     stopifnot(length(CountTable) == 1 )
-    count_matrix <- readr::read_tsv(file=kpps(subdir, CountTable), )
-    count_matrix <- FirstCol2RowNames(count_matrix)[,-1] # remove 1st "Cell column" # https://github.com/vertesy/SEO/issues/63
-    seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
-                              min.cells = min.cells, min.features = min.features)
-    # update----
-    if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
-    saveRDS(seu, file = fnameOUT)
+    count_matrix <- readr::read_tsv(file = kpps(subdir, CountTable))
+    if (nrow(count_matrix) < minDimension | ncol(count_matrix) < minDimension ) {
+      iprint(""); iprint("      EXPRESSION MATRIX TOO SMALL.", nrow(count_matrix), "x", ncol(count_matrix),". Not processed.");
+    } else {
+      count_matrix <- FirstCol2RowNames(count_matrix)[,-1] # remove 1st "Cell column" # https://github.com/vertesy/SEO/issues/63
+      seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
+                                min.cells = min.cells, min.features = min.features)
+      if (ncol(seu) < 1000) print("Only", ncol(seu), "cells survived filtering in the Seurat obj!")
+      if (nrow(seu) < 1000) print("Only", nrow(seu), "genes found in the Seurat obj!")
+
+      # update HGNC ----
+      Sys.setenv('R_MAX_VSIZE' = 32000000000)
+      if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
+      saveRDS(seu, file = fnameOUT)
+    }
   }
 }
-# ConvertDropSeqfolders(InputDir = InputDir)
+# ConvertDropSeqfolders(InputDir)
 
 # LoadAllSeurats ------------------------------------------------------------------------
 LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
