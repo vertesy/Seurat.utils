@@ -44,6 +44,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 # ConvertDropSeqfolders ------------------------------------------------------------------------
 ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
                                   , folderPattern = "SRR*", filePattern = "expression.tsv.gz"
+                                  , useVroom = T
                                   , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T, minDimension = 10, overwrite = FALSE) {
   InputDir <- FixPath(InputDir)
   fin <- list.dirs(InputDir, recursive = F)
@@ -65,7 +66,12 @@ ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a numb
     }
     CountTable <- list.files(subdir, pattern = filePattern,recursive = F)
     stopifnot(length(CountTable) == 1 )
-    count_matrix <- readr::read_tsv(file = kpps(subdir, CountTable))
+    count_matrix <- if (useVroom) {
+      vroom::vroom(file = kpps(subdir, CountTable))
+    } else {
+      readr::read_tsv(file = kpps(subdir, CountTable))
+    }
+
     if (nrow(count_matrix) < minDimension | ncol(count_matrix) < minDimension ) {
       iprint(""); iprint("      EXPRESSION MATRIX TOO SMALL.", nrow(count_matrix), "x", ncol(count_matrix),". Not processed.");
     } else {
