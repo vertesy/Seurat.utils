@@ -87,17 +87,17 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 # https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
 
 # ------------------------------------------------------------------------
-save2umaps.A4 <- function(plot_list, pname = F, ...) { # Save 2 umaps on an A4 page.
+save2umaps.A4 <- function(plot_list, pname = F, h = hA4, w = wA4, ...) { # Save 2 umaps on an A4 page.
   if (pname ==F) pname = substitute(plot_list)
   p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 1, labels = LETTERS[1:length(plot_list)], ...  )
-  save_plot(plot = p1, filename = extPNG(pname), base_height = hA4, base_width = wA4)
+  save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
 
 # ------------------------------------------------------------------------
-save4umaps.A4 <- function(plot_list, pname = F, ...) { # Save 4 umaps on an A4 page.
+save4umaps.A4 <- function(plot_list, pname = F, h = wA4, w = hA4, ...) { # Save 4 umaps on an A4 page.
   if (pname==F) pname = substitute(plot_list)
   p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:length(plot_list)], ...  )
-  save_plot(plot = p1, filename = extPNG(pname), base_height = wA4, base_width = hA4)
+  save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
 
 # ------------------------------------------------------------------------
