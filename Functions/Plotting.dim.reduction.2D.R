@@ -39,25 +39,39 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 
 
 # Quick clustering result or categorical umap  ------------------------------------------------------------------------
-clUMAP <- function(ident = "integrated_snn_res.0.7", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
+
+# Quick clustering result or categorical umap  ------------------------------------------------------------------------
+clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
                    , reduct ="umap", splitby = NULL
                    , title = ident, sub =NULL, label.cex = 7
                    , plotname = ppp(toupper(reduct), ident)
-                   , label = T, repel = T, legend = !label
+                   , label = T, repel = T, legend = !label, MaxCategThrHP = 100
                    , save.plot=T, PNG = T, h=7, ...) {
-  if (!(ident %in%  colnames(combined.obj@meta.data))) ident <- GetClusteringRuns(obj = obj, pat = "_res.*[0,1]\\.[0-9]$")[1]
-  ggplot.obj <-
-    DimPlot(object = obj, group.by = ident
-            , reduction = reduct, split.by = splitby
-            , label = label, repel = repel, label.size = label.cex, ...) +
-    ggtitle(label = title, subtitle = sub) +
-    if (!legend) NoLegend() else NULL
+  IdentFound <- (ident %in%  colnames(obj@meta.data))
 
-  if (save.plot) {
-    fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
-    try(save_plot(filename = fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
+  if (!IdentFound) {
+    ident <- GetClusteringRuns(obj = obj, pat = "_res.*[0,1]\\.[0-9]$")[1]
+    iprint("Identity not found. Plotting", ident)
   }
-  return(ggplot.obj)
+
+  NtCategs <- length(unique(obj[[ident]][,1]))
+  if( NtCategs > MaxCategThrHP ) {
+    iprint("Too many categories (",NtCategs,") in ", ident, "- use qUMAP for continous variables.")
+  } else {
+    if( length(unique(obj[[ident]])) < MaxCategThrHP )
+      ggplot.obj <-
+        DimPlot(object = obj, group.by = ident
+                , reduction = reduct, split.by = splitby
+                , label = label, repel = repel, label.size = label.cex, ...) +
+        ggtitle(label = title, subtitle = sub) +
+        if (!legend) NoLegend() else NULL
+
+    if (save.plot) {
+      fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
+      try(save_plot(filename = fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
+    }
+    return(ggplot.obj)
+  } # if not too many categories
 }
 # clUMAP()
 # clUMAP(ident = "RNA_snn_res.0.1")
