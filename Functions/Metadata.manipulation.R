@@ -192,8 +192,9 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 
 # calc.cluster.averages ------------------------------------------------
 calc.cluster.averages <- function(col_name = "Score.GO.0006096"
-                                  , obj =  combined.obj, simplify=T, plotit = T
+                                  , obj =  combined.obj
                                   , split_by = GetNamedClusteringRuns()[1]
+                                  , simplify=T, plotit = T
                                   , stat = c("mean", "median")[2]
                                   , quantile.thr = 0.9
                                   , ylab.text = paste("Cluster", stat, "score")
@@ -213,8 +214,10 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
     select_at(c(col_name, split_by)) %>%
     group_by_at(split_by) %>%
     summarize('nr.cells' = n()
-              , 'median' = median(!!sym(col_name), na.rm = TRUE)
               , 'mean' = mean(!!sym(col_name), na.rm = TRUE)
+              , 'SEM' = sem(!!sym(col_name), na.rm = TRUE)
+              , 'median' = median(!!sym(col_name), na.rm = TRUE)
+              , 'SE.median' = 1.2533 * sem(!!sym(col_name), na.rm = TRUE)
     )
 
 
