@@ -39,8 +39,9 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 
 # plot3D.umap.gene ------------------------------------------------------------------------
 plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
-                             , gene="TOP2A", quantileCutoff = .99, alpha = .5, dotsize=1.25, def.assay = c("integrated", "RNA")[2]
-                             , AutoAnnotBy = GetNamedClusteringRuns(obj)[1]) {
+                             , gene="TOP2A", quantileCutoff = .99, def.assay = c("integrated", "RNA")[2]
+                             , suffix = NULL, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]
+                             , alpha = .5, dotsize=1.25 ){
   # stopifnot(AutoAnnotBy %in% colnames(obj@meta.data) | AutoAnnotBy = FALSE)
 
   obj <- ww.check.if.3D.reduction.exist(obj = obj)
@@ -68,15 +69,16 @@ plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene express
                  , colors = c('darkgrey', 'red')
                  #, hoverinfo="text"
   ) %>% layout(title=gene, scene = list(annotations=ls.ann.auto))
-  SavePlotlyAsHtml(plt, category. = gene)
+  SavePlotlyAsHtml(plt, category. = gene, suffix. = suffix)
   return(plt)
 }
 # plot3D.umap.gene(obj = combined.obj, gene = "DDIT4", quantileCutoff = .95)
 
 
 # plot3D.umap ------------------------------------------------------------------------
-plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
-                        category="v.project", dotsize = 1.25, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]) {
+plot3D.umap <- function(obj=combined.obj # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
+                        , suffix = NULL, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]
+                        , category="v.project", dotsize = 1.25) {
 
   stopifnot(category %in% colnames(obj@meta.data))
   obj <- ww.check.if.3D.reduction.exist(obj = obj)
@@ -99,15 +101,15 @@ plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the m
           , colors = gg_color_hue(length(unique(plotting.data$'category')))
           # , hoverinfo="text"
   ) %>% layout(title=category, scene = list(annotations=ls.ann.auto))
-  SavePlotlyAsHtml(plt, category. = category)
+  SavePlotlyAsHtml(plt, category. = category, suffix. = suffix)
   return(plt)
 }
 # plot3D.umap(combined.obj, category = "Phase")
 
 # ------------------------------------------------------------------------
-SavePlotlyAsHtml <- function(plotly_obj, category.=category) { # Save Plotly 3D scatterplot as an html file.
+SavePlotlyAsHtml <- function(plotly_obj, category.=category, suffix. = NULL) { # Save Plotly 3D scatterplot as an html file.
   OutputDir <- if (exists("OutDir")) OutDir else getwd()
-  fname <- kpp(OutputDir,"/umap.3D",category.,idate(),"html"); iprint("Plot saved as:",fname)
+  fname <- kpp(OutputDir, "/umap.3D", category., suffix., idate(), "html"); iprint("Plot saved as:", fname)
   htmlwidgets::saveWidget(plotly_obj, file = fname, selfcontained = TRUE, title = category.)
 }
 
