@@ -100,7 +100,10 @@ GetNamedClusteringRuns <- function(obj = combined.obj  # Get Clustering Runs: me
   if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
   if (topgene) pat = gsub(x = pat, pattern = 'Known', replacement = 'top')
   clustering.results <- grepv(x = colnames(obj@meta.data), pattern = pat)
-  if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
+  if ( identical(clustering.results, character(0)) ) {
+    print("Warning: NO matching column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)")
+    clustering.results <- GetClusteringRuns(obj = obj, res = F, pat = "*_res.*[0,1]\\.[0-9]$")
+  }
   return(clustering.results)
 }
 # GetNamedClusteringRuns()
