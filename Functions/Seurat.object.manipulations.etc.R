@@ -51,7 +51,9 @@ gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) { # Check gene names in a
 
 
 # check.genes ---------------------------------------
-check.genes <- function(list.of.genes = ClassicMarkers, obj = combined.obj, assay.slot=c('RNA', 'integrated')[1]) { # Check if genes exist in your dataset.
+check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = TRUE
+                        , obj = combined.obj, assay.slot=c('RNA', 'integrated')[1]) { # Check if genes exist in your dataset.
+  if (makeuppercase) list.of.genes <- toupper(list.of.genes)
   all_genes = rownames(GetAssayData(object = obj, assay = assay.slot, slot = "data")); length(all_genes)
   missingGenes = setdiff(list.of.genes, all_genes)
   if (length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
