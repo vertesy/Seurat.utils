@@ -16,12 +16,23 @@ try(library(htmlwidgets), silent = T)
 
 
 # ------------------------------------------------------------------------
+ww.check.if.3D.reduction.exist <- function(obj = obj) { # ww.check.if.3D.reduction.exist in backup slot
+  if( !("UMAP_3" %in% colnames(obj@reductions$'umap'))) {
+    stopif2( is.null(combined.obj@misc$reductions.backup$'umap3d')
+             , "No 3D umap found in backup slot, @misc$reductions.backup. Run SetupReductionsNtoKdimensions() first.")
+    RecallReduction(obj = obj, dim = 3, reduction = "umap")
+  } else { # Reduction found in normal UMAP slot
+    obj
+  }
+}
+
 # ------------------------------------------------------------------------
 plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
                              , gene="TOP2A", quantileCutoff = .99, alpha = .5, dotsize=1.25, def.assay = c("integrated", "RNA")[2]
-                             , AutoAnnotBy=c(FALSE, "v.project", "integrated_snn_res.0.7")[3]) {
+                             , AutoAnnotBy = GetNamedClusteringRuns(obj)[1]) {
   # stopifnot(AutoAnnotBy %in% colnames(obj@meta.data) | AutoAnnotBy = FALSE)
-  stopifnot("UMAP_3" %in% colnames(obj@reductions$umap))
+
+  obj <- ww.check.if.3D.reduction.exist(obj = obj)
   stopifnot(gene %in% rownames(obj))
 
   DefaultAssay(object = obj) <- def.assay
@@ -54,9 +65,11 @@ plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene express
 
 # ------------------------------------------------------------------------
 plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
-  category="v.project", dotsize = 1.25, AutoAnnotBy=c(FALSE, category, "integrated_snn_res.0.7")[3]) {
+                        category="v.project", dotsize = 1.25, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]) {
+
   stopifnot(category %in% colnames(obj@meta.data))
-  stopifnot("UMAP_3" %in% colnames(obj@reductions$umap))
+  obj <- ww.check.if.3D.reduction.exist(obj = obj)
+
   plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", category))
   colnames(plotting.data)[4] = "category"
   plotting.data$label <- paste(rownames(plotting.data))   # Make a column of row name identities (these will be your cell/barcode names)
