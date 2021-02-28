@@ -191,18 +191,22 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 
 
 # calc.cluster.averages ------------------------------------------------
-calc.cluster.averages <- function(obj =  combined.obj, simplify=T, plotit = T
-                                  , col_name = "Score.GO.0006096"
+calc.cluster.averages <- function(col_name = "Score.GO.0006096"
+                                  , obj =  combined.obj, simplify=T, plotit = T
+                                  , split_by = GetNamedClusteringRuns()[1]
                                   , stat = c("mean", "median")[2]
-                                  , split_by = GetClusteringRuns()[l(GetClusteringRuns())]
                                   , quantile.thr = 0.9
                                   , ylab.text = paste("Cluster", stat, "score")
                                   , title = paste("Cluster", stat, col_name)
                                   , subtitle = NULL
-                                  , ylb = paste(ylab.text, col_name)
-                                  , xlb = paste("Clusters >",percentage_formatter(0.9),"quantile are highlighted. |", split_by)
+                                  # , ylb = paste(ylab.text, col_name)
+                                  # , xlb = paste("Clusters >",percentage_formatter(quantile.thr),"quantile are highlighted. |", split_by)
+                                  , xlb = paste( "Lines mark" , kppd(percentage_formatter(c(1-quantile.thr,quantile.thr))) ,"quantiles."
+                                                 , "Clusters >",percentage_formatter(quantile.thr),"are highlighted. |", split_by)
+
                                   , fname = ppp(col_name,split_by,"cluster.average.barplot.pdf", ...)
 ) { # calc.cluster.averages of a m
+  iprint(substitute(obj), "split by", split_by)
 
   df.summary <-
     obj@meta.data %>%
@@ -229,7 +233,7 @@ calc.cluster.averages <- function(obj =  combined.obj, simplify=T, plotit = T
                     , xlab = xlb # Abused
                     , xlab.angle = 45
                     , ext = "png", w = 7, h = 5
-      )
+      ) + geom_hline(yintercept = quantile(av.score, (1-quantile.thr) ) , lty=2)
       print(p)
     }
     av.score
@@ -237,6 +241,7 @@ calc.cluster.averages <- function(obj =  combined.obj, simplify=T, plotit = T
     df.summary
   }
 }
+
 # calc.cluster.averages(col_name = "Score.GO.0006096", split_by = grepv(pattern = "0.6", GetClusteringRuns())                        )
 # av.score <- as.named.vector(df_col = calc.cluster.averages()[,"median"])
 # names(av.score) <- as.numeric(names(av.score))
