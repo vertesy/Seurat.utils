@@ -176,8 +176,10 @@ read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and b
 #### Functions in Saving.and.loading.R
 
 # Save an object -----------------------------------------------
-isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T, inOutDir = F){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
-  path_rdata = if (inOutDir) { OutDir } else { paste0( "~/Documents/RDS.files/", basename(OutDir) ) }
+isave.RDS <- function(object, prefix =NULL, suffix=NULL, inOutDir = F
+                      , alternative_path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
+                      , showMemObject=T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
+  path_rdata = if (inOutDir) OutDir else alternative_path_rdata
   dir.create(path_rdata)
 
   if (showMemObject) { memory.biggest.objects() }
@@ -200,8 +202,10 @@ isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, savePa
 # requires MarkdownReportsDev (github) and defining OutDir
 # requires github/vertesy/CodeAndRoll.r
 
-isave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
-  path_rdata = paste0("~/Documents/Rdata.files/", basename(OutDir))
+isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))
+                        , showMemObject=T, options=c("--force", NULL)[1]
+                        ){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
+
   dir.create(path_rdata)
 
   if (showMemObject) { memory.biggest.objects() }
