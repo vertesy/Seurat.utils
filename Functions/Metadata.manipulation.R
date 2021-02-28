@@ -190,11 +190,13 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 # combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj, ident.table = clusterIDs.GO.process)
 
 
+
 # calc.cluster.averages ------------------------------------------------
 calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , obj =  combined.obj
                                   , split_by = GetNamedClusteringRuns()[1]
                                   , simplify=T, plotit = T
+                                  , suffix = NULL
                                   , stat = c("mean", "median")[2]
                                   , quantile.thr = 0.9
                                   , ylab.text = paste("Cluster", stat, "score")
@@ -202,8 +204,8 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , subtitle = NULL
                                   # , ylb = paste(ylab.text, col_name)
                                   # , xlb = paste("Clusters >",percentage_formatter(quantile.thr),"quantile are highlighted. |", split_by)
-                                  , xlb = paste( "Lines mark" , kppd(percentage_formatter(c(1-quantile.thr,quantile.thr))) ,"quantiles."
-                                                 , "Clusters >",percentage_formatter(quantile.thr),"are highlighted. |", split_by)
+                                  , xlb = paste( "Lines mark" , kppd(percentage_formatter(c(1-quantile.thr,quantile.thr))) ,"quantiles |"
+                                                 , "Cl. >",percentage_formatter(quantile.thr),"are highlighted. |", split_by)
 
                                   , fname = ppp(col_name,split_by,"cluster.average.barplot.pdf", ...)
 ) { # calc.cluster.averages of a m
@@ -220,39 +222,29 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
               , 'SE.median' = 1.2533 * sem(!!sym(col_name), na.rm = TRUE)
     )
 
-
-
   if (simplify) {
     av.score <- df.summary[[stat]]
     names(av.score) <- ppp("cl",df.summary[[1]])
     av.score <- sortbyitsnames(av.score)
 
     if (plotit) {
-      p <- qbarplot(vec = av.score
+      p <- qbarplot(vec = av.score, save = F
                     , hline = quantile(av.score, quantile.thr)
                     , title = title
                     , subtitle = subtitle
                     , ylab = ylab.text
                     , xlab = xlb # Abused
                     , xlab.angle = 45
-                    , ext = "png", w = 7, h = 5
+                    # , ext = "png", w = 7, h = 5
       ) + geom_hline(yintercept = quantile(av.score, (1-quantile.thr) ) , lty=2)
       print(p)
+      qqSave(ggobj = p, title =  ppp(title, suffix), ext = "png", w = 8, h = 6)
     }
     av.score
   } else {
     df.summary
   }
 }
-
-# calc.cluster.averages(col_name = "Score.GO.0006096", split_by = grepv(pattern = "0.6", GetClusteringRuns())                        )
-# av.score <- as.named.vector(df_col = calc.cluster.averages()[,"median"])
-# names(av.score) <- as.numeric(names(av.score))
-# wbarplot(av.score, hline = quantile(av.score, 0.9)
-#          , ylab = "Glycolytic Process Score (GO.0006096)"
-#          , main = "Two clusters fall above the 90% quantile")
-
-
 
 # Add to obj@metadata from an external table ------------------------------------------------------------------------
 seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix = ".fromMeta") { # Add multiple new metadata columns to a Seurat object from a table.
