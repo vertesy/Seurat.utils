@@ -26,7 +26,18 @@ ww.check.if.3D.reduction.exist <- function(obj = obj) { # ww.check.if.3D.reducti
   }
 }
 
-# ------------------------------------------------------------------------
+# ww.check.quantile.cutoff ------------------------------------------------------------------------
+ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[,gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10) {
+  expr.vec.clipped <- clip.outliers(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
+  if( sum(expr.vec.clipped > 0) > min.cells.expressing ){
+    expr.vec <- expr.vec.clipped
+  } else {
+    iprint("WARNING: quantile.cutoff too stringent, would leave <", min.cells.expressing, "cells. It is NOT applied.")
+  }
+  return(expr.vec)
+}
+
+# plot3D.umap.gene ------------------------------------------------------------------------
 plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
                              , gene="TOP2A", quantileCutoff = .99, alpha = .5, dotsize=1.25, def.assay = c("integrated", "RNA")[2]
                              , AutoAnnotBy = GetNamedClusteringRuns(obj)[1]) {
@@ -34,13 +45,12 @@ plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene express
 
   obj <- ww.check.if.3D.reduction.exist(obj = obj)
   stopifnot(gene %in% rownames(obj))
-
-  DefaultAssay(object = obj) <- def.assay
+  DefaultAssay(object = obj) <- def.assay; iprint(DefaultAssay(object = obj), "assay")
 
   plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", "Expression"=gene), slot = 'data')
-  # Cutoff <- quantile(plotting.data[,gene], probs = quantileCutoff)
-  # plotting.data$'Expression' <- ifelse(test = plotting.data[,gene] < Cutoff, yes = plotting.data[,gene], no = Cutoff)
-  plotting.data$'Expression' <- clip.outliers(plotting.data[,gene], probs = c(1-quantileCutoff, quantileCutoff))
+
+  plotting.data$'Expression' <- ww.check.quantile.cutoff.and.clip.outliers(expr.vec = plotting.data[,gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10)
+    clip.outliers(plotting.data[,gene], probs = c(1-quantileCutoff, quantileCutoff))
   plotting.data$'label' <- paste(rownames(plotting.data)," - ", plotting.data[,gene], sep="")
 
   ls.ann.auto <- if (AutoAnnotBy != FALSE) {
@@ -63,7 +73,8 @@ plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene express
 }
 # plot3D.umap.gene(obj = combined.obj, gene = "DDIT4", quantileCutoff = .95)
 
-# ------------------------------------------------------------------------
+
+# plot3D.umap ------------------------------------------------------------------------
 plot3D.umap <- function(obj=combined.obj, # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
                         category="v.project", dotsize = 1.25, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]) {
 
