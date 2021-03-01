@@ -18,7 +18,7 @@ try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpres
 # Quick gene expression umap ------------------------------------------------------------------------
 qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to draw a gene expression UMAP
                   , title = feature, sub =NULL, makeuppercase = TRUE
-                  , reduct ="umap", splitby = NULL
+                  , reduct ="umap", splitby = NULL, suffix = NULL
                   , save.plot=T, PNG = T, h=7
                   , qlow = "q10", qhigh = "q90", ...) {
   if (makeuppercase) feature <- toupper(feature)
@@ -30,7 +30,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                             , ...) + ggtitle(label = title, subtitle = sub)
   if (save.plot) {
     plotname <- ppp(toupper(reduct), feature)
-    fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
+    fname = ww.FnP_parser(ppp(plotname, suffix), if (PNG) "png" else "pdf")
     try(save_plot(filename = fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
   }
   return(ggplot.obj)
@@ -42,7 +42,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 
 # Quick clustering result or categorical umap  ------------------------------------------------------------------------
 clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
-                   , reduct ="umap", splitby = NULL
+                   , reduct ="umap", splitby = NULL, suffix = NULL
                    , title = ident, sub =NULL, label.cex = 7
                    , plotname = ppp(toupper(reduct), ident)
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 100
@@ -67,7 +67,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
         if (!legend) NoLegend() else NULL
 
     if (save.plot) {
-      fname = ww.FnP_parser(plotname, if (PNG) "png" else "pdf")
+      fname = ww.FnP_parser(ppp(plotname, suffix), if (PNG) "png" else "pdf")
       try(save_plot(filename = fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
     }
     return(ggplot.obj)
