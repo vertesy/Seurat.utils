@@ -438,16 +438,21 @@ SeuratColorVector <- function(obj = combined.obj) {
 }
 
 # getClusterColors ------------------------------------------------------------------------
-getClusterColors <- function(obj = combined.obj, ident  =IdentsUsedForSlingshot ) {
+
+getClusterColors <- function(obj = combined.obj
+                             , ident = GetClusteringRuns()[1]
+                             , show = T) {
   (identities <- levels(obj[[ident]][,1]))
-  color_palette <- hue_pal()(length(identities))
+  color_palette <- scales::hue_pal()(length(identities))
   # color_check(color_palette)
   names(color_palette) <- sort(identities)
   identvec <- obj[[ident]][,1]
   colz <- color_palette[identvec]
   names(colz) <- identvec
+  if (show) color_check(unique(colz)) # MarkdownReports
   colz
 }
+# getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[1] )
 
 #  ------------------------------------------------------------------------
 #  ------------------------------------------------------------------------
