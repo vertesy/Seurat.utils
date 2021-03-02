@@ -301,3 +301,25 @@ qFeatureScatter <- function(feature1 = "M.RabV.N2c", feature2 = "P.RabV.N2c", ob
   qqSave(ggobj = p, title = plotname, ext = ext)
   if (plot) p
 }
+
+# qMarkerCheck.BrainOrg --------------------------------------------------------------------------------
+
+
+qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
+  Signature.Genes.Top16 <- if (custom.genes) custom.genes else
+  {
+    Signature.Genes.Top16  <- c(
+      `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
+      , `oRG` = "ID4", `oRG` = "HOPX"
+      , `Intermediate progenitor` = "EOMES",  `Intermediate progenitor1` = "TAC3"
+      , Astroglia = "GFAP", Astrocyte = "S100B"
+      , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
+      , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
+      , `Low-Quality` = "POLR2A", `PGC` = "DCN"
+      , `dl-EN` = "KAZN", `ul-EN` = "SATB2"
+    )
+  }
+  print(as_tibble_from_named_vec(Signature.Genes.Top16))
+  multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall")
+}
+# qMarkerCheck.BrainOrg(combined.obj)
