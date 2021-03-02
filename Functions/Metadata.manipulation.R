@@ -195,6 +195,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , obj =  combined.obj
                                   , split_by = GetNamedClusteringRuns()[1]
+                                  , scale.zscore = FALSE
                                   , simplify=T, plotit = T
                                   , suffix = NULL
                                   , stat = c("mean", "median")[2]
@@ -202,6 +203,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , ylab.text = paste("Cluster", stat, "score")
                                   , title = paste("Cluster", stat, col_name)
                                   , subtitle = NULL
+                                  , width = 8, height =6
                                   # , ylb = paste(ylab.text, col_name)
                                   # , xlb = paste("Clusters >",percentage_formatter(quantile.thr),"quantile are highlighted. |", split_by)
                                   , xlb = paste( "Lines mark" , kppd(percentage_formatter(c(1-quantile.thr,quantile.thr))) ,"quantiles |"
@@ -227,6 +229,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
     names(av.score) <- ppp("cl",df.summary[[1]])
     av.score <- sortbyitsnames(av.score)
 
+    if (scale.zscore) av.score <- (scale(av.score)[,1])
     if (plotit) {
       p <- qbarplot(vec = av.score, save = F
                     , hline = quantile(av.score, quantile.thr)
@@ -238,13 +241,20 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                     # , ext = "png", w = 7, h = 5
       ) + geom_hline(yintercept = quantile(av.score, (1-quantile.thr) ) , lty=2)
       print(p)
-      qqSave(ggobj = p, title =  ppp(title, suffix), ext = "png", w = 8, h = 6)
+      title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
+      qqSave(ggobj = p, title = title_, ext = "png", w = width, h = height)
     }
     av.score
   } else {
     df.summary
   }
 }
+# calc.cluster.averages(col_name = 'Score.GO.0001666', obj =  combined.obj.wo.EM, split_by = 'Manual.short.0.2.new', xlb = ""
+                      # , width = 6, height = 4, title = "Hypoxia", scale.zscore =  T)
+
+
+
+
 
 # Add to obj@metadata from an external table ------------------------------------------------------------------------
 seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix = ".fromMeta") { # Add multiple new metadata columns to a Seurat object from a table.
@@ -438,7 +448,6 @@ SeuratColorVector <- function(obj = combined.obj) {
 }
 
 # getClusterColors ------------------------------------------------------------------------
-
 getClusterColors <- function(obj = combined.obj
                              , ident = GetClusteringRuns()[1]
                              , show = T) {
