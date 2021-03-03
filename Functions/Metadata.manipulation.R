@@ -204,6 +204,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , title = paste("Cluster", stat, col_name)
                                   , subtitle = NULL
                                   , width = 8, height =6
+                                  , ...
                                   # , ylb = paste(ylab.text, col_name)
                                   # , xlb = paste("Clusters >",percentage_formatter(quantile.thr),"quantile are highlighted. |", split_by)
                                   , xlb = paste( "Lines mark" , kppd(percentage_formatter(c(1-quantile.thr,quantile.thr))) ,"quantiles |"
@@ -238,6 +239,8 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                     , ylab = ylab.text
                     , xlab = xlb # Abused
                     , xlab.angle = 45
+                    # , ylim=c(-1,1)
+                    , ...
                     # , ext = "png", w = 7, h = 5
       ) + geom_hline(yintercept = quantile(av.score, (1-quantile.thr) ) , lty=2)
       print(p)
@@ -249,12 +252,6 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
     df.summary
   }
 }
-# calc.cluster.averages(col_name = 'Score.GO.0001666', obj =  combined.obj.wo.EM, split_by = 'Manual.short.0.2.new', xlb = ""
-                      # , width = 6, height = 4, title = "Hypoxia", scale.zscore =  T)
-
-
-
-
 
 # Add to obj@metadata from an external table ------------------------------------------------------------------------
 seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix = ".fromMeta") { # Add multiple new metadata columns to a Seurat object from a table.
