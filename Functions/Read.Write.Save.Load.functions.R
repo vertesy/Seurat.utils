@@ -20,7 +20,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 
   iprint(length(fin), "samples found.")
   if (l(fin)) {
-    for (i in 2:length(fin)) { print(i)
+    for (i in 1:length(fin)) { print(i)
       pathIN = fin[i]; print(pathIN)
       # fnameIN = basename(dirname(xx))
       fnameIN = strsplit(basename(dirname(fin[i])),split = "_")[[1]][1]
