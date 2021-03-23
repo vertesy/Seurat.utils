@@ -37,3 +37,7 @@ vignettes/*.pdf
 .Renviron
 .Rproj.user
 PlayGround.DoNotUse.R
+
+# Plots accidentally saved
+.pdf
+.png
