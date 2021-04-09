@@ -11,7 +11,7 @@
 # Convert10Xfolders ------------------------------------------------------------------------
 Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
                               , regex = F, folderPattern = c("filtered_feature", "SoupX_decont")[1]
-                              , min.cells=10, min.features=200
+                              , min.cells = 5, min.features = 200
                               , updateHGNC = T, ShowStats = T) {
 
   # finOrig <- list.dirs(InputDir, recursive = subdirs)
