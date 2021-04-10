@@ -94,7 +94,7 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
                                , order_by = c("combined.score", "avg_logFC", "p_val_adj")[1]
                                , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
-  stopifnot(!order_by %in% colnames(df_markers))
+  stopifnot(order_by %in% colnames(df_markers))
 
   top.markers <-
     GetTopMarkersDF(df = df_markers, order.by = order_by, n=1) %>%
