@@ -20,7 +20,8 @@ try(source('~/GitHub/Packages/Seurat.utils/Functions/Jaccard.toolkit.R'))
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Custom.Functions.for.Slingshot.R"))
 
 
-try(source('~/GitHub/Projects/SEO/GO-scoring/Seurat.gene.sets.and.GO.terms.R'))
+# try(source('~/GitHub/Projects/SEO/GO-scoring/Seurat.gene.sets.and.GO.terms.R'))
+try(source('~/GitHub/TheCorvinas/R/GO-scoring/Seurat.gene.sets.and.GO.terms.R'))
 
 # Requirements ------------------------
 # May also require

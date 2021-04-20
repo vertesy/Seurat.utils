@@ -19,8 +19,8 @@ sourceGitHub("Jaccard.toolkit.R", repo = "Seurat.utils", folder = "Functions")
 # try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Soup.Analysis.of.ambient.RNA.R'))
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Custom.Functions.for.Slingshot.R"))
 
-sourceGitHub("Seurat.gene.sets.and.GO.terms.R", repo = "SEO", folder = "GO-scoring", token = "?token=ABG5SV3G3EGGZWSEKGNSE3K73R5F4" )
-
+sourceGitHub("Seurat.gene.sets.and.GO.terms.R", repo = "TheCorvinas", folder = "R/GO-scoring")
+# https://raw.githubusercontent.com/vertesy/TheCorvinas/master/R/GO-scoring/Seurat.gene.sets.and.GO.terms.R
 
 # Requirements ------------------------
 # May also require
