@@ -19,7 +19,7 @@ try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpres
 qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to draw a gene expression UMAP
                   , title = feature, sub =NULL, makeuppercase = TRUE
                   , reduct ="umap", splitby = NULL, suffix = NULL
-                  , save.plot=T, PNG = T, h=7
+                  , save.plot=T, PNG = T, h=7, nr.cols = NULL
                   , assay = c("RNA","integrated")[1]
                   , qlow = "q10", qhigh = "q90", ...) {
   if (makeuppercase) feature <- toupper(feature)
@@ -28,6 +28,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                             , reduction = reduct
                             , min.cutoff = qlow, max.cutoff = qhigh
                             # , plotname = ppp(toupper(reduct), feature)
+                            , ncol = nr.cols
                             , split.by = splitby
                             , ...) + ggtitle(label = title, subtitle = sub)
   if (save.plot) {
@@ -45,7 +46,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 # Quick clustering result or categorical umap  ------------------------------------------------------------------------
 clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
                    , reduct ="umap", splitby = NULL, suffix = NULL
-                   , title = ident, sub =NULL, label.cex = 7
+                   , title = ident, sub =NULL, label.cex = 7, nr.cols = NULL
                    , plotname = ppp(toupper(reduct), ident)
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 100
                    , save.plot=T, PNG = T, h=7, ...) {
@@ -64,6 +65,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
       ggplot.obj <-
         DimPlot(object = obj, group.by = ident
                 , reduction = reduct, split.by = splitby
+                , ncol = nr.cols
                 , label = label, repel = repel, label.size = label.cex, ...) +
         ggtitle(label = title, subtitle = sub) +
         if (!legend) NoLegend() else NULL
