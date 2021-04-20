@@ -66,7 +66,8 @@ plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene express
                  , text =  ~label
                  , color = ~Expression
                  , opacity = alpha
-                 , colors = c('darkgrey', 'red')
+                 # , colors = c('darkgrey', 'red')
+                 , colorscale='Viridis'
                  #, hoverinfo="text"
   ) %>% layout(title = gene, scene = list(annotations = ls.ann.auto))
   SavePlotlyAsHtml(plt, category. = gene, suffix. = suffix)
