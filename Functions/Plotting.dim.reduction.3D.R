@@ -48,11 +48,11 @@ plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene express
   stopifnot((gene %in% rownames(obj) | gene %in% colnames(obj@meta.data)))
   DefaultAssay(object = obj) <- def.assay; iprint(DefaultAssay(object = obj), "assay")
 
-  plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", "Expression"=gene), slot = 'data')
+  plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", "Expression" = gene), slot = 'data')
 
   plotting.data$'Expression' <- ww.check.quantile.cutoff.and.clip.outliers(expr.vec = plotting.data[,gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10)
-    clip.outliers(plotting.data[,gene], probs = c(1-quantileCutoff, quantileCutoff))
-  plotting.data$'label' <- paste(rownames(plotting.data)," - ", plotting.data[,gene], sep="")
+  clip.outliers(plotting.data[,gene], probs = c(1 - quantileCutoff, quantileCutoff))
+  plotting.data$'label' <- paste(rownames(plotting.data), " - ", plotting.data[,gene], sep = "")
 
   ls.ann.auto <- if (AutoAnnotBy != FALSE) {
     Annotate4Plotly3D(obj. = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
@@ -63,12 +63,12 @@ plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene express
                  , type = "scatter3d"
                  , mode = "markers"
                  , marker = list(size = dotsize)
-                 , text=~label
+                 , text =  ~label
                  , color = ~Expression
                  , opacity = alpha
                  , colors = c('darkgrey', 'red')
                  #, hoverinfo="text"
-  ) %>% layout(title=gene, scene = list(annotations=ls.ann.auto))
+  ) %>% layout(title = gene, scene = list(annotations = ls.ann.auto))
   SavePlotlyAsHtml(plt, category. = gene, suffix. = suffix)
   return(plt)
 }
@@ -97,11 +97,11 @@ plot3D.umap <- function(obj=combined.obj # Plot a 3D umap based on one of the me
           , type = "scatter3d"
           , mode = "markers"
           , marker = list(size = dotsize)
-          , text=~label
+          , text = ~label
           , color = ~category
           , colors = gg_color_hue(length(unique(plotting.data$'category')))
           # , hoverinfo="text"
-  ) %>% layout(title=category, scene = list(annotations=ls.ann.auto))
+  ) %>% layout(title = category, scene = list(annotations = ls.ann.auto))
   SavePlotlyAsHtml(plt, category. = category, suffix. = suffix)
   return(plt)
 }
@@ -120,7 +120,7 @@ SavePlotlyAsHtml <- function(plotly_obj, category.=category, suffix. = NULL) { #
 # ------------------------------------------------------------------------
 BackupReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`.
   if (is.null(obj@misc$"reductions.backup")) obj@misc$"reductions.backup" <- list()
-  dslot=paste0(reduction,dim,"d")
+  dslot = paste0(reduction,dim,"d")
   obj@misc$reductions.backup[[dslot]] <- obj@reductions[[reduction]]
   return(obj)
 }
@@ -139,7 +139,7 @@ SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$'n.PC', d
     } else if (reduction == "pca") {
       RunPCA(obj, dims = 1:nPCs, n.components = d, ...)
     }
-    obj <- BackupReduction(obj = obj, dim=d, reduction=red)
+    obj <- BackupReduction(obj = obj, dim = d, reduction = red)
   }
   return(obj)
 }
@@ -149,7 +149,7 @@ SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$'n.PC', d
 
 # ------------------------------------------------------------------------
 RecallReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
-  dslot=paste0(reduction,dim,"d")
+  dslot = paste0(reduction,dim,"d")
   reduction.backup <- obj@misc$reductions.backup[[dslot]]
   msg <-  paste(dim, "dimensional", reduction, "from obj@misc$reductions.backup" )
   stopif(is.null(reduction.backup), message = p0(msg," is NOT FOUND")); iprint(msg, "is set active. " )
@@ -173,8 +173,8 @@ Annotate4Plotly3D <- function(obj. = combined.obj # Create annotation labels for
   plotting.data.$'annot' <- FetchData(object = obj., vars = c(AnnotCateg))[,1]
   auto_annot <-
     plotting.data. %>%
-    group_by(annot)%>%
-    summarise(showarrow=F
+    group_by(annot) %>%
+    summarise(showarrow = F
               , xanchor = "left"
               , xshift = 10
               , opacity = 0.7
@@ -182,7 +182,7 @@ Annotate4Plotly3D <- function(obj. = combined.obj # Create annotation labels for
               , "y" = mean(UMAP_2)
               , "z" = mean(UMAP_3)
     )
-  names(auto_annot)[1]="text"
+  names(auto_annot)[1] = "text"
   ls.ann.auto = apply(auto_annot, 1, as.list)
   return(ls.ann.auto)
 }
@@ -190,7 +190,7 @@ Annotate4Plotly3D <- function(obj. = combined.obj # Create annotation labels for
 # ------------------------------------------------------------------------
 Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
                                , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, cex = 1.25, default.assay = c("integrated", "RNA")[2]
-                               , ListOfGenes=c( "BCL11B" , "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4")
+                               , ListOfGenes = c("BCL11B" , "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4")
                                , SubFolderName=ppp("plot3D", substitute(ListOfGenes))) {
 
 
