@@ -74,7 +74,8 @@ plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene express
   return(plt)
 }
 # plot3D.umap.gene(obj = combined.obj, gene = "DDIT4", quantileCutoff = .95)
-plot3D.umap.gene(obj = combined.obj, gene = "percent.mito", quantileCutoff = .95) # for continous meta variables
+# plot3D.umap.gene(obj = combined.obj, gene = "percent.mito", quantileCutoff = .95) # for continous meta variables
+# plot3D.umap.gene(obj = combined.obj, gene = "nFeature_RNA", quantileCutoff = .95) # for continous meta variables
 
 
 # plot3D.umap ------------------------------------------------------------------------
