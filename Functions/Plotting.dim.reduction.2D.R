@@ -17,13 +17,14 @@ try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpres
 
 # Quick gene expression umap ------------------------------------------------------------------------
 qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to draw a gene expression UMAP
-                  , title = feature, sub =NULL, makeuppercase = TRUE
+                  , title = feature, sub =NULL
+                  # , makeuppercase = FALSE
                   , reduct ="umap", splitby = NULL, suffix = NULL
                   , save.plot=T, PNG = T
                   , h=7, w=NULL, nr.cols = NULL
                   , assay = c("RNA","integrated")[1]
                   , qlow = "q10", qhigh = "q90", ...) {
-  if (makeuppercase) feature <- toupper(feature)
+  # if (makeuppercase) feature <- toupper(feature)
   DefaultAssay(obj) <- assay
   ggplot.obj <- FeaturePlot(obj, features = feature
                             , reduction = reduct
