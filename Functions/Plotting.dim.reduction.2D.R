@@ -19,7 +19,8 @@ try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpres
 qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to draw a gene expression UMAP
                   , title = feature, sub =NULL, makeuppercase = TRUE
                   , reduct ="umap", splitby = NULL, suffix = NULL
-                  , save.plot=T, PNG = T, h=7, nr.cols = NULL
+                  , save.plot=T, PNG = T
+                  , h=7, w=NULL, nr.cols = NULL
                   , assay = c("RNA","integrated")[1]
                   , qlow = "q10", qhigh = "q90", ...) {
   if (makeuppercase) feature <- toupper(feature)
@@ -34,7 +35,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
   if (save.plot) {
     plotname <- ppp(toupper(reduct), feature)
     fname = ww.FnP_parser(ppp(plotname, assay, suffix), if (PNG) "png" else "pdf")
-    try(save_plot(filename = fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
+    try(save_plot(filename = fname, plot = ggplot.obj, base_height=h, base_width = w)) #, ncol=1, nrow=1
   }
   return(ggplot.obj)
 }
@@ -46,10 +47,11 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 # Quick clustering result or categorical umap  ------------------------------------------------------------------------
 clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
                    , reduct ="umap", splitby = NULL, suffix = NULL
-                   , title = ident, sub =NULL, label.cex = 7, nr.cols = NULL
+                   , title = ident, sub =NULL, label.cex = 7
+                   , h=7, w=NULL, nr.cols = NULL
                    , plotname = ppp(toupper(reduct), ident)
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 100
-                   , save.plot=T, PNG = T, h=7, ...) {
+                   , save.plot=T, PNG = T, ...) {
   IdentFound <- (ident %in%  colnames(obj@meta.data))
 
   if (!IdentFound) {
@@ -72,7 +74,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
 
     if (save.plot) {
       fname = ww.FnP_parser(ppp(plotname, suffix), if (PNG) "png" else "pdf")
-      try(save_plot(filename = fname, plot = ggplot.obj, base_height=h)) #, ncol=1, nrow=1
+      try(save_plot(filename = fname, plot = ggplot.obj, base_height=h, base_width = w)) #, ncol=1, nrow=1
     }
     return(ggplot.obj)
   } # if not too many categories
