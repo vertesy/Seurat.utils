@@ -250,10 +250,11 @@ subsetSeuObj <- function(obj=ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_
 }
 
 # subsetSeuObj.and.Save ------------------------------------------------------------------------
-subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = InputDir ) { # Subset a compressed Seurat Obj and save it in wd.
+subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = OutDir, suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
   obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
+  nr.cells.kept <- ncol(obj_Xpc)
   saveRDS(obj_Xpc, compress = TRUE,
-          file = ppp(paste0(dir, 'seu.ORC'), length(cellIDs.keep), 'cells.with.min.features', p$min.features,"Rds" ) )
+          file = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', p$min.features,"Rds" ) )
   say()
 }
 
