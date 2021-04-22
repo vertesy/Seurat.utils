@@ -200,7 +200,7 @@ isave.RDS <- function(object, prefix =NULL, suffix=NULL, inOutDir = F
   }
   fnameBase = kppu(prefix, substitute(object), suffix, idate(Format = "%Y.%m.%d_%H.%M"))
   fnameBase = trimws(fnameBase, whitespace = '_')
-  saveRDS.compress.in.BG(obj = obj_Xpc, fname = paste0(path_rdata, "/",fnameBase , ".Rds") )
+  saveRDS.compress.in.BG(obj = object, fname = paste0(path_rdata, "/",fnameBase , ".Rds") )
 }
 
 
