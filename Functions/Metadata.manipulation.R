@@ -61,13 +61,13 @@ add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) {  #
 add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c("^MT\\.|^MT-", F)[1]
                               , gene.set = F, obj = ls.Seurat[[1]], verbose = T) {
   stopif2(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
-  if(!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
+  if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
   total_expr <- Matrix::colSums(GetAssayData(object = obj))
   genes.matching <- if (!isFALSE(gene.set)) intersect(gene.set, rownames(obj)) else grepv(pattern = gene.symbol.pattern, x = rownames(obj))
 
   genes.expr = GetAssayData(object = obj)[genes.matching, ]
-  target_expr <- if(l(genes.matching) >1) Matrix::colSums(genes.expr) else genes.expr
+  target_expr <- if (l(genes.matching) >1) Matrix::colSums(genes.expr) else genes.expr
   obj <- AddMetaData(object = obj, metadata = target_expr / total_expr, col.name = col.name)
   colnames(obj@meta.data)
   return(obj)
@@ -179,8 +179,8 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
   msg.Seu <- kollapse("Rownames of 'Idents(obj)' have entries not found in 'ident.table':"
                       , OnlyInSeuratIdents, " not found in ", ident.X, collapseby = " ")
 
-  stopif(l(OnlyInIdentVec), message = msg.IdentVec)
-  stopif(l(OnlyInSeuratIdents), message = msg.Seu)
+  stopif (l(OnlyInIdentVec), message = msg.IdentVec)
+  stopif (l(OnlyInSeuratIdents), message = msg.Seu)
 
   # identity mapping ----------------
   new.ident <- translate(vec = as.character(Idents(obj)), oldvalues = ident.X, newvalues = ident.Y)
@@ -347,7 +347,7 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q90.Expression.an
 
 # recall.all.genes ------------------------------------------------------------------------
 recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q90.Expression.and.set.all.genes()
-  if(!exists('all.genes')) {
+  if (!exists('all.genes')) {
     all.genes <- obj@misc$all.genes
     print(head(unlist(all.genes)))
     ww.assign_to_global(name = "all.genes", value = all.genes)
@@ -357,13 +357,13 @@ recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q90.E
 
 # recall.meta.tags.n.datasets ------------------------------------------------------------------------
 recall.meta.tags.n.datasets <- function(obj = combined.obj) {
-  if(!exists('n.datasets')) {
+  if (!exists('n.datasets')) {
     n.datasets <- obj@misc$n.datasets
     print(head(unlist(n.datasets)))
     ww.assign_to_global(name = "n.datasets", value = n.datasets)
   } else {print("variable 'n.datasets' exits in the global namespace")}
 
-  if(!exists('meta.tags')) {
+  if (!exists('meta.tags')) {
     meta.tags <- obj@misc$meta.tags
     print(head(unlist(meta.tags)))
     ww.assign_to_global(name = "meta.tags", value = meta.tags)
@@ -392,7 +392,7 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
 
 # save.parameters ------------------------------------------------------------------------
 save.parameters <- function(obj = combined.obj, params = p) {
-  if(!is.null(obj@misc$'p')) print("Overwriting already existing obj@misc$p. Old version:") ; print(head(unlist(obj@misc$'p')))
+  if (!is.null(obj@misc$'p')) print("Overwriting already existing obj@misc$p. Old version:") ; print(head(unlist(obj@misc$'p')))
   obj@misc$p <- params
 }
 # save.parameters(obj = combined.obj, params = p);
@@ -405,8 +405,8 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
   gene.found <- gene %in% names(expr.all)
   stopifnot(gene.found)
 
-  if (expr.GOI==0) iprint(gene, "is not expressed. q90-av.exp:", expr.GOI) else
-    if (expr.GOI<0.05) iprint(gene, "is lowly expressed. q90-av.exp:", expr.GOI)
+  if (expr.GOI == 0) iprint(gene, "is not expressed. q90-av.exp:", expr.GOI) else
+    if (expr.GOI < 0.05) iprint(gene, "is lowly expressed. q90-av.exp:", expr.GOI)
     if (filterZero) {
       iprint("Zero 'q90 expression' genes (", pc_TRUE(expr.all == 0), ") are removed.")
       expr.all <- expr.all[expr.all > 0]
