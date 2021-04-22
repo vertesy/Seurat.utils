@@ -260,8 +260,8 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
 plot.clust.size.distr <- function(obj = combined.obj, category = 'integrated_snn_res.10', plot = T) {
   clust.size.distr <- table(obj@meta.data[,category])
 
-  resX <- gsub(pattern = ".*res\\.", replacement = '',x = substitute(category))
-  qhistogram(vec = clust.size.distr, plotname = ppp('clust.size.distr', substitute(category))
+  resX <- gsub(pattern = ".*res\\.", replacement = '',x = category)
+  qhistogram(vec = clust.size.distr, plotname = ppp('clust.size.distr', (category))
              , subtitle = paste("Nr.clusters at res.",resX,":", l(clust.size.distr)," | CV:", percentage_formatter(cv(clust.size.distr))))
 }
 # plot.clust.size.distr()
