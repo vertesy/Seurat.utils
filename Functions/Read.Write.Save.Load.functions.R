@@ -175,6 +175,17 @@ read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and b
 
 #### Functions in Saving.and.loading.R
 
+
+# saveRDS.compress.in.BG ------------------------------------------------------------------------
+saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
+  try(tictoc::tic(), silent = T)
+  saveRDS(object = obj, compress = compr, file = fname)
+  try(tictoc::toc(), silent = T)
+  print(paste("Saved, being compressed", fname))
+  system(paste("gzip", fname),  wait = FALSE) # execute in the background
+  try(say(), silent = T)
+}
+
 # Save an object -----------------------------------------------
 isave.RDS <- function(object, prefix =NULL, suffix=NULL, inOutDir = F
                       , alternative_path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
@@ -189,14 +200,18 @@ isave.RDS <- function(object, prefix =NULL, suffix=NULL, inOutDir = F
   }
   fnameBase = kppu(prefix, substitute(object), suffix, idate(Format = "%Y.%m.%d_%H.%M"))
   fnameBase = trimws(fnameBase, whitespace = '_')
-  fname = MarkdownReportsDev::kollapse(path_rdata, "/",fnameBase , ".Rds")
-  tictoc::tic()
-  saveRDS(object, file = fname, compress = F)
-  tictoc::toc()
-  MarkdownReportsDev::iprint("Saved, being compressed", fname)
-  say()
-  system(paste("gzip", fname),  wait = FALSE) # execute in the background
+  saveRDS.compress.in.BG(obj = obj_Xpc, fname = paste0(path_rdata, "/",fnameBase , ".Rds") )
 }
+
+
+
+# subsetSeuObj.and.Save ------------------------------------------------------------------------
+subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = OutDir, suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
+  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
+  nr.cells.kept <- ncol(obj_Xpc)
+  saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', p$min.features,"Rds" ) )
+}
+
 
 # Save workspace -----------------------------------------------
 # requires MarkdownReportsDev (github) and defining OutDir
@@ -233,6 +248,7 @@ qsave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
   cat(toc)
 }
 
+
 # subsetSeuObj -----------------------------------------------------------------------
 subsetSeuObj <- function(obj=ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
   set.seed(seed_)
@@ -253,9 +269,7 @@ subsetSeuObj <- function(obj=ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_
 subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = OutDir, suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
   obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
   nr.cells.kept <- ncol(obj_Xpc)
-  saveRDS(obj_Xpc, compress = TRUE,
-          file = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', p$min.features,"Rds" ) )
-  say()
+  saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', p$min.features,"Rds" ) )
 }
 
 
