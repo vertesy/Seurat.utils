@@ -252,7 +252,24 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
   iprint("Stored under obj@misc$", kpp('cor', slot.use, assay.use), "or cov... ." )
   return(obj)
 }
-
 # combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX = 0.99, max.cells =  400000, set.all.genes = F)
 # combined.obj <- Calc.Cor.Seurat(assay.use = "RNA", slot.use = "data", digits = 2, obj = combined.obj, quantile = 0.99, max.cells = 40000)
+
+
+# plot.clust.size.distr ------------------------------------------------
+plot.clust.size.distr <- function(obj = combined.obj, category = 'integrated_snn_res.10', plot = T) {
+  clust.size.distr <- table(obj@meta.data[,category])
+
+  resX <- gsub(pattern = ".*res\\.", replacement = '',x = substitute(category))
+  qhistogram(vec = clust.size.distr, plotname = ppp('clust.size.distr', substitute(category))
+             , subtitle = paste("Nr.clusters at res.",resX,":", l(clust.size.distr)," | CV:", percentage_formatter(cv(clust.size.distr))))
+}
+# plot.clust.size.distr()
+
+
+#  ------------------------------------------------
+#  ------------------------------------------------
+#  ------------------------------------------------
+
+
 
