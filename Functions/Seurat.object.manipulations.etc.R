@@ -170,7 +170,7 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data", geneset = FALS
 
   qname = p0("q", quantileX * 100)
   quantile_name = kpp("expr", qname)
-  if (is.null(obj@misc[[quantile_name]])) { iprint("Quantile data missing! Call: combined.obj <- Calcq90Expression(combined.obj, quantileX =",quantileX,") first!"); stop()}
+  if (is.null(obj@misc[[quantile_name]])) { iprint("Quantile data missing! Call: combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX,") first!"); stop()}
 
   genes.HE  <- if (isFALSE(geneset)) {  which_names(obj@misc[[quantile_name]] > 0) } else {
                                         check.genes(geneset)  }

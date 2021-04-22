@@ -19,7 +19,7 @@
 # - calc.cluster.averages()
 # - seu.add.meta.from.table()
 # - sampleNpc()
-# - Calcq90Expression()
+# - calc.q90.Expression.and.set.all.genes()
 # - PlotTopGenes()
 # - fix.orig.ident()
 # - set.all.genes()
@@ -282,8 +282,8 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of
 }
 
 
-# Calcq90Expression ------------------------------------------------------------------------
-Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
+# calc.q90.Expression.and.set.all.genes ------------------------------------------------------------------------
+calc.q90.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
                               , quantileX=0.9, max.cells =  100000
                               , slot = "data", assay = c("RNA", "integrated")[1]
                               , set.all.genes = TRUE, show = TRUE) {
@@ -310,9 +310,10 @@ Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression
                , plot = show, save = TRUE, vline  = .2)
     , silent = TRUE)
 
-  all.genes = percent_rank(expr.q90); names(all.genes) = names(expr.q90); all.genes <- sort.decreasing(all.genes)
-
-  if (set.all.genes) obj@misc$'all.genes' = all.genes = as.list(all.genes)
+  {
+    all.genes = percent_rank(expr.q90); names(all.genes) = names(expr.q90); all.genes <- sort.decreasing(all.genes)
+    if (set.all.genes) obj@misc$'all.genes' = all.genes = as.list(all.genes)
+  }
 
   obj@misc[[slot_name]] <-  expr.q90
   assign('all.genes', all.genes, envir = as.environment(1))
@@ -321,12 +322,12 @@ Calcq90Expression <- function(obj = combined.obj # Calculate the gene expression
   return(obj)
 }
 
-# combined.obj <- Calcq90Expression(obj = combined.obj, quantileX=0.9, max.cells =  25000)
+# combined.obj <- calc.q90.Expression.and.set.all.genes(obj = combined.obj, quantileX=0.9, max.cells =  25000)
 # head(sort(as.numeric.wNames(obj@misc$expr.q90), decreasing = T))
-# combined.obj <- Calcq90Expression(obj = combined.obj, quantileX=0.95, max.cells =  25000, set.all.genes = FALSE)
+# combined.obj <- calc.q90.Expression.and.set.all.genes(obj = combined.obj, quantileX=0.95, max.cells =  25000, set.all.genes = FALSE)
 
 # PlotTopGenes ------------------------------------------------------------------------
-PlotTopGenes <- function(obj = combined.obj, n=32 ){ # Plot the highest expressed genes on umaps, in a subfolder. Requires calling Calcq90Expression before.
+PlotTopGenes <- function(obj = combined.obj, n=32 ){ # Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q90.Expression.and.set.all.genes before.
   Highest.Expressed.Genes = names(head(sort(obj@misc$expr.q90, decreasing = T), n = n))
   multiFeaturePlot.A4(list.of.genes = Highest.Expressed.Genes, foldername = "Highest.Expressed.Genes" )
 }
@@ -341,11 +342,11 @@ fix.orig.ident <- function(obj = merged.obj) {
 # merged.obj$orig.ident <- fix.orig.ident(obj = merged.obj); table(merged.obj$orig.ident)
 
 # set.all.genes ------------------------------------------------------------------------
-set.all.genes <- function(obj = combined.obj) iprint("Use Calcq90Expression()")
+set.all.genes <- function(obj = combined.obj) iprint("Use calc.q90.Expression.and.set.all.genes()")
 # set.all.genes(); all.genes
 
 # recall.all.genes ------------------------------------------------------------------------
-recall.all.genes <- function(obj = combined.obj) {
+recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q90.Expression.and.set.all.genes()
   if(!exists('all.genes')) {
     all.genes <- obj@misc$all.genes
     print(head(unlist(all.genes)))

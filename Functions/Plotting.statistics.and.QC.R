@@ -240,7 +240,7 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
   qname = p0("q", quantileX * 100)
   quantile_name = kpp("expr", qname)
 
-  if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- Calcq90Expression(combined.obj, quantileX =",quantileX," first )")
+  if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX," first )")
   genes.HE = which_names(obj@misc[[quantile_name]] > 0)
   iprint("Pearson correlation is calculated for", l(genes.HE), "HE genes with expr.",qname,": > 0.")
   tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
@@ -253,6 +253,6 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
   return(obj)
 }
 
-# combined.obj <- Calcq90Expression(combined.obj, quantileX = 0.99, max.cells =  400000, set.all.genes = F)
+# combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX = 0.99, max.cells =  400000, set.all.genes = F)
 # combined.obj <- Calc.Cor.Seurat(assay.use = "RNA", slot.use = "data", digits = 2, obj = combined.obj, quantile = 0.99, max.cells = 40000)
 
