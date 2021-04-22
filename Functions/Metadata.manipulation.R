@@ -313,10 +313,10 @@ calc.q90.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
   {
     all.genes = percent_rank(expr.q90); names(all.genes) = names(expr.q90); all.genes <- sort.decreasing(all.genes)
     if (set.all.genes) obj@misc$'all.genes' = all.genes = as.list(all.genes)
+    assign('all.genes', all.genes, envir = as.environment(1))
   }
 
   obj@misc[[slot_name]] <-  expr.q90
-  assign('all.genes', all.genes, envir = as.environment(1))
 
   iprint('Quantile', quantileX ,'is now stored under obj@misc$all.genes and $', slot_name, ' Please execute all.genes <- obj@misc$all.genes.')
   return(obj)
@@ -355,6 +355,22 @@ recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q90.E
 }
 # recall.all.genes(); all.genes
 
+# recall.meta.tags.n.datasets ------------------------------------------------------------------------
+recall.meta.tags.n.datasets <- function(obj = combined.obj) {
+  if(!exists('n.datasets')) {
+    n.datasets <- obj@misc$n.datasets
+    print(head(unlist(n.datasets)))
+    ww.assign_to_global(name = "n.datasets", value = n.datasets)
+  } else {print("variable 'n.datasets' exits in the global namespace")}
+
+  if(!exists('meta.tags')) {
+    meta.tags <- obj@misc$meta.tags
+    print(head(unlist(meta.tags)))
+    ww.assign_to_global(name = "meta.tags", value = meta.tags)
+  } else {print("variable 'meta.tags' exits in the global namespace")}
+
+}
+# recall.n.datasets(); n.datasets
 
 # recall.parameters ------------------------------------------------------------------------
 recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
