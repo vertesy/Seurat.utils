@@ -95,7 +95,7 @@ m3DplotKeyGenes <- function(obj = cds.10pc, cex = iround(log10(idim(obj)[2]))
                                     , `dl-EN` = "KAZN", `ul-EN` = "SATB2")
                             , reduc = "UMAP", suffix = "") {
 
-  create_set_SubDir("3D.gex.plots")
+  create_set_SubDir(ppp("3D.gex.plots", substitute(obj)))
   for (g in ls.genes) {
     m3DplotGene(gene = g, obj = obj, cex = cex)
   }
