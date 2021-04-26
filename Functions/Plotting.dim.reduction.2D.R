@@ -44,20 +44,25 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 
 
 # Quick clustering result or categorical umap  ------------------------------------------------------------------------
-
-# Quick clustering result or categorical umap  ------------------------------------------------------------------------
 clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
                    , reduct ="umap", splitby = NULL, suffix = NULL
                    , title = ident, sub =NULL, label.cex = 7
                    , h=7, w=NULL, nr.cols = NULL
                    , plotname = ppp(toupper(reduct), ident)
-                   , label = T, repel = T, legend = !label, MaxCategThrHP = 100
+                   , highlight.clusters = NULL
+                   , label = T, repel = T, legend = !label, MaxCategThrHP = 200
                    , save.plot=T, PNG = T, ...) {
   IdentFound <- (ident %in%  colnames(obj@meta.data))
 
   if (!IdentFound) {
     ident <- GetClusteringRuns(obj = obj, pat = "_res.*[0,1]\\.[0-9]$")[1]
     iprint("Identity not found. Plotting", ident)
+  }
+
+  if ( !is.null(highlight.clusters)) {
+    x <- obj[[ident]]
+    idx.ok <- x[,1] %in% highlight.clusters
+    highlight.clusters <- rownames(x)[idx.ok]
   }
 
   NtCategs <- length(unique(obj[[ident]][,1]))
@@ -68,7 +73,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
       ggplot.obj <-
         DimPlot(object = obj, group.by = ident
                 , reduction = reduct, split.by = splitby
-                , ncol = nr.cols
+                , ncol = nr.cols, cells.highlight = highlight.clusters
                 , label = label, repel = repel, label.size = label.cex, ...) +
         ggtitle(label = title, subtitle = sub) +
         if (!legend) NoLegend() else NULL
@@ -82,7 +87,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
 }
 # clUMAP()
 # clUMAP(ident = "RNA_snn_res.0.1")
-
+# clUMAP(highlight.clusters = c(6,3))
 
 
 
