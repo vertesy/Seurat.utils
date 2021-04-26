@@ -174,7 +174,7 @@ m3.export.umap.2.Seurat <- function(mobj = cds_from_seurat, sobj = combined.obj,
 }
 # combined.obj.bac <- combined.obj
 # combined.obj <- combined.obj.bac
-combined.obj <- m3.export.umap.2.Seurat(mobj = cds_from_seurat, sobj = combined.obj); qUMAP("DDIT4")
+# combined.obj <- m3.export.umap.2.Seurat(mobj = cds_from_seurat, sobj = combined.obj); qUMAP("DDIT4")
 
 # ------------------------
 
