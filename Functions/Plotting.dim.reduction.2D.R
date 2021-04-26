@@ -43,13 +43,14 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 # qUMAP(  )
 
 
+
 # Quick clustering result or categorical umap  ------------------------------------------------------------------------
 clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
                    , reduct ="umap", splitby = NULL, suffix = NULL
                    , title = ident, sub =NULL, label.cex = 7
                    , h=7, w=NULL, nr.cols = NULL
                    , plotname = ppp(toupper(reduct), ident)
-                   , highlight.clusters = NULL
+                   , highlight.clusters = NULL, cells.highlight = NULL
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 200
                    , save.plot=T, PNG = T, ...) {
   IdentFound <- (ident %in%  colnames(obj@meta.data))
@@ -59,11 +60,14 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
     iprint("Identity not found. Plotting", ident)
   }
 
-  if ( !is.null(highlight.clusters)) {
+  if ( !missing(highlight.clusters)) {
     x <- obj[[ident]]
     idx.ok <- x[,1] %in% highlight.clusters
-    highlight.clusters <- rownames(x)[idx.ok]
-  }
+    highlight.these <- rownames(x)[idx.ok]
+  } else { highlight.these <- NULL}
+  if ( !missing(cells.highlight)) {highlight.these <- cells.highlight} # overwrite, if directly defined
+
+
 
   NtCategs <- length(unique(obj[[ident]][,1]))
   if( NtCategs > MaxCategThrHP ) {
@@ -73,7 +77,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
       ggplot.obj <-
         DimPlot(object = obj, group.by = ident
                 , reduction = reduct, split.by = splitby
-                , ncol = nr.cols, cells.highlight = highlight.clusters
+                , ncol = nr.cols, cells.highlight = highlight.these
                 , label = label, repel = repel, label.size = label.cex, ...) +
         ggtitle(label = title, subtitle = sub) +
         if (!legend) NoLegend() else NULL
@@ -85,10 +89,6 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
     return(ggplot.obj)
   } # if not too many categories
 }
-# clUMAP()
-# clUMAP(ident = "RNA_snn_res.0.1")
-# clUMAP(highlight.clusters = c(6,3))
-
 
 
 # ------------------------------------------------------------------------
