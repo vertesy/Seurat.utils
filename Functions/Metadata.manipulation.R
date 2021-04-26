@@ -197,6 +197,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , split_by = GetNamedClusteringRuns()[1]
                                   , scale.zscore = FALSE
                                   , simplify=T, plotit = T
+                                  , histogram = FALSE, nbins = 50
                                   , suffix = NULL
                                   , stat = c("mean", "median")[2]
                                   , quantile.thr = 0.9
@@ -232,26 +233,48 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
 
     if (scale.zscore) av.score <- (scale(av.score)[,1])
     if (plotit) {
-      p <- qbarplot(vec = av.score, save = F
-                    , hline = quantile(av.score, quantile.thr)
-                    , title = title
-                    , subtitle = subtitle
-                    , ylab = ylab.text
-                    , xlab = xlb # Abused
-                    , xlab.angle = 45
-                    # , ylim=c(-1,1)
-                    , ...
-                    # , ext = "png", w = 7, h = 5
-      ) + geom_hline(yintercept = quantile(av.score, (1-quantile.thr) ) , lty=2)
-      print(p)
-      title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
-      qqSave(ggobj = p, title = title_, ext = "png", w = width, h = height)
+      if (histogram) {
+        p <- qhistogram(vec = av.score, save = F
+                      , vline = quantile(av.score, quantile.thr)
+                      # , title = title
+                      , bins = nbins
+                      , subtitle = subtitle
+                      , ylab = ylab.text
+                      , xlab = xlb # Abused
+                      , xlab.angle = 45
+                      # , ylim=c(-1,1)
+                      , ...
+                      # , ext = "png", w = 7, h = 5
+        ) # + geom_hline(yintercept = quantile(av.score, (1-quantile.thr) ) , lty=2)
+        print(p)
+        title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
+        qqSave(ggobj = p, title = title_, ext = "png", w = width, h = height)
+
+      } else {
+        p <- qbarplot(vec = av.score, save = F
+                      , hline = quantile(av.score, quantile.thr)
+                      , title = title
+                      , subtitle = subtitle
+                      , ylab = ylab.text
+                      , xlab = xlb # Abused
+                      , xlab.angle = 45
+                      # , ylim=c(-1,1)
+                      , ...
+                      # , ext = "png", w = 7, h = 5
+        ) + geom_hline(yintercept = quantile(av.score, (1-quantile.thr) ) , lty=2)
+        print(p)
+        title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
+        qqSave(ggobj = p, title = title_, ext = "png", w = width, h = height)
+      }
     }
     av.score
   } else {
     df.summary
   }
 }
+
+
+
 
 # Add to obj@metadata from an external table ------------------------------------------------------------------------
 seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix = ".fromMeta") { # Add multiple new metadata columns to a Seurat object from a table.
