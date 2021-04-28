@@ -19,7 +19,8 @@ try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpres
 qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to draw a gene expression UMAP
                   , title = feature, sub =NULL
                   # , makeuppercase = FALSE
-                  , reduct ="umap", splitby = NULL, suffix = NULL
+                  , reduct ="umap", splitby = NULL
+                  , suffix = sub
                   , save.plot=T, PNG = T
                   , h=7, w=NULL, nr.cols = NULL
                   , assay = c("RNA","integrated")[1]
