@@ -5,31 +5,33 @@
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Metadata.manipulation.R"))
 # Source: self + web
 
-# - getMedianMetric()
-# - add.meta.tags()
-# - add.meta.fraction()
-# - GetClusteringRuns()
-# - GetNamedClusteringRuns()
-# - GetOrderedClusteringRuns()
-# - GetNumberOfClusters()
-# - getMetadataColumn <- mmeta()
-# - getCellIDs.from.meta()
-# - seu.add.meta.from.vector()
-# - seu.map.and.add.new.ident.to.meta()
-# - calc.cluster.averages()
-# - seu.add.meta.from.table()
-# - sampleNpc()
-# - calc.q90.Expression.and.set.all.genes()
-# - PlotTopGenes()
-# - fix.orig.ident()
-# - set.all.genes()
-# - recall.all.genes()
-# - recall.parameters()
-# - save.parameters()
-# - plot.expression.rank.q90()
-# - FlipReductionCoordinates()
-# - SeuratColorVector()
-# - getClusterColors()
+# - getMedianMetric
+# - add.meta.tags
+# - add.meta.fraction
+# - GetClusteringRuns
+# - GetNamedClusteringRuns
+# - GetOrderedClusteringRuns
+# - GetNumberOfClusters
+# - getMetadataColumn <- mmeta
+# - getCellIDs.from.meta
+# - seu.add.meta.from.vector
+# - seu.map.and.add.new.ident.to.meta
+# - calc.cluster.averages
+# - seu.add.meta.from.table
+# - sampleNpc
+# - calc.q90.Expression.and.set.all.genes
+# - PlotTopGenes
+# - fix.orig.ident
+# - set.all.genes
+# - recall.all.genes
+# - recall.meta.tags.n.datasets
+# - recall.parameters
+# - recall.genes.l
+# - save.parameters
+# - plot.expression.rank.q90
+# - FlipReductionCoordinates
+# - SeuratColorVector
+# - getClusterColors
 
 
 # getMedianMetric ------------------------------------------------------------------------------------------------
