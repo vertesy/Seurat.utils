@@ -32,7 +32,7 @@
 # - FlipReductionCoordinates
 # - SeuratColorVector
 # - getClusterColors
-
+# - get.clustercomposition
 
 # getMedianMetric ------------------------------------------------------------------------------------------------
 getMedianMetric <- function(ls.Obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito") {
@@ -205,7 +205,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , stat = c("mean", "median")[2]
                                   , quantile.thr = 0.9
                                   , absolute.thr = FALSE
-                                  , filter = c(FALSE, 'above', 'below')[3]
+                                  , filter = c(FALSE, 'above', 'below')[1]
                                   , ylab.text = paste("Cluster", stat, "score")
                                   , title = paste("Cluster", stat, col_name)
                                   , subtitle = NULL
@@ -528,6 +528,23 @@ getClusterColors <- function(obj = combined.obj
 }
 # getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[1] )
 
-#  ------------------------------------------------------------------------
+
+#  get.clustercomposition ------------------------------------------------------------------------
+get.clustercomposition <- function(obj = combined.obj, x = 'integrated_snn_res.0.3', y = 'project', color = y, ...) {
+  setwd(OutDir)
+  clUMAP(obj = obj, ident = x, save.plot = T, suffix = "as.in.barplot")
+  categ.per.cluster <- ggbarplot(obj@meta.data
+                                 , x = x
+                                 , y = y
+                                 , color = y
+                                 , ...
+  )
+  qqSave(categ.per.cluster)
+}
+
+# get.clustercomposition()
+# get.clustercomposition(, ylim=c(0,10000))
+
+
 #  ------------------------------------------------------------------------
 #  ------------------------------------------------------------------------
