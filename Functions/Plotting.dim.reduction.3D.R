@@ -38,8 +38,8 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 }
 
 # plot3D.umap.gene ------------------------------------------------------------------------
-plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
-                             , gene="TOP2A", quantileCutoff = .99, def.assay = c("integrated", "RNA")[2]
+plot3D.umap.gene <- function(gene="TOP2A", obj=combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
+                             , quantileCutoff = .99, def.assay = c("integrated", "RNA")[2]
                              , suffix = NULL, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]
                              , alpha = .5, dotsize=1.25 ){
   # stopifnot(AutoAnnotBy %in% colnames(obj@meta.data) | AutoAnnotBy = FALSE)
@@ -79,9 +79,9 @@ plot3D.umap.gene <- function(obj=combined.obj # Plot a 3D umap with gene express
 
 
 # plot3D.umap ------------------------------------------------------------------------
-plot3D.umap <- function(obj=combined.obj # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
+plot3D.umap <- function(category="v.project", obj=combined.obj # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
                         , suffix = NULL, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]
-                        , category="v.project", dotsize = 1.25) {
+                        , dotsize = 1.25) {
 
   stopifnot(category %in% colnames(obj@meta.data))
   obj <- ww.check.if.3D.reduction.exist(obj = obj)
