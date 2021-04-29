@@ -191,6 +191,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 
 
 
+
 # calc.cluster.averages ------------------------------------------------
 calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , obj =  combined.obj
@@ -201,6 +202,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , suffix = NULL
                                   , stat = c("mean", "median")[2]
                                   , quantile.thr = 0.9
+                                  , absolute.thr = FALSE
                                   , filter = c(FALSE, 'above', 'below')[3]
                                   , ylab.text = paste("Cluster", stat, "score")
                                   , title = paste("Cluster", stat, col_name)
@@ -209,12 +211,15 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , ...
                                   # , ylb = paste(ylab.text, col_name)
                                   # , xlb = paste("Clusters >",percentage_formatter(quantile.thr),"quantile are highlighted. |", split_by)
-                                  , xlb = paste( "Lines mark" , kppd(percentage_formatter(c(1-quantile.thr,quantile.thr))) ,"quantiles |"
-                                                 , "Cl. >",percentage_formatter(quantile.thr),"are highlighted. |", split_by)
+                                  , xlb = if (absolute.thr) paste("Threshold at", absolute.thr, " + median ()") else paste(
+                                    "Lines mark" , kppd(percentage_formatter(c(1-quantile.thr, quantile.thr))) ,"quantiles |"
+                                    , "Cl. >",percentage_formatter(quantile.thr),"are highlighted. |", split_by
+                                  )
 
                                   , fname = ppp(col_name,split_by,"cluster.average.barplot.pdf", ...)
 ) { # calc.cluster.averages of a m
   iprint(substitute(obj), "split by", split_by)
+  if(absolute.thr) iprint('In case of the absolute threshold, only the returned values are correct, the plot annotations are not!')
 
   df.summary <-
     obj@meta.data %>%
@@ -231,12 +236,14 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
     av.score <- df.summary[[stat]]
     names(av.score) <- ppp("cl",df.summary[[1]])
     av.score <- sortbyitsnames(av.score)
-
     if (scale.zscore) av.score <- (scale(av.score)[,1])
+
+    cutoff <- if(absolute.thr) absolute.thr else quantile(av.score, quantile.thr)
+    cutoff.low <- if(absolute.thr) NULL else  quantile(av.score, (1-quantile.thr) )
+
     if (plotit) {
-      cutoff <- quantile(av.score, quantile.thr)
       if (histogram) {
-        p <- qhistogram(vec = av.score, save = F
+        p <- qhistogram(vec = as.numeric(av.score), save = F
                         , vline = cutoff
                         , plotname = title
                         , bins = nbins
@@ -247,11 +254,10 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                         # , ylim=c(-1,1)
                         , ...
                         # , ext = "png", w = 7, h = 5
-        ) # + geom_hline(yintercept = quantile(av.score, (1-quantile.thr) ) , lty=2)
+        ) + geom_vline(xintercept = cutoff.low, lty=2)
         print(p)
         title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
         qqSave(ggobj = p, title = title_, ext = "png", w = width, h = height)
-
       } else {
         p <- qbarplot(vec = av.score, save = F
                       , hline = cutoff
@@ -263,12 +269,14 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                       # , ylim=c(-1,1)
                       , ...
                       # , ext = "png", w = 7, h = 5
-        ) + geom_hline(yintercept = quantile(av.score, (1 - quantile.thr) ) , lty = 2)
+        ) + geom_hline(yintercept = cutoff.low , lty = 2)
+
         print(p)
         title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
         qqSave(ggobj = p, title = title_, fname = ppp(title_, split_by, "png"),  w = width, h = height)
       }
     }
+
     if (filter == 'below') {
       filter_LP(av.score, threshold = cutoff, plot.hist = F)
     } else if (filter == 'above') {
