@@ -211,7 +211,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , ...
                                   # , ylb = paste(ylab.text, col_name)
                                   # , xlb = paste("Clusters >",percentage_formatter(quantile.thr),"quantile are highlighted. |", split_by)
-                                  , xlb = if (absolute.thr) paste("Threshold at", absolute.thr, " + median ()") else paste(
+                                  , xlb = if (absolute.thr) paste("Threshold at", absolute.thr) else paste(
                                     "Lines mark" , kppd(percentage_formatter(c(1-quantile.thr, quantile.thr))) ,"quantiles |"
                                     , "Cl. >",percentage_formatter(quantile.thr),"are highlighted. |", split_by
                                   )
@@ -247,7 +247,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                         , vline = cutoff
                         , plotname = title
                         , bins = nbins
-                        , subtitle = subtitle
+                        , subtitle = paste(subtitle, "| median in blue/dashed")
                         , ylab = ylab.text
                         , xlab = xlb # Abused
                         , xlab.angle = 45
