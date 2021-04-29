@@ -427,6 +427,18 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
 }
 # recall.parameters(); p
 
+
+# recall.genes.ls ------------------------------------------------------------------------
+recall.genes.ls<- function(obj = combined.obj) { # genes.ls
+  if (!exists('genes.ls')) {
+    genes.ls <- obj@misc$genes.ls
+    print(head(unlist(genes.ls)))
+    ww.assign_to_global(name = "genes.ls", value = genes.ls)
+  } else {print("variable 'genes.ls' exits in the global namespace")}
+}
+# recall.genes.ls(); genes.ls
+
+
 # save.parameters ------------------------------------------------------------------------
 save.parameters <- function(obj = combined.obj, params = p) {
   if (!is.null(obj@misc$'p')) print("Overwriting already existing obj@misc$p. Old version:") ; print(head(unlist(obj@misc$'p')))
