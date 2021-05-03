@@ -247,7 +247,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
       if (histogram) {
         p <- qhistogram(vec = as.numeric(av.score), save = F
                         , vline = cutoff
-                        , plotname = title
+                        , plotname = ppp(title, quantile.thr)
                         , bins = nbins
                         , subtitle = paste(subtitle, "| median in blue/dashed")
                         , ylab = ylab.text
@@ -264,6 +264,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
         p <- qbarplot(vec = av.score, save = F
                       , hline = cutoff
                       , title = title
+                      , suffix = quantile.thr
                       , subtitle = subtitle
                       , ylab = ylab.text
                       , xlab = xlb # Abused
@@ -278,6 +279,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
         qqSave(ggobj = p, title = title_, fname = ppp(title_, split_by, "png"),  w = width, h = height)
       }
     }
+    print(quantile.thr)
 
     if (filter == 'below') {
       filter_LP(av.score, threshold = cutoff, plot.hist = F)
@@ -505,28 +507,40 @@ FlipReductionCoordinates <- function(obj = combined.obj, dim=2, reduction="umap"
 
 
 # SeuratColorVector ------------------------------------------------------------------------
-SeuratColorVector <- function(obj = combined.obj) {
-  colorlevels <- hue_pal()(length(levels(obj@active.ident)))
-  translate(vec = as.character(obj@active.ident)
-            , oldvalues = levels(obj@active.ident)
+SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F) {
+  if (!is.null(ident)) {
+    print(ident)
+    ident.vec <- obj[[ident]][,1]
+  } else {
+    ident.vec <- obj@active.ident
+  }
+  ident.vec <- as.factor(ident.vec)
+  print(table(ident.vec))
+  colorlevels <- scales::hue_pal()(length(levels(ident.vec)))
+  if (plot.colors) color_check(colorlevels)
+  translate(vec = as.character(ident.vec)
+            , oldvalues = levels(ident.vec)
             , newvalues = colorlevels)
 }
+# SeuratColorVector()
+# SeuratColorVector(ident = GetNamedClusteringRuns()[2], plot.colors = T)
 
 # getClusterColors ------------------------------------------------------------------------
 getClusterColors <- function(obj = combined.obj
                              , ident = GetClusteringRuns()[1]
                              , show = T) {
-  (identities <- levels(obj[[ident]][,1]))
+  (identities <- levels(as.factor(obj[[ident]][,1])))
   color_palette <- scales::hue_pal()(length(identities))
   # color_check(color_palette)
-  names(color_palette) <- sort(identities)
+  # names(color_palette) <- sort(as.factor(identities))
+  names(color_palette) <- ((identities))
   identvec <- obj[[ident]][,1]
   colz <- color_palette[identvec]
   names(colz) <- identvec
   if (show) color_check(unique(colz)) # MarkdownReports
   colz
 }
-# getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[1] )
+# getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[2] )
 
 
 #  get.clustercomposition ------------------------------------------------------------------------
