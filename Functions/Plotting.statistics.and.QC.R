@@ -63,14 +63,14 @@ CellFractionsBarplot2 <- function(obj = combined.obj
     { if (downsample) sample_n(., downsample) else . } %>%
     group_by( (!!as.name(group.by)) ) %>%
 
-    ggplot( aes(fill=(!!(as.name(fill.by))), x = (!!(as.name(group.by)))) ) +
+    ggplot( aes(fill = (!!(as.name(fill.by))),  x = (!!(as.name(group.by)))) ) +
     geom_hline( yintercept = hlines, lwd=1.5)  +
-    geom_bar( position="fill" ) +
+    geom_bar( position = "fill" ) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    geom_text(aes(label=..count..), stat='count',position=position_fill(vjust=0.5)) +
-    labs(title =pname_, x = "Clusters", y = "Fraction", caption = caption_) +
+    geom_text(aes(label = ..count..), stat='count',position = position_fill(vjust = 0.5)) +
+    labs(title = pname_,  x = "Clusters", y = "Fraction", caption = caption_) +
     theme_classic() +
-    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 }
 # CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
 # CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
@@ -83,11 +83,11 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
   stopifnot(length(SplitIdents) == 2)
 
   Idents(obj) <- clusters
-  (IdentsUsed <- sort.natural(as.character(unique(Idents(obj)))))
+  IdentsUsed <- sort.natural(as.character(unique(Idents(obj))))
   NrPlots <- length(IdentsUsed)
   p.clAv <- p.clAv.AutoLabel <- genes.to.label <- list.fromNames(IdentsUsed)
 
-  i=1
+  # i = 1
   for (i in 1:NrPlots) {
     print(IdentsUsed[i])
     ClX <- subset(obj, idents = IdentsUsed[i])
@@ -98,9 +98,9 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
     # plot ----
     p.clAv[[i]] <- p.clAv.AutoLabel[[i]] <-
       ggplot(avg.ClX.cells, aes(x = !!as.name(SplitIdents[1]), y = !!as.name(SplitIdents[2]) )) +
-      geom_point(data = avg.ClX.cells, color=rgb(0,.5,0,0.25), size=1) +
+      geom_point(data = avg.ClX.cells, color = rgb(0, .5, 0, 0.25), size = 1) +
       FontSize(x.title = 8, x.text = 8, y.title = 8, y.text = 8)+
-      geom_abline(slope = 1, intercept = 0, color='grey') +
+      geom_abline(slope = 1, intercept = 0, color = 'grey') +
       ggtitle(paste("Cluster", IdentsUsed[i] )) +
       # ggtitle(paste0("Cluster ", i) ) +
       scale_x_log10() + scale_y_log10() + annotation_logticks()
@@ -268,6 +268,19 @@ plot.clust.size.distr <- function(obj = combined.obj, category = 'integrated_snn
 
 
 #  ------------------------------------------------
+barplot.cells.per.cluster <- function(obj = combined.obj, ident =  "cl.names.KnownMarkers.0.5", sort = F) {
+  cell.per.cluster <- (table(obj[[ident]][,1]))
+  if (sort) cell.per.cluster <- sort(cell.per.cluster)
+  qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
+           , col = rainbow(l(cell.per.cluster))
+           , xlab.angle = 45
+           # , col = getClusterColors(ident = ident, show = T)
+           , palette_use = NULL, )
+}
+# barplot.cells.per.cluster()
+# barplot.cells.per.cluster(sort=T)
+
+
 #  ------------------------------------------------
 #  ------------------------------------------------
 
