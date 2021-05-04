@@ -16,6 +16,7 @@ sourceGitHub("Cluster.Auto-naming.DE.R", repo = "Seurat.utils", folder = "Functi
 sourceGitHub("MULTI-seq.functions.R", repo = "Seurat.utils", folder = "Functions")
 sourceGitHub("Jaccard.toolkit.R", repo = "Seurat.utils", folder = "Functions")
 
+# source('https://raw.githubusercontent.com/vertesy/DatabaseLinke.R/master/DatabaseLinke.R')
 # try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Soup.Analysis.of.ambient.RNA.R'))
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Custom.Functions.for.Slingshot.R"))
 
