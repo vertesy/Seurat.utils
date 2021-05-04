@@ -47,8 +47,9 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 
 # Quick clustering result or categorical umap  ------------------------------------------------------------------------
 clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
-                   , reduct ="umap", splitby = NULL, suffix = NULL
-                   , title = ident, sub =NULL, label.cex = 7
+                   , reduct ="umap", splitby = NULL
+                   , title = ident, sub =NULL, suffix = sub
+                   , label.cex = 7
                    , h=7, w=NULL, nr.cols = NULL
                    , plotname = ppp(toupper(reduct), ident)
                    , highlight.clusters = NULL, cells.highlight = NULL
