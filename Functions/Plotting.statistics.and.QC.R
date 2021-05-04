@@ -75,6 +75,23 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 # CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
 # CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
 
+
+
+#  ------------------------------------------------
+barplot.cells.per.cluster <- function(obj = combined.obj, ident =  "cl.names.KnownMarkers.0.5", sort = F) {
+  cell.per.cluster <- (table(obj[[ident]][,1]))
+  if (sort) cell.per.cluster <- sort(cell.per.cluster)
+  qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
+           , col = rainbow(l(cell.per.cluster))
+           , xlab.angle = 45
+           # , col = getClusterColors(ident = ident, show = T)
+           , palette_use = NULL, )
+}
+# barplot.cells.per.cluster()
+# barplot.cells.per.cluster(sort=T)
+
+
+
 # BulkGEScatterPlot ------------------------------------------------------------------------
 BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to identify differential expressed genes across conditions
                               , clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = 'age', genes.from.bulk.DE = rownames(df.markers.per.AGE)) {
@@ -265,21 +282,6 @@ plot.clust.size.distr <- function(obj = combined.obj, category = 'integrated_snn
              , subtitle = paste("Nr.clusters at res.",resX,":", l(clust.size.distr)," | CV:", percentage_formatter(cv(clust.size.distr))))
 }
 # plot.clust.size.distr()
-
-
-#  ------------------------------------------------
-barplot.cells.per.cluster <- function(obj = combined.obj, ident =  "cl.names.KnownMarkers.0.5", sort = F) {
-  cell.per.cluster <- (table(obj[[ident]][,1]))
-  if (sort) cell.per.cluster <- sort(cell.per.cluster)
-  qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
-           , col = rainbow(l(cell.per.cluster))
-           , xlab.angle = 45
-           # , col = getClusterColors(ident = ident, show = T)
-           , palette_use = NULL, )
-}
-# barplot.cells.per.cluster()
-# barplot.cells.per.cluster(sort=T)
-
 
 #  ------------------------------------------------
 #  ------------------------------------------------
