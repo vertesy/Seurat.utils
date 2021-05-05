@@ -97,7 +97,7 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
   stopifnot(order_by %in% colnames(df_markers))
 
   top.markers <-
-    GetTopMarkersDF(df = df_markers, order.by = order_by, n=1) %>%
+    GetTopMarkersDF(df = df_markers, order.by = order_by, n = 1) %>%
     col2named.vec.tbl()
 
   obj@misc[[ppp("top.markers.res",res)]] <- top.markers
@@ -181,8 +181,8 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 
 # ------------------------------------------------------------------------------------
 DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster names.
-                                  , ident = "cl.names.top.gene.res.0.5", reduct ="umap",title = ident) {
-  DimPlot(object = obj, reduction = reduct, group.by=ident, label=T, repel=T) + NoLegend() + ggtitle(title)
+                                 , ident = "cl.names.top.gene.res.0.5", reduct = "umap", title = ident, ...) {
+  DimPlot(object = obj, reduction = reduct, group.by = ident, label = T, repel = T, ...) + NoLegend() + ggtitle(title)
 }
 # DimPlot.ClusterNames()
 
@@ -196,7 +196,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
   ls.perCl <- split(coord.umap, f = obj[[res]])
   MedianClusterCoordinate <- unlapply(ls.perCl, median)
   OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
-  NewLabel <- as.character(0:(length(MedianClusterCoordinate)-1))
+  NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
   NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
   NewMetaCol <- kpp(res,"ordered")
   iprint("NewMetaCol:",NewMetaCol)
@@ -216,18 +216,18 @@ AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers
   coord.umap <- FetchData(object = obj, vars = dim_name)
   fit <- principal_curve(x = as.matrix(coord.umap))
   if (plotit) {
-    plot(fit, xlim=range(coord.umap[,1]), ylim=range(coord.umap[,2])
+    plot(fit, xlim = range(coord.umap[, 1]), ylim = range(coord.umap[, 2])
          , main = "principal_curve")
     # points(fit)
-    points(coord.umap, pch=18, cex=.25)
-    whiskers(coord.umap, fit$s, lwd=.1)
+    points(coord.umap, pch = 18, cex = .25)
+    whiskers(coord.umap, fit$s, lwd = .1)
     wplot_save_this(plotname = "principal_curve")
   }
 
   ls.perCl <- split(swap * fit$lambda, f = obj[[res]])
   MedianClusterCoordinate <- unlapply(ls.perCl, median)
   OldLabel <- names(sort(MedianClusterCoordinate))
-  NewLabel <- as.character(0:(length(MedianClusterCoordinate)-1))
+  NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
   NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
   NewMetaCol <- kpp(res,"prin.curve")
   iprint("NewMetaCol:",NewMetaCol)
