@@ -87,7 +87,7 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
 
 
 # ------------------------------------------------------------------------------------
-GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0,1]\\.[0-9]$") { # Get Clustering Runs: metadata column names
+GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0-9]$") { # Get Clustering Runs: metadata column names
   if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
   clustering.results <- grepv(x = colnames(obj@meta.data), pattern = pat)
   if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
