@@ -196,6 +196,8 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 
 # calc.cluster.averages ------------------------------------------------
 calc.cluster.averages <- function(col_name = "Score.GO.0006096"
+                                  , plot.UMAP.too = TRUE
+                                  , return.plot = F
                                   , obj =  combined.obj
                                   , split_by = GetNamedClusteringRuns()[1]
                                   , scale.zscore = FALSE
@@ -222,6 +224,8 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
 ) { # calc.cluster.averages of a m
   iprint(substitute(obj), "split by", split_by)
   if(absolute.thr) iprint('In case of the absolute threshold, only the returned values are correct, the plot annotations are not!')
+
+  if (plot.UMAP.too) qUMAP(obj = obj, feature = col_name)
 
   df.summary <-
     obj@meta.data %>%
@@ -289,8 +293,9 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
       av.score
     }
   } else {
-    df.summary
+    return(df.summary)
   } # if /not/ simplify
+  if (return.plot) return(p)
 }
 
 
