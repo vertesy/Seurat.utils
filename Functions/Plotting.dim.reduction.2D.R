@@ -54,7 +54,8 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , plotname = ppp(toupper(reduct), ident)
                    , highlight.clusters = NULL, cells.highlight = NULL
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 200
-                   , save.plot=T, PNG = T, ...) {
+                   , save.plot=T, PNG = T
+                   , save.object = F, ...) {
   IdentFound <- (ident %in%  colnames(obj@meta.data))
 
   if (!IdentFound) {
@@ -88,6 +89,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
       fname = ww.FnP_parser(ppp(plotname, suffix), if (PNG) "png" else "pdf")
       try(save_plot(filename = fname, plot = ggplot.obj, base_height=h, base_width = w)) #, ncol=1, nrow=1
     }
+    if(save.object) saveRDS(object = ggplot.obj, file = ppp(fname, 'ggobj.RDS'))
     return(ggplot.obj)
   } # if not too many categories
 }
