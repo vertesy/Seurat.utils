@@ -102,7 +102,13 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 
   obj@misc[[ppp("top.markers.res",res)]] <- top.markers
 
-  stopifnot(length(unique(Idents(object = obj))) == length(top.markers))
+  ids <- unique(Idents(object = obj))
+  if(length(ids) != length(top.markers)) {
+    warning("Not all clusters returned DE-genes!")
+    missing <- setdiff(ids, names(top.markers));  names(missing) <- missing
+    iprint("missing:", missing)
+    top.markers <- sortbyitsnames(c(top.markers, missing))
+  }
 
   (top.markers.ID <- ppp(names(top.markers), top.markers))
   names(top.markers.ID) <- names(top.markers)
@@ -115,6 +121,7 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 
   return(obj)
 }
+
 # combined.obj <- AutoLabelTop.logFC(); combined.obj$"cl.names.top.gene.res.0.5"
 
 
