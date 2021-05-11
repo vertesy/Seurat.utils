@@ -324,13 +324,13 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
   {
     Signature.Genes.Top16  <- c(
       `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
-      , `oRG` = "ID4", `oRG` = "HOPX"
+      , `oRG` = "ID4", `oRG` = "HOPX" # oRG outer radial glia
       , `Intermediate progenitor` = "EOMES",  `Intermediate progenitor1` = "TAC3"
       , Astroglia = "GFAP", Astrocyte = "S100B"
       , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
       , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
-      , `Low-Quality` = "POLR2A", `PGC` = "DCN"
-      , `dl-EN` = "KAZN", `ul-EN` = "SATB2"
+      , `Low-Quality` = "POLR2A", `Choroid.Plexus` = "DCN"
+      , `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
     )
   }
   print(as_tibble_from_named_vec(Signature.Genes.Top16))
