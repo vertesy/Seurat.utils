@@ -286,18 +286,18 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
     print(quantile.thr)
 
     if (filter == 'below') {
-      filter_LP(av.score, threshold = cutoff, plot.hist = F)
+      return(filter_LP(av.score, threshold = cutoff, plot.hist = F))
     } else if (filter == 'above') {
-      filter_HP(av.score, threshold = cutoff, plot.hist = F)
+      return(filter_HP(av.score, threshold = cutoff, plot.hist = F))
     } else {
-      av.score
+      return(av.score)
     }
+  } else if (return.plot) { # if /not/ simplify
+    return(p)
   } else {
     return(df.summary)
-  } # if /not/ simplify
-  if (return.plot) return(p)
+  }
 }
-
 
 # Add to obj@metadata from an external table ------------------------------------------------------------------------
 seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix = ".fromMeta") { # Add multiple new metadata columns to a Seurat object from a table.
