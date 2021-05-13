@@ -86,7 +86,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
         if (!legend) NoLegend() else NULL
 
     if (save.plot) {
-      fname = ww.FnP_parser(ppp(plotname, suffix, highlight.clusters), if (PNG) "png" else "pdf")
+      fname = ww.FnP_parser(ppp(plotname, suffix, kpp(highlight.clusters)), if (PNG) "png" else "pdf")
       try(save_plot(filename = fname, plot = ggplot.obj, base_height=h, base_width = w)) #, ncol=1, nrow=1
     }
     if(save.object) saveRDS(object = ggplot.obj, file = ppp(fname, 'ggobj.RDS'))
