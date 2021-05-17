@@ -103,18 +103,42 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 # https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
 
 # ------------------------------------------------------------------------
-save2umaps.A4 <- function(plot_list, pname = F, scale = 1, h = hA4 * scale, w = wA4 * scale, ...) { # Save 2 umaps on an A4 page.
-  if (pname ==F) pname = substitute(plot_list)
-  p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 1, labels = LETTERS[1:length(plot_list)], ...  )
+save2umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
+                          , nrow = 2, ncol = 1
+                          , h = hA4 * scale, w = wA4 * scale, ...) { # Save 2 umaps on an A4 page.
+  if (pname ==F) pname = sppp(substitute(plot_list), suffix)
+  p1 = plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
 
 # ------------------------------------------------------------------------
-save4umaps.A4 <- function(plot_list, pname = F, scale = 1, h = wA4 * scale, w = hA4 * scale, ...) { # Save 4 umaps on an A4 page.
-  if (pname==F) pname = substitute(plot_list)
-  p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:length(plot_list)], ...  )
+save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
+                          , nrow = 2, ncol = 2
+                          , h = wA4 * scale, w = hA4 * scale, ...) { # Save 4 umaps on an A4 page.
+  if (pname==F) pname =  sppp(substitute(plot_list), suffix)
+  p1 = plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
+
+# # ------------------------------------------------------------------------
+# save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
+#                           , nrow = 2, ncol = 2
+#                           , h = wA4 * scale, w = hA4 * scale, ...) { # Save 4 umaps on an A4 page.
+#   ww.saveXumaps(plot_list = plot_list, pname = pname, suffix = suffix, scale = scale
+#                 , nrow = nrow, ncol = ncol
+#                 , h = h, w =w, ...)
+# }
+#
+# # ------------------------------------------------------------------------
+# ww.saveXumaps <- function(plot_list, pname = F, suffix = NULL, scale = 1
+#                           , nrow = 2, ncol = 2
+#                           , h = wA4 * scale, w = hA4 * scale, ...) { # Save 4 umaps on an A4 page.
+#   if (pname==F) pname =  sppp(substitute(plot_list), suffix)
+#   p1 = plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
+#   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
+# }
+#
+
 
 # ------------------------------------------------------------------------
 umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, ext = "png", ...) { # Plot and save umap based on a metadata column.
@@ -168,7 +192,9 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
 multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
-                                , obj = combined.obj, foldername = substitute(list.of.genes), plot.reduction='umap', intersectionAssay = c('RNA', 'integrated')[1]
+                                , obj = combined.obj
+                                , foldername = substitute(list.of.genes), plot.reduction='umap'
+                                , intersectionAssay = c('RNA', 'integrated')[1]
                                 , layout = c('tall', 'wide', FALSE )[2]
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
@@ -184,6 +210,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
   if (is.null(foldername)) foldername = "genes"
   if (subdir) create_set_SubDir( paste0(foldername,'-', plot.reduction),'/')
   list.of.genes.found = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay)
+  DefaultAssay(obj) <- intersectionAssay
 
   if (layout == 'tall') { w = wA4 * scaling; h = hA4 * scaling; nr.Col = 2; nr.Row = 4}
   if (layout == 'wide') { w = hA4 * scaling; h = wA4 * scaling; nr.Col = 2; nr.Row = 2}
