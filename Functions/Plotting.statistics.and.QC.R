@@ -273,16 +273,16 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
 # combined.obj <- Calc.Cor.Seurat(assay.use = "RNA", slot.use = "data", digits = 2, obj = combined.obj, quantile = 0.99, max.cells = 40000)
 
 # plot.clust.size.distr ------------------------------------------------
-plot.clust.size.distr <- function(obj = combined.obj, category = GetClusteringRuns()[2], plot = T, thr.hist = 30) {
+plot.clust.size.distr <- function(obj = combined.obj, category = GetClusteringRuns()[2], plot = T, thr.hist = 30, ...) {
   clust.size.distr <- table(obj@meta.data[,category])
   print(clust.size.distr)
   resX <- gsub(pattern = ".*res\\.", replacement = '',x = category)
 
   if (l(clust.size.distr) < thr.hist) {
-    qbarplot(clust.size.distr, plotname = ppp('clust.size.distr', (category))
+    qbarplot(clust.size.distr, plotname = ppp('clust.size.distr', (category)), ...
              , subtitle = paste("Nr.clusters at res.",resX,":", l(clust.size.distr)," | CV:", percentage_formatter(cv(clust.size.distr))))
   } else {
-    qhistogram(vec = clust.size.distr, plotname = ppp('clust.size.distr', (category))
+    qhistogram(vec = clust.size.distr, plotname = ppp('clust.size.distr', (category)), ...
                , subtitle = paste("Nr.clusters at res.",resX,":", l(clust.size.distr)," | CV:", percentage_formatter(cv(clust.size.distr))))
   }
 
