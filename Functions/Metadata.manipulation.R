@@ -143,8 +143,10 @@ getMetadataColumn <- mmeta <- function(ColName.metadata = 'batch', obj = combine
 }
 
 # GetCellIDs from metadata ---------------
-getCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = NA) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
-  idx.matching.cells = which(obj@meta.data[ , ColName.meta] %in% values)
+getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj=combined.obj, inverse = F ) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
+  mdat <- obj@meta.data[ , ColName.meta]
+  cells <- if (inverse) {mdat %!in% values} else {mdat %in% values}
+  idx.matching.cells = which(cells)
   iprint(length(idx.matching.cells), 'cells found.')
   return(rownames(obj@meta.data)[idx.matching.cells])
 }
