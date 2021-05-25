@@ -358,6 +358,7 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
       , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
       , `Low-Quality` = "POLR2A", `Choroid.Plexus` = "DCN"
       , `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
+      # , `Choroid.Plexus` = "OTX2", `Choroid.Plexus` = "BMP4"
     )
   }
   print(as_tibble_from_named_vec(Signature.Genes.Top16))
