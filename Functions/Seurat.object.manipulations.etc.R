@@ -56,7 +56,9 @@ check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = TRUE
   if (makeuppercase) list.of.genes <- toupper(list.of.genes)
   all_genes = rownames(GetAssayData(object = obj, assay = assay.slot, slot = "data")); length(all_genes)
   missingGenes = setdiff(list.of.genes, all_genes)
-  if (length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
+  if (length(missingGenes)>0) {
+      iprint(l(missingGenes), "or", percentage_formatter(l(missingGenes) / l(list.of.genes)), "genes not found in the data, e.g:", head(missingGenes, n = 10))
+  }
   intersect(list.of.genes, all_genes)
 }
 
