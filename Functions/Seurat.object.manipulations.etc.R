@@ -76,6 +76,7 @@ CalculateFractionInTrome <- function(geneset = c("MALAT1") # Calculate the fract
                                      , obj = combined.obj
                                      , dataslot = c("counts", "data")[2]
 ) {
+  print("    >>>> Use add.meta.fraction() <<<<")
   geneset <- check.genes(geneset)
   mat <- as.matrix(slot(obj@assays$RNA, name=dataslot))
   RC.per.cell.geneset <- colSums(mat[geneset,])
