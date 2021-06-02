@@ -65,7 +65,7 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
   stopif2(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
-  geneset <- check.genes(geneset)
+  geneset <- check.genes(list.of.genes = gene.set)
   total_expr <- Matrix::colSums(GetAssayData(object = obj))
   genes.matching <- if (!isFALSE(gene.set)) intersect(gene.set, rownames(obj)) else grepv(pattern = gene.symbol.pattern, x = rownames(obj))
 
@@ -75,6 +75,7 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
   colnames(obj@meta.data)
   return(obj)
 }
+
 
 # ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-")
 # ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.ribo", gene.symbol.pattern = "^RPL|^RPS")
