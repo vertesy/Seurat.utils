@@ -76,6 +76,7 @@ CalculateFractionInTrome <- function(obj = combined.obj # Calculate the fraction
                                      , geneset = c("MALAT1", "MT-CO1", "MT-CO3", "MT-CO2", "MT-CYB", "MT-ATP6", "PTPRD")
                                      , dataslot = c("counts", "data")[1]
 ) {
+  geneset <- check.genes(geneset)
   mat <- as.matrix(slot(obj@assays$RNA, name=dataslot))
   RC.per.cell.geneset <- colSums(mat[geneset,])
   RC.per.cell <- colSums(mat)
