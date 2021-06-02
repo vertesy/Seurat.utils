@@ -72,9 +72,9 @@ fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj=org) { # Fi
 
 
 # CalculateFractionInTrome ------------------------------------------------
-CalculateFractionInTrome <- function(obj = combined.obj # Calculate the fraction of a set of genes within the full Transcriptome of each cell.
-                                     , geneset = c("MALAT1", "MT-CO1", "MT-CO3", "MT-CO2", "MT-CYB", "MT-ATP6", "PTPRD")
-                                     , dataslot = c("counts", "data")[1]
+CalculateFractionInTrome <- function(geneset = c("MALAT1") # Calculate the fraction of a set of genes within the full Transcriptome of each cell.
+                                     , obj = combined.obj
+                                     , dataslot = c("counts", "data")[2]
 ) {
   geneset <- check.genes(geneset)
   mat <- as.matrix(slot(obj@assays$RNA, name=dataslot))
