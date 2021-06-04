@@ -18,27 +18,16 @@ try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpres
 # Quick gene expression umap ------------------------------------------------------------------------
 qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to draw a gene expression UMAP
                    , title = feature, sub =NULL
-                   # , makeuppercase = FALSE
                    , reduct ="umap", splitby = NULL
                    , suffix = sub
                    , save.plot=T, PNG = T
                    , h=7, w=NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
+                   , HGNC.lookup= TRUE
                    , qlow = "q10", qhigh = "q90", ...) {
-  # if (makeuppercase) feature <- toupper(feature)
-  # if ( !(feature %in% colnames(obj@meta.data))) {
-  #   feature <- check.genes(feature)
-  # }
-  AllGenes <- rownames(obj@assays[[assay]])
-  isGene <- feature %in% AllGenes
-  isMeta <- feature %in% colnames(obj@meta.data)
-  isMouseGene <- toupper(feature) %in% AllGenes
-  iprint('isGene', isGene)
-  iprint('isMeta', isMeta)
-  iprint('isMouseGene', isMouseGene)
 
-  if (!( isGene | isMeta) ) {
-    if (isMouseGene) { feature <- toupper(feature)} else { try(qHGNC(feature))}
+  if ( !(feature %in% colnames(obj@meta.data))) {
+    feature <- check.genes(feature, verbose = F, HGNC.lookup = HGNC.lookup)
   }
 
   DefaultAssay(obj) <- assay
@@ -56,8 +45,8 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
   }
   return(ggplot.obj)
 }
-# qUMAP('isl1')
-
+# qUMAP('nFeature_RNA')
+# qUMAP('VGLUT') # old name
 
 
 # Quick clustering result or categorical umap  ------------------------------------------------------------------------
