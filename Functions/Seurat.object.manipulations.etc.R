@@ -49,18 +49,22 @@ gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) { # Check gene names in a
 }
 
 
-
 # check.genes ---------------------------------------
-check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = TRUE
+check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = TRUE, verbose  = TRUE, HGNC.lookup = FALSE
                         , obj = combined.obj, assay.slot=c('RNA', 'integrated')[1]) { # Check if genes exist in your dataset.
   if (makeuppercase) list.of.genes <- toupper(list.of.genes)
   all_genes = rownames(GetAssayData(object = obj, assay = assay.slot, slot = "data")); length(all_genes)
   missingGenes = setdiff(list.of.genes, all_genes)
-  if (length(missingGenes)>0) {
-      iprint(l(missingGenes), "or", percentage_formatter(l(missingGenes) / l(list.of.genes)), "genes not found in the data, e.g:", head(missingGenes, n = 10))
+  if (length(missingGenes) > 0) {
+    if (verbose) { iprint(l(missingGenes), "or", percentage_formatter(l(missingGenes) / l(list.of.genes)), "genes not found in the data, e.g:", head(missingGenes, n = 10))  }
+    if (HGNC.lookup) {
+      if (exists('qHGNC', mode='function')) { try(qHGNC(missingGenes)) } else { print("load qHGNC() function, see database.linker")}
+    }
   }
   intersect(list.of.genes, all_genes)
 }
+# check.genes("top2a")
+# check.genes("VGLUT2", verbose = F, HGNC.lookup = T)
 
 
 # replace zero indexed clusternames ------------------------------------------------
