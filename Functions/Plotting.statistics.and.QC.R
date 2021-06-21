@@ -290,6 +290,27 @@ plot.clust.size.distr <- function(obj = combined.obj, category = GetClusteringRu
 # plot.clust.size.distr()
 
 #  ------------------------------------------------
+
+
+gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], slot = c('counts', 'data')[2] ) {
+  slot = 'data'
+  GEX.Counts <- GetAssayData(object = obj, assay = 'RNA', slot = )
+  range(GEX.Counts)
+
+  GEX.Counts.total <- rowSums(GEX.Counts)
+  genes.expression <- GEX.Counts.total[gene]
+  mean.expr <- iround(mean(GEX.Counts[gene,]))
+  suffx = if (slot == 'counts') 'raw' else 'normalised, logtransformed'
+  (pname = paste(gene, 'and the', suffx,'transcript count distribution'))
+
+  qhistogram(GEX.Counts.total, vline = genes.expression, logX = T
+             , subtitle = paste('It belong to the top', pc_TRUE(GEX.Counts.total > genes.expression), 'of genes (black line). Mean expr:', mean.expr)
+             , plotname = pname, xlab = 'Total Transcripts in Dataset', ylab = 'Number of Genes')
+
+
+}
+
+#  ------------------------------------------------
 #  ------------------------------------------------
 
 
