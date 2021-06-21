@@ -213,7 +213,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
   ParentDir = OutDir
   if (is.null(foldername)) foldername = "genes"
   if (subdir) create_set_SubDir( paste0(foldername,'-', plot.reduction),'/')
-  list.of.genes.found = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay)
+  list.of.genes.found = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay, makeuppercase = F)
   DefaultAssay(obj) <- intersectionAssay
 
   if (layout == 'tall') { w = wA4 * scaling; h = hA4 * scaling; nr.Col = 2; nr.Row = 4; print('layout active, nr.Col ignored.') }
