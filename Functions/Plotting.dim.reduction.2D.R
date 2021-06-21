@@ -23,11 +23,11 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , save.plot=T, PNG = T
                    , h=7, w=NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
-                   , HGNC.lookup= TRUE
+                   , HGNC.lookup= TRUE, make.uppercase = TRUE
                    , qlow = "q10", qhigh = "q90", ...) {
 
   if ( !(feature %in% colnames(obj@meta.data))) {
-    feature <- check.genes(feature, verbose = F, HGNC.lookup = HGNC.lookup)
+    feature <- check.genes(feature, verbose = F, HGNC.lookup = HGNC.lookup, makeuppercase = make.uppercase)
   }
 
   DefaultAssay(obj) <- assay
