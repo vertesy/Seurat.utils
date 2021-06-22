@@ -189,6 +189,25 @@ Calc.Cor.Seurat <- function(assay = "RNA", slot = "data"
   expr.mat <- GetAssayData(slot = slot, assay = assay, object = obj)
 }
 
+# plot.Metadata.Cor.Heatmap ------------------------------------------------------------------------
+plot.Metadata.Cor.Heatmap <- function(
+  columns = c( "nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
+  , cormethod = c('pearson', 'spearman')[1]
+  , main =paste( "Metadata", cormethod,"correlations")
+  , obj = combined.obj, ...){
+  library(ggcorrplot)
+
+
+  expr.mat <- obj@meta.data
+  columns.found <- intersect(colnames(obj@meta.data), columns)
+
+  corX <- cor(expr.mat[ , columns.found], method = cormethod)
+  pl <- ggcorrplot(corX, hc.order = TRUE, title = main
+                   , type = "full", lab = T)
+  qqSave(pl, fname = ppp(make.names(main),'pdf'), w = 10)
+  pl
+}
+
 
 # plot.Gene.Cor.Heatmap ------------------------------------------------------------------------
 plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
@@ -218,7 +237,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
       if (l(genes.found) > 200) iprint("Too many genes found in data, cor will be slow: ", l(genes.found))
       ls.cor <- sparse.cor(t(expr.mat[genes.found,]))
       cor.mat <- ls.cor$cor
-    } else {stop()}
+    } else { stop() }
   } else {
     print("Correlation is pre-calculated")
     genes.found <- intersect(genes, rownames(cor.mat))
@@ -303,7 +322,7 @@ gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], sl
   suffx = if (slot == 'counts') 'raw' else 'normalised, logtransformed'
   (pname = paste(gene, 'and the', suffx,'transcript count distribution'))
 
-  qhistogram(GEX.Counts.total, vline = genes.expression, logX = T
+  qhistogram(GEX.Counts.total, vline = genes.expression, logX = T, w = 6, h = 4
              , subtitle = paste('It belong to the top', pc_TRUE(GEX.Counts.total > genes.expression), 'of genes (black line). Mean expr:', mean.expr)
              , plotname = pname, xlab = 'Total Transcripts in Dataset', ylab = 'Number of Genes')
 
