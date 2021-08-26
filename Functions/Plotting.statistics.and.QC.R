@@ -303,12 +303,13 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
                      , "| CV:", percentage_formatter(cv(clust.size.distr))
   )
   xlb = "Cluster size (cells)"
+  xlim = c(0, max(clust.size.distr))
 
   if (plot) {
     if (l(clust.size.distr) < thr.hist) {
       qbarplot(clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, ...)
     } else {
-      qhistogram(vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, ...)
+      qhistogram(vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, xlim = xlim, ...)
     }
   } else {    "return vector"
     clust.size.distr
