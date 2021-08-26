@@ -292,7 +292,7 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
 # combined.obj <- Calc.Cor.Seurat(assay.use = "RNA", slot.use = "data", digits = 2, obj = combined.obj, quantile = 0.99, max.cells = 40000)
 
 # plot.clust.size.distr ------------------------------------------------
-plot.clust.size.distr <- function(obj = combined.obj, category = GetClusteringRuns()[2]
+plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns()[2]
                                   , plot = T, thr.hist = 30, ...) {
   clust.size.distr <- table(obj@meta.data[,ident])
   print(clust.size.distr)
