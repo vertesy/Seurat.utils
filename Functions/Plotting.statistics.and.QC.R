@@ -321,8 +321,6 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
 
 
 #  ------------------------------------------------
-
-
 gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], slot = c('counts', 'data')[2] ) {
   slot = 'data'
   GEX.Counts <- GetAssayData(object = obj, assay = 'RNA', slot = )
@@ -342,7 +340,41 @@ gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], sl
 }
 
 #  ------------------------------------------------
+PrctCellExpringGene <- function(genes, group.by = "all", object = combined.obj){ # From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371
+  if(group.by == "all"){
+    prct = unlist(lapply(genes, ww.calc_helper, object = object))
+    result = data.frame(Markers = genes, Cell_proportion = prct)
+    return(result)
+  }
+
+  else{
+    list = SplitObject(object, group.by)
+    factors = names(list)
+    results = lapply(list, PrctCellExpringGene, genes = genes)
+    for (i in 1:length(factors)) {
+      results[[i]]$Feature = factors[i]
+    }
+    combined = do.call("rbind", results)
+    return(combined)
+  }
+}
+
+
+#  ------------------------------------------------
+ww.calc_helper <- function(object, genes){ # From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371
+  counts = object[['RNA']]@counts
+  ncells = ncol(counts)
+  if (genes %in% row.names(counts)) {
+    sum(counts[genes, ] > 0) / ncells
+  } else{
+    return(NA)
+  }
+}
+
 #  ------------------------------------------------
 
 
 
+#  ------------------------------------------------
+
+#  ------------------------------------------------
