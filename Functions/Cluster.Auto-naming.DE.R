@@ -136,7 +136,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
   stopifnot(!is.null("df_markers"))
 
   lfcCOL <- grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df_markers), perl = T)
-  keep <- c(lfcCOL, 'p_val_adj', 'cluster', 'combined.score', 'gene'  )
+  keep <- unique(c(lfcCOL, 'p_val_adj', 'cluster', order.by, 'gene'  ))
 
 
   matching.clusters <-
