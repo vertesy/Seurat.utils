@@ -56,6 +56,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , label.cex = 7
                    , h=7, w=NULL, nr.cols = NULL
                    , plotname = ppp(toupper(reduct), ident)
+                   , cols = getDiscretePalette(ident.used = ident, show.colors = F)
                    , highlight.clusters = NULL, cells.highlight = NULL
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 200
                    , save.plot=T, PNG = T
@@ -83,6 +84,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
     if( length(unique(obj[[ident]])) < MaxCategThrHP )
       ggplot.obj <-
         DimPlot(object = obj, group.by = ident
+                , cols = cols
                 , reduction = reduct, split.by = splitby
                 , ncol = nr.cols, cells.highlight = highlight.these
                 , label = label, repel = repel, label.size = label.cex, ...) +
@@ -97,6 +99,10 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
     return(ggplot.obj)
   } # if not too many categories
 }
+# clUMAP('cl.names.KnownMarkers.0.5' )
+# clUMAP('cl.names.KnownMarkers.0.5', cols = NULL)
+
+
 
 
 # ------------------------------------------------------------------------
@@ -380,4 +386,4 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1], obj = combin
   return(colz)
 }
 
-
+clUMAP()
