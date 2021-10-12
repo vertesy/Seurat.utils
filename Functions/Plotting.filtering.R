@@ -32,6 +32,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
     , "] and ribosomal [",percentage_formatter(above.ribo), ";" ,percentage_formatter(below.ribo), "] reads."
   )
 
+
   theme_set(theme.used)
   create_set_OutDir(parentdir, subdir)
   require(ggplot2)
@@ -39,15 +40,29 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
   for (i in 1:l(ls.obj)) {
     print(suffices[i])
-
     mm =  ls.obj[[i]]@meta.data
-    filt.nFeature_RNA = (mm$nFeature_RNA < below.nFeature_RNA & mm$nFeature_RNA > above.nFeature_RNA)
-    filt.below.mito = (mm$percent.mito < below.mito & mm$percent.mito > above.mito)
-    # filt.below.mito = (mm$percent.mito < below.mito)
-    filt.below.ribo = (mm$percent.ribo < below.ribo & mm$percent.ribo > above.ribo)
+
+    AllMetaColumnsPresent <- all(c('nFeature_RNA', 'percent.mito', 'percent.ribo') %in% colnames(mm))
+    if (!AllMetaColumnsPresent) {
+      print(c('nFeature_RNA', 'percent.mito', 'percent.ribo'))
+      print(c('nFeature_RNA', 'percent.mito', 'percent.ribo') %in% colnames(mm))
+      print("Try to run:")
+      print('objX <- add.meta.fraction(obj = objX, col.name = "percent.mito", gene.symbol.pattern =  "^MT\\.|^MT-")')
+      print('objX <- add.meta.fraction(obj = objX, col.name = "percent.ribo", gene.symbol.pattern =  "^RPL|^RPS")')
+      stop()
+    }
+
+
+
+    filt.nFeature_RNA = (mm$'nFeature_RNA' < below.nFeature_RNA & mm$'nFeature_RNA' > above.nFeature_RNA)
+    filt.below.mito = (mm$'percent.mito' < below.mito & mm$'percent.mito' > above.mito)
+
+    # filt.below.mito = (mm$'percent.mito' < below.mito)
+    filt.below.ribo = (mm$'percent.ribo' < below.ribo & mm$'percent.ribo' > above.ribo)
+
     mm =  cbind(mm, filt.nFeature_RNA, filt.below.mito, filt.below.ribo)
 
-    mm$colour.thr.nFeature <- cut(mm$nFeature_RNA,
+    mm$colour.thr.nFeature <- cut(mm$'nFeature_RNA',
                                   breaks = c(-Inf, above.nFeature_RNA, below.nFeature_RNA, Inf),
                                   labels = c(p0("LQ (<", above.nFeature_RNA,")"),
                                              p0("HQ (", above.nFeature_RNA,"< X <", below.nFeature_RNA,")"),
@@ -89,6 +104,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
       geom_vline(xintercept = below.nFeature_RNA) +
       geom_vline(xintercept = above.nFeature_RNA);
     # C
+
 
     D = ggplot(mm, aes(x = percent.ribo, y = percent.mito)) +
       ggtitle(paste("Cells w/o extremes selected (with A,B,C:"
