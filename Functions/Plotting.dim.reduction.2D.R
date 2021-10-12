@@ -348,8 +348,6 @@ qFeatureScatter <- function(feature1 = "M.RabV.N2c", feature2 = "P.RabV.N2c", ob
 }
 
 # qMarkerCheck.BrainOrg --------------------------------------------------------------------------------
-
-
 qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
   Signature.Genes.Top16 <- if (custom.genes) custom.genes else
   {
@@ -369,3 +367,17 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
   multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall")
 }
 # qMarkerCheck.BrainOrg(combined.obj)
+
+
+
+# getDiscretePalette --------------------------------------------------------------------------------
+getDiscretePalette <- function(ident.used = GetClusteringRuns()[1], obj = combined.obj
+                               , palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1]
+                               , show.colors = T) {
+  n.clusters <-  nrow(unique(obj[[ident.used]]))
+  colz <- DiscretePalette(n = n.clusters, palette = palette.used)
+  if (show.colors) Color_Check(colz)
+  return(colz)
+}
+
+
