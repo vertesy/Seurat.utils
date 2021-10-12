@@ -8,7 +8,7 @@
 # PlotFilters ------------------------------------------------------------------------------------
 PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.
                         , parentdir= OutDirOrig
-                        , suffices = names(ls.Seurat)
+                        , suffices = names(ls.obj)
                         , filetype='.png'
                         , below.mito = p$"thr.lp.mito"
                         , above.mito = p$"thr.hp.mito"
@@ -37,7 +37,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
   require(ggplot2)
   if (suffices == l(ls.obj)) print("ls.Obj elements have no names (required).")
 
-  for (i in 1:l(ls.Seurat)) {
+  for (i in 1:l(ls.obj)) {
     print(suffices[i])
 
     mm =  ls.obj[[i]]@meta.data
