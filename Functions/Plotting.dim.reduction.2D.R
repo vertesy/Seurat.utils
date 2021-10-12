@@ -377,13 +377,14 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
 
 
 # getDiscretePalette --------------------------------------------------------------------------------
-getDiscretePalette <- function(ident.used = GetClusteringRuns()[1], obj = combined.obj
+getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
+                               , obj = combined.obj
                                , palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1]
-                               , show.colors = T) {
+                               , show.colors = F) {
   n.clusters <-  nrow(unique(obj[[ident.used]]))
   colz <- DiscretePalette(n = n.clusters, palette = palette.used)
   if (show.colors) Color_Check(colz)
   return(colz)
 }
+# getDiscretePalette()
 
-clUMAP()
