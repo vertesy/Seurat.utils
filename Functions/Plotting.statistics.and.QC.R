@@ -223,6 +223,7 @@ plot.Metadata.median.fraction.barplot <- function(
   , main = paste( method, "read fractions per transcript class and cluster", suffix)
   , ylab = "Fraction of transcriptome (%)"
   , percentify = T
+  , subt = NULL
   , position = position_stack()
   , w = 10, h = 6
   , obj = combined.obj
@@ -259,6 +260,7 @@ plot.Metadata.median.fraction.barplot <- function(
   pl
   if (return.matrix) mat.cluster.medians1 else pl
 }
+
 # plot.Metadata.median.fraction.barplot()
 
 
