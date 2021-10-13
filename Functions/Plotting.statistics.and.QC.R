@@ -189,6 +189,7 @@ Calc.Cor.Seurat <- function(assay = "RNA", slot = "data"
   expr.mat <- GetAssayData(slot = slot, assay = assay, object = obj)
 }
 
+
 # plot.Metadata.Cor.Heatmap ------------------------------------------------------------------------
 plot.Metadata.Cor.Heatmap <- function(
   columns = c( "nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
@@ -198,15 +199,51 @@ plot.Metadata.Cor.Heatmap <- function(
   library(ggcorrplot)
 
 
-  expr.mat <- obj@meta.data
-  columns.found <- intersect(colnames(obj@meta.data), columns)
+  meta.data <- obj@meta.data
+  columns.found <- intersect(colnames(meta.data), columns)
 
-  corX <- cor(expr.mat[ , columns.found], method = cormethod)
+  corX <- cor(meta.data[ , columns.found], method = cormethod)
   pl <- ggcorrplot(corX, hc.order = TRUE, title = main
                    , type = "full", lab = T)
   qqSave(pl, fname = ppp(make.names(main),'pdf'), w = 10)
   pl
 }
+
+
+# plot.Metadata.median.fraction.barplot ------------------------------------------------------------------------
+plot.Metadata.median.fraction.barplot <- function(
+  columns = c(  "percent.mito", "percent.ribo")
+  , method = c('median', 'mean' )[1]
+  , main = paste( method, "read fractions per transcript class and cluster")
+  , ylab = "Fraction of transcriptome (%)"
+  # , percentify = T
+  , obj = combined.obj
+  , group.by = GetClusteringRuns(obj = obj)[2]
+  , ...){
+
+  meta.data <- obj@meta.data
+  stopifnot(group.by %in% colnames(meta.data))
+  columns.found <- intersect(colnames(meta.data), c(group.by, columns) )
+
+  (BPP <- meta.data[ , columns.found] %>%
+      group_by_at(group.by) %>%
+      dplyr::summarize_all(median
+                           # , mean = mean(na.rm=TRUE)
+      ) %>%
+      reshape2::melt(id.vars = c(group.by)) %>%
+      mutate(value = 100*value)
+  )
+
+  pl <- ggbarplot(BPP, x = group.by, y = 'value', fill = 'variable'
+                  , title = main, ylab = ylab)
+
+  qqSave(pl, fname = ppp(make.names(main),'pdf'), w = 10)
+  pl
+}
+
+
+
+
 
 
 # plot.Gene.Cor.Heatmap ------------------------------------------------------------------------
