@@ -210,39 +210,56 @@ plot.Metadata.Cor.Heatmap <- function(
 }
 
 
+
+
 # plot.Metadata.median.fraction.barplot ------------------------------------------------------------------------
 plot.Metadata.median.fraction.barplot <- function(
   columns = c(  "percent.mito", "percent.ribo")
-  , method = c('median', 'mean' )[1]
-  , main = paste( method, "read fractions per transcript class and cluster")
-  , ylab = "Fraction of transcriptome (%)"
-  # , percentify = T
-  , obj = combined.obj
+  , suffix =  NULL
   , group.by = GetClusteringRuns(obj = obj)[2]
+  , method = c('median', 'mean' )[1]
+  , min.thr = 2.5 # At least this many percent in at least 1 cluster
+  , return.matrix = F
+  , main = paste( method, "read fractions per transcript class and cluster", suffix)
+  , ylab = "Fraction of transcriptome (%)"
+  , percentify = T
+  , position = position_stack()
+  , w = 10, h = 6
+  , obj = combined.obj
   , ...){
 
   meta.data <- obj@meta.data
   stopifnot(group.by %in% colnames(meta.data))
   columns.found <- intersect(colnames(meta.data), c(group.by, columns) )
 
-  (BPP <- meta.data[ , columns.found] %>%
+  (mat.cluster.medians1 <- meta.data[ , columns.found] %>%
       group_by_at(group.by) %>%
-      dplyr::summarize_all(median
-                           # , mean = mean(na.rm=TRUE)
-      ) %>%
-      reshape2::melt(id.vars = c(group.by)) %>%
-      mutate(value = 100*value)
+      dplyr::summarize_all(median)
   )
+  if (min.thr>0) {
+    pass.cols <- colMax(mat.cluster.medians1[,-1]) > (min.thr/100)
+    cols.OK <- which_names(pass.cols)
+    cols.FAIL <- which_names(!pass.cols)
+    subt = paste(length(cols.FAIL), "classed do not reach", min.thr, "% :", kpps(cols.FAIL))
+    iprint(subt)
+    mat.cluster.medians1 <- mat.cluster.medians1[ , c( group.by, cols.OK) ]
+  }
 
-  pl <- ggbarplot(BPP, x = group.by, y = 'value', fill = 'variable'
-                  , title = main, ylab = ylab)
 
-  qqSave(pl, fname = ppp(make.names(main),'pdf'), w = 10)
+  mat.cluster.medians <- mat.cluster.medians1 %>%
+    reshape2::melt(id.vars = c(group.by), value.name = "Fraction")
+
+
+  if (percentify)  mat.cluster.medians$'Fraction' = 100*mat.cluster.medians$'Fraction'
+
+  pl <- ggbarplot(mat.cluster.medians, x = group.by, y = 'Fraction', fill = 'variable'
+                  , position = position
+                  , title = main, subtitle = subt ,ylab = ylab)
+  qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
   pl
+  if (return.matrix) mat.cluster.medians1 else pl
 }
-
-
-
+# plot.Metadata.median.fraction.barplot()
 
 
 
