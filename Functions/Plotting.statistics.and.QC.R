@@ -195,7 +195,9 @@ plot.Metadata.Cor.Heatmap <- function(
   columns = c( "nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
   , cormethod = c('pearson', 'spearman')[1]
   , main =paste( "Metadata", cormethod,"correlations")
-  , obj = combined.obj, ...){
+  , obj = combined.obj
+  , w = 10, h = w
+  , ...){
   library(ggcorrplot)
 
 
@@ -205,7 +207,7 @@ plot.Metadata.Cor.Heatmap <- function(
   corX <- cor(meta.data[ , columns.found], method = cormethod)
   pl <- ggcorrplot(corX, hc.order = TRUE, title = main
                    , type = "full", lab = T)
-  qqSave(pl, fname = ppp(make.names(main),'pdf'), w = 10)
+  qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
   pl
 }
 
