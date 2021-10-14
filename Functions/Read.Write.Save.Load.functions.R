@@ -1,7 +1,7 @@
 ######################################################################
 # Read.Write.Save.Load.functions.R
 ######################################################################
-# source('~/GitHub/Packages/Seurat.utils/Read.Write.Save.Load.functions.R')
+# source('~/GitHub/Packages/Seurat.utils/Functions/Read.Write.Save.Load.functions.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Read.Write.Save.Load.functions.R"))
 
 "Multicore read / write (I/O) functions are https://github.com/vertesy/Seurat.multicore"

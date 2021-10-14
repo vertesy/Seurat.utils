@@ -1,7 +1,7 @@
 ######################################################################
 # Cluster.Auto-naming.DE.R
 ######################################################################
-# source('~/GitHub/Packages/Seurat.utils/Cluster.Auto-naming.DE.R')
+# source('~/GitHub/Packages/Seurat.utils/Functions/Cluster.Auto-naming.DE.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Cluster.Auto-naming.DE.R"))
 
 # ------------------------------------------------------------------------

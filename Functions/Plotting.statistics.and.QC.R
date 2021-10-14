@@ -1,7 +1,7 @@
 ######################################################################
 # plotting.statistics.and.QC.R
 ######################################################################
-# source('~/GitHub/Packages/Seurat.utils/plotting.statistics.and.QC.R')
+# source('~/GitHub/Packages/Seurat.utils/Functions/Plotting.statistics.and.QC.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.statistics.and.QC.R"))
 
 # Source: self + web

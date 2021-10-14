@@ -1,7 +1,7 @@
 ######################################################################
 # Seurat.object.manipulations.etc.R
 ######################################################################
-# source('~/GitHub/Packages/Seurat.utils/Seurat.object.manipulations.etc.R')
+# source('~/GitHub/Packages/Seurat.utils/Functions/Seurat.object.manipulations.etc.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Seurat.object.manipulations.etc.R"))
 
 # ------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 ######################################################################
 # plotting.dim.reduction.3D.R
 ######################################################################
-# source('~/GitHub/Packages/Seurat.utils/plotting.dim.reduction.3D.R')
+# source('~/GitHub/Packages/Seurat.utils/Functions/plotting.dim.reduction.3D.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.dim.reduction.3D.R"))
 # Source: self + https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0
 

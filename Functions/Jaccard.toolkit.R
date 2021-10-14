@@ -1,7 +1,7 @@
 ######################################################################
 # Jaccard.toolkit.R
 ######################################################################
-# try(source('~/GitHub/Packages/Seurat.utils/Jaccard.toolkit.R'))
+# try(source('~/GitHub/Packages/Seurat.utils/Functions/Jaccard.toolkit.R'))
 # try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Jaccard.toolkit.R'))
 
 

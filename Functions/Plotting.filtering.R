@@ -1,7 +1,7 @@
 ######################################################################
 # plotting.filtering.R
 ######################################################################
-# source('~/GitHub/Packages/Seurat.utils/plotting.filtering.R')
+# source('~/GitHub/Packages/Seurat.utils/Functions/plotting.filtering.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.filtering.R"))
 
 
