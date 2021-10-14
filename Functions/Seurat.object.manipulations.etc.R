@@ -50,10 +50,12 @@ gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) { # Check gene names in a
 
 
 # check.genes ---------------------------------------
-check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = TRUE, verbose  = TRUE, HGNC.lookup = FALSE
-                        , obj = combined.obj, assay.slot=c('RNA', 'integrated')[1]) { # Check if genes exist in your dataset.
+check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = FALSE, verbose  = TRUE, HGNC.lookup = FALSE
+                        , obj = combined.obj
+                        , assay.slot=c('RNA', 'integrated')[1]
+                        , dataslot = c("counts", "data")[2]) { # Check if genes exist in your dataset.
   if (makeuppercase) list.of.genes <- toupper(list.of.genes)
-  all_genes = rownames(GetAssayData(object = obj, assay = assay.slot, slot = "data")); length(all_genes)
+  all_genes = rownames(GetAssayData(object = obj, assay = assay.slot, slot = dataslot)); length(all_genes)
   missingGenes = setdiff(list.of.genes, all_genes)
   if (length(missingGenes) > 0) {
     if (verbose) { iprint(l(missingGenes), "or", percentage_formatter(l(missingGenes) / l(list.of.genes)), "genes not found in the data, e.g:", head(missingGenes, n = 10))  }
@@ -63,7 +65,7 @@ check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = TRUE, ve
   }
   intersect(list.of.genes, all_genes)
 }
-# check.genes("top2a")
+# check.genes("top2a", makeuppercase = TRUE)
 # check.genes("VGLUT2", verbose = F, HGNC.lookup = T)
 
 
@@ -82,8 +84,12 @@ CalculateFractionInTrome <- function(geneset = c("MALAT1") # Calculate the fract
 ) {
   print("    >>>> Use add.meta.fraction() <<<<")
   geneset <- check.genes(geneset)
+  stopifnot(length(geneset)>0)
+
   mat <- as.matrix(slot(obj@assays$RNA, name=dataslot))
-  RC.per.cell.geneset <- colSums(mat[geneset,])
+  mat.sub <- mat[geneset,,drop=F]
+  RC.per.cell.geneset <- colSums(mat.sub)
+
   RC.per.cell <- colSums(mat)
   gene.fraction.per.cell <- 100*RC.per.cell.geneset / RC.per.cell
   return(gene.fraction.per.cell)
