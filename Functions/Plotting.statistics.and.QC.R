@@ -381,20 +381,21 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
 #  ------------------------------------------------
 gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], slot = c('counts', 'data')[2] ) {
   slot = 'data'
-  GEX.Counts <- GetAssayData(object = obj, assay = 'RNA', slot = )
-  range(GEX.Counts)
+  print(gene)
+  if (gene %in% rownames(obj)) {
+    GEX.Counts <- GetAssayData(object = obj, assay = 'RNA', slot = slot)
 
-  GEX.Counts.total <- rowSums(GEX.Counts)
-  genes.expression <- GEX.Counts.total[gene]
-  mean.expr <- iround(mean(GEX.Counts[gene,]))
-  suffx = if (slot == 'counts') 'raw' else 'normalised, logtransformed'
-  (pname = paste(gene, 'and the', suffx,'transcript count distribution'))
+    GEX.Counts.total <- rowSums(GEX.Counts)
+    genes.expression <- GEX.Counts.total[gene]
+    mean.expr <- iround(mean(GEX.Counts[gene,]))
 
-  qhistogram(GEX.Counts.total, vline = genes.expression, logX = T, w = 6, h = 4
-             , subtitle = paste('It belong to the top', pc_TRUE(GEX.Counts.total > genes.expression), 'of genes (black line). Mean expr:', mean.expr)
-             , plotname = pname, xlab = 'Total Transcripts in Dataset', ylab = 'Number of Genes')
+    suffx = if (slot == 'counts') 'raw' else 'normalised, logtransformed'
+    (pname = paste(gene, 'and the', suffx,'transcript count distribution'))
 
-
+    qhistogram(GEX.Counts.total, vline = genes.expression, logX = T, w = 6, h = 4
+               , subtitle = paste('It belong to the top', pc_TRUE(GEX.Counts.total > genes.expression), 'of genes (black line). Mean expr:', mean.expr)
+               , plotname = pname, xlab = 'Total Transcripts in Dataset', ylab = 'Number of Genes')
+  } else { print("     !!! Gene not found in object!")}
 }
 
 #  ------------------------------------------------
@@ -430,6 +431,22 @@ ww.calc_helper <- function(object, genes){ # From Github/Ryan-Zhu https://github
 }
 
 #  ------------------------------------------------
+
+scBarplotFractionAboveThr <- function(thrX = 0.01, columns.used = c('cl.names.top.gene.res.0.3', 'percent.ribo')
+                                      , obj = combined.obj, ) { # Calculat the fraction of cells per cluster above a certain threhold
+  meta = obj@meta.data
+  (fr_ribo_low_cells <- meta %>%
+      dplyr::select(columns.used)  %>%
+      dplyr::group_by_(columns.used[1])  %>%
+      summarize(n_cells = n(),
+                n_ribo_low_cells = sum(!!as.name(columns.used[2]) < thrX),
+                fr_ribo_low_cells = n_ribo_low_cells / n_cells) %>%
+      FirstCol2RowNames())
+  print(fr_ribo_low_cells)
+
+  (v.fr_ribo_low_cells <- 100* as.named.vector(fr_ribo_low_cells[3]))
+  qbarplot(v.fr_ribo_low_cells, xlab.angle = 45, xlab = 'Clusters', ylab = '% Cells')
+}
 
 
 
