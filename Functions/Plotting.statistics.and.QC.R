@@ -432,21 +432,67 @@ ww.calc_helper <- function(object, genes){ # From Github/Ryan-Zhu https://github
 
 #  ------------------------------------------------
 
-scBarplotFractionAboveThr <- function(thrX = 0.01, columns.used = c('cl.names.top.gene.res.0.3', 'percent.ribo')
-                                      , obj = combined.obj, ) { # Calculat the fraction of cells per cluster above a certain threhold
-  meta = obj@meta.data
-  (fr_ribo_low_cells <- meta %>%
-      dplyr::select(columns.used)  %>%
-      dplyr::group_by_(columns.used[1])  %>%
-      summarize(n_cells = n(),
-                n_ribo_low_cells = sum(!!as.name(columns.used[2]) < thrX),
-                fr_ribo_low_cells = n_ribo_low_cells / n_cells) %>%
-      FirstCol2RowNames())
-  print(fr_ribo_low_cells)
+# scBarplotFractionAboveThr <- function(thrX = 0.01, columns.used = c('cl.names.top.gene.res.0.3', 'percent.ribo')
+#                                       , obj = combined.obj, ) { # Calculat the fraction of cells per cluster above a certain threhold
+#   meta = obj@meta.data
+#   (fr_ribo_low_cells <- meta %>%
+#       dplyr::select(columns.used)  %>%
+#       dplyr::group_by_(columns.used[1])  %>%
+#       summarize(n_cells = n(),
+#                 n_ribo_low_cells = sum(!!as.name(columns.used[2]) < thrX),
+#                 fr_ribo_low_cells = n_ribo_low_cells / n_cells) %>%
+#       FirstCol2RowNames())
+#   print(fr_ribo_low_cells)
+#
+#   (v.fr_ribo_low_cells <- 100* as.named.vector(fr_ribo_low_cells[3]))
+#   qbarplot(v.fr_ribo_low_cells, xlab.angle = 45, xlab = 'Clusters', ylab = '% Cells')
+# }
 
-  (v.fr_ribo_low_cells <- 100* as.named.vector(fr_ribo_low_cells[3]))
-  qbarplot(v.fr_ribo_low_cells, xlab.angle = 45, xlab = 'Clusters', ylab = '% Cells')
+
+
+
+scBarplotFractionAboveThr <- function(thrX = 0., value.col = 'TVA', id.col =  'cl.names.top.gene.res.0.3'
+                                      , obj = combined.obj, return.df = F) { # Calculat the fraction of cells per cluster above a certain threhold
+  meta = obj@meta.data
+  (df_cells_above <- meta %>%
+      dplyr::select(c(id.col, value.col))  %>%
+      dplyr::group_by_(id.col)  %>%
+      summarize(n_cells = n(),
+                n_cells_above = sum(!!as.name(value.col) > thrX),
+                fr_n_cells_above = n_cells_above / n_cells) %>%
+      FirstCol2RowNames())
+
+  (v.fr_n_cells_above <- 100* as.named.vector(df_cells_above[3]))
+  ggobj <- qbarplot(v.fr_n_cells_above, xlab = 'Clusters', ylab = '% Cells'
+                    , plotname = paste('Cells with', value.col, '>', thrX)
+                    , subtitle = id.col, xlab.angle = 45)
+  if (return.df) return(df_cells_above) else ggobj
 }
+
+# combined.obj$'TVA' = combined.obj@assays$RNA@data['AAV.TVA.p2a.G.p2a.GFP.WPRE.bGH',]
+# scBarplotFractionAboveThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'TVA', thrX = 0)
+
+
+#  ------------------------------------------------
+scBarplotFractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
+                                      , obj = combined.obj, return.df = F) { # Calculat the fraction of cells per cluster below a certain threhold
+  meta = obj@meta.data
+  (df_cells_below <- meta %>%
+      dplyr::select(c(id.col, value.col))  %>%
+      dplyr::group_by_(id.col)  %>%
+      summarize(n_cells = n(),
+                n_cells_below = sum(!!as.name(value.col) < thrX),
+                fr_n_cells_below = n_cells_below / n_cells) %>%
+      FirstCol2RowNames())
+
+  (v.fr_n_cells_below <- 100* as.named.vector(df_cells_below[3]))
+  ggobj <- qbarplot(v.fr_n_cells_below, xlab = 'Clusters', ylab = '% Cells'
+                    , plotname = make.names(paste('Cells with', value.col, '<', thrX))
+                    , subtitle = id.col, xlab.angle = 45)
+  if (return.df) return(df_cells_below) else ggobj
+}
+
+# scBarplotFractionBelowThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0.01, return.df = T)
 
 
 
