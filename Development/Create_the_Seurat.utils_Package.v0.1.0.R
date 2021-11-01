@@ -33,12 +33,14 @@ Package_FnP = 	kollapse(RepositoryDir, "R/", fname)
 BackupDir = "~/GitHub/Packages/Seurat.Utils/Development/"
 dir.create(BackupDir)
 
-DESCRIPTION <- list("Title" = "Seurat.Utils "
+DESCRIPTION <- list("Title" = "Seurat.Utils - utility functions for Seurat"
     , "Author" = person(given = "Abel", family = "Vertesy", email = "abel.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )
     , "Authors@R" = 'person(given = "Abel", family = "Vertesy", email = "a.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )'
-    , "Description" = "Seurat.Utils is a set of R functions to read and write files conveniently. Complements CodeAndRoll2."
+    , "Description" = "Seurat.utils Is a collection of utility functions for Seurat v3.
+    Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics &
+    QC, interaction with the Seurat object, etc. Some functionalities require functions from CodeAndRoll and MarkdownReports libraries."
     , "License" = "GPL-3 + file LICENSE"
-    , "Version" = "0.1.0"
+    , "Version" = "0.9.1"
     # , "Version" = "4.0.0"
     , "Packaged" =  Sys.time()
     , "Repository" =  "CRAN"
