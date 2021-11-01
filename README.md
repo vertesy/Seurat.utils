@@ -2,21 +2,7 @@
 
 # Seurat.utils
 
-`Seurat.utils` Is a collection of utility functions for Seurat v3. Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics & QC, interaction with the Seurat object, etc.  Some functionalities require functions from [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2), [ReadWriter](https://github.com/vertesy/ReadWriter), [Stringendo](https://github.com/vertesy/Stringendo), [MarkdownReports](https://github.com/vertesy/MarkdownReports), and the [Rocinante](https://github.com/vertesy/Rocinante) (See installation).
-
-
-
-### The content of this repo is organized into files per rough functionalities:
-
-1. `Seurat.Utils.Load.R`								→ *Top level wrapper to source each file below.*
-2. `metadata.manipulation.R`						→ *Metadata manipulation.*
-3. `plotting.dim.reduction.2D.R`				→ *Plotting dimensionality reduction in 2D (UMAP, tSNE, PCA).*
-4. `plotting.dim.reduction.3D.R`				→ *Plotting dimensionality reduction in 3D (UMAP, tSNE, PCA).*
-5. `plotting.filtering.R`								→ *Plotting filtering.*
-6. `plotting.statistics.and.QC.R`				→ *Plotting statistics and QC.*
-7. `Read.Write.Save.Load.functions.R`		→ *Read Write Save Load functions.*
-8. `Seurat.object.manipulations.etc.R`	→ *Seurat object manipulations etc.*
-9. `Seurat.update.gene.symbols.HGNC.R`	→ *Seurat update gene symbols HGNC.*
+`Seurat.utils` Is a collection of utility functions for Seurat v3. Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics & QC, interaction with the Seurat object, etc.  Some functionalities require functions from [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2), [ReadWriter](https://github.com/vertesy/ReadWriter), [Stringendo](https://github.com/vertesy/Stringendo), [ggExpressDev](https://github.com/vertesy/ggExpressDev), [MarkdownReports](https://github.com/vertesy/MarkdownReports), and the [Rocinante](https://github.com/vertesy/Rocinante) (See installation).
 
 
 
@@ -43,7 +29,13 @@ Alternatively, you simply source it from the web.
 source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/R/Seurat.Utils.R")
 ```
 
-<br><br>
+<br>
+
+### Troubleshooting
+
+*If you encounter a **bug**, something doesn't work or unclear, please let me know by raising an issue on [Seurat.utils](https://github.com/vertesy/Seurat.utils/issues) – Please check if it has been asked.*
+
+<br>
 
 `https://github.com/vertesy/Seurat.utils/blob/master/R/Seurat.Utils.R`
 
@@ -55,6 +47,7 @@ devtools::install_github(repo = "vertesy/CodeAndRoll2")
 devtools::install_github(repo = "vertesy/ReadWriter")
 devtools::install_github(repo = "vertesy/Stringendo")
 devtools::install_github(repo = "vertesy/MarkdownReports")
+devtools::install_github(repo = "vertesy/ggExpressDev")
 ```
 Some functionalities require functions from each. Read more at each repo:
 
@@ -624,6 +617,22 @@ Plot stats about the ambient RNA content in a 10X experiment.
 
 - #### load10Xv3
 Load 10X output folders.
+
+
+
+CURRENTLY NOT THE CASE:
+
+### The content of this repo is organized into files per rough functionalities:
+
+1. `Seurat.Utils.Load.R`								→ *Top level wrapper to source each file below.*
+2. `metadata.manipulation.R`						→ *Metadata manipulation.*
+3. `plotting.dim.reduction.2D.R`				→ *Plotting dimensionality reduction in 2D (UMAP, tSNE, PCA).*
+4. `plotting.dim.reduction.3D.R`				→ *Plotting dimensionality reduction in 3D (UMAP, tSNE, PCA).*
+5. `plotting.filtering.R`								→ *Plotting filtering.*
+6. `plotting.statistics.and.QC.R`				→ *Plotting statistics and QC.*
+7. `Read.Write.Save.Load.functions.R`		→ *Read Write Save Load functions.*
+8. `Seurat.object.manipulations.etc.R`	→ *Seurat object manipulations etc.*
+9. `Seurat.update.gene.symbols.HGNC.R`	→ *Seurat update gene symbols HGNC.*
 
 
 
