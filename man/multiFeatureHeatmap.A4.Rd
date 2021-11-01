@@ -42,7 +42,7 @@ multiFeatureHeatmap.A4(
 
 \item{jpeg.q}{PARAM_DESCRIPTION, Default: 90}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 Save multiple FeatureHeatmaps from a list of genes on A4 jpeg #

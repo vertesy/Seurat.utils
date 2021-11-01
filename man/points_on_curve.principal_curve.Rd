@@ -11,10 +11,10 @@
 
 \item{lambda}{PARAM_DESCRIPTION}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-points_on_curve.principal_curve
+Helper to visualize points_on_curve in slingshot.
 }
 \examples{
 \dontrun{

@@ -14,7 +14,7 @@
 \item{sort}{PARAM_DESCRIPTION, Default: F}
 }
 \description{
-barplot.cells.per.cluster
+Barplot the Fraction of cells per cluster. (dupl?)
 }
 \examples{
 \dontrun{

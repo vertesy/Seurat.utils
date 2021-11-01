@@ -21,7 +21,7 @@ subsetMonocleObject(
 \item{seed_}{PARAM_DESCRIPTION, Default: 1989}
 }
 \description{
-Subset a compressed Seurat Obj and save it in wd. #
+Subset a compressed Seurat Obj and save it in wd.
 }
 \examples{
 \dontrun{

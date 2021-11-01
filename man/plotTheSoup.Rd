@@ -15,7 +15,7 @@ plotTheSoup(
 \item{SeqRun}{PARAM_DESCRIPTION, Default: gsub("\emph{(\link{0-9}+).}", "\\1", x = basename(CellRangerOutputDir))}
 }
 \description{
-plotTheSoup
+Plot stats about the ambient RNA content in a 10X experiment.
 }
 \examples{
 \dontrun{

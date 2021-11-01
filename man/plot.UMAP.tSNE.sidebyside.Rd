@@ -51,7 +51,7 @@
 
 \item{filetype}{PARAM_DESCRIPTION, Default: 'pdf'}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 Plot a UMAP and tSNE sidebyside #

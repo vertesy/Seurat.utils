@@ -21,10 +21,10 @@ get.clustercomposition(
 
 \item{color}{PARAM_DESCRIPTION, Default: y}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-get.clustercomposition
+Get cluster composition: which datasets contribute to each cluster?
 }
 \examples{
 \dontrun{

@@ -14,7 +14,7 @@ saveRDS.compress.in.BG(obj, compr = FALSE, fname)
 \item{fname}{File name}
 }
 \description{
-saveRDS.compress.in.BG
+Save and RDS object and compress resulting file in the background using system(gzip). OS X or unix.
 }
 \examples{
 \dontrun{

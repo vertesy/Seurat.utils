@@ -21,7 +21,7 @@ DimPlot.ClusterNames(
 
 \item{title}{Title of the plot, Default: ident}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 Plot UMAP with Cluster names. #

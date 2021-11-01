@@ -10,7 +10,7 @@ sparse.cor(smat)
 \item{smat}{PARAM_DESCRIPTION}
 }
 \description{
-sparse.cor
+Sparse, fast correlation.
 }
 \examples{
 \dontrun{

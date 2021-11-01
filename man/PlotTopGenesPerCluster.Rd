@@ -24,7 +24,7 @@ PlotTopGenesPerCluster(
 \item{df_markers}{PARAM_DESCRIPTION, Default: combined.obj@misc$df.markers[\link{paste0("res.", cl_res)}]}
 }
 \description{
-PlotTopGenesPerCluster
+Plot the top N diff. exp. genes in each cluster
 }
 \examples{
 \dontrun{

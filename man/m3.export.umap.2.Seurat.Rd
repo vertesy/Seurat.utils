@@ -18,7 +18,7 @@ m3.export.umap.2.Seurat(
 \item{def.dim}{PARAM_DESCRIPTION, Default: 2}
 }
 \description{
-m3.export.umap.2.Seurat
+Export umap coordinates.
 }
 \examples{
 \dontrun{

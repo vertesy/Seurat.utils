@@ -21,7 +21,7 @@ Interneurons = "DLX6-AS1", \code{Hypoxia/Stress} = "DDIT4", Glycolytic = "PDK1",
 \code{ul-EN} = "SATB2")}
 }
 \description{
-mplotManyGenes
+Plot many genes in Monocle.
 }
 \examples{
 \dontrun{

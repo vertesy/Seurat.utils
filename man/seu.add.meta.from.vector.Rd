@@ -18,7 +18,7 @@ seu.add.meta.from.vector(
 \item{Label.per.cell}{PARAM_DESCRIPTION, Default: Cl.Label.per.cell}
 }
 \description{
-Add a new metadata column to a Seurat  object #
+Add a new metadata column to a Seurat  object
 }
 \examples{
 \dontrun{

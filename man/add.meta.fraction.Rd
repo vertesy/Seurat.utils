@@ -24,7 +24,7 @@ add.meta.fraction(
 \item{verbose}{PARAM_DESCRIPTION, Default: T}
 }
 \description{
-add.meta.fraction
+Add a new metadata column, with the fraction of gene set in the transcripome (percentage).
 }
 \examples{
 \dontrun{

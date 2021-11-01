@@ -24,7 +24,7 @@ FlipReductionCoordinates(
 \item{FlipReductionBackupToo}{PARAM_DESCRIPTION, Default: TRUE}
 }
 \description{
-FlipReductionCoordinates
+Flip reduction coordinates (like UMAP upside down).
 }
 \examples{
 \dontrun{

@@ -33,7 +33,7 @@ Interneurons = "DLX6-AS1", \code{Hypoxia/Stress} = "DDIT4", Glycolytic = "PDK1",
 \item{suffix}{A suffix added to the filename, Default: ''}
 }
 \description{
-m3DplotKeyGenes
+Plot many genes in 3D in Monocle.
 }
 \examples{
 \dontrun{

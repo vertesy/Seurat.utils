@@ -14,7 +14,7 @@ m3.get.umap(obj = cds_from_seurat, slot = "UMAP", dim = (2:3)[2])
 \item{dim}{Numer of dimensions used, Default: (2:3)\link{2}}
 }
 \description{
-m3.get.umap
+Fetch the umap coordinates from obj@int_colData@listData$reducedDims[\link{slot}]
 }
 \examples{
 \dontrun{

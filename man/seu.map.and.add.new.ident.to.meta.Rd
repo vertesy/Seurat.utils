@@ -18,7 +18,7 @@ seu.map.and.add.new.ident.to.meta(
 \item{metaD.colname}{PARAM_DESCRIPTION, Default: substitute(ident.table)}
 }
 \description{
-seu.map.and.add.new.ident.to.meta
+Add a new metadata column to a Seurat  object
 }
 \examples{
 \dontrun{

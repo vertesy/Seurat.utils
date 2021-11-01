@@ -10,7 +10,7 @@ fix.orig.ident(obj = merged.obj)
 \item{obj}{Seurat object, Default: merged.obj}
 }
 \description{
-fix.orig.ident
+Remove the string "filtered_feature_bc_matrix." from "orig.ident". Helper function.
 }
 \examples{
 \dontrun{

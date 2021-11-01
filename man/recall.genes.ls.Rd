@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{recall.genes.ls}
 \alias{recall.genes.ls}
-\title{recall.genes.l}
+\title{recall.genes.ls}
 \usage{
 recall.genes.ls(obj = combined.obj)
 }
@@ -10,7 +10,7 @@ recall.genes.ls(obj = combined.obj)
 \item{obj}{Seurat object, Default: combined.obj}
 }
 \description{
-genes.ls #
+Recall genes.ls from obj@misc to "genes.ls" in the global environment.
 }
 \examples{
 \dontrun{

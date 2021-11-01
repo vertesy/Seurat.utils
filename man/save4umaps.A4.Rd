@@ -33,10 +33,10 @@ save4umaps.A4(
 
 \item{w}{width of the plot, Default: hA4 * scale}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-save4umaps.A4
+Save 4 umaps on 1 A4
 }
 \examples{
 \dontrun{

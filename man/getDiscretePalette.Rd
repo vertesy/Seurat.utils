@@ -21,7 +21,7 @@ getDiscretePalette(
 \item{show.colors}{PARAM_DESCRIPTION, Default: F}
 }
 \description{
-getDiscretePalette
+Generate a Discrete color Palette.
 }
 \examples{
 \dontrun{

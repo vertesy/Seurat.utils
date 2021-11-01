@@ -21,7 +21,7 @@ SetupReductionsNtoKdimensions(
 
 \item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to \code{obj@misc$reductions.backup} from @reductions$umap #

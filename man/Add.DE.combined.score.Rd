@@ -25,7 +25,7 @@ Add.DE.combined.score(
 perl = T)}
 }
 \description{
-Add.DE.combined.score
+Add combined score to DE results. (LFC * -log10( p_cutoff / pval_scaling ) )
 }
 \examples{
 \dontrun{

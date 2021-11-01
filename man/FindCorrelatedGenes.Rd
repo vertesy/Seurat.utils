@@ -5,7 +5,7 @@
 \title{FindCorrelatedGenes}
 \usage{
 FindCorrelatedGenes(
-  gene = "N.RabV.N2c",
+  gene = "TOP2A",
   obj = combined.obj,
   assay = "RNA",
   slot = "data",
@@ -16,7 +16,7 @@ FindCorrelatedGenes(
 )
 }
 \arguments{
-\item{gene}{gene of interest, Default: 'N.RabV.N2c'}
+\item{gene}{gene of interest, Default: 'TOP2A'}
 
 \item{obj}{Seurat object, Default: combined.obj}
 
@@ -33,12 +33,12 @@ FindCorrelatedGenes(
 \item{trailingNgenes}{PARAM_DESCRIPTION, Default: 1000}
 }
 \description{
-FindCorrelatedGenes
+Find correlated genes in a Seurat object
 }
 \examples{
 \dontrun{
 if(interactive()){
- FindCorrelatedGenes(gene ="N.RabV.N2c", obj = combined.obj); write_clip(names(head(topGenes[-(1:6)], n=50)))
+ FindCorrelatedGenes(gene ="TOP2A", obj = combined.obj); write_clip(names(head(topGenes[-(1:6)], n=50)))
  }
 }
 }

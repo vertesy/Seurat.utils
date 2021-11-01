@@ -7,7 +7,7 @@
 qsave.image(..., showMemObject = T, options = c("--force", NULL)[1])
 }
 \arguments{
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 
 \item{showMemObject}{PARAM_DESCRIPTION, Default: T}
 

@@ -7,31 +7,8 @@
 Calc.Cor.Seurat(
   assay.use = "RNA",
   slot.use = "data",
-  geneset = FALSE,
   quantileX = 0.95,
-  max.cells = 10000,
-  seed = p$seed,
-  digits = 2,
-  obj = combined.obj
-)
-
-Calc.Cor.Seurat(
-  assay.use = "RNA",
-  slot.use = "data",
-  geneset = FALSE,
-  quantileX = 0.95,
-  max.cells = 10000,
-  seed = p$seed,
-  digits = 2,
-  obj = combined.obj
-)
-
-Calc.Cor.Seurat(
-  assay.use = "RNA",
-  slot.use = "data",
-  geneset = FALSE,
-  quantileX = 0.95,
-  max.cells = 10000,
+  max.cells = 40000,
   seed = p$seed,
   digits = 2,
   obj = combined.obj
@@ -42,8 +19,6 @@ Calc.Cor.Seurat(
 
 \item{slot.use}{PARAM_DESCRIPTION, Default: 'data'}
 
-\item{geneset}{PARAM_DESCRIPTION, Default: FALSE}
-
 \item{quantileX}{Quantile level, Default: 0.95}
 
 \item{max.cells}{PARAM_DESCRIPTION, Default: 10000}
@@ -53,29 +28,17 @@ Calc.Cor.Seurat(
 \item{digits}{PARAM_DESCRIPTION, Default: 2}
 
 \item{obj}{Seurat object, Default: combined.obj}
+
+\item{geneset}{PARAM_DESCRIPTION, Default: FALSE}
 }
 \description{
-Calc.Cor.Seurat
-
-Calc.Cor.Seurat
-
-Calc.Cor.Seurat
+Calculate gene correlation on a Seurat object.
 }
 \examples{
 \dontrun{
 if(interactive()){
- #EXAMPLE1
- }
-}
-\dontrun{
-if(interactive()){
  combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX = 0.99, max.cells =  400000, set.all.genes = F)
  combined.obj <- Calc.Cor.Seurat(assay.use = "RNA", slot.use = "data", digits = 2, obj = combined.obj, quantile = 0.99, max.cells = 40000)
- }
-}
-\dontrun{
-if(interactive()){
- #EXAMPLE1
  }
 }
 }

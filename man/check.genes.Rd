@@ -30,7 +30,7 @@ check.genes(
 \item{dataslot}{PARAM_DESCRIPTION, Default: c("counts", "data")\link{2}}
 }
 \description{
-check.genes
+Check if a gene name exists in a Seurat object, or in HGNC?
 }
 \examples{
 \dontrun{

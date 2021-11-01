@@ -30,10 +30,10 @@ gg_plot(
 
 \item{line.colors}{PARAM_DESCRIPTION, Default: gray.colors(n = length(sds@curves), start = 0, end = 0.6, alpha = 1)}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-gg_plot
+Adjusted gg_plot for slingshot
 }
 \examples{
 \dontrun{

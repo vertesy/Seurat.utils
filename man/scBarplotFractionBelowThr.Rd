@@ -24,7 +24,7 @@ scBarplotFractionBelowThr(
 \item{return.df}{PARAM_DESCRIPTION, Default: F}
 }
 \description{
-scBarplotFractionBelowThr
+Barplot the fraction of cell below a threshold value (based on a meta.data column), in each cluster.
 }
 \examples{
 \dontrun{

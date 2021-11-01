@@ -18,7 +18,7 @@ umapNamedClusters(
 
 \item{ext}{PARAM_DESCRIPTION, Default: 'png'}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 Plot and save umap based on a metadata column. #

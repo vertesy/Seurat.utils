@@ -31,7 +31,7 @@ isave.RDS(
 \item{saveParams}{PARAM_DESCRIPTION, Default: T}
 }
 \description{
-isave.RDS
+Save and RDS object.
 }
 \examples{
 \dontrun{

@@ -12,7 +12,7 @@ qMarkerCheck.BrainOrg(obj = combined.obj, custom.genes = F)
 \item{custom.genes}{PARAM_DESCRIPTION, Default: F}
 }
 \description{
-qMarkerCheck.BrainOrg
+Quickly plot key markers in brain organoids
 }
 \examples{
 \dontrun{

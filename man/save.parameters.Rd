@@ -12,7 +12,7 @@ save.parameters(obj = combined.obj, params = p)
 \item{params}{PARAM_DESCRIPTION, Default: p}
 }
 \description{
-save.parameters
+Save parameters to obj@misc$p
 }
 \examples{
 \dontrun{

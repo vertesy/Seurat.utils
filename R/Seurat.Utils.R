@@ -2877,7 +2877,7 @@ plot3D.umap.gene <- function(gene="TOP2A", obj=combined.obj # Plot a 3D umap wit
   plotting.data$'label' <- paste(rownames(plotting.data), " - ", plotting.data[,gene], sep = "")
 
   ls.ann.auto <- if (AutoAnnotBy != FALSE) {
-    Annotate4Plotly3D(obj. = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
+    Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
   } else { NULL }
 
   plt <- plot_ly(data = plotting.data
@@ -2926,7 +2926,7 @@ plot3D.umap <- function(category="v.project", obj=combined.obj # Plot a 3D umap 
   plotting.data$label <- paste(rownames(plotting.data))   # Make a column of row name identities (these will be your cell/barcode names)
 
   ls.ann.auto <- if (AutoAnnotBy != FALSE) {
-    Annotate4Plotly3D(obj. = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
+    Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
   } else { NULL }
 
   plt <- plot_ly(data = plotting.data
@@ -4516,7 +4516,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
   print(head(unlapply(ls.obj, ncol)))
   print(head(unlapply(ls.obj.downsampled, ncol)))
 
-  isave.RDS(object = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = T)
+  isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = T)
 
 }
 

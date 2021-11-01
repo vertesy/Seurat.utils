@@ -30,7 +30,7 @@ CellFractionsBarplot2(
 \item{seedNr}{PARAM_DESCRIPTION, Default: 1989}
 }
 \description{
-CellFractionsBarplot2
+Barplot the Fraction of cells per cluster.
 }
 \examples{
 \dontrun{

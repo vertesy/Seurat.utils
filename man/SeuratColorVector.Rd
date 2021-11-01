@@ -14,7 +14,7 @@ SeuratColorVector(ident = NULL, obj = combined.obj, plot.colors = F)
 \item{plot.colors}{PARAM_DESCRIPTION, Default: F}
 }
 \description{
-SeuratColorVector
+Recall a Seurat color vector.
 }
 \examples{
 \dontrun{

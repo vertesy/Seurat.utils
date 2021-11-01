@@ -14,7 +14,7 @@ getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[1], show = T)
 \item{show}{PARAM_DESCRIPTION, Default: T}
 }
 \description{
-getClusterColors
+get Seurat's cluster colors.
 }
 \examples{
 \dontrun{

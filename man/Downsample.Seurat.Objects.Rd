@@ -12,12 +12,12 @@ Downsample.Seurat.Objects(ls.obj = ls.Seurat, NrCells = p$dSample.Organoids)
 \item{NrCells}{PARAM_DESCRIPTION, Default: p$dSample.Organoids}
 }
 \description{
-Downsample.Seurat.Objects
+Downsample a list of Seurat objects
 }
 \examples{
 \dontrun{
 if(interactive()){
- #EXAMPLE1
+ Downsample.Seurat.Objects(NrCells = 2000); Downsample.Seurat.Objects(NrCells = 200)
  }
 }
 }

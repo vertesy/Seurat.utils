@@ -18,7 +18,7 @@ gene.expression.level.plots(
 \item{slot}{PARAM_DESCRIPTION, Default: c("counts", "data")\link{2}}
 }
 \description{
-gene.expression.level.plots
+Histogram of gene expression levels.
 }
 \examples{
 \dontrun{

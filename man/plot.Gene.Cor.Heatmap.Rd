@@ -36,10 +36,10 @@
 
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-plot.Gene.Cor.Heatmap
+Plot a gene correlation heatmap.
 }
 \examples{
 \dontrun{

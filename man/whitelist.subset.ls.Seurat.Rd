@@ -18,7 +18,7 @@ whitelist.subset.ls.Seurat(
 \item{whitelist.file}{PARAM_DESCRIPTION, Default: 'NonStressedCellIDs.2020.10.21_18h.tsv'}
 }
 \description{
-whitelist.subset.ls.Seurat
+Subset cells in a (list of) Seurat objects, based on an externally provided list of cell IDs.
 }
 \examples{
 \dontrun{

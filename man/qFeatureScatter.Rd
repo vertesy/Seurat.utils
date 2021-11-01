@@ -5,8 +5,8 @@
 \title{qFeatureScatter}
 \usage{
 qFeatureScatter(
-  feature1 = "M.RabV.N2c",
-  feature2 = "P.RabV.N2c",
+  feature1 = "TOP2A",
+  feature2 = "ID2",
   obj = combined.obj,
   ext = "png",
   plot = TRUE,
@@ -14,9 +14,9 @@ qFeatureScatter(
 )
 }
 \arguments{
-\item{feature1}{PARAM_DESCRIPTION, Default: 'M.RabV.N2c'}
+\item{feature1}{PARAM_DESCRIPTION, Default: 'TOP2A'}
 
-\item{feature2}{PARAM_DESCRIPTION, Default: 'P.RabV.N2c'}
+\item{feature2}{PARAM_DESCRIPTION, Default: 'ID2'}
 
 \item{obj}{Seurat object, Default: combined.obj}
 
@@ -24,10 +24,10 @@ qFeatureScatter(
 
 \item{plot}{PARAM_DESCRIPTION, Default: TRUE}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-qFeatureScatter
+Quickly plot and save a FeatureScatter plot.
 }
 \examples{
 \dontrun{

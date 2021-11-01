@@ -75,7 +75,7 @@ clUMAP(
 
 \item{save.object}{PARAM_DESCRIPTION, Default: F}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 The quickest way to draw a clustering result  UMAP #

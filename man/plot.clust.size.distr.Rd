@@ -21,10 +21,10 @@
 
 \item{thr.hist}{PARAM_DESCRIPTION, Default: 30}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-plot.clust.size.distr
+Barplot of Histogram of cluster size distribution
 }
 \examples{
 \dontrun{

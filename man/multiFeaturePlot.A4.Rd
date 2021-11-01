@@ -69,7 +69,7 @@ multiFeaturePlot.A4(
 
 \item{format}{PARAM_DESCRIPTION, Default: c("jpg", "pdf", "png")\link{1}}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names. #

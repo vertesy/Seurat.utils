@@ -27,10 +27,10 @@ load10Xv3(
 
 \item{verbose}{PARAM_DESCRIPTION, Default: TRUE}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-load10Xv3
+Load 10X output folders.
 }
 \examples{
 \dontrun{

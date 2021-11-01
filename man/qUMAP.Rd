@@ -60,7 +60,7 @@ qUMAP(
 
 \item{qhigh}{PARAM_DESCRIPTION, Default: 'q90'}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 The quickest way to draw a gene expression UMAP #

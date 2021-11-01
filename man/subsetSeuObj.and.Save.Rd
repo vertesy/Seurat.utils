@@ -9,14 +9,7 @@ subsetSeuObj.and.Save(
   fraction = 0.25,
   seed = 1989,
   dir = OutDir,
-  suffix = ""
-)
-
-subsetSeuObj.and.Save(
-  obj = ORC,
-  fraction = 0.25,
-  seed = 1989,
-  dir = OutDir,
+  min.features = p$min.features,
   suffix = ""
 )
 }
@@ -33,15 +26,8 @@ subsetSeuObj.and.Save(
 }
 \description{
 Subset a compressed Seurat Obj and save it in wd. #
-
-Subset a compressed Seurat Obj and save it in wd. #
 }
 \examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
 \dontrun{
 if(interactive()){
  #EXAMPLE1

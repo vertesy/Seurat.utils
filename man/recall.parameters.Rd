@@ -12,7 +12,7 @@ recall.parameters(obj = combined.obj, overwrite = FALSE)
 \item{overwrite}{PARAM_DESCRIPTION, Default: FALSE}
 }
 \description{
-recall.parameters
+Recall parameters from obj@misc to "p" in the global environment.
 }
 \examples{
 \dontrun{

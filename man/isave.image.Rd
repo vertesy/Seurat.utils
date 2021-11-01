@@ -12,7 +12,7 @@ isave.image(
 )
 }
 \arguments{
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 
 \item{path_rdata}{PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))}
 
@@ -21,7 +21,7 @@ isave.image(
 \item{options}{PARAM_DESCRIPTION, Default: c("--force", NULL)\link{1}}
 }
 \description{
-isave.image
+Save and RData image.
 }
 \examples{
 \dontrun{

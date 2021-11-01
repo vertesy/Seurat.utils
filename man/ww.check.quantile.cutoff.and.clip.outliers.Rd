@@ -18,7 +18,7 @@ ww.check.quantile.cutoff.and.clip.outliers(
 \item{min.cells.expressing}{PARAM_DESCRIPTION, Default: 10}
 }
 \description{
-ww.check.quantile.cutoff.and.clip.outliers
+Helper function.
 }
 \examples{
 \dontrun{

@@ -14,7 +14,7 @@ mplotGene(gene = "PGK1", reduction = "UMAP", obj = cds_from_seurat)
 \item{obj}{Seurat object, Default: cds_from_seurat}
 }
 \description{
-mplotGene
+Plot genes in Monocle.
 }
 \examples{
 \dontrun{

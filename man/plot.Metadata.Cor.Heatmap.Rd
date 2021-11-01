@@ -27,10 +27,10 @@
 
 \item{h}{height of the plot, Default: w}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-plot.Metadata.Cor.Heatmap
+Plot a heatmap with Metadata correlation values.
 }
 \examples{
 \dontrun{

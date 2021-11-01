@@ -12,7 +12,7 @@ ggplotColours(n = 6, h = c(0, 360) + 15)
 \item{h}{height of the plot, Default: c(0, 360) + 15}
 }
 \description{
-ggplotColours
+Generate ggplot colours for slingshot
 }
 \examples{
 \dontrun{

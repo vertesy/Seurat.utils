@@ -10,7 +10,7 @@ recall.meta.tags.n.datasets(obj = combined.obj)
 \item{obj}{Seurat object, Default: combined.obj}
 }
 \description{
-recall.meta.tags.n.datasets
+Recall  meta.tags from obj@misc to "meta.tags" in the global environment.
 }
 \examples{
 \dontrun{

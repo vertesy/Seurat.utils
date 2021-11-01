@@ -10,12 +10,12 @@ set.all.genes(obj = combined.obj)
 \item{obj}{Seurat object, Default: combined.obj}
 }
 \description{
-set.all.genes
+It is just a reminder to use calc.q90.Expression.and.set.all.genes to create the all.genes variable
 }
 \examples{
 \dontrun{
 if(interactive()){
- #EXAMPLE1
+ set.all.genes(); all.genes
  }
 }
 }

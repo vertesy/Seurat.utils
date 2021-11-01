@@ -13,10 +13,10 @@ m3.recall.umap(obj = cds_from_seurat, slot = "UMAP", dim = (2:3)[2], ...)
 
 \item{dim}{Numer of dimensions used, Default: (2:3)\link{2}}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should  work).}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-m3.recall.umap
+Fetch UMAP coordinates.
 }
 \examples{
 \dontrun{

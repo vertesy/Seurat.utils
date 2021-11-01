@@ -27,7 +27,7 @@ m3DplotGene(
 \item{cex}{Point size, Default: 5}
 }
 \description{
-m3DplotGene
+Plot a gene in 3D in Monocle.
 }
 \examples{
 \dontrun{

@@ -10,16 +10,8 @@ qqSaveGridA4(
   NrPlots = length(plots),
   height = hA4,
   width = wA4,
-  fname = "Fractions.Organoid-to-organoid variation.png"
-)
-
-qqSaveGridA4(
-  plotlist = pl,
-  plots = 1:2,
-  NrPlots = length(plots),
-  height = hA4,
-  width = wA4,
-  fname = "Fractions.Organoid-to-organoid variation.png"
+  fname = "Fractions.Organoid-to-organoid variation.png",
+  ...
 )
 }
 \arguments{
@@ -37,15 +29,8 @@ qqSaveGridA4(
 }
 \description{
 Save 2 or 4 ggplot objects using plot_grid() on an A4 page #
-
-Save 2 or 4 ggplot objects using plot_grid() on an A4 page #
 }
 \examples{
-\dontrun{
-if(interactive()){
- qqSaveGridA4(plotlist= pl, plots = 1:2, fname = "Fractions.per.Cl.png"); qqSaveGridA4(plotlist= pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
- }
-}
 \dontrun{
 if(interactive()){
  qqSaveGridA4(plotlist= pl, plots = 1:2, fname = "Fractions.per.Cl.png"); qqSaveGridA4(plotlist= pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")

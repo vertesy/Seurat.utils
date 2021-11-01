@@ -14,7 +14,7 @@
 \item{filterZero}{PARAM_DESCRIPTION, Default: T}
 }
 \description{
-plot.expression.rank.q90
+Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).
 }
 \examples{
 \dontrun{

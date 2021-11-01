@@ -12,7 +12,7 @@ jJaccardIndexVec(A = 1:3, B = 2:4)
 \item{B}{PARAM_DESCRIPTION, Default: 2:4}
 }
 \description{
-jJaccardIndexVec
+Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
 }
 \examples{
 \dontrun{
