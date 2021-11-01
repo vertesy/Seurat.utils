@@ -2393,6 +2393,8 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
 
 
 # ------------------------------------------------------------------------
+
+# qqSaveGridA4 ------------------------------------------------------------------------------------
 #' @title qqSaveGridA4
 #' @description Save 2 or 4 ggplot objects using plot_grid() on an A4 page #
 #' @param plotlist PARAM_DESCRIPTION, Default: pl
@@ -2419,6 +2421,9 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
             plot = pg.cf, base_height = height, base_width = width)
   ww.FnP_parser(fname)
 }
+
+
+
 
 
 # ------------------------------------------------------------------------
@@ -3552,33 +3557,6 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
 
 
 
-# qqSaveGridA4 ------------------------------------------------------------------------------------
-#' @title qqSaveGridA4
-#' @description Save 2 or 4 ggplot objects using plot_grid() on an A4 page #
-#' @param plotlist PARAM_DESCRIPTION, Default: pl
-#' @param plots PARAM_DESCRIPTION, Default: 1:2
-#' @param NrPlots PARAM_DESCRIPTION, Default: length(plots)
-#' @param height PARAM_DESCRIPTION, Default: hA4
-#' @param width PARAM_DESCRIPTION, Default: wA4
-#' @param fname File name, Default: 'Fractions.Organoid-to-organoid variation.png'
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  qqSaveGridA4(plotlist= pl, plots = 1:2, fname = "Fractions.per.Cl.png"); qqSaveGridA4(plotlist= pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
-#'  }
-#' }
-#' @export
-qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_grid() on an A4 page
-                         , plots = 1:2, NrPlots = length(plots), height = hA4, width = wA4
-                         , fname = "Fractions.Organoid-to-organoid variation.png") {
-  stopifnot(NrPlots %in% c(2,4))
-  iprint(NrPlots,"plots found,", plots,"are saved.")
-  pg.cf = plot_grid(plotlist = plotlist[plots], nrow = 2, ncol = NrPlots/2, labels = LETTERS[1:NrPlots]  )
-  if (NrPlots == 4) list2env(list(height = width, width = height), envir=as.environment(environment()))
-  save_plot(filename = fname,
-            plot = pg.cf, base_height = height, base_width = width)
-  ww.FnP_parser(fname)
-}
 
 
 
@@ -3604,7 +3582,49 @@ sparse.cor <- function(smat){
   list(cov = covmat, cor = cormat)
 }
 
+# Calc.Cor.Seurat ------------------------------------------------
+#' @title Calc.Cor.Seurat
+#' @description Calculate gene correlation on a Seurat object.
+#' @param assay.use PARAM_DESCRIPTION, Default: 'RNA'
+#' @param slot.use PARAM_DESCRIPTION, Default: 'data'
+#' @param geneset PARAM_DESCRIPTION, Default: FALSE
+#' @param quantileX Quantile level, Default: 0.95
+#' @param max.cells PARAM_DESCRIPTION, Default: 10000
+#' @param seed random seed used, Default: p$seed
+#' @param digits PARAM_DESCRIPTION, Default: 2
+#' @param obj Seurat object, Default: combined.obj
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX = 0.99, max.cells =  400000, set.all.genes = F)
+#'  combined.obj <- Calc.Cor.Seurat(assay.use = "RNA", slot.use = "data", digits = 2, obj = combined.obj, quantile = 0.99, max.cells = 40000)
+#'  }
+#' }
+#' @export
+Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
+                            , quantileX = 0.95, max.cells =  40000, seed = p$"seed"
+                            , digits = 2, obj = combined.obj) {
+  expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
+  if (ncol(expr.mat) > max.cells) {
+    set.seed(seed = seed)
+    cells.use <- sample(x = colnames(expr.mat), size = max.cells)
+  }
 
+  qname = p0("q", quantileX * 100)
+  quantile_name = kpp("expr", qname)
+
+  if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX," first )")
+  genes.HE = which_names(obj@misc[[quantile_name]] > 0)
+  iprint("Pearson correlation is calculated for", l(genes.HE), "HE genes with expr.",qname,": > 0.")
+  tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
+  ls.cor <- lapply(ls.cor, round, digits = 2)
+
+  slot__name <- kpp(slot.use, assay.use, quantile_name)
+  obj@misc[[kpp('cor', slot__name)]] <- ls.cor$'cor'
+  obj@misc[[kpp('cov', slot__name)]] <- ls.cor$'cov'
+  iprint("Stored under obj@misc$", kpp('cor', slot.use, assay.use), "or cov... ." )
+  return(obj)
+}
 
 # plot.Metadata.Cor.Heatmap ------------------------------------------------------------------------
 #' @title plot.Metadata.Cor.Heatmap
@@ -3803,49 +3823,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
   dput(maxCorrz)
 }
 
-# Calc.Cor.Seurat ------------------------------------------------
-#' @title Calc.Cor.Seurat
-#' @description Calculate gene correlation on a Seurat object.
-#' @param assay.use PARAM_DESCRIPTION, Default: 'RNA'
-#' @param slot.use PARAM_DESCRIPTION, Default: 'data'
-#' @param geneset PARAM_DESCRIPTION, Default: FALSE
-#' @param quantileX Quantile level, Default: 0.95
-#' @param max.cells PARAM_DESCRIPTION, Default: 10000
-#' @param seed random seed used, Default: p$seed
-#' @param digits PARAM_DESCRIPTION, Default: 2
-#' @param obj Seurat object, Default: combined.obj
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX = 0.99, max.cells =  400000, set.all.genes = F)
-#'  combined.obj <- Calc.Cor.Seurat(assay.use = "RNA", slot.use = "data", digits = 2, obj = combined.obj, quantile = 0.99, max.cells = 40000)
-#'  }
-#' }
-#' @export
-Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
-                            , quantileX = 0.95, max.cells =  40000, seed = p$"seed"
-                            , digits = 2, obj = combined.obj) {
-  expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
-  if (ncol(expr.mat) > max.cells) {
-    set.seed(seed = seed)
-    cells.use <- sample(x = colnames(expr.mat), size = max.cells)
-  }
 
-  qname = p0("q", quantileX * 100)
-  quantile_name = kpp("expr", qname)
-
-  if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX," first )")
-  genes.HE = which_names(obj@misc[[quantile_name]] > 0)
-  iprint("Pearson correlation is calculated for", l(genes.HE), "HE genes with expr.",qname,": > 0.")
-  tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
-  ls.cor <- lapply(ls.cor, round, digits = 2)
-
-  slot__name <- kpp(slot.use, assay.use, quantile_name)
-  obj@misc[[kpp('cor', slot__name)]] <- ls.cor$'cor'
-  obj@misc[[kpp('cov', slot__name)]] <- ls.cor$'cov'
-  iprint("Stored under obj@misc$", kpp('cor', slot.use, assay.use), "or cov... ." )
-  return(obj)
-}
 
 # plot.clust.size.distr ------------------------------------------------
 #' @title plot.clust.size.distr
@@ -4384,26 +4362,6 @@ isave.RDS <- function(obj, prefix =NULL, suffix=NULL, inOutDir = F
 
 
 
-# subsetSeuObj.and.Save ------------------------------------------------------------------------
-#' @title subsetSeuObj.and.Save
-#' @description Subset a compressed Seurat Obj and save it in wd. #
-#' @param obj Seurat object, Default: ORC
-#' @param fraction PARAM_DESCRIPTION, Default: 0.25
-#' @param seed random seed used, Default: 1989
-#' @param dir PARAM_DESCRIPTION, Default: OutDir
-#' @param suffix A suffix added to the filename, Default: ''
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = OutDir, min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
-  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
-  nr.cells.kept <- ncol(obj_Xpc)
-  saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
-}
 
 
 # Save workspace -----------------------------------------------
@@ -4517,10 +4475,10 @@ subsetSeuObj <- function(obj=ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_
 #'  }
 #' }
 #' @export
-subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = OutDir, suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
+subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = OutDir, min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
   obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
   nr.cells.kept <- ncol(obj_Xpc)
-  saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', p$min.features,"Rds" ) )
+  saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
 }
 
 
