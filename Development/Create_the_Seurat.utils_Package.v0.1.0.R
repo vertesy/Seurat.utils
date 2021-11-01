@@ -40,7 +40,7 @@ DESCRIPTION <- list("Title" = "Seurat.Utils - utility functions for Seurat"
     Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics &
     QC, interaction with the Seurat object, etc. Some functionalities require functions from CodeAndRoll and MarkdownReports libraries."
     , "License" = "GPL-3 + file LICENSE"
-    , "Version" = "0.9.1"
+    , "Version" = "0.9.2"
     # , "Version" = "4.0.0"
     , "Packaged" =  Sys.time()
     , "Repository" =  "CRAN"
