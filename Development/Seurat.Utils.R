@@ -218,10 +218,10 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
                                     , dimension=1:2, plotit=T, swap= -1
                                     , reduction="umap", res = "integrated_snn_res.0.5" ) {
-  require(princurve)
+  # require(princurve)
   dim_name <- ppu(toupper(reduction),dimension)
   coord.umap <- FetchData(object = obj, vars = dim_name)
-  fit <- principal_curve(x = as.matrix(coord.umap))
+  fit <- princurve::principal_curve(x = as.matrix(coord.umap))
   if (plotit) {
     plot(fit, xlim = range(coord.umap[, 1]), ylim = range(coord.umap[, 2])
          , main = "principal_curve")
@@ -477,9 +477,9 @@ setMethod(
 
 
 # Functions ------------------------
-try(source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F)
-try(require('MarkdownReportsDev'),  silent = T)
-try(require('tidyverse'),  silent = T)
+# try(source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F)
+# try(require('MarkdownReportsDev'),  silent = T)
+# try(require('tidyverse'),  silent = T)
 # source('~/Github/TheCorvinas/R/DatabaseLinke.r')
 
 
@@ -1337,8 +1337,8 @@ m3.export.umap.2.Seurat <- function(mobj = cds_from_seurat, sobj = combined.obj,
 # try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/MULTI-seq.functions.R'))
 
 # Requirements ------------------------
-try(require(MarkdownReportsDev),  silent = T)
-try(require(pheatmap),  silent = T)
+# try(require(MarkdownReportsDev),  silent = T)
+# try(require(pheatmap),  silent = T)
 # May also require
 
 
@@ -1416,9 +1416,9 @@ aux.plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 # Source: self + web
 
 # Requirements ------------------------
-library(plotly)
+# library(plotly)
 # try(source("~/GitHub/Packages/ggExpressDev/ggExpress.functions.R"), silent = T)
-try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpress.functions.R"), silent = T)
+# try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpress.functions.R"), silent = T)
 
 # May also require
 # try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
@@ -1806,9 +1806,9 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
 # Source: self + https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0
 
 # Requirements ------------------------
-try(library(plotly), silent = T)
-try(library(MarkdownReportsDev), silent = T)
-try(library(htmlwidgets), silent = T)
+# try(library(plotly), silent = T)
+# try(library(MarkdownReportsDev), silent = T)
+# try(library(htmlwidgets), silent = T)
 
 # May also require
 # try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= T) # generic utilities funtions
@@ -2084,7 +2084,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
   theme_set(theme.used)
   create_set_OutDir(parentdir, subdir)
-  require(ggplot2)
+  # require(ggplot2)
   if (suffices == l(ls.obj)) print("ls.Obj elements have no names (required).")
 
   for (i in 1:l(ls.obj)) {
@@ -2126,10 +2126,10 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
       geom_vline(xintercept = above.nFeature_RNA);
     # A
 
-    B = ggplot(mm, aes(x = nFeature_RNA, y = percent.mito)) +
-      ggtitle(paste("Cells below", percentage_formatter(below.mito),
+    B = ggplot2::ggplot(mm, aes(x = nFeature_RNA, y = percent.mito)) +
+      ggplot2::ggtitle(paste("Cells below", percentage_formatter(below.mito),
                     "mito reads are selected (with A:", pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")")) +
-      geom_point(alpha = transparency, size = cex,  show.legend = FALSE,
+      ggplot2::geom_point(alpha = transparency, size = cex,  show.legend = FALSE,
                  aes(color = filt.nFeature_RNA & filt.below.mito)  ) +
       scale_x_log10() + # scale_y_log10() +
       # annotation_logticks() +
@@ -2192,8 +2192,8 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 # Source: self + web
 
 # Requirements ------------------------
-require(Seurat)
-require(ggplot2)
+# require(Seurat)
+# require(ggplot2)
 # tools for tools::toTitleCase
 
 # May also require
@@ -2383,14 +2383,14 @@ plot.Metadata.Cor.Heatmap <- function(
   , obj = combined.obj
   , w = 10, h = w
   , ...){
-  library(ggcorrplot)
+  # library(ggcorrplot)
 
 
   meta.data <- obj@meta.data
   columns.found <- intersect(colnames(meta.data), columns)
 
   corX <- cor(meta.data[ , columns.found], method = cormethod)
-  pl <- ggcorrplot(corX, hc.order = TRUE, title = main
+  pl <- ggcorrplot::ggcorrplot(corX, hc.order = TRUE, title = main
                    , type = "full", lab = T)
   qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
   pl
@@ -3206,7 +3206,7 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data", geneset = FALS
 ######################################################################
 # source('~/GitHub/Packages/Seurat.utils/Functions/Seurat.update.gene.symbols.HGNC.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Seurat.update.gene.symbols.HGNC.R"))
-require(HGNChelper)
+# require(HGNChelper)
 
 # updateHGNC ------------------------------------------------------------------------------------
 UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUnique = T, ShowStats=F ) { # Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
@@ -3314,7 +3314,7 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 # Source: self + web
 
 # Requirements ------------------------
-require(tibble)
+# require(tibble)
 
 # plotTheSoup ------------------------------------------------------------------------
 plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
@@ -3322,7 +3322,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
   ls.Alpha=1
   # Setup ------------------------
-  require(Matrix); require(ggrepel)
+  # require(Matrix); require(ggrepel)
 
   dirz <- list.dirs(CellRangerOutputDir, full.names = F, recursive = F)
   path.raw <- file.path(CellRangerOutputDir, grep(x = dirz, pattern = "^raw_*", value = T))
@@ -3435,7 +3435,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
       geom_point() + theme(legend.position = "none") +
       xlab(paste(axl.pfx, "Soup", axl.sfx)) + ylab(paste(axl.pfx, "Cells", axl.sfx)) +
       ggtitle("Soup VS. Cells", subtitle = pr) +
-      geom_text_repel(aes(label= ifelse(Outlier
+      ggrepel::geom_text_repel(aes(label= ifelse(Outlier
                                         , as.character(gene),'')))
     ggsave(pgg, filename = file.path(OutDir, fname))
   }
@@ -3542,8 +3542,8 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
 
 load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
-          includeFeatures = c("Gene Expression"), verbose = TRUE,
-          ...)
+                      includeFeatures = c("Gene Expression"), verbose = TRUE,
+                      ...)
 {
 
   # include
@@ -3621,9 +3621,9 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
   if (is.null(channelName))
     channelName = ifelse(is.null(names(dataDir)), dataDir,
                          names(dataDir))
-  channel = SoupChannel(tod = dat, toc = datCells, metaData = mDat,
-                        channelName = channelName, dataDir = dataDir, dataType = "10X",
-                        isV3 = isV3, DR = DR, ...)
+  channel = SoupX::SoupChannel(tod = dat, toc = datCells, metaData = mDat,
+                               channelName = channelName, dataDir = dataDir, dataType = "10X",
+                               isV3 = isV3, DR = DR, ...)
   return(channel)
 }
 
