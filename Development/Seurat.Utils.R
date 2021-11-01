@@ -1203,7 +1203,7 @@ mplotManyGenes <- function(ls.genes = c(
 }
 # mplotManyGenes()
 
-# m3DplotGene ------------------------
+
 m3DplotGene <- function(gene = "PGK1", reduc = "UMAP", obj = cds.10pc, ttl.suffix = "expression", suffix = "", cex = 5) {
   gene <- intersect(rownames(obj), gene)
   if (l(gene)) {
@@ -1221,20 +1221,20 @@ m3DplotGene <- function(gene = "PGK1", reduc = "UMAP", obj = cds.10pc, ttl.suffi
     SavePlotlyAsHtml(pl1, category. = gene, suffix. = suffix)
   } else { iprint("gene not found") }
 }
-m3DplotGene("DDIT4")
+# m3DplotGene("DDIT4")
 
 
 # m3DplotKeyGenes ------------------------
 m3DplotKeyGenes <- function(obj = cds.10pc, cex = iround(log10(idim(obj)[2]))
                             , ls.genes =  c(
-                                    `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
-                                    , `oRG` = "ID4", `oRG` = "HOPX"
-                                    , `Intermediate progenitor` = "EOMES",  `Intermediate progenitor1` = "TAC3"
-                                    , Astroglia = "GFAP", Astrocyte = "S100B"
-                                    , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
-                                    , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
-                                    , `Low-Quality` = "POLR2A", `PGC` = "DCN"
-                                    , `dl-EN` = "KAZN", `ul-EN` = "SATB2")
+                              `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
+                              , `oRG` = "ID4", `oRG` = "HOPX"
+                              , `Intermediate progenitor` = "EOMES",  `Intermediate progenitor1` = "TAC3"
+                              , Astroglia = "GFAP", Astrocyte = "S100B"
+                              , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
+                              , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
+                              , `Low-Quality` = "POLR2A", `PGC` = "DCN"
+                              , `dl-EN` = "KAZN", `ul-EN` = "SATB2")
                             , reduc = "UMAP", suffix = "") {
 
   ls.genes <- intersect(rownames(obj), ls.genes)
@@ -1298,7 +1298,7 @@ m3.recall.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2],
   iprint(old.dim, 'dimensional', slot, 'replaced by', dim, slot, 'reduction.')
   return(obj)
 }
-cds_from_seurat <- m3.recall.umap(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2])
+# cds_from_seurat <- m3.recall.umap(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2])
 # cds_from_seurat.bac <- cds_from_seurat
 
 
@@ -1363,7 +1363,7 @@ mSeq.map.all96.BCs <- function(readTable = readTable, CellIDs = CellIDs
                                , path2allBCs = '~/Google_Drive/Science/IMBA/MULTI.seq/from.US/All.MULTI-seq_barcodes.Mar2019.tsv'
 ) {
   (bar.ref <- read_tsv(path2allBCs)[[1]]) # Vector of reference all MULTI-seq sample barcode sequences.
-   MULTIseq.align(readTable = readTable, cellIDs = CellIDs, ref = bar.ref)
+  MULTIseq.align(readTable = readTable, cellIDs = CellIDs, ref = bar.ref)
 }
 # bar.table <-mSeq.map.all96.BCs(readTable = readTable, CellIDs = CellIDs)
 
@@ -1600,7 +1600,7 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
 
 # umapHiLightSel highlight a set of cells based on clusterIDs provided---------------
 umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based on clusterIDs provided.
-                          COI =  c("0", "2", "4", "5",  "11"), res.cl = 'integrated_snn_res.0.3') {
+                           COI =  c("0", "2", "4", "5",  "11"), res.cl = 'integrated_snn_res.0.3') {
   cellsSel = getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
   DimPlot(obj, reduction = "umap", group.by = res.cl,
           label = T, cells.highlight = cellsSel)
@@ -1895,14 +1895,14 @@ plot3D.umap <- function(category="v.project", obj=combined.obj # Plot a 3D umap 
   } else { NULL }
 
   plt <- plot_ly(data = plotting.data
-          , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
-          , type = "scatter3d"
-          , mode = "markers"
-          , marker = list(size = dotsize)
-          , text = ~label
-          , color = ~category
-          , colors = gg_color_hue(length(unique(plotting.data$'category')))
-          # , hoverinfo="text"
+                 , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
+                 , type = "scatter3d"
+                 , mode = "markers"
+                 , marker = list(size = dotsize)
+                 , text = ~label
+                 , color = ~category
+                 , colors = gg_color_hue(length(unique(plotting.data$'category')))
+                 # , hoverinfo="text"
   ) %>% layout(title = category, scene = list(annotations = ls.ann.auto))
   SavePlotlyAsHtml(plt, category. = category, suffix. = suffix)
   return(plt)
@@ -2128,9 +2128,9 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
     B = ggplot2::ggplot(mm, aes(x = nFeature_RNA, y = percent.mito)) +
       ggplot2::ggtitle(paste("Cells below", percentage_formatter(below.mito),
-                    "mito reads are selected (with A:", pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")")) +
+                             "mito reads are selected (with A:", pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")")) +
       ggplot2::geom_point(alpha = transparency, size = cex,  show.legend = FALSE,
-                 aes(color = filt.nFeature_RNA & filt.below.mito)  ) +
+                          aes(color = filt.nFeature_RNA & filt.below.mito)  ) +
       scale_x_log10() + # scale_y_log10() +
       # annotation_logticks() +
       geom_hline(yintercept = below.mito) +
@@ -2222,7 +2222,7 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Pl
 # BarplotCellsPerObject ------------------------------------------------------------
 
 BarplotCellsPerObject <- function(ls.Seu = ls.Seurat, # Take a List of Seurat objects and draw a barplot for the number of cells per object.
-  plotname="Nr.Cells.After.Filtering", names=F ) {
+                                  plotname="Nr.Cells.After.Filtering", names=F ) {
   cellCounts = unlapply(ls.Seu, ncol)
   names(cellCounts) = if (length(names) == length(ls.Seurat)) names else names(ls.Seurat)
   wbarplot(cellCounts, plotname = plotname,tilted_text = T, ylab="Cells")
@@ -2391,7 +2391,7 @@ plot.Metadata.Cor.Heatmap <- function(
 
   corX <- cor(meta.data[ , columns.found], method = cormethod)
   pl <- ggcorrplot::ggcorrplot(corX, hc.order = TRUE, title = main
-                   , type = "full", lab = T)
+                               , type = "full", lab = T)
   qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
   pl
 }
@@ -2741,8 +2741,8 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 
 # Convert10Xfolders.old ------------------------------------------------------------------------
 Convert10Xfolders.old <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
-                              , folderPattern = c("filtered", "SoupX_decont")[1]
-                              , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T) {
+                                  , folderPattern = c("filtered", "SoupX_decont")[1]
+                                  , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T) {
   fin <- list.dirs(InputDir, recursive = F)
   fin <- grepv(x = fin, pattern = folderPattern, perl = F)
 
@@ -2906,7 +2906,7 @@ subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = O
 
 isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))
                         , showMemObject=T, options=c("--force", NULL)[1]
-                        ){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
+){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
 
   dir.create(path_rdata)
 
@@ -3106,8 +3106,8 @@ AddNewAnnotation <- function(obj = obj # Create a new metadata column based on a
 
 # whitelist.subset.ls.Seurat ------------------------------------------------------------------------
 whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
-                                , metadir = p$'cellWhiteList' #  '~/Dropbox/Abel.IMBA/MetadataD/POL.meta/cell.lists/'
-                                , whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv"
+                                       , metadir = p$'cellWhiteList' #  '~/Dropbox/Abel.IMBA/MetadataD/POL.meta/cell.lists/'
+                                       , whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv"
 ) {
   cells.before <- unlapply(ls.obj, ncol)
   # Find file
@@ -3181,7 +3181,7 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data", geneset = FALS
   if (is.null(obj@misc[[quantile_name]])) { iprint("Quantile data missing! Call: combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX,") first!"); stop()}
 
   genes.HE  <- if (isFALSE(geneset)) {  which_names(obj@misc[[quantile_name]] > 0) } else {
-                                        check.genes(geneset)  }
+    check.genes(geneset)  }
   iprint("Pearson correlation is calculated for", l(genes.HE), "HE genes with expr."
          , qname,": > 0 on a sample of", max.cells, " cells.")
   tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
@@ -3273,11 +3273,11 @@ RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 
 # HELPER Enforce Unique names ------------------------------------------------------------------------------------
 HGNC.EnforceUnique <- function(updatedSymbols) { # Enforce Unique names after HGNC symbol update. updatedSymbols is the output of HGNChelper::checkGeneSymbols.
-    NGL <- updatedSymbols[,3]
-    if (any.duplicated(NGL)) {
-      updatedSymbols[,3] <- make.unique(NGL); "Unique names are enforced by suffixing .1, .2, etc."
-      }
-    return(updatedSymbols)
+  NGL <- updatedSymbols[,3]
+  if (any.duplicated(NGL)) {
+    updatedSymbols[,3] <- make.unique(NGL); "Unique names are enforced by suffixing .1, .2, etc."
+  }
+  return(updatedSymbols)
 }
 # x <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
 # While "make.unique" is not the ideal solution, because it generates mismatched, in my integration example it does reduce the mismatching genes from ~800 to 4
@@ -3436,7 +3436,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
       xlab(paste(axl.pfx, "Soup", axl.sfx)) + ylab(paste(axl.pfx, "Cells", axl.sfx)) +
       ggtitle("Soup VS. Cells", subtitle = pr) +
       ggrepel::geom_text_repel(aes(label= ifelse(Outlier
-                                        , as.character(gene),'')))
+                                                 , as.character(gene),'')))
     ggsave(pgg, filename = file.path(OutDir, fname))
   }
 
