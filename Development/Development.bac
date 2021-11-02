@@ -639,7 +639,7 @@ setMethod(
 
 # Functions ------------------------
 # try(source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F)
-# try(require('MarkdownReportsDev'),  silent = T)
+# try(require('MarkdownReports'),  silent = T)
 # try(require('tidyverse'),  silent = T)
 # source('~/Github/TheCorvinas/R/DatabaseLinke.r')
 
@@ -2032,7 +2032,7 @@ m3.export.umap.2.Seurat <- function(mobj = cds_from_seurat, sobj = combined.obj,
 # try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/MULTI-seq.functions.R'))
 
 # Requirements ------------------------
-# try(require(MarkdownReportsDev),  silent = T)
+# try(require(MarkdownReports),  silent = T)
 # try(require(pheatmap),  silent = T)
 # May also require
 
@@ -2144,7 +2144,7 @@ aux.plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 
 # May also require
 # try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
-# require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
+# require('MarkdownReports') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReports")
 
 
 # Quick gene expression umap ------------------------------------------------------------------------
@@ -2788,12 +2788,12 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
 
 # Requirements ------------------------
 # try(library(plotly), silent = T)
-# try(library(MarkdownReportsDev), silent = T)
+# try(library(MarkdownReports), silent = T)
 # try(library(htmlwidgets), silent = T)
 
 # May also require
 # try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= T) # generic utilities funtions
-# require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
+# require('MarkdownReports') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReports")
 
 
 # ------------------------------------------------------------------------
@@ -3350,7 +3350,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
 # May also require
 # try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
-# require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
+# require('MarkdownReports') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReports")
 
 # PCA percent of variation associated with each PC ------------------------------------------------------------
 #' @title seu.PC.var.explained
@@ -4365,7 +4365,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix=NULL, inOutDir = F
 
 
 # Save workspace -----------------------------------------------
-# requires MarkdownReportsDev (github) and defining OutDir
+# requires MarkdownReports (github) and defining OutDir
 # requires github/vertesy/CodeAndRoll.r
 
 #' @title isave.image
@@ -4381,9 +4381,11 @@ isave.RDS <- function(obj, prefix =NULL, suffix=NULL, inOutDir = F
 #'  }
 #' }
 #' @seealso
-#'  \code{\link[MarkdownReportsDev]{kollapse}}, \code{\link[MarkdownReportsDev]{iprint}}
+#'  \code{\link[Stringendo]{kollapse}}, \code{\link[MarkdownReports]{iprint}}
 #' @export
-#' @importFrom MarkdownReportsDev kollapse iprint
+#' @importFrom Stringendo kollapse
+#' @importFrom MarkdownReports iprint
+#'
 isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))
                         , showMemObject=T, options=c("--force", NULL)[1]
 ){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
@@ -4391,17 +4393,17 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
   dir.create(path_rdata)
 
   if (showMemObject) { memory.biggest.objects() }
-  fname = MarkdownReportsDev::kollapse(path_rdata, "/",idate(),...,".Rdata")
+  fname = Stringendo::kollapse(path_rdata, "/",idate(),...,".Rdata")
   print(fname)
   if (nchar(fname) > 2000) stop()
   save.image(file = fname, compress = F)
-  MarkdownReportsDev::iprint("Saved, being compressed", fname)
+  MarkdownReports::iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
 }
 
 
 # Save workspace -----------------------------------------------
-# requires MarkdownReportsDev (github) and defining OutDir
+# requires MarkdownReports (github) and defining OutDir
 # requires github/vertesy/CodeAndRoll.r
 
 #' @title qsave.image
@@ -4416,11 +4418,12 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
 #'  }
 #' }
 #' @seealso
-#'  \code{\link[MarkdownReportsDev]{kollapse}}, \code{\link[MarkdownReportsDev]{iprint}}
+#'  \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
 #' @export
-#' @importFrom MarkdownReportsDev kollapse iprint
+#' @importFrom Stringendo kollapse
+#' @importFrom MarkdownReports iprint
 qsave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
-  fname = MarkdownReportsDev::kollapse(getwd(), "/",basename(OutDir),idate(),...,".Rdata")
+  fname = Stringendo::kollapse(getwd(), "/",basename(OutDir),idate(),...,".Rdata")
   print(fname)
   if (nchar(fname) > 2000) stop()
   tic()

@@ -24,5 +24,5 @@ if(interactive()){
 }
 }
 \seealso{
-\code{\link[MarkdownReportsDev]{kollapse}}, \code{\link[MarkdownReportsDev]{iprint}}
+\code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
 }

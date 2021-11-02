@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.Utils - utility functions for Seurat
-Version: 0.9.5
+Version: 0.9.6
 Authors@R: 
     person(given = "Abel",
            family = "Vertesy",
@@ -16,11 +16,13 @@ License: GPL-3 + file LICENSE
 BugReports: https://github.com/vertesy/Seurat.Utils/issues
 Imports: 
     gtools,
+    MarkdownReports,
     openxlsx,
-    readr
+    readr,
+    Stringendo
 Encoding: UTF-8
 LazyData: true
-Packaged: 2021-11-01 15:59:52
+Packaged: 2021-11-02 14:11:17
 Repository: CRAN
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
