@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.Utils - utility functions for Seurat
-Version: 0.9.6
+Version: 0.9.7
 Authors@R: 
     person(given = "Abel",
            family = "Vertesy",
@@ -22,7 +22,7 @@ Imports:
     Stringendo
 Encoding: UTF-8
 LazyData: true
-Packaged: 2021-11-02 14:11:17
+Packaged: 2021-11-02 18:55:36
 Repository: CRAN
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
