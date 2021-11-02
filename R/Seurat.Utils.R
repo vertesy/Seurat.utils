@@ -1330,12 +1330,13 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of
 #' @seealso
 #'  \code{\link[sparseMatrixStats]{character(0)}}
 #' @export
+#' @importFrom tictoc tic toc
 #' @importFrom sparseMatrixStats rowQuantiles
 calc.q90.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
                                                   , quantileX=0.9, max.cells =  100000
                                                   , slot = "data", assay = c("RNA", "integrated")[1]
                                                   , set.all.genes = TRUE, show = TRUE) {
-  tic()
+  tictoc::tic()
   x = GetAssayData(object = obj, assay = assay, slot = slot) #, assay = 'RNA'
   if (ncol(x) > max.cells) {
     dsampled = sample(x = 1:ncol(x), size = max.cells)
@@ -3601,6 +3602,7 @@ sparse.cor <- function(smat){
 #'  }
 #' }
 #' @export
+#' @importFrom tictoc tic toc
 Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
                             , quantileX = 0.95, max.cells =  40000, seed = p$"seed"
                             , digits = 2, obj = combined.obj) {
@@ -3616,7 +3618,7 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
   if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX," first )")
   genes.HE = which_names(obj@misc[[quantile_name]] > 0)
   iprint("Pearson correlation is calculated for", l(genes.HE), "HE genes with expr.",qname,": > 0.")
-  tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
+  tictoc::tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
   ls.cor <- lapply(ls.cor, round, digits = 2)
 
   slot__name <- kpp(slot.use, assay.use, quantile_name)
@@ -3986,8 +3988,10 @@ scBarplotFractionAboveThr <- function(thrX = 0., value.col = 'percent.ribo', id.
       FirstCol2RowNames())
 
   (v.fr_n_cells_above <- 100* as.named.vector(df_cells_above[3]))
+
+  pname <- make.names(paste('Cells with', value.col, '>', thrX, id.col))
   ggobj <- qbarplot(v.fr_n_cells_above, xlab = 'Clusters', ylab = '% Cells'
-                    , plotname = paste('Cells with', value.col, '>', thrX)
+                    , plotname = pname
                     , subtitle = id.col, xlab.angle = 45)
   if (return.df) return(df_cells_above) else ggobj
 }
@@ -4024,8 +4028,10 @@ scBarplotFractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', i
       FirstCol2RowNames())
 
   (v.fr_n_cells_below <- 100* as.named.vector(df_cells_below[3]))
+
+  pname <- make.names(paste('Cells with', value.col, '<', thrX, id.col))
   ggobj <- qbarplot(v.fr_n_cells_below, xlab = 'Clusters', ylab = '% Cells'
-                    , plotname = make.names(paste('Cells with', value.col, '<', thrX))
+                    , plotname = pname
                     , subtitle = id.col, xlab.angle = 45)
   if (return.df) return(df_cells_below) else ggobj
 }
@@ -4245,11 +4251,12 @@ ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a numb
 #'  }
 #' }
 #' @export
+#' @importFrom tictoc tic toc
 LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
                            , file.pattern = "^filtered.+Rds$"
                            , string.remove1 = c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix." )[2]
                            , string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]) {
-  tic()
+  tictoc::tic()
   InputDir <- AddTrailingSlash(InputDir) # add '/' if necessary
 
   fin.orig <- list.files(InputDir, include.dirs = F, pattern = file.pattern)
@@ -4259,7 +4266,7 @@ LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directo
 
   ls.Seu <- list.fromNames(fin)
   for (i in 1:length(fin)) {print(fin[i]); ls.Seu[[i]] <- readRDS(paste0(InputDir, fin.orig[i]))}
-  print(toc())
+  print(tictoc::toc())
   return(ls.Seu)
 }
 
@@ -4422,11 +4429,12 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
 #' @export
 #' @importFrom Stringendo kollapse
 #' @importFrom MarkdownReports iprint
+#' @importFrom tictoc tic toc
 qsave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
   fname = Stringendo::kollapse(getwd(), "/",basename(OutDir),idate(),...,".Rdata")
   print(fname)
   if (nchar(fname) > 2000) stop()
-  tic()
+  tictoc::tic()
   save.image(file = fname, compress = F)
   MarkdownReportsDev::iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
@@ -4497,11 +4505,12 @@ subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = O
 #'  }
 #' }
 #' @export
+#' @importFrom tictoc tic toc
 Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids") {
   names.ls = names(ls.obj)
   n.datasets = length(ls.obj)
   iprint(NrCells, "cells")
-  tic()
+  tictoc::tic()
   if (getDoParRegistered() ) {
     ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
       iprint(names(ls.obj)[i], percentage_formatter(i/n.datasets, digitz = 2))
@@ -4809,10 +4818,11 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
 #'  \code{\link[matrixStats]{rowSums2}}
 #' @export
 #' @importFrom matrixStats rowSums2
+#' @importFrom tictoc tic toc
 FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA", slot = "data"
                                 , HEonly =F , minExpr = 1, minCells = 1000
                                 , trailingNgenes = 1000) {
-  tic()
+  tictoc::tic()
   AssayData <- GetAssayData(object = obj, assay = assay, slot = slot )
   matrix_mod <- iround(as.matrix(AssayData))
   if (HEonly) {
@@ -4823,7 +4833,7 @@ FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA"
   geneExpr <- as.numeric(matrix_mod[gene, ])
   correlations <- apply(matrix_mod, 1, cor, geneExpr)
   topGenes <- trail(sort(correlations, decreasing = T), N = trailingNgenes)
-  toc()
+  tictoc::toc()
   wbarplot(head(topGenes, n =25))
   topGenes
 }
