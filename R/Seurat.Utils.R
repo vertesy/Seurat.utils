@@ -1335,7 +1335,7 @@ calc.q90.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
                                                   , quantileX=0.9, max.cells =  100000
                                                   , slot = "data", assay = c("RNA", "integrated")[1]
                                                   , set.all.genes = TRUE, show = TRUE) {
-  tic()
+  tictoc::tic()
   x = GetAssayData(object = obj, assay = assay, slot = slot) #, assay = 'RNA'
   if (ncol(x) > max.cells) {
     dsampled = sample(x = 1:ncol(x), size = max.cells)
@@ -3616,7 +3616,7 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
   if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX," first )")
   genes.HE = which_names(obj@misc[[quantile_name]] > 0)
   iprint("Pearson correlation is calculated for", l(genes.HE), "HE genes with expr.",qname,": > 0.")
-  tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
+  tictoc::tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
   ls.cor <- lapply(ls.cor, round, digits = 2)
 
   slot__name <- kpp(slot.use, assay.use, quantile_name)
@@ -3986,8 +3986,10 @@ scBarplotFractionAboveThr <- function(thrX = 0., value.col = 'percent.ribo', id.
       FirstCol2RowNames())
 
   (v.fr_n_cells_above <- 100* as.named.vector(df_cells_above[3]))
+
+  pname <- make.names(paste('Cells with', value.col, '>', thrX, id.col))
   ggobj <- qbarplot(v.fr_n_cells_above, xlab = 'Clusters', ylab = '% Cells'
-                    , plotname = paste('Cells with', value.col, '>', thrX)
+                    , plotname = pname
                     , subtitle = id.col, xlab.angle = 45)
   if (return.df) return(df_cells_above) else ggobj
 }
@@ -4024,8 +4026,10 @@ scBarplotFractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', i
       FirstCol2RowNames())
 
   (v.fr_n_cells_below <- 100* as.named.vector(df_cells_below[3]))
+
+  pname <- make.names(paste('Cells with', value.col, '<', thrX, id.col))
   ggobj <- qbarplot(v.fr_n_cells_below, xlab = 'Clusters', ylab = '% Cells'
-                    , plotname = make.names(paste('Cells with', value.col, '<', thrX))
+                    , plotname = pname
                     , subtitle = id.col, xlab.angle = 45)
   if (return.df) return(df_cells_below) else ggobj
 }
@@ -4249,7 +4253,7 @@ LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directo
                            , file.pattern = "^filtered.+Rds$"
                            , string.remove1 = c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix." )[2]
                            , string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]) {
-  tic()
+  tictoc::tic()
   InputDir <- AddTrailingSlash(InputDir) # add '/' if necessary
 
   fin.orig <- list.files(InputDir, include.dirs = F, pattern = file.pattern)
@@ -4259,7 +4263,7 @@ LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directo
 
   ls.Seu <- list.fromNames(fin)
   for (i in 1:length(fin)) {print(fin[i]); ls.Seu[[i]] <- readRDS(paste0(InputDir, fin.orig[i]))}
-  print(toc())
+  print(tictoc::toc())
   return(ls.Seu)
 }
 
@@ -4426,7 +4430,7 @@ qsave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
   fname = Stringendo::kollapse(getwd(), "/",basename(OutDir),idate(),...,".Rdata")
   print(fname)
   if (nchar(fname) > 2000) stop()
-  tic()
+  tictoc::tic()
   save.image(file = fname, compress = F)
   MarkdownReportsDev::iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
@@ -4501,7 +4505,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
   names.ls = names(ls.obj)
   n.datasets = length(ls.obj)
   iprint(NrCells, "cells")
-  tic()
+  tictoc::tic()
   if (getDoParRegistered() ) {
     ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
       iprint(names(ls.obj)[i], percentage_formatter(i/n.datasets, digitz = 2))
@@ -4812,7 +4816,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
 FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA", slot = "data"
                                 , HEonly =F , minExpr = 1, minCells = 1000
                                 , trailingNgenes = 1000) {
-  tic()
+  tictoc::tic()
   AssayData <- GetAssayData(object = obj, assay = assay, slot = slot )
   matrix_mod <- iround(as.matrix(AssayData))
   if (HEonly) {
@@ -4823,7 +4827,7 @@ FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA"
   geneExpr <- as.numeric(matrix_mod[gene, ])
   correlations <- apply(matrix_mod, 1, cor, geneExpr)
   topGenes <- trail(sort(correlations, decreasing = T), N = trailingNgenes)
-  toc()
+  tictoc::toc()
   wbarplot(head(topGenes, n =25))
   topGenes
 }
