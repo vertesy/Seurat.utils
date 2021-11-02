@@ -27,9 +27,9 @@ calc.cluster.averages(
   height = 6,
   ...,
   xlb = if (absolute.thr) paste("Threshold at", absolute.thr) else
-    paste("Black lines: ", kppd(percentage_formatter(c(1 - quantile.thr, quantile.thr))),
-    "quantiles |", "Cl. >", percentage_formatter(quantile.thr), "are highlighted. |",
-    split_by),
+    paste("Black lines: ", kppd(Stringendo::percentage_formatter(c(1 - quantile.thr,
+    quantile.thr))), "quantiles |", "Cl. >",
+    Stringendo::percentage_formatter(quantile.thr), "are highlighted. |", split_by),
   fname = ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)
 )
 }
@@ -77,8 +77,8 @@ calc.cluster.averages(
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 
 \item{xlb}{PARAM_DESCRIPTION, Default: if (absolute.thr) paste("Threshold at", absolute.thr) else paste("Black lines: ",
-kppd(percentage_formatter(c(1 - quantile.thr, quantile.thr))),
-"quantiles |", "Cl. >", percentage_formatter(quantile.thr),
+kppd(Stringendo::percentage_formatter(c(1 - quantile.thr, quantile.thr))),
+"quantiles |", "Cl. >", Stringendo::percentage_formatter(quantile.thr),
 "are highlighted. |", split_by)}
 
 \item{fname}{File name, Default: ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)}

@@ -684,7 +684,7 @@ jPairwiseJaccardIndexList <- function(lsG = ls_genes) { # Create a pairwise jacc
   m = matrix.fromNames(rowname_vec = names(lsG), colname_vec = names(lsG))
   n.sets <- length(lsG)
   for (r in 1:n.sets) {
-    # print(percentage_formatter(r/n.sets))
+    # print(Stringendo::percentage_formatter(r/n.sets))
     for (c in 1:n.sets) {
       if (c == r) {
         m[r,c] = 1
@@ -770,7 +770,7 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
   m = matrix.fromNames(rowname_vec = colnames(binary.presence.matrix), colname_vec = colnames(binary.presence.matrix) )
   n.sets <- ncol(binary.presence.matrix)
   for (r in 1:n.sets) {
-    print(percentage_formatter(r/n.sets))
+    print(Stringendo::percentage_formatter(r/n.sets))
     for (c in 1:n.sets) {
       if (c == r) {
         m[r,c] = 1
@@ -1142,8 +1142,8 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 #' @param height PARAM_DESCRIPTION, Default: 6
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @param xlb PARAM_DESCRIPTION, Default: if (absolute.thr) paste("Threshold at", absolute.thr) else paste("Black lines: ",
-#'    kppd(percentage_formatter(c(1 - quantile.thr, quantile.thr))),
-#'    "quantiles |", "Cl. >", percentage_formatter(quantile.thr),
+#'    kppd(Stringendo::percentage_formatter(c(1 - quantile.thr, quantile.thr))),
+#'    "quantiles |", "Cl. >", Stringendo::percentage_formatter(quantile.thr),
 #'    "are highlighted. |", split_by)
 #' @param fname File name, Default: ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)
 #' @examples
@@ -1172,10 +1172,10 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , width = 8, height =6
                                   , ...
                                   # , ylb = paste(ylab.text, col_name)
-                                  # , xlb = paste("Clusters >",percentage_formatter(quantile.thr),"quantile are highlighted. |", split_by)
+                                  # , xlb = paste("Clusters >",Stringendo::percentage_formatter(quantile.thr),"quantile are highlighted. |", split_by)
                                   , xlb = if (absolute.thr) paste("Threshold at", absolute.thr) else paste(
-                                    "Black lines: " , kppd(percentage_formatter(c(1-quantile.thr, quantile.thr))) ,"quantiles |"
-                                    , "Cl. >",percentage_formatter(quantile.thr),"are highlighted. |", split_by
+                                    "Black lines: " , kppd(Stringendo::percentage_formatter(c(1-quantile.thr, quantile.thr))) ,"quantiles |"
+                                    , "Cl. >",Stringendo::percentage_formatter(quantile.thr),"are highlighted. |", split_by
                                   )
 
                                   , fname = ppp(col_name,split_by,"cluster.average.barplot.pdf", ...)
@@ -1574,7 +1574,7 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
   } else {
     pos.GOI <- which(names(expr.all) == gene)
     quantile.GOI <- ecdf(expr.all)(expr.all)[pos.GOI]
-    title <- paste(gene, "is in the", percentage_formatter(quantile.GOI), "quantile of 'q90-av' expression. \n There are", counts,"counts" )
+    title <- paste(gene, "is in the", Stringendo::percentage_formatter(quantile.GOI), "quantile of 'q90-av' expression. \n There are", counts,"counts" )
   }
   suppressWarnings(
     whist(expr.all, vline = expr.GOI, breaks = 100, main = title, plotname =   make.names(title)
@@ -1904,7 +1904,7 @@ subsetMonocleObject <- function(obj = cds_from_seurat, fraction_ = 0.1, nCells =
     all.cells <- colnames(obj)
     n.keep <- floor(l(all.cells) * fraction_)
     cellIDs.keep <- sample(all.cells, size = n.keep, replace = FALSE)
-    iprint(length(cellIDs.keep), "or",percentage_formatter(fraction_),"of the cells are kept. Seed:", head(cellIDs.keep), seed_)
+    iprint(length(cellIDs.keep), "or",Stringendo::percentage_formatter(fraction_),"of the cells are kept. Seed:", head(cellIDs.keep), seed_)
     # cellIDs.keep
   } else if (nCells > 1) {
     nKeep = min(ncol(obj), nCells)
@@ -3208,6 +3208,7 @@ Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3
 #'  \code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{labs}}, \code{\link[ggplot2]{geom_point}}
 #' @export
 #' @importFrom ggplot2 ggplot ggtitle geom_point
+#' @importFrom Stringendo Stringendo::percentage_formatter
 PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.
                         , parentdir= OutDirOrig
                         , suffices = names(ls.obj)
@@ -3230,8 +3231,8 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
   llprint(
     "We filtered for high quality cells based on the number of genes detected [", above.nFeature_RNA, ";" ,below.nFeature_RNA
-    , "] and the fraction of mitochondrial [", percentage_formatter(above.mito), ";" ,percentage_formatter(below.mito)
-    , "] and ribosomal [",percentage_formatter(above.ribo), ";" ,percentage_formatter(below.ribo), "] reads."
+    , "] and the fraction of mitochondrial [", Stringendo::percentage_formatter(above.mito), ";" ,Stringendo::percentage_formatter(below.mito)
+    , "] and ribosomal [",Stringendo::percentage_formatter(above.ribo), ";" ,Stringendo::percentage_formatter(below.ribo), "] reads."
   )
 
 
@@ -3280,7 +3281,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
     # A
 
     B = ggplot2::ggplot(mm, aes(x = nFeature_RNA, y = percent.mito)) +
-      ggplot2::ggtitle(paste("Cells below", percentage_formatter(below.mito),
+      ggplot2::ggtitle(paste("Cells below", Stringendo::percentage_formatter(below.mito),
                              "mito reads are selected (with A:", pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")")) +
       ggplot2::geom_point(alpha = transparency, size = cex,  show.legend = FALSE,
                           aes(color = filt.nFeature_RNA & filt.below.mito)  ) +
@@ -3294,7 +3295,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
 
     C = ggplot(mm, aes(x = nFeature_RNA, y = percent.ribo)) +
-      ggtitle(paste("Cells below", percentage_formatter(below.ribo),
+      ggtitle(paste("Cells below", Stringendo::percentage_formatter(below.ribo),
                     "ribo reads are selected (with A:"
                     , pc_TRUE(filt.nFeature_RNA & filt.below.ribo), ")")) +
       geom_point(alpha = transparency, size = cex,   show.legend = FALSE,
@@ -3850,7 +3851,7 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
   ptitle <- ppp('clust.size.distr', ident)
   psubtitle <- paste("Nr.clusters:", l(clust.size.distr)
                      , "| median:", median(clust.size.distr)
-                     , "| CV:", percentage_formatter(cv(clust.size.distr))
+                     , "| CV:", Stringendo::percentage_formatter(cv(clust.size.distr))
   )
   xlb = "Cluster size (cells)"
   xlim = c(0, max(clust.size.distr))
@@ -4460,7 +4461,7 @@ subsetSeuObj <- function(obj=ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_
   set.seed(seed_)
   if (isFALSE(nCells)) {
     cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction_)
-    iprint(length(cellIDs.keep), "or",percentage_formatter(fraction_),"of the cells are kept. Seed:", seed_)
+    iprint(length(cellIDs.keep), "or",Stringendo::percentage_formatter(fraction_),"of the cells are kept. Seed:", seed_)
   } else if (nCells > 1) {
     nKeep = min(ncol(obj), nCells)
     # print(nKeep)
@@ -4513,13 +4514,13 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
   tictoc::tic()
   if (getDoParRegistered() ) {
     ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
-      iprint(names(ls.obj)[i], percentage_formatter(i/n.datasets, digitz = 2))
+      iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i/n.datasets, digitz = 2))
       subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
     }; names(ls.obj.downsampled)  <- names.ls
   } else {
     ls.obj.downsampled <- list.fromNames(names.ls)
     for (i in 1:n.datasets ) {
-      iprint(names(ls.obj)[i], percentage_formatter(i/n.datasets, digitz = 2))
+      iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i/n.datasets, digitz = 2))
       ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
     };
   } # else
@@ -4662,7 +4663,7 @@ check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = FALSE, v
   all_genes = rownames(GetAssayData(object = obj, assay = assay.slot, slot = dataslot)); length(all_genes)
   missingGenes = setdiff(list.of.genes, all_genes)
   if (length(missingGenes) > 0) {
-    if (verbose) { iprint(l(missingGenes), "or", percentage_formatter(l(missingGenes) / l(list.of.genes)), "genes not found in the data, e.g:", head(missingGenes, n = 10))  }
+    if (verbose) { iprint(l(missingGenes), "or", Stringendo::percentage_formatter(l(missingGenes) / l(list.of.genes)), "genes not found in the data, e.g:", head(missingGenes, n = 10))  }
     if (HGNC.lookup) {
       if (exists('qHGNC', mode='function')) { try(qHGNC(missingGenes)) } else { print("load qHGNC() function, see database.linker")}
     }
@@ -4991,7 +4992,7 @@ HGNC.EnforceUnique <- function(updatedSymbols) { # Enforce Unique names after HG
 GetUpdateStats <- function(genes = HGNC.updated[[i]]) { # Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`.
   (MarkedAsUpdated <- genes[genes$Approved == FALSE, ])
   (AcutallyUpdated <- sum(MarkedAsUpdated[,1] != MarkedAsUpdated[,3]))
-  (UpdateStats = c("Updated (%)"=percentage_formatter(AcutallyUpdated / nrow(genes)), "Updated Genes"=floor(AcutallyUpdated), "Total Genes"=floor(nrow(genes))))
+  (UpdateStats = c("Updated (%)"=Stringendo::percentage_formatter(AcutallyUpdated / nrow(genes)), "Updated Genes"=floor(AcutallyUpdated), "Total Genes"=floor(nrow(genes))))
   return(UpdateStats)
 }
 
@@ -5181,7 +5182,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
            , ylim = c(0,100), ylab = "% mRNA in cells"
            , sub = "% mRNA is more meaningful than % reads reported by CR")
   barplot_label(barplotted_variable = PC.mRNA.in.Cells
-                , labels = percentage_formatter(PC.mRNA.in.Cells/100, digitz = 2)
+                , labels = Stringendo::percentage_formatter(PC.mRNA.in.Cells/100, digitz = 2)
                 , TopOffset = 10)
 
 
@@ -5194,7 +5195,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
            , tilted_text = T
            , ylim = c(0, max(Soup.GEMs.top.Genes)*1.5))
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes
-                , labels = percentage_formatter(Soup.GEMs.top.Genes/100, digitz = 2)
+                , labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes/100, digitz = 2)
                 , TopOffset = -.5, srt = 90, cex=.75)
 
   # Plot summarize expression ----------------------------------------------------------------
@@ -5233,7 +5234,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
            , sub = paste("Within the", SeqRun, "dataset")
            , tilted_text = T, col = ccc)
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes.summarized
-                , srt = 45, labels = percentage_formatter(Soup.GEMs.top.Genes.summarized/100, digitz = 2)
+                , srt = 45, labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.summarized/100, digitz = 2)
                 , TopOffset = -1.5)
 
   # Absolute.fraction ---------------------------
@@ -5242,10 +5243,10 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
   maxx <- max(Absolute.fraction.soupProfile.summarized)
   wbarplot(Absolute.fraction.soupProfile.summarized, plotname = kppd("Absolute.fraction.soupProfile.summarized", SeqRun)
            , ylab="% of mRNA in cells", ylim = c(0, maxx*1.33)
-           , sub = paste(percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", SeqRun)
+           , sub = paste(Stringendo::percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", SeqRun)
            , tilted_text = T, col = ccc)
   barplot_label(barplotted_variable = Absolute.fraction.soupProfile.summarized
-                , srt = 45, labels = percentage_formatter(Absolute.fraction.soupProfile.summarized/100, digitz = 2)
+                , srt = 45, labels = Stringendo::percentage_formatter(Absolute.fraction.soupProfile.summarized/100, digitz = 2)
                 # formatC(Absolute.fraction.soupProfile.summarized, format="f", big.mark = " ", digits=0)
                 , TopOffset = -maxx*0.15)
 
@@ -5258,7 +5259,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
            , tilted_text = T, col = "#BF3100"
            , ylim = c(0, maxx*1.5))
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes.non.summarized
-                , labels = percentage_formatter(Soup.GEMs.top.Genes.non.summarized/100, digitz = 2)
+                , labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.non.summarized/100, digitz = 2)
                 # , labels = p0(round(1e6 * Soup.GEMs.top.Genes.non.summarized), " ppm")
                 , TopOffset = -maxx*0.2, srt = 90, cex=.75)
 
