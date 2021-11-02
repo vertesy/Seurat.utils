@@ -15,14 +15,31 @@ Description: Seurat.utils Is a collection of utility functions for Seurat
 License: GPL-3 + file LICENSE
 BugReports: https://github.com/vertesy/Seurat.Utils/issues
 Imports: 
-    gtools,
+    cowplot,
+    dplyr,
+    ggcorrplot,
+    ggplot2,
+    ggrepel,
+    HGNChelper,
+    htmlwidgets,
     MarkdownReports,
-    openxlsx,
+    Matrix,
+    matrixStats,
+    princurve,
+    R.utils,
     readr,
-    Stringendo
+    reshape2,
+    scales,
+    Seurat,
+    SoupX,
+    sparseMatrixStats,
+    Stringendo,
+    tibble,
+    tictoc,
+    vroom
 Encoding: UTF-8
 LazyData: true
-Packaged: 2021-11-02 18:55:36
+Packaged: 2021-11-02 19:00:45
 Repository: CRAN
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1

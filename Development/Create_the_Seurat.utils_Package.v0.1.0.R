@@ -43,7 +43,7 @@ DESCRIPTION <- list("Title" = "Seurat.Utils - utility functions for Seurat"
     , "Version" = "0.9.7"
     , "Packaged" =  Sys.time()
     , "Repository" =  "CRAN"
-    , "Imports" = "readr, gtools, openxlsx, Stringendo, MarkdownReports"
+    , "Imports" = "Stringendo, MarkdownReports,  cowplot,  dplyr,  ggcorrplot,  ggplot2,  ggrepel,  HGNChelper,  htmlwidgets,  Matrix,  matrixStats,  princurve,  R.utils,  readr, reshape2,  scales,  Seurat,  SoupX,  sparseMatrixStats,  tibble,  tictoc,  vroom"
     # , "Suggests" = ""
     , "BugReports"= "https://github.com/vertesy/Seurat.Utils/issues"
 )
