@@ -637,5 +637,8 @@ CURRENTLY NOT THE CASE:
 
 
 -----------
-[Get Seurat.utils](https://github.com/vertesy/Seurat.utils). Vertesy, 2020. [![DOI](https://zenodo.org/badge/248721133.svg)](https://zenodo.org/badge/latestdoi/248721133) 
+[Get Seurat.utils](https://github.com/vertesy/Seurat.utils). Vertesy, 2021. [![DOI](https://zenodo.org/badge/248721133.svg)](https://zenodo.org/badge/latestdoi/248721133) 
 *If you use these functions, please star the repo, or cite via `DOI`. Thanks!*
+
+<br>
+
