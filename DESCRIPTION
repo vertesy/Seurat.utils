@@ -48,7 +48,7 @@ Imports:
     vroom
 Encoding: UTF-8
 LazyData: true
-Packaged: 2021-11-04 19:44:39
+Packaged: 2021-11-04 21:49:33
 Repository: CRAN
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

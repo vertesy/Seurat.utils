@@ -14,7 +14,7 @@ points_on_curve(curve, lambda, ...)
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-Helper to visualize points_on_curve in slingshot.
+Helper to visualize points_on_curve in slingshot. ggplot for slinshot by @HectorRDB.
 }
 \examples{
 \dontrun{

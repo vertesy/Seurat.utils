@@ -18,7 +18,7 @@ getMetadataColumn(
 \item{as_numeric}{PARAM_DESCRIPTION, Default: F}
 }
 \description{
-Get a metadata column from a Seurat object as a named vector #
+Get a metadata column from a Seurat object as a named vector. get Cells from metadata.
 }
 \examples{
 \dontrun{

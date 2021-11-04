@@ -12,7 +12,7 @@ fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
 \item{obj}{Seurat object, Default: org}
 }
 \description{
-Fix zero indexing in seurat clustering, to 1-based indexing #
+Fix zero indexing in seurat clustering, to 1-based indexing. replace zero indexed clusternames.
 }
 \examples{
 \dontrun{
