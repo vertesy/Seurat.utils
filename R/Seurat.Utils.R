@@ -675,6 +675,7 @@ jJaccardIndexVec <- function(A = 1:3, B = 2:4) length(intersect(A,B)) / length(u
 #'  }
 #' }
 #' @export
+#' @importFrom Stringendo percentage_formatter
 jPairwiseJaccardIndexList <- function(lsG = ls_genes) { # Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
   if (l(names(lsG)) < l(lsG)) {
     iprint("Gene lists were not (all) named, now renamed as:")
@@ -766,6 +767,7 @@ jJaccardIndexBinary <- function(x, y) { # Calculate Jaccard Index. Modified from
 #'  }
 #' }
 #' @export
+#' @importFrom Stringendo percentage_formatter
 jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
   m = matrix.fromNames(rowname_vec = colnames(binary.presence.matrix), colname_vec = colnames(binary.presence.matrix) )
   n.sets <- ncol(binary.presence.matrix)
@@ -1153,6 +1155,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 #'  }
 #' }
 #' @export
+#' @importFrom Stringendo percentage_formatter
 calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , plot.UMAP.too = TRUE
                                   , return.plot = F
@@ -1555,6 +1558,7 @@ save.parameters <- function(obj = combined.obj, params = p) {
 #'  }
 #' }
 #' @export
+#' @importFrom Stringendo percentage_formatter
 plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero=T) {
   expr.GOI <- obj@misc$expr.q90[gene]
   expr.all <- unlist(obj@misc$expr.q90)
@@ -1898,6 +1902,7 @@ m3DplotKeyGenes <- function(obj = cds.10pc, cex = iround(log10(idim(obj)[2]))
 #'  }
 #' }
 #' @export
+#' @importFrom Stringendo percentage_formatter
 subsetMonocleObject <- function(obj = cds_from_seurat, fraction_ = 0.1, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
   set.seed(seed_)
   if (isFALSE(nCells)) {
@@ -3208,7 +3213,7 @@ Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3
 #'  \code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{labs}}, \code{\link[ggplot2]{geom_point}}
 #' @export
 #' @importFrom ggplot2 ggplot ggtitle geom_point
-#' @importFrom Stringendo Stringendo::percentage_formatter
+#' @importFrom Stringendo percentage_formatter
 PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.
                         , parentdir= OutDirOrig
                         , suffices = names(ls.obj)
@@ -3843,6 +3848,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 #'  }
 #' }
 #' @export
+#' @importFrom Stringendo percentage_formatter
 plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns()[2]
                                   , plot = T, thr.hist = 30, ...) {
   clust.size.distr <- table(obj@meta.data[,ident])
@@ -4457,6 +4463,7 @@ qsave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
 #'  }
 #' }
 #' @export
+#' @importFrom Stringendo percentage_formatter
 subsetSeuObj <- function(obj=ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
   set.seed(seed_)
   if (isFALSE(nCells)) {
@@ -4507,6 +4514,7 @@ subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = O
 #' }
 #' @export
 #' @importFrom tictoc tic toc
+#' @importFrom Stringendo percentage_formatter
 Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids") {
   names.ls = names(ls.obj)
   n.datasets = length(ls.obj)
@@ -4655,6 +4663,7 @@ gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) { # Check gene names in a
 #'  }
 #' }
 #' @export
+#' @importFrom Stringendo percentage_formatter
 check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = FALSE, verbose  = TRUE, HGNC.lookup = FALSE
                         , obj = combined.obj
                         , assay.slot=c('RNA', 'integrated')[1]
@@ -4989,6 +4998,7 @@ HGNC.EnforceUnique <- function(updatedSymbols) { # Enforce Unique names after HG
 #'  }
 #' }
 #' @export
+#' @importFrom Stringendo percentage_formatter
 GetUpdateStats <- function(genes = HGNC.updated[[i]]) { # Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`.
   (MarkedAsUpdated <- genes[genes$Approved == FALSE, ])
   (AcutallyUpdated <- sum(MarkedAsUpdated[,1] != MarkedAsUpdated[,3]))
@@ -5051,6 +5061,7 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' @importFrom Matrix rowSums
 #' @importFrom tibble rownames_to_column
 #' @importFrom ggrepel geom_text_repel
+#' @importFrom Stringendo percentage_formatter
 plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
                         , SeqRun = gsub('*([0-9]+).*','\\1', x = basename(CellRangerOutputDir))) { # Plot the ambient RNA content of droplets without a cell (background droplets).
 

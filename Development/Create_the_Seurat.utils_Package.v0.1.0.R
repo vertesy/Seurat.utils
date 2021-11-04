@@ -1,8 +1,8 @@
 ######################################################################################################
-# Create_the_Seurat.Utils_Package.v0.1.R
+# Create_the_Seurat.utils_Package.v0.1.R
 # 31 10 2021
 ######################################################################################################
-# source("/Users/abel.vertesy/GitHub/Packages/Seurat.Utils/Development/Create_the_Seurat.Utils_Package.v0.1.R")
+# source("/Users/abel.vertesy/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.v0.1.R")
 rm(list = ls(all.names = TRUE));
 try(dev.off(), silent = TRUE)
 # install.packages("devtools")
@@ -23,29 +23,30 @@ if (print == TRUE) {
 }
 
 # Setup ------------------------
-PackageName = 	"Seurat.Utils"
+PackageName = 	"Seurat.utils"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir = kollapse("~/GitHub/Packages/", PackageName, "/")
 fname = 	kollapse(PackageName, ".R")
 Package_FnP = 	kollapse(RepositoryDir, "R/", fname)
 
-BackupDir = "~/GitHub/Packages/Seurat.Utils/Development/"
+BackupDir = "~/GitHub/Packages/Seurat.utils/Development/"
 dir.create(BackupDir)
 
-DESCRIPTION <- list("Title" = "Seurat.Utils - utility functions for Seurat"
+DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
     , "Author" = person(given = "Abel", family = "Vertesy", email = "abel.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )
     , "Authors@R" = 'person(given = "Abel", family = "Vertesy", email = "a.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )'
     , "Description" = "Seurat.utils Is a collection of utility functions for Seurat v3.
     Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics &
     QC, interaction with the Seurat object, etc. Some functionalities require functions from CodeAndRoll and MarkdownReports libraries."
     , "License" = "GPL-3 + file LICENSE"
-    , "Version" = "0.9.7"
+    , "Version" = "0.9.8"
     , "Packaged" =  Sys.time()
     , "Repository" =  "CRAN"
-    , "Imports" = "Stringendo, MarkdownReports,  cowplot,  dplyr,  ggcorrplot,  ggplot2,  ggrepel,  HGNChelper,  htmlwidgets,  Matrix,  matrixStats,  princurve,  R.utils,  readr, reshape2,  scales,  Seurat,  SoupX,  sparseMatrixStats,  tibble,  tictoc,  vroom"
+    , "Depends" =  "Stringendo"
+    , "Imports" = "MarkdownReports,  cowplot,  dplyr,  ggcorrplot,  ggplot2,  ggrepel,  HGNChelper,  htmlwidgets,  Matrix,  matrixStats,  princurve,  R.utils,  readr, reshape2,  scales,  Seurat,  SoupX,  sparseMatrixStats,  tibble,  tictoc,  vroom"
     # , "Suggests" = ""
-    , "BugReports"= "https://github.com/vertesy/Seurat.Utils/issues"
+    , "BugReports"= "https://github.com/vertesy/Seurat.utils/issues"
 )
 
 
@@ -53,7 +54,7 @@ setwd(RepositoryDir)
 if ( !dir.exists(RepositoryDir) ) { create(path = RepositoryDir, description = DESCRIPTION, rstudio = TRUE)
 } else {
     getwd()
-    try(file.remove(c("DESCRIPTION","NAMESPACE", "Seurat.Utils.Rproj")))
+    try(file.remove(c("DESCRIPTION","NAMESPACE", "Seurat.utils.Rproj")))
     create_package(path = RepositoryDir, fields = DESCRIPTION, open = F)
 }
 
@@ -82,8 +83,8 @@ document()
 # Install your package ------------------------------------------------
 # # setwd(RepositoryDir)
 install(RepositoryDir)
-# require("Seurat.Utils")
-# # remove.packages("Seurat.Utils")
+# require("Seurat.utils")
+# # remove.packages("Seurat.utils")
 # # Test your package ------------------------------------------------
 # help("wplot")
 # cat("\014")
@@ -91,13 +92,13 @@ install(RepositoryDir)
 
 
 # Test if you can install from github ------------------------------------------------
-# devtools::install_github(repo = "vertesy/Seurat.Utils")
+# devtools::install_github(repo = "vertesy/Seurat.utils")
 
-# require("Seurat.Utils")
+# require("Seurat.utils")
 
 # Clean up if not needed anymore ------------------------------------------------
 # View(installed.packages())
-# remove.packages("Seurat.Utils")
+# remove.packages("Seurat.utils")
 
 check(RepositoryDir, cran = TRUE)
 # as.package(RepositoryDir)
@@ -105,9 +106,9 @@ check(RepositoryDir, cran = TRUE)
 #
 # # source("https://install-github.me/r-lib/desc")
 # # library(desc)
-# # desc$set("Seurat.Utils", "foo")
-# # desc$get(Seurat.Utils)
+# # desc$set("Seurat.utils", "foo")
+# # desc$get(Seurat.utils)
 #
 #
-# system("cd ~/GitHub/Seurat.Utils/; ls -a; open .Rbuildignore")
+# system("cd ~/GitHub/Seurat.utils/; ls -a; open .Rbuildignore")
 #
