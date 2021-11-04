@@ -4403,9 +4403,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix=NULL, inOutDir = F
 #' @seealso
 #'  \code{\link[Stringendo]{kollapse}}, \code{\link[MarkdownReports]{iprint}}
 #' @export
-#' @importFrom Stringendo kollapse
-#' @importFrom MarkdownReports iprint
-#'
+#' @importFrom Stringendo kollapse iprint
 isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))
                         , showMemObject=T, options=c("--force", NULL)[1]
 ){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
@@ -4417,7 +4415,7 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
   print(fname)
   if (nchar(fname) > 2000) stop()
   save.image(file = fname, compress = F)
-  MarkdownReports::iprint("Saved, being compressed", fname)
+  iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
 }
 
@@ -4440,8 +4438,7 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
 #' @seealso
 #'  \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
 #' @export
-#' @importFrom Stringendo kollapse
-#' @importFrom MarkdownReports iprint
+#' @importFrom Stringendo kollapse iprint
 #' @importFrom tictoc tic toc
 qsave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
   fname = Stringendo::kollapse(getwd(), "/",basename(OutDir),idate(),...,".Rdata")
@@ -4449,7 +4446,7 @@ qsave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
   if (nchar(fname) > 2000) stop()
   tictoc::tic()
   save.image(file = fname, compress = F)
-  MarkdownReportsDev::iprint("Saved, being compressed", fname)
+  iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
   cat(toc)
 }

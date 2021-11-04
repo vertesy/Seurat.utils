@@ -2,10 +2,7 @@ Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
 Version: 0.9.8
 Authors@R: 
-    person(given = "Abel",
-           family = "Vertesy",
-           role = c("aut", "cre"),
-           email = "a.vertesy@imba.oeaw.ac.at")
+    person("Abel", "Vertesy", , "a.vertesy@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <abel.vertesy@imba.oeaw.ac.at> [aut, cre]
 Description: Seurat.utils Is a collection of utility functions for Seurat
     v3.  Functions allow the automation / multiplexing of plotting, 3D
@@ -47,8 +44,7 @@ Imports:
     utils,
     vroom
 Encoding: UTF-8
-LazyData: true
-Packaged: 2021-11-04 21:49:33
+Packaged: 2021-11-05 00:45:22
 Repository: CRAN
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
