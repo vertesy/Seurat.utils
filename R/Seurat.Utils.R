@@ -679,9 +679,9 @@ jJaccardIndexVec <- function(A = 1:3, B = 2:4) length(intersect(A,B)) / length(u
 #' @export
 #' @importFrom Stringendo percentage_formatter
 jPairwiseJaccardIndexList <- function(lsG = ls_genes) { # Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
-  if (l(names(lsG)) < l(lsG)) {
+  if (length(names(lsG)) < length(lsG)) {
     iprint("Gene lists were not (all) named, now renamed as:")
-    names(lsG) <- ppp("dataset", 1:l(lsG))
+    names(lsG) <- ppp("dataset", 1:length(lsG))
     print(names(lsG))
   }
   m = matrix.fromNames(rowname_vec = names(lsG), colname_vec = names(lsG))
@@ -747,7 +747,7 @@ jPresenceMatrix <- function(string_list = lst(a=1:3, b=2:5,c=4:9, d=-1:4) ) { # 
 #' @export
 jJaccardIndexBinary <- function(x, y) { # Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
   elements.found <- sort(unique(union(x, y)))
-  stopifnot(l(elements.found) == 2) # check if you only have [0,1]
+  stopifnot(length(elements.found) == 2) # check if you only have [0,1]
   stopifnot(as.numeric(elements.found) == 0:1) # check if you only have [0,1]
 
   M.11 = sum(x == 1 & y == 1)
@@ -910,7 +910,7 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
   genes.matching <- if (!isFALSE(gene.set)) intersect(gene.set, rownames(obj)) else grepv(pattern = gene.symbol.pattern, x = rownames(obj))
 
   genes.expr = GetAssayData(object = obj)[genes.matching, ]
-  target_expr <- if (l(genes.matching) >1) Matrix::colSums(genes.expr) else genes.expr
+  target_expr <- if (length(genes.matching) >1) Matrix::colSums(genes.expr) else genes.expr
   obj <- AddMetaData(object = obj, metadata = target_expr / total_expr, col.name = col.name)
   colnames(obj@meta.data)
   return(obj)
@@ -1114,8 +1114,8 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
   msg.Seu <- kollapse("Rownames of 'Idents(obj)' have entries not found in 'ident.table':"
                       , OnlyInSeuratIdents, " not found in ", ident.X, collapseby = " ")
 
-  stopif (l(OnlyInIdentVec), message = msg.IdentVec)
-  stopif (l(OnlyInSeuratIdents), message = msg.Seu)
+  stopif (length(OnlyInIdentVec), message = msg.IdentVec)
+  stopif (length(OnlyInSeuratIdents), message = msg.Seu)
 
   # identity mapping ----------------
   new.ident <- translate(vec = as.character(Idents(obj)), oldvalues = ident.X, newvalues = ident.Y)
@@ -1841,7 +1841,7 @@ mplotManyGenes <- function(ls.genes = c(
 m3DplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds.10pc, ttl.suffix = "expression"
                         , suffix = "", cex = 5) {
   gene <- intersect(rownames(obj), gene)
-  if (l(gene)) {
+  if (length(gene)) {
     pl1 <- plot_cells_3d(cds = obj
                          # color_cells_by = 'clusters_low',
                          , genes = gene
@@ -1893,7 +1893,7 @@ m3DplotKeyGenes <- function(obj = cds.10pc, cex = iround(log10(idim(obj)[2]))
                             , reduction = "UMAP", suffix = "") {
 
   ls.genes <- intersect(rownames(obj), ls.genes)
-  iprint(l(ls.genes), "genes found.")
+  iprint(length(ls.genes), "genes found.")
   create_set_SubDir(ppp("3D.gex.plots", substitute(obj)))
   for (g in ls.genes) {
     m3DplotGene(gene = g, obj = obj, cex = cex)
@@ -1922,7 +1922,7 @@ subsetMonocleObject <- function(obj = cds_from_seurat, fraction_ = 0.1, nCells =
   set.seed(seed_)
   if (isFALSE(nCells)) {
     all.cells <- colnames(obj)
-    n.keep <- floor(l(all.cells) * fraction_)
+    n.keep <- floor(length(all.cells) * fraction_)
     cellIDs.keep <- sample(all.cells, size = n.keep, replace = FALSE)
     iprint(length(cellIDs.keep), "or",Stringendo::percentage_formatter(fraction_),"of the cells are kept. Seed:", head(cellIDs.keep), seed_)
     # cellIDs.keep
@@ -2705,7 +2705,7 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
   topX.markers <- GetTopMarkers(df = df_markers,  n= nrGenes
                                 , order.by = order.by )
   ls.topMarkers <-  splitbyitsnames(topX.markers)
-  for (i in 1:l(ls.topMarkers)) {
+  for (i in 1:length(ls.topMarkers)) {
     multiFeaturePlot.A4(list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = F
                         , prefix = ppp("DEG.markers.res",cl_res,"cluster",names(ls.topMarkers)[i]))
   }
@@ -3259,9 +3259,9 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
   theme_set(theme.used)
   create_set_OutDir(parentdir, subdir)
   # require(ggplot2)
-  if (suffices == l(ls.obj)) print("ls.obj elements have no names (required).")
+  if (suffices == length(ls.obj)) print("ls.obj elements have no names (required).")
 
-  for (i in 1:l(ls.obj)) {
+  for (i in 1:length(ls.obj)) {
     print(suffices[i])
     mm =  ls.obj[[i]]@meta.data
 
@@ -3504,7 +3504,7 @@ barplot.cells.per.cluster <- function(obj = combined.obj, ident =  "cl.names.Kno
   cell.per.cluster <- (table(obj[[ident]][,1]))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
   qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
-           , col = rainbow(l(cell.per.cluster))
+           , col = rainbow(length(cell.per.cluster))
            , xlab.angle = 45
            # , col = getClusterColors(ident = ident, show = T)
            , palette_use = NULL, )
@@ -3638,7 +3638,7 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
 
   if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX," first )")
   genes.HE = which_names(obj@misc[[quantile_name]] > 0)
-  iprint("Pearson correlation is calculated for", l(genes.HE), "HE genes with expr.",qname,": > 0.")
+  iprint("Pearson correlation is calculated for", length(genes.HE), "HE genes with expr.",qname,": > 0.")
   tictoc::tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
   ls.cor <- lapply(ls.cor, round, digits = 2)
 
@@ -3816,15 +3816,15 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
     if (calc.COR) {
       print("Calculating correlation now.")
       genes.found <- check.genes(genes)
-      iprint(l(genes.found), "genes are found in the object.")
-      if (l(genes.found) > 200) iprint("Too many genes found in data, cor will be slow: ", l(genes.found))
+      iprint(length(genes.found), "genes are found in the object.")
+      if (length(genes.found) > 200) iprint("Too many genes found in data, cor will be slow: ", length(genes.found))
       ls.cor <- sparse.cor(t(expr.mat[genes.found,]))
       cor.mat <- ls.cor$cor
     } else { stop() }
   } else {
     print("Correlation is pre-calculated")
     genes.found <- intersect(genes, rownames(cor.mat))
-    iprint(l(genes.found), "genes are found in the correlation matrix.")
+    iprint(length(genes.found), "genes are found in the correlation matrix.")
     cor.mat <- cor.mat[genes.found, genes.found]
   }
 
@@ -3835,7 +3835,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
     which_names(rowMax(cor.mat) >= min.g.cor),
     which_names(rowMin(cor.mat) <= -min.g.cor)
   )
-  iprint(l(corgene.names), "genes are more (anti-)correlated than +/-:", min.g.cor)
+  iprint(length(corgene.names), "genes are more (anti-)correlated than +/-:", min.g.cor)
 
   pname = paste0("Pearson correlations of ", substitute(genes),"\n min.cor:", min.g.cor, " | ",  assay.use ,'.', slot.use )
   o.heatmap <- pheatmap(cor.mat[corgene.names,corgene.names],main = pname, cutree_rows = cutRows, cutree_cols = cutCols, ...)
@@ -3870,7 +3870,7 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
   print(clust.size.distr)
   resX <- gsub(pattern = ".*res\\.", replacement = '',x = ident)
   ptitle <- ppp('clust.size.distr', ident)
-  psubtitle <- paste("Nr.clusters:", l(clust.size.distr)
+  psubtitle <- paste("Nr.clusters:", length(clust.size.distr)
                      , "| median:", median(clust.size.distr)
                      , "| CV:", Stringendo::percentage_formatter(cv(clust.size.distr))
   )
@@ -3878,7 +3878,7 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
   xlim = c(0, max(clust.size.distr))
 
   if (plot) {
-    if (l(clust.size.distr) < thr.hist) {
+    if (length(clust.size.distr) < thr.hist) {
       qbarplot(clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, ...)
     } else {
       qhistogram(vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, xlim = xlim, ...)
@@ -4103,7 +4103,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
   fin <- grepv(x = finOrig, pattern = folderPattern, perl = regex)
 
   iprint(length(fin), "samples found.")
-  if (l(fin)) {
+  if (length(fin)) {
     for (i in 1:length(fin)) { print(i)
       pathIN = fin[i]; print(pathIN)
       # fnameIN = basename(dirname(xx))
@@ -4687,7 +4687,7 @@ check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = FALSE, v
   all_genes = rownames(GetAssayData(object = obj, assay = assay.slot, slot = dataslot)); length(all_genes)
   missingGenes = setdiff(list.of.genes, all_genes)
   if (length(missingGenes) > 0) {
-    if (verbose) { iprint(l(missingGenes), "or", Stringendo::percentage_formatter(l(missingGenes) / l(list.of.genes)), "genes not found in the data, e.g:", head(missingGenes, n = 10))  }
+    if (verbose) { iprint(length(missingGenes), "or", Stringendo::percentage_formatter(length(missingGenes) / length(list.of.genes)), "genes not found in the data, e.g:", head(missingGenes, n = 10))  }
     if (HGNC.lookup) {
       if (exists('qHGNC', mode='function')) { try(qHGNC(missingGenes)) } else { print("load qHGNC() function, see database.linker")}
     }
@@ -4796,7 +4796,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
   dsets <- table(df.cell.whitelist[,1])
 
   ls.orig.idents <- lapply(lapply(ls.Seurat, getMetadataColumn, ColName.metadata = "orig.ident"), unique)
-  stopif(any(unlapply(ls.orig.idents, l) == l(ls.Seurat)), message = "Some ls.Seurat objects have 1+ orig identity.")
+  stopif(any(unlapply(ls.orig.idents, l) == length(ls.Seurat)), message = "Some ls.Seurat objects have 1+ orig identity.")
 
   dsets.in.lsSeu <- unlist(ls.orig.idents)
   isMathced <- all(dsets.in.lsSeu == names(dsets)) # Stop if either ls.Seurat OR the metadata has identities not found in the other, in the same order.
@@ -4805,7 +4805,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
   )
 
   # identX <- ls.orig.idents[[1]]
-  for (i in 1:l(ls.orig.idents)) {
+  for (i in 1:length(ls.orig.idents)) {
     identX <- ls.orig.idents[[i]]; print(identX)
 
     # Extract and process cellIDs ----
@@ -5108,7 +5108,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
   print("Profiling the soup")
   GEMs.all <- CR.matrices$'raw'@Dimnames[[2]]
   GEMs.cells <- CR.matrices$'filt'@Dimnames[[2]]
-  iprint("There are", l(GEMs.all), "GEMs sequenced, and",l(GEMs.cells), "are cells among those." )
+  iprint("There are", length(GEMs.all), "GEMs sequenced, and",l(GEMs.cells), "are cells among those." )
 
   GEMs.soup <- setdiff(GEMs.all, GEMs.cells)
   CR.matrices$'soup' <- CR.matrices$'raw'[,GEMs.soup]
@@ -5168,7 +5168,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
   quantiles <- c(0.025, 0.01, 0.0025)
 
   i=1
-  for (i in 1:l(quantiles)) {
+  for (i in 1:length(quantiles)) {
     pr <- quantiles[i]; print(pr)
     HP.thr <- 200*pr/quantiles[2]
     idx.HE2 <- rowSums(Soup.VS.Cells.Av.Exp) > HP.thr
