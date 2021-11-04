@@ -38,7 +38,8 @@ Adjusted gg_plot for slingshot
 \examples{
 \dontrun{
 if(interactive()){
- plotFittedGenePseudotime(data = sds, gene ="SST", expr = EXPR, loessCI=T, col = colz, pch = 20, panel_first = grid(NULL) )
+ plotFittedGenePseudotime(data = sds, gene ="SST", expr = EXPR, loessCI=T, col = colz, pch = 20,
+ panel_first = grid(NULL) )
  }
 }
 }

@@ -23,7 +23,8 @@ Add a new metadata column to a Seurat  object
 \examples{
 \dontrun{
 if(interactive()){
- combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj, ident.table = clusterIDs.GO.process)
+ combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj,
+ dent.table = clusterIDs.GO.process)
  }
 }
 }

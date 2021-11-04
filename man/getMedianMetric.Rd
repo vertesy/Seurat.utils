@@ -23,7 +23,8 @@ Get the median values of different columns in meta.data, can iterate over a list
 \examples{
 \dontrun{
 if(interactive()){
- ls.Seurat <- getMedianMetric(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito")
+ ls.Seurat <- getMedianMetric(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat),
+ mColname = "percent.mito")
  }
 }
 }

@@ -371,7 +371,8 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 #' \dontrun{
 #' if(interactive()){
 #'  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5")
-#'  combined.obj <- AutoNumber.by.PrinCurve(obj = combined.obj, dim=1:2, reduction="umap", plotit=T, swap= -1, res = "integrated_snn_res.0.5" )
+#'  combined.obj <- AutoNumber.by.PrinCurve(obj = combined.obj, dim=1:2, reduction="umap", plotit=T,
+#'  swap= -1, res = "integrated_snn_res.0.5" )
 #'  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.prin.curve")
 #'  }
 #' }
@@ -528,7 +529,8 @@ points_on_curve.SlingshotDataSet <- function(curve, lambda, ...) {
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  plotFittedGenePseudotime(data = sds, gene ="SST", expr = EXPR, loessCI=T, col = colz, pch = 20, panel_first = grid(NULL) )
+#'  plotFittedGenePseudotime(data = sds, gene ="SST", expr = EXPR, loessCI=T, col = colz, pch = 20,
+#'  panel_first = grid(NULL) )
 #'  }
 #' }
 #' @export
@@ -738,7 +740,8 @@ jPresenceMatrix <- function(string_list = lst(a=1:3, b=2:5,c=4:9, d=-1:4) ) { # 
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  JaccardSimilarity <- jJaccardIndexBinary(  x=sample(x = 0:1, size = 100, replace = T), y=sample(x = 0:1, size = 100, replace = T))
+#'  JaccardSimilarity <- jJaccardIndexBinary(  x=sample(x = 0:1, size = 100, replace = T),
+#'  y=sample(x = 0:1, size = 100, replace = T))
 #'  }
 #' }
 #' @export
@@ -829,7 +832,8 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  ls.Seurat <- getMedianMetric(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito")
+#'  ls.Seurat <- getMedianMetric(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat),
+#'  mColname = "percent.mito")
 #'  }
 #' }
 #' @export
@@ -886,7 +890,9 @@ add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) {  #
 #'  ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.LINC", gene.symbol.pattern = "^LINC0")
 #'  ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.MALAT1", gene.symbol.pattern = "^MALAT1")
 #'  colnames(ls.Seurat[[1]]@meta.data)
-#'  HGA_MarkerGenes <- c("ENO1", "IGFBP2", "WSB1", "DDIT4", "PGK1", "BNIP3", "FAM162A", "TPI1", "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1","NPAS4", "HK2", "BNIP3L", "JUN", "ENO2", "GAPDH", "ANKRD37", "ALDOA", "GADD45G", "TXNIP")
+#'  HGA_MarkerGenes <- c("ENO1", "IGFBP2", "WSB1", "DDIT4", "PGK1", "BNIP3", "FAM162A", "TPI1",
+#'  "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1","NPAS4", "HK2", "BNIP3L",
+#'  "JUN", "ENO2", "GAPDH", "ANKRD37", "ALDOA", "GADD45G", "TXNIP")
 #'  sobj <- add.meta.fraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj =  sobj)
 #'  }
 #' }
@@ -1061,7 +1067,8 @@ getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj=comb
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell ) # formerly add.Cl.Label.2.Metadata
+#'  combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj,  # formerly add.Cl.Label.2.Metadata
+#'  metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell )
 #'  }
 #' }
 #' @export
@@ -1083,7 +1090,8 @@ seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.c
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj, ident.table = clusterIDs.GO.process)
+#'  combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj,
+#'  dent.table = clusterIDs.GO.process)
 #'  }
 #' }
 #' @export
@@ -1325,9 +1333,11 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  combined.obj <- calc.q90.Expression.and.set.all.genes(obj = combined.obj, quantileX=0.9, max.cells =  25000)
+#'  combined.obj <- calc.q90.Expression.and.set.all.genes(obj = combined.obj, quantileX=0.9,
+#'  max.cells =  25000)
 #'  head(sort(as.numeric.wNames(obj@misc$expr.q90), decreasing = T))
-#'  combined.obj <- calc.q90.Expression.and.set.all.genes(obj = combined.obj, quantileX=0.95, max.cells =  25000, set.all.genes = FALSE)
+#'  combined.obj <- calc.q90.Expression.and.set.all.genes(obj = combined.obj, quantileX=0.95,
+#'  max.cells =  25000, set.all.genes = FALSE)
 #'  }
 #' }
 #' @seealso
@@ -1345,7 +1355,7 @@ calc.q90.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
     dsampled = sample(x = 1:ncol(x), size = max.cells)
     x = x[ , dsampled]
   }
-  qname = p0("q", quantileX * 100)
+  qname = paste0("q", quantileX * 100)
   slot_name = kpp("expr", qname)
 
   # expr.q90 = iround(apply(x, 1, quantile, probs = quantileX) )
@@ -1358,7 +1368,7 @@ calc.q90.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
     qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30
                , plotname = kpp("log2.gene.expr.of.the ", qname," quantile")
                , subtitle = kollapse(pc_TRUE(expr.q90 > 0, NumberAndPC = T), " genes have ", qname ," expr. > 0.")
-               , xlab = p0("log2(expr.",qname,"+1) [UMI]"), ylab = "Genes"
+               , xlab = paste0("log2(expr.",qname,"+1) [UMI]"), ylab = "Genes"
                , plot = show, save = TRUE, vline  = .2)
     , silent = TRUE)
 
@@ -1615,7 +1625,7 @@ FlipReductionCoordinates <- function(obj = combined.obj, dim=2, reduction="umap"
   obj@reductions[[reduction]]@cell.embeddings <- coordinates
 
   if (FlipReductionBackupToo) {
-    bac.slot <- p0(reduction,dim,"d")
+    bac.slot <- paste0(reduction,dim,"d")
     if (length(obj@misc$reductions.backup[[bac.slot]])) {
       obj@misc$reductions.backup[[bac.slot]]@cell.embeddings <- coordinates
       iprint(dim, "dimensional",reduction,"backup flipped too.")
@@ -1708,7 +1718,8 @@ getClusterColors <- function(obj = combined.obj
 #'  }
 #' }
 #' @export
-get.clustercomposition <- function(obj = combined.obj, x = 'integrated_snn_res.0.3', y = 'project', color = y, ...) {
+get.clustercomposition <- function(obj = combined.obj, x = 'integrated_snn_res.0.3'
+                                   , y = 'project', color = y, ...) {
   setwd(OutDir)
   clUMAP(obj = obj, ident = x, save.plot = T, suffix = "as.in.barplot")
   categ.per.cluster <- ggbarplot(obj@meta.data
@@ -1779,7 +1790,8 @@ mplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds_from_seurat) 
 # mplotManyGenes ------------------------
 #' @title mplotManyGenes
 #' @description Plot many genes in Monocle.
-#' @param ls.genes PARAM_DESCRIPTION, Default: c(`S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C", oRG = "ID4",
+#' @param ls.genes PARAM_DESCRIPTION, Default: c(`S-phase` = "TOP2A",
+#'    `G2M-phase` = "HIST1H4C", oRG = "ID4",
 #'    oRG = "HOPX", `Intermediate progenitor` = "EOMES", `Intermediate progenitor1` = "TAC3",
 #'    Astroglia = "GFAP", Astrocyte = "S100B", `Immature neurons` = "SLA",
 #'    Interneurons = "DLX6-AS1", `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1",
@@ -1826,7 +1838,8 @@ mplotManyGenes <- function(ls.genes = c(
 #'  }
 #' }
 #' @export
-m3DplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds.10pc, ttl.suffix = "expression", suffix = "", cex = 5) {
+m3DplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds.10pc, ttl.suffix = "expression"
+                        , suffix = "", cex = 5) {
   gene <- intersect(rownames(obj), gene)
   if (l(gene)) {
     pl1 <- plot_cells_3d(cds = obj
@@ -1839,7 +1852,7 @@ m3DplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds.10pc, ttl.s
                          # label_branch_points = F, label_cell_groups = F
                          # , group_label_size = 10
                          , cell_size = cex
-                         , alpha = .5) %>% layout(title=p0(gene, ttl.suffix))
+                         , alpha = .5) %>% layout(title=paste0(gene, ttl.suffix))
     SavePlotlyAsHtml(pl1, category. = gene, suffix. = suffix)
   } else { iprint("gene not found") }
 }
@@ -1870,7 +1883,8 @@ m3DplotKeyGenes <- function(obj = cds.10pc, cex = iround(log10(idim(obj)[2]))
                             , ls.genes =  c(
                               `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
                               , `oRG` = "ID4", `oRG` = "HOPX"
-                              , `Intermediate progenitor` = "EOMES",  `Intermediate progenitor1` = "TAC3"
+                              , `Intermediate progenitor` = "EOMES"
+                              ,  `Intermediate progenitor1` = "TAC3"
                               , Astroglia = "GFAP", Astrocyte = "S100B"
                               , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
                               , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
@@ -1898,7 +1912,8 @@ m3DplotKeyGenes <- function(obj = cds.10pc, cex = iround(log10(idim(obj)[2]))
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  cds.10pc <- subsetMonocleObject(cds_from_seurat, fraction_ = .1);  cds.25pc <- subsetMonocleObject(cds_from_seurat, fraction_ = .25)
+#'  cds.10pc <- subsetMonocleObject(cds_from_seurat, fraction_ = .1);
+#'  cds.25pc <- subsetMonocleObject(cds_from_seurat, fraction_ = .25)
 #'  }
 #' }
 #' @export
@@ -1961,7 +1976,7 @@ m3.get.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2]) {
 #' }
 #' @export
 m3.backup.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2], ...) {
-  new.slot <- p0(slot,'.',dim, 'D')
+  new.slot <- paste0(slot,'.',dim, 'D')
   obj@int_colData@listData$reducedDims[[new.slot]] <- m3.get.umap(obj = obj, slot = slot, dim = dim, ... )
   iprint('obj@int_colData@listData$reducedDims$', new.slot)
   return(obj)
@@ -1984,7 +1999,7 @@ m3.backup.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2],
 #' }
 #' @export
 m3.recall.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2], ...) {
-  backup.slot <- p0(slot,'.',dim, 'D')
+  backup.slot <- paste0(slot,'.',dim, 'D')
   old.dim <- ncol(obj@int_colData@listData$reducedDims[[slot]])
   obj@int_colData@listData$reducedDims[[slot]] <- obj@int_colData@listData$reducedDims[[backup.slot]]
   iprint(old.dim, 'dimensional', slot, 'replaced by', dim, slot, 'reduction.')
@@ -3046,7 +3061,7 @@ RecallReduction <- function(obj = combined.obj, dim=2, reduction="umap") { # Set
   dslot = paste0(reduction,dim,"d")
   reduction.backup <- obj@misc$reductions.backup[[dslot]]
   msg <-  paste(dim, "dimensional", reduction, "from obj@misc$reductions.backup" )
-  stopif(is.null(reduction.backup), message = p0(msg," is NOT FOUND")); iprint(msg, "is set active. " )
+  stopif(is.null(reduction.backup), message = paste0(msg," is NOT FOUND")); iprint(msg, "is set active. " )
   stopifnot(dim == ncol(reduction.backup))
   obj@reductions[[reduction]] <- reduction.backup
   return(obj)
@@ -3272,9 +3287,9 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
     mm$colour.thr.nFeature <- cut(mm$'nFeature_RNA',
                                   breaks = c(-Inf, above.nFeature_RNA, below.nFeature_RNA, Inf),
-                                  labels = c(p0("LQ (<", above.nFeature_RNA,")"),
-                                             p0("HQ (", above.nFeature_RNA,"< X <", below.nFeature_RNA,")"),
-                                             p0("Dbl/Outlier (>", below.nFeature_RNA,")")
+                                  labels = c(paste0("LQ (<", above.nFeature_RNA,")"),
+                                             paste0("HQ (", above.nFeature_RNA,"< X <", below.nFeature_RNA,")"),
+                                             paste0("Dbl/Outlier (>", below.nFeature_RNA,")")
                                   )
     )
 
@@ -3618,7 +3633,7 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
     cells.use <- sample(x = colnames(expr.mat), size = max.cells)
   }
 
-  qname = p0("q", quantileX * 100)
+  qname = paste0("q", quantileX * 100)
   quantile_name = kpp("expr", qname)
 
   if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX," first )")
@@ -3789,7 +3804,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
   }
   expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
 
-  qname = p0("expr.q", quantileX * 100)
+  qname = paste0("expr.q", quantileX * 100)
   slotname_cor.mat <- kpp('cor', slot.use, assay.use, qname)
   cor.mat <- obj@misc[[slotname_cor.mat]]
 
@@ -3822,7 +3837,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
   )
   iprint(l(corgene.names), "genes are more (anti-)correlated than +/-:", min.g.cor)
 
-  pname = p0("Pearson correlations of ", substitute(genes),"\n min.cor:", min.g.cor, " | ",  assay.use ,'.', slot.use )
+  pname = paste0("Pearson correlations of ", substitute(genes),"\n min.cor:", min.g.cor, " | ",  assay.use ,'.', slot.use )
   o.heatmap <- pheatmap(cor.mat[corgene.names,corgene.names],main = pname, cutree_rows = cutRows, cutree_cols = cutCols, ...)
   wplot_save_pheatmap(o.heatmap, filename = make.names(pname))
 
@@ -4207,7 +4222,7 @@ ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a numb
   for (i in 1:length(fin)) { print(i)
     pathIN <- FixPath(fin[i]); print(pathIN)
     fnameIN <- basename(fin[i])
-    subdir <- p0(InputDir, fnameIN)
+    subdir <- paste0(InputDir, fnameIN)
     fnameOUT <- ppp(subdir, 'min.cells', min.cells, 'min.features', min.features,"Rds"); print(fnameOUT)
     if (!overwrite) {
       OutFile <- list.files(InputDir, pattern = basename(fnameOUT), recursive = T)
@@ -5076,7 +5091,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
   # Adapter for Markdownreports background variable "OutDir" ----------------------------------------------------------------
   if (exists('OutDir')) OutDirBac <- OutDir
-  OutDir <- file.path(CellRangerOutputDir,p0(kpp("SoupStatistics", SeqRun)))
+  OutDir <- file.path(CellRangerOutputDir,paste0(kpp("SoupStatistics", SeqRun)))
   try(dir.create(OutDir))
   ww.assign_to_global("OutDir", OutDir, 1)
 
@@ -5271,7 +5286,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
            , ylim = c(0, maxx*1.5))
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes.non.summarized
                 , labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.non.summarized/100, digitz = 2)
-                # , labels = p0(round(1e6 * Soup.GEMs.top.Genes.non.summarized), " ppm")
+                # , labels = paste0(round(1e6 * Soup.GEMs.top.Genes.non.summarized), " ppm")
                 , TopOffset = -maxx*0.2, srt = 90, cex=.75)
 
   # Diff Exp ----------------------------------------------------------------

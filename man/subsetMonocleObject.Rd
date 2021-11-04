@@ -26,7 +26,8 @@ Subset a compressed Seurat Obj and save it in wd.
 \examples{
 \dontrun{
 if(interactive()){
- cds.10pc <- subsetMonocleObject(cds_from_seurat, fraction_ = .1);  cds.25pc <- subsetMonocleObject(cds_from_seurat, fraction_ = .25)
+ cds.10pc <- subsetMonocleObject(cds_from_seurat, fraction_ = .1);
+ cds.25pc <- subsetMonocleObject(cds_from_seurat, fraction_ = .25)
  }
 }
 }

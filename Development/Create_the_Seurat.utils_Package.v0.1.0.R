@@ -7,20 +7,14 @@ rm(list = ls(all.names = TRUE));
 try(dev.off(), silent = TRUE)
 # install.packages("devtools")
 # Functions ------------------------
-try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= FALSE)
 
-# irequire("devtools")
+require(CodeAndRoll2); require(Stringendo)
+
 # install_version("devtools", version = "2.0.2", repos = "http://cran.at.r-project.org")
-irequire("devtools")
-irequire("roxygen2")
-irequire("stringr")
+require("devtools")
+require("roxygen2")
+require("stringr")
 
-kollapse <-function(..., print = TRUE) {
-if (print == TRUE) {
-    print(paste0(c(...), collapse = ""))
-  }
-  paste0(c(...), collapse = "")
-}
 
 # Setup ------------------------
 PackageName = 	"Seurat.utils"
@@ -44,7 +38,7 @@ DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
     , "Packaged" =  Sys.time()
     , "Repository" =  "CRAN"
     , "Depends" =  "Stringendo"
-    , "Imports" = "MarkdownReports,  cowplot,  dplyr,  ggcorrplot,  ggplot2,  ggrepel,  HGNChelper,  htmlwidgets,  Matrix,  matrixStats,  princurve,  R.utils,  readr, reshape2,  scales,  Seurat,  SoupX,  sparseMatrixStats,  tibble,  tictoc,  vroom"
+    , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggplot2, ggrepel, graphics, grDevices, HGNChelper, htmlwidgets, MarkdownReports, Matrix, matrixStats, methods, princurve, R.utils, readr, reshape2, scales, Seurat, Seurat.utils, SoupX, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom"
     # , "Suggests" = ""
     , "BugReports"= "https://github.com/vertesy/Seurat.utils/issues"
 )
@@ -112,3 +106,6 @@ check(RepositoryDir, cran = TRUE)
 #
 # system("cd ~/GitHub/Seurat.utils/; ls -a; open .Rbuildignore")
 #
+(f.deps <- NCmisc::list.functions.in.file(filename = Package_FnP))
+write_clip(f.deps)
+names(f.deps)

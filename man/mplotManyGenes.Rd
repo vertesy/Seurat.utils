@@ -13,7 +13,8 @@ mplotManyGenes(
 )
 }
 \arguments{
-\item{ls.genes}{PARAM_DESCRIPTION, Default: c(\code{S-phase} = "TOP2A", \code{G2M-phase} = "HIST1H4C", oRG = "ID4",
+\item{ls.genes}{PARAM_DESCRIPTION, Default: c(\code{S-phase} = "TOP2A",
+\code{G2M-phase} = "HIST1H4C", oRG = "ID4",
 oRG = "HOPX", \verb{Intermediate progenitor} = "EOMES", \verb{Intermediate progenitor1} = "TAC3",
 Astroglia = "GFAP", Astrocyte = "S100B", \verb{Immature neurons} = "SLA",
 Interneurons = "DLX6-AS1", \code{Hypoxia/Stress} = "DDIT4", Glycolytic = "PDK1",

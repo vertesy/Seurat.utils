@@ -23,7 +23,8 @@ Add a new metadata column to a Seurat  object
 \examples{
 \dontrun{
 if(interactive()){
- combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell ) # formerly add.Cl.Label.2.Metadata
+ combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj,  # formerly add.Cl.Label.2.Metadata
+ metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell )
  }
 }
 }
