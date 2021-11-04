@@ -822,6 +822,7 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 # - getClusterColors
 # - get.clustercomposition
 
+
 # _________________________________________________________________________________________________
 #' @title getMedianMetric
 #' @description Get the median values of different columns in meta.data, can iterate over a list of Seurat objects.
@@ -843,6 +844,7 @@ getMedianMetric <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), 
   }
   return(medMetric)
 }
+
 
 
 
@@ -869,6 +871,7 @@ add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) {  #
   }
   return(obj)
 }
+
 
 
 # _________________________________________________________________________________________________
@@ -1734,9 +1737,6 @@ get.clustercomposition <- function(obj = combined.obj, x = 'integrated_snn_res.0
 
 
 # _________________________________________________________________________________________________
-# _________________________________________________________________________________________________
-
-# _________________________________________________________________________________________________
 # Monocle.Utils.R
 # ____________________________________________________________________ ----
 # source('~/GitHub/Packages/Seurat.utils/Functions/Monocle.Utils.R')
@@ -2139,8 +2139,6 @@ aux.plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 # _________________________________________________________________________________________________
 # bar.table.log <- t(log10(bar.table[,BCs.used]+1))
 # bar.table.log <- clip.outliers(bar.table.log)
-
-
 
 
 
@@ -4860,6 +4858,7 @@ FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA"
 
 
 
+# _________________________________________________________________________________________________
 # _________________________________________________________________________________________________
 
 # _________________________________________________________________________________________________
