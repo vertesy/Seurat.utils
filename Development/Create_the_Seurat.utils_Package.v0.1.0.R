@@ -5,15 +5,17 @@
 # source("/Users/abel.vertesy/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.v0.1.R")
 rm(list = ls(all.names = TRUE));
 try(dev.off(), silent = TRUE)
-# install.packages("devtools")
+
 # Functions ------------------------
-
-require(CodeAndRoll2); require(Stringendo)
-
-# install_version("devtools", version = "2.0.2", repos = "http://cran.at.r-project.org")
+# install_version("devtools", version = "2.0.2", repos = "http://cran.at.r-project.org") # install.packages("devtools")
 require("devtools")
 require("roxygen2")
 require("stringr")
+
+# devtools::install_github(repo = "vertesy/CodeAndRoll2")
+require('CodeAndRoll2')
+require('Stringendo')
+
 
 
 # Setup ------------------------
@@ -106,6 +108,14 @@ check(RepositoryDir, cran = TRUE)
 #
 # system("cd ~/GitHub/Seurat.utils/; ls -a; open .Rbuildignore")
 #
+# Check package dependencies ------------------------------------------------
+depFile = paste0(RepositoryDir, 'Development/Dependencies.R')
+
 (f.deps <- NCmisc::list.functions.in.file(filename = Package_FnP))
-write_clip(f.deps)
-names(f.deps)
+# clipr::write_clip(f.deps)
+
+sink(file = depFile); print(f.deps); sink()
+p.deps <- gsub(x = names(f.deps), pattern = 'package:', replacement = '')
+write(x = p.deps, file = depFile, append = T)
+
+
