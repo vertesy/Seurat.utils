@@ -78,7 +78,7 @@ document()
 
 # Install your package ------------------------------------------------
 # # setwd(RepositoryDir)
-install(RepositoryDir)
+install(RepositoryDir, upgrade = F)
 # require("Seurat.utils")
 # # remove.packages("Seurat.utils")
 # # Test your package ------------------------------------------------

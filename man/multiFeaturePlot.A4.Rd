@@ -20,6 +20,7 @@ multiFeaturePlot.A4(
   subdir = T,
   prefix = NULL,
   suffix = NULL,
+  background_col = "white",
   saveGeneList = FALSE,
   w = wA4,
   h = hA4,
@@ -58,6 +59,8 @@ multiFeaturePlot.A4(
 \item{prefix}{PARAM_DESCRIPTION, Default: NULL}
 
 \item{suffix}{A suffix added to the filename, Default: NULL}
+
+\item{background_col}{background color def: White}
 
 \item{saveGeneList}{PARAM_DESCRIPTION, Default: FALSE}
 

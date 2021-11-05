@@ -2482,6 +2482,7 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' @param subdir PARAM_DESCRIPTION, Default: T
 #' @param prefix PARAM_DESCRIPTION, Default: NULL
 #' @param suffix A suffix added to the filename, Default: NULL
+#' @param background_col background color def: White
 #' @param saveGeneList PARAM_DESCRIPTION, Default: FALSE
 #' @param w width of the plot, Default: wA4
 #' @param h height of the plot, Default: hA4
@@ -2508,6 +2509,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , prefix = NULL , suffix = NULL
+                                , background_col = "white"
                                 , saveGeneList = FALSE
                                 , w = wA4, h = hA4, scaling = 1
                                 , format = c('jpg', 'pdf', 'png')[1]
@@ -2538,10 +2540,10 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
     for (i in 1:length(plot.list)) {
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
     }
+    pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row )
+    pltGrid <- pltGrid
+    ggsave(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
 
-    ggsave(filename = plotname, width = w, height = h,
-           plot = cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
-    )
   }
 
   if (subdir) create_set_OutDir(... = ParentDir)
@@ -5393,6 +5395,33 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
   return(channel)
 }
 
+# _________________________________________________________________________________________________
 
 
+#' @title parallel.computing.by.future
+#' @description Run gc(), load multi-session computing and extend memory limits.
+#' @param workers_ cores
+#' @param maxMemSize memory limit
+#' @export
+parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^2) { # Run gc(), load multi-session computing and extend memory limits.
+  # https://satijalab.org/seurat/v3.0/future_vignette.html
+  cat(
+    "1. If you load futures before you finished using foreach loops,
+    NormalizeData inside a foreach loop fails (Error writing to connection)
+    -> I assume 'future' and 'doMC' are not compatible
 
+    2. If you setup computing on e.g. six cores, it runs 6 instances of R with the entire memory space copied.
+    If you run out of memory, the system starts using the SSD as memory, and it slows you down extremely extremely extremely.
+    -> Therefore it is important to clean up the memory space before setting up multicore computation.
+
+    Loaded: library(future), workers set to 6 (def),set Max mem size to 2GB (def)."   )
+
+  gc(full = T)
+  try(memory.biggest.objects())
+
+  library(future)
+  plan("multiprocess", workers = workers_)
+  # plan("multisession", workers = workers_)
+  # So to set Max mem size to 2GB, you would run :
+  options(future.globals.maxSize = maxMemSize)
+}
