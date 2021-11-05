@@ -2541,7 +2541,6 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
     }
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row )
-    pltGrid <- pltGrid
     ggsave(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
 
   }
