@@ -645,9 +645,8 @@ setMethod(
 # source('~/Github/TheCorvinas/R/DatabaseLinke.r')
 
 
-# _________________________________________________________________________________________________
-# Fast direct calculation from a list --------------------------------------------------------
-# ____________________________________________________________________ ----
+#  __________________________________________
+# Fast direct calculation from a list
 
 
 # _________________________________________________________________________________________________
@@ -704,9 +703,8 @@ jPairwiseJaccardIndexList <- function(lsG = ls_genes) { # Create a pairwise jacc
 
 
 
+# Much slower Indirect calculation via PresenceMatrix
 # _________________________________________________________________________________________________
-# Much slower Indirect calculation via PresenceMatrix ----------------------------------------
-# _________________________________________________________________________________________________ ----
 
 
 # _________________________________________________________________________________________________
@@ -2040,12 +2038,12 @@ m3.export.umap.2.Seurat <- function(mobj = cds_from_seurat, sobj = combined.obj,
 
 
 # _________________________________________________________________________________________________
-# MULTI-seq.functions.R
+# MULTI-seq.functions.R ----
 # ____________________________________________________________________ ----
 # source('~/GitHub/Packages/Seurat.utils/Functions/MULTI-seq.functions.R')
 # try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/MULTI-seq.functions.R'))
 
-# Requirements ------------------------
+# Requirements __________________________________________
 # try(require(MarkdownReports),  silent = T)
 # try(require(pheatmap),  silent = T)
 # May also require
@@ -2142,14 +2140,14 @@ aux.plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 
 
 
-# _________________________________________________________________________________________________
-# plotting.dim.reduction.2D.R
 # ____________________________________________________________________ ----
+# plotting.dim.reduction.2D.R ----
+# _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/plotting.dim.reduction.2D.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.dim.reduction.2D.R"))
 # Source: self + web
 
-# Requirements ------------------------
+# Requirements __________________________________________
 # library(plotly)
 # try(source("~/GitHub/Packages/ggExpressDev/ggExpress.functions.R"), silent = T)
 # try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpress.functions.R"), silent = T)
@@ -2612,7 +2610,7 @@ multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHea
 }
 
 
-# plot.UMAP.tSNE.sidebyside ---------------------------------------------------------------------
+# __________________________________________
 
 #' @title plot.UMAP.tSNE.sidebyside
 #' @description Plot a UMAP and tSNE sidebyside #
@@ -2799,7 +2797,7 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.dim.reduction.3D.R"))
 # Source: self + https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0
 
-# Requirements ------------------------
+# Requirements __________________________________________
 # try(library(plotly), silent = T)
 # try(library(MarkdownReports), silent = T)
 # try(library(htmlwidgets), silent = T)
@@ -3357,7 +3355,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
 # Source: self + web
 
-# Requirements ------------------------
+# Requirements __________________________________________
 # require(Seurat)
 # require(ggplot2)
 # tools for tools::toTitleCase
@@ -4781,7 +4779,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
 ) {
   cells.before <- unlapply(ls.obj, ncol)
   # Find file
-  df.cell.whitelist <- read.simple.tsv(metadir, whitelist.file)
+  df.cell.whitelist <- ReadWriter::read.simple.tsv(metadir, whitelist.file)
   dsets <- table(df.cell.whitelist[,1])
 
   ls.orig.idents <- lapply(lapply(ls.Seurat, getMetadataColumn, ColName.metadata = "orig.ident"), unique)
@@ -5069,7 +5067,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
                         , SeqRun = gsub('*([0-9]+).*','\\1', x = basename(CellRangerOutputDir))) { # Plot the ambient RNA content of droplets without a cell (background droplets).
 
   ls.Alpha=1
-  # Setup ------------------------
+  # Setup ___________________________________
   # require(Matrix); require(ggrepel)
 
   dirz <- list.dirs(CellRangerOutputDir, full.names = F, recursive = F)
@@ -5077,13 +5075,13 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
   path.filt <- file.path(CellRangerOutputDir, grep(x = dirz, pattern = "^filt_*", value = T))
   CR.matrices <- list.fromNames(c("raw", "filt"))
 
-  # Adapter for Markdownreports background variable "OutDir" ----------------------------------------------------------------
+  # Adapter for Markdownreports background variable "OutDir ___________________________________
   if (exists('OutDir')) OutDirBac <- OutDir
   OutDir <- file.path(CellRangerOutputDir,paste0(kpp("SoupStatistics", SeqRun)))
   try(dir.create(OutDir))
   ww.assign_to_global("OutDir", OutDir, 1)
 
-  # Read In ------------------------
+  # Read In ___________________________________
   print("Reading raw CellRanger output matrices")
   CR.matrices$'raw' <- Read10X(path.raw)
   if (length(CR.matrices$'raw') == 2 ) { CR.matrices$'raw' <- CR.matrices$'raw'[[1]] } # Maybe AB table is present too at slot 2!
@@ -5092,7 +5090,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
   CR.matrices$'filt' <- Read10X(path.filt)
   if (length(CR.matrices$'filt') == 2 ) { CR.matrices$'filt' <- CR.matrices$'filt'[[1]] } # Maybe AB table is present too at slot 2!
 
-  # Profiling the soup ------------------------
+  # Profiling the soup ___________________________________
   print("Profiling the soup")
   GEMs.all <- CR.matrices$'raw'@Dimnames[[2]]
   GEMs.cells <- CR.matrices$'filt'@Dimnames[[2]]
@@ -5106,7 +5104,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
   CR.matrices$'soup.rel.RC'  <- CR.matrices$'soup.total.RC' / CR.matrices$'soup.total.sum'
 
-  # Diff Exp ----------------------------------------------------------------
+  # Diff Exp ___________________________________
   Soup.VS.Cells.Av.Exp <- cbind(
     'Soup' = Matrix::rowSums(CR.matrices$'soup'),
     'Cells' = Matrix::rowSums(CR.matrices$'filt')
@@ -5120,7 +5118,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
   #       , ylab = "Total Expression in Cells [log10(mRNA+1)]"
   # )
 
-  # ggplot prepare ----------------------------------------------------------------
+  # ggplot prepare ___________________________________
   Soup.VS.Cells.Av.Exp.gg <- tibble::rownames_to_column(as.data.frame(Soup.VS.Cells.Av.Exp.log10), "gene")
   (Soup.VS.Cells.Av.Exp.gg <- as_tibble(Soup.VS.Cells.Av.Exp.gg))
   soup.rate <- Soup.VS.Cells.Av.Exp.gg$Soup / (Soup.VS.Cells.Av.Exp.gg$Cells + Soup.VS.Cells.Av.Exp.gg$Soup)
@@ -5152,7 +5150,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
   ggsave(pgg, filename = file.path(OutDir, fname))
 
-  # ggplot ----------------------------------------------------------------
+  # ggplot ___________________________________
   quantiles <- c(0.025, 0.01, 0.0025)
 
   i=1
@@ -5189,7 +5187,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
   }
 
 
-  # Per Gene ----------------------------------------------------------------
+  # Per Gene ___________________________________
   PC.mRNA.in.Soup <- sum(CR.matrices$'soup')/sum(CR.matrices$'raw')
   PC.mRNA.in.Cells <- 100*sum(CR.matrices$'filt')/sum(CR.matrices$'raw')
   wbarplot(variable = PC.mRNA.in.Cells, col ="seagreen", plotname = kppd("PC.mRNA.in.Cells", SeqRun)
@@ -5200,7 +5198,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
                 , TopOffset = 10)
 
 
-  # Plot top gene's expression ----------------------------------------------------------------
+  # Plot top gene's expression ___________________________________
   Soup.GEMs.top.Genes = 100*head(sort(CR.matrices$'soup.rel.RC', decreasing = T), n = 20)
 
   wbarplot(Soup.GEMs.top.Genes, plotname = kppd("Soup.GEMs.top.Genes", SeqRun)
@@ -5212,7 +5210,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
                 , labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes/100, digitz = 2)
                 , TopOffset = -.5, srt = 90, cex=.75)
 
-  # Plot summarize expression ----------------------------------------------------------------
+  # Plot summarize expression ___________________________________
   soupProfile <- CR.matrices$'soup.total.RC'
   {
     soup.RP.sum   <- sum(soupProfile[grep('^RPL|^RPS', names(soupProfile))])
@@ -5251,7 +5249,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
                 , srt = 45, labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.summarized/100, digitz = 2)
                 , TopOffset = -1.5)
 
-  # Absolute.fraction ---------------------------
+  # Absolute.fraction ___________________________________
   Absolute.fraction.soupProfile.summarized <- Soup.GEMs.top.Genes.summarized * PC.mRNA.in.Soup
 
   maxx <- max(Absolute.fraction.soupProfile.summarized)
@@ -5264,7 +5262,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
                 # formatC(Absolute.fraction.soupProfile.summarized, format="f", big.mark = " ", digits=0)
                 , TopOffset = -maxx*0.15)
 
-  # -----
+  # ___________________________________
   Soup.GEMs.top.Genes.non.summarized <- 100* sort(genes.non.Above, decreasing = T)[1:20]/ CR.matrices$'soup.total.sum'
   maxx <- max(Soup.GEMs.top.Genes.non.summarized)
   wbarplot(Soup.GEMs.top.Genes.non.summarized, plotname = kppd("Soup.GEMs.top.Genes.non.summarized", SeqRun)
@@ -5276,14 +5274,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
                 , labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.non.summarized/100, digitz = 2)
                 # , labels = paste0(round(1e6 * Soup.GEMs.top.Genes.non.summarized), " ppm")
                 , TopOffset = -maxx*0.2, srt = 90, cex=.75)
-
-  # Diff Exp ----------------------------------------------------------------
-
-
-  # Adapter for Markdownreports background variable "OutDir" ----------------------------------------------------------------
   if (exists('OutDirBac'))  ww.assign_to_global("OutDir", OutDirBac, 1)
-
-
 } # plotTheSoup
 
 

@@ -4779,7 +4779,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
 ) {
   cells.before <- unlapply(ls.obj, ncol)
   # Find file
-  df.cell.whitelist <- read.simple.tsv(metadir, whitelist.file)
+  df.cell.whitelist <- ReadWriter::read.simple.tsv(metadir, whitelist.file)
   dsets <- table(df.cell.whitelist[,1])
 
   ls.orig.idents <- lapply(lapply(ls.Seurat, getMetadataColumn, ColName.metadata = "orig.ident"), unique)

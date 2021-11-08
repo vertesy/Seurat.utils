@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
-Version: 0.9.8
+Version: 0.9.9
 Authors@R: 
     person("Abel", "Vertesy", , "a.vertesy@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <abel.vertesy@imba.oeaw.ac.at> [aut, cre]
@@ -12,18 +12,22 @@ Description: Seurat.utils Is a collection of utility functions for Seurat
 License: GPL-3 + file LICENSE
 BugReports: https://github.com/vertesy/Seurat.utils/issues
 Depends: 
+    CodeAndRoll2,
+    ggExpress,
+    ggplot2,
     Stringendo
 Imports: 
     base,
     cowplot,
     dplyr,
     ggcorrplot,
-    ggplot2,
+    ggpubr,
     ggrepel,
     graphics,
     grDevices,
     HGNChelper,
     htmlwidgets,
+    MarkdownHelpers,
     MarkdownReports,
     Matrix,
     matrixStats,
@@ -31,11 +35,10 @@ Imports:
     princurve,
     R.utils,
     readr,
+    ReadWriter,
     reshape2,
     scales,
     Seurat,
-    Seurat.utils,
-    SoupX,
     sparseMatrixStats,
     stats,
     stringr,
@@ -43,8 +46,10 @@ Imports:
     tictoc,
     utils,
     vroom
+Suggests: 
+    SoupX
 Encoding: UTF-8
-Packaged: 2021-11-05 19:05:04
+Packaged: 2021-11-08 13:56:06
 Repository: CRAN
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2

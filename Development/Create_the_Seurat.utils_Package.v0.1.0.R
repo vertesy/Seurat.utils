@@ -36,12 +36,12 @@ DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
     Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics &
     QC, interaction with the Seurat object, etc. Some functionalities require functions from CodeAndRoll and MarkdownReports libraries."
     , "License" = "GPL-3 + file LICENSE"
-    , "Version" = "0.9.8"
+    , "Version" = "0.9.9"
     , "Packaged" =  Sys.time()
     , "Repository" =  "CRAN"
-    , "Depends" =  "Stringendo"
-    , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggplot2, ggrepel, graphics, grDevices, HGNChelper, htmlwidgets, MarkdownReports, Matrix, matrixStats, methods, princurve, R.utils, readr, reshape2, scales, Seurat, Seurat.utils, SoupX, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom"
-    # , "Suggests" = ""
+    , "Depends" =  "Stringendo, CodeAndRoll2, ggExpress, ggplot2"
+    , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper, htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter, R.utils, readr, reshape2, scales, Seurat, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom"
+    , "Suggests" = "SoupX"
     , "BugReports"= "https://github.com/vertesy/Seurat.utils/issues"
 )
 
@@ -107,7 +107,7 @@ check(RepositoryDir, cran = TRUE)
 #
 #
 # system("cd ~/GitHub/Seurat.utils/; ls -a; open .Rbuildignore")
-#
+
 # Check package dependencies ------------------------------------------------
 depFile = paste0(RepositoryDir, 'Development/Dependencies.R')
 
@@ -119,3 +119,5 @@ p.deps <- gsub(x = names(f.deps), pattern = 'package:', replacement = '')
 write(x = p.deps, file = depFile, append = T)
 
 
+
+# NCmisc::list.functions.in.file(Package_FnP)
