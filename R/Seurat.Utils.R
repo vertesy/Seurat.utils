@@ -2355,12 +2355,12 @@ save2umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
 # _________________________________________________________________________________________________
 #' @title save4umaps.A4
 #' @description Save 4 umaps on 1 A4
-#' @param plot_list PARAM_DESCRIPTION
-#' @param pname PARAM_DESCRIPTION, Default: F
+#' @param plot_list A list of ggplot objects, each of which is one panel.
+#' @param pname Plotname, Default: F
 #' @param suffix A suffix added to the filename, Default: NULL
-#' @param scale PARAM_DESCRIPTION, Default: 1
-#' @param nrow PARAM_DESCRIPTION, Default: 2
-#' @param ncol PARAM_DESCRIPTION, Default: 2
+#' @param scale Scaling factor of the canvas, Default: 1
+#' @param nrow number of rows for panelson the page, Default: 2
+#' @param ncol number of columns for panelson the page, Default: 2
 #' @param h height of the plot, Default: wA4 * scale
 #' @param w width of the plot, Default: hA4 * scale
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
@@ -3982,6 +3982,7 @@ ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.co
 #' @param id.col PARAM_DESCRIPTION, Default: 'cl.names.top.gene.res.0.3'
 #' @param obj Seurat object, Default: combined.obj
 #' @param return.df PARAM_DESCRIPTION, Default: F
+#' @param label label barplot
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -3992,22 +3993,28 @@ ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.co
 #'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
 #' @export
 #' @importFrom dplyr select group_by_
-scBarplotFractionAboveThr <- function(thrX = 0., value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
-                                      , obj = combined.obj, return.df = F) { # Calculat the fraction of cells per cluster above a certain threhold
+scBarplotFractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
+                                      , obj = combined.obj, return.df = F, label = F
+                                      , ...) { # Calculat the fraction of cells per cluster above a certain threhold
+  # obj = combined.obj
   meta = obj@meta.data
   (df_cells_above <- meta %>%
       dplyr::select(c(id.col, value.col))  %>%
       dplyr::group_by_(id.col)  %>%
       summarize(n_cells = n(),
                 n_cells_above = sum(!!as.name(value.col) > thrX),
-                fr_n_cells_above = n_cells_above / n_cells) %>%
-      FirstCol2RowNames())
+                fr_n_cells_above = n_cells_above / n_cells)
+  )
 
-  (v.fr_n_cells_above <- 100* as.named.vector(df_cells_above[3]))
+  # (v.fr_n_cells_above <- 100* as.named.vector(df_cells_above[3]))
+  df_2vec <- df_cells_above[,c(1,4)]
+  (v.fr_n_cells_above <- 100* deframe(df_2vec))
+  if (label == TRUE) lab =  percentage_formatter(deframe(df_2vec)) else lab = NULL
 
   pname <- make.names(paste('Cells with', value.col, '>', thrX, id.col))
-  ggobj <- qbarplot(v.fr_n_cells_above, xlab = 'Clusters', ylab = '% Cells'
-                    , plotname = pname
+  ggobj <- qbarplot(v.fr_n_cells_above, suffix = suffix
+                    , xlab = 'Clusters', ylab = '% Cells'
+                    , plotname = pname, label = lab
                     , subtitle = id.col, xlab.angle = 45)
   if (return.df) return(df_cells_above) else ggobj
 }
