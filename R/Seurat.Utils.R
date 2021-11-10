@@ -2256,32 +2256,36 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , label.cex = 7
                    , h=7, w=NULL, nr.cols = NULL
                    , plotname = ppp(toupper(reduction), ident)
-                   , cols = getDiscretePalette(ident.used = ident, show.colors = F)
+                   , cols = NULL
                    , highlight.clusters = NULL, cells.highlight = NULL
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 200
                    , save.plot=T, PNG = T
                    , save.object = F, ...) {
   IdentFound <- (ident %in%  colnames(obj@meta.data))
-
   if (!IdentFound) {
     ident <- GetClusteringRuns(obj = obj, pat = "_res.*[0,1]\\.[0-9]$")[1]
     iprint("Identity not found. Plotting", ident)
   }
+  identity <- obj[[ident]]
+  NtCategs <- length(unique(identity[,1]))
+
 
   if ( !missing(highlight.clusters)) {
-    x <- obj[[ident]]
-    idx.ok <- x[,1] %in% highlight.clusters
-    highlight.these <- rownames(x)[idx.ok]
+    idx.ok <- identity[,1] %in% highlight.clusters
+    highlight.these <- rownames(identity)[idx.ok]
   } else { highlight.these <- NULL}
   if ( !missing(cells.highlight)) {highlight.these <- cells.highlight} # overwrite, if directly defined
 
 
+  if (is_null(cols)) {
+    cols = if (NtCategs > 5) getDiscretePalette(ident.used = ident, show.colors = F)
+  }
 
-  NtCategs <- length(unique(obj[[ident]][,1]))
+
   if( NtCategs > MaxCategThrHP ) {
     iprint("Too many categories (",NtCategs,") in ", ident, "- use qUMAP for continous variables.")
   } else {
-    if( length(unique(obj[[ident]])) < MaxCategThrHP )
+    if( length(unique(identity)) < MaxCategThrHP )
       ggplot.obj <-
         DimPlot(object = obj, group.by = ident
                 , cols = cols
