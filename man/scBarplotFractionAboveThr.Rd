@@ -5,11 +5,14 @@
 \title{scBarplotFractionAboveThr}
 \usage{
 scBarplotFractionAboveThr(
-  thrX = 0,
+  thrX = 0.3,
+  suffix = NULL,
   value.col = "percent.ribo",
   id.col = "cl.names.top.gene.res.0.3",
   obj = combined.obj,
-  return.df = F
+  return.df = F,
+  label = F,
+  ...
 )
 }
 \arguments{
@@ -22,6 +25,8 @@ scBarplotFractionAboveThr(
 \item{obj}{Seurat object, Default: combined.obj}
 
 \item{return.df}{PARAM_DESCRIPTION, Default: F}
+
+\item{label}{label barplot}
 }
 \description{
 Barplot the fraction of cell above a threshold value (based on a meta.data column), in each cluster.

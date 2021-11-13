@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{getMetadataColumn}
 \alias{getMetadataColumn}
-\title{getMetadataColumn <- mmeta}
+\title{getMetadataColumn}
 \usage{
 getMetadataColumn(
   ColName.metadata = "batch",

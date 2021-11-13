@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{points_on_curve}
 \alias{points_on_curve}
-\title{points_on_curve}
+\title{Point on curve}
 \usage{
 points_on_curve(curve, lambda, ...)
 }

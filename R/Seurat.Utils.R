@@ -438,8 +438,8 @@ ggplotColours <- function(n = 6, h = c(0, 360) + 15){
 # _________________________________________________________________________________________________
 # https://github.com/kstreet13/slingshot/issues/73#issuecomment-585376827
 
-### Point on curve function ----
-#' @title points_on_curve
+
+#' @title Point on curve
 #' @description Helper to visualize points_on_curve in slingshot. ggplot for slinshot by @HectorRDB.
 #' @param curve PARAM_DESCRIPTION
 #' @param lambda PARAM_DESCRIPTION
@@ -636,13 +636,6 @@ setMethod(
 # _________________________________________________________________________________________________
 # try(source('~/GitHub/Packages/Seurat.utils/Functions/Jaccard.toolkit.R'))
 # try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Jaccard.toolkit.R'))
-
-
-# Functions ------------------------
-# try(source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F)
-# try(require('MarkdownReports'),  silent = T)
-# try(require('tidyverse'),  silent = T)
-# source('~/Github/TheCorvinas/R/DatabaseLinke.r')
 
 
 #  __________________________________________
@@ -1014,7 +1007,7 @@ GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
 
 
 # _________________________________________________________________________________________________
-#' @title getMetadataColumn <- mmeta
+#' @title getMetadataColumn
 #' @description Get a metadata column from a Seurat object as a named vector. get Cells from metadata.
 #' @param ColName.metadata PARAM_DESCRIPTION, Default: 'batch'
 #' @param obj Seurat object, Default: combined.obj
@@ -1097,30 +1090,32 @@ seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.c
 #' @export
 seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = clusterIDs.GO.process
                                               , metaD.colname = substitute(ident.table) ) { # Add a new metadata column to a Seurat  object
-  ident.vec <- as.named.vector(ident.table)
+  # identities should match
+  {
+    ident.vec <- as.named.vector(ident.table)
+    ident.X <- names(ident.vec)
+    ident.Y <- as.character(ident.vec)
+    ident.Seu <- sort.natural(levels(Idents(obj)))
+    iprint("ident.Seu: ", ident.Seu)
 
-  # identities should match ----------------
-  ident.X <- names(ident.vec)
-  ident.Y <- as.character(ident.vec)
-  ident.Seu <- sort.natural(levels(Idents(obj)))
-  iprint("ident.Seu: ", ident.Seu)
+    OnlyInIdentVec      <- setdiff(ident.X, ident.Seu)
+    OnlyInSeuratIdents  <- setdiff(ident.Seu, ident.X)
 
-  OnlyInIdentVec      <- setdiff(ident.X, ident.Seu)
-  OnlyInSeuratIdents  <- setdiff(ident.Seu, ident.X)
+    msg.IdentVec <- kollapse("Rownames of 'ident.table' have entries not found in 'Idents(obj)':"
+                             , OnlyInIdentVec, " not found in ", ident.Seu, collapseby = " ")
 
-  msg.IdentVec <- kollapse("Rownames of 'ident.table' have entries not found in 'Idents(obj)':"
-                           , OnlyInIdentVec, " not found in ", ident.Seu, collapseby = " ")
+    msg.Seu <- kollapse("Rownames of 'Idents(obj)' have entries not found in 'ident.table':"
+                        , OnlyInSeuratIdents, " not found in ", ident.X, collapseby = " ")
 
-  msg.Seu <- kollapse("Rownames of 'Idents(obj)' have entries not found in 'ident.table':"
-                      , OnlyInSeuratIdents, " not found in ", ident.X, collapseby = " ")
-
-  stopif (length(OnlyInIdentVec), message = msg.IdentVec)
-  stopif (length(OnlyInSeuratIdents), message = msg.Seu)
-
-  # identity mapping ----------------
-  new.ident <- translate(vec = as.character(Idents(obj)), oldvalues = ident.X, newvalues = ident.Y)
-  obj@meta.data[[metaD.colname]] = new.ident
-  iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:"); cat(paste0("\t", ident.Y, "\n"))
+    stopif (length(OnlyInIdentVec), message = msg.IdentVec)
+    stopif (length(OnlyInSeuratIdents), message = msg.Seu)
+  }
+  # identity mapping
+  {
+    new.ident <- translate(vec = as.character(Idents(obj)), oldvalues = ident.X, newvalues = ident.Y)
+    obj@meta.data[[metaD.colname]] = new.ident
+    iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:"); cat(paste0("\t", ident.Y, "\n"))
+  }
 }
 
 
@@ -2789,6 +2784,13 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
                                , show.colors = F) {
   n.clusters <-  nrow(unique(obj[[ident.used]]))
   colz <- DiscretePalette(n = n.clusters, palette = palette.used)
+  if (anyNA(colz)) {
+    colzOK <- na.omit.strip(colz)
+    repNeeded <- ceiling(length(colz) / length(colzOK) )
+    colzFixed <- rep(colzOK,  repNeeded)[1:length(colz)]
+    stopif(anyNA(colzFixed))
+    colz <- colzFixed
+  }
   if (show.colors) Color_Check(colz)
   return(colz)
 }

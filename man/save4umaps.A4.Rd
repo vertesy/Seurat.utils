@@ -17,17 +17,17 @@ save4umaps.A4(
 )
 }
 \arguments{
-\item{plot_list}{PARAM_DESCRIPTION}
+\item{plot_list}{A list of ggplot objects, each of which is one panel.}
 
-\item{pname}{PARAM_DESCRIPTION, Default: F}
+\item{pname}{Plotname, Default: F}
 
 \item{suffix}{A suffix added to the filename, Default: NULL}
 
-\item{scale}{PARAM_DESCRIPTION, Default: 1}
+\item{scale}{Scaling factor of the canvas, Default: 1}
 
-\item{nrow}{PARAM_DESCRIPTION, Default: 2}
+\item{nrow}{number of rows for panelson the page, Default: 2}
 
-\item{ncol}{PARAM_DESCRIPTION, Default: 2}
+\item{ncol}{number of columns for panelson the page, Default: 2}
 
 \item{h}{height of the plot, Default: wA4 * scale}
 

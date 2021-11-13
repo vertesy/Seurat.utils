@@ -17,7 +17,7 @@ clUMAP(
   w = NULL,
   nr.cols = NULL,
   plotname = ppp(toupper(reduction), ident),
-  cols = getDiscretePalette(ident.used = ident, show.colors = F),
+  cols = NULL,
   highlight.clusters = NULL,
   cells.highlight = NULL,
   label = T,
