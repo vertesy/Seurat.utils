@@ -2169,6 +2169,7 @@ aux.plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 #' @param nr.cols PARAM_DESCRIPTION, Default: NULL
 #' @param assay PARAM_DESCRIPTION, Default: c("RNA", "integrated")[1]
 #' @param HGNC.lookup PARAM_DESCRIPTION, Default: TRUE
+#' @param axes Show axes?
 #' @param make.uppercase PARAM_DESCRIPTION, Default: TRUE
 #' @param qlow PARAM_DESCRIPTION, Default: 'q10'
 #' @param qhigh PARAM_DESCRIPTION, Default: 'q90'
@@ -2180,6 +2181,7 @@ aux.plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 #'  }
 #' }
 #' @export
+
 qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to draw a gene expression UMAP
                    , title = feature, sub =NULL
                    , reduction ="umap", splitby = NULL
@@ -2187,6 +2189,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , save.plot=T, PNG = T
                    , h=7, w=NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
+                   , axes = T
                    , HGNC.lookup= TRUE, make.uppercase = TRUE
                    , qlow = "q10", qhigh = "q90", ...) {
 
@@ -2201,7 +2204,9 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                             # , plotname = ppp(toupper(reduction), feature)
                             , ncol = nr.cols
                             , split.by = splitby
-                            , ...) + ggtitle(label = title, subtitle = sub)
+                            , ...) + ggtitle(label = title, subtitle = sub) +
+    if (!axes) NoAxes() else NULL
+
   if (save.plot) {
     plotname <- ppp(toupper(reduction), feature)
     fname = ww.FnP_parser(ppp(plotname, assay, suffix), if (PNG) "png" else "pdf")
@@ -2233,6 +2238,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #' @param label PARAM_DESCRIPTION, Default: T
 #' @param repel PARAM_DESCRIPTION, Default: T
 #' @param legend PARAM_DESCRIPTION, Default: !label
+#' @param axes Show axes?
 #' @param MaxCategThrHP PARAM_DESCRIPTION, Default: 200
 #' @param save.plot PARAM_DESCRIPTION, Default: T
 #' @param PNG PARAM_DESCRIPTION, Default: T
@@ -2254,6 +2260,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , cols = NULL
                    , highlight.clusters = NULL, cells.highlight = NULL
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 200
+                   , axes = T
                    , save.plot=T, PNG = T
                    , save.object = F, ...) {
   IdentFound <- (ident %in%  colnames(obj@meta.data))
@@ -2288,7 +2295,8 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                 , ncol = nr.cols, cells.highlight = highlight.these
                 , label = label, repel = repel, label.size = label.cex, ...) +
         ggtitle(label = title, subtitle = sub) +
-        if (!legend) NoLegend() else NULL
+        if (!legend) NoLegend() else NULL +
+        if (!axes) NoAxes() else NULL
 
     if (save.plot) {
       fname = ww.FnP_parser(ppp(plotname, suffix, kpp(highlight.clusters)), if (PNG) "png" else "pdf")
