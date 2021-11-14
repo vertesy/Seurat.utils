@@ -1135,6 +1135,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 #' @param plotit Plot results (& show it), Default: T
 #' @param histogram PARAM_DESCRIPTION, Default: FALSE
 #' @param nbins PARAM_DESCRIPTION, Default: 50
+#' @param report Summary sentence, Default: F
 #' @param suffix A suffix added to the filename, Default: NULL
 #' @param stat PARAM_DESCRIPTION, Default: c("mean", "median")[2]
 #' @param quantile.thr PARAM_DESCRIPTION, Default: 0.9
@@ -1174,6 +1175,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , filter = c(FALSE, 'above', 'below')[1]
                                   , ylab.text = paste("Cluster", stat, "score")
                                   , title = paste("Cluster", stat, col_name)
+                                  , report = TRUE
                                   , subtitle = NULL
                                   , width = 8, height =6
                                   , ...
@@ -1211,6 +1213,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
     cutoff <- if(absolute.thr) absolute.thr else quantile(av.score, quantile.thr)
     cutoff.low <- if(absolute.thr) NULL else  quantile(av.score, (1-quantile.thr) )
 
+    iprint('quantile.thr:', quantile.thr)
     if (plotit) {
       if (histogram) {
         p <- qhistogram(vec = as.numeric(av.score), save = F
@@ -1247,8 +1250,8 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
         qqSave(ggobj = p, title = title_, fname = ppp(title_, split_by, "png"),  w = width, h = height)
       }
     }
-    print(quantile.thr)
 
+    if (report) print(paste0(col_name, ": ", paste(iround(av.score), collapse = " vs. ")))
     if (filter == 'below') {
       return(filter_LP(av.score, threshold = cutoff, plot.hist = F))
     } else if (filter == 'above') {
@@ -2204,7 +2207,8 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                             # , plotname = ppp(toupper(reduction), feature)
                             , ncol = nr.cols
                             , split.by = splitby
-                            , ...) + ggtitle(label = title, subtitle = sub) +
+                            , ...) +
+    ggtitle(label = title, subtitle = sub) +
     if (!axes) NoAxes() else NULL
 
   if (save.plot) {
