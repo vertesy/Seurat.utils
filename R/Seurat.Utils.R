@@ -1325,8 +1325,8 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of
 #' @param quantileX Quantile level, Default: 0.9
 #' @param max.cells PARAM_DESCRIPTION, Default: 1e+05
 #' @param slot PARAM_DESCRIPTION, Default: 'data'
-#' @param assay PARAM_DESCRIPTION, Default: c("RNA", "integrated")[1]
-#' @param set.all.genes PARAM_DESCRIPTION, Default: TRUE
+#' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
+#' @param set.all.genes Create the "all.genes" variable in the global env?, Default: TRUE
 #' @param show PARAM_DESCRIPTION, Default: TRUE
 #' @examples
 #' \dontrun{
@@ -2161,16 +2161,16 @@ aux.plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 #' @param feature PARAM_DESCRIPTION, Default: 'TOP2A'
 #' @param obj Seurat object, Default: combined.obj
 #' @param title Title of the plot, Default: feature
-#' @param sub PARAM_DESCRIPTION, Default: NULL
+#' @param sub Subtitle of the plot, Default: NULL
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
 #' @param splitby PARAM_DESCRIPTION, Default: NULL
 #' @param suffix A suffix added to the filename, Default: sub
-#' @param save.plot PARAM_DESCRIPTION, Default: T
-#' @param PNG PARAM_DESCRIPTION, Default: T
+#' @param save.plot Save the plot into a file?, Default: T
+#' @param PNG Save file as .png?, Default: T
 #' @param h height of the plot, Default: 7
 #' @param w width of the plot, Default: NULL
-#' @param nr.cols PARAM_DESCRIPTION, Default: NULL
-#' @param assay PARAM_DESCRIPTION, Default: c("RNA", "integrated")[1]
+#' @param nr.cols Number of columns to combine multiple feature plots to, ignored if split.by is not NULL, Default: NULL
+#' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
 #' @param HGNC.lookup PARAM_DESCRIPTION, Default: TRUE
 #' @param axes Show axes?
 #' @param make.uppercase PARAM_DESCRIPTION, Default: TRUE
@@ -2229,14 +2229,14 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
 #' @param splitby PARAM_DESCRIPTION, Default: NULL
 #' @param title Title of the plot, Default: ident
-#' @param sub PARAM_DESCRIPTION, Default: NULL
+#' @param sub Subtitle of the plot, Default: NULL
 #' @param suffix A suffix added to the filename, Default: sub
 #' @param label.cex PARAM_DESCRIPTION, Default: 7
 #' @param h height of the plot, Default: 7
 #' @param w width of the plot, Default: NULL
-#' @param nr.cols PARAM_DESCRIPTION, Default: NULL
+#' @param nr.cols Number of columns to combine multiple feature plots to, ignored if split.by is not NULL, Default: NULL
 #' @param plotname Title of the plot, Default: ppp(toupper(reduction), ident)
-#' @param cols PARAM_DESCRIPTION, Default: getDiscretePalette(ident.used = ident, show.colors = F)
+#' @param cols Colors used, Default: getDiscretePalette(ident.used = ident, show.colors = F)
 #' @param highlight.clusters PARAM_DESCRIPTION, Default: NULL
 #' @param cells.highlight PARAM_DESCRIPTION, Default: NULL
 #' @param label PARAM_DESCRIPTION, Default: T
@@ -2244,9 +2244,8 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #' @param legend PARAM_DESCRIPTION, Default: !label
 #' @param axes Show axes?
 #' @param MaxCategThrHP PARAM_DESCRIPTION, Default: 200
-#' @param save.plot PARAM_DESCRIPTION, Default: T
-#' @param PNG PARAM_DESCRIPTION, Default: T
-#' @param save.object PARAM_DESCRIPTION, Default: F
+#' @param save.plot Save the plot into a file?, Default: T
+#' @param PNG Save file as .png?, Default: T
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -2255,6 +2254,8 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #'  }
 #' }
 #' @export
+# #' @param save.object PARAM_DESCRIPTION, Default: F
+
 clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
                    , reduction ="umap", splitby = NULL
                    , title = ident, sub =NULL, suffix = sub
@@ -2280,13 +2281,12 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
     idx.ok <- identity[,1] %in% highlight.clusters
     highlight.these <- rownames(identity)[idx.ok]
   } else { highlight.these <- NULL}
-  if ( !missing(cells.highlight)) {highlight.these <- cells.highlight} # overwrite, if directly defined
+  if ( !missing(cells.highlight)) { highlight.these <- cells.highlight } # overwrite, if directly defined
 
 
   if (is_null(cols)) {
     cols = if (NtCategs > 5) getDiscretePalette(ident.used = ident, show.colors = F)
   }
-
 
   if( NtCategs > MaxCategThrHP ) {
     iprint("Too many categories (",NtCategs,") in ", ident, "- use qUMAP for continous variables.")
@@ -2306,7 +2306,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
       fname = ww.FnP_parser(ppp(plotname, suffix, kpp(highlight.clusters)), if (PNG) "png" else "pdf")
       try(save_plot(filename = fname, plot = ggplot.obj, base_height=h, base_width = w)) #, ncol=1, nrow=1
     }
-    if(save.object) saveRDS(object = ggplot.obj, file = ppp(fname, 'ggobj.RDS'))
+    # if(save.object) saveRDS(object = ggplot.obj, file = ppp(fname, 'ggobj.RDS'))
     return(ggplot.obj)
   } # if not too many categories
 }
@@ -2392,7 +2392,7 @@ save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
 #' @description Plot and save umap based on a metadata column. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param metaD.colname PARAM_DESCRIPTION, Default: metaD.colname.labeled
-#' @param ext PARAM_DESCRIPTION, Default: 'png'
+#' @param ext File extension for saving, Default: 'png'
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -2723,7 +2723,7 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
 #' @param feature1 PARAM_DESCRIPTION, Default: 'TOP2A'
 #' @param feature2 PARAM_DESCRIPTION, Default: 'ID2'
 #' @param obj Seurat object, Default: combined.obj
-#' @param ext PARAM_DESCRIPTION, Default: 'png'
+#' @param ext File extension for saving, Default: 'png'
 #' @param plot PARAM_DESCRIPTION, Default: TRUE
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
@@ -4839,7 +4839,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
 #' @description Find correlated genes in a Seurat object
 #' @param gene gene of interest, Default: 'TOP2A'
 #' @param obj Seurat object, Default: combined.obj
-#' @param assay PARAM_DESCRIPTION, Default: 'RNA'
+#' @param assay RNA or integrated assay, Default: 'RNA'
 #' @param slot PARAM_DESCRIPTION, Default: 'data'
 #' @param HEonly PARAM_DESCRIPTION, Default: F
 #' @param minExpr PARAM_DESCRIPTION, Default: 1
