@@ -18,6 +18,7 @@ qUMAP(
   w = NULL,
   nr.cols = NULL,
   assay = c("RNA", "integrated")[1],
+  axes = T,
   HGNC.lookup = TRUE,
   make.uppercase = TRUE,
   qlow = "q10",
@@ -32,7 +33,7 @@ qUMAP(
 
 \item{title}{Title of the plot, Default: feature}
 
-\item{sub}{PARAM_DESCRIPTION, Default: NULL}
+\item{sub}{Subtitle of the plot, Default: NULL}
 
 \item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
 
@@ -40,17 +41,19 @@ qUMAP(
 
 \item{suffix}{A suffix added to the filename, Default: sub}
 
-\item{save.plot}{PARAM_DESCRIPTION, Default: T}
+\item{save.plot}{Save the plot into a file?, Default: T}
 
-\item{PNG}{PARAM_DESCRIPTION, Default: T}
+\item{PNG}{Save file as .png?, Default: T}
 
 \item{h}{height of the plot, Default: 7}
 
 \item{w}{width of the plot, Default: NULL}
 
-\item{nr.cols}{PARAM_DESCRIPTION, Default: NULL}
+\item{nr.cols}{Number of columns to combine multiple feature plots to, ignored if split.by is not NULL, Default: NULL}
 
-\item{assay}{PARAM_DESCRIPTION, Default: c("RNA", "integrated")\link{1}}
+\item{assay}{RNA or integrated assay, Default: c("RNA", "integrated")\link{1}}
+
+\item{axes}{Show axes?}
 
 \item{HGNC.lookup}{PARAM_DESCRIPTION, Default: TRUE}
 

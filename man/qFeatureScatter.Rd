@@ -20,7 +20,7 @@ qFeatureScatter(
 
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{ext}{PARAM_DESCRIPTION, Default: 'png'}
+\item{ext}{File extension for saving, Default: 'png'}
 
 \item{plot}{PARAM_DESCRIPTION, Default: TRUE}
 

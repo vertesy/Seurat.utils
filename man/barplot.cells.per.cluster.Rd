@@ -19,7 +19,7 @@ Barplot the Fraction of cells per cluster. (dupl?)
 \examples{
 \dontrun{
 if(interactive()){
- barplot.cells.per.cluster(); barplot.cells.per.cluster(sort=T)
+ barplot.cells.per.cluster(); barplot.cells.per.cluster(sort = T)
  }
 }
 }

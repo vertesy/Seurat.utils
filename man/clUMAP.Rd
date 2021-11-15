@@ -18,12 +18,14 @@ clUMAP(
   nr.cols = NULL,
   plotname = ppp(toupper(reduction), ident),
   cols = NULL,
+  palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
   highlight.clusters = NULL,
   cells.highlight = NULL,
   label = T,
   repel = T,
   legend = !label,
   MaxCategThrHP = 200,
+  axes = T,
   save.plot = T,
   PNG = T,
   save.object = F,
@@ -41,7 +43,7 @@ clUMAP(
 
 \item{title}{Title of the plot, Default: ident}
 
-\item{sub}{PARAM_DESCRIPTION, Default: NULL}
+\item{sub}{Subtitle of the plot, Default: NULL}
 
 \item{suffix}{A suffix added to the filename, Default: sub}
 
@@ -51,11 +53,11 @@ clUMAP(
 
 \item{w}{width of the plot, Default: NULL}
 
-\item{nr.cols}{PARAM_DESCRIPTION, Default: NULL}
+\item{nr.cols}{Number of columns to combine multiple feature plots to, ignored if split.by is not NULL, Default: NULL}
 
 \item{plotname}{Title of the plot, Default: ppp(toupper(reduction), ident)}
 
-\item{cols}{PARAM_DESCRIPTION, Default: getDiscretePalette(ident.used = ident, show.colors = F)}
+\item{cols}{Colors used, Default: getDiscretePalette(ident.used = ident, show.colors = F)}
 
 \item{highlight.clusters}{PARAM_DESCRIPTION, Default: NULL}
 
@@ -69,11 +71,11 @@ clUMAP(
 
 \item{MaxCategThrHP}{PARAM_DESCRIPTION, Default: 200}
 
-\item{save.plot}{PARAM_DESCRIPTION, Default: T}
+\item{axes}{Show axes?}
 
-\item{PNG}{PARAM_DESCRIPTION, Default: T}
+\item{save.plot}{Save the plot into a file?, Default: T}
 
-\item{save.object}{PARAM_DESCRIPTION, Default: F}
+\item{PNG}{Save file as .png?, Default: T}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }

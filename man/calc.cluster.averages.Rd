@@ -22,6 +22,7 @@ calc.cluster.averages(
   filter = c(FALSE, "above", "below")[1],
   ylab.text = paste("Cluster", stat, "score"),
   title = paste("Cluster", stat, col_name),
+  report = TRUE,
   subtitle = NULL,
   width = 8,
   height = 6,
@@ -67,6 +68,8 @@ calc.cluster.averages(
 \item{ylab.text}{PARAM_DESCRIPTION, Default: paste("Cluster", stat, "score")}
 
 \item{title}{Title of the plot, Default: paste("Cluster", stat, col_name)}
+
+\item{report}{Summary sentence, Default: F}
 
 \item{subtitle}{PARAM_DESCRIPTION, Default: NULL}
 

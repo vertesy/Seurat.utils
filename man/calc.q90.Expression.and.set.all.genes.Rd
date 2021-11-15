@@ -23,9 +23,9 @@ calc.q90.Expression.and.set.all.genes(
 
 \item{slot}{PARAM_DESCRIPTION, Default: 'data'}
 
-\item{assay}{PARAM_DESCRIPTION, Default: c("RNA", "integrated")\link{1}}
+\item{assay}{RNA or integrated assay, Default: c("RNA", "integrated")\link{1}}
 
-\item{set.all.genes}{PARAM_DESCRIPTION, Default: TRUE}
+\item{set.all.genes}{Create the "all.genes" variable in the global env?, Default: TRUE}
 
 \item{show}{PARAM_DESCRIPTION, Default: TRUE}
 }
@@ -35,10 +35,10 @@ Calculate the gene expression of the e.g.: 90th quantile (expression in the top 
 \examples{
 \dontrun{
 if(interactive()){
- combined.obj <- calc.q90.Expression.and.set.all.genes(obj = combined.obj, quantileX=0.9,
+ combined.obj <- calc.q90.Expression.and.set.all.genes(obj = combined.obj, quantileX = 0.9,
  max.cells =  25000)
  head(sort(as.numeric.wNames(obj@misc$expr.q90), decreasing = T))
- combined.obj <- calc.q90.Expression.and.set.all.genes(obj = combined.obj, quantileX=0.95,
+ combined.obj <- calc.q90.Expression.and.set.all.genes(obj = combined.obj, quantileX = 0.95,
  max.cells =  25000, set.all.genes = FALSE)
  }
 }

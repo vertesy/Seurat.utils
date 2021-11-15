@@ -29,7 +29,7 @@ Get cluster composition: which datasets contribute to each cluster?
 \examples{
 \dontrun{
 if(interactive()){
- get.clustercomposition(); get.clustercomposition(, ylim=c(0,10000))
+ get.clustercomposition(); get.clustercomposition(, ylim = c(0,10000))
  }
 }
 }

@@ -19,7 +19,7 @@ Backup UMAP to \code{obj@misc$reductions.backup} from \code{obj@reductions$umap}
 \examples{
 \dontrun{
 if(interactive()){
- obj <- BackupReduction(obj = obj, dim=2, reduction=umap"")
+ obj <- BackupReduction(obj = obj, dim = 2, reduction = umap"")
  }
 }
 }

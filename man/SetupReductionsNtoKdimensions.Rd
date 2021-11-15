@@ -29,7 +29,7 @@ Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to \co
 \examples{
 \dontrun{
 if(interactive()){
- combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = p$'n.PC', dimensions=2:3, reduction="umap"); qUMAP()
+ combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = p$'n.PC', dimensions = 2:3, reduction="umap"); qUMAP()
  }
 }
 }

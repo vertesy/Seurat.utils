@@ -16,7 +16,7 @@ umapNamedClusters(
 
 \item{metaD.colname}{PARAM_DESCRIPTION, Default: metaD.colname.labeled}
 
-\item{ext}{PARAM_DESCRIPTION, Default: 'png'}
+\item{ext}{File extension for saving, Default: 'png'}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }

@@ -24,7 +24,7 @@ Add a new metadata column to a Seurat  object
 \dontrun{
 if(interactive()){
  combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj,  # formerly add.Cl.Label.2.Metadata
- metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell )
+ metaD.colname = metaD.colname.labeled, Label.per.cell = Cl.Label.per.cell )
  }
 }
 }

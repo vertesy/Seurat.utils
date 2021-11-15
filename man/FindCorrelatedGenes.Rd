@@ -20,7 +20,7 @@ FindCorrelatedGenes(
 
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{assay}{PARAM_DESCRIPTION, Default: 'RNA'}
+\item{assay}{RNA or integrated assay, Default: 'RNA'}
 
 \item{slot}{PARAM_DESCRIPTION, Default: 'data'}
 
@@ -38,7 +38,7 @@ Find correlated genes in a Seurat object
 \examples{
 \dontrun{
 if(interactive()){
- FindCorrelatedGenes(gene ="TOP2A", obj = combined.obj); write_clip(names(head(topGenes[-(1:6)], n=50)))
+ FindCorrelatedGenes(gene ="TOP2A", obj = combined.obj); write_clip(names(head(topGenes[-(1:6)], n = 50)))
  }
 }
 }

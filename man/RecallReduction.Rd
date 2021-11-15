@@ -19,8 +19,8 @@ Set active UMAP to \code{obj@reductions$umap} from \code{obj@misc$reductions.bac
 \examples{
 \dontrun{
 if(interactive()){
- combined.obj <- RecallReduction(obj = combined.obj, dim=2, reduction="umap"); qUMAP()
- combined.obj <- RecallReduction(obj = combined.obj, dim=3, reduction="umap"); qUMAP()
+ combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction="umap"); qUMAP()
+ combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction="umap"); qUMAP()
  }
 }
 }
