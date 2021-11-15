@@ -44,7 +44,7 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 #'  }
 #' }
 #' @export
-Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-25, pval_scaling = 0.001, colP = "p_val"
+Add.DE.combined.score <- function(df = df.markers, p_val_min=1e-25, pval_scaling = 0.001, colP = "p_val"
                                   , colLFC = grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = T)
                                   # , colLFC = "avg_log2FC"
 ) { # Score = -LOG10(p_val) * avg_log2FC
@@ -102,7 +102,7 @@ StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based 
 #' }
 #' @export
 StoreAllMarkers <- function(obj = combined.obj # Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
-                            , df_markers = df.markers, res = 0.5, digit=c(0,3)[2]) {
+                            , df_markers = df.markers, res = 0.5, digit = c(0,3)[2]) {
   if (digit) df_markers[,1:5] <- signif(df_markers[,1:5], digits = digit)
   obj@misc$'df.markers'[[ppp('res',res)]] <- df_markers
   iprint("DF markers are stored under:", 'obj@misc$df.markers$', ppp('res',res))
@@ -244,7 +244,7 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 #' @export
 #' @importFrom dplyr select slice
 AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
-                                   , KnownMarkers=c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1","SALL4","DDIT4", "PDK1", "SATB2", "FEZF2")
+                                   , KnownMarkers = c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1","SALL4","DDIT4", "PDK1", "SATB2", "FEZF2")
                                    , order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1]
 
                                    , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",res)]] ) {
@@ -262,7 +262,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
     group_by(gene) %>%
     dplyr::slice(1:topN) %>%
     arrange(desc(!!as.name(order.by))) %>%
-    # top_n(n=1, wt=avg_log2FC) %>% # Select the top cluster for each gene
+    # top_n(n=1, wt = avg_log2FC) %>% # Select the top cluster for each gene
     arrange(cluster)
 
   print(matching.clusters)
@@ -370,7 +370,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 #' \dontrun{
 #' if(interactive()){
 #'  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5")
-#'  combined.obj <- AutoNumber.by.PrinCurve(obj = combined.obj, dim=1:2, reduction="umap", plotit=T,
+#'  combined.obj <- AutoNumber.by.PrinCurve(obj = combined.obj, dim=1:2, reduction="umap", plotit = T,
 #'  swap= -1, res = "integrated_snn_res.0.5" )
 #'  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.prin.curve")
 #'  }
@@ -380,7 +380,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 #' @export
 #' @importFrom princurve principal_curve
 AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
-                                    , dim=1:2, plotit=T, swap= -1
+                                    , dim=1:2, plotit = T, swap= -1
                                     , reduction="umap", res = "integrated_snn_res.0.5" ) {
   # require(princurve)
   dim_name <- ppu(toupper(reduction),dim)
@@ -528,7 +528,7 @@ points_on_curve.SlingshotDataSet <- function(curve, lambda, ...) {
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  plotFittedGenePseudotime(data = sds, gene ="SST", expr = EXPR, loessCI=T, col = colz, pch = 20,
+#'  plotFittedGenePseudotime(data = sds, gene ="SST", expr = EXPR, loessCI = T, col = colz, pch = 20,
 #'  panel_first = grid(NULL) )
 #'  }
 #' }
@@ -589,7 +589,7 @@ setMethod(
       genename <- deparse(substitute(gene))
     }
     if (length(gene) == 1){
-      y <- exprs[gene, ,drop=FALSE][1,]
+      y <- exprs[gene, ,drop = FALSE][1,]
       genename <- gene
     }
     pst <- slingPseudotime(data)
@@ -603,13 +603,13 @@ setMethod(
       # print(l)
       if (l == 1) {
         plot(pst[,l], y, xlab = 'Pseudotime', ylab = 'Expression', cex = 0,
-             main=paste(genename, ', Lineage ',l, sep=''), ...)
+             main = paste(genename, ', Lineage ',l, sep=''), ...)
       }
       if (loess | loessCI){
         l <- loess(y ~ pst[,l], weights = w[,l])
       }
       if (loessCI){
-        pl <- predict(l, se=TRUE, )
+        pl <- predict(l, se = TRUE, )
         polygon(c(l$x[order(l$x)],rev(l$x[order(l$x)])),
                 c((pl$fit+qt(0.975,pl$df)*pl$se)[order(l$x)],
                   rev((pl$fit-qt(0.975,pl$df)*pl$se)[order(l$x)])),
@@ -730,8 +730,8 @@ jPresenceMatrix <- function(string_list = lst(a=1:3, b=2:5,c=4:9, d=-1:4) ) { # 
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  JaccardSimilarity <- jJaccardIndexBinary(  x=sample(x = 0:1, size = 100, replace = T),
-#'  y=sample(x = 0:1, size = 100, replace = T))
+#'  JaccardSimilarity <- jJaccardIndexBinary(  x = sample(x = 0:1, size = 100, replace = T),
+#'  y = sample(x = 0:1, size = 100, replace = T))
 #'  }
 #' }
 #' @export
@@ -1022,7 +1022,7 @@ GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
 getMetadataColumn <- mmeta <- function(ColName.metadata = 'batch', obj = combined.obj, as_numeric =F) { # Get a metadata column from a Seurat object as a named vector
   stopifnot(ColName.metadata %in% colnames(obj@meta.data))
 
-  x = as.named.vector(obj@meta.data[ ,ColName.metadata, drop=F])
+  x = as.named.vector(obj@meta.data[ ,ColName.metadata, drop = F])
   if (as_numeric) {
     as.numeric.wNames(x)+1
   } else {x}
@@ -1042,7 +1042,7 @@ getMetadataColumn <- mmeta <- function(ColName.metadata = 'batch', obj = combine
 #'  }
 #' }
 #' @export
-getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj=combined.obj, inverse = F ) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
+getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj = combined.obj, inverse = F ) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
   mdat <- obj@meta.data[ , ColName.meta]
   cells <- if (inverse) {mdat %!in% values} else {mdat %in% values}
   idx.matching.cells = which(cells)
@@ -1061,11 +1061,11 @@ getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj=comb
 #' \dontrun{
 #' if(interactive()){
 #'  combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj,  # formerly add.Cl.Label.2.Metadata
-#'  metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell )
+#'  metaD.colname = metaD.colname.labeled, Label.per.cell = Cl.Label.per.cell )
 #'  }
 #' }
 #' @export
-seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell ) { # Add a new metadata column to a Seurat  object
+seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell = Cl.Label.per.cell ) { # Add a new metadata column to a Seurat  object
   obj@meta.data[, metaD.colname ] = Label.per.cell
   iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
   return(obj)
@@ -1166,7 +1166,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , obj =  combined.obj
                                   , split_by = GetNamedClusteringRuns()[1]
                                   , scale.zscore = FALSE
-                                  , simplify=T, plotit = T
+                                  , simplify = T, plotit = T
                                   , histogram = FALSE, nbins = 50
                                   , suffix = NULL
                                   , stat = c("mean", "median")[2]
@@ -1224,7 +1224,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                         , ylab = ylab.text
                         , xlab = xlb # Abused
                         , xlab.angle = 45
-                        # , ylim=c(-1,1)
+                        # , ylim = c(-1,1)
                         , ...
                         # , ext = "png", w = 7, h = 5
         ) + geom_vline(xintercept = cutoff.low, lty=2)
@@ -1240,7 +1240,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                       , ylab = ylab.text
                       , xlab = xlb # Abused
                       , xlab.angle = 45
-                      # , ylim=c(-1,1)
+                      # , ylim = c(-1,1)
                       , ...
                       # , ext = "png", w = 7, h = 5
         ) + geom_hline(yintercept = cutoff.low , lty = 2)
@@ -1567,7 +1567,7 @@ save.parameters <- function(obj = combined.obj, params = p) {
 #' }
 #' @export
 #' @importFrom Stringendo percentage_formatter
-plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero=T) {
+plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero = T) {
   expr.GOI <- obj@misc$expr.q90[gene]
   expr.all <- unlist(obj@misc$expr.q90)
   gene.found <- gene %in% names(expr.all)
@@ -1614,7 +1614,7 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
 #' }
 #' @export
 FlipReductionCoordinates <- function(obj = combined.obj, dim=2, reduction="umap"
-                                     , flip=c('x', 'y', 'xy', NULL)[1], FlipReductionBackupToo = TRUE) { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+                                     , flip = c('x', 'y', 'xy', NULL)[1], FlipReductionBackupToo = TRUE) { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
   coordinates <- Embeddings(obj, reduction = reduction)
   stopifnot(ncol(coordinates) == dim )
 
@@ -1712,7 +1712,7 @@ getClusterColors <- function(obj = combined.obj
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  get.clustercomposition(); get.clustercomposition(, ylim=c(0,10000))
+#'  get.clustercomposition(); get.clustercomposition(, ylim = c(0,10000))
 #'  }
 #' }
 #' @export
@@ -1841,7 +1841,7 @@ m3DplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds.10pc, ttl.s
                          # label_branch_points = F, label_cell_groups = F
                          # , group_label_size = 10
                          , cell_size = cex
-                         , alpha = .5) %>% layout(title=paste0(gene, ttl.suffix))
+                         , alpha = .5) %>% layout(title = paste0(gene, ttl.suffix))
     SavePlotlyAsHtml(pl1, category. = gene, suffix. = suffix)
   } else { iprint("gene not found") }
 }
@@ -2064,9 +2064,9 @@ m3.export.umap.2.Seurat <- function(mobj = cds_from_seurat, sobj = combined.obj,
 BarTableSweepList <- function(min=0.01, max=0.99, step=0.02, bar_table =bar.table) {
   bar.table_sweep.list <- list()
   n <- 0
-  Quantiles = seq(from = min, to = max, by=step)
+  Quantiles = seq(from = min, to = max, by = step)
   for (n in 1:length(Quantiles)) { # print(q)
-    bar.table_sweep.list[[n]] <- classifyCells(bar_table, q=Quantiles[n])
+    bar.table_sweep.list[[n]] <- classifyCells(bar_table, q = Quantiles[n])
     names(bar.table_sweep.list)[n] <- paste("q=",Quantiles[n], sep="")
   }
   return(bar.table_sweep.list)
@@ -2189,8 +2189,8 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , title = feature, sub =NULL
                    , reduction ="umap", splitby = NULL
                    , suffix = sub
-                   , save.plot=T, PNG = T
-                   , h=7, w=NULL, nr.cols = NULL
+                   , save.plot = T, PNG = T
+                   , h=7, w = NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
                    , axes = T
                    , HGNC.lookup= TRUE, make.uppercase = TRUE
@@ -2214,7 +2214,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
   if (save.plot) {
     plotname <- ppp(toupper(reduction), feature)
     fname = ww.FnP_parser(ppp(plotname, assay, suffix), if (PNG) "png" else "pdf")
-    try(save_plot(filename = fname, plot = ggplot.obj, base_height=h, base_width = w)) #, ncol=1, nrow=1
+    try(save_plot(filename = fname, plot = ggplot.obj, base_height = h, base_width = w)) #, ncol=1, nrow=1
   }
   return(ggplot.obj)
 }
@@ -2260,13 +2260,13 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , reduction ="umap", splitby = NULL
                    , title = ident, sub =NULL, suffix = sub
                    , label.cex = 7
-                   , h=7, w=NULL, nr.cols = NULL
+                   , h = 7, w = NULL, nr.cols = NULL
                    , plotname = ppp(toupper(reduction), ident)
-                   , cols = NULL
+                   , cols = NULL, palette =  c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
                    , highlight.clusters = NULL, cells.highlight = NULL
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 200
                    , axes = T
-                   , save.plot=T, PNG = T
+                   , save.plot = T, PNG = T
                    , save.object = F, ...) {
   IdentFound <- (ident %in%  colnames(obj@meta.data))
   if (!IdentFound) {
@@ -2276,7 +2276,6 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
   identity <- obj[[ident]]
   NtCategs <- length(unique(identity[,1]))
 
-
   if ( !missing(highlight.clusters)) {
     idx.ok <- identity[,1] %in% highlight.clusters
     highlight.these <- rownames(identity)[idx.ok]
@@ -2285,7 +2284,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
 
 
   if (is_null(cols)) {
-    cols = if (NtCategs > 5) getDiscretePalette(ident.used = ident, show.colors = F)
+    cols = if (NtCategs > 5) getDiscretePalette(ident.used = ident, palette.used = palette, show.colors = F)
   }
 
   if( NtCategs > MaxCategThrHP ) {
@@ -2304,7 +2303,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
 
     if (save.plot) {
       fname = ww.FnP_parser(ppp(plotname, suffix, kpp(highlight.clusters)), if (PNG) "png" else "pdf")
-      try(save_plot(filename = fname, plot = ggplot.obj, base_height=h, base_width = w)) #, ncol=1, nrow=1
+      try(save_plot(filename = fname, plot = ggplot.obj, base_height = h, base_width = w)) #, ncol=1, nrow=1
     }
     # if(save.object) saveRDS(object = ggplot.obj, file = ppp(fname, 'ggobj.RDS'))
     return(ggplot.obj)
@@ -2437,7 +2436,7 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
   stopifnot(NrPlots %in% c(2,4))
   iprint(NrPlots,"plots found,", plots,"are saved.")
   pg.cf = plot_grid(plotlist = plotlist[plots], nrow = 2, ncol = NrPlots/2, labels = LETTERS[1:NrPlots], ...  )
-  if (NrPlots == 4) list2env(list(height = width, width = height), envir=as.environment(environment()))
+  if (NrPlots == 4) list2env(list(height = width, width = height), envir = as.environment(environment()))
   save_plot(filename = fname,
             plot = pg.cf, base_height = height, base_width = width)
   ww.FnP_parser(fname)
@@ -2515,7 +2514,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 , foldername = substitute(list.of.genes), plot.reduction='umap'
                                 , intersectionAssay = c('RNA', 'integrated')[1]
                                 , layout = c('tall', 'wide', FALSE )[2]
-                                , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
+                                , colors = c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , prefix = NULL , suffix = NULL
                                 , background_col = "white"
@@ -2602,7 +2601,7 @@ multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHea
   tictoc::tic()
   list.of.genes = check.genes(list.of.genes, obj = obj)
 
-  lsG = iterBy.over(1:length(list.of.genes), by=gene.per.page)
+  lsG = iterBy.over(1:length(list.of.genes), by = gene.per.page)
   for (i in 1:length(lsG)) { print(i )
     genes = list.of.genes[lsG[[i]]]
     plotname = kpp(c("FeatureHeatmap",plot.reduction,i, genes, 'jpg' ))
@@ -2672,8 +2671,8 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
                 , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...) +
     ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
 
-  plots = plot_grid(p1, p2, labels=c("A", "B"), ncol = 2)
-  plotname=kpp( 'UMAP.tSNE', grouping, name.suffix, filetype)
+  plots = plot_grid(p1, p2, labels = c("A", "B"), ncol = 2)
+  plotname = kpp( 'UMAP.tSNE', grouping, name.suffix, filetype)
 
   cowplot::save_plot(filename = plotname, plot = plots
                      , ncol = 2 # we're saving a grid plot of 2 columns
@@ -2889,7 +2888,7 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 #'  }
 #' }
 #' @export
-plot3D.umap.gene <- function(gene="TOP2A", obj=combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
+plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
                              , quantileCutoff = .99, def.assay = c("integrated", "RNA")[2]
                              , suffix = NULL, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]
                              , alpha = .5, dotsize=1.25 ){
@@ -2943,7 +2942,7 @@ plot3D.umap.gene <- function(gene="TOP2A", obj=combined.obj # Plot a 3D umap wit
 #'  }
 #' }
 #' @export
-plot3D.umap <- function(category="v.project", obj=combined.obj # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
+plot3D.umap <- function(category="v.project", obj = combined.obj # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
                         , suffix = NULL, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]
                         , dotsize = 1.25) {
 
@@ -3007,7 +3006,7 @@ SavePlotlyAsHtml <- function(plotly_obj, category.=category, suffix. = NULL) { #
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  obj <- BackupReduction(obj = obj, dim=2, reduction=umap"")
+#'  obj <- BackupReduction(obj = obj, dim=2, reduction = umap"")
 #'  }
 #' }
 #' @export
@@ -3133,7 +3132,7 @@ Annotate4Plotly3D <- function(obj = combined.obj # Create annotation labels for 
 Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
                                , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, cex = 1.25, default.assay = c("integrated", "RNA")[2]
                                , ListOfGenes = c("BCL11B" , "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4")
-                               , SubFolderName=ppp("plot3D", substitute(ListOfGenes))) {
+                               , SubFolderName = ppp("plot3D", substitute(ListOfGenes))) {
 
 
   try(create_set_SubDir(SubFolderName))
@@ -3174,8 +3173,8 @@ Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMA
 #' @export
 Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
                                     , annotate.by = "integrated_snn_res.0.7", cex = 1.25, default.assay = c("integrated", "RNA")[2]
-                                    , ListOfCategories=c("v.project","experiment", "Phase", "integrated_snn_res.0.7")
-                                    , SubFolderName=ppp("plot3D", substitute(ListOfCategories))) {
+                                    , ListOfCategories = c("v.project","experiment", "Phase", "integrated_snn_res.0.7")
+                                    , SubFolderName = ppp("plot3D", substitute(ListOfCategories))) {
 
   try(create_set_SubDir(SubFolderName))
   obj. <- obj; rm("obj")
@@ -3437,7 +3436,7 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Pl
 #' }
 #' @export
 BarplotCellsPerObject <- function(ls.Seu = ls.Seurat, # Take a List of Seurat objects and draw a barplot for the number of cells per object.
-                                  plotname="Nr.Cells.After.Filtering", names=F ) {
+                                  plotname="Nr.Cells.After.Filtering", names = F ) {
   cellCounts = unlapply(ls.Seu, ncol)
   names(cellCounts) = if (length(names) == length(ls.Seurat)) names else names(ls.Seurat)
   wbarplot(cellCounts, plotname = plotname,tilted_text = T, ylab="Cells")
@@ -3504,7 +3503,7 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  barplot.cells.per.cluster(); barplot.cells.per.cluster(sort=T)
+#'  barplot.cells.per.cluster(); barplot.cells.per.cluster(sort = T)
 #'  }
 #' }
 #' @export
@@ -4169,7 +4168,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 #' @export
 Convert10Xfolders.old <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
                                   , folderPattern = c("filtered", "SoupX_decont")[1]
-                                  , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T) {
+                                  , min.cells=10, min.features=200, updateHGNC = T, ShowStats = T) {
   fin <- list.dirs(InputDir, recursive = F)
   fin <- grepv(x = fin, pattern = folderPattern, perl = F)
 
@@ -4229,7 +4228,7 @@ Convert10Xfolders.old <- function(InputDir # Take a parent directory with a numb
 ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
                                   , folderPattern = "SRR*", filePattern = "expression.tsv.gz"
                                   , useVroom = T, col_types.vroom = list("GENE" = "c", .default = "d")
-                                  , min.cells=10, min.features=200, updateHGNC=T, ShowStats=T, minDimension = 10, overwrite = FALSE) {
+                                  , min.cells=10, min.features=200, updateHGNC = T, ShowStats = T, minDimension = 10, overwrite = FALSE) {
   InputDir <- FixPath(InputDir)
   fin <- list.dirs(InputDir, recursive = F)
   fin <- grepv(x = fin, pattern = folderPattern, perl = F)
@@ -4388,9 +4387,9 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 #'  }
 #' }
 #' @export
-isave.RDS <- function(obj, prefix =NULL, suffix=NULL, inOutDir = F
+isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = F
                       , alternative_path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
-                      , showMemObject=T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
+                      , showMemObject = T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
   path_rdata = if (inOutDir) OutDir else alternative_path_rdata
   dir.create(path_rdata)
 
@@ -4429,7 +4428,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix=NULL, inOutDir = F
 #' @export
 #' @importFrom Stringendo kollapse iprint
 isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))
-                        , showMemObject=T, options=c("--force", NULL)[1]
+                        , showMemObject = T, options = c("--force", NULL)[1]
 ){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
 
   dir.create(path_rdata)
@@ -4464,7 +4463,7 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
 #' @export
 #' @importFrom Stringendo kollapse iprint
 #' @importFrom tictoc tic toc
-qsave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
+qsave.image <- function(..., showMemObject = T, options = c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
   fname = Stringendo::kollapse(getwd(), "/",basename(OutDir),idate(),...,".Rdata")
   print(fname)
   if (nchar(fname) > 2000) stop()
@@ -4491,7 +4490,7 @@ qsave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
 #' }
 #' @export
 #' @importFrom Stringendo percentage_formatter
-subsetSeuObj <- function(obj=ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
+subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
   set.seed(seed_)
   if (isFALSE(nCells)) {
     cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction_)
@@ -4521,7 +4520,7 @@ subsetSeuObj <- function(obj=ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_
 #'  }
 #' }
 #' @export
-subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = OutDir, min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
+subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir, min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
   obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
   nr.cells.kept <- ncol(obj_Xpc)
   saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
@@ -4635,7 +4634,7 @@ seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) { # Take a named
 #'  }
 #' }
 #' @export
-GetMostVarGenes <- function(obj=org, nGenes = p$nVarGenes) { # Get the most variable rGenes
+GetMostVarGenes <- function(obj = org, nGenes = p$nVarGenes) { # Get the most variable rGenes
   head(rownames(slot(object = obj, name = "hvg.info")), n = nGenes)
 }
 
@@ -4693,7 +4692,7 @@ gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) { # Check gene names in a
 #' @importFrom Stringendo percentage_formatter
 check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = FALSE, verbose  = TRUE, HGNC.lookup = FALSE
                         , obj = combined.obj
-                        , assay.slot=c('RNA', 'integrated')[1]
+                        , assay.slot = c('RNA', 'integrated')[1]
                         , dataslot = c("counts", "data")[2]) { # Check if genes exist in your dataset.
   if (makeuppercase) list.of.genes <- toupper(list.of.genes)
   all_genes = rownames(GetAssayData(object = obj, assay = assay.slot, slot = dataslot)); length(all_genes)
@@ -4721,7 +4720,7 @@ check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = FALSE, v
 #'  }
 #' }
 #' @export
-fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj=org) { # Fix zero indexing in seurat clustering, to 1-based indexing
+fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj = org) { # Fix zero indexing in seurat clustering, to 1-based indexing
   obj@meta.data[ ,ColName.metadata] =  as.numeric(obj@meta.data[ ,ColName.metadata])+1
   print(obj@meta.data[ ,ColName.metadata])
   return(obj)
@@ -4749,8 +4748,8 @@ CalculateFractionInTrome <- function(geneset = c("MALAT1") # Calculate the fract
   geneset <- check.genes(geneset)
   stopifnot(length(geneset)>0)
 
-  mat <- as.matrix(slot(obj@assays$RNA, name=dataslot))
-  mat.sub <- mat[geneset,,drop=F]
+  mat <- as.matrix(slot(obj@assays$RNA, name = dataslot))
+  mat.sub <- mat[geneset,,drop = F]
   RC.per.cell.geneset <- colSums(mat.sub)
 
   RC.per.cell <- colSums(mat)
@@ -4906,7 +4905,7 @@ FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA"
 #'  \code{\link[HGNChelper]{checkGeneSymbols}}
 #' @export
 #' @importFrom HGNChelper checkGeneSymbols
-UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUnique = T, ShowStats=F ) { # Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
+UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUnique = T, ShowStats = F ) { # Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
   HGNC.updated <- HGNChelper::checkGeneSymbols(rownames(obj), unmapped.as.na = FALSE, map = NULL, species = species_)
   if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
   if (ShowStats) print(GetUpdateStats(HGNC.updated))
@@ -5155,7 +5154,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
 
   HGNC <- Soup.VS.Cells.Av.Exp.gg$gene
-  Class <- rep("Other", times=nrow(Soup.VS.Cells.Av.Exp.gg))
+  Class <- rep("Other", times = nrow(Soup.VS.Cells.Av.Exp.gg))
   Class[grep('^RPL|^RPS', HGNC)]  <- "RP"
   Class[grep('^MT-', HGNC)] <- "MT"
   Class[grep('^LINC', HGNC)]  <- "LINC"
@@ -5167,7 +5166,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
   fname <- kpp("Soup.VS.Cells.Av.Exp.GeneClasses",SeqRun,"pdf")
   pgg <-
     ggplot(Soup.VS.Cells.Av.Exp.gg %>% arrange(-nchar(Class) )
-           , aes(x= Soup, y= Cells, label=gene, col= Class))  +
+           , aes(x= Soup, y= Cells, label = gene, col= Class))  +
     geom_abline(slope=1, col='darkgrey') + geom_point()+
     scale_alpha_manual(guide='none', values = ls.Alpha) +
     xlab(paste(axl.pfx, "Soup", axl.sfx)) + ylab(paste(axl.pfx, "Cells", axl.sfx)) +
@@ -5201,7 +5200,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
 
     pgg <-
-      ggplot(Soup.VS.Cells.Av.Exp.gg, aes(x= Soup, y= Cells, label=gene,
+      ggplot(Soup.VS.Cells.Av.Exp.gg, aes(x= Soup, y= Cells, label = gene,
                                           col= Outlier))  +
       geom_point() + theme(legend.position = "none") +
       xlab(paste(axl.pfx, "Soup", axl.sfx)) + ylab(paste(axl.pfx, "Cells", axl.sfx)) +
@@ -5261,7 +5260,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
     sort(genes.non.Above, decreasing = T)
   )
   NrColumns2Show  = min(10, nrow(soupProfile.summarized))
-  ccc <- c("#FF4E00","#778B04","#8ea604","#8ea604","#F5BB00","#F5BB00","#EC9F05",rep(x = "#BF3100", times=NrColumns2Show-6)) # ,"#"
+  ccc <- c("#FF4E00","#778B04","#8ea604","#8ea604","#F5BB00","#F5BB00","#EC9F05",rep(x = "#BF3100", times = NrColumns2Show-6)) # ,"#"
 
 
   Soup.GEMs.top.Genes.summarized = 100 * soupProfile.summarized[1:NrColumns2Show] / CR.matrices$'soup.total.sum'
