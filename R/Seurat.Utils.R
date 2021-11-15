@@ -2268,6 +2268,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , axes = T
                    , save.plot = T, PNG = T
                    , save.object = F, ...) {
+
   IdentFound <- (ident %in%  colnames(obj@meta.data))
   if (!IdentFound) {
     ident <- GetClusteringRuns(obj = obj, pat = "_res.*[0,1]\\.[0-9]$")[1]
@@ -2298,8 +2299,9 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                 , ncol = nr.cols, cells.highlight = highlight.these
                 , label = label, repel = repel, label.size = label.cex, ...) +
         ggtitle(label = title, subtitle = sub) +
-        if (!legend) NoLegend() else NULL +
-        if (!axes) NoAxes() else NULL
+        if (!legend) NoLegend() else NULL
+
+    ggplot.obj <- ggplot.obj + if (!axes) NoAxes() else NULL
 
     if (save.plot) {
       fname = ww.FnP_parser(ppp(plotname, suffix, kpp(highlight.clusters)), if (PNG) "png" else "pdf")
@@ -2309,7 +2311,6 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
     return(ggplot.obj)
   } # if not too many categories
 }
-
 
 
 
