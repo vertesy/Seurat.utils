@@ -36,11 +36,13 @@ DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
     Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics &
     QC, interaction with the Seurat object, etc. Some functionalities require functions from CodeAndRoll and MarkdownReports libraries."
     , "License" = "GPL-3 + file LICENSE"
-    , "Version" = "1.1.0"
+    , "Version" = "1.1.1"
     , "Packaged" =  Sys.time()
     , "Repository" =  "CRAN"
     , "Depends" =  "Stringendo, CodeAndRoll2, ggExpress, ggplot2"
-    , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper, htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter, R.utils, readr, reshape2, scales, Seurat, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom"
+    , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
+    htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter,
+    R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom"
     , "Suggests" = "SoupX"
     , "BugReports"= "https://github.com/vertesy/Seurat.utils/issues"
 )

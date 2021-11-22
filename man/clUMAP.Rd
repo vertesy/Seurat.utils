@@ -28,7 +28,6 @@ clUMAP(
   axes = T,
   save.plot = T,
   PNG = T,
-  save.object = F,
   ...
 )
 }
@@ -58,6 +57,8 @@ clUMAP(
 \item{plotname}{Title of the plot, Default: ppp(toupper(reduction), ident)}
 
 \item{cols}{Colors used, Default: getDiscretePalette(ident.used = ident, show.colors = F)}
+
+\item{palette}{Color palette.}
 
 \item{highlight.clusters}{PARAM_DESCRIPTION, Default: NULL}
 

@@ -5,17 +5,17 @@
 \title{CalculateFractionInTrome}
 \usage{
 CalculateFractionInTrome(
-  geneset = c("MALAT1"),
+  genesCalc.Cor.Seuratet = c("MALAT1"),
   obj = combined.obj,
   dataslot = c("counts", "data")[2]
 )
 }
 \arguments{
-\item{geneset}{PARAM_DESCRIPTION, Default: c("MALAT1")}
-
 \item{obj}{Seurat object, Default: combined.obj}
 
 \item{dataslot}{PARAM_DESCRIPTION, Default: c("counts", "data")\link{2}}
+
+\item{geneset}{PARAM_DESCRIPTION, Default: c("MALAT1")}
 }
 \description{
 Calculate the fraction of a set of genes within the full Transcriptome of each cell. #

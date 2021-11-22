@@ -1841,7 +1841,8 @@ m3DplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds.10pc, ttl.s
                          # label_branch_points = F, label_cell_groups = F
                          # , group_label_size = 10
                          , cell_size = cex
-                         , alpha = .5) %>% layout(title = paste0(gene, ttl.suffix))
+                         , alpha = .5) %>%
+      plotly::layout(title = paste0(gene, ttl.suffix))
     SavePlotlyAsHtml(pl1, category. = gene, suffix. = suffix)
   } else { iprint("gene not found") }
 }
@@ -2100,19 +2101,19 @@ mSeq.map.all96.BCs <- function(readTable = readTable, CellIDs = CellIDs
 
 # _________________________________________________________________________________________________
 
-#' @title aux.plotAllMseqBCs
-#' @description aux.plotAllMseqBCs
+#' @title aux_plotAllMseqBCs
+#' @description aux_plotAllMseqBCs
 #' @param bar.table PARAM_DESCRIPTION, Default: bar.table[, 1:96]
 #' @param barcodes.used PARAM_DESCRIPTION, Default: BCs.used
 #' @param plotname Title of the plot, Default: 'Barcode seq depth'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  aux.plotAllMseqBCs(bar.table = bar.table[,1:96], barcodes.used = BCs.used, plotname = "Barcode seq depth")
+#'  aux_plotAllMseqBCs(bar.table = bar.table[,1:96], barcodes.used = BCs.used, plotname = "Barcode seq depth")
 #'  }
 #' }
 #' @export
-aux.plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs.used
+aux_plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs.used
                                , plotname = "Barcode seq depth") {
   stopifnot(is.numeric(BCs.used))
   BC.depth <- colSums(bar.table)[1:96]
@@ -2237,6 +2238,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #' @param nr.cols Number of columns to combine multiple feature plots to, ignored if split.by is not NULL, Default: NULL
 #' @param plotname Title of the plot, Default: ppp(toupper(reduction), ident)
 #' @param cols Colors used, Default: getDiscretePalette(ident.used = ident, show.colors = F)
+#' @param palette Color palette.
 #' @param highlight.clusters PARAM_DESCRIPTION, Default: NULL
 #' @param cells.highlight PARAM_DESCRIPTION, Default: NULL
 #' @param label PARAM_DESCRIPTION, Default: T
@@ -2267,7 +2269,8 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 200
                    , axes = T
                    , save.plot = T, PNG = T
-                   , save.object = F, ...) {
+                   # , save.object = F
+                   , ...) {
 
   IdentFound <- (ident %in%  colnames(obj@meta.data))
   if (!IdentFound) {
@@ -2424,6 +2427,7 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
 #' @param height PARAM_DESCRIPTION, Default: hA4
 #' @param width PARAM_DESCRIPTION, Default: wA4
 #' @param fname File name, Default: 'Fractions.Organoid-to-organoid variation.png'
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -2920,7 +2924,7 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
                  # , colors = c('darkgrey', 'red')
                  , colorscale='Viridis'
                  #, hoverinfo="text"
-  ) %>% layout(title = gene, scene = list(annotations = ls.ann.auto))
+  ) %>% plotly::layout(title = gene, scene = list(annotations = ls.ann.auto))
   SavePlotlyAsHtml(plt, category. = gene, suffix. = suffix)
   return(plt)
 }
@@ -2967,7 +2971,7 @@ plot3D.umap <- function(category="v.project", obj = combined.obj # Plot a 3D uma
                  , color = ~category
                  , colors = gg_color_hue(length(unique(plotting.data$'category')))
                  # , hoverinfo="text"
-  ) %>% layout(title = category, scene = list(annotations = ls.ann.auto))
+  ) %>% plotly::layout(title = category, scene = list(annotations = ls.ann.auto))
   SavePlotlyAsHtml(plt, category. = category, suffix. = suffix)
   return(plt)
 }
@@ -3617,9 +3621,9 @@ sparse.cor <- function(smat){
 #' @description Calculate gene correlation on a Seurat object.
 #' @param assay.use PARAM_DESCRIPTION, Default: 'RNA'
 #' @param slot.use PARAM_DESCRIPTION, Default: 'data'
-#' @param geneset PARAM_DESCRIPTION, Default: FALSE
 #' @param quantileX Quantile level, Default: 0.95
 #' @param max.cells PARAM_DESCRIPTION, Default: 10000
+#' @param seed random seed used, Default: p$seed
 #' @param seed random seed used, Default: p$seed
 #' @param digits PARAM_DESCRIPTION, Default: 2
 #' @param obj Seurat object, Default: combined.obj
@@ -3995,8 +3999,10 @@ ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.co
 #' @param value.col PARAM_DESCRIPTION, Default: 'percent.ribo'
 #' @param id.col PARAM_DESCRIPTION, Default: 'cl.names.top.gene.res.0.3'
 #' @param obj Seurat object, Default: combined.obj
+#' @param suffix Suffix for filename
 #' @param return.df PARAM_DESCRIPTION, Default: F
 #' @param label label barplot
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -4512,6 +4518,7 @@ subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, see
 #' @param obj Seurat object, Default: ORC
 #' @param fraction PARAM_DESCRIPTION, Default: 0.25
 #' @param seed random seed used, Default: 1989
+#' @param min.features Minimum features
 #' @param dir PARAM_DESCRIPTION, Default: OutDir
 #' @param suffix A suffix added to the filename, Default: ''
 #' @examples
@@ -4521,7 +4528,8 @@ subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, see
 #'  }
 #' }
 #' @export
-subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir, min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
+subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir
+                                  , min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
   obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
   nr.cells.kept <- ncol(obj_Xpc)
   saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
@@ -4741,7 +4749,7 @@ fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj = org) { # 
 #'  }
 #' }
 #' @export
-CalculateFractionInTrome <- function(geneset = c("MALAT1") # Calculate the fraction of a set of genes within the full Transcriptome of each cell.
+CalculateFractionInTrome <- function(genesCalc.Cor.Seuratet = c("MALAT1") # Calculate the fraction of a set of genes within the full Transcriptome of each cell.
                                      , obj = combined.obj
                                      , dataslot = c("counts", "data")[2]
 ) {

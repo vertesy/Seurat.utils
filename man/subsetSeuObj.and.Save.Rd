@@ -22,6 +22,8 @@ subsetSeuObj.and.Save(
 
 \item{dir}{PARAM_DESCRIPTION, Default: OutDir}
 
+\item{min.features}{Minimum features}
+
 \item{suffix}{A suffix added to the filename, Default: ''}
 }
 \description{

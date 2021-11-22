@@ -28,8 +28,6 @@ Calc.Cor.Seurat(
 \item{digits}{PARAM_DESCRIPTION, Default: 2}
 
 \item{obj}{Seurat object, Default: combined.obj}
-
-\item{geneset}{PARAM_DESCRIPTION, Default: FALSE}
 }
 \description{
 Calculate gene correlation on a Seurat object.

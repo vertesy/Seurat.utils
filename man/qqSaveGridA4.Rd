@@ -26,6 +26,8 @@ qqSaveGridA4(
 \item{width}{PARAM_DESCRIPTION, Default: wA4}
 
 \item{fname}{File name, Default: 'Fractions.Organoid-to-organoid variation.png'}
+
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 Save 2 or 4 ggplot objects using plot_grid() on an A4 page #
