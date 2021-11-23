@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+title: vertesy/Seurat.utils
+version: v0.9.6
+message: >-
+  If you use this software, please cite it using these metadata.
+type: software
+authors:
+  - given-names: Abel
+    family-names: Vertesy
+    email: abel.vertesy@imba.oeaw.ac.at
+    affiliation: IMBA
+    orcid: 'https://orcid.org/0000-0001-6075-5702'
