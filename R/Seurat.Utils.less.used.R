@@ -65,7 +65,7 @@ points_on_curve <- function(curve, lambda, ...) {
 #'  #EXAMPLE1
 #'  }
 #' }
-#' @export
+#' @export points_on_curve.principal_curve
 points_on_curve.principal_curve <- function(curve, lambda, ...) {
   if (nrow(curve$s) == length(curve$lambda)) { # didn't use approx_points
     S <- apply(curve$s, 2, function(sjj) {
@@ -101,7 +101,7 @@ points_on_curve.principal_curve <- function(curve, lambda, ...) {
 #'  #EXAMPLE1
 #'  }
 #' }
-#' @export
+#' @export points_on_curve.SlingshotDataSet
 points_on_curve.SlingshotDataSet <- function(curve, lambda, ...) {
   locs <- lapply(slingCurves(curve), function(crv) {
     points_on_curve(crv, lambda, ...)

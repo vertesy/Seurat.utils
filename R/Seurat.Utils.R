@@ -8,6 +8,7 @@
 # require(princurve) # only for AutoNumber.by.PrinCurve
 
 
+
 # _________________________________________________________________________________________________
 #' @title SmallestNonAboveX
 #' @description replace small values with the next smallest value found, which is >X. #
@@ -1346,7 +1347,7 @@ save.parameters <- function(obj = combined.obj, params = p) {
 #'  plot.expression.rank.q90(gene = "SATB2")
 #'  }
 #' }
-#' @export
+#' @export plot.expression.rank.q90
 #' @importFrom Stringendo percentage_formatter
 plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero = T) {
   expr.GOI <- obj@misc$expr.q90[gene]
@@ -2433,7 +2434,7 @@ multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHea
 #' }
 #' @seealso
 #'  \code{\link[cowplot]{save_plot}}
-#' @export
+#' @export plot.UMAP.tSNE.sidebyside
 #' @importFrom cowplot save_plot
 plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6',  # Plot a UMAP and tSNE sidebyside
                                       no_legend = F,
@@ -3292,7 +3293,7 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 #'  barplot.cells.per.cluster(); barplot.cells.per.cluster(sort = T)
 #'  }
 #' }
-#' @export
+#' @export barplot.cells.per.cluster
 barplot.cells.per.cluster <- function(obj = combined.obj, ident =  "cl.names.KnownMarkers.0.5", sort = F) {
   cell.per.cluster <- (table(obj[[ident]][,1]))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
@@ -3460,7 +3461,7 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
 #' }
 #' @seealso
 #'  \code{\link[ggcorrplot]{ggcorrplot}}
-#' @export
+#' @export plot.Metadata.Cor.Heatmap
 #' @importFrom ggcorrplot ggcorrplot
 plot.Metadata.Cor.Heatmap <- function(
   columns = c( "nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
@@ -3511,7 +3512,7 @@ plot.Metadata.Cor.Heatmap <- function(
 #' @seealso
 #'  \code{\link[dplyr]{summarise_all}}
 #'  \code{\link[reshape2]{melt}}
-#' @export
+#' @export plot.Metadata.median.fraction.barplot
 #' @importFrom dplyr summarize_all
 #' @importFrom reshape2 melt
 plot.Metadata.median.fraction.barplot <- function(
@@ -3585,7 +3586,7 @@ plot.Metadata.median.fraction.barplot <- function(
 #'  #EXAMPLE1
 #'  }
 #' }
-#' @export
+#' @export plot.Gene.Cor.Heatmap
 plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
                                   , assay.use = "RNA", slot.use = c("data", "scale.data", "data.imputed")[1], quantileX = 0.95
                                   , min.g.cor =  0.3, calc.COR = FALSE
@@ -3655,7 +3656,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 #'  plot.clust.size.distr()
 #'  }
 #' }
-#' @export
+#' @export plot.clust.size.distr
 #' @importFrom Stringendo percentage_formatter
 plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns()[2]
                                   , plot = T, thr.hist = 30, ...) {
