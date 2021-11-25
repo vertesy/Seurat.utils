@@ -2695,7 +2695,7 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
     Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
   } else { NULL }
 
-  plt <- plot_ly(data = plotting.data
+  plt <- plotly::plot_ly(data = plotting.data
                  , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
                  , type = "scatter3d"
                  , mode = "markers"
@@ -2744,7 +2744,7 @@ plot3D.umap <- function(category="v.project", obj = combined.obj # Plot a 3D uma
     Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
   } else { NULL }
 
-  plt <- plot_ly(data = plotting.data
+  plt <- plotly::plot_ly(data = plotting.data
                  , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
                  , type = "scatter3d"
                  , mode = "markers"
