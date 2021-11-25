@@ -9,7 +9,7 @@ AutoLabelTop.logFC(
   res = 0.2,
   plot.top.genes = T,
   order.by = c("combined.score", "avg_logFC", "p_val_adj")[1],
-  df_markers = combined.obj@misc$df.markers[[paste0("res.", res)]]
+  df_markers = obj@misc$df.markers[[paste0("res.", res)]]
 )
 }
 \arguments{

@@ -11,7 +11,7 @@ AutoLabel.KnownMarkers(
   KnownMarkers = c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1",
     "SALL4", "DDIT4", "PDK1", "SATB2", "FEZF2"),
   order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1],
-  df_markers = combined.obj@misc$df.markers[[paste0("res.", res)]]
+  df_markers = obj@misc$df.markers[[paste0("res.", res)]]
 )
 }
 \arguments{

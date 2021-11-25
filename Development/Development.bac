@@ -190,7 +190,7 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
                                , res = 0.2, plot.top.genes = T
                                , order.by = c("combined.score", "avg_logFC", "p_val_adj")[1]
-                               , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",res)]] ) {
+                               , df_markers = obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
   stopifnot(order.by %in% colnames(df_markers))
 
@@ -248,7 +248,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
                                    , KnownMarkers = c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1","SALL4","DDIT4", "PDK1", "SATB2", "FEZF2")
                                    , order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1]
 
-                                   , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",res)]] ) {
+                                   , df_markers = obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
 
   lfcCOL <- grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df_markers), perl = T)
@@ -2488,7 +2488,7 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
 #' @export
 PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p$'n.markers'
                                    , order.by = c("combined.score","avg_log2FC", "p_val_adj")[1]
-                                   , df_markers = combined.obj@misc$"df.markers"[[paste0("res.",cl_res)]]) {
+                                   , df_markers = obj@misc$"df.markers"[[paste0("res.",cl_res)]]) {
   topX.markers <- GetTopMarkers(df = df_markers,  n= nrGenes
                                 , order.by = order.by )
   ls.topMarkers <-  splitbyitsnames(topX.markers)
@@ -2624,7 +2624,7 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
 #' @export
 ww.check.if.3D.reduction.exist <- function(obj = obj) { # ww.check.if.3D.reduction.exist in backup slot
   if( !("UMAP_3" %in% colnames(obj@reductions$'umap'))) {
-    stopif2( is.null(combined.obj@misc$reductions.backup$'umap3d')
+    stopif2( is.null(obj@misc$reductions.backup$'umap3d')
              , "No 3D umap found in backup slot, @misc$reductions.backup. Run SetupReductionsNtoKdimensions() first.")
     RecallReduction(obj = obj, dim = 3, reduction = "umap")
   } else { # Reduction found in normal UMAP slot
@@ -2695,7 +2695,7 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
     Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
   } else { NULL }
 
-  plt <- plot_ly(data = plotting.data
+  plt <- plotly::plot_ly(data = plotting.data
                  , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
                  , type = "scatter3d"
                  , mode = "markers"
@@ -2744,7 +2744,7 @@ plot3D.umap <- function(category="v.project", obj = combined.obj # Plot a 3D uma
     Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
   } else { NULL }
 
-  plt <- plot_ly(data = plotting.data
+  plt <- plotly::plot_ly(data = plotting.data
                  , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
                  , type = "scatter3d"
                  , mode = "markers"
@@ -3604,7 +3604,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 
   if (is_null(cor.mat)) {
     iprint(slotname_cor.mat, " not found in @misc.")
-    iprint("Correlation slots present in @misc:",grepv(names(combined.obj@misc), pattern = "^cor"))
+    iprint("Correlation slots present in @misc:",grepv(names(obj@misc), pattern = "^cor"))
 
     # Calculate ------------------------------------
     if (calc.COR) {
@@ -3798,7 +3798,6 @@ ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.co
 scBarplotFractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
                                       , obj = combined.obj, return.df = F, label = F
                                       , ...) { # Calculat the fraction of cells per cluster above a certain threhold
-  # obj = combined.obj
   meta = obj@meta.data
   (df_cells_above <- meta %>%
       dplyr::select(c(id.col, value.col))  %>%
@@ -4158,6 +4157,10 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
   system(paste("gzip", fname),  wait = FALSE) # execute in the background
   try(say(), silent = T)
 }
+" BUG ABOVE !!"
+" BUG ABOVE !!"
+" BUG ABOVE !!"
+
 
 # Save an object -----------------------------------------------
 #' @title isave.RDS
