@@ -7,18 +7,17 @@ assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Description**
+...
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Load '....'
-3. Call function '....'
-4. See error
+**Expected Behavior**
+...
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Buggy Behavior**
+...
 
-**Additional context**
-Add any other context about the problem here.
+
+```r
+CODE
+
+```
