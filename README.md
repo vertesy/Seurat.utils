@@ -8,12 +8,37 @@
 
 # Installation
 
-Install directly from **GitHub** via **devtools** with one R command:
+Seurat.utils relies on:
+
+- [Stringendo](https://github.com/vertesy/Stringendo)
+- [ReadWriter](https://github.com/vertesy/ReadWriter)
+- [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2)
+- [MarkdownHelpers](https://github.com/vertesy/MarkdownHelpers)
+- [ggExpress](https://github.com/vertesy/ggExpress)
+
+... and provides functions for
+
+- [Seurat.pipeline](https://github.com/vertesy/Seurat.pipeline)
+
+
+
+You can install all of them directly from **GitHub** via **devtools** with one R command:
 
 ```R
 # install.packages("devtools"); # If you don't have it.
 require("devtools")
-devtools::install_github(repo = "vertesy/Seurat.utils")
+
+# Install dependencies
+devtools::install_github(repo = "vertesy/Stringendo", upgrade = F)
+devtools::install_github(repo = "vertesy/CodeAndRoll2", upgrade = F)
+devtools::install_github(repo = "vertesy/ReadWriter", upgrade = F)
+devtools::install_github(repo = "vertesy/MarkdownHelpers", upgrade = F)
+devtools::install_github(repo = "vertesy/Markdownreports", upgrade = F)
+devtools::install_github(repo = "vertesy/ggExpress", upgrade = F)
+
+# Install Seurat.utils
+devtools::install_github(repo = "vertesy/Seurat.utils", upgrade = F)
+
 ```
 
 ...then simply load the package:
@@ -40,7 +65,7 @@ source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/R/Seurat.U
 `https://github.com/vertesy/Seurat.utils/blob/master/R/Seurat.Utils.R`
 
 
-#### Load or install the dependencies:
+#### Check dependencies:
 
 ```R
 devtools::install_github(repo = "vertesy/CodeAndRoll2")
