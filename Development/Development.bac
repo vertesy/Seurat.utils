@@ -1,3 +1,5 @@
+
+# source("/Users/abel.vertesy/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
 # _________________________________________________________________________________________________
 # Cluster.Auto-naming.DE.R
 # _________________________________________________________________________________________________
@@ -1727,7 +1729,7 @@ subsetMonocleObject <- function(obj = cds_from_seurat, fraction_ = 0.1, nCells =
 m3.get.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2]) {
   iprint(dim, 'dimensional', slot)
   df.reduction <- obj@int_colData@listData$reducedDims[[slot]]
-  stopif(condition = is_null(df.reduction), message = paste('slot not found', slot))
+  stopif(condition = is.null(df.reduction), message = paste('slot not found', slot))
   stopifnot(ncol(df.reduction) == dim)
   return(df.reduction)
 }
@@ -2069,7 +2071,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
   if ( !missing(cells.highlight)) { highlight.these <- cells.highlight } # overwrite, if directly defined
 
 
-  if (is_null(cols)) {
+  if (is.null(cols)) {
     cols = if (NtCategs > 5) getDiscretePalette(ident.used = ident, palette.used = palette, show.colors = F)
   }
 
@@ -3602,7 +3604,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
   slotname_cor.mat <- kpp('cor', slot.use, assay.use, qname)
   cor.mat <- obj@misc[[slotname_cor.mat]]
 
-  if (is_null(cor.mat)) {
+  if (is.null(cor.mat)) {
     iprint(slotname_cor.mat, " not found in @misc.")
     iprint("Correlation slots present in @misc:",grepv(names(obj@misc), pattern = "^cor"))
 
