@@ -38,7 +38,7 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 #' @param p_val_min PARAM_DESCRIPTION, Default: 1e-25
 #' @param pval_scaling PARAM_DESCRIPTION, Default: 0.001
 #' @param colP PARAM_DESCRIPTION, Default: 'p_val'
-#' @param colLFC PARAM_DESCRIPTION, Default: grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df),
+#' @param colLFC PARAM_DESCRIPTION, Default: CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df),
 #'    perl = T)
 #' @examples
 #' \dontrun{
@@ -48,7 +48,7 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 #' }
 #' @export
 Add.DE.combined.score <- function(df = df.markers, p_val_min = 1e-25, pval_scaling = 0.001, colP = "p_val"
-                                  , colLFC = grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = T)
+                                  , colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = T)
                                   # , colLFC = "avg_log2FC"
 ) { # Score = -LOG10(p_val) * avg_log2FC
   p_cutoff <- SmallestNonAboveX(vec = df[[colP]], X = p_val_min)
@@ -253,7 +253,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
                                    , df_markers = obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
 
-  lfcCOL <- grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df_markers), perl = T)
+  lfcCOL <- CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df_markers), perl = T)
   keep <- unique(c(lfcCOL, 'p_val_adj', 'cluster', order.by, 'gene'  ))
 
 
@@ -684,7 +684,7 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
 
   geneset <- check.genes(list.of.genes = gene.set, obj = obj)
   total_expr <- Matrix::colSums(GetAssayData(object = obj))
-  genes.matching <- if (!isFALSE(gene.set)) intersect(gene.set, rownames(obj)) else grepv(pattern = gene.symbol.pattern, x = rownames(obj))
+  genes.matching <- if (!isFALSE(gene.set)) intersect(gene.set, rownames(obj)) else CodeAndRoll2::grepv(pattern = gene.symbol.pattern, x = rownames(obj))
 
   genes.expr = GetAssayData(object = obj)[genes.matching, ]
   target_expr <- if (length(genes.matching) >1) Matrix::colSums(genes.expr) else genes.expr
@@ -712,7 +712,7 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
 #' @export
 GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0-9]$") { # Get Clustering Runs: metadata column names
   if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
-  clustering.results <- grepv(x = colnames(obj@meta.data), pattern = pat)
+  clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
   if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
   return(clustering.results)
 }
@@ -737,7 +737,7 @@ GetNamedClusteringRuns <- function(obj = combined.obj  # Get Clustering Runs: me
                                    , res = c(F, 0.5)[1], topgene = F, pat = "^cl.names.Known.*[0,1]\\.[0-9]$") {
   if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
   if (topgene) pat = gsub(x = pat, pattern = 'Known', replacement = 'top')
-  clustering.results <- grepv(x = colnames(obj@meta.data), pattern = pat)
+  clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
   if ( identical(clustering.results, character(0)) ) {
     print("Warning: NO matching column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)")
     clustering.results <- GetClusteringRuns(obj = obj, res = F, pat = "*_res.*[0,1]\\.[0-9]$")
@@ -762,7 +762,7 @@ GetNamedClusteringRuns <- function(obj = combined.obj  # Get Clustering Runs: me
 #' @export
 GetOrderedClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0,1]\\.[0-9]\\.ordered$") { # Get Clustering Runs: metadata column names
   if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
-  clustering.results <- grepv(x = colnames(obj@meta.data), pattern = pat)
+  clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
   if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
   return(clustering.results)
 }
@@ -3606,7 +3606,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 
   if (is.null(cor.mat)) {
     iprint(slotname_cor.mat, " not found in @misc.")
-    iprint("Correlation slots present in @misc:",grepv(names(obj@misc), pattern = "^cor"))
+    iprint("Correlation slots present in @misc:", CodeAndRoll2::grepv(names(obj@misc), pattern = "^cor"))
 
     # Calculate ------------------------------------
     if (calc.COR) {
@@ -3904,7 +3904,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 
   # finOrig <- list.dirs(InputDir, recursive = subdirs)
   finOrig <- list.dirs.depth.n(InputDir, depth = 2)
-  fin <- grepv(x = finOrig, pattern = folderPattern, perl = regex)
+  fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
 
   iprint(length(fin), "samples found.")
   if (length(fin)) {
@@ -3960,7 +3960,7 @@ Convert10Xfolders.old <- function(InputDir # Take a parent directory with a numb
                                   , folderPattern = c("filtered", "SoupX_decont")[1]
                                   , min.cells = 10, min.features = 200, updateHGNC = T, ShowStats = T) {
   fin <- list.dirs(InputDir, recursive = F)
-  fin <- grepv(x = fin, pattern = folderPattern, perl = F)
+  fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = F)
 
   for (i in 1:length(fin)) {
     pathIN = fin[i]; print(pathIN)
@@ -4021,7 +4021,7 @@ ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a numb
                                   , min.cells = 10, min.features = 200, updateHGNC = T, ShowStats = T, minDimension = 10, overwrite = FALSE) {
   InputDir <- FixPath(InputDir)
   fin <- list.dirs(InputDir, recursive = F)
-  fin <- grepv(x = fin, pattern = folderPattern, perl = F)
+  fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = F)
 
   for (i in 1:length(fin)) { print(i)
     pathIN <- FixPath(fin[i]); print(pathIN)
@@ -4450,21 +4450,21 @@ gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) { # Check gene names in a
   llprint("### Gene name pattern")
 
   llogit('`rn = rownames(GetAssayData(object = ls.Seurat[[1]], slot = "counts"))`')
-  llogit('`head(grepv(rn, pattern = "-"), 10)`')
+  llogit('`head(CodeAndRoll2::grepv(rn, pattern = "-"), 10)`')
   print('pattern = -')
-  llprint(head(grepv(rn, pattern = "-"), 10))
+  llprint(head(CodeAndRoll2::grepv(rn, pattern = "-"), 10))
 
-  llogit('`head(grepv(rn, pattern = "_"), 10)`')
+  llogit('`head(CodeAndRoll2::grepv(rn, pattern = "_"), 10)`')
   print('pattern = _')
-  llprint(head(grepv(rn, pattern = "_"), 10))
+  llprint(head(CodeAndRoll2::grepv(rn, pattern = "_"), 10))
 
-  llogit('`head(grepv(rn, pattern = "\\."), 10)`')
+  llogit('`head(CodeAndRoll2::grepv(rn, pattern = "\\."), 10)`')
   print('pattern = \\.')
-  llprint(head(grepv(rn, pattern = "\\."), 10))
+  llprint(head(CodeAndRoll2::grepv(rn, pattern = "\\."), 10))
 
-  llogit('`head(grepv(rn, pattern = "\\.AS[1-9]"), 10)`')
+  llogit('`head(CodeAndRoll2::grepv(rn, pattern = "\\.AS[1-9]"), 10)`')
   print('pattern = \\.AS[1-9]')
-  llprint(head(grepv(rn, pattern = "\\.AS[1-9]"), 10))
+  llprint(head(CodeAndRoll2::grepv(rn, pattern = "\\.AS[1-9]"), 10))
 }
 
 
@@ -5040,7 +5040,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
     soup.LINC.sum <- sum(soupProfile[grep('^LINC', names(soupProfile))])
     soup.AC.sum <- sum(soupProfile[grep('^AC', names(soupProfile))])
     soup.AL.sum <- sum(soupProfile[grep('^AL', names(soupProfile))])
-    genes.non.Above <- soupProfile[grepv('^RPL|^RPS|^MT-|^LINC|^AC|^AL', names(soupProfile), invert = T)]
+    genes.non.Above <- soupProfile[CodeAndRoll2::grepv('^RPL|^RPS|^MT-|^LINC|^AC|^AL', names(soupProfile), invert = T)]
   }
   head(sort(genes.non.Above), n = 50)
 
