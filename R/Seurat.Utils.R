@@ -944,6 +944,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 #' }
 #' @export
 #' @importFrom Stringendo percentage_formatter
+
 calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , plot.UMAP.too = TRUE
                                   , return.plot = F
@@ -959,6 +960,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , filter = c(FALSE, 'above', 'below')[1]
                                   , ylab.text = paste("Cluster", stat, "score")
                                   , title = paste("Cluster", stat, col_name)
+                                  , prefix.cl.names= FALSE
                                   , report = TRUE
                                   , subtitle = NULL
                                   , width = 8, height =6
@@ -990,7 +992,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
 
   if (simplify) {
     av.score <- df.summary[[stat]]
-    names(av.score) <- ppp("cl",df.summary[[1]])
+    names(av.score) <- if ( !isFALSE(prefix.cl.names)) ppp("cl",df.summary[[1]]) else df.summary[[1]]
     av.score <- sortbyitsnames(av.score)
     if (scale.zscore) av.score <- (scale(av.score)[,1])
 
@@ -1018,7 +1020,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
       } else {
         p <- qbarplot(vec = av.score, save = F
                       , hline = cutoff
-                      , title = title
+                      , plotname = title
                       , suffix = quantile.thr
                       , subtitle = subtitle
                       , ylab = ylab.text
@@ -1049,6 +1051,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
     return(df.summary)
   }
 }
+
 
 # _________________________________________________________________________________________________
 #' @title seu.add.meta.from.table
@@ -3315,14 +3318,17 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 #'  }
 #' }
 #' @export barplot.cells.per.cluster
-barplot.cells.per.cluster <- function(obj = combined.obj, ident =  "cl.names.KnownMarkers.0.5", sort = F) {
+barplot.cells.per.cluster <- function(obj = combined.obj
+                                      , ident =  "cl.names.KnownMarkers.0.5"
+                                      , sort = F, ...) {
   cell.per.cluster <- (table(obj[[ident]][,1]))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
   qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
            , col = rainbow(length(cell.per.cluster))
            , xlab.angle = 45
            # , col = getClusterColors(ident = ident, show = T)
-           , palette_use = NULL, )
+           , palette_use = NULL
+           , ...)
 }
 
 
