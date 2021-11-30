@@ -1220,6 +1220,25 @@ fix.orig.ident <- function(obj = merged.obj) {
 set.all.genes <- function(obj = combined.obj) iprint("Use calc.q90.Expression.and.set.all.genes()")
 
 
+
+# _________________________________________________________________________________________________
+#' @title set.mm
+#' @description Helps to find metadata columns. It creates a list with the names of of 'obj@meta.data'.
+#' @param obj Seurat object, Default: combined.obj
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  set.mm(); mm
+#'  }
+#' }
+#' @export
+set.mm <- function(obj = combined.obj) {
+  mm <- CodeAndRoll2::list.fromNames(colnames(combined.obj@meta.data))
+  assign(x = 'mm', value = mm, envir = as.environment(1))
+}
+
+
+
 # _________________________________________________________________________________________________
 #' @title recall.all.genes
 #' @description all.genes set by calc.q90.Expression.and.set.all.genes() #
@@ -5235,3 +5254,5 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
   # So to set Max mem size to 2GB, you would run :
   options(future.globals.maxSize = maxMemSize)
 }
+
+
