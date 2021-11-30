@@ -4,7 +4,7 @@
 \alias{barplot.cells.per.cluster}
 \title{barplot.cells.per.cluster}
 \usage{
-\method{barplot}{cells.per.cluster}(obj = combined.obj, ident = "cl.names.KnownMarkers.0.5", sort = F)
+\method{barplot}{cells.per.cluster}(obj = combined.obj, ident = "cl.names.KnownMarkers.0.5", sort = F, ...)
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}

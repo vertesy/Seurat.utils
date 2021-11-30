@@ -22,6 +22,7 @@ calc.cluster.averages(
   filter = c(FALSE, "above", "below")[1],
   ylab.text = paste("Cluster", stat, "score"),
   title = paste("Cluster", stat, col_name),
+  prefix.cl.names = FALSE,
   report = TRUE,
   subtitle = NULL,
   width = 8,

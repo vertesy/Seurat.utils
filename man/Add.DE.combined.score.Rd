@@ -9,7 +9,8 @@ Add.DE.combined.score(
   p_val_min = 1e-25,
   pval_scaling = 0.001,
   colP = "p_val",
-  colLFC = grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = T)
+  colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df),
+    perl = T)
 )
 }
 \arguments{
@@ -21,7 +22,7 @@ Add.DE.combined.score(
 
 \item{colP}{PARAM_DESCRIPTION, Default: 'p_val'}
 
-\item{colLFC}{PARAM_DESCRIPTION, Default: grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df),
+\item{colLFC}{PARAM_DESCRIPTION, Default: CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df),
 perl = T)}
 }
 \description{
