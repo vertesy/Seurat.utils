@@ -2579,10 +2579,9 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
       # , `Choroid.Plexus` = "OTX2", `Choroid.Plexus` = "BMP4"
     )
   }
-  print(as_tibble_from_named_vec(Signature.Genes.Top16))
+  print(as_tibble_from_namedVec(Signature.Genes.Top16))
   multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall")
 }
-
 
 
 
