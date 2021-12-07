@@ -3317,9 +3317,10 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 #'  }
 #' }
 #' @export barplot.cells.per.cluster
-barplot.cells.per.cluster <- function(obj = combined.obj
-                                      , ident =  "cl.names.KnownMarkers.0.5"
-                                      , sort = F, ...) {
+barplot.cells.per.cluster <- function(ident =  "cl.names.KnownMarkers.0.5"
+                                      , sort = F
+                                      , obj = combined.obj
+                                      , ...) {
   cell.per.cluster <- (table(obj[[ident]][,1]))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
   qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
