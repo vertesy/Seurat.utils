@@ -20,6 +20,7 @@ require('Stringendo')
 
 # Setup ------------------------
 PackageName = 	"Seurat.utils"
+package.version = "1.2.3"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir = kollapse("~/GitHub/Packages/", PackageName, "/")
@@ -36,7 +37,7 @@ DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
     Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics &
     QC, interaction with the Seurat object, etc. Some functionalities require functions from CodeAndRoll and MarkdownReports libraries."
     , "License" = "GPL-3 + file LICENSE"
-    , "Version" = "1.2.3"
+    , "Version" = package.version
     , "Packaged" =  Sys.time()
     , "Repository" =  "CRAN"
     , "Depends" =  "Stringendo, CodeAndRoll2, ggExpress, ggplot2"
@@ -87,6 +88,13 @@ install(RepositoryDir, upgrade = F)
 # help("wplot")
 # cat("\014")
 # devtools::run_examples()
+
+{
+  "update cff version"
+  citpath <- paste0(RepositoryDir, 'CITATION.cff')
+  xfun::gsub_file(file = citpath, perl = T
+                  , "^version: v.+", paste0("version: v", package.version))
+}
 
 
 # Test if you can install from github ------------------------------------------------
