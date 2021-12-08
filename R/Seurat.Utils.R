@@ -872,10 +872,11 @@ seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.c
 #'  }
 #' }
 #' @export
-seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = clusterIDs.GO.process
+seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = clusterIDs.GO.process, orig.ident = Idents(obj)
                                               , metaD.colname = substitute(ident.table) ) { # Add a new metadata column to a Seurat  object
   # identities should match
   {
+    Idents(obj) <- orig.ident
     ident.vec <- as.named.vector(ident.table)
     ident.X <- names(ident.vec)
     ident.Y <- as.character(ident.vec)
@@ -2568,14 +2569,14 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
   Signature.Genes.Top16 <- if (custom.genes) custom.genes else
   {
     Signature.Genes.Top16  <- c(
-      `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
-      , `oRG` = "ID4", `oRG` = "HOPX" # oRG outer radial glia
-      , `Intermediate progenitor` = "EOMES",  `Intermediate progenitor1` = "TAC3"
-      , Astroglia = "GFAP", Astrocyte = "S100B"
+      `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
       , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
+      , `Intermediate progenitor` = "EOMES",  `Intermediate progenitor1` = "TAC3"
+      , `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
+      , `oRG` = "ID4", `oRG` = "HOPX" # oRG outer radial glia
+      , Astroglia = "GFAP", Astrocyte = "S100B"
       , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
       , `Low-Quality` = "POLR2A", `Choroid.Plexus` = "DCN"
-      , `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
       # , `Choroid.Plexus` = "OTX2", `Choroid.Plexus` = "BMP4"
     )
   }
@@ -5262,3 +5263,27 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
 }
 
 
+
+
+getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
+  print(GetClusteringRuns(obj))
+  clz <- as.character(sort(deframe(unique(combined.obj[[ident]]))))
+  cat(dput(clz))
+}
+
+getClusterNames()
+
+
+
+RenameClustering <- function(namedVector = ManualNames
+                             , orig.ident =  "RNA_snn_res.0.3"
+                             , new.ident = ppp(orig.ident,"ManualNames")
+                             , obj = combined.obj) {
+  NewX <- translate(vec = as.character(obj$'RNA_snn_res.0.3')
+                    , oldvalues = names(ManualNames)
+                    , newvalues = ManualNames)
+  obj@meta.data[[new.ident]] <- NewX
+  clUMAP(orig.ident)
+  clUMAP(new.ident)
+  return(obj)
+}
