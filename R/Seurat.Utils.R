@@ -5236,8 +5236,10 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 
 #' @title parallel.computing.by.future
 #' @description Run gc(), load multi-session computing and extend memory limits.
+#'
 #' @param workers_ cores
 #' @param maxMemSize memory limit
+#'
 #' @export
 parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^2) { # Run gc(), load multi-session computing and extend memory limits.
   # https://satijalab.org/seurat/v3.0/future_vignette.html
@@ -5264,6 +5266,13 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
 
 
 
+# _________________________________________________________________________________________________
+#' getClusterNames
+#'
+#' @param obj Seurat object
+#' @param ident ident
+#' @export
+#' @example getClusterNames()
 
 getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
   print(GetClusteringRuns(obj))
@@ -5271,17 +5280,25 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
   cat(dput(clz))
 }
 
-getClusterNames()
 
 
+
+# _________________________________________________________________________________________________
+#' RenameClustering
+#'
+#' @param namedVector named vector, where values = new, names(vec) = old
+#' @param orig.ident meta.data colname original
+#' @param new.ident meta.data colname new
+#' @param obj Seurat object
+#' @export
 
 RenameClustering <- function(namedVector = ManualNames
                              , orig.ident =  "RNA_snn_res.0.3"
                              , new.ident = ppp(orig.ident,"ManualNames")
                              , obj = combined.obj) {
-  NewX <- translate(vec = as.character(obj$'RNA_snn_res.0.3')
-                    , oldvalues = names(ManualNames)
-                    , newvalues = ManualNames)
+  NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
+                    , oldvalues = names(namedVector)
+                    , newvalues = namedVector)
   obj@meta.data[[new.ident]] <- NewX
   clUMAP(orig.ident)
   clUMAP(new.ident)
