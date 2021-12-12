@@ -872,10 +872,11 @@ seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.c
 #'  }
 #' }
 #' @export
-seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = clusterIDs.GO.process
+seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = clusterIDs.GO.process, orig.ident = Idents(obj)
                                               , metaD.colname = substitute(ident.table) ) { # Add a new metadata column to a Seurat  object
   # identities should match
   {
+    Idents(obj) <- orig.ident
     ident.vec <- as.named.vector(ident.table)
     ident.X <- names(ident.vec)
     ident.Y <- as.character(ident.vec)
@@ -2568,21 +2569,20 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
   Signature.Genes.Top16 <- if (custom.genes) custom.genes else
   {
     Signature.Genes.Top16  <- c(
-      `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
-      , `oRG` = "ID4", `oRG` = "HOPX" # oRG outer radial glia
-      , `Intermediate progenitor` = "EOMES",  `Intermediate progenitor1` = "TAC3"
-      , Astroglia = "GFAP", Astrocyte = "S100B"
+      `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
       , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
+      , `Intermediate progenitor` = "EOMES",  `Intermediate progenitor1` = "TAC3"
+      , `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
+      , `oRG` = "ID4", `oRG` = "HOPX" # oRG outer radial glia
+      , Astroglia = "GFAP", Astrocyte = "S100B"
       , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
       , `Low-Quality` = "POLR2A", `Choroid.Plexus` = "DCN"
-      , `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
       # , `Choroid.Plexus` = "OTX2", `Choroid.Plexus` = "BMP4"
     )
   }
-  print(as_tibble_from_named_vec(Signature.Genes.Top16))
+  print(as_tibble_from_namedVec(Signature.Genes.Top16))
   multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall")
 }
-
 
 
 
@@ -3318,9 +3318,10 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 #'  }
 #' }
 #' @export barplot.cells.per.cluster
-barplot.cells.per.cluster <- function(obj = combined.obj
-                                      , ident =  "cl.names.KnownMarkers.0.5"
-                                      , sort = F, ...) {
+barplot.cells.per.cluster <- function(ident =  "cl.names.KnownMarkers.0.5"
+                                      , sort = F
+                                      , obj = combined.obj
+                                      , ...) {
   cell.per.cluster <- (table(obj[[ident]][,1]))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
   qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
@@ -5235,8 +5236,10 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 
 #' @title parallel.computing.by.future
 #' @description Run gc(), load multi-session computing and extend memory limits.
+#'
 #' @param workers_ cores
 #' @param maxMemSize memory limit
+#'
 #' @export
 parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^2) { # Run gc(), load multi-session computing and extend memory limits.
   # https://satijalab.org/seurat/v3.0/future_vignette.html
@@ -5262,3 +5265,42 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
 }
 
 
+
+# _________________________________________________________________________________________________
+#' getClusterNames
+#'
+#' @param obj Seurat object
+#' @param ident ident
+#' @export
+#' @example getClusterNames()
+
+getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
+  print(GetClusteringRuns(obj))
+  clz <- as.character(sort(deframe(unique(combined.obj[[ident]]))))
+  cat(dput(clz))
+}
+
+
+
+
+# _________________________________________________________________________________________________
+#' RenameClustering
+#'
+#' @param namedVector named vector, where values = new, names(vec) = old
+#' @param orig.ident meta.data colname original
+#' @param new.ident meta.data colname new
+#' @param obj Seurat object
+#' @export
+
+RenameClustering <- function(namedVector = ManualNames
+                             , orig.ident =  "RNA_snn_res.0.3"
+                             , new.ident = ppp(orig.ident,"ManualNames")
+                             , obj = combined.obj) {
+  NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
+                    , oldvalues = names(namedVector)
+                    , newvalues = namedVector)
+  obj@meta.data[[new.ident]] <- NewX
+  clUMAP(orig.ident)
+  clUMAP(new.ident)
+  return(obj)
+}

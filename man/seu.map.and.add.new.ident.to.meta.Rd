@@ -7,6 +7,7 @@
 seu.map.and.add.new.ident.to.meta(
   obj = combined.obj,
   ident.table = clusterIDs.GO.process,
+  orig.ident = Idents(obj),
   metaD.colname = substitute(ident.table)
 )
 }
