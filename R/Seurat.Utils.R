@@ -1107,7 +1107,7 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc = 0.1) { # Sample N % 
 
 
 # _________________________________________________________________________________________________
-#' @title calc.q95.Expression.and.set.all.genes
+#' @title calc.q99.Expression.and.set.all.genes
 #' @description Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells). #
 #' @param obj Seurat object, Default: combined.obj
 #' @param quantileX Quantile level, Default: 0.9
@@ -1119,7 +1119,6 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc = 0.1) { # Sample N % 
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  combined.obj <- calc.q95.Expression.and.set.all.genes(obj = combined.obj, quantileX = 0.9,
 #'  combined.obj <- calc.q99.Expression.and.set.all.genes(obj = combined.obj, quantileX = 0.9,
 #'  max.cells =  25000)
 #'  head(sort(as.numeric.wNames(obj@misc$expr.q90), decreasing = T))
