@@ -190,8 +190,9 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 #' }
 #' @export
 AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
+                               , ident = GetClusteringRuns()[1]
                                , res = 0.2, plot.top.genes = T
-                               , order.by = c("combined.score", "avg_logFC", "p_val_adj")[1]
+                               , order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]
                                , df_markers = obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
   stopifnot(order.by %in% colnames(df_markers))
@@ -202,7 +203,8 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 
   obj@misc[[ppp("top.markers.res",res)]] <- top.markers
 
-  ids <- unique(Idents(object = obj))
+
+  ids <- deframe(unique(obj[[ident]]))
   if(length(ids) != length(top.markers)) {
     warning("Not all clusters returned DE-genes!")
     missing <- setdiff(ids, names(top.markers));  names(missing) <- missing
@@ -221,6 +223,8 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 
   return(obj)
 }
+
+
 
 
 
@@ -5329,4 +5333,21 @@ RenameClustering <- function(namedVector = ManualNames
   clUMAP(orig.ident)
   clUMAP(new.ident)
   return(obj)
+}
+
+# _________________________________________________________________________________________________
+#' IntersectWithExpressed
+#'
+#' @param genes
+#' @param obj Seurat object
+#' @param genes.shown
+#' @export
+
+"Duplicated with gruffi"
+IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { # Intersect a set of genes with genes in the Seurat object.
+  print('IntersectWithExpressed()')
+  # print(head(genes, n=15))
+  diff = setdiff(genes, rownames(obj))
+  Stringendo::iprint(length(diff),"genes (of",length(genes), ") are MISSING from the Seurat object:",head(diff, genes.shown))
+  return(intersect(rownames(obj), genes))
 }
