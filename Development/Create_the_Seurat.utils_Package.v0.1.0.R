@@ -39,7 +39,7 @@ DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
     , "License" = "GPL-3 + file LICENSE"
     , "Version" = package.version
     , "Packaged" =  Sys.time()
-    , "Repository" =  "CRAN"
+    # , "Repository" =  "CRAN"
     , "Depends" =  "Stringendo, CodeAndRoll2, ggExpress, ggplot2"
     , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
     htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter,
