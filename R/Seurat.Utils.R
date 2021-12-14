@@ -1197,8 +1197,8 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
 #'  }
 #' }
 #' @export
-PlotTopGenes <- function(obj = combined.obj, n = 32 ){ # Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before.
-  Highest.Expressed.Genes = names(head(sort(obj@misc$expr.q90, decreasing = T), n = n))
+PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = 'expr.q99'){ # Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before.
+  Highest.Expressed.Genes = names(head(sort(obj@misc[[exp.slot]], decreasing = T), n = n))
   multiFeaturePlot.A4(list.of.genes = Highest.Expressed.Genes, foldername = "Highest.Expressed.Genes" )
 }
 
