@@ -2016,7 +2016,8 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , h = 7, w = NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
                    , axes = T
-                   , HGNC.lookup= TRUE, make.uppercase = TRUE
+                   , HGNC.lookup= TRUE
+                   , make.uppercase = FALSE
                    , qlow = "q10", qhigh = "q90", ...) {
 
   if ( !(feature %in% colnames(obj@meta.data))) {
@@ -2550,6 +2551,8 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
 #' @param feature2 PARAM_DESCRIPTION, Default: 'ID2'
 #' @param obj Seurat object, Default: combined.obj
 #' @param ext File extension for saving, Default: 'png'
+#' @param logX logX
+#' @param logY logY
 #' @param plot PARAM_DESCRIPTION, Default: TRUE
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
@@ -2560,12 +2563,48 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
 #' }
 #' @export
 qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj
-                            , ext ="png", plot = TRUE, ...) {
+                            , ext ="png", plot = TRUE
+                            , logX = F, logY = F
+                            , ...) {
   plotname <- kpp(feature1,"VS", feature2)
-  p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2, ...)
+  p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2, ...) +
+    ggtitle(paste("Correlation", plotname)) +
+    theme_linedraw()
+
+  if (logX) p <- p + scale_x_log10()
+  if (logY) p <- p + scale_y_log10()
+
   fname = kpp("FeatureScatter", plotname)
-  qqSave(ggobj = p, title = plotname, ext = ext)
+  qqSave(ggobj = p, title = plotname, ext = ext, w = 8, h = 5)
   if (plot) p
+}
+
+# _________________________________________________________________________________________________
+#' @title qQC.plots.BrainOrg
+#' @description Quickly plot key QC markers in brain organoids
+#' @param QC.Features Any numeric metadata columns
+#' @param obj Seurat object, Default: combined.obj
+#'
+#' @examples qQC.plots.BrainOrg.RV()
+#' @export
+
+qQC.plots.BrainOrg <- function(obj = combined.obj, title = "Top 4 QC markers on UMAP"
+                               , nrow = 2, ncol = 2
+                               , QC.Features = c('nFeature_RNA', 'percent.ribo', 'percent.mito', 'log10.HGA_Markers')) {
+  print(QC.Features)
+  n.found <- setdiff(QC.Features, colnames(obj@meta.data))
+  stopif(length(n.found),message = paste("n.found:", n.found))
+  px <- list(
+    'A' = qUMAP(QC.Features[1], save.plot = F, obj = obj) + NoAxes(),
+    'B' = qUMAP(QC.Features[2], save.plot = F, obj = obj) + NoAxes(),
+    'C' = qUMAP(QC.Features[3], save.plot = F, obj = obj) + NoAxes(),
+    'D' = qUMAP(QC.Features[4], save.plot = F, obj = obj) + NoAxes()
+  )
+  qA4_grid_plot(plot_list = px
+                , plotname = title
+                , w = hA4, h = wA4
+                , nrow = nrow, ncol = ncol
+  )
 }
 
 # _________________________________________________________________________________________________
@@ -2581,7 +2620,7 @@ qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined
 #' }
 #' @export
 qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
-  Signature.Genes.Top16 <- if (custom.genes) custom.genes else
+  Signature.Genes.Top16 <- if (!isFALSE(custom.genes)) custom.genes else
   {
     Signature.Genes.Top16  <- c(
       `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
@@ -2598,6 +2637,8 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
   print(as_tibble_from_namedVec(Signature.Genes.Top16))
   multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall")
 }
+
+
 
 
 
