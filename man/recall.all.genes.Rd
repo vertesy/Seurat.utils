@@ -10,7 +10,7 @@ recall.all.genes(obj = combined.obj)
 \item{obj}{Seurat object, Default: combined.obj}
 }
 \description{
-all.genes set by calc.q90.Expression.and.set.all.genes() #
+all.genes set by calc.q99.Expression.and.set.all.genes() #
 }
 \examples{
 \dontrun{

@@ -5384,7 +5384,6 @@ RenameClustering <- function(namedVector = ManualNames
 #' @param genes.shown
 #' @export
 
-"Duplicated with gruffi"
 IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { # Intersect a set of genes with genes in the Seurat object.
   print('IntersectWithExpressed()')
   # print(head(genes, n=15))

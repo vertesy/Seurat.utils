@@ -190,8 +190,9 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 #' }
 #' @export
 AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
+                               , ident = GetClusteringRuns()[1]
                                , res = 0.2, plot.top.genes = T
-                               , order.by = c("combined.score", "avg_logFC", "p_val_adj")[1]
+                               , order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]
                                , df_markers = obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
   stopifnot(order.by %in% colnames(df_markers))
@@ -202,7 +203,8 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 
   obj@misc[[ppp("top.markers.res",res)]] <- top.markers
 
-  ids <- unique(Idents(object = obj))
+
+  ids <- deframe(unique(obj[[ident]]))
   if(length(ids) != length(top.markers)) {
     warning("Not all clusters returned DE-genes!")
     missing <- setdiff(ids, names(top.markers));  names(missing) <- missing
@@ -221,6 +223,8 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 
   return(obj)
 }
+
+
 
 
 
@@ -582,7 +586,7 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 # - calc.cluster.averages
 # - seu.add.meta.from.table
 # - sampleNpc
-# - calc.q90.Expression.and.set.all.genes
+# - calc.q99.Expression.and.set.all.genes
 # - PlotTopGenes
 # - fix.orig.ident
 # - set.all.genes
@@ -1107,7 +1111,7 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc = 0.1) { # Sample N % 
 
 
 # _________________________________________________________________________________________________
-#' @title calc.q90.Expression.and.set.all.genes
+#' @title calc.q99.Expression.and.set.all.genes
 #' @description Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells). #
 #' @param obj Seurat object, Default: combined.obj
 #' @param quantileX Quantile level, Default: 0.9
@@ -1119,10 +1123,10 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc = 0.1) { # Sample N % 
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  combined.obj <- calc.q90.Expression.and.set.all.genes(obj = combined.obj, quantileX = 0.9,
+#'  combined.obj <- calc.q99.Expression.and.set.all.genes(obj = combined.obj, quantileX = 0.9,
 #'  max.cells =  25000)
 #'  head(sort(as.numeric.wNames(obj@misc$expr.q90), decreasing = T))
-#'  combined.obj <- calc.q90.Expression.and.set.all.genes(obj = combined.obj, quantileX = 0.95,
+#'  combined.obj <- calc.q99.Expression.and.set.all.genes(obj = combined.obj, quantileX = 0.95,
 #'  max.cells =  25000, set.all.genes = FALSE)
 #'  }
 #' }
@@ -1131,8 +1135,8 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc = 0.1) { # Sample N % 
 #' @export
 #' @importFrom tictoc tic toc
 #' @importFrom sparseMatrixStats rowQuantiles
-calc.q90.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
-                                                  , quantileX = 0.9, max.cells =  100000
+calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
+                                                  , quantileX = 0.99, max.cells =  1e5
                                                   , slot = "data", assay = c("RNA", "integrated")[1]
                                                   , set.all.genes = TRUE, show = TRUE) {
   tictoc::tic()
@@ -1144,27 +1148,39 @@ calc.q90.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
   qname = paste0("q", quantileX * 100)
   slot_name = kpp("expr", qname)
 
-  # expr.q90 = iround(apply(x, 1, quantile, probs = quantileX) )
-  expr.q90.df = sparseMatrixStats::rowQuantiles(x, probs = quantileX)
-  expr.q90 = iround(as.named.vector(expr.q90.df))
+  # expr.q99 = iround(apply(x, 1, quantile, probs = quantileX) )
+  print("Calculating Gene Quantiles")
+  expr.q99.df = sparseMatrixStats::rowQuantiles(x, probs = quantileX)
+  expr.q99 = iround(expr.q99.df)
+  # expr.q99 = iround(as.named.vector(expr.q99.df))
   toc();
 
-  log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q90 + 1)) # strip names
+  log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q99 + 1)) # strip names
+  n.cells <- floor(ncol(combined.obj) * (1-quantileX) )
+  qnameP <- p0(100*quantileX,'th quantile')
   try(
     qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30
-               , plotname = kpp("log2.gene.expr.of.the ", qname," quantile")
-               , subtitle = kollapse(pc_TRUE(expr.q90 > 0, NumberAndPC = T), " genes have ", qname ," expr. > 0.")
-               , xlab = paste0("log2(expr.",qname,"+1) [UMI]"), ylab = "Genes"
-               , plot = show, save = TRUE, vline  = .2)
+               , plotname = paste("Gene expression in the", qnameP )
+               , subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = T), " genes have ", qname ," expr. > 0.")
+               , caption = paste(n.cells, 'cells in', qnameP)
+               , xlab = paste0("log2(expr. in the ", qnameP,"quantile+1) [UMI]")
+               , ylab = "Nr. of genes"
+               , plot = show, save = TRUE
+               , vline  = .15
+               , filtercol = T
+               , palette_use = 'npg'
+    )
     , silent = TRUE)
 
   {
-    all.genes = percent_rank(expr.q90); names(all.genes) = names(expr.q90); all.genes <- sort.decreasing(all.genes)
+    all.genes = percent_rank(expr.q99);
+    names(all.genes) = names(expr.q99);
+    all.genes <- sort.decreasing(all.genes)
     if (set.all.genes) obj@misc$'all.genes' = all.genes = as.list(all.genes)
     assign('all.genes', all.genes, envir = as.environment(1))
   }
 
-  obj@misc[[slot_name]] <-  expr.q90
+  obj@misc[[slot_name]] <-  expr.q99
 
   iprint('Quantile', quantileX ,'is now stored under obj@misc$all.genes and $', slot_name, ' Please execute all.genes <- obj@misc$all.genes.')
   return(obj)
@@ -1173,10 +1189,9 @@ calc.q90.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
 
 
 
-
 # _________________________________________________________________________________________________
 #' @title PlotTopGenes
-#' @description Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q90.Expression.and.set.all.genes before. #
+#' @description Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param n PARAM_DESCRIPTION, Default: 32
 #' @examples
@@ -1186,8 +1201,8 @@ calc.q90.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
 #'  }
 #' }
 #' @export
-PlotTopGenes <- function(obj = combined.obj, n = 32 ){ # Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q90.Expression.and.set.all.genes before.
-  Highest.Expressed.Genes = names(head(sort(obj@misc$expr.q90, decreasing = T), n = n))
+PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = 'expr.q99'){ # Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before.
+  Highest.Expressed.Genes = names(head(sort(obj@misc[[exp.slot]], decreasing = T), n = n))
   multiFeaturePlot.A4(list.of.genes = Highest.Expressed.Genes, foldername = "Highest.Expressed.Genes" )
 }
 
@@ -1212,7 +1227,7 @@ fix.orig.ident <- function(obj = merged.obj) {
 
 # _________________________________________________________________________________________________
 #' @title set.all.genes
-#' @description It is just a reminder to use calc.q90.Expression.and.set.all.genes to create the all.genes variable
+#' @description It is just a reminder to use calc.q99.Expression.and.set.all.genes to create the all.genes variable
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
 #' \dontrun{
@@ -1221,7 +1236,7 @@ fix.orig.ident <- function(obj = merged.obj) {
 #'  }
 #' }
 #' @export
-set.all.genes <- function(obj = combined.obj) iprint("Use calc.q90.Expression.and.set.all.genes()")
+set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.and.set.all.genes()")
 
 
 
@@ -1245,7 +1260,7 @@ set.mm <- function(obj = combined.obj) {
 
 # _________________________________________________________________________________________________
 #' @title recall.all.genes
-#' @description all.genes set by calc.q90.Expression.and.set.all.genes() #
+#' @description all.genes set by calc.q99.Expression.and.set.all.genes() #
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
 #' \dontrun{
@@ -1254,7 +1269,7 @@ set.mm <- function(obj = combined.obj) {
 #'  }
 #' }
 #' @export
-recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q90.Expression.and.set.all.genes()
+recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q99.Expression.and.set.all.genes()
   if (!exists('all.genes')) {
     all.genes <- obj@misc$all.genes
     print(head(unlist(all.genes)))
@@ -2001,7 +2016,8 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , h = 7, w = NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
                    , axes = T
-                   , HGNC.lookup= TRUE, make.uppercase = TRUE
+                   , HGNC.lookup= TRUE
+                   , make.uppercase = FALSE
                    , qlow = "q10", qhigh = "q90", ...) {
 
   if ( !(feature %in% colnames(obj@meta.data))) {
@@ -2535,6 +2551,8 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
 #' @param feature2 PARAM_DESCRIPTION, Default: 'ID2'
 #' @param obj Seurat object, Default: combined.obj
 #' @param ext File extension for saving, Default: 'png'
+#' @param logX logX
+#' @param logY logY
 #' @param plot PARAM_DESCRIPTION, Default: TRUE
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
@@ -2545,12 +2563,48 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
 #' }
 #' @export
 qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj
-                            , ext ="png", plot = TRUE, ...) {
+                            , ext ="png", plot = TRUE
+                            , logX = F, logY = F
+                            , ...) {
   plotname <- kpp(feature1,"VS", feature2)
-  p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2, ...)
+  p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2, ...) +
+    ggtitle(paste("Correlation", plotname)) +
+    theme_linedraw()
+
+  if (logX) p <- p + scale_x_log10()
+  if (logY) p <- p + scale_y_log10()
+
   fname = kpp("FeatureScatter", plotname)
-  qqSave(ggobj = p, title = plotname, ext = ext)
+  qqSave(ggobj = p, title = plotname, ext = ext, w = 8, h = 5)
   if (plot) p
+}
+
+# _________________________________________________________________________________________________
+#' @title qQC.plots.BrainOrg
+#' @description Quickly plot key QC markers in brain organoids
+#' @param QC.Features Any numeric metadata columns
+#' @param obj Seurat object, Default: combined.obj
+#'
+#' @examples qQC.plots.BrainOrg.RV()
+#' @export
+
+qQC.plots.BrainOrg <- function(obj = combined.obj, title = "Top 4 QC markers on UMAP"
+                               , nrow = 2, ncol = 2
+                               , QC.Features = c('nFeature_RNA', 'percent.ribo', 'percent.mito', 'log10.HGA_Markers')) {
+  print(QC.Features)
+  n.found <- setdiff(QC.Features, colnames(obj@meta.data))
+  stopif(length(n.found),message = paste("n.found:", n.found))
+  px <- list(
+    'A' = qUMAP(QC.Features[1], save.plot = F, obj = obj) + NoAxes(),
+    'B' = qUMAP(QC.Features[2], save.plot = F, obj = obj) + NoAxes(),
+    'C' = qUMAP(QC.Features[3], save.plot = F, obj = obj) + NoAxes(),
+    'D' = qUMAP(QC.Features[4], save.plot = F, obj = obj) + NoAxes()
+  )
+  qA4_grid_plot(plot_list = px
+                , plotname = title
+                , w = hA4, h = wA4
+                , nrow = nrow, ncol = ncol
+  )
 }
 
 # _________________________________________________________________________________________________
@@ -2566,7 +2620,7 @@ qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined
 #' }
 #' @export
 qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
-  Signature.Genes.Top16 <- if (custom.genes) custom.genes else
+  Signature.Genes.Top16 <- if (!isFALSE(custom.genes)) custom.genes else
   {
     Signature.Genes.Top16  <- c(
       `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
@@ -2583,6 +2637,8 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
   print(as_tibble_from_namedVec(Signature.Genes.Top16))
   multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall")
 }
+
+
 
 
 
@@ -3417,6 +3473,8 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
 #'  }
 #' }
 #' @export
+#'
+#'
 sparse.cor <- function(smat){
   n <- nrow(smat)
   cMeans <- colMeans(smat)
@@ -3424,6 +3482,16 @@ sparse.cor <- function(smat){
   sdvec <- sqrt(diag(covmat))
   cormat <- covmat / tcrossprod(sdvec)
   list(cov = covmat, cor = cormat)
+}
+
+
+sparse.cor4 <- function(x){
+  n <- nrow(x)
+  cMeans <- colMeans(x)
+  covmat <- (as.matrix(crossprod(x)) - n*tcrossprod(cMeans))/(n-1)
+  sdvec <- sqrt(diag(covmat))
+  cormat <- covmat/tcrossprod(sdvec)
+  list(cov=covmat,cor=cormat)
 }
 
 # Calc.Cor.Seurat ------------------------------------------------
@@ -3440,7 +3508,7 @@ sparse.cor <- function(smat){
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX = 0.99, max.cells =  400000, set.all.genes = F)
+#'  combined.obj <- calc.q99.Expression.and.set.all.genes(combined.obj, quantileX = 0.99, max.cells =  400000, set.all.genes = F)
 #'  combined.obj <- Calc.Cor.Seurat(assay.use = "RNA", slot.use = "data", digits = 2, obj = combined.obj, quantile = 0.99, max.cells = 40000)
 #'  }
 #' }
@@ -3453,12 +3521,14 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
   if (ncol(expr.mat) > max.cells) {
     set.seed(seed = seed)
     cells.use <- sample(x = colnames(expr.mat), size = max.cells)
+  } else {
+    cells.use <- ncol(expr.mat)
   }
 
   qname = paste0("q", quantileX * 100)
   quantile_name = kpp("expr", qname)
 
-  if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX," first )")
+  if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- calc.q99.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX," first )")
   genes.HE = which_names(obj@misc[[quantile_name]] > 0)
   iprint("Pearson correlation is calculated for", length(genes.HE), "HE genes with expr.",qname,": > 0.")
   tictoc::tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
@@ -3470,6 +3540,7 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
   iprint("Stored under obj@misc$", kpp('cor', slot.use, assay.use), "or cov... ." )
   return(obj)
 }
+
 
 # _________________________________________________________________________________________________
 #' @title plot.Metadata.Cor.Heatmap
@@ -5303,4 +5374,21 @@ RenameClustering <- function(namedVector = ManualNames
   clUMAP(orig.ident)
   clUMAP(new.ident)
   return(obj)
+}
+
+# _________________________________________________________________________________________________
+#' IntersectWithExpressed
+#'
+#' @param genes
+#' @param obj Seurat object
+#' @param genes.shown
+#' @export
+
+"Duplicated with gruffi"
+IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { # Intersect a set of genes with genes in the Seurat object.
+  print('IntersectWithExpressed()')
+  # print(head(genes, n=15))
+  diff = setdiff(genes, rownames(obj))
+  Stringendo::iprint(length(diff),"genes (of",length(genes), ") are MISSING from the Seurat object:",head(diff, genes.shown))
+  return(intersect(rownames(obj), genes))
 }

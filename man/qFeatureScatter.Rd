@@ -10,6 +10,8 @@ qFeatureScatter(
   obj = combined.obj,
   ext = "png",
   plot = TRUE,
+  logX = F,
+  logY = F,
   ...
 )
 }
@@ -23,6 +25,10 @@ qFeatureScatter(
 \item{ext}{File extension for saving, Default: 'png'}
 
 \item{plot}{PARAM_DESCRIPTION, Default: TRUE}
+
+\item{logX}{logX}
+
+\item{logY}{logY}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }

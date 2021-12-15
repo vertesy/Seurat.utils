@@ -20,7 +20,7 @@ qUMAP(
   assay = c("RNA", "integrated")[1],
   axes = T,
   HGNC.lookup = TRUE,
-  make.uppercase = TRUE,
+  make.uppercase = FALSE,
   qlow = "q10",
   qhigh = "q90",
   ...

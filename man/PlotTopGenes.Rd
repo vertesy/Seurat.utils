@@ -4,7 +4,7 @@
 \alias{PlotTopGenes}
 \title{PlotTopGenes}
 \usage{
-PlotTopGenes(obj = combined.obj, n = 32)
+PlotTopGenes(obj = combined.obj, n = 32, exp.slot = "expr.q99")
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
@@ -12,7 +12,7 @@ PlotTopGenes(obj = combined.obj, n = 32)
 \item{n}{PARAM_DESCRIPTION, Default: 32}
 }
 \description{
-Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q90.Expression.and.set.all.genes before. #
+Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before. #
 }
 \examples{
 \dontrun{
