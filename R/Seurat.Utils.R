@@ -3381,21 +3381,24 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 #' }
 #' @export barplot.cells.per.cluster
 
-scBarplot.cells.per.cluster <- function(ident =  GetNamedClusteringRuns()[1]
-                                      , sort = F
-                                      , label = F
-                                      , obj = combined.obj
-                                      , ...) {
-  cell.per.cluster <- (table(obj[[ident]][,1]))
+scBarplot.cells.per.cluster <- function(ident =  GetOrderedClusteringRuns()[1]
+                                        , sort = F
+                                        , label = T
+                                        , palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
+                                        , obj = combined.obj
+                                        , ...) {
+  cell.per.cl <- obj[[ident]][,1]
+  cell.per.cluster <- (table(cell.per.cl))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
   lbl <- if (isFALSE(label)) NULL else if(isTRUE(label)) cell.per.cluster else label
 
+  n.clusters <- length(cell.per.cluster)
   qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
-           , col = rainbow(length(cell.per.cluster))
+           , col = 1:n.clusters
            , xlab.angle = 45
            , label = lbl
            # , col = getClusterColors(ident = ident, show = T)
-           , palette_use = NULL
+           , palette_use = DiscretePalette(n = n.clusters, palette = palette)
            , ...)
 }
 
