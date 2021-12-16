@@ -1273,7 +1273,7 @@ recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q99.E
   if (!exists('all.genes')) {
     all.genes <- obj@misc$all.genes
     print(head(unlist(all.genes)))
-    ww.assign_to_global(name = "all.genes", value = all.genes)
+    ww.assign_to_global(name = "all.genes", value = all.genes, verbose = F)
   } else {print("variable 'all.genes' exits in the global namespace")}
 }
 
@@ -1507,20 +1507,26 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F)
 #' @export
 #' @importFrom scales hue_pal
 getClusterColors <- function(obj = combined.obj
+                             , use_new_palettes = TRUE
+                             , palette =  c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
                              , ident = GetClusteringRuns()[1]
                              , show = T) {
   (identities <- levels(as.factor(obj[[ident]][,1])))
-  color_palette <- scales::hue_pal()(length(identities))
+  n.clusters <- length(unique(obj[[ident]][,1]))
+  color_palette <- if (use_new_palettes) {
+    DiscretePalette(n = n.clusters, palette = palette)
+  } else {
+    scales::hue_pal()(length(identities))
+  }
   # color_check(color_palette)
   # names(color_palette) <- sort(as.factor(identities))
-  names(color_palette) <- ((identities))
+  names(color_palette) <- (identities)
   identvec <- obj[[ident]][,1]
   colz <- color_palette[identvec]
   names(colz) <- identvec
   if (show) color_check(unique(colz)) # MarkdownReports
   colz
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -3362,7 +3368,7 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 
 
 # _________________________________________________________________________________________________
-#' @title barplot.cells.per.cluster
+#' @title scBarplot.cells.per.cluster
 #' @description Barplot the Fraction of cells per cluster. (dupl?)
 #' @param obj Seurat object, Default: combined.obj
 #' @param ident identity used, Default: 'cl.names.KnownMarkers.0.5'
@@ -3370,26 +3376,31 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  barplot.cells.per.cluster(); barplot.cells.per.cluster(sort = T)
+#'  scBarplot.cells.per.cluster(); barplot.cells.per.cluster(sort = T)
 #'  }
 #' }
 #' @export barplot.cells.per.cluster
-barplot.cells.per.cluster <- function(ident =  "cl.names.KnownMarkers.0.5"
+
+scBarplot.cells.per.cluster <- function(ident =  GetNamedClusteringRuns()[1]
                                       , sort = F
+                                      , label = F
                                       , obj = combined.obj
                                       , ...) {
   cell.per.cluster <- (table(obj[[ident]][,1]))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
+  lbl <- if (isFALSE(label)) NULL else if(isTRUE(label)) cell.per.cluster else label
+
   qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
            , col = rainbow(length(cell.per.cluster))
            , xlab.angle = 45
+           , label = lbl
            # , col = getClusterColors(ident = ident, show = T)
            , palette_use = NULL
            , ...)
 }
 
 
-
+# getClusterColors(ident = )
 
 # _________________________________________________________________________________________________
 #' @title BulkGEScatterPlot
