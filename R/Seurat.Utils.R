@@ -686,17 +686,19 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
   stopif2(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
-  geneset <- check.genes(list.of.genes = gene.set, obj = obj)
+  if (!isFALSE(gene.set)) geneset <- check.genes(list.of.genes = gene.set, obj = obj)
   total_expr <- Matrix::colSums(GetAssayData(object = obj))
   genes.matching <- if (!isFALSE(gene.set)) intersect(gene.set, rownames(obj)) else CodeAndRoll2::grepv(pattern = gene.symbol.pattern, x = rownames(obj))
 
   genes.expr = GetAssayData(object = obj)[genes.matching, ]
   target_expr <- if (length(genes.matching) >1) Matrix::colSums(genes.expr) else genes.expr
+
+  iprint(length(genes.matching), "genes found, :", head(genes.matching))
+
   obj <- AddMetaData(object = obj, metadata = target_expr / total_expr, col.name = col.name)
   colnames(obj@meta.data)
   return(obj)
 }
-
 
 
 
@@ -3386,6 +3388,7 @@ scBarplot.cells.per.cluster <- function(ident =  GetOrderedClusteringRuns()[1]
                                         , label = T
                                         , palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
                                         , obj = combined.obj
+                                        , return_table = F
                                         , ...) {
   cell.per.cl <- obj[[ident]][,1]
   cell.per.cluster <- (table(cell.per.cl))
@@ -3393,13 +3396,18 @@ scBarplot.cells.per.cluster <- function(ident =  GetOrderedClusteringRuns()[1]
   lbl <- if (isFALSE(label)) NULL else if(isTRUE(label)) cell.per.cluster else label
 
   n.clusters <- length(cell.per.cluster)
-  qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
-           , col = 1:n.clusters
-           , xlab.angle = 45
-           , label = lbl
-           # , col = getClusterColors(ident = ident, show = T)
-           , palette_use = DiscretePalette(n = n.clusters, palette = palette)
-           , ...)
+  if (return_table) {
+    cell.per.cluster
+  } else {
+    qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
+             , col = 1:n.clusters
+             , xlab.angle = 45
+             , label = lbl
+             # , col = getClusterColors(ident = ident, show = T)
+             , palette_use = DiscretePalette(n = n.clusters, palette = palette)
+             , ...)
+  }
+
 }
 
 

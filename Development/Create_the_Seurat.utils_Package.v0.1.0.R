@@ -20,7 +20,7 @@ require('Stringendo')
 
 # Setup ------------------------
 PackageName = 	"Seurat.utils"
-package.version = "1.2.4"
+package.version = "1.2.5"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir = kollapse("~/GitHub/Packages/", PackageName, "/")
@@ -78,6 +78,13 @@ setwd(RepositoryDir)
 getwd()
 document()
 
+{
+  "update cff version"
+  citpath <- paste0(RepositoryDir, 'CITATION.cff')
+  xfun::gsub_file(file = citpath, perl = T
+                  , "^version: v.+", paste0("version: v", package.version))
+}
+
 
 # Install your package ------------------------------------------------
 # # setwd(RepositoryDir)
@@ -88,13 +95,6 @@ install(RepositoryDir, upgrade = F)
 # help("wplot")
 # cat("\014")
 # devtools::run_examples()
-
-{
-  "update cff version"
-  citpath <- paste0(RepositoryDir, 'CITATION.cff')
-  xfun::gsub_file(file = citpath, perl = T
-                  , "^version: v.+", paste0("version: v", package.version))
-}
 
 
 # Test if you can install from github ------------------------------------------------

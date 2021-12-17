@@ -4,7 +4,13 @@
 \alias{getClusterColors}
 \title{getClusterColors}
 \usage{
-getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[1], show = T)
+getClusterColors(
+  obj = combined.obj,
+  use_new_palettes = TRUE,
+  palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
+  ident = GetClusteringRuns()[1],
+  show = T
+)
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
