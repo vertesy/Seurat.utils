@@ -50,6 +50,6 @@ Imports:
 Suggests: 
     SoupX
 Encoding: UTF-8
-Packaged: 2021-12-17 10:24:42
+Packaged: 2021-12-17 10:26:14
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2

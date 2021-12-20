@@ -3378,10 +3378,10 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  scBarplot.cells.per.cluster(); barplot.cells.per.cluster(sort = T)
+#'  scBarplot.cells.per.cluster(); scBarplot.cells.per.cluster(sort = T)
 #'  }
 #' }
-#' @export barplot.cells.per.cluster
+#' @export scBarplot.cells.per.cluster
 
 scBarplot.cells.per.cluster <- function(ident =  GetOrderedClusteringRuns()[1]
                                         , sort = F
