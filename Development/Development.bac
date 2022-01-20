@@ -4009,6 +4009,7 @@ scBarplotFractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', i
 #' @param min.features PARAM_DESCRIPTION, Default: 200
 #' @param updateHGNC PARAM_DESCRIPTION, Default: T
 #' @param ShowStats PARAM_DESCRIPTION, Default: T
+#' @param writeCBCtable write out a list of cell barcodes (CBC) as tsv, Default: T
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -4019,7 +4020,8 @@ scBarplotFractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', i
 Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
                               , regex = F, folderPattern = c("filtered_feature", "SoupX_decont")[1]
                               , min.cells = 5, min.features = 200
-                              , updateHGNC = T, ShowStats = T) {
+                              , updateHGNC = T, ShowStats = T
+                              , writeCBCtable = TRUE) {
 
   # finOrig <- list.dirs(InputDir, recursive = subdirs)
   finOrig <- list.dirs.depth.n(InputDir, depth = 2)
@@ -4032,10 +4034,8 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
       # fnameIN = basename(dirname(xx))
       fnameIN = strsplit(basename(dirname(fin[i])),split = "_")[[1]][1]
       print(fnameIN)
-      fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
-      print(fnameOUT)
-      count_matrix <- Read10X(pathIN)
 
+      count_matrix <- Read10X(pathIN)
       if ( !is.list(count_matrix) | length(count_matrix) == 1) {
         seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
                                   min.cells = min.cells, min.features = min.features)
@@ -4050,9 +4050,24 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
       } else {
         print('More than 2 elements in the list of matrices')
       }
+
+      ncells = ncol(seu)
+      fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features, 'cells', ncells, "Rds")
+      print(fnameOUT)
+
+
       # update----
       if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
       saveRDS(seu, file = fnameOUT)
+
+      # write cellIDs ----
+      if (writeCBCtable) {
+        fnameCBC <- ppp(fnameOUT, "CBC.tsv")
+        CBCs <- t(t(colnames(seu)))
+        write.simple.tsv(CBCs, ManualName = fnameCBC)
+
+      }
+
     }
   } else { iprint("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3]) }
 }
