@@ -7,7 +7,11 @@
 IntersectWithExpressed(genes, obj = combined.obj, genes.shown = 10)
 }
 \arguments{
+\item{genes}{A vector of gene names.}
+
 \item{obj}{Seurat object}
+
+\item{genes.shown}{Number of genes printed (head).}
 }
 \description{
 IntersectWithExpressed

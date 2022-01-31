@@ -11,7 +11,7 @@ qUMAP(
   sub = NULL,
   reduction = "umap",
   splitby = NULL,
-  suffix = sub,
+  suffix = make.names(sub),
   save.plot = T,
   PNG = T,
   h = 7,

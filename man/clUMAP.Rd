@@ -11,7 +11,7 @@ clUMAP(
   splitby = NULL,
   title = ident,
   sub = NULL,
-  suffix = sub,
+  suffix = make.names(sub),
   label.cex = 7,
   h = 7,
   w = NULL,

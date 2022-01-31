@@ -2019,7 +2019,7 @@ aux_plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to draw a gene expression UMAP
                    , title = feature, sub =NULL
                    , reduction ="umap", splitby = NULL
-                   , suffix = sub
+                   , suffix = make.names(sub)
                    , save.plot = T, PNG = T
                    , h = 7, w = NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
@@ -2091,7 +2091,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 
 clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
                    , reduction ="umap", splitby = NULL
-                   , title = ident, sub =NULL, suffix = sub
+                   , title = ident, sub =NULL, suffix = make.names(sub)
                    , label.cex = 7
                    , h = 7, w = NULL, nr.cols = NULL
                    , plotname = ppp(toupper(reduction), ident)
@@ -5379,8 +5379,8 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
 #'
 #' @param obj Seurat object
 #' @param ident ident
-#' @export
 #' @example getClusterNames()
+#' @export
 
 getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
   print(GetClusteringRuns(obj))
@@ -5416,9 +5416,9 @@ RenameClustering <- function(namedVector = ManualNames
 # _________________________________________________________________________________________________
 #' IntersectWithExpressed
 #'
-#' @param genes
+#' @param genes A vector of gene names.
 #' @param obj Seurat object
-#' @param genes.shown
+#' @param genes.shown Number of genes printed (head).
 #' @export
 
 IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { # Intersect a set of genes with genes in the Seurat object.
