@@ -63,6 +63,18 @@ source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/R/Seurat.U
 
 *If you encounter a **bug**, something doesn't work or unclear, please let me know by raising an issue on [Seurat.utils](https://github.com/vertesy/Seurat.utils/issues) – Please check if it has been asked.*
 
+
+
+### Error on install
+
+- Dependencies should be installed in the specific order.
+- `Error: Failed to install 'unknown package' from GitHub:  HTTP error 403.  API rate limit exceeded`   -> Try connecting later or via another wifi
+- Try updating all packages `update.packages()`
+
+
+
+### Error during usage
+
 #### #1 Check and reinstall dependencies
 
 If you have an older installation, it is quite possible that some of the above packages are out of date. Please reinstall all of them, in order (see: `Installation`). 
