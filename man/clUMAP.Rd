@@ -27,7 +27,7 @@ clUMAP(
   legend = !label,
   MaxCategThrHP = 200,
   axes = T,
-  save.plot = T,
+  save.plot = TRUE.unless(b.save.wplots),
   PNG = T,
   ...
 )

@@ -1555,8 +1555,8 @@ get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_r
   (df.meta <- obj@meta.data[, c(ident, splitby)])
 
   df.meta %>%
-      dplyr::group_by_(splitby) %>%
-      summarise()
+    dplyr::group_by_(splitby) %>%
+    summarise()
 
   categ.per.cluster <- ggbarplot(obj@meta.data
                                  , x = x
@@ -2035,7 +2035,8 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , reduction ="umap", splitby = NULL
                    , prefix = NULL
                    , suffix = make.names(sub)
-                   , save.plot = T, PNG = T
+                   , save.plot = TRUE.unless(b.save.wplots)
+                   , PNG = T
                    , h = 7, w = NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
                    , axes = T
@@ -2116,7 +2117,8 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , highlight.clusters = NULL, cells.highlight = NULL
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 200
                    , axes = T
-                   , save.plot = T, PNG = T
+                   , save.plot = TRUE.unless(b.save.wplots)
+                   , PNG = T
                    # , save.object = F
                    , ...) {
 
@@ -2563,7 +2565,6 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
     multiFeaturePlot.A4(list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = F
                         , prefix = ppp("DEG.markers.res",cl_res,"cluster",names(ls.topMarkers)[i]))
   }
-
 }
 
 
@@ -2802,16 +2803,16 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
   } else { NULL }
 
   plt <- plotly::plot_ly(data = plotting.data
-                 , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
-                 , type = "scatter3d"
-                 , mode = "markers"
-                 , marker = list(size = dotsize)
-                 , text =  ~label
-                 , color = ~Expression
-                 , opacity = alpha
-                 # , colors = c('darkgrey', 'red')
-                 , colorscale='Viridis'
-                 #, hoverinfo="text"
+                         , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
+                         , type = "scatter3d"
+                         , mode = "markers"
+                         , marker = list(size = dotsize)
+                         , text =  ~label
+                         , color = ~Expression
+                         , opacity = alpha
+                         # , colors = c('darkgrey', 'red')
+                         , colorscale='Viridis'
+                         #, hoverinfo="text"
   ) %>% plotly::layout(title = gene, scene = list(annotations = ls.ann.auto))
   SavePlotlyAsHtml(plt, category. = gene, suffix. = suffix)
   return(plt)
@@ -2851,14 +2852,14 @@ plot3D.umap <- function(category="v.project", obj = combined.obj # Plot a 3D uma
   } else { NULL }
 
   plt <- plotly::plot_ly(data = plotting.data
-                 , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
-                 , type = "scatter3d"
-                 , mode = "markers"
-                 , marker = list(size = dotsize)
-                 , text = ~label
-                 , color = ~category
-                 , colors = gg_color_hue(length(unique(plotting.data$'category')))
-                 # , hoverinfo="text"
+                         , x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3
+                         , type = "scatter3d"
+                         , mode = "markers"
+                         , marker = list(size = dotsize)
+                         , text = ~label
+                         , color = ~category
+                         , colors = gg_color_hue(length(unique(plotting.data$'category')))
+                         # , hoverinfo="text"
   ) %>% plotly::layout(title = category, scene = list(annotations = ls.ann.auto))
   SavePlotlyAsHtml(plt, category. = category, suffix. = suffix)
   return(plt)
@@ -3389,12 +3390,12 @@ scBarplot.CellFractions <- function(obj = combined.obj
 #' @export scBarplot.CellsPerCluster
 
 scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
-                                        , sort = F
-                                        , label = T
-                                        , palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
-                                        , obj = combined.obj
-                                        , return_table = F
-                                        , ...) {
+                                      , sort = F
+                                      , label = T
+                                      , palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
+                                      , obj = combined.obj
+                                      , return_table = F
+                                      , ...) {
   cell.per.cl <- obj[[ident]][,1]
   cell.per.cluster <- (table(cell.per.cl))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
@@ -5469,7 +5470,7 @@ IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { 
 
 seu.RemoveMetadata <- function(obj = combined.obj
                                , cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = T)
-                               ) {
+) {
 
   CNN <- colnames(obj@meta.data)
   iprint('cols_remove:', cols_remove); print('')

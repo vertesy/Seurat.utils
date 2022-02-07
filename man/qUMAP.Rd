@@ -13,7 +13,7 @@ qUMAP(
   splitby = NULL,
   prefix = NULL,
   suffix = make.names(sub),
-  save.plot = T,
+  save.plot = TRUE.unless(b.save.wplots),
   PNG = T,
   h = 7,
   w = NULL,

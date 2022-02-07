@@ -20,7 +20,7 @@ require('CodeAndRoll2')
 
 # Setup ------------------------
 PackageName = 	"Seurat.utils"
-package.version = "1.2.8"
+package.version = "1.2.9"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir = kollapse("~/GitHub/Packages/", PackageName, "/")
@@ -31,30 +31,30 @@ BackupDir = "~/GitHub/Packages/Seurat.utils/Development/"
 dir.create(BackupDir)
 
 DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
-    , "Author" = person(given = "Abel", family = "Vertesy", email = "abel.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )
-    , "Authors@R" = 'person(given = "Abel", family = "Vertesy", email = "a.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )'
-    , "Description" = "Seurat.utils Is a collection of utility functions for Seurat v3.
+                    , "Author" = person(given = "Abel", family = "Vertesy", email = "abel.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )
+                    , "Authors@R" = 'person(given = "Abel", family = "Vertesy", email = "a.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )'
+                    , "Description" = "Seurat.utils Is a collection of utility functions for Seurat v3.
     Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics &
     QC, interaction with the Seurat object, etc. Some functionalities require functions from CodeAndRoll and MarkdownReports libraries."
-    , "License" = "GPL-3 + file LICENSE"
-    , "Version" = package.version
-    , "Packaged" =  Sys.time()
-    # , "Repository" =  "CRAN"
-    , "Depends" =  "Stringendo, CodeAndRoll2, ggExpress, ggplot2"
-    , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
+                    , "License" = "GPL-3 + file LICENSE"
+                    , "Version" = package.version
+                    , "Packaged" =  Sys.time()
+                    # , "Repository" =  "CRAN"
+                    , "Depends" =  "Stringendo, CodeAndRoll2, ggExpress, ggplot2"
+                    , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
     htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter,
     R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom"
-    , "Suggests" = "SoupX"
-    , "BugReports"= "https://github.com/vertesy/Seurat.utils/issues"
+                    , "Suggests" = "SoupX"
+                    , "BugReports"= "https://github.com/vertesy/Seurat.utils/issues"
 )
 
 
 setwd(RepositoryDir)
 if ( !dir.exists(RepositoryDir) ) { create(path = RepositoryDir, description = DESCRIPTION, rstudio = TRUE)
 } else {
-    getwd()
-    try(file.remove(c("DESCRIPTION","NAMESPACE", "Seurat.utils.Rproj")))
-    create_package(path = RepositoryDir, fields = DESCRIPTION, open = F)
+  getwd()
+  try(file.remove(c("DESCRIPTION","NAMESPACE", "Seurat.utils.Rproj")))
+  create_package(path = RepositoryDir, fields = DESCRIPTION, open = F)
 }
 
 
