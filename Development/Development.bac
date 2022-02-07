@@ -913,7 +913,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 
 
 
-# calc.cluster.averages ------------------------------------------------
+# ------------------------------------------------
 #' @title calc.cluster.averages
 #' @description Calculate the average of a metadata column (numeric) per cluster.
 #' @param col_name PARAM_DESCRIPTION, Default: 'Score.GO.0006096'
@@ -1535,29 +1535,42 @@ getClusterColors <- function(obj = combined.obj
 #' @title get.clustercomposition
 #' @description Get cluster composition: which datasets contribute to each cluster?
 #' @param obj Seurat object, Default: combined.obj
-#' @param x PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.3'
-#' @param y PARAM_DESCRIPTION, Default: 'project'
-#' @param color PARAM_DESCRIPTION, Default: y
+#' @param x Bars along the X axis, Default: 'integrated_snn_res.0.3'
+#' @param y Vertical split of each bar, Default: 'project'
+#' @param color Color, Default: y
+#' @param plot  Show plot, Default: T
+#' @param ScaleTo100pc Scale the Y Axis, Default: T
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  get.clustercomposition(); get.clustercomposition(, ylim = c(0,10000))
-#'  }
-#' }
+#' @examples get.clustercomposition(); get.clustercomposition()
 #' @export
-get.clustercomposition <- function(obj = combined.obj, x = 'integrated_snn_res.0.3'
-                                   , y = 'project', color = y, ...) {
+
+
+get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_res.0.3', splitby = 'ShortNames'
+                                   , color = y
+                                   , plot = TRUE, ScaleTo100pc = TRUE
+                                   , ...) {
   setwd(OutDir)
   clUMAP(obj = obj, ident = x, save.plot = T, suffix = "as.in.barplot")
+
+  (df.meta <- obj@meta.data[, c(ident, splitby)])
+
+  df.meta %>%
+      dplyr::group_by_(splitby) %>%
+      summarise()
+
   categ.per.cluster <- ggbarplot(obj@meta.data
                                  , x = x
                                  , y = y
                                  , color = y
                                  , ...
   )
-  qqSave(categ.per.cluster)
+  if (ScaleTo100pc) categ.per.cluster <- categ.per.cluster + scale_y_discrete(labels = scales::percent_format())
+  if (plot) categ.per.cluster
+
+  qqSave(categ.per.cluster, ...)
 }
+
+
 
 
 
@@ -1995,7 +2008,8 @@ aux_plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 #' @param sub Subtitle of the plot, Default: NULL
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
 #' @param splitby PARAM_DESCRIPTION, Default: NULL
-#' @param suffix A suffix added to the filename, Default: sub
+#' @param prefix A prefix added before the filename, Default: NULL
+#' @param suffix A suffix added to the end of the filename, Default: subtitle
 #' @param save.plot Save the plot into a file?, Default: T
 #' @param PNG Save file as .png?, Default: T
 #' @param h height of the plot, Default: 7
@@ -2019,6 +2033,7 @@ aux_plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to draw a gene expression UMAP
                    , title = feature, sub =NULL
                    , reduction ="umap", splitby = NULL
+                   , prefix = NULL
                    , suffix = make.names(sub)
                    , save.plot = T, PNG = T
                    , h = 7, w = NULL, nr.cols = NULL
@@ -2044,8 +2059,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
     if (!axes) NoAxes() else NULL
 
   if (save.plot) {
-    plotname <- ppp(toupper(reduction), feature)
-    fname = ww.FnP_parser(ppp(plotname, assay, suffix), if (PNG) "png" else "pdf")
+    fname = ww.FnP_parser(sppp(prefix, toupper(reduction), feature, assay, suffix), if (PNG) "png" else "pdf")
     try(save_plot(filename = fname, plot = ggplot.obj, base_height = h, base_width = w)) #, ncol = 1, nrow = 1
   }
   return(ggplot.obj)
@@ -2062,6 +2076,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #' @param splitby PARAM_DESCRIPTION, Default: NULL
 #' @param title Title of the plot, Default: ident
 #' @param sub Subtitle of the plot, Default: NULL
+#' @param prefix A prefix added before the filename, Default: NULL
 #' @param suffix A suffix added to the filename, Default: sub
 #' @param label.cex PARAM_DESCRIPTION, Default: 7
 #' @param h height of the plot, Default: 7
@@ -2091,7 +2106,9 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 
 clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
                    , reduction ="umap", splitby = NULL
-                   , title = ident, sub =NULL, suffix = make.names(sub)
+                   , title = ident, sub =NULL
+                   , prefix = NULL
+                   , suffix = make.names(sub)
                    , label.cex = 7
                    , h = 7, w = NULL, nr.cols = NULL
                    , plotname = ppp(toupper(reduction), ident)
@@ -2138,7 +2155,8 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
     ggplot.obj <- ggplot.obj + if (!axes) NoAxes() else NULL
 
     if (save.plot) {
-      fname = ww.FnP_parser(ppp(plotname, suffix, kpp(highlight.clusters)), if (PNG) "png" else "pdf")
+      pname = sppp(prefix, plotname, suffix, highlight.clusters)
+      fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
       try(save_plot(filename = fname, plot = ggplot.obj, base_height = h, base_width = w)) #, ncol = 1, nrow = 1
     }
     # if(save.object) saveRDS(object = ggplot.obj, file = ppp(fname, 'ggobj.RDS'))
@@ -3296,30 +3314,8 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Pl
 }
 
 
-# BarplotCellsPerObject ------------------------------------------------------------
-
-#' @title BarplotCellsPerObject
-#' @description Take a List of Seurat objects and draw a barplot for the number of cells per object. #
-#' @param ls.Seu PARAM_DESCRIPTION, Default: ls.Seurat
-#' @param plotname Title of the plot, Default: 'Nr.Cells.After.Filtering'
-#' @param names PARAM_DESCRIPTION, Default: F
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-BarplotCellsPerObject <- function(ls.Seu = ls.Seurat, # Take a List of Seurat objects and draw a barplot for the number of cells per object.
-                                  plotname="Nr.Cells.After.Filtering", names = F ) {
-  cellCounts = unlapply(ls.Seu, ncol)
-  names(cellCounts) = if (length(names) == length(ls.Seurat)) names else names(ls.Seurat)
-  wbarplot(cellCounts, plotname = plotname,tilted_text = T, ylab="Cells")
-  barplot_label(cellCounts, TopOffset = 500, w = 4)
-}
-
-# CellFractionsBarplot2 ------------------------------------------------------------
-#' @title CellFractionsBarplot2
+# scBarplot.CellFractions ------------------------------------------------------------
+#' @title scBarplot.CellFractions
 #' @description Barplot the Fraction of cells per cluster.
 #' @param obj Seurat object, Default: combined.obj
 #' @param group.by PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.5.ordered'
@@ -3328,20 +3324,23 @@ BarplotCellsPerObject <- function(ls.Seu = ls.Seurat, # Take a List of Seurat ob
 #' @param plotname Title of the plot, Default: paste(tools::toTitleCase(fill.by), "proportions")
 #' @param hlines PARAM_DESCRIPTION, Default: c(0.25, 0.5, 0.75)
 #' @param seedNr PARAM_DESCRIPTION, Default: 1989
+#' @param return_table return contingency table instead of a barplot, Default: F
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
-#'  CellFractionsBarplot2(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
+#'  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
+#'  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
 #'  }
 #' }
 #' @seealso
 #'  \code{\link[tools]{toTitleCase}}
 #' @export
 #' @importFrom tools toTitleCase
-CellFractionsBarplot2 <- function(obj = combined.obj
-                                  , group.by = "integrated_snn_res.0.5.ordered", fill.by = "age", downsample = T
-                                  , plotname = paste(tools::toTitleCase(fill.by), "proportions"), hlines = c(.25, .5, .75), seedNr = 1989) {
+scBarplot.CellFractions <- function(obj = combined.obj
+                                    , group.by = "integrated_snn_res.0.5.ordered", fill.by = "age", downsample = T
+                                    , plotname = paste(tools::toTitleCase(fill.by), "proportions"), hlines = c(.25, .5, .75)
+                                    , return_table = F
+                                    , seedNr = 1989) {
   set.seed(seedNr)
   pname.suffix <- capt.suffix <- NULL
   if (downsample) {
@@ -3352,25 +3351,31 @@ CellFractionsBarplot2 <- function(obj = combined.obj
   caption_ <- paste("Numbers denote # cells.", capt.suffix)
   pname_ <- paste(plotname, pname.suffix)
 
-  obj@meta.data %>%
-    group_by( (!!as.name(fill.by)) ) %>%
-    { if (downsample) sample_n(., downsample) else . } %>%
-    group_by( (!!as.name(group.by)) ) %>%
+  contingency.table <- table(obj@meta.data[ ,group.by], obj@meta.data[, fill.by])
+  print(contingency.table)
+  if (return_table) { contingency.table
+  } else {
+    obj@meta.data %>%
+      # group_by( (!!as.name(fill.by)) ) %>%
+      { if (downsample) sample_n(., downsample) else . } %>%
+      group_by( (!!as.name(group.by)) ) %>%
 
-    ggplot( aes(fill = (!!(as.name(fill.by))),  x = (!!(as.name(group.by)))) ) +
-    geom_hline( yintercept = hlines, lwd = 1.5)  +
-    geom_bar( position = "fill" ) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    geom_text(aes(label = ..count..), stat='count',position = position_fill(vjust = 0.5)) +
-    labs(title = pname_,  x = "Clusters", y = "Fraction", caption = caption_) +
-    theme_classic() +
-    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+      ggplot( aes(fill = (!!(as.name(fill.by))),  x = (!!(as.name(group.by)))) ) +
+      geom_hline( yintercept = hlines, lwd = 1.5)  +
+      geom_bar( position = "fill" ) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      geom_text(aes(label = ..count..), stat='count',position = position_fill(vjust = 0.5)) +
+      labs(title = pname_,  x = "Clusters", y = "Fraction", caption = caption_) +
+      theme_classic() +
+      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+  } # else barplot
 }
 
 
 
+
 # _________________________________________________________________________________________________
-#' @title scBarplot.cells.per.cluster
+#' @title scBarplot.CellsPerCluster
 #' @description Barplot the Fraction of cells per cluster. (dupl?)
 #' @param obj Seurat object, Default: combined.obj
 #' @param ident identity used, Default: 'cl.names.KnownMarkers.0.5'
@@ -3378,12 +3383,12 @@ CellFractionsBarplot2 <- function(obj = combined.obj
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  scBarplot.cells.per.cluster(); scBarplot.cells.per.cluster(sort = T)
+#'  scBarplot.CellsPerCluster(); scBarplot.CellsPerCluster(sort = T)
 #'  }
 #' }
-#' @export scBarplot.cells.per.cluster
+#' @export scBarplot.CellsPerCluster
 
-scBarplot.cells.per.cluster <- function(ident =  GetOrderedClusteringRuns()[1]
+scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
                                         , sort = F
                                         , label = T
                                         , palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
@@ -3408,6 +3413,30 @@ scBarplot.cells.per.cluster <- function(ident =  GetOrderedClusteringRuns()[1]
              , ...)
   }
 
+}
+
+
+
+# scBarplot.CellsPerObject ------------------------------------------------------------
+
+#' @title scBarplot.CellsPerObject
+#' @description Take a List of Seurat objects and draw a barplot for the number of cells per object. #
+#' @param ls.Seu PARAM_DESCRIPTION, Default: ls.Seurat
+#' @param plotname Title of the plot, Default: 'Nr.Cells.After.Filtering'
+#' @param names PARAM_DESCRIPTION, Default: F
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+scBarplot.CellsPerObject <- function(ls.Seu = ls.Seurat, # Take a List of Seurat objects and draw a barplot for the number of cells per object.
+                                     plotname="Nr.Cells.After.Filtering", names = F ) {
+  cellCounts = unlapply(ls.Seu, ncol)
+  names(cellCounts) = if (length(names) == length(ls.Seurat)) names else names(ls.Seurat)
+  wbarplot(cellCounts, plotname = plotname,tilted_text = T, ylab="Cells")
+  barplot_label(cellCounts, TopOffset = 500, w = 4)
 }
 
 
@@ -5428,3 +5457,26 @@ IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { 
   Stringendo::iprint(length(diff),"genes (of",length(genes), ") are MISSING from the Seurat object:",head(diff, genes.shown))
   return(intersect(rownames(obj), genes))
 }
+
+
+# _________________________________________________________________________________________________
+#' seu.RemoveMetadata
+#'
+#' @param obj Seurat object
+#' @param cols_remove columns to remove
+#' @example seu.RemoveMetadata(obj = combined.obj, cols_remove = grepv(colnames(combined.obj@meta.data), pattern = "^integr|^cl.names", perl = T))
+#' @export
+
+seu.RemoveMetadata <- function(obj = combined.obj
+                               , cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = T)
+                               ) {
+
+  CNN <- colnames(obj@meta.data)
+  iprint('cols_remove:', cols_remove); print('')
+  (cols_keep <- setdiff(CNN, cols_remove))
+  obj@meta.data <- obj@meta.data[, cols_keep]
+  iprint('meta.data colnames kept:', colnames(obj@meta.data))
+
+  return(obj)
+}
+

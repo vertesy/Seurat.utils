@@ -1,6 +1,6 @@
 ######################################################################################################
 # Create_the_Seurat.utils_Package.v0.1.R
-# 31 10 2021
+# 31 01 2022
 ######################################################################################################
 # source("/Users/abel.vertesy/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.v0.1.R")
 rm(list = ls(all.names = TRUE));
@@ -13,14 +13,14 @@ require("roxygen2")
 require("stringr")
 
 # devtools::install_github(repo = "vertesy/CodeAndRoll2")
-require('CodeAndRoll2')
 require('Stringendo')
+require('CodeAndRoll2')
 
 
 
 # Setup ------------------------
 PackageName = 	"Seurat.utils"
-package.version = "1.2.7"
+package.version = "1.2.8"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir = kollapse("~/GitHub/Packages/", PackageName, "/")

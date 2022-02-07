@@ -11,6 +11,7 @@ qUMAP(
   sub = NULL,
   reduction = "umap",
   splitby = NULL,
+  prefix = NULL,
   suffix = make.names(sub),
   save.plot = T,
   PNG = T,
@@ -39,7 +40,9 @@ qUMAP(
 
 \item{splitby}{PARAM_DESCRIPTION, Default: NULL}
 
-\item{suffix}{A suffix added to the filename, Default: sub}
+\item{prefix}{A prefix added before the filename, Default: NULL}
+
+\item{suffix}{A suffix added to the end of the filename, Default: subtitle}
 
 \item{save.plot}{Save the plot into a file?, Default: T}
 

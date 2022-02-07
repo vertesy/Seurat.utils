@@ -6,30 +6,32 @@
 \usage{
 get.clustercomposition(
   obj = combined.obj,
-  x = "integrated_snn_res.0.3",
-  y = "project",
+  ident = "integrated_snn_res.0.3",
+  splitby = "ShortNames",
   color = y,
+  plot = TRUE,
+  ScaleTo100pc = TRUE,
   ...
 )
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{x}{PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.3'}
+\item{color}{Color, Default: y}
 
-\item{y}{PARAM_DESCRIPTION, Default: 'project'}
+\item{plot}{Show plot, Default: T}
 
-\item{color}{PARAM_DESCRIPTION, Default: y}
+\item{ScaleTo100pc}{Scale the Y Axis, Default: T}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+
+\item{x}{Bars along the X axis, Default: 'integrated_snn_res.0.3'}
+
+\item{y}{Vertical split of each bar, Default: 'project'}
 }
 \description{
 Get cluster composition: which datasets contribute to each cluster?
 }
 \examples{
-\dontrun{
-if(interactive()){
- get.clustercomposition(); get.clustercomposition(, ylim = c(0,10000))
- }
-}
+get.clustercomposition(); get.clustercomposition()
 }

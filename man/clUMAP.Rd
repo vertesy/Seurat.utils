@@ -11,6 +11,7 @@ clUMAP(
   splitby = NULL,
   title = ident,
   sub = NULL,
+  prefix = NULL,
   suffix = make.names(sub),
   label.cex = 7,
   h = 7,
@@ -43,6 +44,8 @@ clUMAP(
 \item{title}{Title of the plot, Default: ident}
 
 \item{sub}{Subtitle of the plot, Default: NULL}
+
+\item{prefix}{A prefix added before the filename, Default: NULL}
 
 \item{suffix}{A suffix added to the filename, Default: sub}
 
