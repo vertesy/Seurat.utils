@@ -1009,7 +1009,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
     iprint('quantile.thr:', quantile.thr)
     if (plotit) {
       if (histogram) {
-        p <- qhistogram(vec = as.numeric(av.score), save = F
+        p <- ggExpress::qhistogram(vec = as.numeric(av.score), save = F
                         , vline = cutoff
                         , plotname = ppp(title, quantile.thr)
                         , bins = nbins
@@ -1023,9 +1023,9 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
         ) + geom_vline(xintercept = cutoff.low, lty = 2)
         print(p)
         title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
-        qqSave(ggobj = p, title = title_, ext = "png", w = width, h = height)
+        ggExpress::qqSave(ggobj = p, title = title_, ext = "png", w = width, h = height)
       } else {
-        p <- qbarplot(vec = av.score, save = F
+        p <- ggExpress::qbarplot(vec = av.score, save = F
                       , hline = cutoff
                       , plotname = title
                       , suffix = quantile.thr
@@ -1161,7 +1161,7 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
   n.cells <- floor(ncol(combined.obj) * (1-quantileX) )
   qnameP <- p0(100*quantileX,'th quantile')
   try(
-    qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30
+    ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30
                , plotname = paste("Gene expression in the", qnameP )
                , subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = T), " genes have ", qname ," expr. > 0.")
                , caption = paste(n.cells, 'cells in', qnameP)
@@ -1567,7 +1567,7 @@ get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_r
   if (ScaleTo100pc) categ.per.cluster <- categ.per.cluster + scale_y_discrete(labels = scales::percent_format())
   if (plot) categ.per.cluster
 
-  qqSave(categ.per.cluster, ...)
+  ggExpress::qqSave(categ.per.cluster, ...)
 }
 
 
@@ -1614,7 +1614,7 @@ mplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds_from_seurat) 
                     label_branch_points = F, label_cell_groups = F
                     , group_label_size = 10
                     , cell_size = 1, alpha = .5)
-  qqSave(pl1, fname = ppp(reduction, gene, ".png"), w = 14, h = 7)
+  ggExpress::qqSave(pl1, fname = ppp(reduction, gene, ".png"), w = 14, h = 7)
 }
 
 
@@ -2035,7 +2035,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , reduction ="umap", splitby = NULL
                    , prefix = NULL
                    , suffix = make.names(sub)
-                   , save.plot = TRUE.unless(b.save.wplots)
+                   , save.plot = MarkdownHelpers::TRUE.unless(b.save.wplots)
                    , PNG = T
                    , h = 7, w = NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
@@ -2044,8 +2044,9 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , make.uppercase = FALSE
                    , qlow = "q10", qhigh = "q90", ...) {
 
-  if ( !(feature %in% colnames(obj@meta.data))) {
-    feature <- check.genes(feature, verbose = F, HGNC.lookup = HGNC.lookup, makeuppercase = make.uppercase)
+  if ( !(feature %in% colnames(obj@meta.data) | feature %in% rownames(obj) ) ) {
+    feature <- check.genes(list.of.genes = feature, obj = obj, verbose = F
+                           , HGNC.lookup = HGNC.lookup, makeuppercase = make.uppercase)
   }
 
   DefaultAssay(obj) <- assay
@@ -2060,7 +2061,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
     if (!axes) NoAxes() else NULL
 
   if (save.plot) {
-    fname = ww.FnP_parser(sppp(prefix, toupper(reduction), feature, assay, suffix), if (PNG) "png" else "pdf")
+    fname = ww.FnP_parser(Stringendo::sppp(prefix, toupper(reduction), feature, assay, suffix), if (PNG) "png" else "pdf")
     try(save_plot(filename = fname, plot = ggplot.obj, base_height = h, base_width = w)) #, ncol = 1, nrow = 1
   }
   return(ggplot.obj)
@@ -2117,7 +2118,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , highlight.clusters = NULL, cells.highlight = NULL
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 200
                    , axes = T
-                   , save.plot = TRUE.unless(b.save.wplots)
+                   , save.plot = MarkdownHelpers::TRUE.unless(b.save.wplots)
                    , PNG = T
                    # , save.object = F
                    , ...) {
@@ -2157,7 +2158,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
     ggplot.obj <- ggplot.obj + if (!axes) NoAxes() else NULL
 
     if (save.plot) {
-      pname = sppp(prefix, plotname, suffix, highlight.clusters)
+      pname = Stringendo::sppp(prefix, plotname, suffix, highlight.clusters)
       fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
       try(save_plot(filename = fname, plot = ggplot.obj, base_height = h, base_width = w)) #, ncol = 1, nrow = 1
     }
@@ -2208,7 +2209,7 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 save2umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
                           , nrow = 2, ncol = 1
                           , h = hA4 * scale, w = wA4 * scale, ...) { # Save 2 umaps on an A4 page.
-  if (pname ==F) pname = sppp(substitute(plot_list), suffix)
+  if (pname ==F) pname = Stringendo::sppp(substitute(plot_list), suffix)
   p1 = plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
@@ -2235,7 +2236,7 @@ save2umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
 save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
                           , nrow = 2, ncol = 2
                           , h = wA4 * scale, w = hA4 * scale, ...) { # Save 4 umaps on an A4 page.
-  if (pname==F) pname =  sppp(substitute(plot_list), suffix)
+  if (pname==F) pname =  Stringendo::sppp(substitute(plot_list), suffix)
   p1 = plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
@@ -2602,7 +2603,7 @@ qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined
   if (logY) p <- p + scale_y_log10()
 
   fname = kpp("FeatureScatter", plotname)
-  qqSave(ggobj = p, title = plotname, ext = ext, w = 8, h = 5)
+  ggExpress::qqSave(ggobj = p, title = plotname, ext = ext, w = 8, h = 5)
   if (plot) p
 }
 
@@ -3310,7 +3311,7 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Pl
     wbarplot(pct , xlab = "Principal Components", ylab = "% of variation explained")
     barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5 )
   } else {
-    qbarplot(vec = pct, xlab = "Principal Components", ylab =  "% of variation explained", w = 10, h = 5, hline = 1 )
+    ggExpress::qbarplot(vec = pct, xlab = "Principal Components", ylab =  "% of variation explained", w = 10, h = 5, hline = 1 )
   }
 }
 
@@ -3405,7 +3406,7 @@ scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
   if (return_table) {
     cell.per.cluster
   } else {
-    qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
+    ggExpress::qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
              , col = 1:n.clusters
              , xlab.angle = 45
              , label = lbl
@@ -3628,7 +3629,7 @@ plot.Metadata.Cor.Heatmap <- function(
   corX <- cor(meta.data[ , columns.found], method = cormethod)
   pl <- ggcorrplot::ggcorrplot(corX, hc.order = TRUE, title = main
                                , type = "full", lab = T)
-  qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
+  ggExpress::qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
   pl
 }
 
@@ -3709,7 +3710,7 @@ plot.Metadata.median.fraction.barplot <- function(
   pl <- ggbarplot(mat.cluster.medians, x = group.by, y = 'Fraction', fill = 'variable'
                   , position = position
                   , title = main, subtitle = subt ,ylab = ylab)
-  qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
+  ggExpress::qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
   pl
   if (return.matrix) mat.cluster.medians1 else pl
 }
@@ -3760,7 +3761,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
     # Calculate ------------------------------------
     if (calc.COR) {
       print("Calculating correlation now.")
-      genes.found <- check.genes(genes)
+      genes.found <- check.genes(list.of.genes = genes)
       iprint(length(genes.found), "genes are found in the object.")
       if (length(genes.found) > 200) iprint("Too many genes found in data, cor will be slow: ", length(genes.found))
       ls.cor <- sparse.cor(t(expr.mat[genes.found,]))
@@ -3824,9 +3825,9 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
 
   if (plot) {
     if (length(clust.size.distr) < thr.hist) {
-      qbarplot(clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, ...)
+      ggExpress::qbarplot(clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, ...)
     } else {
-      qhistogram(vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, xlim = xlim, ...)
+      ggExpress::qhistogram(vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, xlim = xlim, ...)
     }
   } else {    "return vector"
     clust.size.distr
@@ -3863,7 +3864,7 @@ gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], sl
     suffx = if (slot == 'counts') 'raw' else 'normalised, logtransformed'
     (pname = paste(gene, 'and the', suffx,'transcript count distribution'))
 
-    qhistogram(GEX.Counts.total, vline = genes.expression, logX = T, w = 6, h = 4
+    ggExpress::qhistogram(GEX.Counts.total, vline = genes.expression, logX = T, w = 6, h = 4
                , subtitle = paste('It belong to the top', pc_TRUE(GEX.Counts.total > genes.expression), 'of genes (black line). Mean expr:', mean.expr)
                , plotname = pname, xlab = 'Total Transcripts in Dataset', ylab = 'Number of Genes')
   } else { print("     !!! Gene not found in object!")}
@@ -3964,7 +3965,7 @@ scBarplotFractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'per
   if (label == TRUE) lab =  percentage_formatter(deframe(df_2vec)) else lab = NULL
 
   pname <- make.names(paste('Cells with', value.col, '>', thrX, id.col))
-  ggobj <- qbarplot(v.fr_n_cells_above, suffix = suffix
+  ggobj <- ggExpress::qbarplot(v.fr_n_cells_above, suffix = suffix
                     , xlab = 'Clusters', ylab = '% Cells'
                     , plotname = pname, label = lab
                     , subtitle = id.col, xlab.angle = 45)
@@ -4005,7 +4006,7 @@ scBarplotFractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', i
   (v.fr_n_cells_below <- 100* as.named.vector(df_cells_below[3]))
 
   pname <- make.names(paste('Cells with', value.col, '<', thrX, id.col))
-  ggobj <- qbarplot(v.fr_n_cells_below, xlab = 'Clusters', ylab = '% Cells'
+  ggobj <- ggExpress::qbarplot(v.fr_n_cells_below, xlab = 'Clusters', ylab = '% Cells'
                     , plotname = pname
                     , subtitle = id.col, xlab.angle = 45)
   if (return.df) return(df_cells_below) else ggobj
@@ -4546,7 +4547,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
 #'  }
 #' }
 #' @export
-clip10Xcellname <- function(cellnames) str_split_fixed(cellnames, "_", n = 2)[,1] # Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration).
+clip10Xcellname <- function(cellnames) stringr::str_split_fixed(cellnames, "_", n = 2)[,1] # Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration).
 
 # _________________________________________________________________________________________________
 #' @title make10Xcellname
@@ -4660,7 +4661,7 @@ check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = FALSE, v
   if (length(missingGenes) > 0) {
     if (verbose) { iprint(length(missingGenes), "or", Stringendo::percentage_formatter(length(missingGenes) / length(list.of.genes)), "genes not found in the data, e.g:", head(missingGenes, n = 10))  }
     if (HGNC.lookup) {
-      if (exists('qHGNC', mode='function')) { try(qHGNC(missingGenes)) } else { print("load qHGNC() function, see database.linker")}
+      if (exists('qHGNC', mode='function')) { try(DatabaseLinke.R::qHGNC(missingGenes)) } else { print("load qHGNC() function, see database.linker")}
     }
   }
   intersect(list.of.genes, all_genes)
@@ -4705,7 +4706,7 @@ CalculateFractionInTrome <- function(genesCalc.Cor.Seuratet = c("MALAT1") # Calc
                                      , dataslot = c("counts", "data")[2]
 ) {
   print("    >>>> Use add.meta.fraction() <<<<")
-  geneset <- check.genes(geneset)
+  geneset <- check.genes(list.of.genes = geneset)
   stopifnot(length(geneset)>0)
 
   mat <- as.matrix(slot(obj@assays$RNA, name = dataslot))
@@ -5409,7 +5410,6 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
 #'
 #' @param obj Seurat object
 #' @param ident ident
-#' @example getClusterNames()
 #' @export
 
 getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
@@ -5465,7 +5465,7 @@ IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { 
 #'
 #' @param obj Seurat object
 #' @param cols_remove columns to remove
-#' @example seu.RemoveMetadata(obj = combined.obj, cols_remove = grepv(colnames(combined.obj@meta.data), pattern = "^integr|^cl.names", perl = T))
+#' @example seu.RemoveMetadata(obj = combined.obj)
 #' @export
 
 seu.RemoveMetadata <- function(obj = combined.obj

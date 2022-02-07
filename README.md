@@ -36,6 +36,9 @@ devtools::install_github(repo = "vertesy/MarkdownHelpers", upgrade = F)
 devtools::install_github(repo = "vertesy/Markdownreports", upgrade = F)
 devtools::install_github(repo = "vertesy/ggExpress", upgrade = F)
 
+# Recommended
+devtools::install_github(repo = "vertesy/DatabaseLinke.R", upgrade = F)
+
 # Install Seurat.utils
 devtools::install_github(repo = "vertesy/Seurat.utils", upgrade = F)
 
@@ -56,35 +59,25 @@ source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/R/Seurat.U
 
 <br>
 
-### Troubleshooting
+## Troubleshooting
 
 *If you encounter a **bug**, something doesn't work or unclear, please let me know by raising an issue on [Seurat.utils](https://github.com/vertesy/Seurat.utils/issues) – Please check if it has been asked.*
 
-<br>
+#### #1 Check and reinstall dependencies
 
-`https://github.com/vertesy/Seurat.utils/blob/master/R/Seurat.Utils.R`
+If you have an older installation, it is quite possible that some of the above packages are out of date. Please reinstall all of them, in order (see: `Installation`). 
 
-
-#### Check dependencies:
-
-```R
-devtools::install_github(repo = "vertesy/CodeAndRoll2")
-devtools::install_github(repo = "vertesy/ReadWriter")
-devtools::install_github(repo = "vertesy/Stringendo")
-devtools::install_github(repo = "vertesy/MarkdownReports")
-devtools::install_github(repo = "vertesy/ggExpressDev")
-```
-Some functionalities require functions from each. Read more at each repo:
-
-Use the packages below:
+Some functionalities are coming from dependencies. If the error points to a function outside or `Seurat.utils`, check in the packages below:
 
 - [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2)
 - [ReadWriter](https://github.com/vertesy/ReadWriter)
 - [Stringendo](https://github.com/vertesy/Stringendo)
 - [MarkdownReports](https://github.com/vertesy/MarkdownReports)
-- [Rocinante](https://github.com/vertesy/Rocinante)
 
-Rocinante needs to be sourced, cannot be installed.
+##### #2 Maybe you need [Rocinante](https://github.com/vertesy/Rocinante).
+
+It needs to be sourced, cannot be installed:
+
 ```R
 source("https://raw.githubusercontent.com/vertesy/Rocinante/master/R/Rocinante.R")
 ```

@@ -27,7 +27,7 @@ clUMAP(
   legend = !label,
   MaxCategThrHP = 200,
   axes = T,
-  save.plot = TRUE.unless(b.save.wplots),
+  save.plot = MarkdownHelpers::TRUE.unless(b.save.wplots),
   PNG = T,
   ...
 )
