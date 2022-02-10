@@ -2035,7 +2035,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , reduction ="umap", splitby = NULL
                    , prefix = NULL
                    , suffix = make.names(sub)
-                   , save.plot = MarkdownHelpers::TRUE.unless(b.save.wplots)
+                   , save.plot = MarkdownHelpers::TRUE.unless('b.save.wplots')
                    , PNG = T
                    , h = 7, w = NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
@@ -2118,7 +2118,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , highlight.clusters = NULL, cells.highlight = NULL
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 200
                    , axes = T
-                   , save.plot = MarkdownHelpers::TRUE.unless(b.save.wplots)
+                   , save.plot = MarkdownHelpers::TRUE.unless('b.save.wplots')
                    , PNG = T
                    # , save.object = F
                    , ...) {
