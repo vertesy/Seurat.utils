@@ -192,6 +192,7 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
                                , ident = GetClusteringRuns()[1]
                                , res = 0.2, plot.top.genes = T
+                               , suffix = res
                                , order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]
                                , df_markers = obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
@@ -219,7 +220,7 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
   namedIDslot <- ppp('cl.names.top.gene.res', res )
   obj[[namedIDslot]] = named.ident
 
-  if (plot.top.genes) multiFeaturePlot.A4(list.of.genes = top.markers)
+  if (plot.top.genes) multiFeaturePlot.A4(list.of.genes = top.markers, suffix = suffix)
 
   return(obj)
 }
@@ -5465,7 +5466,7 @@ IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { 
 #'
 #' @param obj Seurat object
 #' @param cols_remove columns to remove
-#' @example seu.RemoveMetadata(obj = combined.obj)
+#' @example seu.RemoveMetadata()
 #' @export
 
 seu.RemoveMetadata <- function(obj = combined.obj

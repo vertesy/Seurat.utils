@@ -9,6 +9,7 @@ AutoLabelTop.logFC(
   ident = GetClusteringRuns()[1],
   res = 0.2,
   plot.top.genes = T,
+  suffix = res,
   order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2],
   df_markers = obj@misc$df.markers[[paste0("res.", res)]]
 )
