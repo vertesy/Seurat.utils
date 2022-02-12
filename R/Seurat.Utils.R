@@ -3356,7 +3356,11 @@ scBarplot.CellFractions <- function(obj = combined.obj
 
   contingency.table <- table(obj@meta.data[ ,group.by], obj@meta.data[, fill.by])
   print(contingency.table)
-  if (return_table) { contingency.table
+  if (return_table) {
+    list(
+      'values' = contingency.table,
+      'percentages' = CodeAndRoll2::colDivide(mat = contingency.table, vec = colSums(contingency.table))
+    )
   } else {
     obj@meta.data %>%
       # group_by( (!!as.name(fill.by)) ) %>%
@@ -3928,7 +3932,7 @@ ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.co
 
 # _________________________________________________________________________________________________
 
-#' @title scBarplotFractionAboveThr
+#' @title scBarplot.FractionAboveThr
 #' @description Barplot the fraction of cell above a threshold value (based on a meta.data column), in each cluster.
 #' @param thrX PARAM_DESCRIPTION, Default: 0
 #' @param value.col PARAM_DESCRIPTION, Default: 'percent.ribo'
@@ -3941,14 +3945,14 @@ ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.co
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  scBarplotFractionAboveThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0)
+#'  scBarplot.FractionAboveThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0)
 #'  }
 #' }
 #' @seealso
 #'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
 #' @export
 #' @importFrom dplyr select group_by_
-scBarplotFractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
+scBarplot.FractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
                                       , obj = combined.obj, return.df = F, label = F
                                       , ...) { # Calculat the fraction of cells per cluster above a certain threhold
   meta = obj@meta.data
@@ -3976,7 +3980,7 @@ scBarplotFractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'per
 
 
 # _________________________________________________________________________________________________
-#' @title scBarplotFractionBelowThr
+#' @title scBarplot.FractionBelowThr
 #' @description Barplot the fraction of cell below a threshold value (based on a meta.data column), in each cluster.
 #' @param thrX PARAM_DESCRIPTION, Default: 0.01
 #' @param value.col PARAM_DESCRIPTION, Default: 'percent.ribo'
@@ -3986,14 +3990,14 @@ scBarplotFractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'per
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  scBarplotFractionBelowThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0.01, return.df = T)
+#'  scBarplot.FractionBelowThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0.01, return.df = T)
 #'  }
 #' }
 #' @seealso
 #'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
 #' @export
 #' @importFrom dplyr select group_by_
-scBarplotFractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
+scBarplot.FractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
                                       , obj = combined.obj, return.df = F) { # Calculat the fraction of cells per cluster below a certain threhold
   meta = obj@meta.data
   (df_cells_below <- meta %>%
