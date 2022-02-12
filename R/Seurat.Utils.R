@@ -4326,12 +4326,9 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
   saveRDS(object = obj, compress = compr, file = fname)
   try(tictoc::toc(), silent = T)
   print(paste("Saved, being compressed", fname))
-  system(paste("gzip", fname),  wait = FALSE) # execute in the background
+  system(command = paste0("gzip '", fname,"'"),  wait = FALSE) # execute in the background
   try(say(), silent = T)
 }
-" BUG ABOVE !!"
-" BUG ABOVE !!"
-" BUG ABOVE !!"
 
 
 # Save an object -----------------------------------------------
@@ -4342,6 +4339,7 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 #' @param suffix A suffix added to the filename, Default: NULL
 #' @param inOutDir PARAM_DESCRIPTION, Default: F
 #' @param alternative_path_rdata PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
+#' @param homepath homepath to replace '~, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
 #' @param showMemObject PARAM_DESCRIPTION, Default: T
 #' @param saveParams PARAM_DESCRIPTION, Default: T
 #' @examples
@@ -4351,21 +4349,27 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 #'  }
 #' }
 #' @export
+
 isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = F
-                      , alternative_path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
+                      , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
+                      , homepath = '/Users/abel.vertesy/'
                       , showMemObject = T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
   path_rdata = if (inOutDir) OutDir else alternative_path_rdata
   dir.create(path_rdata)
 
-  if (showMemObject) { memory.biggest.objects() }
+  if (showMemObject) { try(memory.biggest.objects(), silent = T) }
   if ( "seurat" %in% is(obj) & saveParams) {
     try(obj@misc$p <- p, silent = T)
     try(obj@misc$all.genes  <- all.genes, silent = T)
   }
   fnameBase = kppu(prefix, substitute(obj), suffix, idate(Format = "%Y.%m.%d_%H.%M"))
   fnameBase = trimws(fnameBase, whitespace = '_')
-  saveRDS.compress.in.BG(obj = obj, fname = paste0(path_rdata, "/",fnameBase , ".Rds") )
+  FNN <- paste0(path_rdata, fnameBase , ".Rds")
+  print(FNN)
+  FNN <- gsub(pattern = '~/', replacement = homepath, x = FNN)
+  saveRDS.compress.in.BG3(obj = obj, fname =  FNN)
 }
+
 
 
 
@@ -4397,7 +4401,7 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
 
   dir.create(path_rdata)
 
-  if (showMemObject) { memory.biggest.objects() }
+  if (showMemObject) { try(memory.biggest.objects(), silent = T) }
   fname = Stringendo::kollapse(path_rdata, "/",idate(),...,".Rdata")
   print(fname)
   if (nchar(fname) > 2000) stop()
@@ -5399,7 +5403,7 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
     Loaded: library(future), workers set to 6 (def),set Max mem size to 2GB (def)."   )
 
   gc(full = T)
-  try(memory.biggest.objects())
+  try(memory.biggest.objects(), silent = T)
 
   library(future)
   plan("multiprocess", workers = workers_)

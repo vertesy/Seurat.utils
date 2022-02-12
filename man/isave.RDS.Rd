@@ -9,8 +9,9 @@ isave.RDS(
   prefix = NULL,
   suffix = NULL,
   inOutDir = F,
-  alternative_path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/",
+  alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/",
     basename(OutDir)),
+  homepath = "/Users/abel.vertesy/",
   showMemObject = T,
   saveParams = T
 )
@@ -25,6 +26,8 @@ isave.RDS(
 \item{inOutDir}{PARAM_DESCRIPTION, Default: F}
 
 \item{alternative_path_rdata}{PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))}
+
+\item{homepath}{homepath to replace '~, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))}
 
 \item{showMemObject}{PARAM_DESCRIPTION, Default: T}
 
