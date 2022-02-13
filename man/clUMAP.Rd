@@ -78,7 +78,7 @@ clUMAP(
 
 \item{axes}{Show axes? Default: T}
 
-\item{aspect.ratio}{Fix the aspect ratio? Default: F}
+\item{aspect.ratio}{Fix the aspect ratio? Default: Yes, at 0.6}
 
 \item{save.plot}{Save the plot into a file?, Default: T}
 

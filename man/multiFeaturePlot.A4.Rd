@@ -21,6 +21,7 @@ multiFeaturePlot.A4(
   prefix = NULL,
   suffix = NULL,
   background_col = "white",
+  aspect.ratio = c(FALSE, 0.6)[2],
   saveGeneList = FALSE,
   w = wA4,
   h = hA4,
@@ -61,6 +62,8 @@ multiFeaturePlot.A4(
 \item{suffix}{A suffix added to the filename, Default: NULL}
 
 \item{background_col}{background color def: White}
+
+\item{aspect.ratio}{Fix the aspect ratio? Default: Yes, at 0.6}
 
 \item{saveGeneList}{PARAM_DESCRIPTION, Default: FALSE}
 

@@ -59,7 +59,7 @@ qUMAP(
 
 \item{axes}{Show axes? Default: T}
 
-\item{aspect.ratio}{Fix the aspect ratio? Default: F}
+\item{aspect.ratio}{Fix the aspect ratio?  Default: Yes, at 0.6}
 
 \item{HGNC.lookup}{PARAM_DESCRIPTION, Default: TRUE}
 

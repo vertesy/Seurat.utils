@@ -2019,7 +2019,7 @@ aux_plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 #' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
 #' @param HGNC.lookup PARAM_DESCRIPTION, Default: TRUE
 #' @param axes Show axes? Default: T
-#' @param aspect.ratio Fix the aspect ratio? Default: F
+#' @param aspect.ratio Fix the aspect ratio?  Default: Yes, at 0.6
 #' @param make.uppercase PARAM_DESCRIPTION, Default: TRUE
 #' @param qlow PARAM_DESCRIPTION, Default: 'q10'
 #' @param qhigh PARAM_DESCRIPTION, Default: 'q90'
@@ -2098,7 +2098,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #' @param repel PARAM_DESCRIPTION, Default: T
 #' @param legend PARAM_DESCRIPTION, Default: !label
 #' @param axes Show axes? Default: T
-#' @param aspect.ratio Fix the aspect ratio? Default: F
+#' @param aspect.ratio Fix the aspect ratio? Default: Yes, at 0.6
 #' @param MaxCategThrHP PARAM_DESCRIPTION, Default: 200
 #' @param save.plot Save the plot into a file?, Default: T
 #' @param PNG Save file as .png?, Default: T
@@ -2360,6 +2360,7 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' @param w width of the plot, Default: wA4
 #' @param h height of the plot, Default: hA4
 #' @param scaling PARAM_DESCRIPTION, Default: 1
+#' @param aspect.ratio Fix the aspect ratio? Default: Yes, at 0.6
 #' @param format PARAM_DESCRIPTION, Default: c("jpg", "pdf", "png")[1]
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
@@ -2374,6 +2375,8 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' @export
 #' @importFrom tictoc tic toc
 #' @importFrom cowplot plot_grid
+
+
 multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
                                 , obj = combined.obj
                                 , foldername = substitute(list.of.genes), plot.reduction='umap'
@@ -2383,6 +2386,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , prefix = NULL , suffix = NULL
                                 , background_col = "white"
+                                , aspect.ratio = c(FALSE, 0.6)[2]
                                 , saveGeneList = FALSE
                                 , w = wA4, h = hA4, scaling = 1
                                 , format = c('jpg', 'pdf', 'png')[1]
@@ -2412,10 +2416,11 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
 
     for (i in 1:length(plot.list)) {
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
+      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + coord_fixed(ratio = aspect.ratio)
     }
+
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row )
     ggsave(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
-
   }
 
   if (subdir) create_set_OutDir(... = ParentDir)
