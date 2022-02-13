@@ -2018,7 +2018,8 @@ aux_plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 #' @param nr.cols Number of columns to combine multiple feature plots to, ignored if split.by is not NULL, Default: NULL
 #' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
 #' @param HGNC.lookup PARAM_DESCRIPTION, Default: TRUE
-#' @param axes Show axes?
+#' @param axes Show axes? Default: T
+#' @param aspect.ratio Fix the aspect ratio? Default: F
 #' @param make.uppercase PARAM_DESCRIPTION, Default: TRUE
 #' @param qlow PARAM_DESCRIPTION, Default: 'q10'
 #' @param qhigh PARAM_DESCRIPTION, Default: 'q90'
@@ -2041,6 +2042,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , h = 7, w = NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
                    , axes = T
+                   , aspect.ratio = c(FALSE, 0.6)[2]
                    , HGNC.lookup= TRUE
                    , make.uppercase = FALSE
                    , qlow = "q10", qhigh = "q90", ...) {
@@ -2060,6 +2062,8 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                             , ...) +
     ggtitle(label = title, subtitle = sub) +
     if (!axes) NoAxes() else NULL
+
+  ggplot.obj <- ggplot.obj + if (aspect.ratio) coord_fixed(ratio = aspect.ratio) else NULL
 
   if (save.plot) {
     fname = ww.FnP_parser(Stringendo::sppp(prefix, toupper(reduction), feature, assay, suffix), if (PNG) "png" else "pdf")
@@ -2093,7 +2097,8 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #' @param label PARAM_DESCRIPTION, Default: T
 #' @param repel PARAM_DESCRIPTION, Default: T
 #' @param legend PARAM_DESCRIPTION, Default: !label
-#' @param axes Show axes?
+#' @param axes Show axes? Default: T
+#' @param aspect.ratio Fix the aspect ratio? Default: F
 #' @param MaxCategThrHP PARAM_DESCRIPTION, Default: 200
 #' @param save.plot Save the plot into a file?, Default: T
 #' @param PNG Save file as .png?, Default: T
@@ -2119,6 +2124,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , highlight.clusters = NULL, cells.highlight = NULL
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 200
                    , axes = T
+                   , aspect.ratio = c(FALSE, 0.6)[2]
                    , save.plot = MarkdownHelpers::TRUE.unless('b.save.wplots')
                    , PNG = T
                    # , save.object = F
@@ -2157,6 +2163,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
         if (!legend) NoLegend() else NULL
 
     ggplot.obj <- ggplot.obj + if (!axes) NoAxes() else NULL
+    ggplot.obj <- ggplot.obj + if (aspect.ratio) coord_fixed(ratio = aspect.ratio) else NULL
 
     if (save.plot) {
       pname = Stringendo::sppp(prefix, plotname, suffix, highlight.clusters)
@@ -4339,7 +4346,7 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 #' @param suffix A suffix added to the filename, Default: NULL
 #' @param inOutDir PARAM_DESCRIPTION, Default: F
 #' @param alternative_path_rdata PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
-#' @param homepath homepath to replace '~, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
+#' @param homepath homepath to replace '~', Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
 #' @param showMemObject PARAM_DESCRIPTION, Default: T
 #' @param saveParams PARAM_DESCRIPTION, Default: T
 #' @examples
@@ -4367,7 +4374,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = F
   FNN <- paste0(path_rdata, fnameBase , ".Rds")
   print(FNN)
   FNN <- gsub(pattern = '~/', replacement = homepath, x = FNN)
-  saveRDS.compress.in.BG3(obj = obj, fname =  FNN)
+  saveRDS.compress.in.BG(obj = obj, fname =  FNN)
 }
 
 

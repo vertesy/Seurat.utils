@@ -27,7 +27,7 @@ isave.RDS(
 
 \item{alternative_path_rdata}{PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))}
 
-\item{homepath}{homepath to replace '~, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))}
+\item{homepath}{homepath to replace '~', Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))}
 
 \item{showMemObject}{PARAM_DESCRIPTION, Default: T}
 
