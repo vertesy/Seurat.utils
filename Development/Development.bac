@@ -2146,7 +2146,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
 
 
   if (is.null(cols)) {
-    cols = if (NtCategs > 5) getDiscretePalette(ident.used = ident, palette.used = palette, show.colors = F)
+    cols = if (NtCategs > 5) getDiscretePalette(ident.used = ident, palette.used = palette, obj = obj, show.colors = F)
   }
 
   if( NtCategs > MaxCategThrHP ) {
@@ -2166,7 +2166,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
     ggplot.obj <- ggplot.obj + if (aspect.ratio) coord_fixed(ratio = aspect.ratio) else NULL
 
     if (save.plot) {
-      pname = Stringendo::sppp(prefix, plotname, suffix, highlight.clusters)
+      pname = Stringendo::sppp(prefix, plotname, suffix, sppp(highlight.clusters))
       fname = ww.FnP_parser(pname, if (PNG) "png" else "pdf")
       try(save_plot(filename = fname, plot = ggplot.obj, base_height = h, base_width = w)) #, ncol = 1, nrow = 1
     }
