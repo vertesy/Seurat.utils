@@ -3450,16 +3450,18 @@ scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
 #'  }
 #' }
 #' @export
-scBarplot.CellsPerObject <- function(ls.Seu = ls.Seurat, # Take a List of Seurat objects and draw a barplot for the number of cells per object.
-                                     plotname="Nr.Cells.After.Filtering", names = F ) {
+scBarplot.CellsPerObject <- function(ls.Seu = ls.Seurat
+                                     , plotname="Nr.Cells.After.Filtering", xlab.angle = 45
+                                     , names = F, ...) {
   cellCounts = unlapply(ls.Seu, ncol)
   names(cellCounts) = if (length(names) == length(ls.Seurat)) names else names(ls.Seurat)
-  wbarplot(cellCounts, plotname = plotname,tilted_text = T, ylab="Cells")
-  barplot_label(cellCounts, TopOffset = 500, w = 4)
+  qbarplot(cellCounts, plotname = plotname
+           , subtitle = paste(sum(cellCounts), "cells in total")
+           , label = cellCounts
+           , xlab.angle =  xlab.angle, ylab="Cells"
+           , ...)
+
 }
-
-
-# getClusterColors(ident = )
 
 # _________________________________________________________________________________________________
 #' @title BulkGEScatterPlot
@@ -4528,7 +4530,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
   n.datasets = length(ls.obj)
   iprint(NrCells, "cells")
   tictoc::tic()
-  if (getDoParRegistered() ) {
+  if (foreach::getDoParRegistered() ) {
     ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
       iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i/n.datasets, digitz = 2))
       subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
@@ -4549,6 +4551,48 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
 
 }
 
+
+
+# _________________________________________________________________________________________________
+#' @title Downsample.Seurat.Objects.PC
+#' @description Downsample a list of Seurat objects, by fraction
+#' @param ls.obj List of Seurat objects, Default: ls.Seurat
+#' @param NrCells PARAM_DESCRIPTION, Default: p$dSample.Organoids
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  Downsample.Seurat.Objects.PC()
+#'  }
+#' }
+#' @export
+#' @importFrom tictoc tic toc
+#' @importFrom Stringendo percentage_formatter
+
+Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1) {
+  names.ls = names(ls.obj)
+  n.datasets = length(ls.obj)
+  iprint(fraction, "fraction")
+  tictoc::tic()
+  if (foreach::getDoParRegistered() ) {
+    ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
+      subsetSeuObj(obj = ls.obj[[i]], fraction_ = fraction)
+    }; names(ls.obj.downsampled)  <- names.ls
+  } else {
+    ls.obj.downsampled <- list.fromNames(names.ls)
+    for (i in 1:n.datasets ) {
+      cells = round(ncol(ls.obj[[1]]) * fraction)
+      iprint(names(ls.obj)[i], cells, "cells=", Stringendo::percentage_formatter(i/n.datasets, digitz = 2))
+      ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], fraction_ = fraction)
+    };
+  }; toc(); # else
+
+  NrCells <- sum(unlapply(ls.obj, ncol))
+
+  print(head(unlapply(ls.obj, ncol)))
+  print(head(unlapply(ls.obj.downsampled, ncol)))
+  isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = T)
+
+}
 
 
 # _________________________________________________________________________________________________

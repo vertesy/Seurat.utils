@@ -7,7 +7,9 @@
 scBarplot.CellsPerObject(
   ls.Seu = ls.Seurat,
   plotname = "Nr.Cells.After.Filtering",
-  names = F
+  xlab.angle = 45,
+  names = F,
+  ...
 )
 }
 \arguments{
