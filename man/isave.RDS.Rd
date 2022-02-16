@@ -9,6 +9,7 @@ isave.RDS(
   prefix = NULL,
   suffix = NULL,
   inOutDir = F,
+  project = getProject(),
   alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/",
     basename(OutDir)),
   homepath = "/Users/abel.vertesy/",
@@ -25,6 +26,8 @@ isave.RDS(
 
 \item{inOutDir}{PARAM_DESCRIPTION, Default: F}
 
+\item{project}{project code appended to the saved file name. Default: try(basename(rstudioapi::getActiveProject()), silent=T) using  getProject().}
+
 \item{alternative_path_rdata}{PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))}
 
 \item{homepath}{homepath to replace '~', Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))}
@@ -39,7 +42,7 @@ Save and RDS object.
 \examples{
 \dontrun{
 if(interactive()){
- #EXAMPLE1
+ isave.RDS(my.R.object)
  }
 }
 }

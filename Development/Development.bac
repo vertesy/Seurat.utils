@@ -4345,10 +4345,24 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 }
 
 
+
+#' getProject  -----------------------------------------------
+#'
+#' @description Try to get the project name you are wokring on in Rstudio.
+#' @returns The final subfolder of your project, or NULL, if you are not running one
+#' @export
+#'
+#' @examples getProject()
+getProject <- function() {
+  tryCatch(basename(rstudioapi::getActiveProject()), error=function(e){})
+}
+
+
 # Save an object -----------------------------------------------
 #' @title isave.RDS
 #' @description Save and RDS object.
 #' @param obj Seurat object
+#' @param project project code appended to the saved file name. Default: try(basename(rstudioapi::getActiveProject()), silent=T) using  getProject().
 #' @param prefix PARAM_DESCRIPTION, Default: NULL
 #' @param suffix A suffix added to the filename, Default: NULL
 #' @param inOutDir PARAM_DESCRIPTION, Default: F
@@ -4359,12 +4373,13 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  #EXAMPLE1
+#'  isave.RDS(my.R.object)
 #'  }
 #' }
 #' @export
 
 isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = F
+                      , project = getProject()
                       , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
                       , homepath = '/Users/abel.vertesy/'
                       , showMemObject = T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
@@ -4376,15 +4391,13 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = F
     try(obj@misc$p <- p, silent = T)
     try(obj@misc$all.genes  <- all.genes, silent = T)
   }
-  fnameBase = kppu(prefix, substitute(obj), suffix, idate(Format = "%Y.%m.%d_%H.%M"))
+  fnameBase = kppu(prefix, substitute(obj), project, suffix, idate(Format = "%Y.%m.%d_%H.%M"))
   fnameBase = trimws(fnameBase, whitespace = '_')
   FNN <- paste0(path_rdata, fnameBase , ".Rds")
-  print(FNN)
   FNN <- gsub(pattern = '~/', replacement = homepath, x = FNN)
+  print(FNN)
   saveRDS.compress.in.BG(obj = obj, fname =  FNN)
 }
-
-
 
 
 
