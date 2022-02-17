@@ -9,6 +9,7 @@ try(dev.off(), silent = TRUE)
 # Functions ------------------------
 # install_version("devtools", version = "2.0.2", repos = "http://cran.at.r-project.org") # install.packages("devtools")
 require("devtools")
+require("RcppArmadillo")
 require("roxygen2")
 require("stringr")
 
@@ -20,7 +21,7 @@ require('CodeAndRoll2')
 
 # Setup ------------------------
 PackageName = 	"Seurat.utils"
-package.version = "1.4.4"
+package.version = "1.4.5"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir = kollapse("~/GitHub/Packages/", PackageName, "/")
@@ -53,8 +54,8 @@ setwd(RepositoryDir)
 if ( !dir.exists(RepositoryDir) ) { create(path = RepositoryDir, description = DESCRIPTION, rstudio = TRUE)
 } else {
   getwd()
-  try(file.remove(c("DESCRIPTION","NAMESPACE", "Seurat.utils.Rproj")))
-  create_package(path = RepositoryDir, fields = DESCRIPTION, open = F)
+  try(file.remove(c("DESCRIPTION","NAMESPACE"))) # , "Seurat.utils.Rproj"
+  usethis::create_package(path = RepositoryDir, fields = DESCRIPTION, open = F)
 }
 
 

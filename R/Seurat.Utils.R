@@ -1159,7 +1159,7 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
   toc();
 
   log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q99 + 1)) # strip names
-  n.cells <- floor(ncol(combined.obj) * (1-quantileX) )
+  n.cells <- floor(ncol(obj) * (1-quantileX) )
   qnameP <- p0(100*quantileX,'th quantile')
   try(
     ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30
@@ -1255,7 +1255,7 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 #' }
 #' @export
 set.mm <- function(obj = combined.obj) {
-  mm <- CodeAndRoll2::list.fromNames(colnames(combined.obj@meta.data))
+  mm <- CodeAndRoll2::list.fromNames(colnames(obj@meta.data))
   assign(x = 'mm', value = mm, envir = as.environment(1))
 }
 
@@ -5492,7 +5492,7 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
 
 getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
   print(GetClusteringRuns(obj))
-  clz <- as.character(sort(deframe(unique(combined.obj[[ident]]))))
+  clz <- as.character(sort(deframe(unique(obj[[ident]]))))
   cat(dput(clz))
 }
 
