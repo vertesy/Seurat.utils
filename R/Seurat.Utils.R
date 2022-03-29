@@ -2653,6 +2653,7 @@ qQC.plots.BrainOrg <- function(obj = combined.obj, title = "Top 4 QC markers on 
 #' @description Quickly plot key markers in brain organoids
 #' @param obj Seurat object, Default: combined.obj
 #' @param custom.genes PARAM_DESCRIPTION, Default: F
+#' @param suffix Folder name suffix, Default: ""
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -2660,7 +2661,7 @@ qQC.plots.BrainOrg <- function(obj = combined.obj, title = "Top 4 QC markers on 
 #'  }
 #' }
 #' @export
-qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
+qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix = "") {
   Signature.Genes.Top16 <- if (!isFALSE(custom.genes)) custom.genes else
   {
     Signature.Genes.Top16  <- c(
@@ -2674,9 +2675,11 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
       , `Low-Quality` = "POLR2A", `Choroid.Plexus` = "DCN"
       # , `Choroid.Plexus` = "OTX2", `Choroid.Plexus` = "BMP4"
     )
+    print(Signature.Genes.Top16)
   }
   print(as_tibble_from_namedVec(Signature.Genes.Top16))
-  multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall")
+  multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall"
+                      , foldername = sppp('Signature.Genes.Top16', suffix))
 }
 
 
@@ -5559,3 +5562,44 @@ seu.RemoveMetadata <- function(obj = combined.obj
   return(obj)
 }
 
+
+
+# _________________________________________________________________________________________________
+#' Percent.in.Trome
+#' @description  Gene expression as fraction of all UMI's
+#' @param obj Seurat object
+#' @param n.genes.barplot number of top genes shows
+#' @param width.barplot barplot width
+#' @return  Seurat object
+#' @export
+#' @examples # combined.obj <- Percent.in.Trome()
+
+Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25, width.barplot = round(n.genes.barplot/4)) {
+  m.expr <- combined.obj@assays$RNA@counts
+  total.Expr <- sort(rowSums(m.expr), decreasing = T)
+  relative.total.Expr <- total.Expr / sum(total.Expr)
+  print(head(iround(100*relative.total.Expr), n = n.genes.barplot))
+
+  qhistogram(relative.total.Expr*100, logX = F, logY = T
+             , plotname = "Gene expression as fraction of all UMI's"
+             , subtitle = "Percentage in RNA-counts"
+             , xlab = "Percent in Transcriptome (total per gene)"
+             , ylab = "Number of genes"
+             , xlab.angle = 45
+  ) # + geom_hline(yintercept = 10)
+
+  Highest.Expressed.Genes <- head(iround(100*relative.total.Expr), n = n.genes.barplot)
+  qbarplot(Highest.Expressed.Genes, w = width.barplot
+           , plotname = "Percentage of highest expressed genes"
+           , subtitle = "Total, in RNA-counts"
+           , xlab = ""
+           , ylab = "Gene expression as percent of all UMI's"
+           , xlab.angle = 45
+  )
+  print("!!!")
+  print("TotalReadFraction is stored under combined.obj@misc$'TotalReadFraction'  ")
+  print("!!!")
+  combined.obj@misc$'TotalReadFraction' <- relative.total.Expr
+  return(combined.obj)
+
+}
