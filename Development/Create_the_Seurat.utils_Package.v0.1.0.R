@@ -41,7 +41,7 @@ DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
                     , "Version" = package.version
                     , "Packaged" =  Sys.time()
                     # , "Repository" =  "CRAN"
-                    , "Depends" =  "Stringendo, CodeAndRoll2, ggExpress, ggplot2"
+                    , "Depends" =  "Seurat, ggplot2, Stringendo, CodeAndRoll2, ggExpress"
                     , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
     htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter,
     R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom"

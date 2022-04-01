@@ -326,7 +326,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 #' @export
 DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster names.
                                  , ident = "cl.names.top.gene.res.0.5", reduction = "umap", title = ident, ...) {
-  DimPlot(object = obj, reduction = reduction, group.by = ident, label = T, repel = T, ...) + NoLegend() + ggtitle(title)
+  Seurat::DimPlot(object = obj, reduction = reduction, group.by = ident, label = T, repel = T, ...) + NoLegend() + ggtitle(title)
 }
 
 
@@ -2053,7 +2053,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
   }
 
   DefaultAssay(obj) <- assay
-  ggplot.obj <- FeaturePlot(obj, features = feature
+  ggplot.obj <- Seurat::FeaturePlot(obj, features = feature
                             , reduction = reduction
                             , min.cutoff = qlow, max.cutoff = qhigh
                             # , plotname = ppp(toupper(reduction), feature)
@@ -2063,7 +2063,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
     ggtitle(label = title, subtitle = sub) +
     if (!axes) NoAxes() else NULL
 
-  ggplot.obj <- ggplot.obj + if (aspect.ratio) coord_fixed(ratio = aspect.ratio) else NULL
+  ggplot.obj <- ggplot.obj + if (aspect.ratio) ggplot2::coord_fixed(ratio = aspect.ratio) else NULL
 
   if (save.plot) {
     fname = ww.FnP_parser(Stringendo::sppp(prefix, toupper(reduction), feature, assay, suffix), if (PNG) "png" else "pdf")
@@ -2154,7 +2154,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
   } else {
     if( length(unique(identity)) < MaxCategThrHP )
       ggplot.obj <-
-        DimPlot(object = obj, group.by = ident
+        Seurat::DimPlot(object = obj, group.by = ident
                 , cols = cols
                 , reduction = reduction, split.by = splitby
                 , ncol = nr.cols, cells.highlight = highlight.these
@@ -2163,7 +2163,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
         if (!legend) NoLegend() else NULL
 
     ggplot.obj <- ggplot.obj + if (!axes) NoAxes() else NULL
-    ggplot.obj <- ggplot.obj + if (aspect.ratio) coord_fixed(ratio = aspect.ratio) else NULL
+    ggplot.obj <- ggplot.obj + if (aspect.ratio) ggplot2::coord_fixed(ratio = aspect.ratio) else NULL
 
     if (save.plot) {
       pname = Stringendo::sppp(prefix, plotname, suffix, sppp(highlight.clusters))
@@ -2267,7 +2267,7 @@ save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
 umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, ext = "png", ...) { # Plot and save umap based on a metadata column.
   fname = ppp("Named.clusters", metaD.colname, ext)
   p.named =
-    DimPlot(obj, reduction = "umap", group.by = metaD.colname, label = T, ...) +
+    Seurat::DimPlot(obj, reduction = "umap", group.by = metaD.colname, label = T, ...) +
     NoLegend() +
     ggtitle(metaD.colname)
   save_plot(p.named, filename = fname); p.named
@@ -2329,7 +2329,7 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
 umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based on clusterIDs provided.
                            COI =  c("0", "2", "4", "5",  "11"), res.cl = 'integrated_snn_res.0.3') {
   cellsSel = getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
-  DimPlot(obj, reduction = "umap", group.by = res.cl,
+  Seurat::DimPlot(obj, reduction = "umap", group.by = res.cl,
           label = T, cells.highlight = cellsSel)
   ggsave(filename = extPNG(kollapse("cells",COI, collapseby = '.')))
 }
@@ -2409,14 +2409,14 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
     iprint(i,genes )
     plotname = kpp(c(prefix, plot.reduction,i, genes, suffix, format ))
 
-    plot.list = FeaturePlot(object = obj, features = genes, reduction = plot.reduction, combine = F
+    plot.list = Seurat::FeaturePlot(object = obj, features = genes, reduction = plot.reduction, combine = F
                             , ncol = nr.Col, cols = colors
                             , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp
                             , pt.size = cex, ...)
 
     for (i in 1:length(plot.list)) {
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
-      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + coord_fixed(ratio = aspect.ratio)
+      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + ggplot2::coord_fixed(ratio = aspect.ratio)
     }
 
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row )
@@ -2531,12 +2531,12 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
                                       name.suffix = NULL,
                                       width = hA4, heigth = 1.75*wA4, filetype = "pdf", ...) {
 
-  p1 <- DimPlot(object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
+  p1 <- Seurat::DimPlot(object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
                 , no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size
                 , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...) +
     ggtitle("tSNE") + theme(plot.title = element_text(hjust = 0.5))
 
-  p2 <- DimPlot(object = obj, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use
+  p2 <- Seurat::DimPlot(object = obj, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use
                 , no.legend = T, do.return = do_return, do.label = do_label, label.size = label_size
                 , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...) +
     ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
