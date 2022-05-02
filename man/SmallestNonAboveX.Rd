@@ -7,9 +7,9 @@
 SmallestNonAboveX(vec, X = 0)
 }
 \arguments{
-\item{vec}{PARAM_DESCRIPTION}
+\item{vec}{Numeric input vector}
 
-\item{X}{PARAM_DESCRIPTION, Default: 0}
+\item{X}{Threshold, Default: 0}
 }
 \description{
 replace small values with the next smallest value found, which is >X. #

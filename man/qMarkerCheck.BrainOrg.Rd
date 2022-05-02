@@ -4,12 +4,14 @@
 \alias{qMarkerCheck.BrainOrg}
 \title{qMarkerCheck.BrainOrg}
 \usage{
-qMarkerCheck.BrainOrg(obj = combined.obj, custom.genes = F)
+qMarkerCheck.BrainOrg(obj = combined.obj, custom.genes = F, suffix = "")
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
 \item{custom.genes}{PARAM_DESCRIPTION, Default: F}
+
+\item{suffix}{Folder name suffix, Default: ""}
 }
 \description{
 Quickly plot key markers in brain organoids

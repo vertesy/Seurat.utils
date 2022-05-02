@@ -7,9 +7,9 @@
 jJaccardIndexBinary(x, y)
 }
 \arguments{
-\item{x}{PARAM_DESCRIPTION}
+\item{x}{Set X}
 
-\item{y}{PARAM_DESCRIPTION}
+\item{y}{Set Y}
 }
 \description{
 Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #

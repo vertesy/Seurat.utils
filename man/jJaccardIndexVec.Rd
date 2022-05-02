@@ -7,9 +7,9 @@
 jJaccardIndexVec(A = 1:3, B = 2:4)
 }
 \arguments{
-\item{A}{PARAM_DESCRIPTION, Default: 1:3}
+\item{A}{Set A, Default: 1:3}
 
-\item{B}{PARAM_DESCRIPTION, Default: 2:4}
+\item{B}{Set B, Default: 2:4}
 }
 \description{
 Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.

@@ -11,9 +11,9 @@ GetTopMarkers(
 )
 }
 \arguments{
-\item{dfDE}{PARAM_DESCRIPTION, Default: df.markers}
+\item{dfDE}{Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers}
 
-\item{n}{PARAM_DESCRIPTION, Default: p$n.markers}
+\item{n}{Number of markers to return, Default: p$n.markers}
 
 \item{order.by}{Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")\link{2}}
 }

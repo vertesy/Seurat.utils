@@ -17,9 +17,9 @@ AutoLabel.KnownMarkers(
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{topN}{PARAM_DESCRIPTION, Default: 1}
+\item{topN}{Take the top N genes, Default: 1}
 
-\item{res}{Clustering resoluton to use, Default: 0.5}
+\item{res}{Clustering resolution to use, Default: 0.5}
 
 \item{KnownMarkers}{PARAM_DESCRIPTION, Default: c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1",
 "SALL4", "DDIT4", "PDK1", "SATB2", "FEZF2")}

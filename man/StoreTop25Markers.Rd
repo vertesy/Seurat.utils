@@ -9,7 +9,7 @@ StoreTop25Markers(obj = combined.obj, df_markers = df.markers, res = 0.5)
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{df_markers}{PARAM_DESCRIPTION, Default: df.markers}
+\item{df_markers}{Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers}
 
 \item{res}{Clustering resoluton to use, Default: 0.5}
 }

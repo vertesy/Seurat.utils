@@ -16,9 +16,9 @@ GetNamedClusteringRuns(
 
 \item{res}{Clustering resoluton to use, Default: c(F, 0.5)\link{1}}
 
-\item{topgene}{PARAM_DESCRIPTION, Default: F}
+\item{topgene}{Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: F}
 
-\item{pat}{PARAM_DESCRIPTION, Default: '^cl.names.Known.*\link{0,1}\.\link{0-9}$'}
+\item{pat}{Pettern to match, Default: '^cl.names.Known.*\link{0,1}\.\link{0-9}$'}
 }
 \description{
 Get Clustering Runs: metadata column names #

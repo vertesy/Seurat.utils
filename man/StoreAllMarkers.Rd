@@ -14,11 +14,11 @@ StoreAllMarkers(
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{df_markers}{PARAM_DESCRIPTION, Default: df.markers}
+\item{df_markers}{Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers}
 
 \item{res}{Clustering resoluton to use, Default: 0.5}
 
-\item{digit}{PARAM_DESCRIPTION, Default: c(0, 3)\link{2}}
+\item{digit}{Number of digits to keep, Default: c(0, 3)\link{2}}
 }
 \description{
 Save the output table of \code{FindAllMarkers()} (df_markers) under \verb{@misc$df.markers$res...}. By default, it rounds up insignificant digits up to 3. #

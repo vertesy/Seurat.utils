@@ -16,11 +16,11 @@ AutoNumber.by.PrinCurve(
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{dim}{PARAM_DESCRIPTION, Default: 1:2}
+\item{dim}{Dimensions to use, Default: 1:2}
 
 \item{plotit}{Plot results (& show it), Default: T}
 
-\item{swap}{PARAM_DESCRIPTION, Default: -1}
+\item{swap}{Swap Lambda paramter (multiplied with this) , Default: -1}
 
 \item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
 

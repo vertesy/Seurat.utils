@@ -14,8 +14,8 @@
 # _________________________________________________________________________________________________
 #' @title SmallestNonAboveX
 #' @description replace small values with the next smallest value found, which is >X. #
-#' @param vec PARAM_DESCRIPTION
-#' @param X PARAM_DESCRIPTION, Default: 0
+#' @param vec Numeric input vector
+#' @param X Threshold, Default: 0
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -34,7 +34,7 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 # _________________________________________________________________________________________________
 #' @title Add.DE.combined.score
 #' @description Add combined score to DE results. (LFC * -log10( p_cutoff / pval_scaling ) )
-#' @param df PARAM_DESCRIPTION, Default: df.markers
+#' @param df Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
 #' @param p_val_min PARAM_DESCRIPTION, Default: 1e-25
 #' @param pval_scaling PARAM_DESCRIPTION, Default: 0.001
 #' @param colP PARAM_DESCRIPTION, Default: 'p_val'
@@ -63,7 +63,7 @@ Add.DE.combined.score <- function(df = df.markers, p_val_min = 1e-25, pval_scali
 #' @title StoreTop25Markers
 #' @description Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
 #' @param obj Seurat object, Default: combined.obj
-#' @param df_markers PARAM_DESCRIPTION, Default: df.markers
+#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
 #' @param res Clustering resoluton to use, Default: 0.5
 #' @examples
 #' \dontrun{
@@ -94,9 +94,9 @@ StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based 
 #' @title StoreAllMarkers
 #' @description Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
 #' @param obj Seurat object, Default: combined.obj
-#' @param df_markers PARAM_DESCRIPTION, Default: df.markers
+#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
 #' @param res Clustering resoluton to use, Default: 0.5
-#' @param digit PARAM_DESCRIPTION, Default: c(0, 3)[2]
+#' @param digit Number of digits to keep, Default: c(0, 3)[2]
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -116,8 +116,8 @@ StoreAllMarkers <- function(obj = combined.obj # Save the output table of `FindA
 # _________________________________________________________________________________________________
 #' @title GetTopMarkersDF
 #' @description Get the vector of N most diff. exp. genes. #
-#' @param dfDE PARAM_DESCRIPTION, Default: df.markers
-#' @param n PARAM_DESCRIPTION, Default: p$n.markers
+#' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
+#' @param n Number of markers to return, Default: p$n.markers
 #' @param order.by Sort output tibble by which column, Default: c("avg_log2FC", "p_val_adj")[1]
 #' @examples
 #' \dontrun{
@@ -145,8 +145,8 @@ GetTopMarkersDF <- function(dfDE = df.markers # Get the vector of N most diff. e
 # _________________________________________________________________________________________________
 #' @title GetTopMarkers
 #' @description Get the vector of N most diff. exp. genes. #
-#' @param dfDE PARAM_DESCRIPTION, Default: df.markers
-#' @param n PARAM_DESCRIPTION, Default: p$n.markers
+#' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
+#' @param n Number of markers to return, Default: p$n.markers
 #' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")[2]
 #' @examples
 #' \dontrun{
@@ -181,7 +181,7 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 #' @param res Clustering resoluton to use, Default: 0.2
 #' @param plot.top.genes PARAM_DESCRIPTION, Default: T
 #' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_logFC", "p_val_adj")[1]
-#' @param df_markers PARAM_DESCRIPTION, Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
+#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -234,8 +234,8 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 #' @title AutoLabel.KnownMarkers
 #' @description Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
 #' @param obj Seurat object, Default: combined.obj
-#' @param topN PARAM_DESCRIPTION, Default: 1
-#' @param res Clustering resoluton to use, Default: 0.5
+#' @param topN Take the top N genes, Default: 1
+#' @param res Clustering resolution to use, Default: 0.5
 #' @param KnownMarkers PARAM_DESCRIPTION, Default: c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1",
 #'    "SALL4", "DDIT4", "PDK1", "SATB2", "FEZF2")
 #' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")[1]
@@ -335,8 +335,8 @@ DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster nam
 #' @title AutoNumber.by.UMAP
 #' @description Relabel cluster numbers along a UMAP (or tSNE) axis #
 #' @param obj Seurat object, Default: combined.obj
-#' @param dim PARAM_DESCRIPTION, Default: 1
-#' @param swap PARAM_DESCRIPTION, Default: F
+#' @param dim Which dimension? Default: 1
+#' @param swap Swap direction? Default: F
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
 #' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
 #' @examples
@@ -369,9 +369,9 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 #' @title AutoNumber.by.PrinCurve
 #' @description Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
 #' @param obj Seurat object, Default: combined.obj
-#' @param dim PARAM_DESCRIPTION, Default: 1:2
+#' @param dim Dimensions to use, Default: 1:2
 #' @param plotit Plot results (& show it), Default: T
-#' @param swap PARAM_DESCRIPTION, Default: -1
+#' @param swap Swap Lambda paramter (multiplied with this) , Default: -1
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
 #' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
 #' @examples
@@ -434,8 +434,8 @@ AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers
 # _________________________________________________________________________________________________
 #' @title jJaccardIndexVec
 #' @description Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
-#' @param A PARAM_DESCRIPTION, Default: 1:3
-#' @param B PARAM_DESCRIPTION, Default: 2:4
+#' @param A Set A, Default: 1:3
+#' @param B Set B, Default: 2:4
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -449,7 +449,7 @@ jJaccardIndexVec <- function(A = 1:3, B = 2:4) length(intersect(A,B)) / length(u
 
 #' @title jPairwiseJaccardIndexList
 #' @description Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
-#' @param lsG PARAM_DESCRIPTION, Default: ls_genes
+#' @param lsG List of genes, Default: ls_genes
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -514,8 +514,8 @@ jPresenceMatrix <- function(string_list = lst(a = 1:3, b = 2:5,c = 4:9, d=-1:4) 
 # _________________________________________________________________________________________________
 #' @title jJaccardIndexBinary
 #' @description Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
-#' @param x PARAM_DESCRIPTION
-#' @param y PARAM_DESCRIPTION
+#' @param x Set X
+#' @param y Set Y
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -709,7 +709,7 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
 #' @description Get Clustering Runs: metadata column names #
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: F
-#' @param pat PARAM_DESCRIPTION, Default: '*snn_res.*[0-9]$'
+#' @param pat Pettern to match, Default: '*snn_res.*[0-9]$'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -731,8 +731,8 @@ GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0-9
 #' @description Get Clustering Runs: metadata column names #
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: c(F, 0.5)[1]
-#' @param topgene PARAM_DESCRIPTION, Default: F
-#' @param pat PARAM_DESCRIPTION, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
+#' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: F
+#' @param pat Pettern to match, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -759,7 +759,7 @@ GetNamedClusteringRuns <- function(obj = combined.obj  # Get Clustering Runs: me
 #' @description Get Clustering Runs: metadata column names #
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: F
-#' @param pat PARAM_DESCRIPTION, Default: '*snn_res.*[0,1]\.[0-9]\.ordered$'
+#' @param pat Pettern to match, Default: '*snn_res.*[0,1]\.[0-9]\.ordered$'
 #' @examples
 #' \dontrun{
 #' if(interactive()){

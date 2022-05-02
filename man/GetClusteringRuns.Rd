@@ -11,7 +11,7 @@ GetClusteringRuns(obj = combined.obj, res = F, pat = "*snn_res.*[0-9]$")
 
 \item{res}{Clustering resoluton to use, Default: F}
 
-\item{pat}{PARAM_DESCRIPTION, Default: '\emph{snn_res.}\link{0-9}$'}
+\item{pat}{Pettern to match, Default: '\emph{snn_res.}\link{0-9}$'}
 }
 \description{
 Get Clustering Runs: metadata column names #

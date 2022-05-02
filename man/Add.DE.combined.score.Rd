@@ -14,7 +14,7 @@ Add.DE.combined.score(
 )
 }
 \arguments{
-\item{df}{PARAM_DESCRIPTION, Default: df.markers}
+\item{df}{Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers}
 
 \item{p_val_min}{PARAM_DESCRIPTION, Default: 1e-25}
 

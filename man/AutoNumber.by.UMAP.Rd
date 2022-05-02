@@ -15,9 +15,9 @@ AutoNumber.by.UMAP(
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{dim}{PARAM_DESCRIPTION, Default: 1}
+\item{dim}{Which dimension? Default: 1}
 
-\item{swap}{PARAM_DESCRIPTION, Default: F}
+\item{swap}{Swap direction? Default: F}
 
 \item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
 

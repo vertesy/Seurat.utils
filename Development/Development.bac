@@ -14,8 +14,8 @@
 # _________________________________________________________________________________________________
 #' @title SmallestNonAboveX
 #' @description replace small values with the next smallest value found, which is >X. #
-#' @param vec PARAM_DESCRIPTION
-#' @param X PARAM_DESCRIPTION, Default: 0
+#' @param vec Numeric input vector
+#' @param X Threshold, Default: 0
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -34,7 +34,7 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 # _________________________________________________________________________________________________
 #' @title Add.DE.combined.score
 #' @description Add combined score to DE results. (LFC * -log10( p_cutoff / pval_scaling ) )
-#' @param df PARAM_DESCRIPTION, Default: df.markers
+#' @param df Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
 #' @param p_val_min PARAM_DESCRIPTION, Default: 1e-25
 #' @param pval_scaling PARAM_DESCRIPTION, Default: 0.001
 #' @param colP PARAM_DESCRIPTION, Default: 'p_val'
@@ -63,7 +63,7 @@ Add.DE.combined.score <- function(df = df.markers, p_val_min = 1e-25, pval_scali
 #' @title StoreTop25Markers
 #' @description Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
 #' @param obj Seurat object, Default: combined.obj
-#' @param df_markers PARAM_DESCRIPTION, Default: df.markers
+#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
 #' @param res Clustering resoluton to use, Default: 0.5
 #' @examples
 #' \dontrun{
@@ -94,9 +94,9 @@ StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based 
 #' @title StoreAllMarkers
 #' @description Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
 #' @param obj Seurat object, Default: combined.obj
-#' @param df_markers PARAM_DESCRIPTION, Default: df.markers
+#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
 #' @param res Clustering resoluton to use, Default: 0.5
-#' @param digit PARAM_DESCRIPTION, Default: c(0, 3)[2]
+#' @param digit Number of digits to keep, Default: c(0, 3)[2]
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -116,8 +116,8 @@ StoreAllMarkers <- function(obj = combined.obj # Save the output table of `FindA
 # _________________________________________________________________________________________________
 #' @title GetTopMarkersDF
 #' @description Get the vector of N most diff. exp. genes. #
-#' @param dfDE PARAM_DESCRIPTION, Default: df.markers
-#' @param n PARAM_DESCRIPTION, Default: p$n.markers
+#' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
+#' @param n Number of markers to return, Default: p$n.markers
 #' @param order.by Sort output tibble by which column, Default: c("avg_log2FC", "p_val_adj")[1]
 #' @examples
 #' \dontrun{
@@ -145,8 +145,8 @@ GetTopMarkersDF <- function(dfDE = df.markers # Get the vector of N most diff. e
 # _________________________________________________________________________________________________
 #' @title GetTopMarkers
 #' @description Get the vector of N most diff. exp. genes. #
-#' @param dfDE PARAM_DESCRIPTION, Default: df.markers
-#' @param n PARAM_DESCRIPTION, Default: p$n.markers
+#' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
+#' @param n Number of markers to return, Default: p$n.markers
 #' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")[2]
 #' @examples
 #' \dontrun{
@@ -181,7 +181,7 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 #' @param res Clustering resoluton to use, Default: 0.2
 #' @param plot.top.genes PARAM_DESCRIPTION, Default: T
 #' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_logFC", "p_val_adj")[1]
-#' @param df_markers PARAM_DESCRIPTION, Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
+#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -234,8 +234,8 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 #' @title AutoLabel.KnownMarkers
 #' @description Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
 #' @param obj Seurat object, Default: combined.obj
-#' @param topN PARAM_DESCRIPTION, Default: 1
-#' @param res Clustering resoluton to use, Default: 0.5
+#' @param topN Take the top N genes, Default: 1
+#' @param res Clustering resolution to use, Default: 0.5
 #' @param KnownMarkers PARAM_DESCRIPTION, Default: c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1",
 #'    "SALL4", "DDIT4", "PDK1", "SATB2", "FEZF2")
 #' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")[1]
@@ -326,7 +326,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 #' @export
 DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster names.
                                  , ident = "cl.names.top.gene.res.0.5", reduction = "umap", title = ident, ...) {
-  DimPlot(object = obj, reduction = reduction, group.by = ident, label = T, repel = T, ...) + NoLegend() + ggtitle(title)
+  Seurat::DimPlot(object = obj, reduction = reduction, group.by = ident, label = T, repel = T, ...) + NoLegend() + ggtitle(title)
 }
 
 
@@ -335,8 +335,8 @@ DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster nam
 #' @title AutoNumber.by.UMAP
 #' @description Relabel cluster numbers along a UMAP (or tSNE) axis #
 #' @param obj Seurat object, Default: combined.obj
-#' @param dim PARAM_DESCRIPTION, Default: 1
-#' @param swap PARAM_DESCRIPTION, Default: F
+#' @param dim Which dimension? Default: 1
+#' @param swap Swap direction? Default: F
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
 #' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
 #' @examples
@@ -369,9 +369,9 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 #' @title AutoNumber.by.PrinCurve
 #' @description Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
 #' @param obj Seurat object, Default: combined.obj
-#' @param dim PARAM_DESCRIPTION, Default: 1:2
+#' @param dim Dimensions to use, Default: 1:2
 #' @param plotit Plot results (& show it), Default: T
-#' @param swap PARAM_DESCRIPTION, Default: -1
+#' @param swap Swap Lambda paramter (multiplied with this) , Default: -1
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
 #' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
 #' @examples
@@ -434,8 +434,8 @@ AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers
 # _________________________________________________________________________________________________
 #' @title jJaccardIndexVec
 #' @description Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
-#' @param A PARAM_DESCRIPTION, Default: 1:3
-#' @param B PARAM_DESCRIPTION, Default: 2:4
+#' @param A Set A, Default: 1:3
+#' @param B Set B, Default: 2:4
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -449,7 +449,7 @@ jJaccardIndexVec <- function(A = 1:3, B = 2:4) length(intersect(A,B)) / length(u
 
 #' @title jPairwiseJaccardIndexList
 #' @description Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
-#' @param lsG PARAM_DESCRIPTION, Default: ls_genes
+#' @param lsG List of genes, Default: ls_genes
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -514,8 +514,8 @@ jPresenceMatrix <- function(string_list = lst(a = 1:3, b = 2:5,c = 4:9, d=-1:4) 
 # _________________________________________________________________________________________________
 #' @title jJaccardIndexBinary
 #' @description Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
-#' @param x PARAM_DESCRIPTION
-#' @param y PARAM_DESCRIPTION
+#' @param x Set X
+#' @param y Set Y
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -709,7 +709,7 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
 #' @description Get Clustering Runs: metadata column names #
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: F
-#' @param pat PARAM_DESCRIPTION, Default: '*snn_res.*[0-9]$'
+#' @param pat Pettern to match, Default: '*snn_res.*[0-9]$'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -731,8 +731,8 @@ GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0-9
 #' @description Get Clustering Runs: metadata column names #
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: c(F, 0.5)[1]
-#' @param topgene PARAM_DESCRIPTION, Default: F
-#' @param pat PARAM_DESCRIPTION, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
+#' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: F
+#' @param pat Pettern to match, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -759,7 +759,7 @@ GetNamedClusteringRuns <- function(obj = combined.obj  # Get Clustering Runs: me
 #' @description Get Clustering Runs: metadata column names #
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: F
-#' @param pat PARAM_DESCRIPTION, Default: '*snn_res.*[0,1]\.[0-9]\.ordered$'
+#' @param pat Pettern to match, Default: '*snn_res.*[0,1]\.[0-9]\.ordered$'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -2053,7 +2053,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
   }
 
   DefaultAssay(obj) <- assay
-  ggplot.obj <- FeaturePlot(obj, features = feature
+  ggplot.obj <- Seurat::FeaturePlot(obj, features = feature
                             , reduction = reduction
                             , min.cutoff = qlow, max.cutoff = qhigh
                             # , plotname = ppp(toupper(reduction), feature)
@@ -2063,7 +2063,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
     ggtitle(label = title, subtitle = sub) +
     if (!axes) NoAxes() else NULL
 
-  ggplot.obj <- ggplot.obj + if (aspect.ratio) coord_fixed(ratio = aspect.ratio) else NULL
+  ggplot.obj <- ggplot.obj + if (aspect.ratio) ggplot2::coord_fixed(ratio = aspect.ratio) else NULL
 
   if (save.plot) {
     fname = ww.FnP_parser(Stringendo::sppp(prefix, toupper(reduction), feature, assay, suffix), if (PNG) "png" else "pdf")
@@ -2154,7 +2154,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
   } else {
     if( length(unique(identity)) < MaxCategThrHP )
       ggplot.obj <-
-        DimPlot(object = obj, group.by = ident
+        Seurat::DimPlot(object = obj, group.by = ident
                 , cols = cols
                 , reduction = reduction, split.by = splitby
                 , ncol = nr.cols, cells.highlight = highlight.these
@@ -2163,7 +2163,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
         if (!legend) NoLegend() else NULL
 
     ggplot.obj <- ggplot.obj + if (!axes) NoAxes() else NULL
-    ggplot.obj <- ggplot.obj + if (aspect.ratio) coord_fixed(ratio = aspect.ratio) else NULL
+    ggplot.obj <- ggplot.obj + if (aspect.ratio) ggplot2::coord_fixed(ratio = aspect.ratio) else NULL
 
     if (save.plot) {
       pname = Stringendo::sppp(prefix, plotname, suffix, sppp(highlight.clusters))
@@ -2267,7 +2267,7 @@ save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
 umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, ext = "png", ...) { # Plot and save umap based on a metadata column.
   fname = ppp("Named.clusters", metaD.colname, ext)
   p.named =
-    DimPlot(obj, reduction = "umap", group.by = metaD.colname, label = T, ...) +
+    Seurat::DimPlot(obj, reduction = "umap", group.by = metaD.colname, label = T, ...) +
     NoLegend() +
     ggtitle(metaD.colname)
   save_plot(p.named, filename = fname); p.named
@@ -2329,7 +2329,7 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
 umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based on clusterIDs provided.
                            COI =  c("0", "2", "4", "5",  "11"), res.cl = 'integrated_snn_res.0.3') {
   cellsSel = getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
-  DimPlot(obj, reduction = "umap", group.by = res.cl,
+  Seurat::DimPlot(obj, reduction = "umap", group.by = res.cl,
           label = T, cells.highlight = cellsSel)
   ggsave(filename = extPNG(kollapse("cells",COI, collapseby = '.')))
 }
@@ -2409,14 +2409,14 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
     iprint(i,genes )
     plotname = kpp(c(prefix, plot.reduction,i, genes, suffix, format ))
 
-    plot.list = FeaturePlot(object = obj, features = genes, reduction = plot.reduction, combine = F
+    plot.list = Seurat::FeaturePlot(object = obj, features = genes, reduction = plot.reduction, combine = F
                             , ncol = nr.Col, cols = colors
                             , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp
                             , pt.size = cex, ...)
 
     for (i in 1:length(plot.list)) {
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
-      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + coord_fixed(ratio = aspect.ratio)
+      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + ggplot2::coord_fixed(ratio = aspect.ratio)
     }
 
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row )
@@ -2531,12 +2531,12 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
                                       name.suffix = NULL,
                                       width = hA4, heigth = 1.75*wA4, filetype = "pdf", ...) {
 
-  p1 <- DimPlot(object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
+  p1 <- Seurat::DimPlot(object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
                 , no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size
                 , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...) +
     ggtitle("tSNE") + theme(plot.title = element_text(hjust = 0.5))
 
-  p2 <- DimPlot(object = obj, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use
+  p2 <- Seurat::DimPlot(object = obj, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use
                 , no.legend = T, do.return = do_return, do.label = do_label, label.size = label_size
                 , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...) +
     ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
@@ -2653,6 +2653,7 @@ qQC.plots.BrainOrg <- function(obj = combined.obj, title = "Top 4 QC markers on 
 #' @description Quickly plot key markers in brain organoids
 #' @param obj Seurat object, Default: combined.obj
 #' @param custom.genes PARAM_DESCRIPTION, Default: F
+#' @param suffix Folder name suffix, Default: ""
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -2660,7 +2661,7 @@ qQC.plots.BrainOrg <- function(obj = combined.obj, title = "Top 4 QC markers on 
 #'  }
 #' }
 #' @export
-qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
+qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix = "") {
   Signature.Genes.Top16 <- if (!isFALSE(custom.genes)) custom.genes else
   {
     Signature.Genes.Top16  <- c(
@@ -2674,9 +2675,11 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F) {
       , `Low-Quality` = "POLR2A", `Choroid.Plexus` = "DCN"
       # , `Choroid.Plexus` = "OTX2", `Choroid.Plexus` = "BMP4"
     )
+    print(Signature.Genes.Top16)
   }
   print(as_tibble_from_namedVec(Signature.Genes.Top16))
-  multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall")
+  multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall"
+                      , foldername = sppp('Signature.Genes.Top16', suffix))
 }
 
 
@@ -5559,3 +5562,44 @@ seu.RemoveMetadata <- function(obj = combined.obj
   return(obj)
 }
 
+
+
+# _________________________________________________________________________________________________
+#' Percent.in.Trome
+#' @description  Gene expression as fraction of all UMI's
+#' @param obj Seurat object
+#' @param n.genes.barplot number of top genes shows
+#' @param width.barplot barplot width
+#' @return  Seurat object
+#' @export
+#' @examples # combined.obj <- Percent.in.Trome()
+
+Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25, width.barplot = round(n.genes.barplot/4)) {
+  m.expr <- combined.obj@assays$RNA@counts
+  total.Expr <- sort(rowSums(m.expr), decreasing = T)
+  relative.total.Expr <- total.Expr / sum(total.Expr)
+  print(head(iround(100*relative.total.Expr), n = n.genes.barplot))
+
+  qhistogram(relative.total.Expr*100, logX = F, logY = T
+             , plotname = "Gene expression as fraction of all UMI's"
+             , subtitle = "Percentage in RNA-counts"
+             , xlab = "Percent in Transcriptome (total per gene)"
+             , ylab = "Number of genes"
+             , xlab.angle = 45
+  ) # + geom_hline(yintercept = 10)
+
+  Highest.Expressed.Genes <- head(iround(100*relative.total.Expr), n = n.genes.barplot)
+  qbarplot(Highest.Expressed.Genes, w = width.barplot
+           , plotname = "Percentage of highest expressed genes"
+           , subtitle = "Total, in RNA-counts"
+           , xlab = ""
+           , ylab = "Gene expression as percent of all UMI's"
+           , xlab.angle = 45
+  )
+  print("!!!")
+  print("TotalReadFraction is stored under combined.obj@misc$'TotalReadFraction'  ")
+  print("!!!")
+  combined.obj@misc$'TotalReadFraction' <- relative.total.Expr
+  return(combined.obj)
+
+}
