@@ -3294,7 +3294,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
 # PCA percent of variation associated with each PC ------------------------------------------------------------
 #' @title seu.PC.var.explained
-#' @description Determine percent of variation associated with each PC. #
+#' @description Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
 #' \dontrun{

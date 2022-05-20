@@ -26,6 +26,7 @@ You can install all of them directly from **GitHub** via **devtools** with one R
 
 ```R
 # install.packages("devtools"); # If you don't have it.
+BiocManager::install("sparseMatrixStats")
 require("devtools")
 
 # Install dependencies
@@ -49,6 +50,8 @@ devtools::install_github(repo = "vertesy/Seurat.utils", upgrade = F)
 ```R
 require("Seurat.utils")
 ```
+
+**NOTE: If you type 'all' when R asks to update dependencies, you may get into installation errors / infinite loops. If updating fails, type 'no' when prompted. **
 
 Alternatively, you simply source it from the web. 
 *This way function help will not work, and you will have no local copy of the code on your hard drive.*
