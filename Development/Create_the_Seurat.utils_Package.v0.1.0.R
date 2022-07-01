@@ -21,7 +21,7 @@ require('CodeAndRoll2')
 
 # Setup ------------------------
 PackageName = 	"Seurat.utils"
-package.version = "1.4.6"
+package.version = "1.4.7"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir = kollapse("~/GitHub/Packages/", PackageName, "/")
@@ -90,7 +90,7 @@ document()
 # Install your package ------------------------------------------------
 # # setwd(RepositoryDir)
 install(RepositoryDir, upgrade = F)
-# unload("Seurat.utils")
+# unload(Seurat.utils)
 # require("Seurat.utils")
 # # remove.packages("Seurat.utils")
 # # Test your package ------------------------------------------------

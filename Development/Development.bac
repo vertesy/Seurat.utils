@@ -1979,7 +1979,7 @@ aux_plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 
 # _________________________________________________________________________________________________
 # bar.table.log <- t(log10(bar.table[,BCs.used]+1))
-# bar.table.log <- clip.outliers(bar.table.log)
+# bar.table.log <- CodeAndRoll2::clip.outliers.at.percentile(bar.table.log)
 
 
 
@@ -2770,7 +2770,7 @@ ww.check.if.3D.reduction.exist <- function(obj = obj) { # ww.check.if.3D.reducti
 #' }
 #' @export
 ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[,gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10) {
-  expr.vec.clipped <- clip.outliers(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
+  expr.vec.clipped <- CodeAndRoll2::clip.outliers.at.percentile(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
   if( sum(expr.vec.clipped > 0) > min.cells.expressing ){
     expr.vec <- expr.vec.clipped
   } else {
@@ -2812,7 +2812,7 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
   plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", "Expression" = gene), slot = 'data')
 
   plotting.data$'Expression' <- ww.check.quantile.cutoff.and.clip.outliers(expr.vec = plotting.data[,gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10)
-  clip.outliers(plotting.data[,gene], probs = c(1 - quantileCutoff, quantileCutoff))
+  CodeAndRoll2::clip.outliers.at.percentile(plotting.data[,gene], probs = c(1 - quantileCutoff, quantileCutoff))
   plotting.data$'label' <- paste(rownames(plotting.data), " - ", plotting.data[,gene], sep = "")
 
   ls.ann.auto <- if (AutoAnnotBy != FALSE) {
@@ -3294,7 +3294,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
 # PCA percent of variation associated with each PC ------------------------------------------------------------
 #' @title seu.PC.var.explained
-#' @description Determine percent of variation associated with each PC. #
+#' @description Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
 #' \dontrun{

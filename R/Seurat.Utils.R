@@ -1979,7 +1979,7 @@ aux_plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 
 # _________________________________________________________________________________________________
 # bar.table.log <- t(log10(bar.table[,BCs.used]+1))
-# bar.table.log <- clip.outliers(bar.table.log)
+# bar.table.log <- CodeAndRoll2::clip.outliers.at.percentile(bar.table.log)
 
 
 
@@ -2770,7 +2770,7 @@ ww.check.if.3D.reduction.exist <- function(obj = obj) { # ww.check.if.3D.reducti
 #' }
 #' @export
 ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[,gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10) {
-  expr.vec.clipped <- clip.outliers(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
+  expr.vec.clipped <- CodeAndRoll2::clip.outliers.at.percentile(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
   if( sum(expr.vec.clipped > 0) > min.cells.expressing ){
     expr.vec <- expr.vec.clipped
   } else {
@@ -2812,7 +2812,7 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
   plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", "Expression" = gene), slot = 'data')
 
   plotting.data$'Expression' <- ww.check.quantile.cutoff.and.clip.outliers(expr.vec = plotting.data[,gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10)
-  clip.outliers(plotting.data[,gene], probs = c(1 - quantileCutoff, quantileCutoff))
+  CodeAndRoll2::clip.outliers.at.percentile(plotting.data[,gene], probs = c(1 - quantileCutoff, quantileCutoff))
   plotting.data$'label' <- paste(rownames(plotting.data), " - ", plotting.data[,gene], sep = "")
 
   ls.ann.auto <- if (AutoAnnotBy != FALSE) {
@@ -5507,13 +5507,15 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #'
 #' @param namedVector named vector, where values = new, names(vec) = old
 #' @param orig.ident meta.data colname original
+#' @param suffix.new.ident How to name (suffix) the new identity. Default: "ManualNames"
 #' @param new.ident meta.data colname new
 #' @param obj Seurat object
 #' @export
 
 RenameClustering <- function(namedVector = ManualNames
                              , orig.ident =  "RNA_snn_res.0.3"
-                             , new.ident = ppp(orig.ident,"ManualNames")
+                             , suffix.new.ident = "ManualNames"
+                             , new.ident = ppp(orig.ident, suffix.new.ident)
                              , obj = combined.obj) {
   NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
                     , oldvalues = names(namedVector)
@@ -5546,7 +5548,7 @@ IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { 
 #'
 #' @param obj Seurat object
 #' @param cols_remove columns to remove
-#' @example seu.RemoveMetadata()
+#' @example # seu.RemoveMetadata()
 #' @export
 
 seu.RemoveMetadata <- function(obj = combined.obj

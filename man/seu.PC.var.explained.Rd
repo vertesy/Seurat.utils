@@ -10,7 +10,7 @@ seu.PC.var.explained(obj = combined.obj)
 \item{obj}{Seurat object, Default: combined.obj}
 }
 \description{
-Determine percent of variation associated with each PC. #
+Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
 }
 \examples{
 \dontrun{
