@@ -7,7 +7,8 @@
 RenameClustering(
   namedVector = ManualNames,
   orig.ident = "RNA_snn_res.0.3",
-  new.ident = ppp(orig.ident, "ManualNames"),
+  suffix.new.ident = "ManualNames",
+  new.ident = ppp(orig.ident, suffix.new.ident),
   obj = combined.obj
 )
 }
@@ -15,6 +16,8 @@ RenameClustering(
 \item{namedVector}{named vector, where values = new, names(vec) = old}
 
 \item{orig.ident}{meta.data colname original}
+
+\item{suffix.new.ident}{How to name (suffix) the new identity. Default: "ManualNames"}
 
 \item{new.ident}{meta.data colname new}
 

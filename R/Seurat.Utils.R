@@ -4063,6 +4063,8 @@ scBarplot.FractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', 
 #' @param updateHGNC PARAM_DESCRIPTION, Default: T
 #' @param ShowStats PARAM_DESCRIPTION, Default: T
 #' @param writeCBCtable write out a list of cell barcodes (CBC) as tsv, Default: T
+#' @param depth Depth of scan (How many levels below InputDir). Def 2
+#' @param sample.barcoding Cell Ranger run with sample barcoding. The folder structure is different.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -4071,21 +4073,36 @@ scBarplot.FractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', 
 #' }
 #' @export
 Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
-                              , regex = F, folderPattern = c("filtered_feature", "SoupX_decont")[1]
-                              , min.cells = 5, min.features = 200
-                              , updateHGNC = T, ShowStats = T
-                              , writeCBCtable = TRUE) {
+                               , regex = F, folderPattern = c("filtered_feature", "SoupX_decont")[1]
+                               , min.cells = 5, min.features = 200
+                               , updateHGNC = T, ShowStats = T
+                               , writeCBCtable = TRUE
+                               , sample.barcoding = F
+                               , depth = 2) {
 
-  # finOrig <- list.dirs(InputDir, recursive = subdirs)
-  finOrig <- list.dirs.depth.n(InputDir, depth = 2)
+  if (sample.barcoding) depth = 3
+
+  finOrig <- list.dirs.depth.n(InputDir, depth = depth)
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
 
   iprint(length(fin), "samples found.")
+
+  if (sample.barcoding) {
+    samples <- basename(list.dirs(InputDir, recursive = F))
+    iprint("Samples:", samples)
+  }
+
   if (length(fin)) {
     for (i in 1:length(fin)) { print(i)
       pathIN = fin[i]; print(pathIN)
-      # fnameIN = basename(dirname(xx))
-      fnameIN = strsplit(basename(dirname(fin[i])),split = "_")[[1]][1]
+
+      # sample.barcoding----
+      fnameIN = if (sample.barcoding) {
+        samples[i]
+      } else {
+        strsplit(basename(dirname(pathIN)),split = "_")[[1]][1]
+      }
+
       print(fnameIN)
 
       count_matrix <- Read10X(pathIN)
@@ -4103,6 +4120,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
       } else {
         print('More than 2 elements in the list of matrices')
       }
+
 
       ncells = ncol(seu)
       fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features, 'cells', ncells, "Rds")
