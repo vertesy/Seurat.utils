@@ -1119,7 +1119,7 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc = 0.1) { # Sample N % 
 #' @param obj Seurat object, Default: combined.obj
 #' @param quantileX Quantile level, Default: 0.9
 #' @param max.cells PARAM_DESCRIPTION, Default: 1e+05
-#' @param slot PARAM_DESCRIPTION, Default: 'data'
+#' @param slot slot in the Seurat object. Default: 'data'
 #' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
 #' @param set.all.genes Create the "all.genes" variable in the global env?, Default: TRUE
 #' @param show PARAM_DESCRIPTION, Default: TRUE
@@ -1777,7 +1777,7 @@ subsetMonocleObject <- function(obj = cds_from_seurat, fraction_ = 0.1, nCells =
 #' @title m3.get.umap
 #' @description Fetch the umap coordinates from obj@int_colData@listData$reducedDims[[slot]]
 #' @param obj Seurat object, Default: cds_from_seurat
-#' @param slot PARAM_DESCRIPTION, Default: 'UMAP'
+#' @param slot slot in the Seurat object. Default: 'UMAP'
 #' @param dim Numer of dimensions used, Default: (2:3)[2]
 #' @examples
 #' \dontrun{
@@ -1799,7 +1799,7 @@ m3.get.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2]) {
 #' @title m3.backup.umap
 #' @description Backup umap coordinates to obj@int_colData@listData$reducedDims[[new.slot]]
 #' @param obj Seurat object, Default: cds_from_seurat
-#' @param slot PARAM_DESCRIPTION, Default: 'UMAP'
+#' @param slot slot in the Seurat object. Default: 'UMAP'
 #' @param dim Numer of dimensions used, Default: (2:3)[2]
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
@@ -1822,7 +1822,7 @@ m3.backup.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2],
 #' @title m3.recall.umap
 #' @description Fetch UMAP coordinates.
 #' @param obj Seurat object, Default: cds_from_seurat
-#' @param slot PARAM_DESCRIPTION, Default: 'UMAP'
+#' @param slot slot in the Seurat object. Default: 'UMAP'
 #' @param dim Numer of dimensions used, Default: (2:3)[2]
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
@@ -3865,7 +3865,8 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
 #' @description Histogram of gene expression levels.
 #' @param gene gene of interest, Default: 'TOP2A'
 #' @param obj Seurat object, Default: ls.Seurat[[1]]
-#' @param slot PARAM_DESCRIPTION, Default: c("counts", "data")[2]
+#' @param slot slot in the Seurat object. Default: c("counts", "data")[2]
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -3873,7 +3874,8 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
 #'  }
 #' }
 #' @export
-gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], slot = c('counts', 'data')[2] ) {
+gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], slot = c('counts', 'data')[2]
+                                        , ... ) {
   slot = 'data'
   print(gene)
   if (gene %in% rownames(obj)) {
@@ -3884,11 +3886,12 @@ gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], sl
     mean.expr <- iround(mean(GEX.Counts[gene,]))
 
     suffx = if (slot == 'counts') 'raw' else 'normalised, logtransformed'
-    (pname = paste(gene, 'and the', suffx,'transcript count distribution'))
+    (pname = paste(gene, 'and the', suffx, 'transcript count distribution'))
 
-    ggExpress::qhistogram(GEX.Counts.total, vline = genes.expression, logX = T, w = 6, h = 4
+    ggExpress::qhistogram(GEX.Counts.total, vline = genes.expression, logX = T, w = 7, h = 4
                , subtitle = paste('It belong to the top', pc_TRUE(GEX.Counts.total > genes.expression), 'of genes (black line). Mean expr:', mean.expr)
-               , plotname = pname, xlab = 'Total Transcripts in Dataset', ylab = 'Number of Genes')
+               , plotname = pname, xlab = 'Total Transcripts in Dataset', ylab = 'Number of Genes'
+               , ...)
   } else { print("     !!! Gene not found in object!")}
 }
 
@@ -4899,7 +4902,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
 #' @param gene gene of interest, Default: 'TOP2A'
 #' @param obj Seurat object, Default: combined.obj
 #' @param assay RNA or integrated assay, Default: 'RNA'
-#' @param slot PARAM_DESCRIPTION, Default: 'data'
+#' @param slot slot in the Seurat object. Default: 'data'
 #' @param HEonly PARAM_DESCRIPTION, Default: F
 #' @param minExpr PARAM_DESCRIPTION, Default: 1
 #' @param minCells PARAM_DESCRIPTION, Default: 1000
