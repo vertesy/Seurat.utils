@@ -22,7 +22,7 @@ FindCorrelatedGenes(
 
 \item{assay}{RNA or integrated assay, Default: 'RNA'}
 
-\item{slot}{PARAM_DESCRIPTION, Default: 'data'}
+\item{slot}{slot in the Seurat object. Default: 'data'}
 
 \item{HEonly}{PARAM_DESCRIPTION, Default: F}
 

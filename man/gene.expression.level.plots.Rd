@@ -7,7 +7,8 @@
 gene.expression.level.plots(
   gene = "TOP2A",
   obj = ls.Seurat[[1]],
-  slot = c("counts", "data")[2]
+  slot = c("counts", "data")[2],
+  ...
 )
 }
 \arguments{
@@ -15,7 +16,9 @@ gene.expression.level.plots(
 
 \item{obj}{Seurat object, Default: ls.Seurat[\link{1}]}
 
-\item{slot}{PARAM_DESCRIPTION, Default: c("counts", "data")\link{2}}
+\item{slot}{slot in the Seurat object. Default: c("counts", "data")\link{2}}
+
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 Histogram of gene expression levels.

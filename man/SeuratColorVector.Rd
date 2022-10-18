@@ -4,7 +4,12 @@
 \alias{SeuratColorVector}
 \title{SeuratColorVector}
 \usage{
-SeuratColorVector(ident = NULL, obj = combined.obj, plot.colors = F)
+SeuratColorVector(
+  ident = NULL,
+  obj = combined.obj,
+  plot.colors = F,
+  simple = F
+)
 }
 \arguments{
 \item{ident}{identity used, Default: NULL}
@@ -12,6 +17,8 @@ SeuratColorVector(ident = NULL, obj = combined.obj, plot.colors = F)
 \item{obj}{Seurat object, Default: combined.obj}
 
 \item{plot.colors}{PARAM_DESCRIPTION, Default: F}
+
+\item{simple}{Return simply the unique colors, in order? Default: F}
 }
 \description{
 Recall a Seurat color vector.

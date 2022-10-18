@@ -1466,6 +1466,7 @@ FlipReductionCoordinates <- function(obj = combined.obj, dim = 2, reduction="uma
 #' @param ident identity used, Default: NULL
 #' @param obj Seurat object, Default: combined.obj
 #' @param plot.colors PARAM_DESCRIPTION, Default: F
+#' @param simple Return simply the unique colors, in order? Default: F
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -1476,7 +1477,8 @@ FlipReductionCoordinates <- function(obj = combined.obj, dim = 2, reduction="uma
 #'  \code{\link[scales]{hue_pal}}
 #' @export
 #' @importFrom scales hue_pal
-SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F) {
+
+SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F, simple = F) {
   if (!is.null(ident)) {
     print(ident)
     ident.vec <- obj[[ident]][,1]
@@ -1487,9 +1489,13 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F)
   print(table(ident.vec))
   colorlevels <- scales::hue_pal()(length(levels(ident.vec)))
   if (plot.colors) color_check(colorlevels)
-  translate(vec = as.character(ident.vec)
-            , oldvalues = levels(ident.vec)
-            , newvalues = colorlevels)
+  if (simple) {
+    colorlevels
+  } else {
+    translate(vec = as.character(ident.vec)
+              , oldvalues = levels(ident.vec)
+              , newvalues = colorlevels)
+  }
 }
 
 

@@ -9,7 +9,7 @@ m3.backup.umap(obj = cds_from_seurat, slot = "UMAP", dim = (2:3)[2], ...)
 \arguments{
 \item{obj}{Seurat object, Default: cds_from_seurat}
 
-\item{slot}{PARAM_DESCRIPTION, Default: 'UMAP'}
+\item{slot}{slot in the Seurat object. Default: 'UMAP'}
 
 \item{dim}{Numer of dimensions used, Default: (2:3)\link{2}}
 

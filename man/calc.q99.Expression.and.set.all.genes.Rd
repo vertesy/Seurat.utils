@@ -21,7 +21,7 @@ calc.q99.Expression.and.set.all.genes(
 
 \item{max.cells}{PARAM_DESCRIPTION, Default: 1e+05}
 
-\item{slot}{PARAM_DESCRIPTION, Default: 'data'}
+\item{slot}{slot in the Seurat object. Default: 'data'}
 
 \item{assay}{RNA or integrated assay, Default: c("RNA", "integrated")\link{1}}
 
