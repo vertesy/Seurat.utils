@@ -4879,13 +4879,13 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
   for (i in 1:length(ls.orig.idents)) {
     identX <- ls.orig.idents[[i]]; print(identX)
 
-    # Extract and process cellIDs ----
+    # Extract and process cellIDs
     idx.match <- which(df.cell.whitelist[,1] == identX)
     cell.whitelist <- rownames(df.cell.whitelist)[idx.match]
     cell.whitelist <- substr(x = cell.whitelist
                              , start = 1 ,stop = nchar(cell.whitelist)-2)
 
-    # Extract and process cellIDs ----
+    # Extract and process cellIDs
     ls.obj[[i]] <- subset(x = ls.obj[[i]], cells = cell.whitelist)
   }
   cells.after <- unlapply(ls.obj, ncol)
