@@ -10,7 +10,7 @@ seu.RemoveMetadata(
 )
 }
 \arguments{
-\item{obj}{Seurat object}
+\item{obj}{Seurat object, Default: combined.obj}
 
 \item{cols_remove}{columns to remove}
 }

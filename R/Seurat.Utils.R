@@ -1579,7 +1579,64 @@ get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_r
 
 
 
+# _________________________________________________________________________________________________
+#' remove.residual.small.clusters
+#' @description E.g.: after subsetting often some residual cells remain in clusters originally denfined in the full dataset.
+#' @param identitites Identities to scan for residual clusters
+#' @param obj Seurat object, Default: combined.obj
+#' @param max.cells Max number of cells in cluster to be removed. Default: 0.5% of the dataset
+#' @export
 
+remove.residual.small.clusters <- function(identitites = GetOrderedClusteringRuns()
+                                           , obj = combined.obj
+                                           , max.cells = round((ncol(obj))/2000)
+                                           ) {
+  META <- obj@meta.data
+  all.cells <- rownames(META)
+
+  iprint("max.cells:",max.cells,"| Scanning over these", length(identitites), "identities:", identitites)
+  small.clusters <- cells.to.remove <- list.fromNames(identitites)
+
+  for (i in 1:length(identitites)) {
+    colX <- identitites[i]
+    tbl <- table(META[[colX]])
+
+    small.clusters[[i]] <- which_names(tbl <=max.cells )
+    cells.to.remove[[i]] <- all.cells[which(META[[colX]] %in% small.clusters)]
+    if (length(cells.to.remove[[i]])) iprint(length(cells.to.remove[[i]]), "cells in small clusters:", small.clusters[[i]]) # , head(cells.to.remove[[i]])
+  }
+
+  all.cells.2.remove <- unique(unlist(cells.to.remove))
+  if (length(all.cells.2.remove)) {
+    iprint(">>> a total of", length(all.cells.2.remove), "cells are removed which belonged to a small cluster in any of the identities.")
+  } else { iprint(">>> No cells are removed because belonging to small cluster.")}
+
+  cells.2.keep <- setdiff(all.cells, all.cells.2.remove)
+  obj <- subset(x = obj, cells = cells.2.keep)
+
+  return(obj)
+}
+
+
+# _________________________________________________________________________________________________
+#' drop.levels.Seurat
+#' @description Drop levels in clustering vectors in metadata (e.g. after subsetting)
+#' @param obj Seurat object, Default: combined.obj
+#' @export
+
+drop.levels.Seurat <- function(obj = combined.obj) {
+  META <- obj@meta.data
+  colclasses <- sapply(META, class)
+  drop_in_these <- names(colclasses[ colclasses == 'factor'])
+  iprint("Dropping levels in", length(drop_in_these), drop_in_these)
+  for (i in 1:length(drop_in_these)) {
+    colX <- drop_in_these[i]
+    META[[colX]] <- droplevels(META[[colX]])
+  }
+
+  obj@meta.data <- META
+  return(obj)
+}
 
 
 # _________________________________________________________________________________________________
@@ -5573,9 +5630,8 @@ IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { 
 # _________________________________________________________________________________________________
 #' seu.RemoveMetadata
 #'
-#' @param obj Seurat object
+#' @param obj Seurat object, Default: combined.obj
 #' @param cols_remove columns to remove
-#' @example # seu.RemoveMetadata()
 #' @export
 
 seu.RemoveMetadata <- function(obj = combined.obj
@@ -5595,11 +5651,11 @@ seu.RemoveMetadata <- function(obj = combined.obj
 
 # _________________________________________________________________________________________________
 #' Percent.in.Trome
-#' @description  Gene expression as fraction of all UMI's
+#' @description Gene expression as fraction of all UMI's
 #' @param obj Seurat object
 #' @param n.genes.barplot number of top genes shows
 #' @param width.barplot barplot width
-#' @return  Seurat object
+#' @return Seurat object
 #' @export
 #' @examples # combined.obj <- Percent.in.Trome()
 
