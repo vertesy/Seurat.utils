@@ -348,17 +348,21 @@ DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster nam
 #' }
 #' @export
 AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers along a UMAP (or tSNE) axis
-                               , dim = 1, swap= F, reduction="umap", res = "integrated_snn_res.0.5" ) {
+                               , dim = 1, swap= F, reduction="umap", res = "RNA_snn_res.0.5" ) {
 
   dim_name <- kppu(toupper(reduction),dim)
   coord.umap <- as.named.vector(FetchData(object = obj, vars = dim_name))
-  ls.perCl <- split(coord.umap, f = obj[[res]])
+  identX <- as.character(obj@meta.data[[res]])
+
+  ls.perCl <- split(coord.umap, f = identX)
   MedianClusterCoordinate <- unlapply(ls.perCl, median)
+
   OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
   NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
-  NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
+  NewMeta <- translate(vec = identX, oldvalues = OldLabel, newvalues = NewLabel)
   NewMetaCol <- kpp(res,"ordered")
   iprint("NewMetaCol:",NewMetaCol)
+
   obj[[NewMetaCol]] <- NewMeta
   return(obj)
 }
@@ -3462,9 +3466,16 @@ scBarplot.CellFractions <- function(obj = combined.obj
 # _________________________________________________________________________________________________
 #' @title scBarplot.CellsPerCluster
 #' @description Barplot the Fraction of cells per cluster. (dupl?)
+#'
 #' @param obj Seurat object, Default: combined.obj
 #' @param ident identity used, Default: 'cl.names.KnownMarkers.0.5'
-#' @param sort PARAM_DESCRIPTION, Default: F
+#' @param label True: displays cell count, but you can provide anything in a vector.
+#' @param palette Color palette. Default: glasbey.
+#' @param return_table Should it return the plotting data instead of the plot?
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @param sort Sort by cluster size? Default: F
+#' @param suffix File name suffix
+#'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -3475,7 +3486,8 @@ scBarplot.CellFractions <- function(obj = combined.obj
 
 scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
                                       , sort = F
-                                      , label = T
+                                      , label = list(T, 'percent')[[1]]
+                                      , suffix = if (label == 'percent') 'percent' else NULL
                                       , palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
                                       , obj = combined.obj
                                       , return_table = F
@@ -3483,13 +3495,16 @@ scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
   cell.per.cl <- obj[[ident]][,1]
   cell.per.cluster <- (table(cell.per.cl))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
-  lbl <- if (isFALSE(label)) NULL else if(isTRUE(label)) cell.per.cluster else label
+  lbl <- if (isFALSE(label)) { NULL
+    } else if (label == 'percent') { percentage_formatter(cell.per.cluster/sum(cell.per.cluster))
+      } else if (label == 'T') { cell.per.cluster
+        } else label
 
   n.clusters <- length(cell.per.cluster)
   if (return_table) {
     cell.per.cluster
   } else {
-    ggExpress::qbarplot(cell.per.cluster, subtitle = ident, suffix = ident
+    ggExpress::qbarplot(cell.per.cluster, subtitle = ident, suffix = kpp(ident, suffix)
              , col = 1:n.clusters
              , xlab.angle = 45
              , label = lbl

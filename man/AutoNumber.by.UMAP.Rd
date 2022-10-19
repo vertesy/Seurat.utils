@@ -9,7 +9,7 @@ AutoNumber.by.UMAP(
   dim = 1,
   swap = F,
   reduction = "umap",
-  res = "integrated_snn_res.0.5"
+  res = "RNA_snn_res.0.5"
 )
 }
 \arguments{
