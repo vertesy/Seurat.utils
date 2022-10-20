@@ -4627,6 +4627,22 @@ subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir =
 
 
 # _________________________________________________________________________________________________
+#' @title subsetSeuObj.ident.class
+#' @description Subset a Seurat Obj to a given column
+#' @param obj Seurat object, Default: ORC
+#' @param ident identity
+#' @param clusters which value to match
+#' @export
+
+subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.5.ordered.ManualNames', clusters = "Neuron, unclear" ) {
+  Idents(obj) <- ident
+  cellz <- WhichCells(obj, idents = clusters)
+  iprint(length(cellz), "cells are selected from", ncol(obj), 'using', ident)
+  subset(x = obj, cells = cellz)
+}
+
+
+# _________________________________________________________________________________________________
 #' @title Downsample.Seurat.Objects
 #' @description Downsample a list of Seurat objects
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
@@ -5196,6 +5212,67 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
         , ylim = c(0,max(HGNC.UpdateStatistics[,2])) )
   wlegend(NamedColorVec = lll, poz = 1)
 }
+
+
+
+# _________________________________________________________________________________________________
+# Handling SNP demux table results coming from SoupOrCell
+# ____________________________________________________________________ ----
+
+
+# _________________________________________________________________________________________________
+#' @title SNP.demux.fix.GT.table
+#' @description Fix SNP demux table results coming from SoupOrCell
+#'
+#' @param GT.table A 2 column Genotype assignment table with singlet status
+#' @param col1 'assignment.named'
+#' @param col1.new.name New name 'Genotype'
+#' @param col2 'status'
+#' @param col2.new.name New name 'Singlet.status'
+#' @param suffix Add this to 'Singlet.status', then overwrite 'Genotype'
+#' @export
+
+SNP.demux.fix.GT.table <- function(GT.table = GenotypeTable.37
+                                   , col1 = 'assignment.named'
+                                   , col1.new.name = 'Genotype'
+                                   , col2 = 'status'
+                                   , col2.new.name = 'Singlet.status'
+                                   , suffix = 'lib.37'
+) {
+  # rename -------------------------
+  stopifnot(colnames(GT.table) == c(col1, col2))
+  colnames(GT.table) <- c(col1.new.name, col2.new.name)
+
+  # stats -------------------------
+  assignment.status <- GT.table[, col2.new.name]
+  tbl.status <- table(assignment.status)
+  print(tbl.status)
+
+  # replace entries -------------------------
+  idx.doublet <- which(assignment.status == 'doublet')
+  idx.unassigned <- which(assignment.status == 'unassigned')
+
+  GT.table[idx.doublet, col1.new.name] <- kpp('doublet', suffix)
+  GT.table[idx.unassigned, col1.new.name] <- kpp('unassigned', suffix)
+
+  # stats -------------------------
+  gentotype.status <- GT.table[ , col1.new.name]
+  tbl.gentotype <- table(gentotype.status)
+  print(tbl.gentotype)
+
+  return(GT.table)
+}
+
+
+
+# _________________________________________________________________________________________________
+
+
+
+# _________________________________________________________________________________________________
+
+
+
 
 
 # _________________________________________________________________________________________________
