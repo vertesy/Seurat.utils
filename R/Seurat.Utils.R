@@ -5229,15 +5229,21 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' @param col1.new.name New name 'Genotype'
 #' @param col2 'status'
 #' @param col2.new.name New name 'Singlet.status'
+#' @param obj
+#' @param cellname_prefix
 #' @param suffix Add this to 'Singlet.status', then overwrite 'Genotype'
+#'
 #' @export
 
+
 SNP.demux.fix.GT.table <- function(GT.table = GenotypeTable.37
+                                   , obj = obj.Neurons.37
                                    , col1 = 'assignment.named'
                                    , col1.new.name = 'Genotype'
                                    , col2 = 'status'
                                    , col2.new.name = 'Singlet.status'
                                    , suffix = 'lib.37'
+                                   , cellname_prefix = NULL
 ) {
   # rename -------------------------
   stopifnot(colnames(GT.table) == c(col1, col2))
@@ -5260,8 +5266,41 @@ SNP.demux.fix.GT.table <- function(GT.table = GenotypeTable.37
   tbl.gentotype <- table(gentotype.status)
   print(tbl.gentotype)
 
+  # Plot stats -------------------------
+  SNP.demux.singlet.status <- sort(table(GT.table$'Singlet.status'))
+  qpie(SNP.demux.singlet.status, suffix = suffix, w = 7, h =5)
+
+  SNP.demux.Genotype.status <- sort(table(GT.table$'Genotype'))
+  qpie(SNP.demux.Genotype.status, suffix = suffix, w = 7, h =5)
+
+
+  # Check cell name identity -------------------------
+  cells.GT.table = rownames(GT.table)
+  cells.obj = colnames(obj)
+
+  if (is_null(cellname_prefix)) {
+    tbl_cellID_prefix <- table(stringr::str_split_fixed(cells.obj, pattern = '_', n = 2)[,1])
+    cellname_prefix <- paste0(names(tbl_cellID_prefix), '_')
+    iprint(">>> Cellname prefixes in object:", cellname_prefix)
+    stopifnot(length(cellname_prefix) == 1)
+  }
+  rownames(GT.table) <- paste0(cellname_prefix, rownames(GT.table))
+
+
+  # Visual check cell name identity -------------------------
+  iprint("Cells GT.table", head(rownames(GT.table)))
+  iprint("Cells object", head(cells.obj))
+  Overlap.of.cell.names <- list("Cells in obj" = cells.obj
+                                , "Cells in GT.table" = rownames(GT.table)
+  )
+  qvenn(Overlap.of.cell.names)
+
   return(GT.table)
 }
+
+
+
+
 
 
 

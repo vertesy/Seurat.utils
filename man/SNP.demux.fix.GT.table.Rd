@@ -6,11 +6,13 @@
 \usage{
 SNP.demux.fix.GT.table(
   GT.table = GenotypeTable.37,
+  obj = obj.Neurons.37,
   col1 = "assignment.named",
   col1.new.name = "Genotype",
   col2 = "status",
   col2.new.name = "Singlet.status",
-  suffix = "lib.37"
+  suffix = "lib.37",
+  cellname_prefix = NULL
 )
 }
 \arguments{
