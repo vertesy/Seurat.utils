@@ -5,7 +5,7 @@
 \title{SNP.demux.fix.GT.table}
 \usage{
 SNP.demux.fix.GT.table(
-  GT.table = GenotypeTable.37,
+  GT.table = Genotypes.37.named,
   obj = obj.Neurons.37,
   col1 = "assignment.named",
   col1.new.name = "Genotype",

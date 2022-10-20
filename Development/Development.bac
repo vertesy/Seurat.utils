@@ -5236,7 +5236,8 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' @export
 
 
-SNP.demux.fix.GT.table <- function(GT.table = GenotypeTable.37
+
+SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
                                    , obj = obj.Neurons.37
                                    , col1 = 'assignment.named'
                                    , col1.new.name = 'Genotype'
@@ -5245,8 +5246,16 @@ SNP.demux.fix.GT.table <- function(GT.table = GenotypeTable.37
                                    , suffix = 'lib.37'
                                    , cellname_prefix = NULL
 ) {
+
+  # Subset -------------------------
+  col_names <- c(col1, col2)
+  stopifnot(col_names %in% colnames(GT.table))
+
+  GT.table <-
+    GT.table %>%
+    select(col_names)
+
   # rename -------------------------
-  stopifnot(colnames(GT.table) == c(col1, col2))
   colnames(GT.table) <- c(col1.new.name, col2.new.name)
 
   # stats -------------------------
@@ -5268,11 +5277,14 @@ SNP.demux.fix.GT.table <- function(GT.table = GenotypeTable.37
 
   # Plot stats -------------------------
   SNP.demux.singlet.status <- sort(table(GT.table$'Singlet.status'))
-  qpie(SNP.demux.singlet.status, suffix = suffix, w = 7, h =5)
+  qpie(SNP.demux.singlet.status, suffix = suffix, w = 7, h =5, plot = T)
 
   SNP.demux.Genotype.status <- sort(table(GT.table$'Genotype'))
-  qpie(SNP.demux.Genotype.status, suffix = suffix, w = 7, h =5)
+  qpie(SNP.demux.Genotype.status, suffix = suffix, w = 7, h =5, plot = T)
 
+  cln.categ <- grepv(names(SNP.demux.Genotype.status), pattern = 'doublet|unassigned', invert = T)
+  SNP.demux.Genotype.status.cln <- SNP.demux.Genotype.status[cln.categ]
+  qpie(SNP.demux.Genotype.status.cln, suffix = suffix, w = 7, h =5, plot = T)
 
   # Check cell name identity -------------------------
   cells.GT.table = rownames(GT.table)
@@ -5293,10 +5305,11 @@ SNP.demux.fix.GT.table <- function(GT.table = GenotypeTable.37
   Overlap.of.cell.names <- list("Cells in obj" = cells.obj
                                 , "Cells in GT.table" = rownames(GT.table)
   )
-  qvenn(Overlap.of.cell.names)
+  qvenn(Overlap.of.cell.names, plot = T)
 
   return(GT.table)
 }
+
 
 
 
