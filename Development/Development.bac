@@ -10,7 +10,8 @@
 # require(princurve) # only for AutoNumber.by.PrinCurve
 
 
-
+# _________________________________________________________________________________________________
+# General ______________________________ ----
 # _________________________________________________________________________________________________
 #' @title SmallestNonAboveX
 #' @description replace small values with the next smallest value found, which is >X. #
@@ -571,8 +572,8 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 }
 
 # _________________________________________________________________________________________________
-# metadata.manipulation.R
-# ____________________________________________________________________ ----
+# metadata.manipulation.R ______________________________ ----
+# _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/Seurat.object.manipulations.etc.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Metadata.manipulation.R"))
 # Source: self + web
@@ -918,7 +919,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 
 
 
-# ------------------------------------------------
+# _________________________________________________________________________________________________
 #' @title calc.cluster.averages
 #' @description Calculate the average of a metadata column (numeric) per cluster.
 #' @param col_name PARAM_DESCRIPTION, Default: 'Score.GO.0006096'
@@ -1643,313 +1644,14 @@ drop.levels.Seurat <- function(obj = combined.obj) {
 }
 
 
-# _________________________________________________________________________________________________
-# Monocle.Utils.R
-# ____________________________________________________________________ ----
-# source('~/GitHub/Packages/Seurat.utils/Functions/Monocle.Utils.R')
-# rm(list = ls(all.names = TRUE)); try(dev.off(), silent = T)
-
-# Functions ------------------------
-# source('https://raw.githubusercontent.com/vertesy/Seurat.Pipeline/main/elements/Load.packages.local.R')
-# try(source("~/GitHub/Packages/Seurat.multicore/00.Load.Seurat3.Multicore.LOCAL.R"));
-
-
-# _________________________________________________________________________________________________
-# _________________________________________________________________________________________________
-
-
-# mplotGene ------------------------
-#' @title mplotGene
-#' @description Plot genes in Monocle.
-#' @param gene gene of interest, Default: 'PGK1'
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'UMAP'
-#' @param obj Seurat object, Default: cds_from_seurat
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  mplotGene(); mplotGene("GAPDH")
-#'  }
-#' }
-#' @export
-mplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds_from_seurat) {
-  pl1 <- plot_cells(cds = obj,
-                    # color_cells_by = 'clusters_low',
-                    genes = gene,
-                    reduction_method =reduction,
-                    # color_cells_by = 'clusters_superlow',
-                    label_groups_by_cluster = F,
-                    label_leaves = F,
-                    label_branch_points = F, label_cell_groups = F
-                    , group_label_size = 10
-                    , cell_size = 1, alpha = .5)
-  ggExpress::qqSave(pl1, fname = ppp(reduction, gene, ".png"), w = 14, h = 7)
-}
-
-
-
-# mplotManyGenes ------------------------
-#' @title mplotManyGenes
-#' @description Plot many genes in Monocle.
-#' @param ls.genes PARAM_DESCRIPTION, Default: c(`S-phase` = "TOP2A",
-#'    `G2M-phase` = "HIST1H4C", oRG = "ID4",
-#'    oRG = "HOPX", `Intermediate progenitor` = "EOMES", `Intermediate progenitor1` = "TAC3",
-#'    Astroglia = "GFAP", Astrocyte = "S100B", `Immature neurons` = "SLA",
-#'    Interneurons = "DLX6-AS1", `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1",
-#'    `Low-Quality` = "POLR2A", PGC = "DCN", `dl-EN` = "KAZN",
-#'    `ul-EN` = "SATB2")
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  mplotManyGenes()
-#'  }
-#' }
-#' @export
-mplotManyGenes <- function(ls.genes = c(
-  `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
-  , `oRG` = "ID4", `oRG` = "HOPX"
-  , `Intermediate progenitor` = "EOMES",  `Intermediate progenitor1` = "TAC3"
-  , Astroglia = "GFAP", Astrocyte = "S100B"
-  , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
-  , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
-  , `Low-Quality` = "POLR2A", `PGC` = "DCN"
-  , `dl-EN` = "KAZN", `ul-EN` = "SATB2")
-) {
-  create_set_SubDir("gene.expression")
-  for (g in ls.genes) {
-    mplotGene(g)
-  }
-  create_set_OutDir(ParentDir)
-}
-
-
-
-#' @title m3DplotGene
-#' @description Plot a gene in 3D in Monocle.
-#' @param gene gene of interest, Default: 'PGK1'
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'UMAP'
-#' @param obj Seurat object, Default: cds.10pc
-#' @param ttl.suffix PARAM_DESCRIPTION, Default: 'expression'
-#' @param suffix A suffix added to the filename, Default: ''
-#' @param cex Point size, Default: 5
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  m3DplotGene("DDIT4")
-#'  }
-#' }
-#' @export
-m3DplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds.10pc, ttl.suffix = "expression"
-                        , suffix = "", cex = 5) {
-  gene <- intersect(rownames(obj), gene)
-  if (length(gene)) {
-    pl1 <- plot_cells_3d(cds = obj
-                         # color_cells_by = 'clusters_low',
-                         , genes = gene
-                         , reduction_method = reduction
-                         # color_cells_by = 'clusters_superlow',
-                         # label_groups_by_cluster = F,
-                         # label_leaves = F,
-                         # label_branch_points = F, label_cell_groups = F
-                         # , group_label_size = 10
-                         , cell_size = cex
-                         , alpha = .5) %>%
-      plotly::layout(title = paste0(gene, ttl.suffix))
-    SavePlotlyAsHtml(pl1, category. = gene, suffix. = suffix)
-  } else { iprint("gene not found") }
-}
-
-
-
-# m3DplotKeyGenes ------------------------
-#' @title m3DplotKeyGenes
-#' @description Plot many genes in 3D in Monocle.
-#' @param obj Seurat object, Default: cds.10pc
-#' @param cex Point size, Default: iround(log10(idim(obj)[2]))
-#' @param ls.genes PARAM_DESCRIPTION, Default: c(`S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C", oRG = "ID4",
-#'    oRG = "HOPX", `Intermediate progenitor` = "EOMES", `Intermediate progenitor1` = "TAC3",
-#'    Astroglia = "GFAP", Astrocyte = "S100B", `Immature neurons` = "SLA",
-#'    Interneurons = "DLX6-AS1", `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1",
-#'    `Low-Quality` = "POLR2A", PGC = "DCN", `dl-EN` = "KAZN",
-#'    `ul-EN` = "SATB2")
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'UMAP'
-#' @param suffix A suffix added to the filename, Default: ''
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  m3DplotKeyGenes()
-#'  }
-#' }
-#' @export
-m3DplotKeyGenes <- function(obj = cds.10pc, cex = iround(log10(idim(obj)[2]))
-                            , ls.genes =  c(
-                              `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
-                              , `oRG` = "ID4", `oRG` = "HOPX"
-                              , `Intermediate progenitor` = "EOMES"
-                              ,  `Intermediate progenitor1` = "TAC3"
-                              , Astroglia = "GFAP", Astrocyte = "S100B"
-                              , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
-                              , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
-                              , `Low-Quality` = "POLR2A", `PGC` = "DCN"
-                              , `dl-EN` = "KAZN", `ul-EN` = "SATB2")
-                            , reduction = "UMAP", suffix = "") {
-
-  ls.genes <- intersect(rownames(obj), ls.genes)
-  iprint(length(ls.genes), "genes found.")
-  create_set_SubDir(ppp("3D.gex.plots", substitute(obj)))
-  for (g in ls.genes) {
-    m3DplotGene(gene = g, obj = obj, cex = cex)
-  }
-  create_set_OutDir(ParentDir)
-}
-
-
-# subsetMonocleObject ------------------------
-#' @title subsetMonocleObject
-#' @description Subset a compressed Seurat Obj and save it in wd.
-#' @param obj Seurat object, Default: cds_from_seurat
-#' @param fraction_ PARAM_DESCRIPTION, Default: 0.1
-#' @param nCells PARAM_DESCRIPTION, Default: F
-#' @param seed_ PARAM_DESCRIPTION, Default: 1989
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  cds.10pc <- subsetMonocleObject(cds_from_seurat, fraction_ = .1);
-#'  cds.25pc <- subsetMonocleObject(cds_from_seurat, fraction_ = .25)
-#'  }
-#' }
-#' @export
-#' @importFrom Stringendo percentage_formatter
-subsetMonocleObject <- function(obj = cds_from_seurat, fraction_ = 0.1, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
-  set.seed(seed_)
-  if (isFALSE(nCells)) {
-    all.cells <- colnames(obj)
-    n.keep <- floor(length(all.cells) * fraction_)
-    cellIDs.keep <- sample(all.cells, size = n.keep, replace = FALSE)
-    iprint(length(cellIDs.keep), "or",Stringendo::percentage_formatter(fraction_),"of the cells are kept. Seed:", head(cellIDs.keep), seed_)
-    # cellIDs.keep
-  } else if (nCells > 1) {
-    nKeep = min(ncol(obj), nCells)
-    # print(nKeep)
-    cellIDs.keep = sample(colnames(obj), size = nKeep, replace = F)
-    if (nKeep < nCells) iprint("Only",nCells,"cells were found in the object, so downsampling is not possible.")
-  }
-  obj <- obj[,cellIDs.keep] # downsample
-  return(obj)
-}
-
-
-
-
-# m3.get.umap ------------------------
-#' @title m3.get.umap
-#' @description Fetch the umap coordinates from obj@int_colData@listData$reducedDims[[slot]]
-#' @param obj Seurat object, Default: cds_from_seurat
-#' @param slot slot in the Seurat object. Default: 'UMAP'
-#' @param dim Numer of dimensions used, Default: (2:3)[2]
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  m3.get.umap(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2])
-#'  }
-#' }
-#' @export
-m3.get.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2]) {
-  iprint(dim, 'dimensional', slot)
-  df.reduction <- obj@int_colData@listData$reducedDims[[slot]]
-  stopif(condition = is.null(df.reduction), message = paste('slot not found', slot))
-  stopifnot(ncol(df.reduction) == dim)
-  return(df.reduction)
-}
-
-
-# _________________________________________________________________________________________________
-#' @title m3.backup.umap
-#' @description Backup umap coordinates to obj@int_colData@listData$reducedDims[[new.slot]]
-#' @param obj Seurat object, Default: cds_from_seurat
-#' @param slot slot in the Seurat object. Default: 'UMAP'
-#' @param dim Numer of dimensions used, Default: (2:3)[2]
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  cds_from_seurat <- m3.backup.umap(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2])
-#'  }
-#' }
-#' @export
-m3.backup.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2], ...) {
-  new.slot <- paste0(slot,'.',dim, 'D')
-  obj@int_colData@listData$reducedDims[[new.slot]] <- m3.get.umap(obj = obj, slot = slot, dim = dim, ... )
-  iprint('obj@int_colData@listData$reducedDims$', new.slot)
-  return(obj)
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title m3.recall.umap
-#' @description Fetch UMAP coordinates.
-#' @param obj Seurat object, Default: cds_from_seurat
-#' @param slot slot in the Seurat object. Default: 'UMAP'
-#' @param dim Numer of dimensions used, Default: (2:3)[2]
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  cds_from_seurat <- m3.recall.umap(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2]); cds_from_seurat.bac <- cds_from_seurat
-#'  }
-#' }
-#' @export
-m3.recall.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2], ...) {
-  backup.slot <- paste0(slot,'.',dim, 'D')
-  old.dim <- ncol(obj@int_colData@listData$reducedDims[[slot]])
-  obj@int_colData@listData$reducedDims[[slot]] <- obj@int_colData@listData$reducedDims[[backup.slot]]
-  iprint(old.dim, 'dimensional', slot, 'replaced by', dim, slot, 'reduction.')
-  return(obj)
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title m3.export.umap.2.Seurat
-#' @description Export umap coordinates.
-#' @param mobj PARAM_DESCRIPTION, Default: cds_from_seurat
-#' @param sobj PARAM_DESCRIPTION, Default: combined.obj
-#' @param def.dim PARAM_DESCRIPTION, Default: 2
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  combined.obj.bac <- combined.obj; # combined.obj <- combined.obj.bac
-#'  combined.obj <- m3.export.umap.2.Seurat(mobj = cds_from_seurat, sobj = combined.obj); qUMAP("DDIT4")
-#'  }
-#' }
-#' @export
-m3.export.umap.2.Seurat <- function(mobj = cds_from_seurat, sobj = combined.obj, def.dim = 2) {
-
-  reduc_bac <- sobj@misc$reductions.backup
-  reduc_bac$'umap2d.Seurat' <- reduc_bac$'umap2d'
-  reduc_bac$'umap2d'@cell.embeddings <- m3.get.umap(obj = cds_from_seurat, slot = 'UMAP.2D', dim = 2)
-  colnames(reduc_bac$'umap2d'@cell.embeddings) <- paste('UMAP', 1:2, sep = '_')
-
-  reduc_bac$'umap3d.Seurat' <- reduc_bac$'umap3d'
-  reduc_bac$'umap3d'@cell.embeddings <- m3.get.umap(obj = cds_from_seurat, slot = 'UMAP.3D', dim = 3)
-  colnames(reduc_bac$'umap3d'@cell.embeddings) <- paste('UMAP', 1:3, sep = '_')
-
-  sobj@misc$reductions.backup <- reduc_bac
-  sobj@reductions$umap <-  reduc_bac$'umap2d'  # if (def.dim == 2) { reduc_bac$'umap2d' } else if (def.dim == 3) { reduc_bac$'umap3d' }
-
-  return(sobj)
-}
-
-# _________________________________________________________________________________________________
-
 
 
 
 
 
 # _________________________________________________________________________________________________
-# MULTI-seq.functions.R ----
-# ____________________________________________________________________ ----
+# MULTI-seq.functions.R ______________________________ ----
+# _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/MULTI-seq.functions.R')
 # try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/MULTI-seq.functions.R'))
 
@@ -1959,7 +1661,8 @@ m3.export.umap.2.Seurat <- function(mobj = cds_from_seurat, sobj = combined.obj,
 # May also require
 
 
-# BarTableSweepList -----------------------------------------------------------------------
+# _________________________________________________________________________________________________
+# BarTableSweepList
 #' @title BarTableSweepList
 #' @description BarTableSweepList
 #' @param min PARAM_DESCRIPTION, Default: 0.01
@@ -2050,8 +1753,8 @@ aux_plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 
 
 
-# ____________________________________________________________________ ----
-# plotting.dim.reduction.2D.R ----
+# _________________________________________________________________________________________________
+# plotting.dim.reduction.2D.R ______________________________ ----
 # _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/plotting.dim.reduction.2D.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.dim.reduction.2D.R"))
@@ -2380,7 +2083,7 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
 
 # _________________________________________________________________________________________________
 
-# umapHiLightSel highlight a set of cells based on clusterIDs provided---------------
+# umapHiLightSel highlight a set of cells based on clusterIDs provided
 #' @title umapHiLightSel
 #' @description Highlight a set of cells based on clusterIDs provided. #
 #' @param obj Seurat object, Default: combined.obj
@@ -2404,7 +2107,7 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 
 
 
-# Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
+# Save multiple FeaturePlot from a list of genes on A4 jpeg
 #' @title multiFeaturePlot.A4
 #' @description Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names. #
 #' @param list.of.genes PARAM_DESCRIPTION
@@ -2501,7 +2204,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
 };
 
 
-# Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
+# Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
 # code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
 
 #' @title multiFeatureHeatmap.A4
@@ -2786,8 +2489,8 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
 
 
 # _________________________________________________________________________________________________
-# plotting.dim.reduction.3D.R
-# ____________________________________________________________________ ----
+# plotting.dim.reduction.3D.R ______________________________ ----
+# _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/plotting.dim.reduction.3D.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.dim.reduction.3D.R"))
 # Source: self + https://github.com/Dragonmasterx87/Interactive-3D-Plotting-in-Seurat-3.0.0
@@ -3177,8 +2880,8 @@ Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3
 
 
 # _________________________________________________________________________________________________
-# plotting.filtering.R
-# ____________________________________________________________________ ----
+# plotting.filtering.R ______________________________ ----
+# ____________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/plotting.filtering.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.filtering.R"))
 
@@ -3214,7 +2917,7 @@ Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3
 #' @export
 #' @importFrom ggplot2 ggplot ggtitle geom_point
 #' @importFrom Stringendo percentage_formatter
-PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.
+PlotFilters <- function(ls.obj = ls.Seurat
                         , parentdir= OutDirOrig
                         , suffices = names(ls.obj)
                         , filetype='.png'
@@ -3343,8 +3046,8 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 
 
 # _________________________________________________________________________________________________
-# plotting.statistics.and.QC.R
-# ____________________________________________________________________ ----
+# plotting.statistics.and.QC.R ______________________________ ----
+# _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/Plotting.statistics.and.QC.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.statistics.and.QC.R"))
 
@@ -3359,7 +3062,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 # try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReports') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReports")
 
-# PCA percent of variation associated with each PC ------------------------------------------------------------
+# PCA percent of variation associated with each PC
 #' @title seu.PC.var.explained
 #' @description Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
 #' @param obj Seurat object, Default: combined.obj
@@ -3376,7 +3079,8 @@ seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of v
   return(pct)
 }
 
-# plot percent of variation associated with each PC ------------------------------------------------------------
+# _________________________________________________________________________________________________
+# plot percent of variation associated with each PC
 #' @title seu.plot.PC.var.explained
 #' @description Plot the percent of variation associated with each PC. #
 #' @param obj Seurat object, Default: combined.obj
@@ -3399,7 +3103,8 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Pl
 }
 
 
-# scBarplot.CellFractions ------------------------------------------------------------
+# _________________________________________________________________________________________________
+# scBarplot.CellFractions
 #' @title scBarplot.CellFractions
 #' @description Barplot the Fraction of cells per cluster.
 #' @param obj Seurat object, Default: combined.obj
@@ -3517,7 +3222,8 @@ scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
 
 
 
-# scBarplot.CellsPerObject ------------------------------------------------------------
+# _________________________________________________________________________________________________
+# scBarplot.CellsPerObject
 
 #' @title scBarplot.CellsPerObject
 #' @description Take a List of Seurat objects and draw a barplot for the number of cells per object. #
@@ -3577,7 +3283,7 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
     avg.ClX.cells <- log2(AverageExpression(ClX, verbose = FALSE)$RNA + 1)
     avg.ClX.cells$gene <- rownames(avg.ClX.cells)
 
-    # plot ----
+    # plot --- --- ---
     p.clAv[[i]] <- p.clAv.AutoLabel[[i]] <-
       ggplot(avg.ClX.cells, aes(x = !!as.name(SplitIdents[1]), y = !!as.name(SplitIdents[2]) )) +
       geom_point(data = avg.ClX.cells, color = rgb(0, .5, 0, 0.25), size = 1) +
@@ -3647,7 +3353,8 @@ sparse.cor4 <- function(x){
   list(cov=covmat,cor=cormat)
 }
 
-# Calc.Cor.Seurat ------------------------------------------------
+# _________________________________________________________________________________________________
+# Calc.Cor.Seurat
 #' @title Calc.Cor.Seurat
 #' @description Calculate gene correlation on a Seurat object.
 #' @param assay.use PARAM_DESCRIPTION, Default: 'RNA'
@@ -3858,7 +3565,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
     iprint(slotname_cor.mat, " not found in @misc.")
     iprint("Correlation slots present in @misc:", CodeAndRoll2::grepv(names(obj@misc), pattern = "^cor"))
 
-    # Calculate ------------------------------------
+    # Calculate --- --- --- --- ---
     if (calc.COR) {
       print("Calculating correlation now.")
       genes.found <- check.genes(list.of.genes = genes)
@@ -3875,7 +3582,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
   }
 
 
-  # Filter ------------------------------------
+  # Filter --- --- --- --- --- ---
   diag(cor.mat) <- NaN
   corgene.names <- union(
     which_names(rowMax(cor.mat) >= min.g.cor),
@@ -3894,7 +3601,8 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 
 
 
-# plot.clust.size.distr ------------------------------------------------
+# _________________________________________________________________________________________________
+# plot.clust.size.distr
 #' @title plot.clust.size.distr
 #' @description Barplot of Histogram of cluster size distribution
 #' @param obj Seurat object, Default: combined.obj
@@ -4117,15 +3825,15 @@ scBarplot.FractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', 
 
 
 
+# _________________________________________________________________________________________________
+# _________________________________________________________________________________________________
+
+
 
 
 # _________________________________________________________________________________________________
-
+# Read.Write.Save.Load.functions.R ______________________________ ----
 # _________________________________________________________________________________________________
-
-# _________________________________________________________________________________________________
-# Read.Write.Save.Load.functions.R
-# ____________________________________________________________________ ----
 # source('~/GitHub/Packages/Seurat.utils/Functions/Read.Write.Save.Load.functions.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Read.Write.Save.Load.functions.R"))
 
@@ -4177,7 +3885,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
     for (i in 1:length(fin)) { print(i)
       pathIN = fin[i]; print(pathIN)
 
-      # sample.barcoding----
+      # sample.barcoding --- --- ---
       fnameIN = if (sample.barcoding) {
         samples[i]
       } else {
@@ -4194,7 +3902,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
         seu <- CreateSeuratObject(counts = count_matrix[[1]], project = fnameIN,
                                   min.cells = min.cells, min.features = min.features)
 
-        # LSB, Lipid Sample barcode (Multi-seq) --------------------
+        # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
         LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
         LSBnameOUT = ppp(paste0(InputDir, '/LSB.', fnameIN),"Rds")
         saveRDS(LSB, file = LSBnameOUT)
@@ -4208,11 +3916,11 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
       print(fnameOUT)
 
 
-      # update----
+      # update --- --- ---
       if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
       saveRDS(seu, file = fnameOUT)
 
-      # write cellIDs ----
+      # write cellIDs ---  --- ---
       if (writeCBCtable) {
         fnameCBC <- ppp(fnameOUT, "CBC.tsv")
         CBCs <- t(t(colnames(seu)))
@@ -4261,14 +3969,14 @@ Convert10Xfolders.old <- function(InputDir # Take a parent directory with a numb
       seu <- CreateSeuratObject(counts = count_matrix[[1]], project = fnameIN,
                                 min.cells = min.cells, min.features = min.features)
 
-      # LSB, Lipid Sample barcode (Multi-seq) --------------------
+      # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
       LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
       LSBnameOUT = ppp(paste0(InputDir, '/LSB.', fnameIN),"Rds")
       saveRDS(LSB, file = LSBnameOUT)
     } else {
       print('More than 2 elements in the list of matrices')
     }
-    # update----
+    # update --- --- --- ---
     if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
     saveRDS(seu, file = fnameOUT)
   }
@@ -4340,7 +4048,7 @@ ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a numb
       if (ncol(seu) < 1000) print("Only", ncol(seu), "cells survived filtering in the Seurat obj!")
       if (nrow(seu) < 1000) print("Only", nrow(seu), "genes found in the Seurat obj!")
 
-      # update HGNC ----
+      # update HGNC --- --- --- --- ---
       Sys.setenv('R_MAX_VSIZE' = 32000000000)
       if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
       saveRDS(seu, file = fnameOUT)
@@ -4572,7 +4280,8 @@ qsave.image <- function(..., showMemObject = T, options = c("--force", NULL)[1])
 }
 
 
-# subsetSeuObj -----------------------------------------------------------------------
+# _________________________________________________________________________________________________
+# subsetSeuObj
 #' @title subsetSeuObj
 #' @description Subset a compressed Seurat Obj and save it in wd. #
 #' @param obj Seurat object, Default: ls.Seurat[[i]]
@@ -4727,8 +4436,8 @@ Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1) {
 
 
 # _________________________________________________________________________________________________
-# Seurat.object.manipulations.etc.R
-# ____________________________________________________________________ ----
+# Seurat.object.manipulations.etc.R ______________________________ ----
+# _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/Seurat.object.manipulations.etc.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Seurat.object.manipulations.etc.R"))
 
@@ -4779,7 +4488,8 @@ seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) { # Take a named
 }
 
 
-# FeaturePlot with different defaults ------------------------------------------------------------------
+# _________________________________________________________________________________________________
+# FeaturePlot with different defaults
 #' @title GetMostVarGenes
 #' @description Get the most variable rGenes #
 #' @param obj Seurat object, Default: org
@@ -4795,7 +4505,8 @@ GetMostVarGenes <- function(obj = org, nGenes = p$nVarGenes) { # Get the most va
   head(rownames(slot(object = obj, name = "hvg.info")), n = nGenes)
 }
 
-# gene.name.check for read .mtx /write .rds script ---------------------------------------
+# _________________________________________________________________________________________________
+# gene.name.check for read .mtx /write .rds script
 #' @title gene.name.check
 #' @description Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #
 #' @param Seu.obj PARAM_DESCRIPTION, Default: ls.Seurat[[1]]
@@ -5033,14 +4744,14 @@ FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA"
 
 
 
-
-
 # _________________________________________________________________________________________________
 # _________________________________________________________________________________________________
 
+
+
 # _________________________________________________________________________________________________
-# Seurat.update.gene.symbols.HGNC.R
-# ____________________________________________________________________ ----
+# Seurat.update.gene.symbols.HGNC.R ______________________________ ----
+# _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/Seurat.update.gene.symbols.HGNC.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Seurat.update.gene.symbols.HGNC.R"))
 # require(HGNChelper)
@@ -5216,11 +4927,10 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 
 
 # _________________________________________________________________________________________________
-# Handling SNP demux table results coming from SoupOrCell
-# ____________________________________________________________________ ----
-
-
+# Handling SNP demux table results coming from SoupOrCell ______________________________ ----
 # _________________________________________________________________________________________________
+
+
 #' @title SNP.demux.fix.GT.table
 #' @description Fix SNP demux table results coming from SoupOrCell
 #'
@@ -5247,7 +4957,7 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
                                    , cellname_prefix = NULL
 ) {
 
-  # Subset -------------------------
+  # Subset --- --- --- --- ---
   col_names <- c(col1, col2)
   stopifnot(col_names %in% colnames(GT.table))
 
@@ -5255,27 +4965,27 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
     GT.table %>%
     select(col_names)
 
-  # rename -------------------------
+  # rename --- --- --- --- ---
   colnames(GT.table) <- c(col1.new.name, col2.new.name)
 
-  # stats -------------------------
+  # stats --- --- --- --- ---
   assignment.status <- GT.table[, col2.new.name]
   tbl.status <- table(assignment.status)
   print(tbl.status)
 
-  # replace entries -------------------------
+  # replace entries --- --- --- --- ---
   idx.doublet <- which(assignment.status == 'doublet')
   idx.unassigned <- which(assignment.status == 'unassigned')
 
   GT.table[idx.doublet, col1.new.name] <- kpp('doublet', suffix)
   GT.table[idx.unassigned, col1.new.name] <- kpp('unassigned', suffix)
 
-  # stats -------------------------
+  # stats --- --- --- --- ---
   gentotype.status <- GT.table[ , col1.new.name]
   tbl.gentotype <- table(gentotype.status)
   print(tbl.gentotype)
 
-  # Plot stats -------------------------
+  # Plot stats --- --- --- --- ---
   SNP.demux.singlet.status <- sort(table(GT.table$'Singlet.status'))
   qpie(SNP.demux.singlet.status, suffix = suffix, w = 7, h =5, plot = T)
 
@@ -5286,7 +4996,7 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
   SNP.demux.Genotype.status.cln <- SNP.demux.Genotype.status[cln.categ]
   qpie(SNP.demux.Genotype.status.cln, suffix = suffix, w = 7, h =5, plot = T)
 
-  # Check cell name identity -------------------------
+  # Check cell name identity --- --- --- --- ---
   cells.GT.table = rownames(GT.table)
   cells.obj = colnames(obj)
 
@@ -5299,7 +5009,7 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
   rownames(GT.table) <- paste0(cellname_prefix, rownames(GT.table))
 
 
-  # Visual check cell name identity -------------------------
+  # Visual check cell name identity --- --- --- --- ---
   iprint("Cells GT.table", head(rownames(GT.table)))
   iprint("Cells object", head(cells.obj))
   Overlap.of.cell.names <- list("Cells in obj" = cells.obj
@@ -5307,6 +5017,7 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
   )
   qvenn(Overlap.of.cell.names, plot = T)
 
+  print("See the 4 plots generated in OutDir!")
   return(GT.table)
 }
 
@@ -5317,7 +5028,6 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
 
 
 
-# _________________________________________________________________________________________________
 
 
 
@@ -5328,14 +5038,13 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
 
 
 # _________________________________________________________________________________________________
-# Soup.Analysis.of.ambient.RNA.R
-# ____________________________________________________________________ ----
+# Soup.Analysis.of.ambient.RNA.R ______________________________ ----
+# _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/Soup.Analysis.of.ambient.RNA.R')
 # try (source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Soup.Analysis.of.ambient.RNA.R'))
 # Source: self + web
 
 
-# require(tibble)
 
 # _________________________________________________________________________________________________
 #' @title plotTheSoup
