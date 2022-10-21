@@ -6,13 +6,22 @@
 \usage{
 calculate.observable.multiplet.rate.10X.LT(
   fractions = c(`176` = 0.07, h9 = 0.93),
-  multiplet.rate = 0.12
+  multiplet.rate = FALSE,
+  FMR.r = 131000,
+  cell.count,
+  ...
 )
 }
 \arguments{
 \item{fractions}{Genotype fractions observed or loaded on the machine.}
 
-\item{multiplet.rate}{Expected multiplet rate for your number of recovered cells.}
+\item{multiplet.rate}{Expected multiplet rate for your number of recovered cells. Default FALSE. If FALSE, it auto-calculates it based on an inferred FMR: Factor for calculating multiplet rate: Cell count / FMR = multiplet rate.}
+
+\item{FMR.r}{Factor for calculating Multiplet Rate: Cell count / FMR = multiplet rate. (.r stands for 'estimating from Recovered cell count.')}
+
+\item{cell.count}{Number of total cells recovered from a 10X lane.}
+
+\item{...}{}
 }
 \description{
 calculate.observable.multiplet.rate.10X.LT

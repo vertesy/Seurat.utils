@@ -4427,13 +4427,27 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' calculate.observable.multiplet.rate.10X.LT
 #'
 #' @param fractions Genotype fractions observed or loaded on the machine.
-#' @param multiplet.rate Expected multiplet rate for your number of recovered cells.
+#' @param FMR.r Factor for calculating Multiplet Rate: Cell count / FMR = multiplet rate. (.r stands for 'estimating from Recovered cell count.')
+#' @param cell.count Number of total cells recovered from a 10X lane.
+#' @param multiplet.rate Expected multiplet rate for your number of recovered cells. Default FALSE. If FALSE, it auto-calculates it based on an inferred FMR: Factor for calculating multiplet rate: Cell count / FMR = multiplet rate.
+#' @param ...
+#'
 #' @export
 
-calculate.observable.multiplet.rate.10X.LT <- function (
+calculate.observable.multiplet.rate.10X.LT <- function(
     fractions = c('176' = 0.07, 'h9' = 0.93)
-    , multiplet.rate= 0.12) {
+    , multiplet.rate = FALSE
+    , FMR.r = 131000
+    , cell.count
+    , ...) {
 
+  iprint("cell.count", cell.count)
+  if (!multiplet.rate) {
+    iprint("multiplet.rate is calculated...")
+    if (FMR.r == 131000) iprint("...based on the LT 10X controller.")
+    multiplet.rate = cell.count/FMR.r
+    iprint(percentage_formatter(multiplet.rate, prefix = 'The estimated total multiplet rate is:'))
+  }
 
   homo.doublet <- fractions^2 # same genotype
   names(homo.doublet) <- ppp('homo', names(homo.doublet))
