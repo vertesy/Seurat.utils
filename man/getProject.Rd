@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{getProject}
 \alias{getProject}
-\title{getProject  -----------------------------------------------}
+\title{getProject}
 \usage{
 getProject()
 }

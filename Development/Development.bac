@@ -571,6 +571,172 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
   return(m)
 }
 
+
+# _________________________________________________________________________________________________
+# plotting.filtering.R ______________________________ ----
+# ____________________________________________________________________
+# source('~/GitHub/Packages/Seurat.utils/Functions/plotting.filtering.R')
+# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.filtering.R"))
+
+
+# _________________________________________________________________________________________________
+#' @title PlotFilters
+#' @description Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content. #
+#' @param ls.obj List of Seurat objects, Default: ls.Seurat
+#' @param parentdir PARAM_DESCRIPTION, Default: OutDirOrig
+#' @param suffices PARAM_DESCRIPTION, Default: names(ls.obj)
+#' @param filetype PARAM_DESCRIPTION, Default: '.png'
+#' @param below.mito PARAM_DESCRIPTION, Default: p$thr.lp.mito
+#' @param above.mito PARAM_DESCRIPTION, Default: p$thr.hp.mito
+#' @param below.ribo PARAM_DESCRIPTION, Default: p$thr.lp.ribo
+#' @param above.ribo PARAM_DESCRIPTION, Default: p$thr.hp.ribo
+#' @param below.nFeature_RNA PARAM_DESCRIPTION, Default: p$thr.lp.nFeature_RNA
+#' @param above.nFeature_RNA PARAM_DESCRIPTION, Default: p$thr.hp.nFeature_RNA
+#' @param subdir PARAM_DESCRIPTION, Default: kpp("Filtering.plots", "mito", p$thr.hp.mito, p$thr.lp.mito,
+#'    "ribo", p$thr.hp.ribo, p$thr.lp.ribo, "nFeature", p$thr.hp.nFeature_RNA,
+#'    p$thr.lp.nFeature_RNA, "/")
+#' @param transparency PARAM_DESCRIPTION, Default: 0.25
+#' @param cex Point size, Default: 0.75
+#' @param theme.used PARAM_DESCRIPTION, Default: theme_bw(base_size = 18)
+#' @param LabelDistFromTop PARAM_DESCRIPTION, Default: 200
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  PlotFilters(ls.Seurat)
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{labs}}, \code{\link[ggplot2]{geom_point}}
+#' @export
+#' @importFrom ggplot2 ggplot ggtitle geom_point
+#' @importFrom Stringendo percentage_formatter
+PlotFilters <- function(ls.obj = ls.Seurat
+                        , parentdir= OutDirOrig
+                        , suffices = names(ls.obj)
+                        , filetype='.png'
+                        , below.mito = p$"thr.lp.mito"
+                        , above.mito = p$"thr.hp.mito"
+                        , below.ribo = p$"thr.lp.ribo"
+                        , above.ribo = p$"thr.hp.ribo"
+                        , below.nFeature_RNA = p$"thr.lp.nFeature_RNA"
+                        , above.nFeature_RNA = p$"thr.hp.nFeature_RNA"
+                        , subdir= kpp("Filtering.plots"
+                                      , "mito", p$"thr.hp.mito", p$"thr.lp.mito"
+                                      , "ribo", p$"thr.hp.ribo", p$"thr.lp.ribo"
+                                      , "nFeature", p$"thr.hp.nFeature_RNA", p$"thr.lp.nFeature_RNA", "/")
+                        , transparency = 0.25
+                        , cex = 0.75
+                        , theme.used = theme_bw(base_size = 18)
+                        , LabelDistFromTop = 200 # for barplot_label
+) {
+
+  llprint(
+    "We filtered for high quality cells based on the number of genes detected [", above.nFeature_RNA, ";" ,below.nFeature_RNA
+    , "] and the fraction of mitochondrial [", Stringendo::percentage_formatter(above.mito), ";" ,Stringendo::percentage_formatter(below.mito)
+    , "] and ribosomal [",Stringendo::percentage_formatter(above.ribo), ";" ,Stringendo::percentage_formatter(below.ribo), "] reads."
+  )
+
+
+  theme_set(theme.used)
+  create_set_OutDir(parentdir, subdir)
+  # require(ggplot2)
+  if (suffices == length(ls.obj)) print("ls.obj elements have no names (required).")
+
+  for (i in 1:length(ls.obj)) {
+    print(suffices[i])
+    mm =  ls.obj[[i]]@meta.data
+
+    AllMetaColumnsPresent <- all(c('nFeature_RNA', 'percent.mito', 'percent.ribo') %in% colnames(mm))
+    if (!AllMetaColumnsPresent) {
+      print(c('nFeature_RNA', 'percent.mito', 'percent.ribo'))
+      print(c('nFeature_RNA', 'percent.mito', 'percent.ribo') %in% colnames(mm))
+      print("Try to run:")
+      print('objX <- add.meta.fraction(obj = objX, col.name = "percent.mito", gene.symbol.pattern =  "^MT\\.|^MT-")')
+      print('objX <- add.meta.fraction(obj = objX, col.name = "percent.ribo", gene.symbol.pattern =  "^RPL|^RPS")')
+      stop()
+    }
+
+
+
+    filt.nFeature_RNA = (mm$'nFeature_RNA' < below.nFeature_RNA & mm$'nFeature_RNA' > above.nFeature_RNA)
+    filt.below.mito = (mm$'percent.mito' < below.mito & mm$'percent.mito' > above.mito)
+
+    # filt.below.mito = (mm$'percent.mito' < below.mito)
+    filt.below.ribo = (mm$'percent.ribo' < below.ribo & mm$'percent.ribo' > above.ribo)
+
+    mm =  cbind(mm, filt.nFeature_RNA, filt.below.mito, filt.below.ribo)
+
+    mm$colour.thr.nFeature <- cut(mm$'nFeature_RNA',
+                                  breaks = c(-Inf, above.nFeature_RNA, below.nFeature_RNA, Inf),
+                                  labels = c(paste0("LQ (<", above.nFeature_RNA,")"),
+                                             paste0("HQ (", above.nFeature_RNA,"< X <", below.nFeature_RNA,")"),
+                                             paste0("Dbl/Outlier (>", below.nFeature_RNA,")")
+                                  )
+    )
+
+    A = ggplot(data = mm, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
+      geom_histogram(binwidth = 100) +
+      ggtitle(paste("Cells between", above.nFeature_RNA,"and",below.nFeature_RNA, " UMIs are selected (", pc_TRUE(filt.nFeature_RNA), ")")) +
+      geom_vline(xintercept = below.nFeature_RNA) +
+      geom_vline(xintercept = above.nFeature_RNA);
+    # A
+
+    B = ggplot2::ggplot(mm, aes(x = nFeature_RNA, y = percent.mito)) +
+      ggplot2::ggtitle(paste("Cells below", Stringendo::percentage_formatter(below.mito),
+                             "mito reads are selected (with A:", pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")")) +
+      ggplot2::geom_point(alpha = transparency, size = cex,  show.legend = FALSE,
+                          aes(color = filt.nFeature_RNA & filt.below.mito)  ) +
+      scale_x_log10() + # scale_y_log10() +
+      # annotation_logticks() +
+      geom_hline(yintercept = below.mito) +
+      geom_hline(yintercept = above.mito) +
+      geom_vline(xintercept = below.nFeature_RNA) +
+      geom_vline(xintercept = above.nFeature_RNA);
+    # B
+
+
+    C = ggplot(mm, aes(x = nFeature_RNA, y = percent.ribo)) +
+      ggtitle(paste("Cells below", Stringendo::percentage_formatter(below.ribo),
+                    "ribo reads are selected (with A:"
+                    , pc_TRUE(filt.nFeature_RNA & filt.below.ribo), ")")) +
+      geom_point(alpha = transparency, size = cex,   show.legend = FALSE,
+                 aes(color = filt.nFeature_RNA & filt.below.ribo)  ) +
+      scale_x_log10() + # scale_y_log10() +
+      annotation_logticks() +
+      geom_hline(yintercept = below.ribo) +
+      geom_hline(yintercept = above.ribo) +
+      geom_vline(xintercept = below.nFeature_RNA) +
+      geom_vline(xintercept = above.nFeature_RNA);
+    # C
+
+
+    D = ggplot(mm, aes(x = percent.ribo, y = percent.mito)) +
+      ggtitle(paste("Cells w/o extremes selected (with A,B,C:"
+                    , pc_TRUE(filt.nFeature_RNA & filt.below.mito & filt.below.ribo), ")")) +
+
+      geom_point(alpha = transparency, size =  cex,  show.legend = FALSE,
+                 aes(color = filt.nFeature_RNA & filt.below.mito & filt.below.ribo)  ) +
+      scale_x_log10() + scale_y_log10() +
+      annotation_logticks() +
+      geom_hline(yintercept = below.mito) +
+      geom_hline(yintercept = above.mito) +
+      geom_vline(xintercept = below.ribo) +
+      geom_vline(xintercept = above.ribo);
+    # D
+
+
+    plot_list = list(A,B,C,D)
+    px = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:4])
+    fname = ppp("Filtering.thresholds", suffices[i], filetype)
+    save_plot(filename = fname, plot = px, base_height = 12, ncol = 1, nrow = 1) #Figure 2
+
+  } # for
+
+  # _________________________________________________________________________________________________
+  create_set_Original_OutDir()
+}
+
+
 # _________________________________________________________________________________________________
 # metadata.manipulation.R ______________________________ ----
 # _________________________________________________________________________________________________
@@ -1198,25 +1364,6 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
 
 
 # _________________________________________________________________________________________________
-#' @title PlotTopGenes
-#' @description Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param n PARAM_DESCRIPTION, Default: 32
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  PlotTopGenes()
-#'  }
-#' }
-#' @export
-PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = 'expr.q99'){ # Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before.
-  Highest.Expressed.Genes = names(head(sort(obj@misc[[exp.slot]], decreasing = T), n = n))
-  multiFeaturePlot.A4(list.of.genes = Highest.Expressed.Genes, foldername = "Highest.Expressed.Genes" )
-}
-
-
-
-# _________________________________________________________________________________________________
 #' @title fix.orig.ident
 #' @description Remove the string "filtered_feature_bc_matrix." from "orig.ident". Helper function.
 #' @param obj Seurat object, Default: merged.obj
@@ -1245,6 +1392,114 @@ fix.orig.ident <- function(obj = merged.obj) {
 #' }
 #' @export
 set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.and.set.all.genes()")
+
+
+
+# _________________________________________________________________________________________________
+#' @title plot.expression.rank.q90
+#' @description Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).
+#' @param obj Seurat object, Default: combined.obj
+#' @param gene gene of interest, Default: 'ACTB'
+#' @param filterZero PARAM_DESCRIPTION, Default: T
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  plot.expression.rank.q90(gene = "SATB2")
+#'  }
+#' }
+#' @export plot.expression.rank.q90
+#' @importFrom Stringendo percentage_formatter
+plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero = T) {
+  expr.GOI <- obj@misc$expr.q90[gene]
+  expr.all <- unlist(obj@misc$expr.q90)
+  gene.found <- gene %in% names(expr.all)
+  stopifnot(gene.found)
+
+  if (expr.GOI == 0) iprint(gene, "is not expressed. q90-av.exp:", expr.GOI) else
+    if (expr.GOI < 0.05) iprint(gene, "is lowly expressed. q90-av.exp:", expr.GOI)
+  if (filterZero) {
+    iprint("Zero 'q90 expression' genes (", pc_TRUE(expr.all == 0), ") are removed.")
+    expr.all <- expr.all[expr.all > 0]
+  }
+  counts <- sum(obj@assays$RNA@counts[gene,])
+  if (expr.GOI == 0) {
+    quantile.GOI <- 0
+    title <- paste(gene, "is too lowly expressed: q90-av.exp is zero. \n There are", counts,"counts." )
+  } else {
+    pos.GOI <- which(names(expr.all) == gene)
+    quantile.GOI <- ecdf(expr.all)(expr.all)[pos.GOI]
+    title <- paste(gene, "is in the", Stringendo::percentage_formatter(quantile.GOI), "quantile of 'q90-av' expression. \n There are", counts,"counts" )
+  }
+  suppressWarnings(
+    whist(expr.all, vline = expr.GOI, breaks = 100, main = title, plotname =   make.names(title)
+          , ylab = "Genes"
+          , xlab = "Av. mRNA in the 10% top expressing cells (q90 av.exp.)")
+  )
+}
+
+
+
+
+# _________________________________________________________________________________________________
+#' @title get.clustercomposition
+#' @description Get cluster composition: which datasets contribute to each cluster?
+#' @param obj Seurat object, Default: combined.obj
+#' @param x Bars along the X axis, Default: 'integrated_snn_res.0.3'
+#' @param y Vertical split of each bar, Default: 'project'
+#' @param color Color, Default: y
+#' @param plot  Show plot, Default: T
+#' @param ScaleTo100pc Scale the Y Axis, Default: T
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples get.clustercomposition(); get.clustercomposition()
+#' @export
+
+
+get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_res.0.3', splitby = 'ShortNames'
+                                   , color = y
+                                   , plot = TRUE, ScaleTo100pc = TRUE
+                                   , ...) {
+  setwd(OutDir)
+  clUMAP(obj = obj, ident = x, save.plot = T, suffix = "as.in.barplot")
+
+  (df.meta <- obj@meta.data[, c(ident, splitby)])
+
+  df.meta %>%
+    dplyr::group_by_(splitby) %>%
+    summarise()
+
+  categ.per.cluster <- ggbarplot(obj@meta.data
+                                 , x = x
+                                 , y = y
+                                 , color = y
+                                 , ...
+  )
+  if (ScaleTo100pc) categ.per.cluster <- categ.per.cluster + scale_y_discrete(labels = scales::percent_format())
+  if (plot) categ.per.cluster
+
+  ggExpress::qqSave(categ.per.cluster, ...)
+}
+
+
+
+
+# _________________________________________________________________________________________________
+#' getProject
+#'
+#' @description Try to get the project name you are wokring on in Rstudio.
+#' @returns The final subfolder of your project, or NULL, if you are not running one
+#' @export
+#'
+#' @examples getProject()
+getProject <- function() {
+  tryCatch(basename(rstudioapi::getActiveProject()), error=function(e){})
+}
+
+
+
+# _________________________________________________________________________________________________
+# Interacting with the environment ______________________________ ----
+# _________________________________________________________________________________________________
+# Subsetting, downsampling and manipulating the Seurat object
 
 
 
@@ -1382,206 +1637,165 @@ save.parameters <- function(obj = combined.obj, params = p) {
 }
 
 
-
 # _________________________________________________________________________________________________
-#' @title plot.expression.rank.q90
-#' @description Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).
-#' @param obj Seurat object, Default: combined.obj
-#' @param gene gene of interest, Default: 'ACTB'
-#' @param filterZero PARAM_DESCRIPTION, Default: T
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  plot.expression.rank.q90(gene = "SATB2")
-#'  }
-#' }
-#' @export plot.expression.rank.q90
-#' @importFrom Stringendo percentage_formatter
-plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero = T) {
-  expr.GOI <- obj@misc$expr.q90[gene]
-  expr.all <- unlist(obj@misc$expr.q90)
-  gene.found <- gene %in% names(expr.all)
-  stopifnot(gene.found)
-
-  if (expr.GOI == 0) iprint(gene, "is not expressed. q90-av.exp:", expr.GOI) else
-    if (expr.GOI < 0.05) iprint(gene, "is lowly expressed. q90-av.exp:", expr.GOI)
-  if (filterZero) {
-    iprint("Zero 'q90 expression' genes (", pc_TRUE(expr.all == 0), ") are removed.")
-    expr.all <- expr.all[expr.all > 0]
-  }
-  counts <- sum(obj@assays$RNA@counts[gene,])
-  if (expr.GOI == 0) {
-    quantile.GOI <- 0
-    title <- paste(gene, "is too lowly expressed: q90-av.exp is zero. \n There are", counts,"counts." )
-  } else {
-    pos.GOI <- which(names(expr.all) == gene)
-    quantile.GOI <- ecdf(expr.all)(expr.all)[pos.GOI]
-    title <- paste(gene, "is in the", Stringendo::percentage_formatter(quantile.GOI), "quantile of 'q90-av' expression. \n There are", counts,"counts" )
-  }
-  suppressWarnings(
-    whist(expr.all, vline = expr.GOI, breaks = 100, main = title, plotname =   make.names(title)
-          , ylab = "Genes"
-          , xlab = "Av. mRNA in the 10% top expressing cells (q90 av.exp.)")
-  )
-}
-
-
+# Subsetting the Seurat object ______________________________ ----
+# _________________________________________________________________________________________________
+# Subsetting, downsampling and manipulating the Seurat object
 
 
 # _________________________________________________________________________________________________
-#' @title FlipReductionCoordinates
-#' @description Flip reduction coordinates (like UMAP upside down).
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Numer of dimensions used, Default: 2
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param flip PARAM_DESCRIPTION, Default: c("x", "y", "xy", NULL)[1]
-#' @param FlipReductionBackupToo PARAM_DESCRIPTION, Default: TRUE
+# subsetSeuObj
+#' @title subsetSeuObj
+#' @description Subset a compressed Seurat Obj and save it in wd. #
+#' @param obj Seurat object, Default: ls.Seurat[[i]]
+#' @param fraction_ PARAM_DESCRIPTION, Default: 0.25
+#' @param nCells PARAM_DESCRIPTION, Default: F
+#' @param seed_ PARAM_DESCRIPTION, Default: 1989
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  clUMAP(); combined.obj <- FlipReductionCoordinates(combined.obj); clUMAP()
+#'  #EXAMPLE1
 #'  }
 #' }
 #' @export
-FlipReductionCoordinates <- function(obj = combined.obj, dim = 2, reduction="umap"
-                                     , flip = c('x', 'y', 'xy', NULL)[1], FlipReductionBackupToo = TRUE) { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
-  coordinates <- Embeddings(obj, reduction = reduction)
-  stopifnot(ncol(coordinates) == dim )
-
-  if (flip %in% c('x', 'xy')) coordinates[,1] = coordinates[,1] * -1
-  if (flip %in% c('y', 'xy')) coordinates[,2] = coordinates[,2] * -1
-  obj@reductions[[reduction]]@cell.embeddings <- coordinates
-
-  if (FlipReductionBackupToo) {
-    bac.slot <- paste0(reduction,dim,"d")
-    if (length(obj@misc$reductions.backup[[bac.slot]])) {
-      obj@misc$reductions.backup[[bac.slot]]@cell.embeddings <- coordinates
-      iprint(dim, "dimensional",reduction,"backup flipped too.")
-    }
+#' @importFrom Stringendo percentage_formatter
+subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
+  set.seed(seed_)
+  if (isFALSE(nCells)) {
+    cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction_)
+    iprint(length(cellIDs.keep), "or",Stringendo::percentage_formatter(fraction_),"of the cells are kept. Seed:", seed_)
+  } else if (nCells > 1) {
+    nKeep = min(ncol(obj), nCells)
+    # print(nKeep)
+    cellIDs.keep = sample(colnames(obj), size = nKeep, replace = F)
+    if (nKeep < nCells) iprint("Only",nCells,"cells were found in the object, so downsampling is not possible.")
   }
+  obj <- subset(x = obj, cells = cellIDs.keep) # downsample
   return(obj)
 }
 
-
-
-
 # _________________________________________________________________________________________________
-#' @title SeuratColorVector
-#' @description Recall a Seurat color vector.
-#' @param ident identity used, Default: NULL
-#' @param obj Seurat object, Default: combined.obj
-#' @param plot.colors PARAM_DESCRIPTION, Default: F
-#' @param simple Return simply the unique colors, in order? Default: F
+#' @title subsetSeuObj.and.Save
+#' @description Subset a compressed Seurat Obj and save it in wd. #
+#' @param obj Seurat object, Default: ORC
+#' @param fraction PARAM_DESCRIPTION, Default: 0.25
+#' @param seed random seed used, Default: 1989
+#' @param min.features Minimum features
+#' @param dir PARAM_DESCRIPTION, Default: OutDir
+#' @param suffix A suffix added to the filename, Default: ''
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  SeuratColorVector(); SeuratColorVector(ident = GetNamedClusteringRuns()[2], plot.colors = T)
+#'  #EXAMPLE1
 #'  }
 #' }
-#' @seealso
-#'  \code{\link[scales]{hue_pal}}
 #' @export
-#' @importFrom scales hue_pal
-
-SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F, simple = F) {
-  if (!is.null(ident)) {
-    print(ident)
-    ident.vec <- obj[[ident]][,1]
-  } else {
-    ident.vec <- obj@active.ident
-  }
-  ident.vec <- as.factor(ident.vec)
-  print(table(ident.vec))
-  colorlevels <- scales::hue_pal()(length(levels(ident.vec)))
-  if (plot.colors) color_check(colorlevels)
-  if (simple) {
-    colorlevels
-  } else {
-    translate(vec = as.character(ident.vec)
-              , oldvalues = levels(ident.vec)
-              , newvalues = colorlevels)
-  }
+subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir
+                                  , min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
+  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
+  nr.cells.kept <- ncol(obj_Xpc)
+  saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
 }
 
 
 # _________________________________________________________________________________________________
-#' @title getClusterColors
-#' @description get Seurat's cluster colors.
-#' @param obj Seurat object, Default: combined.obj
-#' @param ident identity used, Default: GetClusteringRuns()[1]
-#' @param show PARAM_DESCRIPTION, Default: T
+#' @title subsetSeuObj.ident.class
+#' @description Subset a Seurat Obj to a given column
+#' @param obj Seurat object, Default: ORC
+#' @param ident identity
+#' @param clusters which value to match
+#' @export
+
+subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.5.ordered.ManualNames', clusters = "Neuron, unclear" ) {
+  Idents(obj) <- ident
+  cellz <- WhichCells(obj, idents = clusters)
+  iprint(length(cellz), "cells are selected from", ncol(obj), 'using', ident)
+  subset(x = obj, cells = cellz)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title Downsample.Seurat.Objects
+#' @description Downsample a list of Seurat objects
+#' @param ls.obj List of Seurat objects, Default: ls.Seurat
+#' @param NrCells PARAM_DESCRIPTION, Default: p$dSample.Organoids
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[2] )
+#'  Downsample.Seurat.Objects(NrCells = 2000); Downsample.Seurat.Objects(NrCells = 200)
 #'  }
 #' }
-#' @seealso
-#'  \code{\link[scales]{hue_pal}}
 #' @export
-#' @importFrom scales hue_pal
-getClusterColors <- function(obj = combined.obj
-                             , use_new_palettes = TRUE
-                             , palette =  c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
-                             , ident = GetClusteringRuns()[1]
-                             , show = T) {
-  (identities <- levels(as.factor(obj[[ident]][,1])))
-  n.clusters <- length(unique(obj[[ident]][,1]))
-  color_palette <- if (use_new_palettes) {
-    DiscretePalette(n = n.clusters, palette = palette)
+#' @importFrom tictoc tic toc
+#' @importFrom Stringendo percentage_formatter
+Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids") {
+  names.ls = names(ls.obj)
+  n.datasets = length(ls.obj)
+  iprint(NrCells, "cells")
+  tictoc::tic()
+  if (foreach::getDoParRegistered() ) {
+    ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
+      iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i/n.datasets, digitz = 2))
+      subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
+    }; names(ls.obj.downsampled)  <- names.ls
   } else {
-    scales::hue_pal()(length(identities))
-  }
-  # color_check(color_palette)
-  # names(color_palette) <- sort(as.factor(identities))
-  names(color_palette) <- (identities)
-  identvec <- obj[[ident]][,1]
-  colz <- color_palette[identvec]
-  names(colz) <- identvec
-  if (show) color_check(unique(colz)) # MarkdownReports
-  colz
+    ls.obj.downsampled <- list.fromNames(names.ls)
+    for (i in 1:n.datasets ) {
+      iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i/n.datasets, digitz = 2))
+      ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
+    };
+  } # else
+  toc();
+
+  print(head(unlapply(ls.obj, ncol)))
+  print(head(unlapply(ls.obj.downsampled, ncol)))
+
+  isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = T)
+
 }
+
 
 
 # _________________________________________________________________________________________________
-#' @title get.clustercomposition
-#' @description Get cluster composition: which datasets contribute to each cluster?
-#' @param obj Seurat object, Default: combined.obj
-#' @param x Bars along the X axis, Default: 'integrated_snn_res.0.3'
-#' @param y Vertical split of each bar, Default: 'project'
-#' @param color Color, Default: y
-#' @param plot  Show plot, Default: T
-#' @param ScaleTo100pc Scale the Y Axis, Default: T
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples get.clustercomposition(); get.clustercomposition()
+#' @title Downsample.Seurat.Objects.PC
+#' @description Downsample a list of Seurat objects, by fraction
+#' @param ls.obj List of Seurat objects, Default: ls.Seurat
+#' @param NrCells PARAM_DESCRIPTION, Default: p$dSample.Organoids
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  Downsample.Seurat.Objects.PC()
+#'  }
+#' }
 #' @export
+#' @importFrom tictoc tic toc
+#' @importFrom Stringendo percentage_formatter
 
+Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1) {
+  names.ls = names(ls.obj)
+  n.datasets = length(ls.obj)
+  iprint(fraction, "fraction")
+  tictoc::tic()
+  if (foreach::getDoParRegistered() ) {
+    ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
+      subsetSeuObj(obj = ls.obj[[i]], fraction_ = fraction)
+    }; names(ls.obj.downsampled)  <- names.ls
+  } else {
+    ls.obj.downsampled <- list.fromNames(names.ls)
+    for (i in 1:n.datasets ) {
+      cells = round(ncol(ls.obj[[1]]) * fraction)
+      iprint(names(ls.obj)[i], cells, "cells=", Stringendo::percentage_formatter(i/n.datasets, digitz = 2))
+      ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], fraction_ = fraction)
+    };
+  }; toc(); # else
 
-get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_res.0.3', splitby = 'ShortNames'
-                                   , color = y
-                                   , plot = TRUE, ScaleTo100pc = TRUE
-                                   , ...) {
-  setwd(OutDir)
-  clUMAP(obj = obj, ident = x, save.plot = T, suffix = "as.in.barplot")
+  NrCells <- sum(unlapply(ls.obj, ncol))
 
-  (df.meta <- obj@meta.data[, c(ident, splitby)])
+  print(head(unlapply(ls.obj, ncol)))
+  print(head(unlapply(ls.obj.downsampled, ncol)))
+  isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = T)
 
-  df.meta %>%
-    dplyr::group_by_(splitby) %>%
-    summarise()
-
-  categ.per.cluster <- ggbarplot(obj@meta.data
-                                 , x = x
-                                 , y = y
-                                 , color = y
-                                 , ...
-  )
-  if (ScaleTo100pc) categ.per.cluster <- categ.per.cluster + scale_y_discrete(labels = scales::percent_format())
-  if (plot) categ.per.cluster
-
-  ggExpress::qqSave(categ.per.cluster, ...)
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -1595,7 +1809,7 @@ get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_r
 remove.residual.small.clusters <- function(identitites = GetOrderedClusteringRuns()
                                            , obj = combined.obj
                                            , max.cells = round((ncol(obj))/2000)
-                                           ) {
+) {
   META <- obj@meta.data
   all.cells <- rownames(META)
 
@@ -1646,110 +1860,183 @@ drop.levels.Seurat <- function(obj = combined.obj) {
 
 
 
+# _________________________________________________________________________________________________
+# Manipulating UMAP and PCA  ______________________________ ----
+# _________________________________________________________________________________________________
 
 
 
 # _________________________________________________________________________________________________
-# MULTI-seq.functions.R ______________________________ ----
-# _________________________________________________________________________________________________
-# source('~/GitHub/Packages/Seurat.utils/Functions/MULTI-seq.functions.R')
-# try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/MULTI-seq.functions.R'))
-
-# Requirements __________________________________________
-# try(require(MarkdownReports),  silent = T)
-# try(require(pheatmap),  silent = T)
-# May also require
-
-
-# _________________________________________________________________________________________________
-# BarTableSweepList
-#' @title BarTableSweepList
-#' @description BarTableSweepList
-#' @param min PARAM_DESCRIPTION, Default: 0.01
-#' @param max PARAM_DESCRIPTION, Default: 0.99
-#' @param step PARAM_DESCRIPTION, Default: 0.02
-#' @param bar_table PARAM_DESCRIPTION, Default: bar.table
+#' @title FlipReductionCoordinates
+#' @description Flip reduction coordinates (like UMAP upside down).
+#' @param obj Seurat object, Default: combined.obj
+#' @param dim Numer of dimensions used, Default: 2
+#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @param flip PARAM_DESCRIPTION, Default: c("x", "y", "xy", NULL)[1]
+#' @param FlipReductionBackupToo PARAM_DESCRIPTION, Default: TRUE
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  bar.table_sweep.list <- BarTableSweepList(bar_table = bar.table.solo) # Quantile Sweep List
+#'  clUMAP(); combined.obj <- FlipReductionCoordinates(combined.obj); clUMAP()
 #'  }
 #' }
 #' @export
-BarTableSweepList <- function(min = 0.01, max = 0.99, step = 0.02, bar_table =bar.table) {
-  bar.table_sweep.list <- list()
-  n <- 0
-  Quantiles = seq(from = min, to = max, by = step)
-  for (n in 1:length(Quantiles)) { # print(q)
-    bar.table_sweep.list[[n]] <- classifyCells(bar_table, q = Quantiles[n])
-    names(bar.table_sweep.list)[n] <- paste("q=",Quantiles[n], sep="")
+FlipReductionCoordinates <- function(obj = combined.obj, dim = 2, reduction="umap"
+                                     , flip = c('x', 'y', 'xy', NULL)[1], FlipReductionBackupToo = TRUE) { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+  coordinates <- Embeddings(obj, reduction = reduction)
+  stopifnot(ncol(coordinates) == dim )
+
+  if (flip %in% c('x', 'xy')) coordinates[,1] = coordinates[,1] * -1
+  if (flip %in% c('y', 'xy')) coordinates[,2] = coordinates[,2] * -1
+  obj@reductions[[reduction]]@cell.embeddings <- coordinates
+
+  if (FlipReductionBackupToo) {
+    bac.slot <- paste0(reduction,dim,"d")
+    if (length(obj@misc$reductions.backup[[bac.slot]])) {
+      obj@misc$reductions.backup[[bac.slot]]@cell.embeddings <- coordinates
+      iprint(dim, "dimensional",reduction,"backup flipped too.")
+    }
   }
-  return(bar.table_sweep.list)
+  return(obj)
 }
 
 
 
 
-
 # _________________________________________________________________________________________________
-#' @title mSeq.map.all96.BCs
-#' @description mSeq.map.all96.BCs
-#' @param readTable PARAM_DESCRIPTION, Default: readTable
-#' @param CellIDs PARAM_DESCRIPTION, Default: CellIDs
-#' @param path2allBCs PARAM_DESCRIPTION, Default: '~/Google_Drive/Science/IMBA/MULTI.seq/from.US/All.MULTI-seq_barcodes.Mar2019.tsv'
+# Colors ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+#' @title gg_color_hue
+#' @description reproduce the ggplot2 default color palette #
+#' @param n PARAM_DESCRIPTION
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  bar.table <-mSeq.map.all96.BCs(readTable = readTable, CellIDs = CellIDs)
+#'  #EXAMPLE1
 #'  }
 #' }
 #' @export
-mSeq.map.all96.BCs <- function(readTable = readTable, CellIDs = CellIDs
-                               , path2allBCs = '~/Google_Drive/Science/IMBA/MULTI.seq/from.US/All.MULTI-seq_barcodes.Mar2019.tsv'
-) {
-  (bar.ref <- read_tsv(path2allBCs)[[1]]) # Vector of reference all MULTI-seq sample barcode sequences.
-  MULTIseq.align(readTable = readTable, cellIDs = CellIDs, ref = bar.ref)
+gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
 }
-
+# https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
 
 
 # _________________________________________________________________________________________________
-
-#' @title aux_plotAllMseqBCs
-#' @description aux_plotAllMseqBCs
-#' @param bar.table PARAM_DESCRIPTION, Default: bar.table[, 1:96]
-#' @param barcodes.used PARAM_DESCRIPTION, Default: BCs.used
-#' @param plotname Title of the plot, Default: 'Barcode seq depth'
+#' @title getDiscretePalette
+#' @description Generate a Discrete color Palette.
+#' @param ident.used PARAM_DESCRIPTION, Default: GetClusteringRuns()[1]
+#' @param obj Seurat object, Default: combined.obj
+#' @param palette.used PARAM_DESCRIPTION, Default: c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1]
+#' @param show.colors PARAM_DESCRIPTION, Default: F
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  aux_plotAllMseqBCs(bar.table = bar.table[,1:96], barcodes.used = BCs.used, plotname = "Barcode seq depth")
+#'  getDiscretePalette()
 #'  }
 #' }
 #' @export
-aux_plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs.used
-                               , plotname = "Barcode seq depth") {
-  stopifnot(is.numeric(BCs.used))
-  BC.depth <- colSums(bar.table)[1:96]
-  if (min(BC.depth) < 1) { BC.depth <- BC.depth+1 }
-  log.depth <- log10(BC.depth); range(log.depth)
-  ccc <- colnames(bar.table) %in% BCs.used
-
-  wbarplot(log.depth, col = ccc, lwd = 1, lcol = 1, lty = 2, plotname = plotname
-           , vline = (range(BCs.used)+c(-1,1))
-           , hline = quantile(log.depth[setdiff(1:69, BCs.used)], .95)
-           , ylab = "log10(total reads / BC)", main =  plotname)
-  wlegend.label(
-    "    Horiz. line at 95%
-    of unused BC's.
-    Vertical line: range
-    of used BCs.",poz = 2, cex = 1)
+getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
+                               , obj = combined.obj
+                               , palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1]
+                               , show.colors = F) {
+  n.clusters <-  nrow(unique(obj[[ident.used]]))
+  colz <- DiscretePalette(n = n.clusters, palette = palette.used)
+  if (anyNA(colz)) {
+    colzOK <- na.omit.strip(colz)
+    repNeeded <- ceiling(length(colz) / length(colzOK) )
+    colzFixed <- rep(colzOK,  repNeeded)[1:length(colz)]
+    stopif(anyNA(colzFixed))
+    colz <- colzFixed
+  }
+  if (show.colors) Color_Check(colz)
+  return(colz)
 }
 
 
+
 # _________________________________________________________________________________________________
-# bar.table.log <- t(log10(bar.table[,BCs.used]+1))
-# bar.table.log <- CodeAndRoll2::clip.outliers.at.percentile(bar.table.log)
+#' @title getClusterColors
+#' @description get Seurat's cluster colors.
+#' @param obj Seurat object, Default: combined.obj
+#' @param ident identity used, Default: GetClusteringRuns()[1]
+#' @param show PARAM_DESCRIPTION, Default: T
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[2] )
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[scales]{hue_pal}}
+#' @export
+#' @importFrom scales hue_pal
+getClusterColors <- function(obj = combined.obj
+                             , use_new_palettes = TRUE
+                             , palette =  c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
+                             , ident = GetClusteringRuns()[1]
+                             , show = T) {
+  (identities <- levels(as.factor(obj[[ident]][,1])))
+  n.clusters <- length(unique(obj[[ident]][,1]))
+  color_palette <- if (use_new_palettes) {
+    DiscretePalette(n = n.clusters, palette = palette)
+  } else {
+    scales::hue_pal()(length(identities))
+  }
+  # color_check(color_palette)
+  # names(color_palette) <- sort(as.factor(identities))
+  names(color_palette) <- (identities)
+  identvec <- obj[[ident]][,1]
+  colz <- color_palette[identvec]
+  names(colz) <- identvec
+  if (show) color_check(unique(colz)) # MarkdownReports
+  colz
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title SeuratColorVector
+#' @description Recall a Seurat color vector.
+#' @param ident identity used, Default: NULL
+#' @param obj Seurat object, Default: combined.obj
+#' @param plot.colors PARAM_DESCRIPTION, Default: F
+#' @param simple Return simply the unique colors, in order? Default: F
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  SeuratColorVector(); SeuratColorVector(ident = GetNamedClusteringRuns()[2], plot.colors = T)
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[scales]{hue_pal}}
+#' @export
+#' @importFrom scales hue_pal
+
+SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F, simple = F) {
+  if (!is.null(ident)) {
+    print(ident)
+    ident.vec <- obj[[ident]][,1]
+  } else {
+    ident.vec <- obj@active.ident
+  }
+  ident.vec <- as.factor(ident.vec)
+  print(table(ident.vec))
+  colorlevels <- scales::hue_pal()(length(levels(ident.vec)))
+  if (plot.colors) color_check(colorlevels)
+  if (simple) {
+    colorlevels
+  } else {
+    translate(vec = as.character(ident.vec)
+              , oldvalues = levels(ident.vec)
+              , newvalues = colorlevels)
+  }
+}
+
+
 
 
 
@@ -1949,78 +2236,6 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
 
 
 # _________________________________________________________________________________________________
-#' @title gg_color_hue
-#' @description reproduce the ggplot2 default color palette #
-#' @param n PARAM_DESCRIPTION
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
-  hues = seq(15, 375, length = n + 1)
-  hcl(h = hues, l = 65, c = 100)[1:n]
-}
-# https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
-
-# _________________________________________________________________________________________________
-#' @title save2umaps.A4
-#' @description Save 2 umaps on 1 A4
-#' @param plot_list PARAM_DESCRIPTION
-#' @param pname PARAM_DESCRIPTION, Default: F
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param scale PARAM_DESCRIPTION, Default: 1
-#' @param nrow PARAM_DESCRIPTION, Default: 2
-#' @param ncol PARAM_DESCRIPTION, Default: 1
-#' @param h height of the plot, Default: hA4 * scale
-#' @param w width of the plot, Default: wA4 * scale
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-save2umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
-                          , nrow = 2, ncol = 1
-                          , h = hA4 * scale, w = wA4 * scale, ...) { # Save 2 umaps on an A4 page.
-  if (pname ==F) pname = Stringendo::sppp(substitute(plot_list), suffix)
-  p1 = plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
-  save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
-}
-
-# _________________________________________________________________________________________________
-#' @title save4umaps.A4
-#' @description Save 4 umaps on 1 A4
-#' @param plot_list A list of ggplot objects, each of which is one panel.
-#' @param pname Plotname, Default: F
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param scale Scaling factor of the canvas, Default: 1
-#' @param nrow number of rows for panelson the page, Default: 2
-#' @param ncol number of columns for panelson the page, Default: 2
-#' @param h height of the plot, Default: wA4 * scale
-#' @param w width of the plot, Default: hA4 * scale
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
-                          , nrow = 2, ncol = 2
-                          , h = wA4 * scale, w = hA4 * scale, ...) { # Save 4 umaps on an A4 page.
-  if (pname==F) pname =  Stringendo::sppp(substitute(plot_list), suffix)
-  p1 = plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
-  save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
-}
-
-
-# _________________________________________________________________________________________________
 #' @title umapNamedClusters
 #' @description Plot and save umap based on a metadata column. #
 #' @param obj Seurat object, Default: combined.obj
@@ -2048,41 +2263,6 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
 
 # _________________________________________________________________________________________________
 
-# _________________________________________________________________________________________________
-#' @title qqSaveGridA4
-#' @description Save 2 or 4 ggplot objects using plot_grid() on an A4 page #
-#' @param plotlist PARAM_DESCRIPTION, Default: pl
-#' @param plots PARAM_DESCRIPTION, Default: 1:2
-#' @param NrPlots PARAM_DESCRIPTION, Default: length(plots)
-#' @param height PARAM_DESCRIPTION, Default: hA4
-#' @param width PARAM_DESCRIPTION, Default: wA4
-#' @param fname File name, Default: 'Fractions.Organoid-to-organoid variation.png'
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  qqSaveGridA4(plotlist= pl, plots = 1:2, fname = "Fractions.per.Cl.png"); qqSaveGridA4(plotlist= pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
-#'  }
-#' }
-#' @export
-qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_grid() on an A4 page
-                         , plots = 1:2, NrPlots = length(plots), height = hA4, width = wA4
-                         , fname = "Fractions.Organoid-to-organoid variation.png", ...) {
-  stopifnot(NrPlots %in% c(2,4))
-  iprint(NrPlots,"plots found,", plots,"are saved.")
-  pg.cf = plot_grid(plotlist = plotlist[plots], nrow = 2, ncol = NrPlots/2, labels = LETTERS[1:NrPlots], ...  )
-  if (NrPlots == 4) list2env(list(height = width, width = height), envir = as.environment(environment()))
-  save_plot(filename = fname,
-            plot = pg.cf, base_height = height, base_width = width)
-  ww.FnP_parser(fname)
-}
-
-
-
-
-
-# _________________________________________________________________________________________________
-
 # umapHiLightSel highlight a set of cells based on clusterIDs provided
 #' @title umapHiLightSel
 #' @description Highlight a set of cells based on clusterIDs provided. #
@@ -2100,15 +2280,15 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
                            COI =  c("0", "2", "4", "5",  "11"), res.cl = 'integrated_snn_res.0.3') {
   cellsSel = getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
   Seurat::DimPlot(obj, reduction = "umap", group.by = res.cl,
-          label = T, cells.highlight = cellsSel)
+                  label = T, cells.highlight = cellsSel)
   ggsave(filename = extPNG(kollapse("cells",COI, collapseby = '.')))
 }
 
 
 
-
-# Save multiple FeaturePlot from a list of genes on A4 jpeg
+# _________________________________________________________________________________________________
 #' @title multiFeaturePlot.A4
+#'
 #' @description Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names. #
 #' @param list.of.genes PARAM_DESCRIPTION
 #' @param obj Seurat object, Default: combined.obj
@@ -2457,35 +2637,116 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix =
 
 
 # _________________________________________________________________________________________________
-#' @title getDiscretePalette
-#' @description Generate a Discrete color Palette.
-#' @param ident.used PARAM_DESCRIPTION, Default: GetClusteringRuns()[1]
+#' @title PlotTopGenes
+#' @description Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before. #
 #' @param obj Seurat object, Default: combined.obj
-#' @param palette.used PARAM_DESCRIPTION, Default: c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1]
-#' @param show.colors PARAM_DESCRIPTION, Default: F
+#' @param n PARAM_DESCRIPTION, Default: 32
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  getDiscretePalette()
+#'  PlotTopGenes()
 #'  }
 #' }
 #' @export
-getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
-                               , obj = combined.obj
-                               , palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1]
-                               , show.colors = F) {
-  n.clusters <-  nrow(unique(obj[[ident.used]]))
-  colz <- DiscretePalette(n = n.clusters, palette = palette.used)
-  if (anyNA(colz)) {
-    colzOK <- na.omit.strip(colz)
-    repNeeded <- ceiling(length(colz) / length(colzOK) )
-    colzFixed <- rep(colzOK,  repNeeded)[1:length(colz)]
-    stopif(anyNA(colzFixed))
-    colz <- colzFixed
-  }
-  if (show.colors) Color_Check(colz)
-  return(colz)
+PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = 'expr.q99'){ # Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before.
+  Highest.Expressed.Genes = names(head(sort(obj@misc[[exp.slot]], decreasing = T), n = n))
+  multiFeaturePlot.A4(list.of.genes = Highest.Expressed.Genes, foldername = "Highest.Expressed.Genes" )
 }
+
+
+
+
+# _________________________________________________________________________________________________
+# Saving plots ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+
+# _________________________________________________________________________________________________
+#' @title save2umaps.A4
+#' @description Save 2 umaps on 1 A4
+#' @param plot_list PARAM_DESCRIPTION
+#' @param pname PARAM_DESCRIPTION, Default: F
+#' @param suffix A suffix added to the filename, Default: NULL
+#' @param scale PARAM_DESCRIPTION, Default: 1
+#' @param nrow PARAM_DESCRIPTION, Default: 2
+#' @param ncol PARAM_DESCRIPTION, Default: 1
+#' @param h height of the plot, Default: hA4 * scale
+#' @param w width of the plot, Default: wA4 * scale
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+save2umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
+                          , nrow = 2, ncol = 1
+                          , h = hA4 * scale, w = wA4 * scale, ...) { # Save 2 umaps on an A4 page.
+  if (pname ==F) pname = Stringendo::sppp(substitute(plot_list), suffix)
+  p1 = plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
+  save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
+}
+
+# _________________________________________________________________________________________________
+#' @title save4umaps.A4
+#' @description Save 4 umaps on 1 A4
+#' @param plot_list A list of ggplot objects, each of which is one panel.
+#' @param pname Plotname, Default: F
+#' @param suffix A suffix added to the filename, Default: NULL
+#' @param scale Scaling factor of the canvas, Default: 1
+#' @param nrow number of rows for panelson the page, Default: 2
+#' @param ncol number of columns for panelson the page, Default: 2
+#' @param h height of the plot, Default: wA4 * scale
+#' @param w width of the plot, Default: hA4 * scale
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
+                          , nrow = 2, ncol = 2
+                          , h = wA4 * scale, w = hA4 * scale, ...) { # Save 4 umaps on an A4 page.
+  if (pname==F) pname =  Stringendo::sppp(substitute(plot_list), suffix)
+  p1 = plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
+  save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title qqSaveGridA4
+#' @description Save 2 or 4 ggplot objects using plot_grid() on an A4 page #
+#' @param plotlist PARAM_DESCRIPTION, Default: pl
+#' @param plots PARAM_DESCRIPTION, Default: 1:2
+#' @param NrPlots PARAM_DESCRIPTION, Default: length(plots)
+#' @param height PARAM_DESCRIPTION, Default: hA4
+#' @param width PARAM_DESCRIPTION, Default: wA4
+#' @param fname File name, Default: 'Fractions.Organoid-to-organoid variation.png'
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  qqSaveGridA4(plotlist= pl, plots = 1:2, fname = "Fractions.per.Cl.png"); qqSaveGridA4(plotlist= pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
+#'  }
+#' }
+#' @export
+qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_grid() on an A4 page
+                         , plots = 1:2, NrPlots = length(plots), height = hA4, width = wA4
+                         , fname = "Fractions.Organoid-to-organoid variation.png", ...) {
+  stopifnot(NrPlots %in% c(2,4))
+  iprint(NrPlots,"plots found,", plots,"are saved.")
+  pg.cf = plot_grid(plotlist = plotlist[plots], nrow = 2, ncol = NrPlots/2, labels = LETTERS[1:NrPlots], ...  )
+  if (NrPlots == 4) list2env(list(height = width, width = height), envir = as.environment(environment()))
+  save_plot(filename = fname,
+            plot = pg.cf, base_height = height, base_width = width)
+  ww.FnP_parser(fname)
+}
+
 
 
 # _________________________________________________________________________________________________
@@ -2877,171 +3138,6 @@ Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3
 
 # _________________________________________________________________________________________________
 # _________________________________________________________________________________________________
-
-
-# _________________________________________________________________________________________________
-# plotting.filtering.R ______________________________ ----
-# ____________________________________________________________________
-# source('~/GitHub/Packages/Seurat.utils/Functions/plotting.filtering.R')
-# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.filtering.R"))
-
-
-# _________________________________________________________________________________________________
-#' @title PlotFilters
-#' @description Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content. #
-#' @param ls.obj List of Seurat objects, Default: ls.Seurat
-#' @param parentdir PARAM_DESCRIPTION, Default: OutDirOrig
-#' @param suffices PARAM_DESCRIPTION, Default: names(ls.obj)
-#' @param filetype PARAM_DESCRIPTION, Default: '.png'
-#' @param below.mito PARAM_DESCRIPTION, Default: p$thr.lp.mito
-#' @param above.mito PARAM_DESCRIPTION, Default: p$thr.hp.mito
-#' @param below.ribo PARAM_DESCRIPTION, Default: p$thr.lp.ribo
-#' @param above.ribo PARAM_DESCRIPTION, Default: p$thr.hp.ribo
-#' @param below.nFeature_RNA PARAM_DESCRIPTION, Default: p$thr.lp.nFeature_RNA
-#' @param above.nFeature_RNA PARAM_DESCRIPTION, Default: p$thr.hp.nFeature_RNA
-#' @param subdir PARAM_DESCRIPTION, Default: kpp("Filtering.plots", "mito", p$thr.hp.mito, p$thr.lp.mito,
-#'    "ribo", p$thr.hp.ribo, p$thr.lp.ribo, "nFeature", p$thr.hp.nFeature_RNA,
-#'    p$thr.lp.nFeature_RNA, "/")
-#' @param transparency PARAM_DESCRIPTION, Default: 0.25
-#' @param cex Point size, Default: 0.75
-#' @param theme.used PARAM_DESCRIPTION, Default: theme_bw(base_size = 18)
-#' @param LabelDistFromTop PARAM_DESCRIPTION, Default: 200
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  PlotFilters(ls.Seurat)
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{labs}}, \code{\link[ggplot2]{geom_point}}
-#' @export
-#' @importFrom ggplot2 ggplot ggtitle geom_point
-#' @importFrom Stringendo percentage_formatter
-PlotFilters <- function(ls.obj = ls.Seurat
-                        , parentdir= OutDirOrig
-                        , suffices = names(ls.obj)
-                        , filetype='.png'
-                        , below.mito = p$"thr.lp.mito"
-                        , above.mito = p$"thr.hp.mito"
-                        , below.ribo = p$"thr.lp.ribo"
-                        , above.ribo = p$"thr.hp.ribo"
-                        , below.nFeature_RNA = p$"thr.lp.nFeature_RNA"
-                        , above.nFeature_RNA = p$"thr.hp.nFeature_RNA"
-                        , subdir= kpp("Filtering.plots"
-                                      , "mito", p$"thr.hp.mito", p$"thr.lp.mito"
-                                      , "ribo", p$"thr.hp.ribo", p$"thr.lp.ribo"
-                                      , "nFeature", p$"thr.hp.nFeature_RNA", p$"thr.lp.nFeature_RNA", "/")
-                        , transparency = 0.25
-                        , cex = 0.75
-                        , theme.used = theme_bw(base_size = 18)
-                        , LabelDistFromTop = 200 # for barplot_label
-) {
-
-  llprint(
-    "We filtered for high quality cells based on the number of genes detected [", above.nFeature_RNA, ";" ,below.nFeature_RNA
-    , "] and the fraction of mitochondrial [", Stringendo::percentage_formatter(above.mito), ";" ,Stringendo::percentage_formatter(below.mito)
-    , "] and ribosomal [",Stringendo::percentage_formatter(above.ribo), ";" ,Stringendo::percentage_formatter(below.ribo), "] reads."
-  )
-
-
-  theme_set(theme.used)
-  create_set_OutDir(parentdir, subdir)
-  # require(ggplot2)
-  if (suffices == length(ls.obj)) print("ls.obj elements have no names (required).")
-
-  for (i in 1:length(ls.obj)) {
-    print(suffices[i])
-    mm =  ls.obj[[i]]@meta.data
-
-    AllMetaColumnsPresent <- all(c('nFeature_RNA', 'percent.mito', 'percent.ribo') %in% colnames(mm))
-    if (!AllMetaColumnsPresent) {
-      print(c('nFeature_RNA', 'percent.mito', 'percent.ribo'))
-      print(c('nFeature_RNA', 'percent.mito', 'percent.ribo') %in% colnames(mm))
-      print("Try to run:")
-      print('objX <- add.meta.fraction(obj = objX, col.name = "percent.mito", gene.symbol.pattern =  "^MT\\.|^MT-")')
-      print('objX <- add.meta.fraction(obj = objX, col.name = "percent.ribo", gene.symbol.pattern =  "^RPL|^RPS")')
-      stop()
-    }
-
-
-
-    filt.nFeature_RNA = (mm$'nFeature_RNA' < below.nFeature_RNA & mm$'nFeature_RNA' > above.nFeature_RNA)
-    filt.below.mito = (mm$'percent.mito' < below.mito & mm$'percent.mito' > above.mito)
-
-    # filt.below.mito = (mm$'percent.mito' < below.mito)
-    filt.below.ribo = (mm$'percent.ribo' < below.ribo & mm$'percent.ribo' > above.ribo)
-
-    mm =  cbind(mm, filt.nFeature_RNA, filt.below.mito, filt.below.ribo)
-
-    mm$colour.thr.nFeature <- cut(mm$'nFeature_RNA',
-                                  breaks = c(-Inf, above.nFeature_RNA, below.nFeature_RNA, Inf),
-                                  labels = c(paste0("LQ (<", above.nFeature_RNA,")"),
-                                             paste0("HQ (", above.nFeature_RNA,"< X <", below.nFeature_RNA,")"),
-                                             paste0("Dbl/Outlier (>", below.nFeature_RNA,")")
-                                  )
-    )
-
-    A = ggplot(data = mm, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
-      geom_histogram(binwidth = 100) +
-      ggtitle(paste("Cells between", above.nFeature_RNA,"and",below.nFeature_RNA, " UMIs are selected (", pc_TRUE(filt.nFeature_RNA), ")")) +
-      geom_vline(xintercept = below.nFeature_RNA) +
-      geom_vline(xintercept = above.nFeature_RNA);
-    # A
-
-    B = ggplot2::ggplot(mm, aes(x = nFeature_RNA, y = percent.mito)) +
-      ggplot2::ggtitle(paste("Cells below", Stringendo::percentage_formatter(below.mito),
-                             "mito reads are selected (with A:", pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")")) +
-      ggplot2::geom_point(alpha = transparency, size = cex,  show.legend = FALSE,
-                          aes(color = filt.nFeature_RNA & filt.below.mito)  ) +
-      scale_x_log10() + # scale_y_log10() +
-      # annotation_logticks() +
-      geom_hline(yintercept = below.mito) +
-      geom_hline(yintercept = above.mito) +
-      geom_vline(xintercept = below.nFeature_RNA) +
-      geom_vline(xintercept = above.nFeature_RNA);
-    # B
-
-
-    C = ggplot(mm, aes(x = nFeature_RNA, y = percent.ribo)) +
-      ggtitle(paste("Cells below", Stringendo::percentage_formatter(below.ribo),
-                    "ribo reads are selected (with A:"
-                    , pc_TRUE(filt.nFeature_RNA & filt.below.ribo), ")")) +
-      geom_point(alpha = transparency, size = cex,   show.legend = FALSE,
-                 aes(color = filt.nFeature_RNA & filt.below.ribo)  ) +
-      scale_x_log10() + # scale_y_log10() +
-      annotation_logticks() +
-      geom_hline(yintercept = below.ribo) +
-      geom_hline(yintercept = above.ribo) +
-      geom_vline(xintercept = below.nFeature_RNA) +
-      geom_vline(xintercept = above.nFeature_RNA);
-    # C
-
-
-    D = ggplot(mm, aes(x = percent.ribo, y = percent.mito)) +
-      ggtitle(paste("Cells w/o extremes selected (with A,B,C:"
-                    , pc_TRUE(filt.nFeature_RNA & filt.below.mito & filt.below.ribo), ")")) +
-
-      geom_point(alpha = transparency, size =  cex,  show.legend = FALSE,
-                 aes(color = filt.nFeature_RNA & filt.below.mito & filt.below.ribo)  ) +
-      scale_x_log10() + scale_y_log10() +
-      annotation_logticks() +
-      geom_hline(yintercept = below.mito) +
-      geom_hline(yintercept = above.mito) +
-      geom_vline(xintercept = below.ribo) +
-      geom_vline(xintercept = above.ribo);
-    # D
-
-
-    plot_list = list(A,B,C,D)
-    px = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:4])
-    fname = ppp("Filtering.thresholds", suffices[i], filetype)
-    save_plot(filename = fname, plot = px, base_height = 12, ncol = 1, nrow = 1) #Figure 2
-
-  } # for
-
-  # _________________________________________________________________________________________________
-  create_set_Original_OutDir()
-}
 
 
 
@@ -4126,7 +4222,114 @@ read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and b
   mat
 }
 
-#### Functions in Saving.and.loading.R
+
+
+
+#' @title load10Xv3
+#' @description Load 10X output folders.
+#' @param dataDir PARAM_DESCRIPTION
+#' @param cellIDs PARAM_DESCRIPTION, Default: NULL
+#' @param channelName PARAM_DESCRIPTION, Default: NULL
+#' @param readArgs PARAM_DESCRIPTION, Default: list()
+#' @param includeFeatures PARAM_DESCRIPTION, Default: c("Gene Expression")
+#' @param verbose PARAM_DESCRIPTION, Default: TRUE
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[SoupX]{SoupChannel}}
+#' @export
+#' @importFrom SoupX SoupChannel
+load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
+                      includeFeatures = c("Gene Expression"), verbose = TRUE,
+                      ...)
+{
+
+  # include
+  dirz <- list.dirs(dataDir, full.names = F, recursive = F)
+  path.raw <- file.path(dataDir, grep(x = dirz, pattern = "^raw_*", value = T))
+  path.filt <- file.path(dataDir, grep(x = dirz, pattern = "^filt_*", value = T))
+  CR.matrices <- list.fromNames(c("raw", "filt"))
+
+
+  (isV3 = any(grepl(x = dirz, pattern = "^raw_feature_bc*")))
+  tgt = path.raw
+
+  if (!isV3)
+    tgt = file.path(tgt, list.files(tgt))
+  if (verbose)
+    message(sprintf("Loading raw count data"))
+  dat = do.call(Read10X, c(list(data.dir = tgt), readArgs))
+  if (verbose)
+    message(sprintf("Loading cell-only count data"))
+  if (!is.null(cellIDs)) {
+    if (all(grepl("\\-1$", cellIDs)))
+      cellIDs = gsub("\\-1$", "", cellIDs)
+    if (!all(cellIDs %in% colnames(dat)))
+      stop("Not all supplied cellIDs found in raw data.")
+    datCells = dat[, match(cellIDs, colnames(dat))]
+  }
+  else {
+    tgt = path.filt
+    if (!isV3)
+      tgt = file.path(tgt, list.files(tgt))
+    datCells = do.call(Read10X, c(list(data.dir = tgt),
+                                  readArgs))
+    if (is.list(dat)) {
+      dat = do.call(rbind, dat[includeFeatures])
+      datCells = do.call(rbind, datCells[includeFeatures])
+    }
+  }
+  if (verbose)
+    message(sprintf("Loading extra analysis data where available"))
+  mDat = NULL
+  tgt = file.path(dataDir, "analysis", "clustering", "graphclust",
+                  "clusters.csv")
+  if (file.exists(tgt)) {
+    clusters = read.csv(tgt)
+    mDat = data.frame(clusters = clusters$Cluster, row.names = clusters$Barcode)
+  }
+  tgt = file.path(dataDir, "analysis", "clustering", "kmeans_10_clusters",
+                  "clusters.csv")
+  if (file.exists(tgt)) {
+    clusters = read.csv(tgt)
+    mDat$clustersFine = clusters$Cluster
+  }
+  tgt = file.path(dataDir, "analysis", "tsne", "2_components",
+                  "projection.csv")
+  if (file.exists(tgt)) {
+    tsne = read.csv(tgt)
+    if (is.null(mDat)) {
+      mDat = data.frame(tSNE1 = tsne$TSNE.1, tSNE2 = tsne$TSNE.2,
+                        row.names = tsne$Barcode)
+    }
+    else {
+      mDat$tSNE1 = tsne$TSNE.1[match(rownames(mDat), tsne$Barcode)]
+      mDat$tSNE2 = tsne$TSNE.2[match(rownames(mDat), tsne$Barcode)]
+    }
+    DR = c("tSNE1", "tSNE2")
+  }
+  else {
+    DR = NULL
+  }
+  if (!is.null(mDat) && any(rownames(mDat) != colnames(datCells))) {
+    rownames(mDat) = gsub("-1$", "", rownames(mDat))
+    if (any(rownames(mDat) != colnames(datCells)))
+      stop("Error matching meta-data to cell names.")
+  }
+  if (is.null(channelName))
+    channelName = ifelse(is.null(names(dataDir)), dataDir,
+                         names(dataDir))
+  channel = SoupX::SoupChannel(tod = dat, toc = datCells, metaData = mDat,
+                               channelName = channelName, dataDir = dataDir, dataType = "10X",
+                               isV3 = isV3, DR = DR, ...)
+  return(channel)
+}
+
 
 
 # _________________________________________________________________________________________________
@@ -4156,19 +4359,9 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 
 
 
-#' getProject  -----------------------------------------------
-#'
-#' @description Try to get the project name you are wokring on in Rstudio.
-#' @returns The final subfolder of your project, or NULL, if you are not running one
-#' @export
-#'
-#' @examples getProject()
-getProject <- function() {
-  tryCatch(basename(rstudioapi::getActiveProject()), error=function(e){})
-}
 
-
-# Save an object -----------------------------------------------
+# _________________________________________________________________________________________________
+# Save an object
 #' @title isave.RDS
 #' @description Save and RDS object.
 #' @param obj Seurat object
@@ -4212,7 +4405,8 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = F
 
 
 
-# Save workspace -----------------------------------------------
+# _________________________________________________________________________________________________
+# Save workspace
 # requires MarkdownReports (github) and defining OutDir
 # requires github/vertesy/CodeAndRoll.r
 
@@ -4248,7 +4442,8 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
 }
 
 
-# Save workspace -----------------------------------------------
+# _________________________________________________________________________________________________
+# Save workspace
 # requires MarkdownReports (github) and defining OutDir
 # requires github/vertesy/CodeAndRoll.r
 
@@ -4279,160 +4474,6 @@ qsave.image <- function(..., showMemObject = T, options = c("--force", NULL)[1])
   cat(toc)
 }
 
-
-# _________________________________________________________________________________________________
-# subsetSeuObj
-#' @title subsetSeuObj
-#' @description Subset a compressed Seurat Obj and save it in wd. #
-#' @param obj Seurat object, Default: ls.Seurat[[i]]
-#' @param fraction_ PARAM_DESCRIPTION, Default: 0.25
-#' @param nCells PARAM_DESCRIPTION, Default: F
-#' @param seed_ PARAM_DESCRIPTION, Default: 1989
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-#' @importFrom Stringendo percentage_formatter
-subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
-  set.seed(seed_)
-  if (isFALSE(nCells)) {
-    cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction_)
-    iprint(length(cellIDs.keep), "or",Stringendo::percentage_formatter(fraction_),"of the cells are kept. Seed:", seed_)
-  } else if (nCells > 1) {
-    nKeep = min(ncol(obj), nCells)
-    # print(nKeep)
-    cellIDs.keep = sample(colnames(obj), size = nKeep, replace = F)
-    if (nKeep < nCells) iprint("Only",nCells,"cells were found in the object, so downsampling is not possible.")
-  }
-  obj <- subset(x = obj, cells = cellIDs.keep) # downsample
-  return(obj)
-}
-
-# _________________________________________________________________________________________________
-#' @title subsetSeuObj.and.Save
-#' @description Subset a compressed Seurat Obj and save it in wd. #
-#' @param obj Seurat object, Default: ORC
-#' @param fraction PARAM_DESCRIPTION, Default: 0.25
-#' @param seed random seed used, Default: 1989
-#' @param min.features Minimum features
-#' @param dir PARAM_DESCRIPTION, Default: OutDir
-#' @param suffix A suffix added to the filename, Default: ''
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir
-                                  , min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
-  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
-  nr.cells.kept <- ncol(obj_Xpc)
-  saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
-}
-
-
-# _________________________________________________________________________________________________
-#' @title subsetSeuObj.ident.class
-#' @description Subset a Seurat Obj to a given column
-#' @param obj Seurat object, Default: ORC
-#' @param ident identity
-#' @param clusters which value to match
-#' @export
-
-subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.5.ordered.ManualNames', clusters = "Neuron, unclear" ) {
-  Idents(obj) <- ident
-  cellz <- WhichCells(obj, idents = clusters)
-  iprint(length(cellz), "cells are selected from", ncol(obj), 'using', ident)
-  subset(x = obj, cells = cellz)
-}
-
-
-# _________________________________________________________________________________________________
-#' @title Downsample.Seurat.Objects
-#' @description Downsample a list of Seurat objects
-#' @param ls.obj List of Seurat objects, Default: ls.Seurat
-#' @param NrCells PARAM_DESCRIPTION, Default: p$dSample.Organoids
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  Downsample.Seurat.Objects(NrCells = 2000); Downsample.Seurat.Objects(NrCells = 200)
-#'  }
-#' }
-#' @export
-#' @importFrom tictoc tic toc
-#' @importFrom Stringendo percentage_formatter
-Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids") {
-  names.ls = names(ls.obj)
-  n.datasets = length(ls.obj)
-  iprint(NrCells, "cells")
-  tictoc::tic()
-  if (foreach::getDoParRegistered() ) {
-    ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
-      iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i/n.datasets, digitz = 2))
-      subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
-    }; names(ls.obj.downsampled)  <- names.ls
-  } else {
-    ls.obj.downsampled <- list.fromNames(names.ls)
-    for (i in 1:n.datasets ) {
-      iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i/n.datasets, digitz = 2))
-      ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
-    };
-  } # else
-  toc();
-
-  print(head(unlapply(ls.obj, ncol)))
-  print(head(unlapply(ls.obj.downsampled, ncol)))
-
-  isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = T)
-
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title Downsample.Seurat.Objects.PC
-#' @description Downsample a list of Seurat objects, by fraction
-#' @param ls.obj List of Seurat objects, Default: ls.Seurat
-#' @param NrCells PARAM_DESCRIPTION, Default: p$dSample.Organoids
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  Downsample.Seurat.Objects.PC()
-#'  }
-#' }
-#' @export
-#' @importFrom tictoc tic toc
-#' @importFrom Stringendo percentage_formatter
-
-Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1) {
-  names.ls = names(ls.obj)
-  n.datasets = length(ls.obj)
-  iprint(fraction, "fraction")
-  tictoc::tic()
-  if (foreach::getDoParRegistered() ) {
-    ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
-      subsetSeuObj(obj = ls.obj[[i]], fraction_ = fraction)
-    }; names(ls.obj.downsampled)  <- names.ls
-  } else {
-    ls.obj.downsampled <- list.fromNames(names.ls)
-    for (i in 1:n.datasets ) {
-      cells = round(ncol(ls.obj[[1]]) * fraction)
-      iprint(names(ls.obj)[i], cells, "cells=", Stringendo::percentage_formatter(i/n.datasets, digitz = 2))
-      ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], fraction_ = fraction)
-    };
-  }; toc(); # else
-
-  NrCells <- sum(unlapply(ls.obj, ncol))
-
-  print(head(unlapply(ls.obj, ncol)))
-  print(head(unlapply(ls.obj.downsampled, ncol)))
-  isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = T)
-
-}
 
 
 # _________________________________________________________________________________________________
@@ -5028,15 +5069,6 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
 
 
 
-
-
-
-# _________________________________________________________________________________________________
-
-
-
-
-
 # _________________________________________________________________________________________________
 # Soup.Analysis.of.ambient.RNA.R ______________________________ ----
 # _________________________________________________________________________________________________
@@ -5283,111 +5315,10 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
 
 
-#' @title load10Xv3
-#' @description Load 10X output folders.
-#' @param dataDir PARAM_DESCRIPTION
-#' @param cellIDs PARAM_DESCRIPTION, Default: NULL
-#' @param channelName PARAM_DESCRIPTION, Default: NULL
-#' @param readArgs PARAM_DESCRIPTION, Default: list()
-#' @param includeFeatures PARAM_DESCRIPTION, Default: c("Gene Expression")
-#' @param verbose PARAM_DESCRIPTION, Default: TRUE
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[SoupX]{SoupChannel}}
-#' @export
-#' @importFrom SoupX SoupChannel
-load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
-                      includeFeatures = c("Gene Expression"), verbose = TRUE,
-                      ...)
-{
-
-  # include
-  dirz <- list.dirs(dataDir, full.names = F, recursive = F)
-  path.raw <- file.path(dataDir, grep(x = dirz, pattern = "^raw_*", value = T))
-  path.filt <- file.path(dataDir, grep(x = dirz, pattern = "^filt_*", value = T))
-  CR.matrices <- list.fromNames(c("raw", "filt"))
 
 
-  (isV3 = any(grepl(x = dirz, pattern = "^raw_feature_bc*")))
-  tgt = path.raw
-
-  if (!isV3)
-    tgt = file.path(tgt, list.files(tgt))
-  if (verbose)
-    message(sprintf("Loading raw count data"))
-  dat = do.call(Read10X, c(list(data.dir = tgt), readArgs))
-  if (verbose)
-    message(sprintf("Loading cell-only count data"))
-  if (!is.null(cellIDs)) {
-    if (all(grepl("\\-1$", cellIDs)))
-      cellIDs = gsub("\\-1$", "", cellIDs)
-    if (!all(cellIDs %in% colnames(dat)))
-      stop("Not all supplied cellIDs found in raw data.")
-    datCells = dat[, match(cellIDs, colnames(dat))]
-  }
-  else {
-    tgt = path.filt
-    if (!isV3)
-      tgt = file.path(tgt, list.files(tgt))
-    datCells = do.call(Read10X, c(list(data.dir = tgt),
-                                  readArgs))
-    if (is.list(dat)) {
-      dat = do.call(rbind, dat[includeFeatures])
-      datCells = do.call(rbind, datCells[includeFeatures])
-    }
-  }
-  if (verbose)
-    message(sprintf("Loading extra analysis data where available"))
-  mDat = NULL
-  tgt = file.path(dataDir, "analysis", "clustering", "graphclust",
-                  "clusters.csv")
-  if (file.exists(tgt)) {
-    clusters = read.csv(tgt)
-    mDat = data.frame(clusters = clusters$Cluster, row.names = clusters$Barcode)
-  }
-  tgt = file.path(dataDir, "analysis", "clustering", "kmeans_10_clusters",
-                  "clusters.csv")
-  if (file.exists(tgt)) {
-    clusters = read.csv(tgt)
-    mDat$clustersFine = clusters$Cluster
-  }
-  tgt = file.path(dataDir, "analysis", "tsne", "2_components",
-                  "projection.csv")
-  if (file.exists(tgt)) {
-    tsne = read.csv(tgt)
-    if (is.null(mDat)) {
-      mDat = data.frame(tSNE1 = tsne$TSNE.1, tSNE2 = tsne$TSNE.2,
-                        row.names = tsne$Barcode)
-    }
-    else {
-      mDat$tSNE1 = tsne$TSNE.1[match(rownames(mDat), tsne$Barcode)]
-      mDat$tSNE2 = tsne$TSNE.2[match(rownames(mDat), tsne$Barcode)]
-    }
-    DR = c("tSNE1", "tSNE2")
-  }
-  else {
-    DR = NULL
-  }
-  if (!is.null(mDat) && any(rownames(mDat) != colnames(datCells))) {
-    rownames(mDat) = gsub("-1$", "", rownames(mDat))
-    if (any(rownames(mDat) != colnames(datCells)))
-      stop("Error matching meta-data to cell names.")
-  }
-  if (is.null(channelName))
-    channelName = ifelse(is.null(names(dataDir)), dataDir,
-                         names(dataDir))
-  channel = SoupX::SoupChannel(tod = dat, toc = datCells, metaData = mDat,
-                               channelName = channelName, dataDir = dataDir, dataType = "10X",
-                               isV3 = isV3, DR = DR, ...)
-  return(channel)
-}
-
+# _________________________________________________________________________________________________
+# New additions,  categorized ------
 # _________________________________________________________________________________________________
 
 
