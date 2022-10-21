@@ -87,6 +87,31 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 }
 
 
+# _________________________________________________________________________________________________
+#' @title AreTheseCellNamesTheSame
+#'
+#' @param vec1 Character vector, eg. with cell names
+#' @param vec2 Character vector, eg. with cell names
+#' @param min.overlap Threhold below there is no there is no meaninful overlap between the tow vectors. The function aborts with an error.
+#' @export
+#' @examples # reTheseCellNamesTheSame()
+
+AreTheseCellNamesTheSame  <- function(vec1 = names(UVI.annot)
+                                      , vec2 = names(nr_UVI)
+                                      , min.overlap = 0.33
+) {
+  CellNames <- list(vec1, vec2)
+  names(CellNames) = c( substitute(vec1), substitute(vec2))
+  qvenn(CellNames)
+
+  Nr.overlapping <- length(intersect(vec1, vec2))
+  Nr.total <- length(union(vec1, vec2))
+  Percent_Overlapping <- Nr.overlapping/Nr.total
+  iprint(percentage_formatter(Percent_Overlapping, suffix = paste("of the cellIDs overlap across", substitute(vec1), "and", substitute(vec2))))
+  stopifnot( Percent_Overlapping > min.overlap)
+}
+
+
 
 # _________________________________________________________________________________________________
 #' getProject
@@ -4554,7 +4579,8 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
                                 , "Cells in GT.table" = rownames(GT.table)
   )
   qvenn(Overlap.of.cell.names, plot = T)
-
+  print(head(GT.table))
+  print("")
   print("See the 4 plots generated in OutDir!")
   return(GT.table)
 }

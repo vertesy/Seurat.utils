@@ -3,6 +3,7 @@
 export(Add.DE.combined.score)
 export(AddNewAnnotation)
 export(Annotate4Plotly3D)
+export(AreTheseCellNamesTheSame)
 export(AutoLabel.KnownMarkers)
 export(AutoLabelTop.logFC)
 export(AutoNumber.by.PrinCurve)
