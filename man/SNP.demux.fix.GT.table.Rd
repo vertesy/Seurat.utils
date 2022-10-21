@@ -18,6 +18,8 @@ SNP.demux.fix.GT.table(
 \arguments{
 \item{GT.table}{A 2 column Genotype assignment table with singlet status}
 
+\item{obj}{Seurat object.}
+
 \item{col1}{'assignment.named'}
 
 \item{col1.new.name}{New name 'Genotype'}
@@ -27,6 +29,8 @@ SNP.demux.fix.GT.table(
 \item{col2.new.name}{New name 'Singlet.status'}
 
 \item{suffix}{Add this to 'Singlet.status', then overwrite 'Genotype'}
+
+\item{cellname_prefix}{prefix for cell names added by Seurat to distingish 10X lanes}
 }
 \description{
 Fix SNP demux table results coming from SoupOrCell

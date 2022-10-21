@@ -4422,20 +4422,53 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 # _________________________________________________________________________________________________
 
 
-#' @title SNP.demux.fix.GT.table
-#' @description Fix SNP demux table results coming from SoupOrCell
+
+
+#' calculate.observable.multiplet.rate.10X.LT
 #'
+#' @param fractions Genotype fractions observed or loaded on the machine.
+#' @param multiplet.rate Expected multiplet rate for your number of recovered cells.
+#' @export
+
+calculate.observable.multiplet.rate.10X.LT <- function (
+    fractions = c('176' = 0.07, 'h9' = 0.93)
+    , multiplet.rate= 0.12) {
+
+
+  homo.doublet <- fractions^2 # same genotype
+  names(homo.doublet) <- ppp('homo', names(homo.doublet))
+
+  hetero.doublet.rate = 1-sum(homo.doublet)
+
+  doublet.distribution <- c(homo.doublet, 'hetero' = hetero.doublet.rate)
+  qpie(doublet.distribution
+       , caption = paste('We can only observe hetero.doublets', percentage_formatter(hetero.doublet.rate))
+  )
+
+  tot.doublet.distribution <- doublet.distribution * multiplet.rate
+  Expected.singlet.doublet.distribution <- c('singlet' = 1 - sum(tot.doublet.distribution), tot.doublet.distribution)
+  qbarplot(Expected.singlet.doublet.distribution
+           , label = percentage_formatter(Expected.singlet.doublet.distribution)
+           , col = c(3,1,1,2), xlab.angle = 45
+           , ylab = "Fraction of 'Cells'", xlab = 'Doublet status'
+  )
+}
+
+
+# _________________________________________________________________________________________________
+#' @title SNP.demux.fix.GT.table
+#'
+#' @description Fix SNP demux table results coming from SoupOrCell
 #' @param GT.table A 2 column Genotype assignment table with singlet status
 #' @param col1 'assignment.named'
 #' @param col1.new.name New name 'Genotype'
 #' @param col2 'status'
 #' @param col2.new.name New name 'Singlet.status'
-#' @param obj
-#' @param cellname_prefix
+#' @param obj Seurat object.
+#' @param cellname_prefix prefix for cell names added by Seurat to distingish 10X lanes
 #' @param suffix Add this to 'Singlet.status', then overwrite 'Genotype'
 #'
 #' @export
-
 
 
 SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
@@ -4511,6 +4544,7 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
   print("See the 4 plots generated in OutDir!")
   return(GT.table)
 }
+# _________________________________________________________________________________________________
 
 
 
