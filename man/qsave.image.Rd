@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{qsave.image}
 \alias{qsave.image}
-\title{qsave.image}
+\title{Save workspace - qsave.image}
 \usage{
 qsave.image(..., showMemObject = T, options = c("--force", NULL)[1])
 }

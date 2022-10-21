@@ -48,45 +48,6 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
 
 
 
-# _________________________________________________________________________________________________
-#' getClusterNames
-#'
-#' @param obj Seurat object
-#' @param ident ident
-#' @export
-
-getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
-  print(GetClusteringRuns(obj))
-  clz <- as.character(sort(deframe(unique(obj[[ident]]))))
-  cat(dput(clz))
-}
-
-
-
-
-# _________________________________________________________________________________________________
-#' RenameClustering
-#'
-#' @param namedVector named vector, where values = new, names(vec) = old
-#' @param orig.ident meta.data colname original
-#' @param suffix.new.ident How to name (suffix) the new identity. Default: "ManualNames"
-#' @param new.ident meta.data colname new
-#' @param obj Seurat object
-#' @export
-
-RenameClustering <- function(namedVector = ManualNames
-                             , orig.ident =  "RNA_snn_res.0.3"
-                             , suffix.new.ident = "ManualNames"
-                             , new.ident = ppp(orig.ident, suffix.new.ident)
-                             , obj = combined.obj) {
-  NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
-                    , oldvalues = names(namedVector)
-                    , newvalues = namedVector)
-  obj@meta.data[[new.ident]] <- NewX
-  clUMAP(orig.ident)
-  clUMAP(new.ident)
-  return(obj)
-}
 
 # _________________________________________________________________________________________________
 #' IntersectWithExpressed
@@ -102,27 +63,6 @@ IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { 
   diff = setdiff(genes, rownames(obj))
   Stringendo::iprint(length(diff),"genes (of",length(genes), ") are MISSING from the Seurat object:",head(diff, genes.shown))
   return(intersect(rownames(obj), genes))
-}
-
-
-# _________________________________________________________________________________________________
-#' seu.RemoveMetadata
-#'
-#' @param obj Seurat object, Default: combined.obj
-#' @param cols_remove columns to remove
-#' @export
-
-seu.RemoveMetadata <- function(obj = combined.obj
-                               , cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = T)
-) {
-
-  CNN <- colnames(obj@meta.data)
-  iprint('cols_remove:', cols_remove); print('')
-  (cols_keep <- setdiff(CNN, cols_remove))
-  obj@meta.data <- obj@meta.data[, cols_keep]
-  iprint('meta.data colnames kept:', colnames(obj@meta.data))
-
-  return(obj)
 }
 
 
@@ -740,99 +680,26 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
 }
 
 
-
-
 # _________________________________________________________________________________________________
-#' @title GetClusteringRuns
-#' @description Get Clustering Runs: metadata column names #
+#' seu.RemoveMetadata
+#'
 #' @param obj Seurat object, Default: combined.obj
-#' @param res Clustering resoluton to use, Default: F
-#' @param pat Pettern to match, Default: '*snn_res.*[0-9]$'
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  GetClusteringRuns()
-#'  }
-#' }
+#' @param cols_remove columns to remove
 #' @export
-GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0-9]$") { # Get Clustering Runs: metadata column names
-  if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
-  clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
-  if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
-  return(clustering.results)
+
+seu.RemoveMetadata <- function(obj = combined.obj
+                               , cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = T)
+) {
+
+  CNN <- colnames(obj@meta.data)
+  iprint('cols_remove:', cols_remove); print('')
+  (cols_keep <- setdiff(CNN, cols_remove))
+  obj@meta.data <- obj@meta.data[, cols_keep]
+  iprint('meta.data colnames kept:', colnames(obj@meta.data))
+
+  return(obj)
 }
 
-
-
-# _________________________________________________________________________________________________
-#' @title GetNamedClusteringRuns
-#' @description Get Clustering Runs: metadata column names #
-#' @param obj Seurat object, Default: combined.obj
-#' @param res Clustering resoluton to use, Default: c(F, 0.5)[1]
-#' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: F
-#' @param pat Pettern to match, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  GetNamedClusteringRuns()
-#'  }
-#' }
-#' @export
-GetNamedClusteringRuns <- function(obj = combined.obj  # Get Clustering Runs: metadata column names
-                                   , res = c(F, 0.5)[1], topgene = F, pat = "^cl.names.Known.*[0,1]\\.[0-9]$") {
-  if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
-  if (topgene) pat = gsub(x = pat, pattern = 'Known', replacement = 'top')
-  clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
-  if ( identical(clustering.results, character(0)) ) {
-    print("Warning: NO matching column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)")
-    clustering.results <- GetClusteringRuns(obj = obj, res = F, pat = "*_res.*[0,1]\\.[0-9]$")
-  }
-  return(clustering.results)
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title GetOrderedClusteringRuns
-#' @description Get Clustering Runs: metadata column names #
-#' @param obj Seurat object, Default: combined.obj
-#' @param res Clustering resoluton to use, Default: F
-#' @param pat Pettern to match, Default: '*snn_res.*[0,1]\.[0-9]\.ordered$'
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  GetOrderedClusteringRuns(); GetOrderedClusteringRuns(res = 0.5)
-#'  }
-#' }
-#' @export
-GetOrderedClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0,1]\\.[0-9]\\.ordered$") { # Get Clustering Runs: metadata column names
-  if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
-  clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
-  if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
-  return(clustering.results)
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title GetNumberOfClusters
-#' @description Get Number Of Clusters #
-#' @param obj Seurat object, Default: combined.obj
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  GetNumberOfClusters()
-#'  }
-#' }
-#' @export
-GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
-  clustering.results <- GetClusteringRuns(obj)
-  print("## Number of clusters: ---------")
-  for (cc in clustering.results) {
-    NrCl <- length(unique(obj@meta.data[[cc]]))
-    iprint( cc, "   ", NrCl)
-  }
-}
 
 
 # _________________________________________________________________________________________________
@@ -855,28 +722,6 @@ getMetadataColumn <- mmeta <- function(ColName.metadata = 'batch', obj = combine
   if (as_numeric) {
     as.numeric.wNames(x)+1
   } else {x}
-}
-
-# _________________________________________________________________________________________________
-#' @title getCellIDs.from.meta
-#' @description Get cellIDs from a metadata column, matching a list of values (using %in%). #
-#' @param ColName.meta PARAM_DESCRIPTION, Default: 'res.0.6'
-#' @param values PARAM_DESCRIPTION, Default: NA
-#' @param obj Seurat object, Default: combined.obj
-#' @param inverse PARAM_DESCRIPTION, Default: F
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  getCellIDs.from.meta()
-#'  }
-#' }
-#' @export
-getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj = combined.obj, inverse = F ) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
-  mdat <- obj@meta.data[ , ColName.meta]
-  cells <- if (inverse) {mdat %!in% values} else {mdat %in% values}
-  idx.matching.cells = which(cells)
-  iprint(length(idx.matching.cells), 'cells found.')
-  return(rownames(obj@meta.data)[idx.matching.cells])
 }
 
 
@@ -951,153 +796,27 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 
 
 
-
 # _________________________________________________________________________________________________
-#' @title calc.cluster.averages
-#' @description Calculate the average of a metadata column (numeric) per cluster.
-#' @param col_name PARAM_DESCRIPTION, Default: 'Score.GO.0006096'
-#' @param plot.UMAP.too PARAM_DESCRIPTION, Default: TRUE
-#' @param return.plot PARAM_DESCRIPTION, Default: F
+#' @title getCellIDs.from.meta
+#' @description Get cellIDs from a metadata column, matching a list of values (using %in%). #
+#' @param ColName.meta PARAM_DESCRIPTION, Default: 'res.0.6'
+#' @param values PARAM_DESCRIPTION, Default: NA
 #' @param obj Seurat object, Default: combined.obj
-#' @param split_by PARAM_DESCRIPTION, Default: GetNamedClusteringRuns()[1]
-#' @param scale.zscore PARAM_DESCRIPTION, Default: FALSE
-#' @param simplify PARAM_DESCRIPTION, Default: T
-#' @param plotit Plot results (& show it), Default: T
-#' @param histogram PARAM_DESCRIPTION, Default: FALSE
-#' @param nbins PARAM_DESCRIPTION, Default: 50
-#' @param report Summary sentence, Default: F
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param stat PARAM_DESCRIPTION, Default: c("mean", "median")[2]
-#' @param quantile.thr PARAM_DESCRIPTION, Default: 0.9
-#' @param absolute.thr PARAM_DESCRIPTION, Default: FALSE
-#' @param filter PARAM_DESCRIPTION, Default: c(FALSE, "above", "below")[1]
-#' @param ylab.text PARAM_DESCRIPTION, Default: paste("Cluster", stat, "score")
-#' @param title Title of the plot, Default: paste("Cluster", stat, col_name)
-#' @param subtitle PARAM_DESCRIPTION, Default: NULL
-#' @param width PARAM_DESCRIPTION, Default: 8
-#' @param height PARAM_DESCRIPTION, Default: 6
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @param xlb PARAM_DESCRIPTION, Default: if (absolute.thr) paste("Threshold at", absolute.thr) else paste("Black lines: ",
-#'    kppd(Stringendo::percentage_formatter(c(1 - quantile.thr, quantile.thr))),
-#'    "quantiles |", "Cl. >", Stringendo::percentage_formatter(quantile.thr),
-#'    "are highlighted. |", split_by)
-#' @param fname File name, Default: ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)
+#' @param inverse PARAM_DESCRIPTION, Default: F
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  #EXAMPLE1
+#'  getCellIDs.from.meta()
 #'  }
 #' }
 #' @export
-#' @importFrom Stringendo percentage_formatter
-
-calc.cluster.averages <- function(col_name = "Score.GO.0006096"
-                                  , plot.UMAP.too = TRUE
-                                  , return.plot = F
-                                  , obj =  combined.obj
-                                  , split_by = GetNamedClusteringRuns()[1]
-                                  , scale.zscore = FALSE
-                                  , simplify = T, plotit = T
-                                  , histogram = FALSE, nbins = 50
-                                  , suffix = NULL
-                                  , stat = c("mean", "median")[2]
-                                  , quantile.thr = 0.9
-                                  , absolute.thr = FALSE
-                                  , filter = c(FALSE, 'above', 'below')[1]
-                                  , ylab.text = paste("Cluster", stat, "score")
-                                  , title = paste("Cluster", stat, col_name)
-                                  , prefix.cl.names= FALSE
-                                  , report = TRUE
-                                  , subtitle = NULL
-                                  , width = 8, height =6
-                                  , ...
-                                  # , ylb = paste(ylab.text, col_name)
-                                  # , xlb = paste("Clusters >",Stringendo::percentage_formatter(quantile.thr),"quantile are highlighted. |", split_by)
-                                  , xlb = if (absolute.thr) paste("Threshold at", absolute.thr) else paste(
-                                    "Black lines: " , kppd(Stringendo::percentage_formatter(c(1-quantile.thr, quantile.thr))) ,"quantiles |"
-                                    , "Cl. >",Stringendo::percentage_formatter(quantile.thr),"are highlighted. |", split_by
-                                  )
-
-                                  , fname = ppp(col_name,split_by,"cluster.average.barplot.pdf", ...)
-) { # calc.cluster.averages of a m
-  iprint(substitute(obj), "split by", split_by)
-  if(absolute.thr) iprint('In case of the absolute threshold, only the returned values are correct, the plot annotations are not!')
-
-  if (plot.UMAP.too) qUMAP(obj = obj, feature = col_name)
-
-  df.summary <-
-    obj@meta.data %>%
-    select_at(c(col_name, split_by)) %>%
-    group_by_at(split_by) %>%
-    summarize('nr.cells' = n()
-              , 'mean' = mean(!!sym(col_name), na.rm = TRUE)
-              , 'SEM' = sem(!!sym(col_name), na.rm = TRUE)
-              , 'median' = median(!!sym(col_name), na.rm = TRUE)
-              , 'SE.median' = 1.2533 * sem(!!sym(col_name), na.rm = TRUE)
-    )
-
-  if (simplify) {
-    av.score <- df.summary[[stat]]
-    names(av.score) <- if ( !isFALSE(prefix.cl.names)) ppp("cl",df.summary[[1]]) else df.summary[[1]]
-    av.score <- sortbyitsnames(av.score)
-    if (scale.zscore) av.score <- (scale(av.score)[,1])
-
-    cutoff <- if(absolute.thr) absolute.thr else quantile(av.score, quantile.thr)
-    cutoff.low <- if(absolute.thr) NULL else  quantile(av.score, (1-quantile.thr) )
-
-    iprint('quantile.thr:', quantile.thr)
-    if (plotit) {
-      if (histogram) {
-        p <- ggExpress::qhistogram(vec = as.numeric(av.score), save = F
-                        , vline = cutoff
-                        , plotname = ppp(title, quantile.thr)
-                        , bins = nbins
-                        , subtitle = paste(subtitle, "| median in blue/dashed")
-                        , ylab = ylab.text
-                        , xlab = xlb # Abused
-                        , xlab.angle = 45
-                        # , ylim = c(-1,1)
-                        , ...
-                        # , ext = "png", w = 7, h = 5
-        ) + geom_vline(xintercept = cutoff.low, lty = 2)
-        print(p)
-        title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
-        ggExpress::qqSave(ggobj = p, title = title_, ext = "png", w = width, h = height)
-      } else {
-        p <- ggExpress::qbarplot(vec = av.score, save = F
-                      , hline = cutoff
-                      , plotname = title
-                      , suffix = quantile.thr
-                      , subtitle = subtitle
-                      , ylab = ylab.text
-                      , xlab = xlb # Abused
-                      , xlab.angle = 45
-                      # , ylim = c(-1,1)
-                      , ...
-                      # , ext = "png", w = 7, h = 5
-        ) + geom_hline(yintercept = cutoff.low , lty = 2)
-
-        print(p)
-        title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
-        qqSave(ggobj = p, title = title_, fname = ppp(title_, split_by, "png"),  w = width, h = height)
-      }
-    }
-
-    if (report) print(paste0(col_name, ": ", paste(iround(av.score), collapse = " vs. ")))
-    if (filter == 'below') {
-      return(filter_LP(av.score, threshold = cutoff, plot.hist = F))
-    } else if (filter == 'above') {
-      return(filter_HP(av.score, threshold = cutoff, plot.hist = F))
-    } else {
-      return(av.score)
-    }
-  } else if (return.plot) { # if /not/ simplify
-    return(p)
-  } else {
-    return(df.summary)
-  }
+getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj = combined.obj, inverse = F ) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
+  mdat <- obj@meta.data[ , ColName.meta]
+  cells <- if (inverse) {mdat %!in% values} else {mdat %in% values}
+  idx.matching.cells = which(cells)
+  iprint(length(idx.matching.cells), 'cells found.')
+  return(rownames(obj@meta.data)[idx.matching.cells])
 }
-
 
 # _________________________________________________________________________________________________
 #' @title seu.add.meta.from.table
@@ -1309,14 +1028,306 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
 
 
 
+
+
+# _________________________________________________________________________________________________
+# Clustering ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+
+# _________________________________________________________________________________________________
+#' RenameClustering
+#'
+#' @param namedVector named vector, where values = new, names(vec) = old
+#' @param orig.ident meta.data colname original
+#' @param suffix.new.ident How to name (suffix) the new identity. Default: "ManualNames"
+#' @param new.ident meta.data colname new
+#' @param obj Seurat object
+#' @export
+
+RenameClustering <- function(namedVector = ManualNames
+                             , orig.ident =  "RNA_snn_res.0.3"
+                             , suffix.new.ident = "ManualNames"
+                             , new.ident = ppp(orig.ident, suffix.new.ident)
+                             , obj = combined.obj) {
+  NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
+                    , oldvalues = names(namedVector)
+                    , newvalues = namedVector)
+  obj@meta.data[[new.ident]] <- NewX
+  clUMAP(orig.ident)
+  clUMAP(new.ident)
+  return(obj)
+}
+
+
+# _________________________________________________________________________________________________
+#' getClusterNames
+#'
+#' @param obj Seurat object
+#' @param ident ident
+#' @export
+
+getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
+  print(GetClusteringRuns(obj))
+  clz <- as.character(sort(deframe(unique(obj[[ident]]))))
+  cat(dput(clz))
+}
+
+
+
+
+# _________________________________________________________________________________________________
+#' @title GetClusteringRuns
+#' @description Get Clustering Runs: metadata column names #
+#' @param obj Seurat object, Default: combined.obj
+#' @param res Clustering resoluton to use, Default: F
+#' @param pat Pettern to match, Default: '*snn_res.*[0-9]$'
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  GetClusteringRuns()
+#'  }
+#' }
+#' @export
+GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0-9]$") { # Get Clustering Runs: metadata column names
+  if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
+  clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
+  if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
+  return(clustering.results)
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title GetNamedClusteringRuns
+#' @description Get Clustering Runs: metadata column names #
+#' @param obj Seurat object, Default: combined.obj
+#' @param res Clustering resoluton to use, Default: c(F, 0.5)[1]
+#' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: F
+#' @param pat Pettern to match, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  GetNamedClusteringRuns()
+#'  }
+#' }
+#' @export
+GetNamedClusteringRuns <- function(obj = combined.obj  # Get Clustering Runs: metadata column names
+                                   , res = c(F, 0.5)[1], topgene = F, pat = "^cl.names.Known.*[0,1]\\.[0-9]$") {
+  if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
+  if (topgene) pat = gsub(x = pat, pattern = 'Known', replacement = 'top')
+  clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
+  if ( identical(clustering.results, character(0)) ) {
+    print("Warning: NO matching column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)")
+    clustering.results <- GetClusteringRuns(obj = obj, res = F, pat = "*_res.*[0,1]\\.[0-9]$")
+  }
+  return(clustering.results)
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title GetOrderedClusteringRuns
+#' @description Get Clustering Runs: metadata column names #
+#' @param obj Seurat object, Default: combined.obj
+#' @param res Clustering resoluton to use, Default: F
+#' @param pat Pettern to match, Default: '*snn_res.*[0,1]\.[0-9]\.ordered$'
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  GetOrderedClusteringRuns(); GetOrderedClusteringRuns(res = 0.5)
+#'  }
+#' }
+#' @export
+GetOrderedClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0,1]\\.[0-9]\\.ordered$") { # Get Clustering Runs: metadata column names
+  if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
+  clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
+  if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
+  return(clustering.results)
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title GetNumberOfClusters
+#' @description Get Number Of Clusters #
+#' @param obj Seurat object, Default: combined.obj
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  GetNumberOfClusters()
+#'  }
+#' }
+#' @export
+GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
+  clustering.results <- GetClusteringRuns(obj)
+  print("## Number of clusters: ---------")
+  for (cc in clustering.results) {
+    NrCl <- length(unique(obj@meta.data[[cc]]))
+    iprint( cc, "   ", NrCl)
+  }
+}
+
+
+# _________________________________________________________________________________________________
+#' @title calc.cluster.averages
+#' @description Calculate the average of a metadata column (numeric) per cluster.
+#' @param col_name PARAM_DESCRIPTION, Default: 'Score.GO.0006096'
+#' @param plot.UMAP.too PARAM_DESCRIPTION, Default: TRUE
+#' @param return.plot PARAM_DESCRIPTION, Default: F
+#' @param obj Seurat object, Default: combined.obj
+#' @param split_by PARAM_DESCRIPTION, Default: GetNamedClusteringRuns()[1]
+#' @param scale.zscore PARAM_DESCRIPTION, Default: FALSE
+#' @param simplify PARAM_DESCRIPTION, Default: T
+#' @param plotit Plot results (& show it), Default: T
+#' @param histogram PARAM_DESCRIPTION, Default: FALSE
+#' @param nbins PARAM_DESCRIPTION, Default: 50
+#' @param report Summary sentence, Default: F
+#' @param suffix A suffix added to the filename, Default: NULL
+#' @param stat PARAM_DESCRIPTION, Default: c("mean", "median")[2]
+#' @param quantile.thr PARAM_DESCRIPTION, Default: 0.9
+#' @param absolute.thr PARAM_DESCRIPTION, Default: FALSE
+#' @param filter PARAM_DESCRIPTION, Default: c(FALSE, "above", "below")[1]
+#' @param ylab.text PARAM_DESCRIPTION, Default: paste("Cluster", stat, "score")
+#' @param title Title of the plot, Default: paste("Cluster", stat, col_name)
+#' @param subtitle PARAM_DESCRIPTION, Default: NULL
+#' @param width PARAM_DESCRIPTION, Default: 8
+#' @param height PARAM_DESCRIPTION, Default: 6
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @param xlb PARAM_DESCRIPTION, Default: if (absolute.thr) paste("Threshold at", absolute.thr) else paste("Black lines: ",
+#'    kppd(Stringendo::percentage_formatter(c(1 - quantile.thr, quantile.thr))),
+#'    "quantiles |", "Cl. >", Stringendo::percentage_formatter(quantile.thr),
+#'    "are highlighted. |", split_by)
+#' @param fname File name, Default: ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+#' @importFrom Stringendo percentage_formatter
+
+calc.cluster.averages <- function(col_name = "Score.GO.0006096"
+                                  , plot.UMAP.too = TRUE
+                                  , return.plot = F
+                                  , obj =  combined.obj
+                                  , split_by = GetNamedClusteringRuns()[1]
+                                  , scale.zscore = FALSE
+                                  , simplify = T, plotit = T
+                                  , histogram = FALSE, nbins = 50
+                                  , suffix = NULL
+                                  , stat = c("mean", "median")[2]
+                                  , quantile.thr = 0.9
+                                  , absolute.thr = FALSE
+                                  , filter = c(FALSE, 'above', 'below')[1]
+                                  , ylab.text = paste("Cluster", stat, "score")
+                                  , title = paste("Cluster", stat, col_name)
+                                  , prefix.cl.names= FALSE
+                                  , report = TRUE
+                                  , subtitle = NULL
+                                  , width = 8, height =6
+                                  , ...
+                                  # , ylb = paste(ylab.text, col_name)
+                                  # , xlb = paste("Clusters >",Stringendo::percentage_formatter(quantile.thr),"quantile are highlighted. |", split_by)
+                                  , xlb = if (absolute.thr) paste("Threshold at", absolute.thr) else paste(
+                                    "Black lines: " , kppd(Stringendo::percentage_formatter(c(1-quantile.thr, quantile.thr))) ,"quantiles |"
+                                    , "Cl. >",Stringendo::percentage_formatter(quantile.thr),"are highlighted. |", split_by
+                                  )
+
+                                  , fname = ppp(col_name,split_by,"cluster.average.barplot.pdf", ...)
+) { # calc.cluster.averages of a m
+  iprint(substitute(obj), "split by", split_by)
+  if(absolute.thr) iprint('In case of the absolute threshold, only the returned values are correct, the plot annotations are not!')
+
+  if (plot.UMAP.too) qUMAP(obj = obj, feature = col_name)
+
+  df.summary <-
+    obj@meta.data %>%
+    select_at(c(col_name, split_by)) %>%
+    group_by_at(split_by) %>%
+    summarize('nr.cells' = n()
+              , 'mean' = mean(!!sym(col_name), na.rm = TRUE)
+              , 'SEM' = sem(!!sym(col_name), na.rm = TRUE)
+              , 'median' = median(!!sym(col_name), na.rm = TRUE)
+              , 'SE.median' = 1.2533 * sem(!!sym(col_name), na.rm = TRUE)
+    )
+
+  if (simplify) {
+    av.score <- df.summary[[stat]]
+    names(av.score) <- if ( !isFALSE(prefix.cl.names)) ppp("cl",df.summary[[1]]) else df.summary[[1]]
+    av.score <- sortbyitsnames(av.score)
+    if (scale.zscore) av.score <- (scale(av.score)[,1])
+
+    cutoff <- if(absolute.thr) absolute.thr else quantile(av.score, quantile.thr)
+    cutoff.low <- if(absolute.thr) NULL else  quantile(av.score, (1-quantile.thr) )
+
+    iprint('quantile.thr:', quantile.thr)
+    if (plotit) {
+      if (histogram) {
+        p <- ggExpress::qhistogram(vec = as.numeric(av.score), save = F
+                                   , vline = cutoff
+                                   , plotname = ppp(title, quantile.thr)
+                                   , bins = nbins
+                                   , subtitle = paste(subtitle, "| median in blue/dashed")
+                                   , ylab = ylab.text
+                                   , xlab = xlb # Abused
+                                   , xlab.angle = 45
+                                   # , ylim = c(-1,1)
+                                   , ...
+                                   # , ext = "png", w = 7, h = 5
+        ) + geom_vline(xintercept = cutoff.low, lty = 2)
+        print(p)
+        title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
+        ggExpress::qqSave(ggobj = p, title = title_, ext = "png", w = width, h = height)
+      } else {
+        p <- ggExpress::qbarplot(vec = av.score, save = F
+                                 , hline = cutoff
+                                 , plotname = title
+                                 , suffix = quantile.thr
+                                 , subtitle = subtitle
+                                 , ylab = ylab.text
+                                 , xlab = xlb # Abused
+                                 , xlab.angle = 45
+                                 # , ylim = c(-1,1)
+                                 , ...
+                                 # , ext = "png", w = 7, h = 5
+        ) + geom_hline(yintercept = cutoff.low , lty = 2)
+
+        print(p)
+        title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
+        qqSave(ggobj = p, title = title_, fname = ppp(title_, split_by, "png"),  w = width, h = height)
+      }
+    }
+
+    if (report) print(paste0(col_name, ": ", paste(iround(av.score), collapse = " vs. ")))
+    if (filter == 'below') {
+      return(filter_LP(av.score, threshold = cutoff, plot.hist = F))
+    } else if (filter == 'above') {
+      return(filter_HP(av.score, threshold = cutoff, plot.hist = F))
+    } else {
+      return(av.score)
+    }
+  } else if (return.plot) { # if /not/ simplify
+    return(p)
+  } else {
+    return(df.summary)
+  }
+}
+
+
+
+
+
+
+
 # _________________________________________________________________________________________________
 # Plot metadata ______________________________ ----
 # _________________________________________________________________________________________________
 
 
 
-
-# _________________________________________________________________________________________________
 #' @title plot.Metadata.Cor.Heatmap
 #' @description Plot a heatmap with Metadata correlation values.
 #' @param columns PARAM_DESCRIPTION, Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
@@ -1438,12 +1449,6 @@ plot.Metadata.median.fraction.barplot <- function(
 
 # plot.Metadata.median.fraction.barplot()
 
-
-
-
-# _________________________________________________________________________________________________
-# Clustering ______________________________ ----
-# _________________________________________________________________________________________________
 
 
 # _________________________________________________________________________________________________
@@ -5480,6 +5485,6 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 
 
 # _________________________________________________________________________________________________
-# New additions,  categorized ------
+# New additions,  categorized _____________________________ ------
 # _________________________________________________________________________________________________
 
