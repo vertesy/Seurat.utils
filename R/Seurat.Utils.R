@@ -92,25 +92,35 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 #'
 #' @param vec1 Character vector, eg. with cell names
 #' @param vec2 Character vector, eg. with cell names
+#' @param names Names for plotting
 #' @param min.overlap Threhold below there is no there is no meaninful overlap between the tow vectors. The function aborts with an error.
+#'
 #' @export
 #' @examples # reTheseCellNamesTheSame()
 
+
 AreTheseCellNamesTheSame  <- function(vec1 = names(UVI.annot)
                                       , vec2 = names(nr_UVI)
+                                      , names = c( 'Cells in T/AMP', 'Cells in GEX')
                                       , min.overlap = 0.33
 ) {
-  CellNames <- list(vec1, vec2)
-  names(CellNames) = c( substitute(vec1), substitute(vec2))
-  qvenn(CellNames)
+  Cellname.Overlap <- list(vec1, vec2)
+  names(Cellname.Overlap) <- if (!isFALSE(names)) names else c( substitute(vec1), substitute(vec2))
+  sbb <- percentage_formatter(length(cells.in.both) / length(vec2), suffix = "of cells (GEX) in have a UVI assigned")
+  ggExpress::qvenn(Cellname.Overlap, subt = sbb)
+  iprint('Venn Diagramm saved.')
+  iprint(sbb)
 
   Nr.overlapping <- length(intersect(vec1, vec2))
   Nr.total <- length(union(vec1, vec2))
   Percent_Overlapping <- Nr.overlapping/Nr.total
-  iprint(percentage_formatter(Percent_Overlapping, suffix = paste("of the cellIDs overlap across", substitute(vec1), "and", substitute(vec2))))
+  print("")
+  report <- percentage_formatter(Percent_Overlapping
+                                 , prefix = "In total,"
+                                 , suffix = paste("of the cellIDs overlap across", names(Cellname.Overlap)[1], "and", names(Cellname.Overlap)[2]))
+  print(report[1])
   stopifnot( Percent_Overlapping > min.overlap)
 }
-
 
 
 # _________________________________________________________________________________________________

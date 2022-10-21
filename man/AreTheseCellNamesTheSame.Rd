@@ -7,6 +7,7 @@
 AreTheseCellNamesTheSame(
   vec1 = names(UVI.annot),
   vec2 = names(nr_UVI),
+  names = c("Cells in T/AMP", "Cells in GEX"),
   min.overlap = 0.33
 )
 }
@@ -14,6 +15,8 @@ AreTheseCellNamesTheSame(
 \item{vec1}{Character vector, eg. with cell names}
 
 \item{vec2}{Character vector, eg. with cell names}
+
+\item{names}{Names for plotting}
 
 \item{min.overlap}{Threhold below there is no there is no meaninful overlap between the tow vectors. The function aborts with an error.}
 }
