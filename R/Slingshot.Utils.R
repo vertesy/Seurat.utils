@@ -1,14 +1,7 @@
-
-
-# ------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------
 # _________________________________________________________________________________________________
-# Custom.Functions.for.Slingshot.R
-# ____________________________________________________________________ ----
-# source('~/GitHub/Packages/Seurat.utils/Functions/Custom.Functions.for.Slingshot.R')
+# Slingshot.Utils.R ----
+# _________________________________________________________________________________________________
+# source('~/GitHub/Packages/Seurat.utils/R/Slingshot.Utils.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Custom.Functions.for.Slingshot.R"))
 
 # _________________________________________________________________________________________________
@@ -16,27 +9,8 @@
 # require(ggbeeswarm)
 # require(ggthemes)
 
-
-#' @title ggplotColours
-#' @description Generate ggplot colours for slingshot
-#' @param n PARAM_DESCRIPTION, Default: 6
-#' @param h height of the plot, Default: c(0, 360) + 15
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-ggplotColours <- function(n = 6, h = c(0, 360) + 15){
-  if ((diff(h) %% 360) < 1) h[2] <- h[2] - 360/n
-  hcl(h = (seq(h[1], h[2], length = n)), c = 100, l = 65)
-}
-
-
 # _________________________________________________________________________________________________
 # https://github.com/kstreet13/slingshot/issues/73#issuecomment-585376827
-
 
 #' @title Point on curve
 #' @description Helper to visualize points_on_curve in slingshot. ggplot for slinshot by @HectorRDB.
@@ -111,8 +85,32 @@ points_on_curve.SlingshotDataSet <- function(curve, lambda, ...) {
   return(as.data.frame(locs))
 }
 
-### Extend ggplot function
 
+# _________________________________________________________________________________________________
+# Colors and visuals ----
+# _________________________________________________________________________________________________
+
+
+#' @title ggplotColours
+#' @description Generate ggplot colours for slingshot
+#' @param n PARAM_DESCRIPTION, Default: 6
+#' @param h height of the plot, Default: c(0, 360) + 15
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+ggplotColours <- function(n = 6, h = c(0, 360) + 15){
+  if ((diff(h) %% 360) < 1) h[2] <- h[2] - 360/n
+  hcl(h = (seq(h[1], h[2], length = n)), c = 100, l = 65)
+}
+
+
+
+# _________________________________________________________________________________________________
+### Extend ggplot function
 
 #' @title gg_plot
 #' @description Adjusted gg_plot for slingshot
@@ -226,9 +224,9 @@ setMethod(
 
 
 
-# ------------------------------------------------------------------------------------------------
+# _________________________________________________________________________________________________
 #' @title cell_pal
-#' @description Generate paletter
+#' @description Generate palette
 #' @param cell_vars PARAM_DESCRIPTION
 #' @param pal_fun PARAM_DESCRIPTION
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
@@ -250,57 +248,6 @@ cell_pal <- function(cell_vars, pal_fun,...) {
   }
 }
 
-# ------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------
-# Duplicates ------------------------------------------------------------------------------------------------
 
-# ------------------------------------------------------------------------
-# #' @title Calc.Cor.Seurat
-# #' @description
-# #' @param assay.use PARAM_DESCRIPTION, Default: 'RNA'
-# #' @param slot.use PARAM_DESCRIPTION, Default: 'data'
-# #' @param geneset PARAM_DESCRIPTION, Default: FALSE
-# #' @param quantileX Quantile level, Default: 0.95
-# #' @param max.cells PARAM_DESCRIPTION, Default: 10000
-# #' @param seed random seed used, Default: p$seed
-# #' @param digits PARAM_DESCRIPTION, Default: 2
-# #' @param obj Seurat object, Default: combined.obj
-# #' @examples
-# #' \dontrun{
-# #' if(interactive()){
-# #'  #EXAMPLE1
-# #'  }
-# #' }
-# #' @export
-# Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data", geneset = FALSE
-#                             , quantileX = 0.95, max.cells =  10000, seed = p$"seed"
-#                             , digits = 2, obj = combined.obj) {
-#   expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
-#   if (ncol(expr.mat) > max.cells) {
-#     set.seed(seed = seed)
-#     cells.use <- sample(x = colnames(expr.mat), size = max.cells)
-#   } else {
-#     cells.use <- colnames(obj)
-#   }
 
-#   qname = p0("q", quantileX * 100)
-#   quantile_name = kpp("expr", qname)
-#   if (is.null(obj@misc[[quantile_name]])) { iprint("Quantile data missing! Call: combined.obj <- calc.q90.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX,") first!"); stop()}
-
-#   genes.HE  <- if (isFALSE(geneset)) {  which_names(obj@misc[[quantile_name]] > 0) } else {
-#     check.genes(geneset)  }
-#   iprint("Pearson correlation is calculated for", l(genes.HE), "HE genes with expr."
-#          , qname,": > 0 on a sample of", max.cells, " cells.")
-#   tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
-
-#   ls.cor <- lapply(ls.cor, round, digits = 2)
-
-#   slot__name <- kpp(slot.use, assay.use, quantile_name)
-#   obj@misc[[kpp('cor', slot__name)]] <- ls.cor$'cor'
-#   obj@misc[[kpp('cov', slot__name)]] <- ls.cor$'cov'
-#   iprint("Stored under obj@misc$", kpp('cor', slot.use, assay.use), "or cov... ." )
-#   return(obj)
-# }
 
