@@ -1,5 +1,5 @@
 ######################################################################################################
-# Create_the_Seurat.utils_Package.v0.1.R
+# Create_the_Seurat.utils_Package.R
 # 31 01 2022
 ######################################################################################################
 # source("/Users/abel.vertesy/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.v0.1.R")
