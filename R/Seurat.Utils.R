@@ -13,6 +13,122 @@
 # _________________________________________________________________________________________________
 # General ______________________________ ----
 # _________________________________________________________________________________________________
+
+
+#' @title parallel.computing.by.future
+#' @description Run gc(), load multi-session computing and extend memory limits.
+#'
+#' @param workers_ cores
+#' @param maxMemSize memory limit
+#'
+#' @export
+parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^2) { # Run gc(), load multi-session computing and extend memory limits.
+  # https://satijalab.org/seurat/v3.0/future_vignette.html
+  cat(
+    "1. If you load futures before you finished using foreach loops,
+    NormalizeData inside a foreach loop fails (Error writing to connection)
+    -> I assume 'future' and 'doMC' are not compatible
+
+    2. If you setup computing on e.g. six cores, it runs 6 instances of R with the entire memory space copied.
+    If you run out of memory, the system starts using the SSD as memory, and it slows you down extremely extremely extremely.
+    -> Therefore it is important to clean up the memory space before setting up multicore computation.
+
+    Loaded: library(future), workers set to 6 (def),set Max mem size to 2GB (def)."   )
+
+  gc(full = T)
+  try(memory.biggest.objects(), silent = T)
+
+  library(future)
+  plan("multiprocess", workers = workers_)
+  # plan("multisession", workers = workers_)
+  # So to set Max mem size to 2GB, you would run :
+  options(future.globals.maxSize = maxMemSize)
+}
+
+
+
+
+# _________________________________________________________________________________________________
+#' getClusterNames
+#'
+#' @param obj Seurat object
+#' @param ident ident
+#' @export
+
+getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
+  print(GetClusteringRuns(obj))
+  clz <- as.character(sort(deframe(unique(obj[[ident]]))))
+  cat(dput(clz))
+}
+
+
+
+
+# _________________________________________________________________________________________________
+#' RenameClustering
+#'
+#' @param namedVector named vector, where values = new, names(vec) = old
+#' @param orig.ident meta.data colname original
+#' @param suffix.new.ident How to name (suffix) the new identity. Default: "ManualNames"
+#' @param new.ident meta.data colname new
+#' @param obj Seurat object
+#' @export
+
+RenameClustering <- function(namedVector = ManualNames
+                             , orig.ident =  "RNA_snn_res.0.3"
+                             , suffix.new.ident = "ManualNames"
+                             , new.ident = ppp(orig.ident, suffix.new.ident)
+                             , obj = combined.obj) {
+  NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
+                    , oldvalues = names(namedVector)
+                    , newvalues = namedVector)
+  obj@meta.data[[new.ident]] <- NewX
+  clUMAP(orig.ident)
+  clUMAP(new.ident)
+  return(obj)
+}
+
+# _________________________________________________________________________________________________
+#' IntersectWithExpressed
+#'
+#' @param genes A vector of gene names.
+#' @param obj Seurat object
+#' @param genes.shown Number of genes printed (head).
+#' @export
+
+IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { # Intersect a set of genes with genes in the Seurat object.
+  print('IntersectWithExpressed()')
+  # print(head(genes, n=15))
+  diff = setdiff(genes, rownames(obj))
+  Stringendo::iprint(length(diff),"genes (of",length(genes), ") are MISSING from the Seurat object:",head(diff, genes.shown))
+  return(intersect(rownames(obj), genes))
+}
+
+
+# _________________________________________________________________________________________________
+#' seu.RemoveMetadata
+#'
+#' @param obj Seurat object, Default: combined.obj
+#' @param cols_remove columns to remove
+#' @export
+
+seu.RemoveMetadata <- function(obj = combined.obj
+                               , cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = T)
+) {
+
+  CNN <- colnames(obj@meta.data)
+  iprint('cols_remove:', cols_remove); print('')
+  (cols_keep <- setdiff(CNN, cols_remove))
+  obj@meta.data <- obj@meta.data[, cols_keep]
+  iprint('meta.data colnames kept:', colnames(obj@meta.data))
+
+  return(obj)
+}
+
+
+
+
+# _________________________________________________________________________________________________
 #' @title SmallestNonAboveX
 #' @description replace small values with the next smallest value found, which is >X. #
 #' @param vec Numeric input vector
@@ -33,544 +149,16 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 
 
 # _________________________________________________________________________________________________
-#' @title Add.DE.combined.score
-#' @description Add combined score to DE results. (LFC * -log10( p_cutoff / pval_scaling ) )
-#' @param df Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param p_val_min PARAM_DESCRIPTION, Default: 1e-25
-#' @param pval_scaling PARAM_DESCRIPTION, Default: 0.001
-#' @param colP PARAM_DESCRIPTION, Default: 'p_val'
-#' @param colLFC PARAM_DESCRIPTION, Default: CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df),
-#'    perl = T)
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  df.markers <- Add.DE.combined.score(df.markers)
-#'  }
-#' }
+#' getProject
+#'
+#' @description Try to get the project name you are wokring on in Rstudio.
+#' @returns The final subfolder of your project, or NULL, if you are not running one
 #' @export
-Add.DE.combined.score <- function(df = df.markers, p_val_min = 1e-25, pval_scaling = 0.001, colP = "p_val"
-                                  , colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = T)
-                                  # , colLFC = "avg_log2FC"
-) { # Score = -LOG10(p_val) * avg_log2FC
-  p_cutoff <- SmallestNonAboveX(vec = df[[colP]], X = p_val_min)
-  df$'combined.score' <- round(df[[colLFC]] * -log10( p_cutoff / pval_scaling ) )
-  return(df)
+#'
+#' @examples getProject()
+getProject <- function() {
+  tryCatch(basename(rstudioapi::getActiveProject()), error=function(e){})
 }
-
-
-
-
-# _________________________________________________________________________________________________
-#' @title StoreTop25Markers
-#' @description Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param res Clustering resoluton to use, Default: 0.5
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  combined.obj <- StoreTop25Markers(df_markers = df.markers, res = 0.)
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{select}}
-#' @export
-#' @importFrom dplyr select
-StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
-                              , df_markers = df.markers, res = 0.5) {
-  top25.markers <-
-    df_markers %>%
-    group_by(cluster) %>%
-    top_n(n = 25, wt = avg_2logFC) %>%
-    dplyr::select(gene) %>%
-    col2named.vec.tbl() %>%
-    splitbyitsnames()
-
-  obj@misc$'top25.markers'[[ppp('res',res)]] <- top25.markers
-  return(obj)
-}
-
-
-# _________________________________________________________________________________________________
-#' @title StoreAllMarkers
-#' @description Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param res Clustering resoluton to use, Default: 0.5
-#' @param digit Number of digits to keep, Default: c(0, 3)[2]
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  combined.obj <- StoreAllMarkers(df_markers = df.markers, res = 0.5)
-#'  }
-#' }
-#' @export
-StoreAllMarkers <- function(obj = combined.obj # Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
-                            , df_markers = df.markers, res = 0.5, digit = c(0,3)[2]) {
-  if (digit) df_markers[,1:5] <- signif(df_markers[,1:5], digits = digit)
-  obj@misc$'df.markers'[[ppp('res',res)]] <- df_markers
-  iprint("DF markers are stored under:", 'obj@misc$df.markers$', ppp('res',res))
-  return(obj)
-}
-
-
-# _________________________________________________________________________________________________
-#' @title GetTopMarkersDF
-#' @description Get the vector of N most diff. exp. genes. #
-#' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param n Number of markers to return, Default: p$n.markers
-#' @param order.by Sort output tibble by which column, Default: c("avg_log2FC", "p_val_adj")[1]
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  GetTopMarkers(df = df.markers, n = 3 )
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{slice}}, \code{\link[dplyr]{select}}
-#' @export
-#' @importFrom dplyr slice select
-GetTopMarkersDF <- function(dfDE = df.markers # Get the vector of N most diff. exp. genes.
-                            , n = p$'n.markers', order.by = c("avg_log2FC", "p_val_adj")[1]) {
-  'Works on active Idents() -> thus we call cluster'
-  TopMarkers <- dfDE %>%
-    arrange(desc(!!as.name(order.by))) %>%
-    group_by(cluster) %>%
-    dplyr::slice(1:n) %>%
-    dplyr::select(gene)
-
-  return(TopMarkers)
-}
-
-
-# _________________________________________________________________________________________________
-#' @title GetTopMarkers
-#' @description Get the vector of N most diff. exp. genes. #
-#' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param n Number of markers to return, Default: p$n.markers
-#' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")[2]
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  GetTopMarkers(df = df.markers, n = 3 )
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{slice}}, \code{\link[dplyr]{select}}
-#' @export
-#' @importFrom dplyr slice select
-GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp. genes.
-                          , n = p$'n.markers', order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]) {
-  'Works on active Idents() -> thus we call cluster'
-  TopMarkers <- dfDE %>%
-    arrange(desc(!!as.name(order.by))) %>%
-    group_by(cluster) %>%
-    dplyr::slice(1:n) %>%
-    dplyr::select(gene) %>%
-    col2named.vec.tbl()
-
-  return(TopMarkers)
-}
-
-
-
-
-# _________________________________________________________________________________________________
-#' @title AutoLabelTop.logFC
-#' @description Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param res Clustering resoluton to use, Default: 0.2
-#' @param plot.top.genes PARAM_DESCRIPTION, Default: T
-#' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_logFC", "p_val_adj")[1]
-#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  combined.obj <- AutoLabelTop.logFC(); combined.obj$"cl.names.top.gene.res.0.5"
-#'  }
-#' }
-#' @export
-AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
-                               , ident = GetClusteringRuns()[1]
-                               , res = 0.2, plot.top.genes = T
-                               , suffix = res
-                               , order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]
-                               , df_markers = obj@misc$"df.markers"[[paste0("res.",res)]] ) {
-  stopifnot(!is.null("df_markers"))
-  stopifnot(order.by %in% colnames(df_markers))
-
-  top.markers <-
-    GetTopMarkersDF(df = df_markers, order.by = order.by, n = 1) %>%
-    col2named.vec.tbl()
-
-  obj@misc[[ppp("top.markers.res",res)]] <- top.markers
-
-
-  ids <- deframe(unique(obj[[ident]]))
-  if(length(ids) != length(top.markers)) {
-    warning("Not all clusters returned DE-genes!")
-    missing <- setdiff(ids, names(top.markers));  names(missing) <- missing
-    iprint("missing:", missing)
-    top.markers <- sortbyitsnames(c(top.markers, missing))
-  }
-
-  (top.markers.ID <- ppp(names(top.markers), top.markers))
-  names(top.markers.ID) <- names(top.markers)
-  named.ident <- top.markers.ID[Idents(object = obj)]
-
-  namedIDslot <- ppp('cl.names.top.gene.res', res )
-  obj[[namedIDslot]] = named.ident
-
-  if (plot.top.genes) multiFeaturePlot.A4(list.of.genes = top.markers, suffix = suffix)
-
-  return(obj)
-}
-
-
-
-
-
-
-# _________________________________________________________________________________________________
-#' @title AutoLabel.KnownMarkers
-#' @description Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param topN Take the top N genes, Default: 1
-#' @param res Clustering resolution to use, Default: 0.5
-#' @param KnownMarkers PARAM_DESCRIPTION, Default: c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1",
-#'    "SALL4", "DDIT4", "PDK1", "SATB2", "FEZF2")
-#' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")[1]
-#' @param df_markers PARAM_DESCRIPTION, Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  combined.obj <- AutoLabel.KnownMarkers(); # combined.obj$cl.names.KnownMarkers.0.5
-#'  DimPlot.ClusterNames(ident = "cl.names.KnownMarkers.0.5")
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{slice}}
-#' @export
-#' @importFrom dplyr select slice
-AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
-                                   , KnownMarkers = c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1","SALL4","DDIT4", "PDK1", "SATB2", "FEZF2")
-                                   , order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1]
-
-                                   , df_markers = obj@misc$"df.markers"[[paste0("res.",res)]] ) {
-  stopifnot(!is.null("df_markers"))
-
-  lfcCOL <- CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df_markers), perl = T)
-  keep <- unique(c(lfcCOL, 'p_val_adj', 'cluster', order.by, 'gene'  ))
-
-
-  matching.clusters <-
-    df_markers %>%
-    dplyr::select(keep) %>%
-    arrange(desc(!!as.name(order.by))) %>%
-    filter(gene %in%  KnownMarkers) %>%
-    group_by(gene) %>%
-    dplyr::slice(1:topN) %>%
-    arrange(desc(!!as.name(order.by))) %>%
-    # top_n(n = 1, wt = avg_log2FC) %>% # Select the top cluster for each gene
-    arrange(cluster)
-
-  print(matching.clusters)
-
-  unique.matches <-
-    matching.clusters %>%
-    group_by(cluster) %>% # Select rows with unique values based on column "cluster"
-    distinct(cluster,.keep_all = T)  %>%
-    dplyr::select(gene)
-
-  print("Best matches:")
-  print(unique.matches)
-
-  top.markers.df <- GetTopMarkersDF(dfDE = df_markers, order.by = lfcCOL, n = 1)
-  top.markers <- top.markers.df %>% col2named.vec.tbl()
-
-  missing.annotations <-
-    top.markers.df %>%
-    filter(!cluster %in%  unique.matches$cluster) # filter for clusters that do not have a unique label already
-
-  named.annotations <-
-    rbind(unique.matches, missing.annotations) %>%  # merge the 2 df's
-    arrange(cluster) %>%
-    col2named.vec.tbl() # requires github.com/vertesy/CodeAndRoll
-
-  (top.markers.ID <- ppp(names(named.annotations), named.annotations))
-  names(top.markers.ID) <- names(top.markers)
-  named.ident <- top.markers.ID[Idents(object = obj)]
-
-  namedIDslot <- ppp('cl.names.KnownMarkers', res )
-  obj[[namedIDslot]] = named.ident
-  return(obj)
-}
-
-
-
-
-
-# _________________________________________________________________________________________________
-#' @title DimPlot.ClusterNames
-#' @description Plot UMAP with Cluster names. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param ident identity used, Default: 'cl.names.top.gene.res.0.5'
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param title Title of the plot, Default: ident
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  DimPlot.ClusterNames()
-#'  }
-#' }
-#' @export
-DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster names.
-                                 , ident = "cl.names.top.gene.res.0.5", reduction = "umap", title = ident, ...) {
-  Seurat::DimPlot(object = obj, reduction = reduction, group.by = ident, label = T, repel = T, ...) + NoLegend() + ggtitle(title)
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title AutoNumber.by.UMAP
-#' @description Relabel cluster numbers along a UMAP (or tSNE) axis #
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Which dimension? Default: 1
-#' @param swap Swap direction? Default: F
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction="umap", res = "integrated_snn_res.0.5" );
-#'  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.ordered")
-#'  }
-#' }
-#' @export
-AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers along a UMAP (or tSNE) axis
-                               , dim = 1, swap= F, reduction="umap", res = "RNA_snn_res.0.5" ) {
-
-  dim_name <- kppu(toupper(reduction),dim)
-  coord.umap <- as.named.vector(FetchData(object = obj, vars = dim_name))
-  identX <- as.character(obj@meta.data[[res]])
-
-  ls.perCl <- split(coord.umap, f = identX)
-  MedianClusterCoordinate <- unlapply(ls.perCl, median)
-
-  OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
-  NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
-  NewMeta <- translate(vec = identX, oldvalues = OldLabel, newvalues = NewLabel)
-  NewMetaCol <- kpp(res,"ordered")
-  iprint("NewMetaCol:",NewMetaCol)
-
-  obj[[NewMetaCol]] <- NewMeta
-  return(obj)
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title AutoNumber.by.PrinCurve
-#' @description Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Dimensions to use, Default: 1:2
-#' @param plotit Plot results (& show it), Default: T
-#' @param swap Swap Lambda paramter (multiplied with this) , Default: -1
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5")
-#'  combined.obj <- AutoNumber.by.PrinCurve(obj = combined.obj, dim = 1:2, reduction="umap", plotit = T,
-#'  swap= -1, res = "integrated_snn_res.0.5" )
-#'  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.prin.curve")
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[princurve]{principal_curve}}
-#' @export
-#' @importFrom princurve principal_curve
-AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
-                                    , dim = 1:2, plotit = T, swap= -1
-                                    , reduction="umap", res = "integrated_snn_res.0.5" ) {
-  # require(princurve)
-  dim_name <- ppu(toupper(reduction),dim)
-  coord.umap <- FetchData(object = obj, vars = dim_name)
-  fit <- princurve::principal_curve(x = as.matrix(coord.umap))
-  if (plotit) {
-    plot(fit, xlim = range(coord.umap[, 1]), ylim = range(coord.umap[, 2])
-         , main = "principal_curve")
-    # points(fit)
-    points(coord.umap, pch = 18, cex = .25)
-    whiskers(coord.umap, fit$s, lwd = .1)
-    wplot_save_this(plotname = "principal_curve")
-  }
-
-  ls.perCl <- split(swap * fit$lambda, f = obj[[res]])
-  MedianClusterCoordinate <- unlapply(ls.perCl, median)
-  OldLabel <- names(sort(MedianClusterCoordinate))
-  NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
-  NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
-  NewMetaCol <- kpp(res,"prin.curve")
-  iprint("NewMetaCol:",NewMetaCol)
-  obj[[NewMetaCol]] <- NewMeta
-  return(obj)
-}
-
-
-
-# _________________________________________________________________________________________________
-# _________________________________________________________________________________________________
-
-
-# _________________________________________________________________________________________________
-# Jaccard.toolkit.R
-# _________________________________________________________________________________________________
-# try(source('~/GitHub/Packages/Seurat.utils/Functions/Jaccard.toolkit.R'))
-# try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Jaccard.toolkit.R'))
-
-
-#  __________________________________________
-# Fast direct calculation from a list
-
-
-# _________________________________________________________________________________________________
-#' @title jJaccardIndexVec
-#' @description Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
-#' @param A Set A, Default: 1:3
-#' @param B Set B, Default: 2:4
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-jJaccardIndexVec <- function(A = 1:3, B = 2:4) length(intersect(A,B)) / length(union(A,B))
-
-# _________________________________________________________________________________________________
-
-#' @title jPairwiseJaccardIndexList
-#' @description Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
-#' @param lsG List of genes, Default: ls_genes
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  jPairwiseJaccardIndexList(lsG = ls_genes)
-#'  }
-#' }
-#' @export
-#' @importFrom Stringendo percentage_formatter
-jPairwiseJaccardIndexList <- function(lsG = ls_genes) { # Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
-  if (length(names(lsG)) < length(lsG)) {
-    iprint("Gene lists were not (all) named, now renamed as:")
-    names(lsG) <- ppp("dataset", 1:length(lsG))
-    print(names(lsG))
-  }
-  m = matrix.fromNames(rowname_vec = names(lsG), colname_vec = names(lsG))
-  n.sets <- length(lsG)
-  for (r in 1:n.sets) {
-    # print(Stringendo::percentage_formatter(r/n.sets))
-    for (c in 1:n.sets) {
-      if (c == r) {
-        m[r,c] = 1
-      } else {
-        m[r,c] =signif(jJaccardIndexVec(lsG[[r]], lsG[[c]]), digits = 2)
-      }
-    }
-  }
-  return(m)
-}
-
-
-
-
-
-
-
-# Much slower Indirect calculation via PresenceMatrix
-# _________________________________________________________________________________________________
-
-
-# _________________________________________________________________________________________________
-#' @title jPresenceMatrix
-#' @description Make a binary presence matrix from a list. Source: https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings #
-#' @param string_list PARAM_DESCRIPTION, Default: lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4)
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  df.presence <- jPresenceMatrix(string_list = lst(a = 1:3, b = 2:5,c = 4:9, d=-1:4))
-#'  }
-#' }
-#' @export
-jPresenceMatrix <- function(string_list = lst(a = 1:3, b = 2:5,c = 4:9, d=-1:4) ) { # Make a binary presence matrix from a list. Source: https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings
-  df.presence <- string_list %>%
-    enframe %>%
-    unnest(cols = "value") %>%
-    count(name, value) %>%
-    spread(value, n, fill = 0)
-  df.presence2 <- FirstCol2RowNames(df.presence)
-  return(t(df.presence2))
-}
-
-
-# _________________________________________________________________________________________________
-#' @title jJaccardIndexBinary
-#' @description Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
-#' @param x Set X
-#' @param y Set Y
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  JaccardSimilarity <- jJaccardIndexBinary(  x = sample(x = 0:1, size = 100, replace = T),
-#'  y = sample(x = 0:1, size = 100, replace = T))
-#'  }
-#' }
-#' @export
-jJaccardIndexBinary <- function(x, y) { # Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
-  elements.found <- sort(unique(union(x, y)))
-  stopifnot(length(elements.found) == 2) # check if you only have [0,1]
-  stopifnot(as.numeric(elements.found) == 0:1) # check if you only have [0,1]
-
-  M.11 = sum(x == 1 & y == 1)
-  M.10 = sum(x == 1 & y == 0)
-  M.01 = sum(x == 0 & y == 1)
-  return (M.11 / (M.11 + M.10 + M.01))
-}
-
-
-
-
-# _________________________________________________________________________________________________
-#' @title jPairwiseJaccardIndex
-#' @description Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
-#' @param binary.presence.matrix PARAM_DESCRIPTION, Default: df.presence
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  PairwiseJaccardIndices <- jPairwiseJaccardIndex(binary.presence.matrix = df.presence)
-#'  }
-#' }
-#' @export
-#' @importFrom Stringendo percentage_formatter
-jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
-  m = matrix.fromNames(rowname_vec = colnames(binary.presence.matrix), colname_vec = colnames(binary.presence.matrix) )
-  n.sets <- ncol(binary.presence.matrix)
-  for (r in 1:n.sets) {
-    print(Stringendo::percentage_formatter(r/n.sets))
-    for (c in 1:n.sets) {
-      if (c == r) {
-        m[r,c] = 1
-      } else {
-        m[r,c] = signif(jJaccardIndexBinary(binary.presence.matrix[,r], binary.presence.matrix[,c]), digits = 2)
-      }
-    }
-  }
-  return(m)
-}
-
 
 # _________________________________________________________________________________________________
 # plotting.filtering.R ______________________________ ----
@@ -734,6 +322,285 @@ PlotFilters <- function(ls.obj = ls.Seurat
 
   # _________________________________________________________________________________________________
   create_set_Original_OutDir()
+}
+
+
+# _________________________________________________________________________________________________
+# plotting.statistics.and.QC.R ______________________________ ----
+# _________________________________________________________________________________________________
+# source('~/GitHub/Packages/Seurat.utils/Functions/Plotting.statistics.and.QC.R')
+# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.statistics.and.QC.R"))
+
+# Source: self + web
+
+# Requirements __________________________________________
+# require(Seurat)
+# require(ggplot2)
+# tools for tools::toTitleCase
+
+# May also require
+# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
+# require('MarkdownReports') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReports")
+
+# PCA percent of variation associated with each PC
+#' @title seu.PC.var.explained
+#' @description Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
+#' @param obj Seurat object, Default: combined.obj
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of variation associated with each PC.
+  pct <- obj@reductions$pca@stdev / sum(obj@reductions$pca@stdev) * 100
+  names(pct) =1:length(obj@reductions$pca@stdev)
+  return(pct)
+}
+
+# _________________________________________________________________________________________________
+# plot percent of variation associated with each PC
+#' @title seu.plot.PC.var.explained
+#' @description Plot the percent of variation associated with each PC. #
+#' @param obj Seurat object, Default: combined.obj
+#' @param use.MDrep PARAM_DESCRIPTION, Default: F
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Plot the percent of variation associated with each PC.
+  pct <- seu.PC.var.explained(obj)
+  if (use.MDrep) {
+    wbarplot(pct , xlab = "Principal Components", ylab = "% of variation explained")
+    barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5 )
+  } else {
+    ggExpress::qbarplot(vec = pct, xlab = "Principal Components", ylab =  "% of variation explained", w = 10, h = 5, hline = 1 )
+  }
+}
+
+
+
+# _________________________________________________________________________________________________
+#' Percent.in.Trome
+#' @description Gene expression as fraction of all UMI's
+#' @param obj Seurat object
+#' @param n.genes.barplot number of top genes shows
+#' @param width.barplot barplot width
+#' @return Seurat object
+#' @export
+#' @examples # combined.obj <- Percent.in.Trome()
+
+Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25, width.barplot = round(n.genes.barplot/4)) {
+  m.expr <- combined.obj@assays$RNA@counts
+  total.Expr <- sort(rowSums(m.expr), decreasing = T)
+  relative.total.Expr <- total.Expr / sum(total.Expr)
+  print(head(iround(100*relative.total.Expr), n = n.genes.barplot))
+
+  qhistogram(relative.total.Expr*100, logX = F, logY = T
+             , plotname = "Gene expression as fraction of all UMI's"
+             , subtitle = "Percentage in RNA-counts"
+             , xlab = "Percent in Transcriptome (total per gene)"
+             , ylab = "Number of genes"
+             , xlab.angle = 45
+  ) # + geom_hline(yintercept = 10)
+
+  Highest.Expressed.Genes <- head(iround(100*relative.total.Expr), n = n.genes.barplot)
+  qbarplot(Highest.Expressed.Genes, w = width.barplot
+           , plotname = "Percentage of highest expressed genes"
+           , subtitle = "Total, in RNA-counts"
+           , xlab = ""
+           , ylab = "Gene expression as percent of all UMI's"
+           , xlab.angle = 45
+  )
+  print("!!!")
+  print("TotalReadFraction is stored under combined.obj@misc$'TotalReadFraction'  ")
+  print("!!!")
+  combined.obj@misc$'TotalReadFraction' <- relative.total.Expr
+  return(combined.obj)
+
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title gene.expression.level.plots
+#' @description Histogram of gene expression levels.
+#' @param gene gene of interest, Default: 'TOP2A'
+#' @param obj Seurat object, Default: ls.Seurat[[1]]
+#' @param slot slot in the Seurat object. Default: c("counts", "data")[2]
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], slot = c('counts', 'data')[2]
+                                        , ... ) {
+  slot = 'data'
+  print(gene)
+  if (gene %in% rownames(obj)) {
+    GEX.Counts <- GetAssayData(object = obj, assay = 'RNA', slot = slot)
+
+    GEX.Counts.total <- rowSums(GEX.Counts)
+    genes.expression <- GEX.Counts.total[gene]
+    mean.expr <- iround(mean(GEX.Counts[gene,]))
+
+    suffx = if (slot == 'counts') 'raw' else 'normalised, logtransformed'
+    (pname = paste(gene, 'and the', suffx, 'transcript count distribution'))
+
+    ggExpress::qhistogram(GEX.Counts.total, vline = genes.expression, logX = T, w = 7, h = 4
+                          , subtitle = paste('It belong to the top', pc_TRUE(GEX.Counts.total > genes.expression), 'of genes (black line). Mean expr:', mean.expr)
+                          , plotname = pname, xlab = 'Total Transcripts in Dataset', ylab = 'Number of Genes'
+                          , ...)
+  } else { print("     !!! Gene not found in object!")}
+}
+
+# _________________________________________________________________________________________________
+#' @title PrctCellExpringGene
+#' @description From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
+#' @param genes Genes of iinterest
+#' @param group.by PARAM_DESCRIPTION, Default: 'all'
+#' @param obj Seurat object, Default: combined.obj
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj){ # From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371
+  if(group.by == "all"){
+    prct = unlist(lapply(genes, ww.calc_helper, object = obj))
+    result = data.frame(Markers = genes, Cell_proportion = prct)
+    return(result)
+  }
+
+  else{
+    list = SplitObject(obj, group.by)
+    factors = names(list)
+    results = lapply(list, PrctCellExpringGene, genes = genes)
+    for (i in 1:length(factors)) {
+      results[[i]]$Feature = factors[i]
+    }
+    combined = do.call("rbind", results)
+    return(combined)
+  }
+}
+
+
+# _________________________________________________________________________________________________
+#' @title ww.calc_helper
+#' @description From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
+#' @param obj Seurat object
+#' @param genes Genes of iinterest
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371
+  counts = obj[['RNA']]@counts
+  ncells = ncol(counts)
+  if (genes %in% row.names(counts)) {
+    sum(counts[genes, ] > 0) / ncells
+  } else{
+    return(NA)
+  }
+}
+
+# _________________________________________________________________________________________________
+
+#' @title scBarplot.FractionAboveThr
+#' @description Barplot the fraction of cell above a threshold value (based on a meta.data column), in each cluster.
+#' @param thrX PARAM_DESCRIPTION, Default: 0
+#' @param value.col PARAM_DESCRIPTION, Default: 'percent.ribo'
+#' @param id.col PARAM_DESCRIPTION, Default: 'cl.names.top.gene.res.0.3'
+#' @param obj Seurat object, Default: combined.obj
+#' @param suffix Suffix for filename
+#' @param return.df PARAM_DESCRIPTION, Default: F
+#' @param label label barplot
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  scBarplot.FractionAboveThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0)
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
+#' @export
+#' @importFrom dplyr select group_by_
+scBarplot.FractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
+                                       , obj = combined.obj, return.df = F, label = F
+                                       , ...) { # Calculat the fraction of cells per cluster above a certain threhold
+  meta = obj@meta.data
+  (df_cells_above <- meta %>%
+      dplyr::select(c(id.col, value.col))  %>%
+      dplyr::group_by_(id.col)  %>%
+      summarize(n_cells = n(),
+                n_cells_above = sum(!!as.name(value.col) > thrX),
+                fr_n_cells_above = n_cells_above / n_cells)
+  )
+
+  # (v.fr_n_cells_above <- 100* as.named.vector(df_cells_above[3]))
+  df_2vec <- df_cells_above[,c(1,4)]
+  (v.fr_n_cells_above <- 100* deframe(df_2vec))
+  if (label == TRUE) lab =  percentage_formatter(deframe(df_2vec)) else lab = NULL
+
+  pname <- make.names(paste('Cells with', value.col, '>', thrX, id.col))
+  ggobj <- ggExpress::qbarplot(v.fr_n_cells_above, suffix = suffix
+                               , xlab = 'Clusters', ylab = '% Cells'
+                               , plotname = pname, label = lab
+                               , subtitle = id.col, xlab.angle = 45)
+  if (return.df) return(df_cells_above) else ggobj
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title scBarplot.FractionBelowThr
+#' @description Barplot the fraction of cell below a threshold value (based on a meta.data column), in each cluster.
+#' @param thrX PARAM_DESCRIPTION, Default: 0.01
+#' @param value.col PARAM_DESCRIPTION, Default: 'percent.ribo'
+#' @param id.col PARAM_DESCRIPTION, Default: 'cl.names.top.gene.res.0.3'
+#' @param obj Seurat object, Default: combined.obj
+#' @param return.df PARAM_DESCRIPTION, Default: F
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  scBarplot.FractionBelowThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0.01, return.df = T)
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
+#' @export
+#' @importFrom dplyr select group_by_
+scBarplot.FractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
+                                       , obj = combined.obj, return.df = F) { # Calculat the fraction of cells per cluster below a certain threhold
+  meta = obj@meta.data
+  (df_cells_below <- meta %>%
+      dplyr::select(c(id.col, value.col))  %>%
+      dplyr::group_by_(id.col)  %>%
+      summarize(n_cells = n(),
+                n_cells_below = sum(!!as.name(value.col) < thrX),
+                fr_n_cells_below = n_cells_below / n_cells) %>%
+      FirstCol2RowNames())
+
+  (v.fr_n_cells_below <- 100* as.named.vector(df_cells_below[3]))
+
+  pname <- make.names(paste('Cells with', value.col, '<', thrX, id.col))
+  ggobj <- ggExpress::qbarplot(v.fr_n_cells_below, xlab = 'Clusters', ylab = '% Cells'
+                               , plotname = pname
+                               , subtitle = id.col, xlab.angle = 45)
+  if (return.df) return(df_cells_below) else ggobj
 }
 
 
@@ -1440,60 +1307,143 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
 
 
 
+
+
 # _________________________________________________________________________________________________
-#' @title get.clustercomposition
-#' @description Get cluster composition: which datasets contribute to each cluster?
+# Plot metadata ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+
+
+# _________________________________________________________________________________________________
+#' @title plot.Metadata.Cor.Heatmap
+#' @description Plot a heatmap with Metadata correlation values.
+#' @param columns PARAM_DESCRIPTION, Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
+#' @param cormethod PARAM_DESCRIPTION, Default: c("pearson", "spearman")[1]
+#' @param main PARAM_DESCRIPTION, Default: paste("Metadata", cormethod, "correlations")
 #' @param obj Seurat object, Default: combined.obj
-#' @param x Bars along the X axis, Default: 'integrated_snn_res.0.3'
-#' @param y Vertical split of each bar, Default: 'project'
-#' @param color Color, Default: y
-#' @param plot  Show plot, Default: T
-#' @param ScaleTo100pc Scale the Y Axis, Default: T
+#' @param w width of the plot, Default: 10
+#' @param h height of the plot, Default: w
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples get.clustercomposition(); get.clustercomposition()
-#' @export
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[ggcorrplot]{ggcorrplot}}
+#' @export plot.Metadata.Cor.Heatmap
+#' @importFrom ggcorrplot ggcorrplot
+plot.Metadata.Cor.Heatmap <- function(
+    columns = c( "nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
+    , cormethod = c('pearson', 'spearman')[1]
+    , main =paste( "Metadata", cormethod,"correlations")
+    , obj = combined.obj
+    , w = 10, h = w
+    , ...){
 
+  meta.data <- obj@meta.data
+  columns.found <- intersect(colnames(meta.data), columns)
 
-get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_res.0.3', splitby = 'ShortNames'
-                                   , color = y
-                                   , plot = TRUE, ScaleTo100pc = TRUE
-                                   , ...) {
-  setwd(OutDir)
-  clUMAP(obj = obj, ident = x, save.plot = T, suffix = "as.in.barplot")
-
-  (df.meta <- obj@meta.data[, c(ident, splitby)])
-
-  df.meta %>%
-    dplyr::group_by_(splitby) %>%
-    summarise()
-
-  categ.per.cluster <- ggbarplot(obj@meta.data
-                                 , x = x
-                                 , y = y
-                                 , color = y
-                                 , ...
-  )
-  if (ScaleTo100pc) categ.per.cluster <- categ.per.cluster + scale_y_discrete(labels = scales::percent_format())
-  if (plot) categ.per.cluster
-
-  ggExpress::qqSave(categ.per.cluster, ...)
+  corX <- cor(meta.data[ , columns.found], method = cormethod)
+  pl <- ggcorrplot::ggcorrplot(corX, hc.order = TRUE, title = main
+                               , type = "full", lab = T)
+  ggExpress::qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
+  pl
 }
 
 
 
 
 # _________________________________________________________________________________________________
-#' getProject
-#'
-#' @description Try to get the project name you are wokring on in Rstudio.
-#' @returns The final subfolder of your project, or NULL, if you are not running one
-#' @export
-#'
-#' @examples getProject()
-getProject <- function() {
-  tryCatch(basename(rstudioapi::getActiveProject()), error=function(e){})
+#' @title plot.Metadata.median.fraction.barplot
+#' @description Barplot Metadata median values
+#' @param columns PARAM_DESCRIPTION, Default: c("percent.mito", "percent.ribo")
+#' @param suffix A suffix added to the filename, Default: NULL
+#' @param group.by PARAM_DESCRIPTION, Default: GetClusteringRuns(obj = obj)[2]
+#' @param method PARAM_DESCRIPTION, Default: c("median", "mean")[1]
+#' @param min.thr PARAM_DESCRIPTION, Default: 2.5
+#' @param return.matrix PARAM_DESCRIPTION, Default: F
+#' @param main PARAM_DESCRIPTION, Default: paste(method, "read fractions per transcript class and cluster",
+#'    suffix)
+#' @param ylab PARAM_DESCRIPTION, Default: 'Fraction of transcriptome (%)'
+#' @param percentify PARAM_DESCRIPTION, Default: T
+#' @param subt PARAM_DESCRIPTION, Default: NULL
+#' @param position PARAM_DESCRIPTION, Default: position_stack()
+#' @param w width of the plot, Default: 10
+#' @param h height of the plot, Default: 6
+#' @param obj Seurat object, Default: combined.obj
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[dplyr]{summarise_all}}
+#'  \code{\link[reshape2]{melt}}
+#' @export plot.Metadata.median.fraction.barplot
+#' @importFrom dplyr summarize_all
+#' @importFrom reshape2 melt
+plot.Metadata.median.fraction.barplot <- function(
+    columns = c(  "percent.mito", "percent.ribo")
+    , suffix =  NULL
+    , group.by = GetClusteringRuns(obj = obj)[2]
+    , method = c('median', 'mean' )[1]
+    , min.thr = 2.5 # At least this many percent in at least 1 cluster
+    , return.matrix = F
+    , main = paste( method, "read fractions per transcript class and cluster", suffix)
+    , ylab = "Fraction of transcriptome (%)"
+    , percentify = T
+    , subt = NULL
+    , position = position_stack()
+    , w = 10, h = 6
+    , obj = combined.obj
+    , ...){
+
+  meta.data <- obj@meta.data
+  stopifnot(group.by %in% colnames(meta.data))
+  columns.found <- intersect(colnames(meta.data), c(group.by, columns) )
+
+  (mat.cluster.medians1 <- meta.data[ , columns.found] %>%
+      group_by_at(group.by) %>%
+      dplyr::summarize_all(median)
+  )
+  if (min.thr>0) {
+    pass.cols <- colMax(mat.cluster.medians1[,-1]) > (min.thr/100)
+    cols.OK <- which_names(pass.cols)
+    cols.FAIL <- which_names(!pass.cols)
+    subt = paste(length(cols.FAIL), "classed do not reach", min.thr, "% :", kpps(cols.FAIL))
+    iprint(subt)
+    mat.cluster.medians1 <- mat.cluster.medians1[ , c( group.by, cols.OK) ]
+  }
+
+
+  mat.cluster.medians <- mat.cluster.medians1 %>%
+    reshape2::melt(id.vars = c(group.by), value.name = "Fraction")
+
+
+  if (percentify)  mat.cluster.medians$'Fraction' = 100*mat.cluster.medians$'Fraction'
+
+  pl <- ggbarplot(mat.cluster.medians, x = group.by, y = 'Fraction', fill = 'variable'
+                  , position = position
+                  , title = main, subtitle = subt ,ylab = ylab)
+  ggExpress::qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
+  pl
+  if (return.matrix) mat.cluster.medians1 else pl
 }
 
+# plot.Metadata.median.fraction.barplot()
+
+
+
+
+# _________________________________________________________________________________________________
+# Clustering ______________________________ ----
+# _________________________________________________________________________________________________
 
 
 # _________________________________________________________________________________________________
@@ -1900,6 +1850,680 @@ FlipReductionCoordinates <- function(obj = combined.obj, dim = 2, reduction="uma
   return(obj)
 }
 
+
+
+# _________________________________________________________________________________________________
+#' @title AutoNumber.by.UMAP
+#' @description Relabel cluster numbers along a UMAP (or tSNE) axis #
+#' @param obj Seurat object, Default: combined.obj
+#' @param dim Which dimension? Default: 1
+#' @param swap Swap direction? Default: F
+#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction="umap", res = "integrated_snn_res.0.5" );
+#'  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.ordered")
+#'  }
+#' }
+#' @export
+AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers along a UMAP (or tSNE) axis
+                               , dim = 1, swap= F, reduction="umap", res = "RNA_snn_res.0.5" ) {
+
+  dim_name <- kppu(toupper(reduction),dim)
+  coord.umap <- as.named.vector(FetchData(object = obj, vars = dim_name))
+  identX <- as.character(obj@meta.data[[res]])
+
+  ls.perCl <- split(coord.umap, f = identX)
+  MedianClusterCoordinate <- unlapply(ls.perCl, median)
+
+  OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
+  NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
+  NewMeta <- translate(vec = identX, oldvalues = OldLabel, newvalues = NewLabel)
+  NewMetaCol <- kpp(res,"ordered")
+  iprint("NewMetaCol:",NewMetaCol)
+
+  obj[[NewMetaCol]] <- NewMeta
+  return(obj)
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title AutoNumber.by.PrinCurve
+#' @description Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
+#' @param obj Seurat object, Default: combined.obj
+#' @param dim Dimensions to use, Default: 1:2
+#' @param plotit Plot results (& show it), Default: T
+#' @param swap Swap Lambda paramter (multiplied with this) , Default: -1
+#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5")
+#'  combined.obj <- AutoNumber.by.PrinCurve(obj = combined.obj, dim = 1:2, reduction="umap", plotit = T,
+#'  swap= -1, res = "integrated_snn_res.0.5" )
+#'  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.prin.curve")
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[princurve]{principal_curve}}
+#' @export
+#' @importFrom princurve principal_curve
+AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
+                                    , dim = 1:2, plotit = T, swap= -1
+                                    , reduction="umap", res = "integrated_snn_res.0.5" ) {
+  # require(princurve)
+  dim_name <- ppu(toupper(reduction),dim)
+  coord.umap <- FetchData(object = obj, vars = dim_name)
+  fit <- princurve::principal_curve(x = as.matrix(coord.umap))
+  if (plotit) {
+    plot(fit, xlim = range(coord.umap[, 1]), ylim = range(coord.umap[, 2])
+         , main = "principal_curve")
+    # points(fit)
+    points(coord.umap, pch = 18, cex = .25)
+    whiskers(coord.umap, fit$s, lwd = .1)
+    wplot_save_this(plotname = "principal_curve")
+  }
+
+  ls.perCl <- split(swap * fit$lambda, f = obj[[res]])
+  MedianClusterCoordinate <- unlapply(ls.perCl, median)
+  OldLabel <- names(sort(MedianClusterCoordinate))
+  NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
+  NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
+  NewMetaCol <- kpp(res,"prin.curve")
+  iprint("NewMetaCol:",NewMetaCol)
+  obj[[NewMetaCol]] <- NewMeta
+  return(obj)
+}
+
+
+
+# _________________________________________________________________________________________________
+# DEA ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+# _________________________________________________________________________________________________
+#' @title Add.DE.combined.score
+#' @description Add combined score to DE results. (LFC * -log10( p_cutoff / pval_scaling ) )
+#' @param df Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
+#' @param p_val_min PARAM_DESCRIPTION, Default: 1e-25
+#' @param pval_scaling PARAM_DESCRIPTION, Default: 0.001
+#' @param colP PARAM_DESCRIPTION, Default: 'p_val'
+#' @param colLFC PARAM_DESCRIPTION, Default: CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df),
+#'    perl = T)
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  df.markers <- Add.DE.combined.score(df.markers)
+#'  }
+#' }
+#' @export
+Add.DE.combined.score <- function(df = df.markers, p_val_min = 1e-25, pval_scaling = 0.001, colP = "p_val"
+                                  , colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = T)
+                                  # , colLFC = "avg_log2FC"
+) { # Score = -LOG10(p_val) * avg_log2FC
+  p_cutoff <- SmallestNonAboveX(vec = df[[colP]], X = p_val_min)
+  df$'combined.score' <- round(df[[colLFC]] * -log10( p_cutoff / pval_scaling ) )
+  return(df)
+}
+
+
+
+
+# _________________________________________________________________________________________________
+#' @title StoreTop25Markers
+#' @description Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
+#' @param obj Seurat object, Default: combined.obj
+#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
+#' @param res Clustering resoluton to use, Default: 0.5
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  combined.obj <- StoreTop25Markers(df_markers = df.markers, res = 0.)
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[dplyr]{select}}
+#' @export
+#' @importFrom dplyr select
+StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
+                              , df_markers = df.markers, res = 0.5) {
+  top25.markers <-
+    df_markers %>%
+    group_by(cluster) %>%
+    top_n(n = 25, wt = avg_2logFC) %>%
+    dplyr::select(gene) %>%
+    col2named.vec.tbl() %>%
+    splitbyitsnames()
+
+  obj@misc$'top25.markers'[[ppp('res',res)]] <- top25.markers
+  return(obj)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title StoreAllMarkers
+#' @description Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
+#' @param obj Seurat object, Default: combined.obj
+#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
+#' @param res Clustering resoluton to use, Default: 0.5
+#' @param digit Number of digits to keep, Default: c(0, 3)[2]
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  combined.obj <- StoreAllMarkers(df_markers = df.markers, res = 0.5)
+#'  }
+#' }
+#' @export
+StoreAllMarkers <- function(obj = combined.obj # Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
+                            , df_markers = df.markers, res = 0.5, digit = c(0,3)[2]) {
+  if (digit) df_markers[,1:5] <- signif(df_markers[,1:5], digits = digit)
+  obj@misc$'df.markers'[[ppp('res',res)]] <- df_markers
+  iprint("DF markers are stored under:", 'obj@misc$df.markers$', ppp('res',res))
+  return(obj)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title GetTopMarkersDF
+#' @description Get the vector of N most diff. exp. genes. #
+#' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
+#' @param n Number of markers to return, Default: p$n.markers
+#' @param order.by Sort output tibble by which column, Default: c("avg_log2FC", "p_val_adj")[1]
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  GetTopMarkers(df = df.markers, n = 3 )
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[dplyr]{slice}}, \code{\link[dplyr]{select}}
+#' @export
+#' @importFrom dplyr slice select
+GetTopMarkersDF <- function(dfDE = df.markers # Get the vector of N most diff. exp. genes.
+                            , n = p$'n.markers', order.by = c("avg_log2FC", "p_val_adj")[1]) {
+  'Works on active Idents() -> thus we call cluster'
+  TopMarkers <- dfDE %>%
+    arrange(desc(!!as.name(order.by))) %>%
+    group_by(cluster) %>%
+    dplyr::slice(1:n) %>%
+    dplyr::select(gene)
+
+  return(TopMarkers)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title GetTopMarkers
+#' @description Get the vector of N most diff. exp. genes. #
+#' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
+#' @param n Number of markers to return, Default: p$n.markers
+#' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")[2]
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  GetTopMarkers(df = df.markers, n = 3 )
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[dplyr]{slice}}, \code{\link[dplyr]{select}}
+#' @export
+#' @importFrom dplyr slice select
+GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp. genes.
+                          , n = p$'n.markers', order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]) {
+  'Works on active Idents() -> thus we call cluster'
+  TopMarkers <- dfDE %>%
+    arrange(desc(!!as.name(order.by))) %>%
+    group_by(cluster) %>%
+    dplyr::slice(1:n) %>%
+    dplyr::select(gene) %>%
+    col2named.vec.tbl()
+
+  return(TopMarkers)
+}
+
+
+
+
+# _________________________________________________________________________________________________
+#' @title AutoLabelTop.logFC
+#' @description Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
+#' @param obj Seurat object, Default: combined.obj
+#' @param res Clustering resoluton to use, Default: 0.2
+#' @param plot.top.genes PARAM_DESCRIPTION, Default: T
+#' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_logFC", "p_val_adj")[1]
+#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  combined.obj <- AutoLabelTop.logFC(); combined.obj$"cl.names.top.gene.res.0.5"
+#'  }
+#' }
+#' @export
+AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
+                               , ident = GetClusteringRuns()[1]
+                               , res = 0.2, plot.top.genes = T
+                               , suffix = res
+                               , order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]
+                               , df_markers = obj@misc$"df.markers"[[paste0("res.",res)]] ) {
+  stopifnot(!is.null("df_markers"))
+  stopifnot(order.by %in% colnames(df_markers))
+
+  top.markers <-
+    GetTopMarkersDF(df = df_markers, order.by = order.by, n = 1) %>%
+    col2named.vec.tbl()
+
+  obj@misc[[ppp("top.markers.res",res)]] <- top.markers
+
+
+  ids <- deframe(unique(obj[[ident]]))
+  if(length(ids) != length(top.markers)) {
+    warning("Not all clusters returned DE-genes!")
+    missing <- setdiff(ids, names(top.markers));  names(missing) <- missing
+    iprint("missing:", missing)
+    top.markers <- sortbyitsnames(c(top.markers, missing))
+  }
+
+  (top.markers.ID <- ppp(names(top.markers), top.markers))
+  names(top.markers.ID) <- names(top.markers)
+  named.ident <- top.markers.ID[Idents(object = obj)]
+
+  namedIDslot <- ppp('cl.names.top.gene.res', res )
+  obj[[namedIDslot]] = named.ident
+
+  if (plot.top.genes) multiFeaturePlot.A4(list.of.genes = top.markers, suffix = suffix)
+
+  return(obj)
+}
+
+
+
+
+
+
+# _________________________________________________________________________________________________
+#' @title AutoLabel.KnownMarkers
+#' @description Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
+#' @param obj Seurat object, Default: combined.obj
+#' @param topN Take the top N genes, Default: 1
+#' @param res Clustering resolution to use, Default: 0.5
+#' @param KnownMarkers PARAM_DESCRIPTION, Default: c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1",
+#'    "SALL4", "DDIT4", "PDK1", "SATB2", "FEZF2")
+#' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")[1]
+#' @param df_markers PARAM_DESCRIPTION, Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  combined.obj <- AutoLabel.KnownMarkers(); # combined.obj$cl.names.KnownMarkers.0.5
+#'  DimPlot.ClusterNames(ident = "cl.names.KnownMarkers.0.5")
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{slice}}
+#' @export
+#' @importFrom dplyr select slice
+AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
+                                   , KnownMarkers = c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1","SALL4","DDIT4", "PDK1", "SATB2", "FEZF2")
+                                   , order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1]
+
+                                   , df_markers = obj@misc$"df.markers"[[paste0("res.",res)]] ) {
+  stopifnot(!is.null("df_markers"))
+
+  lfcCOL <- CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df_markers), perl = T)
+  keep <- unique(c(lfcCOL, 'p_val_adj', 'cluster', order.by, 'gene'  ))
+
+
+  matching.clusters <-
+    df_markers %>%
+    dplyr::select(keep) %>%
+    arrange(desc(!!as.name(order.by))) %>%
+    filter(gene %in%  KnownMarkers) %>%
+    group_by(gene) %>%
+    dplyr::slice(1:topN) %>%
+    arrange(desc(!!as.name(order.by))) %>%
+    # top_n(n = 1, wt = avg_log2FC) %>% # Select the top cluster for each gene
+    arrange(cluster)
+
+  print(matching.clusters)
+
+  unique.matches <-
+    matching.clusters %>%
+    group_by(cluster) %>% # Select rows with unique values based on column "cluster"
+    distinct(cluster,.keep_all = T)  %>%
+    dplyr::select(gene)
+
+  print("Best matches:")
+  print(unique.matches)
+
+  top.markers.df <- GetTopMarkersDF(dfDE = df_markers, order.by = lfcCOL, n = 1)
+  top.markers <- top.markers.df %>% col2named.vec.tbl()
+
+  missing.annotations <-
+    top.markers.df %>%
+    filter(!cluster %in%  unique.matches$cluster) # filter for clusters that do not have a unique label already
+
+  named.annotations <-
+    rbind(unique.matches, missing.annotations) %>%  # merge the 2 df's
+    arrange(cluster) %>%
+    col2named.vec.tbl() # requires github.com/vertesy/CodeAndRoll
+
+  (top.markers.ID <- ppp(names(named.annotations), named.annotations))
+  names(top.markers.ID) <- names(top.markers)
+  named.ident <- top.markers.ID[Idents(object = obj)]
+
+  namedIDslot <- ppp('cl.names.KnownMarkers', res )
+  obj[[namedIDslot]] = named.ident
+  return(obj)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title BulkGEScatterPlot
+#' @description Plot bulk scatterplots to identify differential expressed genes across conditions #
+#' @param obj Seurat object, Default: combined.obj
+#' @param clusters PARAM_DESCRIPTION, Default: 'cl.names.KnownMarkers.0.2'
+#' @param TwoCategIdent PARAM_DESCRIPTION, Default: 'age'
+#' @param genes.from.bulk.DE PARAM_DESCRIPTION, Default: rownames(df.markers.per.AGE)
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  BulkGEScatterPlot(obj = combined.obj, clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = 'age', genes.from.bulk.DE = rownames(df.markers.per.AGE))
+#'  }
+#' }
+#' @export
+BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to identify differential expressed genes across conditions
+                              , clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = 'age', genes.from.bulk.DE = rownames(df.markers.per.AGE)) {
+
+  (SplitIdents <- unique(obj[[TwoCategIdent]][,1]))
+  stopifnot(length(SplitIdents) == 2)
+
+  Idents(obj) <- clusters
+  IdentsUsed <- sort.natural(as.character(unique(Idents(obj))))
+  NrPlots <- length(IdentsUsed)
+  p.clAv <- p.clAv.AutoLabel <- genes.to.label <- list.fromNames(IdentsUsed)
+
+  # i = 1
+  for (i in 1:NrPlots) {
+    print(IdentsUsed[i])
+    ClX <- subset(obj, idents = IdentsUsed[i])
+    Idents(ClX) <- TwoCategIdent
+    avg.ClX.cells <- log2(AverageExpression(ClX, verbose = FALSE)$RNA + 1)
+    avg.ClX.cells$gene <- rownames(avg.ClX.cells)
+
+    # plot --- --- ---
+    p.clAv[[i]] <- p.clAv.AutoLabel[[i]] <-
+      ggplot(avg.ClX.cells, aes(x = !!as.name(SplitIdents[1]), y = !!as.name(SplitIdents[2]) )) +
+      geom_point(data = avg.ClX.cells, color = rgb(0, .5, 0, 0.25), size = 1) +
+      FontSize(x.title = 8, x.text = 8, y.title = 8, y.text = 8)+
+      geom_abline(slope = 1, intercept = 0, color = 'grey') +
+      ggtitle(paste("Cluster", IdentsUsed[i] )) +
+      # ggtitle(paste0("Cluster ", i) ) +
+      scale_x_log10() + scale_y_log10() + annotation_logticks()
+    # p.clAv[[i]]
+
+    "Auto identify divergent genes"
+    dist.from.axis = eucl.dist.pairwise(avg.ClX.cells[,1:2])
+    genes.to.label[[i]] = names(head(sort(dist.from.axis, decreasing = T),n = 20))
+    p.clAv.AutoLabel[[i]] <- LabelPoints(plot = p.clAv[[i]], points = genes.to.label[[i]], xnudge = 0, ynudge = 0, repel = TRUE, size = 2);
+    p.clAv.AutoLabel[[i]]
+
+    "Pre-identified genes"
+    p.clAv[[i]] <- LabelPoints(plot = p.clAv[[i]], points = genes.from.bulk.DE, repel = TRUE, size = 2);
+  }
+
+  PlotIter <- iterBy.over(1:NrPlots, by = 4)
+  for (i in 1:length(PlotIter)) {
+    plotLS = p.clAv.AutoLabel[PlotIter[[i]]]
+    qqSaveGridA4(plotlist = plotLS, plots = 1:4, fname = ppp("BulkGEScatterPlot.AutoGenes",kpp(PlotIter[[i]]), "png"))
+
+    plotLS = p.clAv[PlotIter[[i]]]
+    qqSaveGridA4(plotlist = plotLS, plots = 1:4, fname= ppp("BulkGEScatterPlot.BulkGenes",kpp(PlotIter[[i]]), "png"))
+  }
+}
+
+
+
+
+
+# _________________________________________________________________________________________________
+# Compositional analysis ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+#' @title get.clustercomposition
+#' @description Get cluster composition: which datasets contribute to each cluster?
+#' @param obj Seurat object, Default: combined.obj
+#' @param x Bars along the X axis, Default: 'integrated_snn_res.0.3'
+#' @param y Vertical split of each bar, Default: 'project'
+#' @param color Color, Default: y
+#' @param plot  Show plot, Default: T
+#' @param ScaleTo100pc Scale the Y Axis, Default: T
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples get.clustercomposition(); get.clustercomposition()
+#' @export
+
+
+get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_res.0.3', splitby = 'ShortNames'
+                                   , color = y
+                                   , plot = TRUE, ScaleTo100pc = TRUE
+                                   , ...) {
+  setwd(OutDir)
+  clUMAP(obj = obj, ident = x, save.plot = T, suffix = "as.in.barplot")
+
+  (df.meta <- obj@meta.data[, c(ident, splitby)])
+
+  df.meta %>%
+    dplyr::group_by_(splitby) %>%
+    summarise()
+
+  categ.per.cluster <- ggbarplot(obj@meta.data
+                                 , x = x
+                                 , y = y
+                                 , color = y
+                                 , ...
+  )
+  if (ScaleTo100pc) categ.per.cluster <- categ.per.cluster + scale_y_discrete(labels = scales::percent_format())
+  if (plot) categ.per.cluster
+
+  ggExpress::qqSave(categ.per.cluster, ...)
+}
+
+
+# _________________________________________________________________________________________________
+# scBarplot.CellFractions
+#' @title scBarplot.CellFractions
+#' @description Barplot the Fraction of cells per cluster.
+#' @param obj Seurat object, Default: combined.obj
+#' @param group.by PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.5.ordered'
+#' @param fill.by PARAM_DESCRIPTION, Default: 'age'
+#' @param downsample PARAM_DESCRIPTION, Default: T
+#' @param plotname Title of the plot, Default: paste(tools::toTitleCase(fill.by), "proportions")
+#' @param hlines PARAM_DESCRIPTION, Default: c(0.25, 0.5, 0.75)
+#' @param seedNr PARAM_DESCRIPTION, Default: 1989
+#' @param return_table return contingency table instead of a barplot, Default: F
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
+#'  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[tools]{toTitleCase}}
+#' @export
+#' @importFrom tools toTitleCase
+scBarplot.CellFractions <- function(obj = combined.obj
+                                    , group.by = "integrated_snn_res.0.5.ordered", fill.by = "age", downsample = T
+                                    , plotname = paste(tools::toTitleCase(fill.by), "proportions"), hlines = c(.25, .5, .75)
+                                    , return_table = F
+                                    , seedNr = 1989) {
+  set.seed(seedNr)
+  pname.suffix <- capt.suffix <- NULL
+  if (downsample) {
+    downsample <- min (table(obj@meta.data[[fill.by]]))
+    pname.suffix <- "(downsampled)"
+    capt.suffix <- paste("Downsampled to", downsample, "cells in the smallest", fill.by, "group.")
+  }
+  caption_ <- paste("Numbers denote # cells.", capt.suffix)
+  pname_ <- paste(plotname, pname.suffix)
+
+  contingency.table <- table(obj@meta.data[ ,group.by], obj@meta.data[, fill.by])
+  print(contingency.table)
+  if (return_table) {
+    list(
+      'values' = contingency.table,
+      'percentages' = CodeAndRoll2::colDivide(mat = contingency.table, vec = colSums(contingency.table))
+    )
+  } else {
+    obj@meta.data %>%
+      # group_by( (!!as.name(fill.by)) ) %>%
+      { if (downsample) sample_n(., downsample) else . } %>%
+      group_by( (!!as.name(group.by)) ) %>%
+
+      ggplot( aes(fill = (!!(as.name(fill.by))),  x = (!!(as.name(group.by)))) ) +
+      geom_hline( yintercept = hlines, lwd = 1.5)  +
+      geom_bar( position = "fill" ) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      geom_text(aes(label = ..count..), stat='count',position = position_fill(vjust = 0.5)) +
+      labs(title = pname_,  x = "Clusters", y = "Fraction", caption = caption_) +
+      theme_classic() +
+      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+  } # else barplot
+}
+
+
+
+
+# _________________________________________________________________________________________________
+#' @title scBarplot.CellsPerCluster
+#' @description Barplot the Fraction of cells per cluster. (dupl?)
+#'
+#' @param obj Seurat object, Default: combined.obj
+#' @param ident identity used, Default: 'cl.names.KnownMarkers.0.5'
+#' @param label True: displays cell count, but you can provide anything in a vector.
+#' @param palette Color palette. Default: glasbey.
+#' @param return_table Should it return the plotting data instead of the plot?
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @param sort Sort by cluster size? Default: F
+#' @param suffix File name suffix
+#'
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  scBarplot.CellsPerCluster(); scBarplot.CellsPerCluster(sort = T)
+#'  }
+#' }
+#' @export scBarplot.CellsPerCluster
+
+scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
+                                      , sort = F
+                                      , label = list(T, 'percent')[[1]]
+                                      , suffix = if (label == 'percent') 'percent' else NULL
+                                      , palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
+                                      , obj = combined.obj
+                                      , return_table = F
+                                      , ...) {
+  cell.per.cl <- obj[[ident]][,1]
+  cell.per.cluster <- (table(cell.per.cl))
+  if (sort) cell.per.cluster <- sort(cell.per.cluster)
+  lbl <- if (isFALSE(label)) { NULL
+  } else if (label == 'percent') { percentage_formatter(cell.per.cluster/sum(cell.per.cluster))
+  } else if (label == 'T') { cell.per.cluster
+  } else label
+
+  n.clusters <- length(cell.per.cluster)
+  if (return_table) {
+    cell.per.cluster
+  } else {
+    ggExpress::qbarplot(cell.per.cluster, subtitle = ident, suffix = kpp(ident, suffix)
+                        , col = 1:n.clusters
+                        , xlab.angle = 45
+                        , label = lbl
+                        # , col = getClusterColors(ident = ident, show = T)
+                        , palette_use = DiscretePalette(n = n.clusters, palette = palette)
+                        , ...)
+  }
+
+}
+
+
+
+# _________________________________________________________________________________________________
+# scBarplot.CellsPerObject
+
+#' @title scBarplot.CellsPerObject
+#' @description Take a List of Seurat objects and draw a barplot for the number of cells per object. #
+#' @param ls.Seu PARAM_DESCRIPTION, Default: ls.Seurat
+#' @param plotname Title of the plot, Default: 'Nr.Cells.After.Filtering'
+#' @param names PARAM_DESCRIPTION, Default: F
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+scBarplot.CellsPerObject <- function(ls.Seu = ls.Seurat
+                                     , plotname="Nr.Cells.After.Filtering", xlab.angle = 45
+                                     , names = F, ...) {
+  cellCounts = unlapply(ls.Seu, ncol)
+  names(cellCounts) = if (length(names) == length(ls.Seurat)) names else names(ls.Seurat)
+  qbarplot(cellCounts, plotname = plotname
+           , subtitle = paste(sum(cellCounts), "cells in total")
+           , label = cellCounts
+           , xlab.angle =  xlab.angle, ylab="Cells"
+           , ...)
+
+}
+
+
+
+
+# _________________________________________________________________________________________________
+# plot.clust.size.distr
+#' @title plot.clust.size.distr
+#' @description Barplot of Histogram of cluster size distribution
+#' @param obj Seurat object, Default: combined.obj
+#' @param ident identity used, Default: GetClusteringRuns()[2]
+#' @param plot PARAM_DESCRIPTION, Default: T
+#' @param thr.hist PARAM_DESCRIPTION, Default: 30
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  plot.clust.size.distr()
+#'  }
+#' }
+#' @export plot.clust.size.distr
+#' @importFrom Stringendo percentage_formatter
+plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns()[2]
+                                  , plot = T, thr.hist = 30, ...) {
+  clust.size.distr <- table(obj@meta.data[,ident])
+  print(clust.size.distr)
+  resX <- gsub(pattern = ".*res\\.", replacement = '',x = ident)
+  ptitle <- ppp('clust.size.distr', ident)
+  psubtitle <- paste("Nr.clusters:", length(clust.size.distr)
+                     , "| median:", median(clust.size.distr)
+                     , "| CV:", Stringendo::percentage_formatter(cv(clust.size.distr))
+  )
+  xlb = "Cluster size (cells)"
+  xlim = c(0, max(clust.size.distr))
+
+  if (plot) {
+    if (length(clust.size.distr) < thr.hist) {
+      ggExpress::qbarplot(clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, ...)
+    } else {
+      ggExpress::qhistogram(vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, xlim = xlim, ...)
+    }
+  } else {    "return vector"
+    clust.size.distr
+  }
+
+}
 
 
 
@@ -2657,6 +3281,27 @@ PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = 'expr.q99'){ # P
 
 
 # _________________________________________________________________________________________________
+#' @title DimPlot.ClusterNames
+#' @description Plot UMAP with Cluster names. #
+#' @param obj Seurat object, Default: combined.obj
+#' @param ident identity used, Default: 'cl.names.top.gene.res.0.5'
+#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @param title Title of the plot, Default: ident
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  DimPlot.ClusterNames()
+#'  }
+#' }
+#' @export
+DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster names.
+                                 , ident = "cl.names.top.gene.res.0.5", reduction = "umap", title = ident, ...) {
+  Seurat::DimPlot(object = obj, reduction = reduction, group.by = ident, label = T, repel = T, ...) + NoLegend() + ggtitle(title)
+}
+
+
+# _________________________________________________________________________________________________
 # Saving plots ______________________________ ----
 # _________________________________________________________________________________________________
 
@@ -3141,281 +3786,10 @@ Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3
 
 
 
-# _________________________________________________________________________________________________
-# plotting.statistics.and.QC.R ______________________________ ----
-# _________________________________________________________________________________________________
-# source('~/GitHub/Packages/Seurat.utils/Functions/Plotting.statistics.and.QC.R')
-# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.statistics.and.QC.R"))
-
-# Source: self + web
-
-# Requirements __________________________________________
-# require(Seurat)
-# require(ggplot2)
-# tools for tools::toTitleCase
-
-# May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
-# require('MarkdownReports') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReports")
-
-# PCA percent of variation associated with each PC
-#' @title seu.PC.var.explained
-#' @description Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
-#' @param obj Seurat object, Default: combined.obj
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of variation associated with each PC.
-  pct <- obj@reductions$pca@stdev / sum(obj@reductions$pca@stdev) * 100
-  names(pct) =1:length(obj@reductions$pca@stdev)
-  return(pct)
-}
-
-# _________________________________________________________________________________________________
-# plot percent of variation associated with each PC
-#' @title seu.plot.PC.var.explained
-#' @description Plot the percent of variation associated with each PC. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param use.MDrep PARAM_DESCRIPTION, Default: F
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Plot the percent of variation associated with each PC.
-  pct <- seu.PC.var.explained(obj)
-  if (use.MDrep) {
-    wbarplot(pct , xlab = "Principal Components", ylab = "% of variation explained")
-    barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5 )
-  } else {
-    ggExpress::qbarplot(vec = pct, xlab = "Principal Components", ylab =  "% of variation explained", w = 10, h = 5, hline = 1 )
-  }
-}
 
 
 # _________________________________________________________________________________________________
-# scBarplot.CellFractions
-#' @title scBarplot.CellFractions
-#' @description Barplot the Fraction of cells per cluster.
-#' @param obj Seurat object, Default: combined.obj
-#' @param group.by PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.5.ordered'
-#' @param fill.by PARAM_DESCRIPTION, Default: 'age'
-#' @param downsample PARAM_DESCRIPTION, Default: T
-#' @param plotname Title of the plot, Default: paste(tools::toTitleCase(fill.by), "proportions")
-#' @param hlines PARAM_DESCRIPTION, Default: c(0.25, 0.5, 0.75)
-#' @param seedNr PARAM_DESCRIPTION, Default: 1989
-#' @param return_table return contingency table instead of a barplot, Default: F
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
-#'  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[tools]{toTitleCase}}
-#' @export
-#' @importFrom tools toTitleCase
-scBarplot.CellFractions <- function(obj = combined.obj
-                                    , group.by = "integrated_snn_res.0.5.ordered", fill.by = "age", downsample = T
-                                    , plotname = paste(tools::toTitleCase(fill.by), "proportions"), hlines = c(.25, .5, .75)
-                                    , return_table = F
-                                    , seedNr = 1989) {
-  set.seed(seedNr)
-  pname.suffix <- capt.suffix <- NULL
-  if (downsample) {
-    downsample <- min (table(obj@meta.data[[fill.by]]))
-    pname.suffix <- "(downsampled)"
-    capt.suffix <- paste("Downsampled to", downsample, "cells in the smallest", fill.by, "group.")
-  }
-  caption_ <- paste("Numbers denote # cells.", capt.suffix)
-  pname_ <- paste(plotname, pname.suffix)
-
-  contingency.table <- table(obj@meta.data[ ,group.by], obj@meta.data[, fill.by])
-  print(contingency.table)
-  if (return_table) {
-    list(
-      'values' = contingency.table,
-      'percentages' = CodeAndRoll2::colDivide(mat = contingency.table, vec = colSums(contingency.table))
-    )
-  } else {
-    obj@meta.data %>%
-      # group_by( (!!as.name(fill.by)) ) %>%
-      { if (downsample) sample_n(., downsample) else . } %>%
-      group_by( (!!as.name(group.by)) ) %>%
-
-      ggplot( aes(fill = (!!(as.name(fill.by))),  x = (!!(as.name(group.by)))) ) +
-      geom_hline( yintercept = hlines, lwd = 1.5)  +
-      geom_bar( position = "fill" ) +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-      geom_text(aes(label = ..count..), stat='count',position = position_fill(vjust = 0.5)) +
-      labs(title = pname_,  x = "Clusters", y = "Fraction", caption = caption_) +
-      theme_classic() +
-      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
-  } # else barplot
-}
-
-
-
-
-# _________________________________________________________________________________________________
-#' @title scBarplot.CellsPerCluster
-#' @description Barplot the Fraction of cells per cluster. (dupl?)
-#'
-#' @param obj Seurat object, Default: combined.obj
-#' @param ident identity used, Default: 'cl.names.KnownMarkers.0.5'
-#' @param label True: displays cell count, but you can provide anything in a vector.
-#' @param palette Color palette. Default: glasbey.
-#' @param return_table Should it return the plotting data instead of the plot?
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @param sort Sort by cluster size? Default: F
-#' @param suffix File name suffix
-#'
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  scBarplot.CellsPerCluster(); scBarplot.CellsPerCluster(sort = T)
-#'  }
-#' }
-#' @export scBarplot.CellsPerCluster
-
-scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
-                                      , sort = F
-                                      , label = list(T, 'percent')[[1]]
-                                      , suffix = if (label == 'percent') 'percent' else NULL
-                                      , palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
-                                      , obj = combined.obj
-                                      , return_table = F
-                                      , ...) {
-  cell.per.cl <- obj[[ident]][,1]
-  cell.per.cluster <- (table(cell.per.cl))
-  if (sort) cell.per.cluster <- sort(cell.per.cluster)
-  lbl <- if (isFALSE(label)) { NULL
-    } else if (label == 'percent') { percentage_formatter(cell.per.cluster/sum(cell.per.cluster))
-      } else if (label == 'T') { cell.per.cluster
-        } else label
-
-  n.clusters <- length(cell.per.cluster)
-  if (return_table) {
-    cell.per.cluster
-  } else {
-    ggExpress::qbarplot(cell.per.cluster, subtitle = ident, suffix = kpp(ident, suffix)
-             , col = 1:n.clusters
-             , xlab.angle = 45
-             , label = lbl
-             # , col = getClusterColors(ident = ident, show = T)
-             , palette_use = DiscretePalette(n = n.clusters, palette = palette)
-             , ...)
-  }
-
-}
-
-
-
-# _________________________________________________________________________________________________
-# scBarplot.CellsPerObject
-
-#' @title scBarplot.CellsPerObject
-#' @description Take a List of Seurat objects and draw a barplot for the number of cells per object. #
-#' @param ls.Seu PARAM_DESCRIPTION, Default: ls.Seurat
-#' @param plotname Title of the plot, Default: 'Nr.Cells.After.Filtering'
-#' @param names PARAM_DESCRIPTION, Default: F
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-scBarplot.CellsPerObject <- function(ls.Seu = ls.Seurat
-                                     , plotname="Nr.Cells.After.Filtering", xlab.angle = 45
-                                     , names = F, ...) {
-  cellCounts = unlapply(ls.Seu, ncol)
-  names(cellCounts) = if (length(names) == length(ls.Seurat)) names else names(ls.Seurat)
-  qbarplot(cellCounts, plotname = plotname
-           , subtitle = paste(sum(cellCounts), "cells in total")
-           , label = cellCounts
-           , xlab.angle =  xlab.angle, ylab="Cells"
-           , ...)
-
-}
-
-# _________________________________________________________________________________________________
-#' @title BulkGEScatterPlot
-#' @description Plot bulk scatterplots to identify differential expressed genes across conditions #
-#' @param obj Seurat object, Default: combined.obj
-#' @param clusters PARAM_DESCRIPTION, Default: 'cl.names.KnownMarkers.0.2'
-#' @param TwoCategIdent PARAM_DESCRIPTION, Default: 'age'
-#' @param genes.from.bulk.DE PARAM_DESCRIPTION, Default: rownames(df.markers.per.AGE)
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  BulkGEScatterPlot(obj = combined.obj, clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = 'age', genes.from.bulk.DE = rownames(df.markers.per.AGE))
-#'  }
-#' }
-#' @export
-BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to identify differential expressed genes across conditions
-                              , clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = 'age', genes.from.bulk.DE = rownames(df.markers.per.AGE)) {
-
-  (SplitIdents <- unique(obj[[TwoCategIdent]][,1]))
-  stopifnot(length(SplitIdents) == 2)
-
-  Idents(obj) <- clusters
-  IdentsUsed <- sort.natural(as.character(unique(Idents(obj))))
-  NrPlots <- length(IdentsUsed)
-  p.clAv <- p.clAv.AutoLabel <- genes.to.label <- list.fromNames(IdentsUsed)
-
-  # i = 1
-  for (i in 1:NrPlots) {
-    print(IdentsUsed[i])
-    ClX <- subset(obj, idents = IdentsUsed[i])
-    Idents(ClX) <- TwoCategIdent
-    avg.ClX.cells <- log2(AverageExpression(ClX, verbose = FALSE)$RNA + 1)
-    avg.ClX.cells$gene <- rownames(avg.ClX.cells)
-
-    # plot --- --- ---
-    p.clAv[[i]] <- p.clAv.AutoLabel[[i]] <-
-      ggplot(avg.ClX.cells, aes(x = !!as.name(SplitIdents[1]), y = !!as.name(SplitIdents[2]) )) +
-      geom_point(data = avg.ClX.cells, color = rgb(0, .5, 0, 0.25), size = 1) +
-      FontSize(x.title = 8, x.text = 8, y.title = 8, y.text = 8)+
-      geom_abline(slope = 1, intercept = 0, color = 'grey') +
-      ggtitle(paste("Cluster", IdentsUsed[i] )) +
-      # ggtitle(paste0("Cluster ", i) ) +
-      scale_x_log10() + scale_y_log10() + annotation_logticks()
-    # p.clAv[[i]]
-
-    "Auto identify divergent genes"
-    dist.from.axis = eucl.dist.pairwise(avg.ClX.cells[,1:2])
-    genes.to.label[[i]] = names(head(sort(dist.from.axis, decreasing = T),n = 20))
-    p.clAv.AutoLabel[[i]] <- LabelPoints(plot = p.clAv[[i]], points = genes.to.label[[i]], xnudge = 0, ynudge = 0, repel = TRUE, size = 2);
-    p.clAv.AutoLabel[[i]]
-
-    "Pre-identified genes"
-    p.clAv[[i]] <- LabelPoints(plot = p.clAv[[i]], points = genes.from.bulk.DE, repel = TRUE, size = 2);
-  }
-
-  PlotIter <- iterBy.over(1:NrPlots, by = 4)
-  for (i in 1:length(PlotIter)) {
-    plotLS = p.clAv.AutoLabel[PlotIter[[i]]]
-    qqSaveGridA4(plotlist = plotLS, plots = 1:4, fname = ppp("BulkGEScatterPlot.AutoGenes",kpp(PlotIter[[i]]), "png"))
-
-    plotLS = p.clAv[PlotIter[[i]]]
-    qqSaveGridA4(plotlist = plotLS, plots = 1:4, fname= ppp("BulkGEScatterPlot.BulkGenes",kpp(PlotIter[[i]]), "png"))
-  }
-}
-
-
-
-
-
-
-
+# Correlations _________________________ ----
 # _________________________________________________________________________________________________
 
 #' @title sparse.cor
@@ -3499,130 +3873,6 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
 
 
 # _________________________________________________________________________________________________
-#' @title plot.Metadata.Cor.Heatmap
-#' @description Plot a heatmap with Metadata correlation values.
-#' @param columns PARAM_DESCRIPTION, Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
-#' @param cormethod PARAM_DESCRIPTION, Default: c("pearson", "spearman")[1]
-#' @param main PARAM_DESCRIPTION, Default: paste("Metadata", cormethod, "correlations")
-#' @param obj Seurat object, Default: combined.obj
-#' @param w width of the plot, Default: 10
-#' @param h height of the plot, Default: w
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[ggcorrplot]{ggcorrplot}}
-#' @export plot.Metadata.Cor.Heatmap
-#' @importFrom ggcorrplot ggcorrplot
-plot.Metadata.Cor.Heatmap <- function(
-  columns = c( "nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
-  , cormethod = c('pearson', 'spearman')[1]
-  , main =paste( "Metadata", cormethod,"correlations")
-  , obj = combined.obj
-  , w = 10, h = w
-  , ...){
-
-  meta.data <- obj@meta.data
-  columns.found <- intersect(colnames(meta.data), columns)
-
-  corX <- cor(meta.data[ , columns.found], method = cormethod)
-  pl <- ggcorrplot::ggcorrplot(corX, hc.order = TRUE, title = main
-                               , type = "full", lab = T)
-  ggExpress::qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
-  pl
-}
-
-
-
-
-# _________________________________________________________________________________________________
-#' @title plot.Metadata.median.fraction.barplot
-#' @description Barplot Metadata median values
-#' @param columns PARAM_DESCRIPTION, Default: c("percent.mito", "percent.ribo")
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param group.by PARAM_DESCRIPTION, Default: GetClusteringRuns(obj = obj)[2]
-#' @param method PARAM_DESCRIPTION, Default: c("median", "mean")[1]
-#' @param min.thr PARAM_DESCRIPTION, Default: 2.5
-#' @param return.matrix PARAM_DESCRIPTION, Default: F
-#' @param main PARAM_DESCRIPTION, Default: paste(method, "read fractions per transcript class and cluster",
-#'    suffix)
-#' @param ylab PARAM_DESCRIPTION, Default: 'Fraction of transcriptome (%)'
-#' @param percentify PARAM_DESCRIPTION, Default: T
-#' @param subt PARAM_DESCRIPTION, Default: NULL
-#' @param position PARAM_DESCRIPTION, Default: position_stack()
-#' @param w width of the plot, Default: 10
-#' @param h height of the plot, Default: 6
-#' @param obj Seurat object, Default: combined.obj
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{summarise_all}}
-#'  \code{\link[reshape2]{melt}}
-#' @export plot.Metadata.median.fraction.barplot
-#' @importFrom dplyr summarize_all
-#' @importFrom reshape2 melt
-plot.Metadata.median.fraction.barplot <- function(
-  columns = c(  "percent.mito", "percent.ribo")
-  , suffix =  NULL
-  , group.by = GetClusteringRuns(obj = obj)[2]
-  , method = c('median', 'mean' )[1]
-  , min.thr = 2.5 # At least this many percent in at least 1 cluster
-  , return.matrix = F
-  , main = paste( method, "read fractions per transcript class and cluster", suffix)
-  , ylab = "Fraction of transcriptome (%)"
-  , percentify = T
-  , subt = NULL
-  , position = position_stack()
-  , w = 10, h = 6
-  , obj = combined.obj
-  , ...){
-
-  meta.data <- obj@meta.data
-  stopifnot(group.by %in% colnames(meta.data))
-  columns.found <- intersect(colnames(meta.data), c(group.by, columns) )
-
-  (mat.cluster.medians1 <- meta.data[ , columns.found] %>%
-      group_by_at(group.by) %>%
-      dplyr::summarize_all(median)
-  )
-  if (min.thr>0) {
-    pass.cols <- colMax(mat.cluster.medians1[,-1]) > (min.thr/100)
-    cols.OK <- which_names(pass.cols)
-    cols.FAIL <- which_names(!pass.cols)
-    subt = paste(length(cols.FAIL), "classed do not reach", min.thr, "% :", kpps(cols.FAIL))
-    iprint(subt)
-    mat.cluster.medians1 <- mat.cluster.medians1[ , c( group.by, cols.OK) ]
-  }
-
-
-  mat.cluster.medians <- mat.cluster.medians1 %>%
-    reshape2::melt(id.vars = c(group.by), value.name = "Fraction")
-
-
-  if (percentify)  mat.cluster.medians$'Fraction' = 100*mat.cluster.medians$'Fraction'
-
-  pl <- ggbarplot(mat.cluster.medians, x = group.by, y = 'Fraction', fill = 'variable'
-                  , position = position
-                  , title = main, subtitle = subt ,ylab = ylab)
-  ggExpress::qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
-  pl
-  if (return.matrix) mat.cluster.medians1 else pl
-}
-
-# plot.Metadata.median.fraction.barplot()
-
-
-
-# _________________________________________________________________________________________________
 #' @title plot.Gene.Cor.Heatmap
 #' @description Plot a gene correlation heatmap.
 #' @param genes Genes of iinterest, Default: WU.2017.139.IEGsf
@@ -3697,783 +3947,6 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 
 
 
-# _________________________________________________________________________________________________
-# plot.clust.size.distr
-#' @title plot.clust.size.distr
-#' @description Barplot of Histogram of cluster size distribution
-#' @param obj Seurat object, Default: combined.obj
-#' @param ident identity used, Default: GetClusteringRuns()[2]
-#' @param plot PARAM_DESCRIPTION, Default: T
-#' @param thr.hist PARAM_DESCRIPTION, Default: 30
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  plot.clust.size.distr()
-#'  }
-#' }
-#' @export plot.clust.size.distr
-#' @importFrom Stringendo percentage_formatter
-plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns()[2]
-                                  , plot = T, thr.hist = 30, ...) {
-  clust.size.distr <- table(obj@meta.data[,ident])
-  print(clust.size.distr)
-  resX <- gsub(pattern = ".*res\\.", replacement = '',x = ident)
-  ptitle <- ppp('clust.size.distr', ident)
-  psubtitle <- paste("Nr.clusters:", length(clust.size.distr)
-                     , "| median:", median(clust.size.distr)
-                     , "| CV:", Stringendo::percentage_formatter(cv(clust.size.distr))
-  )
-  xlb = "Cluster size (cells)"
-  xlim = c(0, max(clust.size.distr))
-
-  if (plot) {
-    if (length(clust.size.distr) < thr.hist) {
-      ggExpress::qbarplot(clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, ...)
-    } else {
-      ggExpress::qhistogram(vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, xlim = xlim, ...)
-    }
-  } else {    "return vector"
-    clust.size.distr
-  }
-
-}
-
-
-
-
-# _________________________________________________________________________________________________
-#' @title gene.expression.level.plots
-#' @description Histogram of gene expression levels.
-#' @param gene gene of interest, Default: 'TOP2A'
-#' @param obj Seurat object, Default: ls.Seurat[[1]]
-#' @param slot slot in the Seurat object. Default: c("counts", "data")[2]
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], slot = c('counts', 'data')[2]
-                                        , ... ) {
-  slot = 'data'
-  print(gene)
-  if (gene %in% rownames(obj)) {
-    GEX.Counts <- GetAssayData(object = obj, assay = 'RNA', slot = slot)
-
-    GEX.Counts.total <- rowSums(GEX.Counts)
-    genes.expression <- GEX.Counts.total[gene]
-    mean.expr <- iround(mean(GEX.Counts[gene,]))
-
-    suffx = if (slot == 'counts') 'raw' else 'normalised, logtransformed'
-    (pname = paste(gene, 'and the', suffx, 'transcript count distribution'))
-
-    ggExpress::qhistogram(GEX.Counts.total, vline = genes.expression, logX = T, w = 7, h = 4
-               , subtitle = paste('It belong to the top', pc_TRUE(GEX.Counts.total > genes.expression), 'of genes (black line). Mean expr:', mean.expr)
-               , plotname = pname, xlab = 'Total Transcripts in Dataset', ylab = 'Number of Genes'
-               , ...)
-  } else { print("     !!! Gene not found in object!")}
-}
-
-# _________________________________________________________________________________________________
-#' @title PrctCellExpringGene
-#' @description From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
-#' @param genes Genes of iinterest
-#' @param group.by PARAM_DESCRIPTION, Default: 'all'
-#' @param obj Seurat object, Default: combined.obj
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj){ # From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371
-  if(group.by == "all"){
-    prct = unlist(lapply(genes, ww.calc_helper, object = obj))
-    result = data.frame(Markers = genes, Cell_proportion = prct)
-    return(result)
-  }
-
-  else{
-    list = SplitObject(obj, group.by)
-    factors = names(list)
-    results = lapply(list, PrctCellExpringGene, genes = genes)
-    for (i in 1:length(factors)) {
-      results[[i]]$Feature = factors[i]
-    }
-    combined = do.call("rbind", results)
-    return(combined)
-  }
-}
-
-
-# _________________________________________________________________________________________________
-#' @title ww.calc_helper
-#' @description From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
-#' @param obj Seurat object
-#' @param genes Genes of iinterest
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371
-  counts = obj[['RNA']]@counts
-  ncells = ncol(counts)
-  if (genes %in% row.names(counts)) {
-    sum(counts[genes, ] > 0) / ncells
-  } else{
-    return(NA)
-  }
-}
-
-# _________________________________________________________________________________________________
-
-#' @title scBarplot.FractionAboveThr
-#' @description Barplot the fraction of cell above a threshold value (based on a meta.data column), in each cluster.
-#' @param thrX PARAM_DESCRIPTION, Default: 0
-#' @param value.col PARAM_DESCRIPTION, Default: 'percent.ribo'
-#' @param id.col PARAM_DESCRIPTION, Default: 'cl.names.top.gene.res.0.3'
-#' @param obj Seurat object, Default: combined.obj
-#' @param suffix Suffix for filename
-#' @param return.df PARAM_DESCRIPTION, Default: F
-#' @param label label barplot
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  scBarplot.FractionAboveThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0)
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
-#' @export
-#' @importFrom dplyr select group_by_
-scBarplot.FractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
-                                      , obj = combined.obj, return.df = F, label = F
-                                      , ...) { # Calculat the fraction of cells per cluster above a certain threhold
-  meta = obj@meta.data
-  (df_cells_above <- meta %>%
-      dplyr::select(c(id.col, value.col))  %>%
-      dplyr::group_by_(id.col)  %>%
-      summarize(n_cells = n(),
-                n_cells_above = sum(!!as.name(value.col) > thrX),
-                fr_n_cells_above = n_cells_above / n_cells)
-  )
-
-  # (v.fr_n_cells_above <- 100* as.named.vector(df_cells_above[3]))
-  df_2vec <- df_cells_above[,c(1,4)]
-  (v.fr_n_cells_above <- 100* deframe(df_2vec))
-  if (label == TRUE) lab =  percentage_formatter(deframe(df_2vec)) else lab = NULL
-
-  pname <- make.names(paste('Cells with', value.col, '>', thrX, id.col))
-  ggobj <- ggExpress::qbarplot(v.fr_n_cells_above, suffix = suffix
-                    , xlab = 'Clusters', ylab = '% Cells'
-                    , plotname = pname, label = lab
-                    , subtitle = id.col, xlab.angle = 45)
-  if (return.df) return(df_cells_above) else ggobj
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title scBarplot.FractionBelowThr
-#' @description Barplot the fraction of cell below a threshold value (based on a meta.data column), in each cluster.
-#' @param thrX PARAM_DESCRIPTION, Default: 0.01
-#' @param value.col PARAM_DESCRIPTION, Default: 'percent.ribo'
-#' @param id.col PARAM_DESCRIPTION, Default: 'cl.names.top.gene.res.0.3'
-#' @param obj Seurat object, Default: combined.obj
-#' @param return.df PARAM_DESCRIPTION, Default: F
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  scBarplot.FractionBelowThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0.01, return.df = T)
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
-#' @export
-#' @importFrom dplyr select group_by_
-scBarplot.FractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
-                                      , obj = combined.obj, return.df = F) { # Calculat the fraction of cells per cluster below a certain threhold
-  meta = obj@meta.data
-  (df_cells_below <- meta %>%
-      dplyr::select(c(id.col, value.col))  %>%
-      dplyr::group_by_(id.col)  %>%
-      summarize(n_cells = n(),
-                n_cells_below = sum(!!as.name(value.col) < thrX),
-                fr_n_cells_below = n_cells_below / n_cells) %>%
-      FirstCol2RowNames())
-
-  (v.fr_n_cells_below <- 100* as.named.vector(df_cells_below[3]))
-
-  pname <- make.names(paste('Cells with', value.col, '<', thrX, id.col))
-  ggobj <- ggExpress::qbarplot(v.fr_n_cells_below, xlab = 'Clusters', ylab = '% Cells'
-                    , plotname = pname
-                    , subtitle = id.col, xlab.angle = 45)
-  if (return.df) return(df_cells_below) else ggobj
-}
-
-
-
-# _________________________________________________________________________________________________
-# _________________________________________________________________________________________________
-
-
-
-
-# _________________________________________________________________________________________________
-# Read.Write.Save.Load.functions.R ______________________________ ----
-# _________________________________________________________________________________________________
-# source('~/GitHub/Packages/Seurat.utils/Functions/Read.Write.Save.Load.functions.R')
-# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Read.Write.Save.Load.functions.R"))
-
-"Multicore read / write (I/O) functions are https://github.com/vertesy/Seurat.multicore"
-"Single core read / write (I/O) functions are in https://github.com/vertesy/Seurat.utils/"
-
-
-# _________________________________________________________________________________________________
-#' @title Convert10Xfolders
-#' @description Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
-#' @param InputDir Input directory
-#' @param regex PARAM_DESCRIPTION, Default: F
-#' @param folderPattern PARAM_DESCRIPTION, Default: c("filtered_feature", "SoupX_decont")[1]
-#' @param min.cells PARAM_DESCRIPTION, Default: 5
-#' @param min.features PARAM_DESCRIPTION, Default: 200
-#' @param updateHGNC PARAM_DESCRIPTION, Default: T
-#' @param ShowStats PARAM_DESCRIPTION, Default: T
-#' @param writeCBCtable write out a list of cell barcodes (CBC) as tsv, Default: T
-#' @param depth Depth of scan (How many levels below InputDir). Def 2
-#' @param sample.barcoding Cell Ranger run with sample barcoding. The folder structure is different.
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  Convert10Xfolders(InputDir)
-#'  }
-#' }
-#' @export
-Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
-                               , regex = F, folderPattern = c("filtered_feature", "SoupX_decont")[1]
-                               , min.cells = 5, min.features = 200
-                               , updateHGNC = T, ShowStats = T
-                               , writeCBCtable = TRUE
-                               , sample.barcoding = F
-                               , depth = 2) {
-
-  if (sample.barcoding) depth = 3
-
-  finOrig <- list.dirs.depth.n(InputDir, depth = depth)
-  fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
-
-  iprint(length(fin), "samples found.")
-
-  if (sample.barcoding) {
-    samples <- basename(list.dirs(InputDir, recursive = F))
-    iprint("Samples:", samples)
-  }
-
-  if (length(fin)) {
-    for (i in 1:length(fin)) { print(i)
-      pathIN = fin[i]; print(pathIN)
-
-      # sample.barcoding --- --- ---
-      fnameIN = if (sample.barcoding) {
-        samples[i]
-      } else {
-        strsplit(basename(dirname(pathIN)),split = "_")[[1]][1]
-      }
-
-      print(fnameIN)
-
-      count_matrix <- Read10X(pathIN)
-      if ( !is.list(count_matrix) | length(count_matrix) == 1) {
-        seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
-                                  min.cells = min.cells, min.features = min.features)
-      } else if (is.list(count_matrix) & length(count_matrix) == 2)  {
-        seu <- CreateSeuratObject(counts = count_matrix[[1]], project = fnameIN,
-                                  min.cells = min.cells, min.features = min.features)
-
-        # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
-        LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
-        LSBnameOUT = ppp(paste0(InputDir, '/LSB.', fnameIN),"Rds")
-        saveRDS(LSB, file = LSBnameOUT)
-      } else {
-        print('More than 2 elements in the list of matrices')
-      }
-
-
-      ncells = ncol(seu)
-      fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features, 'cells', ncells, "Rds")
-      print(fnameOUT)
-
-
-      # update --- --- ---
-      if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
-      saveRDS(seu, file = fnameOUT)
-
-      # write cellIDs ---  --- ---
-      if (writeCBCtable) {
-        fnameCBC <- ppp(fnameOUT, "CBC.tsv")
-        CBCs <- t(t(colnames(seu)))
-        write.simple.tsv(CBCs, ManualName = fnameCBC)
-
-      }
-
-    }
-  } else { iprint("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3]) }
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title Convert10Xfolders.old
-#' @description Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
-#' @param InputDir Input directory
-#' @param folderPattern PARAM_DESCRIPTION, Default: c("filtered", "SoupX_decont")[1]
-#' @param min.cells PARAM_DESCRIPTION, Default: 10
-#' @param min.features PARAM_DESCRIPTION, Default: 200
-#' @param updateHGNC PARAM_DESCRIPTION, Default: T
-#' @param ShowStats PARAM_DESCRIPTION, Default: T
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  Convert10Xfolders(InputDir = InputDir)
-#'  }
-#' }
-#' @export
-Convert10Xfolders.old <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
-                                  , folderPattern = c("filtered", "SoupX_decont")[1]
-                                  , min.cells = 10, min.features = 200, updateHGNC = T, ShowStats = T) {
-  fin <- list.dirs(InputDir, recursive = F)
-  fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = F)
-
-  for (i in 1:length(fin)) {
-    pathIN = fin[i]; print(pathIN)
-    fnameIN = basename(fin[i])
-    fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
-    count_matrix <- Read10X(pathIN)
-
-    if ( !is.list(count_matrix) | length(count_matrix) == 1) {
-      seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
-                                min.cells = min.cells, min.features = min.features)
-    } else if (is.list(count_matrix) & length(count_matrix) == 2)  {
-      seu <- CreateSeuratObject(counts = count_matrix[[1]], project = fnameIN,
-                                min.cells = min.cells, min.features = min.features)
-
-      # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
-      LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
-      LSBnameOUT = ppp(paste0(InputDir, '/LSB.', fnameIN),"Rds")
-      saveRDS(LSB, file = LSBnameOUT)
-    } else {
-      print('More than 2 elements in the list of matrices')
-    }
-    # update --- --- --- ---
-    if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
-    saveRDS(seu, file = fnameOUT)
-  }
-}
-
-
-# _________________________________________________________________________________________________
-#' @title ConvertDropSeqfolders
-#' @description Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
-#' @param InputDir Input directory
-#' @param folderPattern PARAM_DESCRIPTION, Default: 'SRR*'
-#' @param filePattern PARAM_DESCRIPTION, Default: 'expression.tsv.gz'
-#' @param useVroom PARAM_DESCRIPTION, Default: T
-#' @param col_types.vroom PARAM_DESCRIPTION, Default: list(GENE = "c", .default = "d")
-#' @param min.cells PARAM_DESCRIPTION, Default: 10
-#' @param min.features PARAM_DESCRIPTION, Default: 200
-#' @param updateHGNC PARAM_DESCRIPTION, Default: T
-#' @param ShowStats PARAM_DESCRIPTION, Default: T
-#' @param minDimension PARAM_DESCRIPTION, Default: 10
-#' @param overwrite PARAM_DESCRIPTION, Default: FALSE
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  ConvertDropSeqfolders(InputDir)
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[vroom]{vroom}}
-#'  \code{\link[readr]{read_delim}}
-#' @export
-#' @importFrom vroom vroom
-#' @importFrom readr read_tsv
-ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
-                                  , folderPattern = "SRR*", filePattern = "expression.tsv.gz"
-                                  , useVroom = T, col_types.vroom = list("GENE" = "c", .default = "d")
-                                  , min.cells = 10, min.features = 200, updateHGNC = T, ShowStats = T, minDimension = 10, overwrite = FALSE) {
-  InputDir <- FixPath(InputDir)
-  fin <- list.dirs(InputDir, recursive = F)
-  fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = F)
-
-  for (i in 1:length(fin)) { print(i)
-    pathIN <- FixPath(fin[i]); print(pathIN)
-    fnameIN <- basename(fin[i])
-    subdir <- paste0(InputDir, fnameIN)
-    fnameOUT <- ppp(subdir, 'min.cells', min.cells, 'min.features', min.features,"Rds"); print(fnameOUT)
-    if (!overwrite) {
-      OutFile <- list.files(InputDir, pattern = basename(fnameOUT), recursive = T)
-      if (length(OutFile) > 0) {
-        if (grepl(pattern = ".Rds$", OutFile, perl = T)) {
-          iprint("      RDS OBJECT ALREADY EXISTS.");
-          next
-        }
-      } # if length
-    }
-    CountTable <- list.files(subdir, pattern = filePattern,recursive = F)
-    stopifnot(length(CountTable) == 1 )
-    count_matrix <- if (useVroom) {
-      vroom::vroom(file = kpps(subdir, CountTable), col_types = col_types.vroom)
-    } else {
-      readr::read_tsv(file = kpps(subdir, CountTable))
-    }
-
-    if (nrow(count_matrix) < minDimension | ncol(count_matrix) < minDimension ) {
-      iprint(""); iprint("      EXPRESSION MATRIX TOO SMALL.", nrow(count_matrix), "x", ncol(count_matrix),". Not processed.");
-    } else {
-      count_matrix <- FirstCol2RowNames(count_matrix)[,-1] # remove 1st "Cell column" # https://github.com/vertesy/SEO/issues/63
-      seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
-                                min.cells = min.cells, min.features = min.features)
-      if (ncol(seu) < 1000) print("Only", ncol(seu), "cells survived filtering in the Seurat obj!")
-      if (nrow(seu) < 1000) print("Only", nrow(seu), "genes found in the Seurat obj!")
-
-      # update HGNC --- --- --- --- ---
-      Sys.setenv('R_MAX_VSIZE' = 32000000000)
-      if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
-      saveRDS(seu, file = fnameOUT)
-    }
-  }
-}
-
-
-# _________________________________________________________________________________________________
-#' @title LoadAllSeurats
-#' @description Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases). #
-#' @param InputDir Input directory
-#' @param file.pattern PARAM_DESCRIPTION, Default: '^filtered.+Rds$'
-#' @param string.remove1 PARAM_DESCRIPTION, Default: c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[2]
-#' @param string.remove2 PARAM_DESCRIPTION, Default: c(F, ".min.cells.10.min.features.200.Rds")[2]
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  ls.Seurat <- LoadAllSeurats(InputDir)
-#'  }
-#' }
-#' @export
-#' @importFrom tictoc tic toc
-LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
-                           , file.pattern = "^filtered.+Rds$"
-                           , string.remove1 = c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix." )[2]
-                           , string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]) {
-  tictoc::tic()
-  InputDir <- AddTrailingSlash(InputDir) # add '/' if necessary
-
-  fin.orig <- list.files(InputDir, include.dirs = F, pattern = file.pattern)
-  print(fin.orig)
-  fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = "") else fin.orig
-  fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = "") else fin
-
-  ls.Seu <- list.fromNames(fin)
-  for (i in 1:length(fin)) {print(fin[i]); ls.Seu[[i]] <- readRDS(paste0(InputDir, fin.orig[i]))}
-  print(tictoc::toc())
-  return(ls.Seu)
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title read10x
-#' @description read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv #
-#' @param dir PARAM_DESCRIPTION
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[tictoc]{tic}}
-#'  \code{\link[R.utils]{compressFile}}
-#'  \code{\link[Seurat]{Read10X}}
-#' @export
-#' @importFrom tictoc tic toc
-#' @importFrom R.utils gunzip gzip
-#' @importFrom Seurat Read10X
-read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv
-  tictoc::tic()
-  names <- c("barcodes.tsv", "features.tsv", "matrix.mtx")
-  for (i in 1:length(names)) {
-    R.utils::gunzip(paste0(dir, "/", names[i], ".gz"))
-  }
-  file.copy(paste0(dir, "/features.tsv"), paste0(dir, "/genes.tsv"))
-  mat <- Seurat::Read10X(dir)
-  file.remove(paste0(dir, "/genes.tsv"))
-  for (i in 1:length(names)) {
-    R.utils::gzip(paste0(dir, "/", names[i]))
-  }
-  tictoc::toc()
-  mat
-}
-
-
-
-
-#' @title load10Xv3
-#' @description Load 10X output folders.
-#' @param dataDir PARAM_DESCRIPTION
-#' @param cellIDs PARAM_DESCRIPTION, Default: NULL
-#' @param channelName PARAM_DESCRIPTION, Default: NULL
-#' @param readArgs PARAM_DESCRIPTION, Default: list()
-#' @param includeFeatures PARAM_DESCRIPTION, Default: c("Gene Expression")
-#' @param verbose PARAM_DESCRIPTION, Default: TRUE
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[SoupX]{SoupChannel}}
-#' @export
-#' @importFrom SoupX SoupChannel
-load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
-                      includeFeatures = c("Gene Expression"), verbose = TRUE,
-                      ...)
-{
-
-  # include
-  dirz <- list.dirs(dataDir, full.names = F, recursive = F)
-  path.raw <- file.path(dataDir, grep(x = dirz, pattern = "^raw_*", value = T))
-  path.filt <- file.path(dataDir, grep(x = dirz, pattern = "^filt_*", value = T))
-  CR.matrices <- list.fromNames(c("raw", "filt"))
-
-
-  (isV3 = any(grepl(x = dirz, pattern = "^raw_feature_bc*")))
-  tgt = path.raw
-
-  if (!isV3)
-    tgt = file.path(tgt, list.files(tgt))
-  if (verbose)
-    message(sprintf("Loading raw count data"))
-  dat = do.call(Read10X, c(list(data.dir = tgt), readArgs))
-  if (verbose)
-    message(sprintf("Loading cell-only count data"))
-  if (!is.null(cellIDs)) {
-    if (all(grepl("\\-1$", cellIDs)))
-      cellIDs = gsub("\\-1$", "", cellIDs)
-    if (!all(cellIDs %in% colnames(dat)))
-      stop("Not all supplied cellIDs found in raw data.")
-    datCells = dat[, match(cellIDs, colnames(dat))]
-  }
-  else {
-    tgt = path.filt
-    if (!isV3)
-      tgt = file.path(tgt, list.files(tgt))
-    datCells = do.call(Read10X, c(list(data.dir = tgt),
-                                  readArgs))
-    if (is.list(dat)) {
-      dat = do.call(rbind, dat[includeFeatures])
-      datCells = do.call(rbind, datCells[includeFeatures])
-    }
-  }
-  if (verbose)
-    message(sprintf("Loading extra analysis data where available"))
-  mDat = NULL
-  tgt = file.path(dataDir, "analysis", "clustering", "graphclust",
-                  "clusters.csv")
-  if (file.exists(tgt)) {
-    clusters = read.csv(tgt)
-    mDat = data.frame(clusters = clusters$Cluster, row.names = clusters$Barcode)
-  }
-  tgt = file.path(dataDir, "analysis", "clustering", "kmeans_10_clusters",
-                  "clusters.csv")
-  if (file.exists(tgt)) {
-    clusters = read.csv(tgt)
-    mDat$clustersFine = clusters$Cluster
-  }
-  tgt = file.path(dataDir, "analysis", "tsne", "2_components",
-                  "projection.csv")
-  if (file.exists(tgt)) {
-    tsne = read.csv(tgt)
-    if (is.null(mDat)) {
-      mDat = data.frame(tSNE1 = tsne$TSNE.1, tSNE2 = tsne$TSNE.2,
-                        row.names = tsne$Barcode)
-    }
-    else {
-      mDat$tSNE1 = tsne$TSNE.1[match(rownames(mDat), tsne$Barcode)]
-      mDat$tSNE2 = tsne$TSNE.2[match(rownames(mDat), tsne$Barcode)]
-    }
-    DR = c("tSNE1", "tSNE2")
-  }
-  else {
-    DR = NULL
-  }
-  if (!is.null(mDat) && any(rownames(mDat) != colnames(datCells))) {
-    rownames(mDat) = gsub("-1$", "", rownames(mDat))
-    if (any(rownames(mDat) != colnames(datCells)))
-      stop("Error matching meta-data to cell names.")
-  }
-  if (is.null(channelName))
-    channelName = ifelse(is.null(names(dataDir)), dataDir,
-                         names(dataDir))
-  channel = SoupX::SoupChannel(tod = dat, toc = datCells, metaData = mDat,
-                               channelName = channelName, dataDir = dataDir, dataType = "10X",
-                               isV3 = isV3, DR = DR, ...)
-  return(channel)
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title saveRDS.compress.in.BG
-#' @description Save and RDS object and compress resulting file in the background using system(gzip). OS X or unix.
-#' @param obj Seurat object.
-#' @param compr PARAM_DESCRIPTION, Default: FALSE
-#' @param fname File name
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[tictoc]{tic}}
-#' @export
-#' @importFrom tictoc tic toc
-saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
-  try(tictoc::tic(), silent = T)
-  saveRDS(object = obj, compress = compr, file = fname)
-  try(tictoc::toc(), silent = T)
-  print(paste("Saved, being compressed", fname))
-  system(command = paste0("gzip '", fname,"'"),  wait = FALSE) # execute in the background
-  try(say(), silent = T)
-}
-
-
-
-
-# _________________________________________________________________________________________________
-# Save an object
-#' @title isave.RDS
-#' @description Save and RDS object.
-#' @param obj Seurat object
-#' @param project project code appended to the saved file name. Default: try(basename(rstudioapi::getActiveProject()), silent=T) using  getProject().
-#' @param prefix PARAM_DESCRIPTION, Default: NULL
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param inOutDir PARAM_DESCRIPTION, Default: F
-#' @param alternative_path_rdata PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
-#' @param homepath homepath to replace '~', Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
-#' @param showMemObject PARAM_DESCRIPTION, Default: T
-#' @param saveParams PARAM_DESCRIPTION, Default: T
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  isave.RDS(my.R.object)
-#'  }
-#' }
-#' @export
-
-isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = F
-                      , project = getProject()
-                      , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
-                      , homepath = '/Users/abel.vertesy/'
-                      , showMemObject = T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
-  path_rdata = if (inOutDir) OutDir else alternative_path_rdata
-  dir.create(path_rdata)
-
-  if (showMemObject) { try(memory.biggest.objects(), silent = T) }
-  if ( "seurat" %in% is(obj) & saveParams) {
-    try(obj@misc$p <- p, silent = T)
-    try(obj@misc$all.genes  <- all.genes, silent = T)
-  }
-  fnameBase = kppu(prefix, substitute(obj), project, suffix, idate(Format = "%Y.%m.%d_%H.%M"))
-  fnameBase = trimws(fnameBase, whitespace = '_')
-  FNN <- paste0(path_rdata, fnameBase , ".Rds")
-  FNN <- gsub(pattern = '~/', replacement = homepath, x = FNN)
-  print(FNN)
-  saveRDS.compress.in.BG(obj = obj, fname =  FNN)
-}
-
-
-
-
-# _________________________________________________________________________________________________
-# Save workspace
-# requires MarkdownReports (github) and defining OutDir
-# requires github/vertesy/CodeAndRoll.r
-
-#' @title isave.image
-#' @description Save and RData image.
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @param path_rdata PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))
-#' @param showMemObject PARAM_DESCRIPTION, Default: T
-#' @param options PARAM_DESCRIPTION, Default: c("--force", NULL)[1]
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[Stringendo]{kollapse}}, \code{\link[MarkdownReports]{iprint}}
-#' @export
-#' @importFrom Stringendo kollapse iprint
-isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))
-                        , showMemObject = T, options = c("--force", NULL)[1]
-){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
-
-  dir.create(path_rdata)
-
-  if (showMemObject) { try(memory.biggest.objects(), silent = T) }
-  fname = Stringendo::kollapse(path_rdata, "/",idate(),...,".Rdata")
-  print(fname)
-  if (nchar(fname) > 2000) stop()
-  save.image(file = fname, compress = F)
-  iprint("Saved, being compressed", fname)
-  system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
-}
-
-
-# _________________________________________________________________________________________________
-# Save workspace
-# requires MarkdownReports (github) and defining OutDir
-# requires github/vertesy/CodeAndRoll.r
-
-#' @title qsave.image
-#' @description Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression. #
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @param showMemObject PARAM_DESCRIPTION, Default: T
-#' @param options PARAM_DESCRIPTION, Default: c("--force", NULL)[1]
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @seealso
-#'  \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
-#' @export
-#' @importFrom Stringendo kollapse iprint
-#' @importFrom tictoc tic toc
-qsave.image <- function(..., showMemObject = T, options = c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
-  fname = Stringendo::kollapse(getwd(), "/",basename(OutDir),idate(),...,".Rdata")
-  print(fname)
-  if (nchar(fname) > 2000) stop()
-  tictoc::tic()
-  save.image(file = fname, compress = F)
-  iprint("Saved, being compressed", fname)
-  system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
-  cat(toc)
-}
-
 
 
 # _________________________________________________________________________________________________
@@ -4481,34 +3954,6 @@ qsave.image <- function(..., showMemObject = T, options = c("--force", NULL)[1])
 # _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/Seurat.object.manipulations.etc.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Seurat.object.manipulations.etc.R"))
-
-# _________________________________________________________________________________________________
-#' @title clip10Xcellname
-#' @description Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration). #
-#' @param cellnames PARAM_DESCRIPTION
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-clip10Xcellname <- function(cellnames) stringr::str_split_fixed(cellnames, "_", n = 2)[,1] # Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration).
-
-# _________________________________________________________________________________________________
-#' @title make10Xcellname
-#' @description Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1". #
-#' @param cellnames PARAM_DESCRIPTION
-#' @param suffix A suffix added to the filename, Default: '_1'
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-make10Xcellname <- function(cellnames, suffix="_1") paste0(cellnames, suffix) # Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1".
-
 
 # _________________________________________________________________________________________________
 #' @title seu.Make.Cl.Label.per.cell
@@ -5067,6 +4512,578 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
 
 
 
+# _________________________________________________________________________________________________
+# Read.Write.Save.Load.functions.R ______________________________ ----
+# _________________________________________________________________________________________________
+# source('~/GitHub/Packages/Seurat.utils/Functions/Read.Write.Save.Load.functions.R')
+# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Read.Write.Save.Load.functions.R"))
+
+"Multicore read / write (I/O) functions are https://github.com/vertesy/Seurat.multicore"
+"Single core read / write (I/O) functions are in https://github.com/vertesy/Seurat.utils/"
+
+
+# _________________________________________________________________________________________________
+#' @title Convert10Xfolders
+#' @description Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
+#' @param InputDir Input directory
+#' @param regex PARAM_DESCRIPTION, Default: F
+#' @param folderPattern PARAM_DESCRIPTION, Default: c("filtered_feature", "SoupX_decont")[1]
+#' @param min.cells PARAM_DESCRIPTION, Default: 5
+#' @param min.features PARAM_DESCRIPTION, Default: 200
+#' @param updateHGNC PARAM_DESCRIPTION, Default: T
+#' @param ShowStats PARAM_DESCRIPTION, Default: T
+#' @param writeCBCtable write out a list of cell barcodes (CBC) as tsv, Default: T
+#' @param depth Depth of scan (How many levels below InputDir). Def 2
+#' @param sample.barcoding Cell Ranger run with sample barcoding. The folder structure is different.
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  Convert10Xfolders(InputDir)
+#'  }
+#' }
+#' @export
+Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
+                              , regex = F, folderPattern = c("filtered_feature", "SoupX_decont")[1]
+                              , min.cells = 5, min.features = 200
+                              , updateHGNC = T, ShowStats = T
+                              , writeCBCtable = TRUE
+                              , sample.barcoding = F
+                              , depth = 2) {
+
+  if (sample.barcoding) depth = 3
+
+  finOrig <- list.dirs.depth.n(InputDir, depth = depth)
+  fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
+
+  iprint(length(fin), "samples found.")
+
+  if (sample.barcoding) {
+    samples <- basename(list.dirs(InputDir, recursive = F))
+    iprint("Samples:", samples)
+  }
+
+  if (length(fin)) {
+    for (i in 1:length(fin)) { print(i)
+      pathIN = fin[i]; print(pathIN)
+
+      # sample.barcoding --- --- ---
+      fnameIN = if (sample.barcoding) {
+        samples[i]
+      } else {
+        strsplit(basename(dirname(pathIN)),split = "_")[[1]][1]
+      }
+
+      print(fnameIN)
+
+      count_matrix <- Read10X(pathIN)
+      if ( !is.list(count_matrix) | length(count_matrix) == 1) {
+        seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
+                                  min.cells = min.cells, min.features = min.features)
+      } else if (is.list(count_matrix) & length(count_matrix) == 2)  {
+        seu <- CreateSeuratObject(counts = count_matrix[[1]], project = fnameIN,
+                                  min.cells = min.cells, min.features = min.features)
+
+        # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
+        LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
+        LSBnameOUT = ppp(paste0(InputDir, '/LSB.', fnameIN),"Rds")
+        saveRDS(LSB, file = LSBnameOUT)
+      } else {
+        print('More than 2 elements in the list of matrices')
+      }
+
+
+      ncells = ncol(seu)
+      fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features, 'cells', ncells, "Rds")
+      print(fnameOUT)
+
+
+      # update --- --- ---
+      if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
+      saveRDS(seu, file = fnameOUT)
+
+      # write cellIDs ---  --- ---
+      if (writeCBCtable) {
+        fnameCBC <- ppp(fnameOUT, "CBC.tsv")
+        CBCs <- t(t(colnames(seu)))
+        write.simple.tsv(CBCs, ManualName = fnameCBC)
+
+      }
+
+    }
+  } else { iprint("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3]) }
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title Convert10Xfolders.old
+#' @description Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
+#' @param InputDir Input directory
+#' @param folderPattern PARAM_DESCRIPTION, Default: c("filtered", "SoupX_decont")[1]
+#' @param min.cells PARAM_DESCRIPTION, Default: 10
+#' @param min.features PARAM_DESCRIPTION, Default: 200
+#' @param updateHGNC PARAM_DESCRIPTION, Default: T
+#' @param ShowStats PARAM_DESCRIPTION, Default: T
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  Convert10Xfolders(InputDir = InputDir)
+#'  }
+#' }
+#' @export
+Convert10Xfolders.old <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
+                                  , folderPattern = c("filtered", "SoupX_decont")[1]
+                                  , min.cells = 10, min.features = 200, updateHGNC = T, ShowStats = T) {
+  fin <- list.dirs(InputDir, recursive = F)
+  fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = F)
+
+  for (i in 1:length(fin)) {
+    pathIN = fin[i]; print(pathIN)
+    fnameIN = basename(fin[i])
+    fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
+    count_matrix <- Read10X(pathIN)
+
+    if ( !is.list(count_matrix) | length(count_matrix) == 1) {
+      seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
+                                min.cells = min.cells, min.features = min.features)
+    } else if (is.list(count_matrix) & length(count_matrix) == 2)  {
+      seu <- CreateSeuratObject(counts = count_matrix[[1]], project = fnameIN,
+                                min.cells = min.cells, min.features = min.features)
+
+      # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
+      LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
+      LSBnameOUT = ppp(paste0(InputDir, '/LSB.', fnameIN),"Rds")
+      saveRDS(LSB, file = LSBnameOUT)
+    } else {
+      print('More than 2 elements in the list of matrices')
+    }
+    # update --- --- --- ---
+    if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
+    saveRDS(seu, file = fnameOUT)
+  }
+}
+
+
+# _________________________________________________________________________________________________
+#' @title ConvertDropSeqfolders
+#' @description Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
+#' @param InputDir Input directory
+#' @param folderPattern PARAM_DESCRIPTION, Default: 'SRR*'
+#' @param filePattern PARAM_DESCRIPTION, Default: 'expression.tsv.gz'
+#' @param useVroom PARAM_DESCRIPTION, Default: T
+#' @param col_types.vroom PARAM_DESCRIPTION, Default: list(GENE = "c", .default = "d")
+#' @param min.cells PARAM_DESCRIPTION, Default: 10
+#' @param min.features PARAM_DESCRIPTION, Default: 200
+#' @param updateHGNC PARAM_DESCRIPTION, Default: T
+#' @param ShowStats PARAM_DESCRIPTION, Default: T
+#' @param minDimension PARAM_DESCRIPTION, Default: 10
+#' @param overwrite PARAM_DESCRIPTION, Default: FALSE
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  ConvertDropSeqfolders(InputDir)
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[vroom]{vroom}}
+#'  \code{\link[readr]{read_delim}}
+#' @export
+#' @importFrom vroom vroom
+#' @importFrom readr read_tsv
+ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
+                                  , folderPattern = "SRR*", filePattern = "expression.tsv.gz"
+                                  , useVroom = T, col_types.vroom = list("GENE" = "c", .default = "d")
+                                  , min.cells = 10, min.features = 200, updateHGNC = T, ShowStats = T, minDimension = 10, overwrite = FALSE) {
+  InputDir <- FixPath(InputDir)
+  fin <- list.dirs(InputDir, recursive = F)
+  fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = F)
+
+  for (i in 1:length(fin)) { print(i)
+    pathIN <- FixPath(fin[i]); print(pathIN)
+    fnameIN <- basename(fin[i])
+    subdir <- paste0(InputDir, fnameIN)
+    fnameOUT <- ppp(subdir, 'min.cells', min.cells, 'min.features', min.features,"Rds"); print(fnameOUT)
+    if (!overwrite) {
+      OutFile <- list.files(InputDir, pattern = basename(fnameOUT), recursive = T)
+      if (length(OutFile) > 0) {
+        if (grepl(pattern = ".Rds$", OutFile, perl = T)) {
+          iprint("      RDS OBJECT ALREADY EXISTS.");
+          next
+        }
+      } # if length
+    }
+    CountTable <- list.files(subdir, pattern = filePattern,recursive = F)
+    stopifnot(length(CountTable) == 1 )
+    count_matrix <- if (useVroom) {
+      vroom::vroom(file = kpps(subdir, CountTable), col_types = col_types.vroom)
+    } else {
+      readr::read_tsv(file = kpps(subdir, CountTable))
+    }
+
+    if (nrow(count_matrix) < minDimension | ncol(count_matrix) < minDimension ) {
+      iprint(""); iprint("      EXPRESSION MATRIX TOO SMALL.", nrow(count_matrix), "x", ncol(count_matrix),". Not processed.");
+    } else {
+      count_matrix <- FirstCol2RowNames(count_matrix)[,-1] # remove 1st "Cell column" # https://github.com/vertesy/SEO/issues/63
+      seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
+                                min.cells = min.cells, min.features = min.features)
+      if (ncol(seu) < 1000) print("Only", ncol(seu), "cells survived filtering in the Seurat obj!")
+      if (nrow(seu) < 1000) print("Only", nrow(seu), "genes found in the Seurat obj!")
+
+      # update HGNC --- --- --- --- ---
+      Sys.setenv('R_MAX_VSIZE' = 32000000000)
+      if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
+      saveRDS(seu, file = fnameOUT)
+    }
+  }
+}
+
+
+# _________________________________________________________________________________________________
+#' @title LoadAllSeurats
+#' @description Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases). #
+#' @param InputDir Input directory
+#' @param file.pattern PARAM_DESCRIPTION, Default: '^filtered.+Rds$'
+#' @param string.remove1 PARAM_DESCRIPTION, Default: c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[2]
+#' @param string.remove2 PARAM_DESCRIPTION, Default: c(F, ".min.cells.10.min.features.200.Rds")[2]
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  ls.Seurat <- LoadAllSeurats(InputDir)
+#'  }
+#' }
+#' @export
+#' @importFrom tictoc tic toc
+LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
+                           , file.pattern = "^filtered.+Rds$"
+                           , string.remove1 = c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix." )[2]
+                           , string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]) {
+  tictoc::tic()
+  InputDir <- AddTrailingSlash(InputDir) # add '/' if necessary
+
+  fin.orig <- list.files(InputDir, include.dirs = F, pattern = file.pattern)
+  print(fin.orig)
+  fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = "") else fin.orig
+  fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = "") else fin
+
+  ls.Seu <- list.fromNames(fin)
+  for (i in 1:length(fin)) {print(fin[i]); ls.Seu[[i]] <- readRDS(paste0(InputDir, fin.orig[i]))}
+  print(tictoc::toc())
+  return(ls.Seu)
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title read10x
+#' @description read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv #
+#' @param dir PARAM_DESCRIPTION
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[tictoc]{tic}}
+#'  \code{\link[R.utils]{compressFile}}
+#'  \code{\link[Seurat]{Read10X}}
+#' @export
+#' @importFrom tictoc tic toc
+#' @importFrom R.utils gunzip gzip
+#' @importFrom Seurat Read10X
+read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv
+  tictoc::tic()
+  names <- c("barcodes.tsv", "features.tsv", "matrix.mtx")
+  for (i in 1:length(names)) {
+    R.utils::gunzip(paste0(dir, "/", names[i], ".gz"))
+  }
+  file.copy(paste0(dir, "/features.tsv"), paste0(dir, "/genes.tsv"))
+  mat <- Seurat::Read10X(dir)
+  file.remove(paste0(dir, "/genes.tsv"))
+  for (i in 1:length(names)) {
+    R.utils::gzip(paste0(dir, "/", names[i]))
+  }
+  tictoc::toc()
+  mat
+}
+
+
+
+
+#' @title load10Xv3
+#' @description Load 10X output folders.
+#' @param dataDir PARAM_DESCRIPTION
+#' @param cellIDs PARAM_DESCRIPTION, Default: NULL
+#' @param channelName PARAM_DESCRIPTION, Default: NULL
+#' @param readArgs PARAM_DESCRIPTION, Default: list()
+#' @param includeFeatures PARAM_DESCRIPTION, Default: c("Gene Expression")
+#' @param verbose PARAM_DESCRIPTION, Default: TRUE
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[SoupX]{SoupChannel}}
+#' @export
+#' @importFrom SoupX SoupChannel
+load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
+                      includeFeatures = c("Gene Expression"), verbose = TRUE,
+                      ...)
+{
+
+  # include
+  dirz <- list.dirs(dataDir, full.names = F, recursive = F)
+  path.raw <- file.path(dataDir, grep(x = dirz, pattern = "^raw_*", value = T))
+  path.filt <- file.path(dataDir, grep(x = dirz, pattern = "^filt_*", value = T))
+  CR.matrices <- list.fromNames(c("raw", "filt"))
+
+
+  (isV3 = any(grepl(x = dirz, pattern = "^raw_feature_bc*")))
+  tgt = path.raw
+
+  if (!isV3)
+    tgt = file.path(tgt, list.files(tgt))
+  if (verbose)
+    message(sprintf("Loading raw count data"))
+  dat = do.call(Read10X, c(list(data.dir = tgt), readArgs))
+  if (verbose)
+    message(sprintf("Loading cell-only count data"))
+  if (!is.null(cellIDs)) {
+    if (all(grepl("\\-1$", cellIDs)))
+      cellIDs = gsub("\\-1$", "", cellIDs)
+    if (!all(cellIDs %in% colnames(dat)))
+      stop("Not all supplied cellIDs found in raw data.")
+    datCells = dat[, match(cellIDs, colnames(dat))]
+  }
+  else {
+    tgt = path.filt
+    if (!isV3)
+      tgt = file.path(tgt, list.files(tgt))
+    datCells = do.call(Read10X, c(list(data.dir = tgt),
+                                  readArgs))
+    if (is.list(dat)) {
+      dat = do.call(rbind, dat[includeFeatures])
+      datCells = do.call(rbind, datCells[includeFeatures])
+    }
+  }
+  if (verbose)
+    message(sprintf("Loading extra analysis data where available"))
+  mDat = NULL
+  tgt = file.path(dataDir, "analysis", "clustering", "graphclust",
+                  "clusters.csv")
+  if (file.exists(tgt)) {
+    clusters = read.csv(tgt)
+    mDat = data.frame(clusters = clusters$Cluster, row.names = clusters$Barcode)
+  }
+  tgt = file.path(dataDir, "analysis", "clustering", "kmeans_10_clusters",
+                  "clusters.csv")
+  if (file.exists(tgt)) {
+    clusters = read.csv(tgt)
+    mDat$clustersFine = clusters$Cluster
+  }
+  tgt = file.path(dataDir, "analysis", "tsne", "2_components",
+                  "projection.csv")
+  if (file.exists(tgt)) {
+    tsne = read.csv(tgt)
+    if (is.null(mDat)) {
+      mDat = data.frame(tSNE1 = tsne$TSNE.1, tSNE2 = tsne$TSNE.2,
+                        row.names = tsne$Barcode)
+    }
+    else {
+      mDat$tSNE1 = tsne$TSNE.1[match(rownames(mDat), tsne$Barcode)]
+      mDat$tSNE2 = tsne$TSNE.2[match(rownames(mDat), tsne$Barcode)]
+    }
+    DR = c("tSNE1", "tSNE2")
+  }
+  else {
+    DR = NULL
+  }
+  if (!is.null(mDat) && any(rownames(mDat) != colnames(datCells))) {
+    rownames(mDat) = gsub("-1$", "", rownames(mDat))
+    if (any(rownames(mDat) != colnames(datCells)))
+      stop("Error matching meta-data to cell names.")
+  }
+  if (is.null(channelName))
+    channelName = ifelse(is.null(names(dataDir)), dataDir,
+                         names(dataDir))
+  channel = SoupX::SoupChannel(tod = dat, toc = datCells, metaData = mDat,
+                               channelName = channelName, dataDir = dataDir, dataType = "10X",
+                               isV3 = isV3, DR = DR, ...)
+  return(channel)
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title saveRDS.compress.in.BG
+#' @description Save and RDS object and compress resulting file in the background using system(gzip). OS X or unix.
+#' @param obj Seurat object.
+#' @param compr PARAM_DESCRIPTION, Default: FALSE
+#' @param fname File name
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[tictoc]{tic}}
+#' @export
+#' @importFrom tictoc tic toc
+saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
+  try(tictoc::tic(), silent = T)
+  saveRDS(object = obj, compress = compr, file = fname)
+  try(tictoc::toc(), silent = T)
+  print(paste("Saved, being compressed", fname))
+  system(command = paste0("gzip '", fname,"'"),  wait = FALSE) # execute in the background
+  try(say(), silent = T)
+}
+
+
+
+
+# _________________________________________________________________________________________________
+# Save an object
+#' @title isave.RDS
+#' @description Save and RDS object.
+#' @param obj Seurat object
+#' @param project project code appended to the saved file name. Default: try(basename(rstudioapi::getActiveProject()), silent=T) using  getProject().
+#' @param prefix PARAM_DESCRIPTION, Default: NULL
+#' @param suffix A suffix added to the filename, Default: NULL
+#' @param inOutDir PARAM_DESCRIPTION, Default: F
+#' @param alternative_path_rdata PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
+#' @param homepath homepath to replace '~', Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
+#' @param showMemObject PARAM_DESCRIPTION, Default: T
+#' @param saveParams PARAM_DESCRIPTION, Default: T
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  isave.RDS(my.R.object)
+#'  }
+#' }
+#' @export
+
+isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = F
+                      , project = getProject()
+                      , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
+                      , homepath = '/Users/abel.vertesy/'
+                      , showMemObject = T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
+  path_rdata = if (inOutDir) OutDir else alternative_path_rdata
+  dir.create(path_rdata)
+
+  if (showMemObject) { try(memory.biggest.objects(), silent = T) }
+  if ( "seurat" %in% is(obj) & saveParams) {
+    try(obj@misc$p <- p, silent = T)
+    try(obj@misc$all.genes  <- all.genes, silent = T)
+  }
+  fnameBase = kppu(prefix, substitute(obj), project, suffix, idate(Format = "%Y.%m.%d_%H.%M"))
+  fnameBase = trimws(fnameBase, whitespace = '_')
+  FNN <- paste0(path_rdata, fnameBase , ".Rds")
+  FNN <- gsub(pattern = '~/', replacement = homepath, x = FNN)
+  print(FNN)
+  saveRDS.compress.in.BG(obj = obj, fname =  FNN)
+}
+
+
+
+
+# _________________________________________________________________________________________________
+# Save workspace
+# requires MarkdownReports (github) and defining OutDir
+# requires github/vertesy/CodeAndRoll.r
+
+#' @title isave.image
+#' @description Save and RData image.
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @param path_rdata PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))
+#' @param showMemObject PARAM_DESCRIPTION, Default: T
+#' @param options PARAM_DESCRIPTION, Default: c("--force", NULL)[1]
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[Stringendo]{kollapse}}, \code{\link[MarkdownReports]{iprint}}
+#' @export
+#' @importFrom Stringendo kollapse iprint
+isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))
+                        , showMemObject = T, options = c("--force", NULL)[1]
+){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
+
+  dir.create(path_rdata)
+
+  if (showMemObject) { try(memory.biggest.objects(), silent = T) }
+  fname = Stringendo::kollapse(path_rdata, "/",idate(),...,".Rdata")
+  print(fname)
+  if (nchar(fname) > 2000) stop()
+  save.image(file = fname, compress = F)
+  iprint("Saved, being compressed", fname)
+  system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
+}
+
+
+# _________________________________________________________________________________________________
+#' @title Save workspace - qsave.image
+#' @description Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression. #
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @param showMemObject PARAM_DESCRIPTION, Default: T
+#' @param options PARAM_DESCRIPTION, Default: c("--force", NULL)[1]
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
+#' @export
+#' @importFrom Stringendo kollapse iprint
+#' @importFrom tictoc tic toc
+qsave.image <- function(..., showMemObject = T, options = c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
+  fname = Stringendo::kollapse(getwd(), "/",basename(OutDir),idate(),...,".Rdata")
+  print(fname)
+  if (nchar(fname) > 2000) stop()
+  tictoc::tic()
+  save.image(file = fname, compress = F)
+  iprint("Saved, being compressed", fname)
+  system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
+  cat(toc)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title clip10Xcellname
+#' @description Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration). #
+#' @param cellnames PARAM_DESCRIPTION
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+clip10Xcellname <- function(cellnames) { stringr::str_split_fixed(cellnames, "_", n = 2)[,1] }
+
+# _________________________________________________________________________________________________
+#' @title make10Xcellname
+#' @description Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1". #
+#' @param cellnames PARAM_DESCRIPTION
+#' @param suffix A suffix added to the filename, Default: '_1'
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+make10Xcellname <- function(cellnames, suffix="_1") { paste0(cellnames, suffix) }
+
+
 
 
 # _________________________________________________________________________________________________
@@ -5315,160 +5332,154 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
 
 
 
+# _________________________________________________________________________________________________
+# Jaccard.toolkit _____________________________ ----
+# _________________________________________________________________________________________________
+# try(source('~/GitHub/Packages/Seurat.utils/Functions/Jaccard.toolkit.R'))
+# try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Jaccard.toolkit.R'))
+
+
+#  __________________________________________
+# Fast direct calculation from a list
+
+
+# _________________________________________________________________________________________________
+#' @title jJaccardIndexVec
+#' @description Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
+#' @param A Set A, Default: 1:3
+#' @param B Set B, Default: 2:4
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+jJaccardIndexVec <- function(A = 1:3, B = 2:4) length(intersect(A,B)) / length(union(A,B))
+
+# _________________________________________________________________________________________________
+#' @title jPairwiseJaccardIndexList
+#' @description Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
+#' @param lsG List of genes, Default: ls_genes
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  jPairwiseJaccardIndexList(lsG = ls_genes)
+#'  }
+#' }
+#' @export
+#' @importFrom Stringendo percentage_formatter
+jPairwiseJaccardIndexList <- function(lsG = ls_genes) { # Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
+  if (length(names(lsG)) < length(lsG)) {
+    iprint("Gene lists were not (all) named, now renamed as:")
+    names(lsG) <- ppp("dataset", 1:length(lsG))
+    print(names(lsG))
+  }
+  m = matrix.fromNames(rowname_vec = names(lsG), colname_vec = names(lsG))
+  n.sets <- length(lsG)
+  for (r in 1:n.sets) {
+    # print(Stringendo::percentage_formatter(r/n.sets))
+    for (c in 1:n.sets) {
+      if (c == r) {
+        m[r,c] = 1
+      } else {
+        m[r,c] =signif(jJaccardIndexVec(lsG[[r]], lsG[[c]]), digits = 2)
+      }
+    }
+  }
+  return(m)
+}
+
+
+
+
+
+
+
+# Much slower Indirect calculation via PresenceMatrix
+# _________________________________________________________________________________________________
+
+
+# _________________________________________________________________________________________________
+#' @title jPresenceMatrix
+#' @description Make a binary presence matrix from a list. Source: https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings #
+#' @param string_list PARAM_DESCRIPTION, Default: lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4)
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  df.presence <- jPresenceMatrix(string_list = lst(a = 1:3, b = 2:5,c = 4:9, d=-1:4))
+#'  }
+#' }
+#' @export
+jPresenceMatrix <- function(string_list = lst(a = 1:3, b = 2:5,c = 4:9, d=-1:4) ) { # Make a binary presence matrix from a list. Source: https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings
+  df.presence <- string_list %>%
+    enframe %>%
+    unnest(cols = "value") %>%
+    count(name, value) %>%
+    spread(value, n, fill = 0)
+  df.presence2 <- FirstCol2RowNames(df.presence)
+  return(t(df.presence2))
+}
+
+
+# _________________________________________________________________________________________________
+#' @title jJaccardIndexBinary
+#' @description Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
+#' @param x Set X
+#' @param y Set Y
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  JaccardSimilarity <- jJaccardIndexBinary(  x = sample(x = 0:1, size = 100, replace = T),
+#'  y = sample(x = 0:1, size = 100, replace = T))
+#'  }
+#' }
+#' @export
+jJaccardIndexBinary <- function(x, y) { # Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
+  elements.found <- sort(unique(union(x, y)))
+  stopifnot(length(elements.found) == 2) # check if you only have [0,1]
+  stopifnot(as.numeric(elements.found) == 0:1) # check if you only have [0,1]
+
+  M.11 = sum(x == 1 & y == 1)
+  M.10 = sum(x == 1 & y == 0)
+  M.01 = sum(x == 0 & y == 1)
+  return (M.11 / (M.11 + M.10 + M.01))
+}
+
+
+
+
+# _________________________________________________________________________________________________
+#' @title jPairwiseJaccardIndex
+#' @description Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
+#' @param binary.presence.matrix PARAM_DESCRIPTION, Default: df.presence
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  PairwiseJaccardIndices <- jPairwiseJaccardIndex(binary.presence.matrix = df.presence)
+#'  }
+#' }
+#' @export
+#' @importFrom Stringendo percentage_formatter
+jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
+  m = matrix.fromNames(rowname_vec = colnames(binary.presence.matrix), colname_vec = colnames(binary.presence.matrix) )
+  n.sets <- ncol(binary.presence.matrix)
+  for (r in 1:n.sets) {
+    print(Stringendo::percentage_formatter(r/n.sets))
+    for (c in 1:n.sets) {
+      if (c == r) {
+        m[r,c] = 1
+      } else {
+        m[r,c] = signif(jJaccardIndexBinary(binary.presence.matrix[,r], binary.presence.matrix[,c]), digits = 2)
+      }
+    }
+  }
+  return(m)
+}
+
 
 
 # _________________________________________________________________________________________________
 # New additions,  categorized ------
 # _________________________________________________________________________________________________
 
-
-#' @title parallel.computing.by.future
-#' @description Run gc(), load multi-session computing and extend memory limits.
-#'
-#' @param workers_ cores
-#' @param maxMemSize memory limit
-#'
-#' @export
-parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^2) { # Run gc(), load multi-session computing and extend memory limits.
-  # https://satijalab.org/seurat/v3.0/future_vignette.html
-  cat(
-    "1. If you load futures before you finished using foreach loops,
-    NormalizeData inside a foreach loop fails (Error writing to connection)
-    -> I assume 'future' and 'doMC' are not compatible
-
-    2. If you setup computing on e.g. six cores, it runs 6 instances of R with the entire memory space copied.
-    If you run out of memory, the system starts using the SSD as memory, and it slows you down extremely extremely extremely.
-    -> Therefore it is important to clean up the memory space before setting up multicore computation.
-
-    Loaded: library(future), workers set to 6 (def),set Max mem size to 2GB (def)."   )
-
-  gc(full = T)
-  try(memory.biggest.objects(), silent = T)
-
-  library(future)
-  plan("multiprocess", workers = workers_)
-  # plan("multisession", workers = workers_)
-  # So to set Max mem size to 2GB, you would run :
-  options(future.globals.maxSize = maxMemSize)
-}
-
-
-
-# _________________________________________________________________________________________________
-#' getClusterNames
-#'
-#' @param obj Seurat object
-#' @param ident ident
-#' @export
-
-getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
-  print(GetClusteringRuns(obj))
-  clz <- as.character(sort(deframe(unique(obj[[ident]]))))
-  cat(dput(clz))
-}
-
-
-
-
-# _________________________________________________________________________________________________
-#' RenameClustering
-#'
-#' @param namedVector named vector, where values = new, names(vec) = old
-#' @param orig.ident meta.data colname original
-#' @param suffix.new.ident How to name (suffix) the new identity. Default: "ManualNames"
-#' @param new.ident meta.data colname new
-#' @param obj Seurat object
-#' @export
-
-RenameClustering <- function(namedVector = ManualNames
-                             , orig.ident =  "RNA_snn_res.0.3"
-                             , suffix.new.ident = "ManualNames"
-                             , new.ident = ppp(orig.ident, suffix.new.ident)
-                             , obj = combined.obj) {
-  NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
-                    , oldvalues = names(namedVector)
-                    , newvalues = namedVector)
-  obj@meta.data[[new.ident]] <- NewX
-  clUMAP(orig.ident)
-  clUMAP(new.ident)
-  return(obj)
-}
-
-# _________________________________________________________________________________________________
-#' IntersectWithExpressed
-#'
-#' @param genes A vector of gene names.
-#' @param obj Seurat object
-#' @param genes.shown Number of genes printed (head).
-#' @export
-
-IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { # Intersect a set of genes with genes in the Seurat object.
-  print('IntersectWithExpressed()')
-  # print(head(genes, n=15))
-  diff = setdiff(genes, rownames(obj))
-  Stringendo::iprint(length(diff),"genes (of",length(genes), ") are MISSING from the Seurat object:",head(diff, genes.shown))
-  return(intersect(rownames(obj), genes))
-}
-
-
-# _________________________________________________________________________________________________
-#' seu.RemoveMetadata
-#'
-#' @param obj Seurat object, Default: combined.obj
-#' @param cols_remove columns to remove
-#' @export
-
-seu.RemoveMetadata <- function(obj = combined.obj
-                               , cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = T)
-) {
-
-  CNN <- colnames(obj@meta.data)
-  iprint('cols_remove:', cols_remove); print('')
-  (cols_keep <- setdiff(CNN, cols_remove))
-  obj@meta.data <- obj@meta.data[, cols_keep]
-  iprint('meta.data colnames kept:', colnames(obj@meta.data))
-
-  return(obj)
-}
-
-
-
-# _________________________________________________________________________________________________
-#' Percent.in.Trome
-#' @description Gene expression as fraction of all UMI's
-#' @param obj Seurat object
-#' @param n.genes.barplot number of top genes shows
-#' @param width.barplot barplot width
-#' @return Seurat object
-#' @export
-#' @examples # combined.obj <- Percent.in.Trome()
-
-Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25, width.barplot = round(n.genes.barplot/4)) {
-  m.expr <- combined.obj@assays$RNA@counts
-  total.Expr <- sort(rowSums(m.expr), decreasing = T)
-  relative.total.Expr <- total.Expr / sum(total.Expr)
-  print(head(iround(100*relative.total.Expr), n = n.genes.barplot))
-
-  qhistogram(relative.total.Expr*100, logX = F, logY = T
-             , plotname = "Gene expression as fraction of all UMI's"
-             , subtitle = "Percentage in RNA-counts"
-             , xlab = "Percent in Transcriptome (total per gene)"
-             , ylab = "Number of genes"
-             , xlab.angle = 45
-  ) # + geom_hline(yintercept = 10)
-
-  Highest.Expressed.Genes <- head(iround(100*relative.total.Expr), n = n.genes.barplot)
-  qbarplot(Highest.Expressed.Genes, w = width.barplot
-           , plotname = "Percentage of highest expressed genes"
-           , subtitle = "Total, in RNA-counts"
-           , xlab = ""
-           , ylab = "Gene expression as percent of all UMI's"
-           , xlab.angle = 45
-  )
-  print("!!!")
-  print("TotalReadFraction is stored under combined.obj@misc$'TotalReadFraction'  ")
-  print("!!!")
-  combined.obj@misc$'TotalReadFraction' <- relative.total.Expr
-  return(combined.obj)
-
-}
