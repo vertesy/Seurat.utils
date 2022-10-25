@@ -1072,6 +1072,7 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
 
 Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables" ) {
   if (is.null(obj@misc[[NewSlotName]])) obj@misc[[NewSlotName]] <- list() else iprint(NewSlotName, "already exists in @misc.")
+  return(obj)
 }
 
 
