@@ -106,6 +106,8 @@ AreTheseCellNamesTheSame  <- function(vec1 = names(UVI.annot)
 ) {
   Cellname.Overlap <- list(vec1, vec2)
   names(Cellname.Overlap) <- if (!isFALSE(names)) names else c( substitute(vec1), substitute(vec2))
+
+  cells.in.both <- intersect(vec1, vec2)
   sbb <- percentage_formatter(length(cells.in.both) / length(vec2), suffix = "of cells (GEX) in have a UVI assigned")
   ggExpress::qvenn(Cellname.Overlap, subt = sbb)
   iprint('Venn Diagramm saved.')
@@ -1059,6 +1061,18 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
 }
 
 
+
+
+# _________________________________________________________________________________________________
+#' Create.MiscSlot
+#'
+#' @param obj Seurat object
+#' @param NewSlotName Name of the new element inside obj@misc.
+#' @export
+
+Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables" ) {
+  if (is.null(obj@misc[[NewSlotName]])) obj@misc[[NewSlotName]] <- list() else iprint(NewSlotName, "already exists in @misc.")
+}
 
 
 
