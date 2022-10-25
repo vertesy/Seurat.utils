@@ -4,7 +4,7 @@
 \alias{Create.MiscSlot}
 \title{Create.MiscSlot}
 \usage{
-Create.MiscSlot(obj, NewSlotName = "UVI.tables")
+Create.MiscSlot(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 }
 \arguments{
 \item{obj}{Seurat object}

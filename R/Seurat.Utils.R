@@ -1070,10 +1070,13 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
 #' @param NewSlotName Name of the new element inside obj@misc.
 #' @export
 
-Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables" ) {
+Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL ) {
   if (is.null(obj@misc[[NewSlotName]])) obj@misc[[NewSlotName]] <- list() else iprint(NewSlotName, "already exists in @misc.")
+  if (is.null(obj@misc[[NewSlotName]][[SubSlotName]])) obj@misc[[NewSlotName]][[SubSlotName]] <- list() else iprint(SubSlotName, "subslot already exists in @misc$NewSlot.")
   return(obj)
 }
+
+
 
 
 
