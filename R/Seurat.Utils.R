@@ -2757,7 +2757,7 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F,
 #' @param nr.cols Number of columns to combine multiple feature plots to, ignored if split.by is not NULL, Default: NULL
 #' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
 #' @param HGNC.lookup PARAM_DESCRIPTION, Default: TRUE
-#' @param axes Show axes? Default: T
+#' @param axes Show axes? Default: FALSE
 #' @param aspect.ratio Fix the aspect ratio?  Default: Yes, at 0.6
 #' @param make.uppercase PARAM_DESCRIPTION, Default: TRUE
 #' @param qlow PARAM_DESCRIPTION, Default: 'q10'
@@ -2780,7 +2780,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , PNG = T
                    , h = 7, w = NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
-                   , axes = T
+                   , axes = FALSE
                    , aspect.ratio = c(FALSE, 0.6)[2]
                    , HGNC.lookup= TRUE
                    , make.uppercase = FALSE
@@ -2836,7 +2836,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #' @param label PARAM_DESCRIPTION, Default: T
 #' @param repel PARAM_DESCRIPTION, Default: T
 #' @param legend PARAM_DESCRIPTION, Default: !label
-#' @param axes Show axes? Default: T
+#' @param axes Show axes? Default: FALSE
 #' @param aspect.ratio Fix the aspect ratio? Default: Yes, at 0.6
 #' @param MaxCategThrHP PARAM_DESCRIPTION, Default: 200
 #' @param save.plot Save the plot into a file?, Default: T
@@ -2862,7 +2862,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , cols = NULL, palette =  c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
                    , highlight.clusters = NULL, cells.highlight = NULL
                    , label = T, repel = T, legend = !label, MaxCategThrHP = 200
-                   , axes = T
+                   , axes = FALSE
                    , aspect.ratio = c(FALSE, 0.6)[2]
                    , save.plot = MarkdownHelpers::TRUE.unless('b.save.wplots')
                    , PNG = T

@@ -19,7 +19,7 @@ qUMAP(
   w = NULL,
   nr.cols = NULL,
   assay = c("RNA", "integrated")[1],
-  axes = T,
+  axes = FALSE,
   aspect.ratio = c(FALSE, 0.6)[2],
   HGNC.lookup = TRUE,
   make.uppercase = FALSE,
@@ -57,7 +57,7 @@ qUMAP(
 
 \item{assay}{RNA or integrated assay, Default: c("RNA", "integrated")\link{1}}
 
-\item{axes}{Show axes? Default: T}
+\item{axes}{Show axes? Default: FALSE}
 
 \item{aspect.ratio}{Fix the aspect ratio?  Default: Yes, at 0.6}
 

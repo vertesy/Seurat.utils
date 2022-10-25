@@ -26,7 +26,7 @@ clUMAP(
   repel = T,
   legend = !label,
   MaxCategThrHP = 200,
-  axes = T,
+  axes = FALSE,
   aspect.ratio = c(FALSE, 0.6)[2],
   save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots"),
   PNG = T,
@@ -76,7 +76,7 @@ clUMAP(
 
 \item{MaxCategThrHP}{PARAM_DESCRIPTION, Default: 200}
 
-\item{axes}{Show axes? Default: T}
+\item{axes}{Show axes? Default: FALSE}
 
 \item{aspect.ratio}{Fix the aspect ratio? Default: Yes, at 0.6}
 
