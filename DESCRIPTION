@@ -51,6 +51,6 @@ Imports:
 Suggests: 
     SoupX
 Encoding: UTF-8
-Packaged: 2022-10-25 12:41:48
+Packaged: 2022-11-01 13:23:29
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0

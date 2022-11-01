@@ -2501,6 +2501,7 @@ scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
                         , col = 1:n.clusters
                         , xlab.angle = 45
                         , label = lbl
+                        , ylab = "Cells"
                         # , col = getClusterColors(ident = ident, show = T)
                         , palette_use = DiscretePalette(n = n.clusters, palette = palette)
                         , ...)
@@ -2533,7 +2534,8 @@ scBarplot.CellsPerObject <- function(ls.Seu = ls.Seurat
   qbarplot(cellCounts, plotname = plotname
            , subtitle = paste(sum(cellCounts), "cells in total")
            , label = cellCounts
-           , xlab.angle =  xlab.angle, ylab="Cells"
+           , xlab.angle =  xlab.angle
+           , ylab = "Cells"
            , ...)
 
 }
