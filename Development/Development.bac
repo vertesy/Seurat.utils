@@ -785,6 +785,30 @@ seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.c
 
 
 # _________________________________________________________________________________________________
+#' create.overlap.vector
+#'
+#' @param vec cell - ID vector with partial overlap to cells in a Seurat object.
+#' @param obj Seurat object
+#' @param min.intersect Min number of cells to find in both.
+#'
+#' @export
+
+create.overlap.vector <- function(vec = All.UVI, obj = combined.obj, min.intersect = 100) {
+  cell.vec <- names(vec)
+  cell.obj <- colnames(obj)
+  cells.in.both <- intersect(cell.vec, cell.obj)
+
+  stopifnot(length(cells.in.both) > min.intersect )
+  iprint(l(cells.in.both), 'cells in both;'
+         , l(cell.vec), 'cells in vec;'
+         , l(cell.obj), 'cells in obj')
+  new_assignment <- vec.fromNames(cell.obj)
+  new_assignment[cells.in.both] <- vec[cells.in.both]
+  return(new_assignment)
+}
+
+
+# _________________________________________________________________________________________________
 
 #' @title seu.map.and.add.new.ident.to.meta
 #' @description Add a new metadata column to a Seurat  object
