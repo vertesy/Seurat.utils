@@ -9,6 +9,7 @@ calculate.observable.multiplet.rate.10X.LT(
   multiplet.rate = FALSE,
   FMR.r = 131000,
   cell.count,
+  suffix = "",
   ...
 )
 }
@@ -21,7 +22,9 @@ calculate.observable.multiplet.rate.10X.LT(
 
 \item{cell.count}{Number of total cells recovered from a 10X lane.}
 
-\item{...}{}
+\item{suffix}{A suffix added to the filename, Default: ''}
+
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 calculate.observable.multiplet.rate.10X.LT

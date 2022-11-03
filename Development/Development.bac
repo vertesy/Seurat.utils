@@ -1043,51 +1043,6 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 
 
 # _________________________________________________________________________________________________
-#' @title plot.expression.rank.q90
-#' @description Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).
-#' @param obj Seurat object, Default: combined.obj
-#' @param gene gene of interest, Default: 'ACTB'
-#' @param filterZero PARAM_DESCRIPTION, Default: T
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  plot.expression.rank.q90(gene = "SATB2")
-#'  }
-#' }
-#' @export plot.expression.rank.q90
-#' @importFrom Stringendo percentage_formatter
-plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero = T) {
-  expr.GOI <- obj@misc$expr.q90[gene]
-  expr.all <- unlist(obj@misc$expr.q90)
-  gene.found <- gene %in% names(expr.all)
-  stopifnot(gene.found)
-
-  if (expr.GOI == 0) iprint(gene, "is not expressed. q90-av.exp:", expr.GOI) else
-    if (expr.GOI < 0.05) iprint(gene, "is lowly expressed. q90-av.exp:", expr.GOI)
-  if (filterZero) {
-    iprint("Zero 'q90 expression' genes (", pc_TRUE(expr.all == 0), ") are removed.")
-    expr.all <- expr.all[expr.all > 0]
-  }
-  counts <- sum(obj@assays$RNA@counts[gene,])
-  if (expr.GOI == 0) {
-    quantile.GOI <- 0
-    title <- paste(gene, "is too lowly expressed: q90-av.exp is zero. \n There are", counts,"counts." )
-  } else {
-    pos.GOI <- which(names(expr.all) == gene)
-    quantile.GOI <- ecdf(expr.all)(expr.all)[pos.GOI]
-    title <- paste(gene, "is in the", Stringendo::percentage_formatter(quantile.GOI), "quantile of 'q90-av' expression. \n There are", counts,"counts" )
-  }
-  suppressWarnings(
-    whist(expr.all, vline = expr.GOI, breaks = 100, main = title, plotname =   make.names(title)
-          , ylab = "Genes"
-          , xlab = "Av. mRNA in the 10% top expressing cells (q90 av.exp.)")
-  )
-}
-
-
-
-
-# _________________________________________________________________________________________________
 #' Create.MiscSlot
 #'
 #' @param obj Seurat object
@@ -1099,8 +1054,6 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
   if (is.null(obj@misc[[NewSlotName]][[SubSlotName]])) obj@misc[[NewSlotName]][[SubSlotName]] <- list() else iprint(SubSlotName, "subslot already exists in @misc$NewSlot.")
   return(obj)
 }
-
-
 
 
 
@@ -1525,6 +1478,73 @@ plot.Metadata.median.fraction.barplot <- function(
 }
 
 # plot.Metadata.median.fraction.barplot()
+
+# _________________________________________________________________________________________________
+#' plot.Metadata.categ.pie
+#'
+#' @param metacol Which column in metadata should be used?
+#' @param plot_name Plot name
+#' @param obj Seurat object, Default: combined.obj
+#' @param max.categs Maximum number of categories allowed for this pie chart. Error otherwise.
+#' @param ...
+#'
+#' @export
+
+plot.Metadata.categ.pie <- function(metacol = 'Singlet.status'
+                                    , plot_name = paste(metacol, "distribution")
+                                    , obj = combined.obj, max.categs = 20, ...) {
+  categ_pivot <- table(obj[[metacol]])
+  stopifnot(length(categ_pivot) < max.categs)
+  qpie(categ_pivot, plotname = plot_name
+       , LegendSide = F, labels = NULL, LegendTitle = '', ...)
+}
+
+
+
+
+
+# _________________________________________________________________________________________________
+#' @title plot.expression.rank.q90
+#' @description Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).
+#' @param obj Seurat object, Default: combined.obj
+#' @param gene gene of interest, Default: 'ACTB'
+#' @param filterZero PARAM_DESCRIPTION, Default: T
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  plot.expression.rank.q90(gene = "SATB2")
+#'  }
+#' }
+#' @export plot.expression.rank.q90
+#' @importFrom Stringendo percentage_formatter
+plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero = T) {
+  expr.GOI <- obj@misc$expr.q90[gene]
+  expr.all <- unlist(obj@misc$expr.q90)
+  gene.found <- gene %in% names(expr.all)
+  stopifnot(gene.found)
+
+  if (expr.GOI == 0) iprint(gene, "is not expressed. q90-av.exp:", expr.GOI) else
+    if (expr.GOI < 0.05) iprint(gene, "is lowly expressed. q90-av.exp:", expr.GOI)
+  if (filterZero) {
+    iprint("Zero 'q90 expression' genes (", pc_TRUE(expr.all == 0), ") are removed.")
+    expr.all <- expr.all[expr.all > 0]
+  }
+  counts <- sum(obj@assays$RNA@counts[gene,])
+  if (expr.GOI == 0) {
+    quantile.GOI <- 0
+    title <- paste(gene, "is too lowly expressed: q90-av.exp is zero. \n There are", counts,"counts." )
+  } else {
+    pos.GOI <- which(names(expr.all) == gene)
+    quantile.GOI <- ecdf(expr.all)(expr.all)[pos.GOI]
+    title <- paste(gene, "is in the", Stringendo::percentage_formatter(quantile.GOI), "quantile of 'q90-av' expression. \n There are", counts,"counts" )
+  }
+  suppressWarnings(
+    whist(expr.all, vline = expr.GOI, breaks = 100, main = title, plotname =   make.names(title)
+          , ylab = "Genes"
+          , xlab = "Av. mRNA in the 10% top expressing cells (q90 av.exp.)")
+  )
+}
+
 
 
 
@@ -4509,7 +4529,8 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' @param FMR.r Factor for calculating Multiplet Rate: Cell count / FMR = multiplet rate. (.r stands for 'estimating from Recovered cell count.')
 #' @param cell.count Number of total cells recovered from a 10X lane.
 #' @param multiplet.rate Expected multiplet rate for your number of recovered cells. Default FALSE. If FALSE, it auto-calculates it based on an inferred FMR: Factor for calculating multiplet rate: Cell count / FMR = multiplet rate.
-#' @param ...
+#' @param suffix A suffix added to the filename, Default: ''
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #'
 #' @export
 
@@ -4518,6 +4539,7 @@ calculate.observable.multiplet.rate.10X.LT <- function(
     , multiplet.rate = FALSE
     , FMR.r = 131000
     , cell.count
+    , suffix = ''
     , ...) {
 
   iprint("cell.count", cell.count)
@@ -4536,7 +4558,8 @@ calculate.observable.multiplet.rate.10X.LT <- function(
   doublet.distribution <- c(homo.doublet, 'hetero' = hetero.doublet.rate)
   qpie(doublet.distribution
        , caption = paste('We can only observe hetero.doublets', percentage_formatter(hetero.doublet.rate))
-  )
+       , suffix = suffix
+       , ...)
 
   tot.doublet.distribution <- doublet.distribution * multiplet.rate
   Expected.singlet.doublet.distribution <- c('singlet' = 1 - sum(tot.doublet.distribution), tot.doublet.distribution)
@@ -4544,7 +4567,8 @@ calculate.observable.multiplet.rate.10X.LT <- function(
            , label = percentage_formatter(Expected.singlet.doublet.distribution)
            , col = c(3,1,1,2), xlab.angle = 45
            , ylab = "Fraction of 'Cells'", xlab = 'Doublet status'
-  )
+           , suffix = suffix
+           , ...)
 }
 
 
