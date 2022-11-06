@@ -785,7 +785,7 @@ seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.c
 
 
 # _________________________________________________________________________________________________
-#' create.overlap.vector
+#' create.metadata.vector
 #'
 #' @param vec cell - ID vector with partial overlap to cells in a Seurat object.
 #' @param obj Seurat object
@@ -793,16 +793,16 @@ seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.c
 #'
 #' @export
 
-create.overlap.vector <- function(vec = All.UVI, obj = combined.obj, min.intersect = 100) {
-  cell.vec <- names(vec)
-  cell.obj <- colnames(obj)
-  cells.in.both <- intersect(cell.vec, cell.obj)
+create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.intersect = 100) {
+  cells.vec <- names(vec)
+  cells.obj <- colnames(obj)
+  cells.in.both <- intersect(cells.vec, cells.obj)
 
   stopifnot(length(cells.in.both) > min.intersect )
   iprint(l(cells.in.both), 'cells in both;'
-         , l(cell.vec), 'cells in vec;'
-         , l(cell.obj), 'cells in obj')
-  new_assignment <- vec.fromNames(cell.obj)
+         , l(cells.vec), 'cells in vec;'
+         , l(cells.obj), 'cells in obj')
+  new_assignment <- vec.fromNames(cells.obj)
   new_assignment[cells.in.both] <- vec[cells.in.both]
   return(new_assignment)
 }
