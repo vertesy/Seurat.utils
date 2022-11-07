@@ -9,7 +9,8 @@ RenameClustering(
   orig.ident = "RNA_snn_res.0.3",
   suffix.new.ident = "ManualNames",
   new.ident = ppp(orig.ident, suffix.new.ident),
-  obj = combined.obj
+  obj = combined.obj,
+  ...
 )
 }
 \arguments{

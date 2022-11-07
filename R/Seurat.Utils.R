@@ -1080,13 +1080,14 @@ RenameClustering <- function(namedVector = ManualNames
                              , orig.ident =  "RNA_snn_res.0.3"
                              , suffix.new.ident = "ManualNames"
                              , new.ident = ppp(orig.ident, suffix.new.ident)
-                             , obj = combined.obj) {
+                             , obj = combined.obj
+                             , ...) {
   NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
                     , oldvalues = names(namedVector)
                     , newvalues = namedVector)
   obj@meta.data[[new.ident]] <- NewX
-  clUMAP(orig.ident)
-  clUMAP(new.ident)
+  clUMAP(orig.ident, ...)
+  clUMAP(new.ident, ...)
   return(obj)
 }
 
@@ -1865,16 +1866,17 @@ remove.residual.small.clusters <- function(identitites = GetOrderedClusteringRun
   META <- obj@meta.data
   all.cells <- rownames(META)
 
-  iprint("max.cells:",max.cells,"| Scanning over these", length(identitites), "identities:", identitites)
+  iprint("max.cells:", max.cells, "| Scanning over these", length(identitites), "identities:", identitites)
   small.clusters <- cells.to.remove <- list.fromNames(identitites)
 
   for (i in 1:length(identitites)) {
     colX <- identitites[i]
     tbl <- table(META[[colX]])
 
-    small.clusters[[i]] <- which_names(tbl <=max.cells )
-    cells.to.remove[[i]] <- all.cells[which(META[[colX]] %in% small.clusters)]
-    if (length(cells.to.remove[[i]])) iprint(length(cells.to.remove[[i]]), "cells in small clusters:", small.clusters[[i]]) # , head(cells.to.remove[[i]])
+    small.clusters[[i]] <- which_names(tbl <= max.cells )
+    cells.to.remove[[i]] <- all.cells[which(META[[colX]] %in% small.clusters[[i]])]
+    if (length(cells.to.remove[[i]])) iprint(length(cells.to.remove[[i]]), "cells in small clusters:", small.clusters[[i]]
+                                             , "| Cell counts:",tbl[small.clusters[[i]]]) # , head(cells.to.remove[[i]])
   }
 
   all.cells.2.remove <- unique(unlist(cells.to.remove))
@@ -1906,6 +1908,56 @@ drop.levels.Seurat <- function(obj = combined.obj) {
   }
 
   obj@meta.data <- META
+  return(obj)
+}
+
+
+
+
+# _________________________________________________________________________________________________
+#' remove.cells.by.UMAP
+#'
+#' @param reduction
+#' @param umap_dim
+#' @param obj
+#' @param cutoff
+#' @param cut_below
+#' @param ...
+#' @export
+remove.cells.by.UMAP <- function(reduction = 'umap'
+                                 , umap_dim = 1
+                                 , obj = combined.obj
+                                 , cutoff = 0
+                                 , cut_below = TRUE
+                                 , ...
+) {
+
+  {
+    p <- clUMAP(obj = obj, save.plot = F)
+    p <-
+      if (umap_dim == 1) {
+        p + geom_vline(xintercept = cutoff)
+      } else if (umap_dim == 1) {
+        p + geom_hline(xintercept = cutoff)
+      }
+    print(p)
+  }
+
+  cell_embedding <- obj@reductions[[reduction]]@cell.embeddings
+  stopifnot(ncol(cell_embedding) > 0)
+  emX <- cell_embedding[, umap_dim]
+
+  all.cells.2.remove <- if (cut_below) which_names(emX < cutoff) else which_names(emX >= cutoff)
+
+
+
+  if (length(all.cells.2.remove)) {
+    iprint(">>> a total of", length(all.cells.2.remove), "cells are removed which fell on UMAP aside cutoff:", cutoff)
+  } else { iprint(">>> No cells are removed because of the UMAP dimension cutoff.")}
+
+  cells.2.keep <- setdiff(all.cells, all.cells.2.remove)
+  obj <- subset(x = obj, cells = cells.2.keep)
+
   return(obj)
 }
 
@@ -2808,6 +2860,7 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F,
 #' @param make.uppercase PARAM_DESCRIPTION, Default: TRUE
 #' @param qlow PARAM_DESCRIPTION, Default: 'q10'
 #' @param qhigh PARAM_DESCRIPTION, Default: 'q90'
+#' @param check_for_2D Check if UMAP is 2 dimensional.
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -2830,7 +2883,15 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , aspect.ratio = c(FALSE, 0.6)[2]
                    , HGNC.lookup= TRUE
                    , make.uppercase = FALSE
-                   , qlow = "q10", qhigh = "q90", ...) {
+                   , check_for_2D = TRUE
+                   , qlow = "q10", qhigh = "q90"
+                   , ...) {
+
+  if (check_for_2D) {
+    umap_dims <- ncol(obj@reductions[[reduction]]@cell.embeddings)
+    if (umap_dims != 2) warning(">>> UMAP is not 2 dimensional! \n Check obj@reductions[[reduction]]@cell.embeddings")
+  }
+
 
   if ( !(feature %in% colnames(obj@meta.data) | feature %in% rownames(obj) ) ) {
     feature <- check.genes(list.of.genes = feature, obj = obj, verbose = F
@@ -2887,6 +2948,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #' @param MaxCategThrHP PARAM_DESCRIPTION, Default: 200
 #' @param save.plot Save the plot into a file?, Default: T
 #' @param PNG Save file as .png?, Default: T
+#' @param check_for_2D Check if UMAP is 2 dimensional.
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -2911,9 +2973,15 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , axes = FALSE
                    , aspect.ratio = c(FALSE, 0.6)[2]
                    , save.plot = MarkdownHelpers::TRUE.unless('b.save.wplots')
-                   , PNG = T
+                   , PNG = TRUE
+                   , check_for_2D = TRUE
                    # , save.object = F
                    , ...) {
+
+  if (check_for_2D) {
+    umap_dims <- ncol(obj@reductions[[reduction]]@cell.embeddings)
+    if (umap_dims != 2) warning(">>> UMAP is not 2 dimensional! \n Check obj@reductions[[reduction]]@cell.embeddings")
+  }
 
   IdentFound <- (ident %in%  colnames(obj@meta.data))
   if (!IdentFound) {
@@ -3344,8 +3412,10 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix =
   {
     Signature.Genes.Top16  <- c(
       `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
-      , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
-      , `Intermediate progenitor` = "EOMES",  `Intermediate progenitor1` = "TAC3"
+      , `Immature neurons` = "SLA"
+      , Interneurons = "DLX6-AS1", Interneurons = "ERBB4"
+      , `Intermediate progenitor` = "EOMES"
+      # ,  `Intermediate progenitor1` = "TAC3"
       , `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
       , `oRG` = "ID4", `oRG` = "HOPX" # oRG outer radial glia
       , Astroglia = "GFAP", Astrocyte = "S100B"

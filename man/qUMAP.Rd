@@ -23,6 +23,7 @@ qUMAP(
   aspect.ratio = c(FALSE, 0.6)[2],
   HGNC.lookup = TRUE,
   make.uppercase = FALSE,
+  check_for_2D = TRUE,
   qlow = "q10",
   qhigh = "q90",
   ...
@@ -64,6 +65,8 @@ qUMAP(
 \item{HGNC.lookup}{PARAM_DESCRIPTION, Default: TRUE}
 
 \item{make.uppercase}{PARAM_DESCRIPTION, Default: TRUE}
+
+\item{check_for_2D}{Check if UMAP is 2 dimensional.}
 
 \item{qlow}{PARAM_DESCRIPTION, Default: 'q10'}
 

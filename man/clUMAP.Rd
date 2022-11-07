@@ -29,7 +29,8 @@ clUMAP(
   axes = FALSE,
   aspect.ratio = c(FALSE, 0.6)[2],
   save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots"),
-  PNG = T,
+  PNG = TRUE,
+  check_for_2D = TRUE,
   ...
 )
 }
@@ -83,6 +84,8 @@ clUMAP(
 \item{save.plot}{Save the plot into a file?, Default: T}
 
 \item{PNG}{Save file as .png?, Default: T}
+
+\item{check_for_2D}{Check if UMAP is 2 dimensional.}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
