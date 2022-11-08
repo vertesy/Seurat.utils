@@ -1081,13 +1081,14 @@ RenameClustering <- function(namedVector = ManualNames
                              , suffix.new.ident = "ManualNames"
                              , new.ident = ppp(orig.ident, suffix.new.ident)
                              , obj = combined.obj
+                             , suffix = substitute(obj)
                              , ...) {
   NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
                     , oldvalues = names(namedVector)
                     , newvalues = namedVector)
   obj@meta.data[[new.ident]] <- NewX
-  clUMAP(orig.ident, ...)
-  clUMAP(new.ident, ...)
+  clUMAP(orig.ident, suffix = suffix, ...)
+  clUMAP(new.ident, suffix = suffix, ...)
   return(obj)
 }
 
