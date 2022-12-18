@@ -2,7 +2,7 @@
 
 # Seurat.utils
 
-`Seurat.utils` Is a collection of utility functions for Seurat v3. Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics & QC, interaction with the Seurat object, etc.  Some functionalities require functions from [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2), [ReadWriter](https://github.com/vertesy/ReadWriter), [Stringendo](https://github.com/vertesy/Stringendo), [ggExpressDev](https://github.com/vertesy/ggExpressDev), [MarkdownReports](https://github.com/vertesy/MarkdownReports), and the [Rocinante](https://github.com/vertesy/Rocinante) (See installation).
+`Seurat.utils` Is a collection of utility functions for Seurat. Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics & QC, interaction with the Seurat object, etc.  Some functionalities require functions from [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2), [ReadWriter](https://github.com/vertesy/ReadWriter), [Stringendo](https://github.com/vertesy/Stringendo), [ggExpressDev](https://github.com/vertesy/ggExpressDev), [MarkdownReports](https://github.com/vertesy/MarkdownReports), and the [Rocinante](https://github.com/vertesy/Rocinante) (See installation).
 
 
 
@@ -652,20 +652,6 @@ Plot stats about the ambient RNA content in a 10X experiment.
 Load 10X output folders.
 
 
-
-CURRENTLY NOT THE CASE:
-
-### The content of this repo is organized into files per rough functionalities:
-
-1. `Seurat.Utils.Load.R`								→ *Top level wrapper to source each file below.*
-2. `metadata.manipulation.R`						→ *Metadata manipulation.*
-3. `plotting.dim.reduction.2D.R`				→ *Plotting dimensionality reduction in 2D (UMAP, tSNE, PCA).*
-4. `plotting.dim.reduction.3D.R`				→ *Plotting dimensionality reduction in 3D (UMAP, tSNE, PCA).*
-5. `plotting.filtering.R`								→ *Plotting filtering.*
-6. `plotting.statistics.and.QC.R`				→ *Plotting statistics and QC.*
-7. `Read.Write.Save.Load.functions.R`		→ *Read Write Save Load functions.*
-8. `Seurat.object.manipulations.etc.R`	→ *Seurat object manipulations etc.*
-9. `Seurat.update.gene.symbols.HGNC.R`	→ *Seurat update gene symbols HGNC.*
 
 
 
