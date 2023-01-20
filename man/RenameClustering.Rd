@@ -10,6 +10,7 @@ RenameClustering(
   suffix.new.ident = "ManualNames",
   new.ident = ppp(orig.ident, suffix.new.ident),
   obj = combined.obj,
+  suffix = substitute(obj),
   ...
 )
 }

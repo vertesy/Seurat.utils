@@ -207,9 +207,13 @@ PlotFilters <- function(ls.obj = ls.Seurat
   # require(ggplot2)
   if (suffices == length(ls.obj)) print("ls.obj elements have no names (required).")
 
+
   for (i in 1:length(ls.obj)) {
     print(suffices[i])
     mm =  ls.obj[[i]]@meta.data
+
+    below.nFeature_RNA <- floor(quantile(ls.obj[[i]]$'nFeature_RNA', probs = 0.9975))
+    iprint("below.nFeature_RNA at 99.75% percentile:", below.nFeature_RNA)
 
     AllMetaColumnsPresent <- all(c('nFeature_RNA', 'percent.mito', 'percent.ribo') %in% colnames(mm))
     if (!AllMetaColumnsPresent) {
