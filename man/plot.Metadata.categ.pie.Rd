@@ -24,7 +24,7 @@
 
 \item{both_pc_and_value}{Report both percentage AND number.}
 
-\item{...}{}
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 plot.Metadata.categ.pie

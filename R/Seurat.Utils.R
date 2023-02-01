@@ -1493,7 +1493,7 @@ plot.Metadata.median.fraction.barplot <- function(
 #' @param obj Seurat object, Default: combined.obj
 #' @param max.categs Maximum number of categories allowed for this pie chart. Error otherwise.
 #' @param both_pc_and_value Report both percentage AND number.
-#' @param ...
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #'
 #' @export
 
@@ -1506,7 +1506,6 @@ plot.Metadata.categ.pie <- function(metacol = 'Singlet.status'
        , both_pc_and_value = both_pc_and_value
        , LegendSide = F, labels = NULL, LegendTitle = '', ...)
 }
-
 
 
 
@@ -4708,14 +4707,14 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
 
   # Plot stats --- --- --- --- ---
   SNP.demux.singlet.status <- sort(table(GT.table$'Singlet.status'))
-  qpie(SNP.demux.singlet.status, suffix = suffix, w = 7, h =5, plot = T)
+  qpie(SNP.demux.singlet.status, suffix = suffix, w = 7, h =5, plot = T, both_pc_and_value = T)
 
   SNP.demux.Genotype.status <- sort(table(GT.table$'Genotype'))
-  qpie(SNP.demux.Genotype.status, suffix = suffix, w = 7, h =5, plot = T)
+  qpie(SNP.demux.Genotype.status, suffix = suffix, w = 7, h =5, plot = T, both_pc_and_value = T)
 
   cln.categ <- grepv(names(SNP.demux.Genotype.status), pattern = 'doublet|unassigned', invert = T)
   SNP.demux.Genotype.status.cln <- SNP.demux.Genotype.status[cln.categ]
-  qpie(SNP.demux.Genotype.status.cln, suffix = suffix, w = 7, h =5, plot = T)
+  qpie(SNP.demux.Genotype.status.cln, suffix = suffix, w = 7, h =5, plot = T, both_pc_and_value = T)
 
   # Check cell name identity --- --- --- --- ---
   cells.GT.table = rownames(GT.table)
