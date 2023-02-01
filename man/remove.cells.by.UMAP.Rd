@@ -13,6 +13,19 @@ remove.cells.by.UMAP(
   ...
 )
 }
+\arguments{
+\item{reduction}{Dim. reduction: umap or pca or tsne}
+
+\item{umap_dim}{Which axis to remove by?}
+
+\item{obj}{Seurat object, Default: combined.obj}
+
+\item{cutoff}{Horizontal or vertical cutoff value}
+
+\item{cut_below}{Shall we remove below or above the line}
+
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+}
 \description{
 remove.cells.by.UMAP
 }

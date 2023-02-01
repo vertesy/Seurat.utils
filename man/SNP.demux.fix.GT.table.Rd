@@ -12,7 +12,8 @@ SNP.demux.fix.GT.table(
   col2 = "status",
   col2.new.name = "Singlet.status",
   suffix = "lib.37",
-  cellname_prefix = NULL
+  cellname_prefix = FALSE,
+  return_tbl_for_cells_found_in_object = TRUE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ SNP.demux.fix.GT.table(
 \item{suffix}{Add this to 'Singlet.status', then overwrite 'Genotype'}
 
 \item{cellname_prefix}{prefix for cell names added by Seurat to distingish 10X lanes}
+
+\item{return_tbl_for_cells_found_in_object}{cells.found.in.both}
 }
 \description{
 Fix SNP demux table results coming from SoupOrCell

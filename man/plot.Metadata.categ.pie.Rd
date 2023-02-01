@@ -9,6 +9,7 @@
   plot_name = paste(metacol, "distribution"),
   obj = combined.obj,
   max.categs = 20,
+  both_pc_and_value = T,
   ...
 )
 }
@@ -20,6 +21,8 @@
 \item{obj}{Seurat object, Default: combined.obj}
 
 \item{max.categs}{Maximum number of categories allowed for this pie chart. Error otherwise.}
+
+\item{both_pc_and_value}{Report both percentage AND number.}
 
 \item{...}{}
 }

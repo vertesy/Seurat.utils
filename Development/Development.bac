@@ -1492,16 +1492,18 @@ plot.Metadata.median.fraction.barplot <- function(
 #' @param plot_name Plot name
 #' @param obj Seurat object, Default: combined.obj
 #' @param max.categs Maximum number of categories allowed for this pie chart. Error otherwise.
+#' @param both_pc_and_value Report both percentage AND number.
 #' @param ...
 #'
 #' @export
 
 plot.Metadata.categ.pie <- function(metacol = 'Singlet.status'
                                     , plot_name = paste(metacol, "distribution")
-                                    , obj = combined.obj, max.categs = 20, ...) {
+                                    , obj = combined.obj, max.categs = 20, both_pc_and_value = T, ...) {
   categ_pivot <- table(obj[[metacol]])
   stopifnot(length(categ_pivot) < max.categs)
   qpie(categ_pivot, plotname = plot_name
+       , both_pc_and_value = both_pc_and_value
        , LegendSide = F, labels = NULL, LegendTitle = '', ...)
 }
 
@@ -4659,8 +4661,10 @@ calculate.observable.multiplet.rate.10X.LT <- function(
 #' @param obj Seurat object.
 #' @param cellname_prefix prefix for cell names added by Seurat to distingish 10X lanes
 #' @param suffix Add this to 'Singlet.status', then overwrite 'Genotype'
+#' @param return_tbl_for_cells_found_in_object cells.found.in.both
 #'
 #' @export
+
 
 
 SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
@@ -4670,7 +4674,8 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
                                    , col2 = 'status'
                                    , col2.new.name = 'Singlet.status'
                                    , suffix = 'lib.37'
-                                   , cellname_prefix = NULL
+                                   , cellname_prefix = FALSE
+                                   , return_tbl_for_cells_found_in_object = TRUE # cells.found.in.both
 ) {
 
   # Subset --- --- --- --- ---
@@ -4716,13 +4721,15 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
   cells.GT.table = rownames(GT.table)
   cells.obj = colnames(obj)
 
-  if (is_null(cellname_prefix)) {
-    tbl_cellID_prefix <- table(stringr::str_split_fixed(cells.obj, pattern = '_', n = 2)[,1])
-    cellname_prefix <- paste0(names(tbl_cellID_prefix), '_')
-    iprint(">>> Cellname prefixes in object:", cellname_prefix)
-    stopifnot(length(cellname_prefix) == 1)
+  if (!isFALSE(cellname_prefix)) { # if there set to handle cellname prefixes
+    if (is_null(cellname_prefix)) {
+      tbl_cellID_prefix <- table(stringr::str_split_fixed(cells.obj, pattern = '_', n = 2)[,1])
+      cellname_prefix <- paste0(names(tbl_cellID_prefix), '_')
+      iprint(">>> Cellname prefixes in object:", head(cellname_prefix))
+      stopifnot(length(cellname_prefix) == 1)
+    }
+    rownames(GT.table) <- paste0(cellname_prefix, rownames(GT.table))
   }
-  rownames(GT.table) <- paste0(cellname_prefix, rownames(GT.table))
 
 
   # Visual check cell name identity --- --- --- --- ---
@@ -4731,17 +4738,23 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
   Overlap.of.cell.names <- list("Cells in obj" = cells.obj
                                 , "Cells in GT.table" = rownames(GT.table)
   )
-  qvenn(Overlap.of.cell.names, plot = T)
+  qvenn(Overlap.of.cell.names, plot = T, suffix = suffix)
+  cells.found.in.both <- intersect.ls(Overlap.of.cell.names)
+  stopifnot(length(cells.found.in.both)>1)
+
+  if (return_tbl_for_cells_found_in_object) {
+    GT.table <- GT.table[ cells.found.in.both, ]
+  }
+
+  iprint("dimensions of the table:", idim(GT.table))
   print(head(GT.table))
   print("")
   print("See the 4 plots generated in OutDir!")
+
+
   return(GT.table)
 }
 # _________________________________________________________________________________________________
-
-
-
-
 
 
 # _________________________________________________________________________________________________
