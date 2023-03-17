@@ -2586,6 +2586,7 @@ scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
                                       , palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
                                       , obj = combined.obj
                                       , return_table = F
+                                      , ylab_adj = 1.1
                                       , ...) {
   cell.per.cl <- obj[[ident]][,1]
   cell.per.cluster <- (table(cell.per.cl))
@@ -2602,6 +2603,7 @@ scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
     ggExpress::qbarplot(cell.per.cluster, subtitle = ident, suffix = kpp(ident, suffix)
                         , col = 1:n.clusters
                         , xlab.angle = 45
+                        , ylim = c(0, ylab_adj * max(cell.per.cluster))
                         , label = lbl
                         , ylab = "Cells"
                         # , col = getClusterColors(ident = ident, show = T)

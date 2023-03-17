@@ -12,6 +12,7 @@ scBarplot.CellsPerCluster(
   palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
   obj = combined.obj,
   return_table = F,
+  ylab_adj = 1.1,
   ...
 )
 }
