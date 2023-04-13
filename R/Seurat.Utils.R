@@ -519,31 +519,40 @@ ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.co
 #'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
 #' @export
 #' @importFrom dplyr select group_by_
+
 scBarplot.FractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
                                        , obj = combined.obj, return.df = F, label = F
                                        , ...) { # Calculat the fraction of cells per cluster above a certain threhold
-  meta = obj@meta.data
-  (df_cells_above <- meta %>%
-      dplyr::select(c(id.col, value.col))  %>%
+  meta <- obj@meta.data
+  metacol <- meta %>%
+    dplyr::select(c(id.col, value.col))
+
+  (df_cells_above <- metacol %>%
       dplyr::group_by_(id.col)  %>%
       summarize(n_cells = n(),
                 n_cells_above = sum(!!as.name(value.col) > thrX),
                 fr_n_cells_above = n_cells_above / n_cells)
   )
 
-  # (v.fr_n_cells_above <- 100* as.named.vector(df_cells_above[3]))
+  total_average <- iround(100*mean(metacol[, value.col] > thrX))
+
   df_2vec <- df_cells_above[,c(1,4)]
   (v.fr_n_cells_above <- 100* deframe(df_2vec))
   if (label == TRUE) lab =  percentage_formatter(deframe(df_2vec)) else lab = NULL
 
-  pname <- make.names(paste('Cells with', value.col, '>', thrX, id.col))
-  ggobj <- ggExpress::qbarplot(v.fr_n_cells_above, suffix = suffix
+  pname <- paste('Pc. Cells above', thrX, 'of', value.col, '|', id.col) #
+  ggobj <- ggExpress::qbarplot(v.fr_n_cells_above
+                               , plotname = pname
+                               , suffix = suffix
+                               # , subtitle = id.col
+                               , caption = paste('Overall average:', iround(total_average), '%')
+                               , xlab.angle = 45
                                , xlab = 'Clusters', ylab = '% Cells'
-                               , plotname = pname, label = lab
-                               , subtitle = id.col, xlab.angle = 45)
+                               , label = lab
+                               , hline = total_average
+                               , ...)
   if (return.df) return(df_cells_above) else ggobj
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -1077,7 +1086,10 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 #' @param orig.ident meta.data colname original
 #' @param suffix.new.ident How to name (suffix) the new identity. Default: "ManualNames"
 #' @param new.ident meta.data colname new
+#' @param suffix.plot
+#' @param ...
 #' @param obj Seurat object
+#'
 #' @export
 
 RenameClustering <- function(namedVector = ManualNames
@@ -1085,16 +1097,26 @@ RenameClustering <- function(namedVector = ManualNames
                              , suffix.new.ident = "ManualNames"
                              , new.ident = ppp(orig.ident, suffix.new.ident)
                              , obj = combined.obj
-                             , suffix = substitute(obj)
+                             , suffix.plot = ''
                              , ...) {
+
   NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
                     , oldvalues = names(namedVector)
                     , newvalues = namedVector)
-  obj@meta.data[[new.ident]] <- NewX
-  clUMAP(orig.ident, suffix = suffix, ...)
-  clUMAP(new.ident, suffix = suffix, ...)
+
+  obj <- AddMetaData(object = obj, metadata = NewX, col.name = new.ident)
+
+  iprint('new.ident is', new.ident, 'created from', orig.ident); print('')
+
+
+  stopifnot(is.character(suffix.plot))
+  suffix.plot <- make.names(suffix.plot)
+  print(clUMAP(orig.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
+  print(clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
   return(obj)
 }
+
+
 
 
 # _________________________________________________________________________________________________
