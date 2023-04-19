@@ -4485,16 +4485,19 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
 #' }
 #' @export
 RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol) { # Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
+RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol, assay = "RNA") { # Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
   print("Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.")
-  RNA <- obj@assays$RNA
+  assayobj <- obj@assays[[assay]]
 
-  if (nrow(RNA) == length(newnames)) {
-    if (length(RNA@counts)) RNA@counts@Dimnames[[1]]            <- newnames
-    if (length(RNA@data)) RNA@data@Dimnames[[1]]                <- newnames
-    if (length(RNA@scale.data)) RNA@scale.data@Dimnames[[1]]    <- newnames
+  if (nrow(assayobj) == length(newnames)) {
+    if (length(assayobj@counts)) assayobj@counts@Dimnames[[1]]             <- newnames
+    if (length(assayobj@data))   attr(assayobj@data, "dimnames")[[1]]      <- newnames
+    if (length(assayobj@scale.data) > 0) assayobj@scale.data@Dimnames[[1]] <- newnames
     # if (length(obj@meta.data)) rownames(obj@meta.data)          <- newnames
-  } else {"Unequal gene sets: nrow(RNA) != nrow(newnames)"}
-  obj@assays$RNA <- RNA
+  } else {
+    warning("Unequal gene sets: nrow(assayobj) != nrow(newnames). No renaming performed")
+  }
+    obj@assays[[assay]] <- assayobj
   return(obj)
 }
 
