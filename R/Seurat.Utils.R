@@ -4491,7 +4491,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]
 
   if (nrow(assayobj) == length(newnames)) {
     if (length(assayobj@counts)) assayobj@counts@Dimnames[[1]]             <- newnames
-    if (length(assayobj@data))   attr(assayobj@data, "dimnames")[[1]]      <- newnames
+    if (length(assayobj@data))   assayobj@data@Dimnames[[1]]               <- newnames
     if (length(assayobj@scale.data) > 0) assayobj@scale.data@Dimnames[[1]] <- newnames
     # if (length(obj@meta.data)) rownames(obj@meta.data)          <- newnames
   } else {
