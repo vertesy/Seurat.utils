@@ -1086,8 +1086,8 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 #' @param orig.ident meta.data colname original
 #' @param suffix.new.ident How to name (suffix) the new identity. Default: "ManualNames"
 #' @param new.ident meta.data colname new
-#' @param suffix.plot
-#' @param ...
+#' @param suffix.plot Suffix description (short string) to be added to the umap plots.
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @param obj Seurat object
 #'
 #' @export
@@ -4476,7 +4476,9 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
 #' @title RenameGenesSeurat
 #' @description Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data. #
 #' @param obj Seurat object, Default: ls.Seurat[[i]]
+#' @param assay Which Seurat assay to replace. Default: RNA. Disclaimer: Intended use on simple objects that ONLY contain an RNA object. I highly advise against selectively replacing name in other assays that may have slots that cannot be updated by this function.
 #' @param newnames PARAM_DESCRIPTION, Default: HGNC.updated[[i]]$Suggested.Symbol
+#'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -4484,10 +4486,13 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
 #'  }
 #' }
 #' @export
-RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol) { # Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
 RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol, assay = "RNA") { # Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
   print("Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.")
   assayobj <- obj@assays[[assay]]
+
+  if (assay != 'RNA') {
+    print("Disclaimer: Intended use on simple objects that ONLY contain an RNA object. I highly advise against selectively replacing names in other assays that may have sub-slots that cannot be updated by this function.")
+  }
 
   if (nrow(assayobj) == length(newnames)) {
     if (length(assayobj@counts)) assayobj@counts@Dimnames[[1]]             <- newnames
