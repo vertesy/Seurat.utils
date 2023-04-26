@@ -39,6 +39,7 @@ Imports:
     ReadWriter,
     reshape2,
     scales,
+    Seurat,
     SoupX,
     sparseMatrixStats,
     stats,
@@ -47,7 +48,9 @@ Imports:
     tictoc,
     utils,
     vroom
+Suggests: 
+    SoupX
 Encoding: UTF-8
-Packaged: 2023-04-26 15:54:47
+Packaged: 2023-04-26 16:07:47
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0

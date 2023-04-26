@@ -4487,12 +4487,12 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
 #' }
 #' @export
 RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol, assay = "RNA") { # Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
-  print("Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.")
-  assayobj <- obj@assays[[assay]]
+  print(paste0("Run this before integration. It only changes obj@assays$", assay, "@counts, @data and @scale.data."))
+  if (assay != 'RNA') print("Disclaimer: Intended use on simple objects that ONLY contain an RNA object.
+                            I highly advise against selectively replacing names in other assays that
+                            may have sub-slots that cannot be updated by this function.")
 
-  if (assay != 'RNA') {
-    print("Disclaimer: Intended use on simple objects that ONLY contain an RNA object. I highly advise against selectively replacing names in other assays that may have sub-slots that cannot be updated by this function.")
-  }
+  assayobj <- obj@assays[[assay]]
 
   if (nrow(assayobj) == length(newnames)) {
     if (length(assayobj@counts)) assayobj@counts@Dimnames[[1]]             <- newnames
