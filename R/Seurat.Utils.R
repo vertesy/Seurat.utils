@@ -4484,16 +4484,51 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
 #'  }
 #' }
 #' @export
-RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol) { # Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
 RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol, assay = "RNA") { # Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
-  print("Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.")
+  if ("integrated" %in% names(obj@assays)) {
+    warning("Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.")
+  }
+  
+  # assayob <- SeuratObject::GetAssayData(obj)
+  # SetAssayData
+  # assay <- "RNA"
+  # assay <- "ADT"
   assayobj <- obj@assays[[assay]]
+  myslots <- slotNames(assayobj)
+  lnn <- length(newnames)
+
+  check_and_rename <- function(assayobj, newnames, slotname) {
+    if (!slotname %in% myslots) {
+       warning(slotname, " not in available as slot, no renaming here")
+    } else {
+      myobj <- slot(assayobj, slotname)
+      if ("dgCMatrix" %in% class(myobj)) {
+        if (length(myobj@Dimnames[[1]]) == lnn) {
+          myobj@Dimnames[[1]] <- newnames
+          slot(assayobj, slotname) <- myobj
+          message(slotname, " is of type dgeCMatrix! ", slotname, " succesfully renamed!")
+        } else {
+          warning("number of newnames is unequal number genes names in slot ", slotname)
+        }
+       } else if ("matrix" %in% class(myobj)) {
+        if (length(rownames(myobj)) == lnn) {
+          rownames(myobj) <- newnames
+          slot(assayobj, slotname) <- myobj
+          message(slotname, " is of type Matrix! ", slotname, " succesfully renamed!")
+        } else {
+          warning("number of newnames is unequal number genes names in slot ", slotname, ". No renaming here")
+        }
+       } else {
+        warning(slotname, " not of type dgeCMatrix or Matrix, no renaming")
+       }
+    }
+    return(assayobj)
+  }
 
   if (nrow(assayobj) == length(newnames)) {
-    if (length(assayobj@counts)) assayobj@counts@Dimnames[[1]]             <- newnames
-    if (length(assayobj@data))   assayobj@data@Dimnames[[1]]               <- newnames
-    if (length(assayobj@scale.data) > 0) assayobj@scale.data@Dimnames[[1]] <- newnames
-    # if (length(obj@meta.data)) rownames(obj@meta.data)          <- newnames
+    assayobj <- check_and_rename(assayobj, newnames=newnames, "counts")
+    assayobj <- check_and_rename(assayobj, newnames=newnames, "data")
+    assayobj <- check_and_rename(assayobj, newnames=newnames, "scale.data")
   } else {
     warning("Unequal gene sets: nrow(assayobj) != nrow(newnames). No renaming performed")
   }
