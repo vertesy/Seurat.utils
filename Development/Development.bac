@@ -4486,23 +4486,40 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
 #'  }
 #' }
 #' @export
-RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol, assay = "RNA") { # Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
-  print(paste0("Run this before integration. It only changes obj@assays$", assay, "@counts, @data and @scale.data."))
-  if (assay != 'RNA') print("Disclaimer: Intended use on simple objects that ONLY contain an RNA object.
-                            I highly advise against selectively replacing names in other assays that
-                            may have sub-slots that cannot be updated by this function.")
-
+RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol, assay = "RNA") { 
+  warning("Run this before integration and downstream processing. It only attempts to change obj@assays$YOUR_ASSAY@counts, @data and @scale.data.")
+  
   assayobj <- obj@assays[[assay]]
-
+  
+  check_and_rename <- function(assayobj, newnames, slotname) {
+    stopifnot(slotname %in% slotNames(assayobj))
+    # slotname = "scale.data"
+    myobj <- slot(assayobj, slotname)
+    
+    if (all(dim(myobj)) > 0) {
+      stopifnot(nrow(myobj) == length(newnames))
+      if ("dgCMatrix" %in% class(myobj) ) {
+      message(assay, "@", slotname," is of type dgeCMatrix!")
+      myobj@Dimnames[[1]] <- newnames
+    } else if ("matrix" %in% class(myobj) ) {
+      message(assay, "@", slotname," is of type Matrix!")
+      rownames(myobj) <- newnames
+    } else {
+      warning(">>> No renaming: ", assay, "@", slotname, " not of type dgeCMatrix or Matrix.")
+    }
+    slot(assayobj, slotname) <- myobj
+    } # id dim >0 
+    return(assayobj)
+  } # fun
+  
   if (nrow(assayobj) == length(newnames)) {
-    if (length(assayobj@counts)) assayobj@counts@Dimnames[[1]]             <- newnames
-    if (length(assayobj@data))   attr(assayobj@data, "dimnames")[[1]]      <- newnames
-    if (length(assayobj@scale.data) > 0) assayobj@scale.data@Dimnames[[1]] <- newnames
-    # if (length(obj@meta.data)) rownames(obj@meta.data)          <- newnames
+    assayobj <- check_and_rename(assayobj, newnames=newnames, "counts")
+    assayobj <- check_and_rename(assayobj, newnames=newnames, "data")
+    assayobj <- check_and_rename(assayobj, newnames=newnames, "scale.data")
   } else {
     warning("Unequal gene sets: nrow(assayobj) != nrow(newnames). No renaming performed")
   }
-    obj@assays[[assay]] <- assayobj
+  obj@assays[[assay]] <- assayobj
   return(obj)
 }
 
