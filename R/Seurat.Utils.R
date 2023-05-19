@@ -1086,8 +1086,8 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 #' @param orig.ident meta.data colname original
 #' @param suffix.new.ident How to name (suffix) the new identity. Default: "ManualNames"
 #' @param new.ident meta.data colname new
-#' @param suffix.plot
-#' @param ...
+#' @param suffix.plot Suffix description (short string) to be added to the umap plots.
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @param obj Seurat object
 #'
 #' @export
@@ -4476,7 +4476,9 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
 #' @title RenameGenesSeurat
 #' @description Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data. #
 #' @param obj Seurat object, Default: ls.Seurat[[i]]
+#' @param assay Which Seurat assay to replace. Default: RNA. Disclaimer: Intended use on simple objects that ONLY contain an RNA object. I highly advise against selectively replacing name in other assays that may have slots that cannot be updated by this function.
 #' @param newnames PARAM_DESCRIPTION, Default: HGNC.updated[[i]]$Suggested.Symbol
+#'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -4484,47 +4486,32 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
 #'  }
 #' }
 #' @export
-RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol, assay = "RNA") { # Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
-  if ("integrated" %in% names(obj@assays)) {
-    warning("Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.")
-  }
+RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol, assay = "RNA") { 
+  warning("Run this before integration and downstream processing. It only attempts to change obj@assays$YOUR_ASSAY@counts, @data and @scale.data.")
   
-  # assayob <- SeuratObject::GetAssayData(obj)
-  # SetAssayData
-  # assay <- "RNA"
-  # assay <- "ADT"
   assayobj <- obj@assays[[assay]]
-  myslots <- slotNames(assayobj)
-  lnn <- length(newnames)
-
+  
   check_and_rename <- function(assayobj, newnames, slotname) {
-    if (!slotname %in% myslots) {
-       warning(slotname, " not in available as slot, no renaming here")
+    stopifnot(slotname %in% slotNames(assayobj))
+    # slotname = "scale.data"
+    myobj <- slot(assayobj, slotname)
+    
+    if (all(dim(myobj)) > 0) {
+      stopifnot(nrow(myobj) == length(newnames))
+      if ("dgCMatrix" %in% class(myobj) ) {
+      message(assay, "@", slotname," is of type dgeCMatrix!")
+      myobj@Dimnames[[1]] <- newnames
+    } else if ("matrix" %in% class(myobj) ) {
+      message(assay, "@", slotname," is of type Matrix!")
+      rownames(myobj) <- newnames
     } else {
-      myobj <- slot(assayobj, slotname)
-      if ("dgCMatrix" %in% class(myobj)) {
-        if (length(myobj@Dimnames[[1]]) == lnn) {
-          myobj@Dimnames[[1]] <- newnames
-          slot(assayobj, slotname) <- myobj
-          message(slotname, " is of type dgeCMatrix! ", slotname, " succesfully renamed!")
-        } else {
-          warning("number of newnames is unequal number genes names in slot ", slotname)
-        }
-       } else if ("matrix" %in% class(myobj)) {
-        if (length(rownames(myobj)) == lnn) {
-          rownames(myobj) <- newnames
-          slot(assayobj, slotname) <- myobj
-          message(slotname, " is of type Matrix! ", slotname, " succesfully renamed!")
-        } else {
-          warning("number of newnames is unequal number genes names in slot ", slotname, ". No renaming here")
-        }
-       } else {
-        warning(slotname, " not of type dgeCMatrix or Matrix, no renaming")
-       }
+      warning(">>> No renaming: ", assay, "@", slotname, " not of type dgeCMatrix or Matrix.")
     }
+    slot(assayobj, slotname) <- myobj
+    } # id dim >0 
     return(assayobj)
-  }
-
+  } # fun
+  
   if (nrow(assayobj) == length(newnames)) {
     assayobj <- check_and_rename(assayobj, newnames=newnames, "counts")
     assayobj <- check_and_rename(assayobj, newnames=newnames, "data")
@@ -4532,7 +4519,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]
   } else {
     warning("Unequal gene sets: nrow(assayobj) != nrow(newnames). No renaming performed")
   }
-    obj@assays[[assay]] <- assayobj
+  obj@assays[[assay]] <- assayobj
   return(obj)
 }
 

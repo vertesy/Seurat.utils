@@ -24,6 +24,10 @@ RenameClustering(
 \item{new.ident}{meta.data colname new}
 
 \item{obj}{Seurat object}
+
+\item{suffix.plot}{Suffix description (short string) to be added to the umap plots.}
+
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 RenameClustering
