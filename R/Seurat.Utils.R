@@ -584,7 +584,7 @@ scBarplot.FractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', 
                 fr_n_cells_below = n_cells_below / n_cells) %>%
       FirstCol2RowNames())
 
-  (v.fr_n_cells_below <- 100* as.named.vector(df_cells_below[3]))
+  (v.fr_n_cells_below <- 100* as.named.vector.df(df_cells_below[3]))
 
   pname <- make.names(paste('Cells with', value.col, '<', thrX, id.col))
   ggobj <- ggExpress::qbarplot(v.fr_n_cells_below, xlab = 'Clusters', ylab = '% Cells'
@@ -768,7 +768,7 @@ seu.RemoveMetadata <- function(obj = combined.obj
 getMetadataColumn <- mmeta <- function(ColName.metadata = 'batch', obj = combined.obj, as_numeric =F) { # Get a metadata column from a Seurat object as a named vector
   stopifnot(ColName.metadata %in% colnames(obj@meta.data))
 
-  x = as.named.vector(obj@meta.data[ ,ColName.metadata, drop = F])
+  x = as.named.vector.df(obj@meta.data[ ,ColName.metadata, drop = F])
   if (as_numeric) {
     as.numeric.wNames(x)+1
   } else {x}
@@ -841,7 +841,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
   # identities should match
   {
     Idents(obj) <- orig.ident
-    ident.vec <- as.named.vector(ident.table)
+    ident.vec <- as.named.vector.df(ident.table)
     ident.X <- names(ident.vec)
     ident.Y <- as.character(ident.vec)
     ident.Seu <- sort.natural(levels(Idents(obj)))
@@ -2054,7 +2054,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
                                , dim = 1, swap= F, reduction="umap", res = "RNA_snn_res.0.5" ) {
 
   dim_name <- kppu(toupper(reduction),dim)
-  coord.umap <- as.named.vector(FetchData(object = obj, vars = dim_name))
+  coord.umap <- as.named.vector.df(FetchData(object = obj, vars = dim_name))
   identX <- as.character(obj@meta.data[[res]])
 
   ls.perCl <- split(coord.umap, f = identX)
@@ -4330,7 +4330,7 @@ CalculateFractionInTrome <- function(genesCalc.Cor.Seuratet = c("MALAT1") # Calc
 #' @export
 AddNewAnnotation <- function(obj = obj # Create a new metadata column based on an exisiting metadata column and a list of mappings (name <- IDs).
                              , source = "RNA_snn_res.0.5", named.list.of.identities = ls.Subset.ClusterLists) {
-  NewID <- as.named.vector(obj[[source]])
+  NewID <- as.named.vector.df(obj[[source]])
 
   for (i in 1:length(named.list.of.identities)) {
     lx <- as.character(named.list.of.identities[[i]])
@@ -4486,16 +4486,16 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
 #'  }
 #' }
 #' @export
-RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol, assay = "RNA") { 
+RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol, assay = "RNA") {
   warning("Run this before integration and downstream processing. It only attempts to change obj@assays$YOUR_ASSAY@counts, @data and @scale.data.")
-  
+
   assayobj <- obj@assays[[assay]]
-  
+
   check_and_rename <- function(assayobj, newnames, slotname) {
     stopifnot(slotname %in% slotNames(assayobj))
     # slotname = "scale.data"
     myobj <- slot(assayobj, slotname)
-    
+
     if (all(dim(myobj)) > 0) {
       stopifnot(nrow(myobj) == length(newnames))
       if ("dgCMatrix" %in% class(myobj) ) {
@@ -4508,10 +4508,10 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]
       warning(">>> No renaming: ", assay, "@", slotname, " not of type dgeCMatrix or Matrix.")
     }
     slot(assayobj, slotname) <- myobj
-    } # id dim >0 
+    } # id dim >0
     return(assayobj)
   } # fun
-  
+
   if (nrow(assayobj) == length(newnames)) {
     assayobj <- check_and_rename(assayobj, newnames=newnames, "counts")
     assayobj <- check_and_rename(assayobj, newnames=newnames, "data")
