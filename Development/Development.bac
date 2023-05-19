@@ -183,12 +183,12 @@ PlotFilters <- function(ls.obj = ls.Seurat
                         , above.mito = p$"thr.hp.mito"
                         , below.ribo = p$"thr.lp.ribo"
                         , above.ribo = p$"thr.hp.ribo"
-                        , below.nFeature_RNA = p$"thr.lp.nFeature_RNA"
+                        , below.nFeature_RNA = if(exists(p$'qunatile.thr.lp.nFeature_RNA')) p$'qunatile.thr.lp.nFeature_RNA' else p$"thr.lp.nFeature_RNA"
                         , above.nFeature_RNA = p$"thr.hp.nFeature_RNA"
                         , subdir= kpp("Filtering.plots"
                                       , "mito", p$"thr.hp.mito", p$"thr.lp.mito"
                                       , "ribo", p$"thr.hp.ribo", p$"thr.lp.ribo"
-                                      , "nFeature", p$"thr.hp.nFeature_RNA", p$"thr.lp.nFeature_RNA", "/")
+                                      , "nFeature", p$"thr.hp.nFeature_RNA", below.nFeature_RNA, "/")
                         , transparency = 0.25
                         , cex = 0.75
                         , theme.used = theme_bw(base_size = 18)
@@ -201,19 +201,19 @@ PlotFilters <- function(ls.obj = ls.Seurat
     , "] and ribosomal [",Stringendo::percentage_formatter(above.ribo), ";" ,Stringendo::percentage_formatter(below.ribo), "] reads."
   )
 
-
   theme_set(theme.used)
   create_set_OutDir(parentdir, subdir)
-  # require(ggplot2)
   if (suffices == length(ls.obj)) print("ls.obj elements have no names (required).")
-
 
   for (i in 1:length(ls.obj)) {
     print(suffices[i])
     mm =  ls.obj[[i]]@meta.data
 
-    below.nFeature_RNA <- floor(quantile(ls.obj[[i]]$'nFeature_RNA', probs = 0.9975))
-    iprint("below.nFeature_RNA at 99.75% percentile:", below.nFeature_RNA)
+    if(below.nFeature_RNA < 1) {
+      # "if below.nFeature_RNA is a qunaitle, then take that as the low-pass cutoff"
+      below.nFeature_RNA <- floor(quantile(ls.obj[[i]]$'nFeature_RNA', probs = below.nFeature_RNA))
+      iprint("below.nFeature_RNA at 99.75% percentile:", below.nFeature_RNA)
+    }
 
     AllMetaColumnsPresent <- all(c('nFeature_RNA', 'percent.mito', 'percent.ribo') %in% colnames(mm))
     if (!AllMetaColumnsPresent) {
@@ -225,12 +225,8 @@ PlotFilters <- function(ls.obj = ls.Seurat
       stop()
     }
 
-
-
     filt.nFeature_RNA = (mm$'nFeature_RNA' < below.nFeature_RNA & mm$'nFeature_RNA' > above.nFeature_RNA)
     filt.below.mito = (mm$'percent.mito' < below.mito & mm$'percent.mito' > above.mito)
-
-    # filt.below.mito = (mm$'percent.mito' < below.mito)
     filt.below.ribo = (mm$'percent.ribo' < below.ribo & mm$'percent.ribo' > above.ribo)
 
     mm =  cbind(mm, filt.nFeature_RNA, filt.below.mito, filt.below.ribo)
@@ -240,8 +236,8 @@ PlotFilters <- function(ls.obj = ls.Seurat
                                   labels = c(paste0("LQ (<", above.nFeature_RNA,")"),
                                              paste0("HQ (", above.nFeature_RNA,"< X <", below.nFeature_RNA,")"),
                                              paste0("Dbl/Outlier (>", below.nFeature_RNA,")")
+                                             )
                                   )
-    )
 
     A = ggplot(data = mm, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
       geom_histogram(binwidth = 100) +
@@ -263,7 +259,6 @@ PlotFilters <- function(ls.obj = ls.Seurat
       geom_vline(xintercept = above.nFeature_RNA);
     # B
 
-
     C = ggplot(mm, aes(x = nFeature_RNA, y = percent.ribo)) +
       ggtitle(paste("Cells below", Stringendo::percentage_formatter(below.ribo),
                     "ribo reads are selected (with A:"
@@ -277,7 +272,6 @@ PlotFilters <- function(ls.obj = ls.Seurat
       geom_vline(xintercept = below.nFeature_RNA) +
       geom_vline(xintercept = above.nFeature_RNA);
     # C
-
 
     D = ggplot(mm, aes(x = percent.ribo, y = percent.mito)) +
       ggtitle(paste("Cells w/o extremes selected (with A,B,C:"
@@ -293,14 +287,11 @@ PlotFilters <- function(ls.obj = ls.Seurat
       geom_vline(xintercept = above.ribo);
     # D
 
-
     plot_list = list(A,B,C,D)
     px = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:4])
     fname = ppp("Filtering.thresholds", suffices[i], filetype)
     save_plot(filename = fname, plot = px, base_height = 12, ncol = 1, nrow = 1) #Figure 2
-
   } # for
-
   # _________________________________________________________________________________________________
   create_set_Original_OutDir()
 }
