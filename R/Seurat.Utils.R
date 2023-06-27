@@ -2901,7 +2901,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , h = 7, w = NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
                    , axes = FALSE
-                   , aspect.ratio = c(FALSE, 0.6)[2]
+                   , aspect.ratio = c(FALSE, 0.6)[1]
                    , HGNC.lookup= TRUE
                    , make.uppercase = FALSE
                    , check_for_2D = TRUE
@@ -4828,13 +4828,14 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
 #' @export
 Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
                               , regex = F, folderPattern = c("filtered_feature", "SoupX_decont")[1]
+                              , depth = 4
                               , min.cells = 5, min.features = 200
                               , updateHGNC = T, ShowStats = T
                               , writeCBCtable = TRUE
                               , sample.barcoding = F
-                              , depth = 2) {
+                              , ...) {
 
-  if (sample.barcoding) depth = 3
+  # if (sample.barcoding) depth = 4
 
   finOrig <- list.dirs.depth.n(InputDir, depth = depth)
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
