@@ -20,7 +20,7 @@ qUMAP(
   nr.cols = NULL,
   assay = c("RNA", "integrated")[1],
   axes = FALSE,
-  aspect.ratio = c(FALSE, 0.6)[2],
+  aspect.ratio = c(FALSE, 0.6)[1],
   HGNC.lookup = TRUE,
   make.uppercase = FALSE,
   check_for_2D = TRUE,

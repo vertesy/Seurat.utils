@@ -11,6 +11,7 @@ RenameClustering(
   new.ident = ppp(orig.ident, suffix.new.ident),
   obj = combined.obj,
   suffix.plot = "",
+  plot_umaps = TRUE,
   ...
 )
 }

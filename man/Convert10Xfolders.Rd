@@ -8,13 +8,14 @@ Convert10Xfolders(
   InputDir,
   regex = F,
   folderPattern = c("filtered_feature", "SoupX_decont")[1],
+  depth = 4,
   min.cells = 5,
   min.features = 200,
   updateHGNC = T,
   ShowStats = T,
   writeCBCtable = TRUE,
   sample.barcoding = F,
-  depth = 2
+  ...
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ Convert10Xfolders(
 \item{regex}{PARAM_DESCRIPTION, Default: F}
 
 \item{folderPattern}{PARAM_DESCRIPTION, Default: c("filtered_feature", "SoupX_decont")\link{1}}
+
+\item{depth}{Depth of scan (How many levels below InputDir). Def 2}
 
 \item{min.cells}{PARAM_DESCRIPTION, Default: 5}
 
@@ -35,8 +38,6 @@ Convert10Xfolders(
 \item{writeCBCtable}{write out a list of cell barcodes (CBC) as tsv, Default: T}
 
 \item{sample.barcoding}{Cell Ranger run with sample barcoding. The folder structure is different.}
-
-\item{depth}{Depth of scan (How many levels below InputDir). Def 2}
 }
 \description{
 Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #

@@ -1594,8 +1594,6 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
 }
 
 
-
-
 # _________________________________________________________________________________________________
 # Interacting with the environment ______________________________ ----
 # _________________________________________________________________________________________________
@@ -2866,6 +2864,75 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F,
 }
 
 
+# _________________________________________________________________________________________________
+# plotting generic, misc ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+# _________________________________________________________________________________________________
+
+#' @title qFeatureScatter
+#' @description Quickly plot and save a FeatureScatter plot.
+#' @param feature1 PARAM_DESCRIPTION, Default: 'TOP2A'
+#' @param feature2 PARAM_DESCRIPTION, Default: 'ID2'
+#' @param obj Seurat object, Default: combined.obj
+#' @param ext File extension for saving, Default: 'png'
+#' @param logX logX
+#' @param logY logY
+#' @param plot PARAM_DESCRIPTION, Default: TRUE
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj
+                            , ext ="png", plot = TRUE
+                            , logX = F, logY = F
+                            , ...) {
+  plotname <- kpp(feature1,"VS", feature2)
+  p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2, ...) +
+    ggtitle(paste("Correlation", plotname)) +
+    theme_linedraw()
+
+  if (logX) p <- p + scale_x_log10()
+  if (logY) p <- p + scale_y_log10()
+
+  fname = kpp("FeatureScatter", plotname)
+  ggExpress::qqSave(ggobj = p, title = plotname, ext = ext, w = 8, h = 5)
+  if (plot) p
+}
+
+
+# _________________________________________________________________________________________________
+#' qSeuViolin
+#'
+#' @param object
+#' @param suffix
+#' @param features
+#' @param split.by
+#' @param logY
+#'
+#' @return
+#' @export
+#'
+#' @examples
+qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
+                       , features = 'nFeature_RNA', split.by = 'orig.ident', logY = TRUE) {
+
+  # onm <- kollapse(gsub("[[:punct:]]", "", substitute(object)))
+  p <- VlnPlot(object = object, features = features, split.by = split.by) +
+    ggtitle( label = features, subtitle = paste(suffix, 'by', split.by)) +
+    theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
+  if (logY)
+    p <- p + ggplot2::scale_y_log10()
+
+  title_ <- ppp(as.character(features), GEX_library, flag.nameiftrue(logY))
+  qqSave(p, title = title_, w = 7, h = 5)
+  p
+}
 
 
 
@@ -3378,42 +3445,6 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
 
 
 
-
-# _________________________________________________________________________________________________
-
-#' @title qFeatureScatter
-#' @description Quickly plot and save a FeatureScatter plot.
-#' @param feature1 PARAM_DESCRIPTION, Default: 'TOP2A'
-#' @param feature2 PARAM_DESCRIPTION, Default: 'ID2'
-#' @param obj Seurat object, Default: combined.obj
-#' @param ext File extension for saving, Default: 'png'
-#' @param logX logX
-#' @param logY logY
-#' @param plot PARAM_DESCRIPTION, Default: TRUE
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj
-                            , ext ="png", plot = TRUE
-                            , logX = F, logY = F
-                            , ...) {
-  plotname <- kpp(feature1,"VS", feature2)
-  p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2, ...) +
-    ggtitle(paste("Correlation", plotname)) +
-    theme_linedraw()
-
-  if (logX) p <- p + scale_x_log10()
-  if (logY) p <- p + scale_y_log10()
-
-  fname = kpp("FeatureScatter", plotname)
-  ggExpress::qqSave(ggobj = p, title = plotname, ext = ext, w = 8, h = 5)
-  if (plot) p
-}
 
 # _________________________________________________________________________________________________
 #' @title qQC.plots.BrainOrg

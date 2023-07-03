@@ -977,8 +977,6 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
   print("Calculating Gene Quantiles")
   expr.q99.df = sparseMatrixStats::rowQuantiles(x, probs = quantileX)
   expr.q99 = iround(expr.q99.df)
-  # expr.q99 = iround(as.named.vector(expr.q99.df))
-  toc();
 
   log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q99 + 1)) # strip names
   n.cells <- floor(ncol(obj) * (1-quantileX) )
@@ -1089,6 +1087,7 @@ RenameClustering <- function(namedVector = ManualNames
                              , new.ident = ppp(orig.ident, suffix.new.ident)
                              , obj = combined.obj
                              , suffix.plot = ''
+                             , plot_umaps = TRUE
                              , ...) {
 
   NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
@@ -1099,13 +1098,42 @@ RenameClustering <- function(namedVector = ManualNames
 
   iprint('new.ident is', new.ident, 'created from', orig.ident); print('')
 
+  if (plot_umaps) {
+    stopifnot(is.character(suffix.plot))
+    suffix.plot <- make.names(suffix.plot)
+    print(clUMAP(orig.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
+    print(clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
+  } else { iprint("New ident:", new.ident) }
 
-  stopifnot(is.character(suffix.plot))
-  suffix.plot <- make.names(suffix.plot)
-  print(clUMAP(orig.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
-  print(clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
   return(obj)
 }
+
+
+# RenameClustering <- function(namedVector = ManualNames
+#                              , orig.ident =  "RNA_snn_res.0.3"
+#                              , suffix = substitute(obj)
+#                              , suffx.new.ident = "ManualNames" # dont name it suffix... stupid autoguess feature
+#                              , new.ident = ppp(orig.ident, suffx.new.ident)
+#                              , obj = combined.obj
+#                              , plot_umaps = FALSE
+#                              , ...) {
+#
+#   NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
+#                     , oldvalues = names(namedVector)
+#                     , newvalues = namedVector)
+#   obj@meta.data[[new.ident]] <- NewX
+#   print(0)
+#   if (plot_umaps) {
+#     "There is an error here prob some arguments get passed that should not"
+#     "I removed the ', ...'  argument, but maybe the problem is with suffix..."
+#     "Did not test either"
+#     clUMAP(orig.ident, suffix = suffix, obj = obj)
+#     print(1)
+#     clUMAP(new.ident, suffix = suffix, obj = obj)
+#     print(11)
+#   } else { iprint("New ident:", new.ident) }
+#   return(obj)
+# }
 
 
 
@@ -1564,8 +1592,6 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
           , xlab = "Av. mRNA in the 10% top expressing cells (q90 av.exp.)")
   )
 }
-
-
 
 
 # _________________________________________________________________________________________________
@@ -2838,6 +2864,75 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F,
 }
 
 
+# _________________________________________________________________________________________________
+# plotting generic, misc ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+# _________________________________________________________________________________________________
+
+#' @title qFeatureScatter
+#' @description Quickly plot and save a FeatureScatter plot.
+#' @param feature1 PARAM_DESCRIPTION, Default: 'TOP2A'
+#' @param feature2 PARAM_DESCRIPTION, Default: 'ID2'
+#' @param obj Seurat object, Default: combined.obj
+#' @param ext File extension for saving, Default: 'png'
+#' @param logX logX
+#' @param logY logY
+#' @param plot PARAM_DESCRIPTION, Default: TRUE
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @export
+qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj
+                            , ext ="png", plot = TRUE
+                            , logX = F, logY = F
+                            , ...) {
+  plotname <- kpp(feature1,"VS", feature2)
+  p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2, ...) +
+    ggtitle(paste("Correlation", plotname)) +
+    theme_linedraw()
+
+  if (logX) p <- p + scale_x_log10()
+  if (logY) p <- p + scale_y_log10()
+
+  fname = kpp("FeatureScatter", plotname)
+  ggExpress::qqSave(ggobj = p, title = plotname, ext = ext, w = 8, h = 5)
+  if (plot) p
+}
+
+
+# _________________________________________________________________________________________________
+#' qSeuViolin
+#'
+#' @param object
+#' @param suffix
+#' @param features
+#' @param split.by
+#' @param logY
+#'
+#' @return
+#' @export
+#'
+#' @examples
+qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
+                       , features = 'nFeature_RNA', split.by = 'orig.ident', logY = TRUE) {
+
+  # onm <- kollapse(gsub("[[:punct:]]", "", substitute(object)))
+  p <- VlnPlot(object = object, features = features, split.by = split.by) +
+    ggtitle( label = features, subtitle = paste(suffix, 'by', split.by)) +
+    theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
+  if (logY)
+    p <- p + ggplot2::scale_y_log10()
+
+  title_ <- ppp(as.character(features), GEX_library, flag.nameiftrue(logY))
+  qqSave(p, title = title_, w = 7, h = 5)
+  p
+}
 
 
 
@@ -2901,7 +2996,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , h = 7, w = NULL, nr.cols = NULL
                    , assay = c("RNA","integrated")[1]
                    , axes = FALSE
-                   , aspect.ratio = c(FALSE, 0.6)[2]
+                   , aspect.ratio = c(FALSE, 0.6)[1]
                    , HGNC.lookup= TRUE
                    , make.uppercase = FALSE
                    , check_for_2D = TRUE
@@ -3350,42 +3445,6 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
 
 
 
-
-# _________________________________________________________________________________________________
-
-#' @title qFeatureScatter
-#' @description Quickly plot and save a FeatureScatter plot.
-#' @param feature1 PARAM_DESCRIPTION, Default: 'TOP2A'
-#' @param feature2 PARAM_DESCRIPTION, Default: 'ID2'
-#' @param obj Seurat object, Default: combined.obj
-#' @param ext File extension for saving, Default: 'png'
-#' @param logX logX
-#' @param logY logY
-#' @param plot PARAM_DESCRIPTION, Default: TRUE
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export
-qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj
-                            , ext ="png", plot = TRUE
-                            , logX = F, logY = F
-                            , ...) {
-  plotname <- kpp(feature1,"VS", feature2)
-  p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2, ...) +
-    ggtitle(paste("Correlation", plotname)) +
-    theme_linedraw()
-
-  if (logX) p <- p + scale_x_log10()
-  if (logY) p <- p + scale_y_log10()
-
-  fname = kpp("FeatureScatter", plotname)
-  ggExpress::qqSave(ggobj = p, title = plotname, ext = ext, w = 8, h = 5)
-  if (plot) p
-}
 
 # _________________________________________________________________________________________________
 #' @title qQC.plots.BrainOrg
@@ -4828,13 +4887,14 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
 #' @export
 Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
                               , regex = F, folderPattern = c("filtered_feature", "SoupX_decont")[1]
+                              , depth = 4
                               , min.cells = 5, min.features = 200
                               , updateHGNC = T, ShowStats = T
                               , writeCBCtable = TRUE
                               , sample.barcoding = F
-                              , depth = 2) {
+                              , ...) {
 
-  if (sample.barcoding) depth = 3
+  # if (sample.barcoding) depth = 4
 
   finOrig <- list.dirs.depth.n(InputDir, depth = depth)
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
@@ -4877,7 +4937,8 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 
 
       ncells = ncol(seu)
-      fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features, 'cells', ncells, "Rds")
+      fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells
+                     , 'min.features', min.features, 'cells', ncells, "Rds")
       print(fnameOUT)
 
 
@@ -4893,7 +4954,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 
       }
 
-    }
+    } # for
   } else { iprint("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3]) }
 }
 
