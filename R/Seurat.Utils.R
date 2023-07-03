@@ -977,8 +977,6 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
   print("Calculating Gene Quantiles")
   expr.q99.df = sparseMatrixStats::rowQuantiles(x, probs = quantileX)
   expr.q99 = iround(expr.q99.df)
-  # expr.q99 = iround(as.named.vector(expr.q99.df))
-  toc();
 
   log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q99 + 1)) # strip names
   n.cells <- floor(ncol(obj) * (1-quantileX) )
