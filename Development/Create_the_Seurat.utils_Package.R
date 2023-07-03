@@ -1,6 +1,5 @@
 ######################################################################################################
 # Create_the_Seurat.utils_Package.R
-# 31 01 2022
 ######################################################################################################
 # source("/Users/abel.vertesy/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.v0.1.R")
 # rm(list = ls(all.names = TRUE));
@@ -21,7 +20,7 @@ require('CodeAndRoll2')
 
 # Setup ------------------------
 PackageName = 	"Seurat.utils"
-package.version = "1.7.5"
+package.version = "1.7.6"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir = kollapse("~/GitHub/Packages/", PackageName, "/")
@@ -44,7 +43,7 @@ DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
                     , "Depends" =  "Seurat, ggplot2, Stringendo, CodeAndRoll2, ggExpress"
                     , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
     htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter,
-    R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom"
+    R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom, EnhancedVolcano"
                     , "Suggests" = "SoupX"
                     , "BugReports"= "https://github.com/vertesy/Seurat.utils/issues"
 )

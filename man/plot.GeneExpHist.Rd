@@ -22,5 +22,5 @@
 \item{...}{}
 }
 \description{
-plot.GeneExpHist
+Plot the summed expression of a set of genes as a histogram per cell.
 }

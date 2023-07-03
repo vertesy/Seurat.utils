@@ -2425,6 +2425,42 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 }
 
 
+
+# ________________________________________________________________________
+#' scEnhancedVolcano
+#'
+#' @param toptable
+#' @param lab
+#' @param suffix
+#' @param title
+#' @param subtitle
+#' @param x
+#' @param y
+#' @param selectLab
+#' @param h
+#' @param w
+#' @export
+#'
+#' @examples
+scEnhancedVolcano <- function(toptable = df.markers.X, lab = rownames(toptable)
+                              , suffix = ""
+                              , title = kppd("DGEA", suffix)
+                              , subtitle = paste("min FC:", iround(2^abs(min(toptable$'avg_log2FC'))))
+                              , x ="avg_log2FC", y ="p_val_adj"
+                              , selectLab = lab[1:3]
+                              , h = 8, w = h
+) {
+  pobj <- EnhancedVolcano::EnhancedVolcano(toptable = toptable
+                                           , title = title, subtitle = subtitle
+                                           , lab =lab, selectLab = selectLab
+                                           , x = x, y = y
+  )
+  qqSave(ggobj = pobj, title = title, h = h, w = w)
+  pobj
+}
+
+
+
 # _________________________________________________________________________________________________
 #' @title BulkGEScatterPlot
 #' @description Plot bulk scatterplots to identify differential expressed genes across conditions #
