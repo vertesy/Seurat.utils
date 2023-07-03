@@ -2935,6 +2935,61 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
 }
 
 
+# _________________________________________________________________________________________________
+#' plot.GeneExpHist
+#'
+#' @param obj
+#' @param genes
+#' @param assay
+#' @param slot_
+#' @param thr_expr
+#' @param suffix
+#' @param xlab
+#' @param return_cells_passing
+#' @param quantile_thr
+#' @param return_quantile
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN")
+                             , assay = 'RNA', slot_ = 'data'
+                             , thr_expr = 10
+                             , suffix = NULL
+                             , xlab = p0("log10(Summed UMI count @",slot_,")")
+                             , return_cells_passing = TRUE
+                             , quantile_thr = 0.95
+                             , return_quantile
+                             , ...) {
+  aggregate = length(genes) > 1
+  G_expression = colSums(GetAssayData(object = obj, assay = assay, slot = slot_)[genes, ])
+
+  subx <- filter_HP(G_expression, threshold = thr_expr, return_conclusion = T, plot.hist = F)
+  if (aggregate) subx <- p0(subx,"\n", length(genes), " aggregated:", paste(head(genes), collapse = " "))
+
+
+  if (slot_ == 'counts') G_expression <- CodeAndRoll2::clip.at.fixed.value(distribution = G_expression, thr = quantile(G_expression, probs = .95)) # clip values for counts
+
+  title_ = paste("Gene expression histogram", Stringendo::flag.nameiftrue(aggregate, prefix = '- '), suffix, slot_)
+
+  pobj <- qhistogram(G_expression
+                     , plotname = title_
+                     , suffix = suffix
+                     , vline = thr_expr, filtercol = -1
+                     , xlab = xlab
+                     , ylab = "# of cells"
+                     , subtitle = subx
+                     , caption = paste('cutoff at', iround(thr_expr))
+                     , w = 7, h = 6
+                     , ...)
+  print(pobj)
+  if (return_cells_passing) MarkdownHelpers::filter_HP(G_expression, threshold = thr_expr, plot.hist = F)
+
+}
+
+
 
 # _________________________________________________________________________________________________
 # plotting.dim.reduction.2D.R ______________________________ ----
