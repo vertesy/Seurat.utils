@@ -1089,6 +1089,7 @@ RenameClustering <- function(namedVector = ManualNames
                              , new.ident = ppp(orig.ident, suffix.new.ident)
                              , obj = combined.obj
                              , suffix.plot = ''
+                             , plot_umaps = TRUE
                              , ...) {
 
   NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
@@ -1099,13 +1100,42 @@ RenameClustering <- function(namedVector = ManualNames
 
   iprint('new.ident is', new.ident, 'created from', orig.ident); print('')
 
+  if (plot_umaps) {
+    stopifnot(is.character(suffix.plot))
+    suffix.plot <- make.names(suffix.plot)
+    print(clUMAP(orig.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
+    print(clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
+  } else { iprint("New ident:", new.ident) }
 
-  stopifnot(is.character(suffix.plot))
-  suffix.plot <- make.names(suffix.plot)
-  print(clUMAP(orig.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
-  print(clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
   return(obj)
 }
+
+
+# RenameClustering <- function(namedVector = ManualNames
+#                              , orig.ident =  "RNA_snn_res.0.3"
+#                              , suffix = substitute(obj)
+#                              , suffx.new.ident = "ManualNames" # dont name it suffix... stupid autoguess feature
+#                              , new.ident = ppp(orig.ident, suffx.new.ident)
+#                              , obj = combined.obj
+#                              , plot_umaps = FALSE
+#                              , ...) {
+#
+#   NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
+#                     , oldvalues = names(namedVector)
+#                     , newvalues = namedVector)
+#   obj@meta.data[[new.ident]] <- NewX
+#   print(0)
+#   if (plot_umaps) {
+#     "There is an error here prob some arguments get passed that should not"
+#     "I removed the ', ...'  argument, but maybe the problem is with suffix..."
+#     "Did not test either"
+#     clUMAP(orig.ident, suffix = suffix, obj = obj)
+#     print(1)
+#     clUMAP(new.ident, suffix = suffix, obj = obj)
+#     print(11)
+#   } else { iprint("New ident:", new.ident) }
+#   return(obj)
+# }
 
 
 
@@ -4878,7 +4908,8 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 
 
       ncells = ncol(seu)
-      fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features, 'cells', ncells, "Rds")
+      fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells
+                     , 'min.features', min.features, 'cells', ncells, "Rds")
       print(fnameOUT)
 
 
@@ -4894,7 +4925,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 
       }
 
-    }
+    } # for
   } else { iprint("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3]) }
 }
 
