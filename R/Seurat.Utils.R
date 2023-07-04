@@ -188,7 +188,7 @@ PlotFilters <- function(ls.obj = ls.Seurat
                         , above.mito = p$"thr.hp.mito"
                         , below.ribo = p$"thr.lp.ribo"
                         , above.ribo = p$"thr.hp.ribo"
-                        , below.nFeature_RNA = if(exists(p$'qunatile.thr.lp.nFeature_RNA')) p$'qunatile.thr.lp.nFeature_RNA' else p$"thr.lp.nFeature_RNA"
+                        , below.nFeature_RNA = if('quantile.thr.lp.nFeature_RNA' %in% names(p)) p$'quantile.thr.lp.nFeature_RNA' else p$"thr.lp.nFeature_RNA"
                         , above.nFeature_RNA = p$"thr.hp.nFeature_RNA"
                         , subdir= kpp("Filtering.plots"
                                       , "mito", p$"thr.hp.mito", p$"thr.lp.mito"
@@ -200,6 +200,7 @@ PlotFilters <- function(ls.obj = ls.Seurat
                         , LabelDistFromTop = 200 # for barplot_label
 ) {
 
+  stopif(is.null(below.nFeature_RNA))
   llprint(
     "We filtered for high quality cells based on the number of genes detected [", above.nFeature_RNA, ";" ,below.nFeature_RNA
     , "] and the fraction of mitochondrial [", Stringendo::percentage_formatter(above.mito), ";" ,Stringendo::percentage_formatter(below.mito)
@@ -5542,12 +5543,6 @@ make10Xcellname <- function(cellnames, suffix="_1") { paste0(cellnames, suffix) 
 #' @description Plot stats about the ambient RNA content in a 10X experiment.
 #' @param CellRangerOutputDir PARAM_DESCRIPTION, Default: '~/Data/114593/114593'
 #' @param SeqRun PARAM_DESCRIPTION, Default: gsub("*([0-9]+).*", "\\1", x = basename(CellRangerOutputDir))
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  plotTheSoup(CellRangerOutputDir = "~/Data/114593/114593" , SeqRun = gsub('*([0-9]+).*','\\1', x = basename(CellRangerOutputDir)))
-#'  }
-#' }
 #' @seealso
 #'  \code{\link[Matrix]{colSums}}
 #'  \code{\link[tibble]{rownames}}
@@ -5557,10 +5552,12 @@ make10Xcellname <- function(cellnames, suffix="_1") { paste0(cellnames, suffix) 
 #' @importFrom tibble rownames_to_column
 #' @importFrom ggrepel geom_text_repel
 #' @importFrom Stringendo percentage_formatter
-plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
-                        , SeqRun = gsub('*([0-9]+).*','\\1', x = basename(CellRangerOutputDir))) { # Plot the ambient RNA content of droplets without a cell (background droplets).
 
-  ls.Alpha = 1
+plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
+                        , SeqRun = gsub('*([0-9]+).*','\\1', x = basename(CellRangerOutputDir))
+                        , ls.Alpha = 1) {
+
+
   # Setup ___________________________________
   # require(Matrix); require(ggrepel)
 
@@ -5569,10 +5566,11 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
   path.filt <- file.path(CellRangerOutputDir, grep(x = dirz, pattern = "^filt_*", value = T))
   CR.matrices <- list.fromNames(c("raw", "filt"))
 
-  # Adapter for Markdownreports background variable "OutDir ___________________________________
-  if (exists('OutDir')) OutDirBac <- OutDir
-  OutDir <- file.path(CellRangerOutputDir,paste0(kpp("SoupStatistics", SeqRun)))
-  try(dir.create(OutDir))
+  # Adapter for Markdownreports background variable "OutDir" ___________________________________
+  OutDirBac <- if(exists("OutDir")) OutDir else getwd()
+  OutDir <- file.path(CellRangerOutputDir, paste0(kpp("SoupStatistics", SeqRun)))
+  MarkdownReports::create_set_OutDir(OutDir)
+
   ww.assign_to_global("OutDir", OutDir, 1)
 
   # Read In ___________________________________
@@ -5768,6 +5766,7 @@ plotTheSoup <- function(CellRangerOutputDir = "~/Data/114593/114593"
                 , labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.non.summarized/100, digitz = 2)
                 # , labels = paste0(round(1e6 * Soup.GEMs.top.Genes.non.summarized), " ppm")
                 , TopOffset = -maxx*0.2, srt = 90, cex=.75)
+
   if (exists('OutDirBac'))  ww.assign_to_global("OutDir", OutDirBac, 1)
 } # plotTheSoup
 
