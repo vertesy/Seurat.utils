@@ -11,9 +11,9 @@ plotTheSoup(
 )
 }
 \arguments{
-\item{SeqRun}{PARAM_DESCRIPTION, Default: gsub("\emph{(\link{0-9}+).}", "\\1", x = basename(CellRangerOutputDir))}
+\item{CellRanger_outs_Dir}{CellRanger 'outs' (output) directory, Default: '~/Data/114593/114593'}
 
-\item{CellRangerOutputDir}{PARAM_DESCRIPTION, Default: '~/Data/114593/114593'}
+\item{SeqRun}{Aka SampleName (the folder above 'outs;). Default: str_extract(CellRanger_outs_Dir, "[\link{:alnum:}_]+(?=/outs/)").}
 }
 \description{
 Plot stats about the ambient RNA content in a 10X experiment.

@@ -1640,7 +1640,7 @@ recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q99.E
   if (!exists('all.genes')) {
     all.genes <- obj@misc$all.genes
     print(head(unlist(all.genes)))
-    ww.assign_to_global(name = "all.genes", value = all.genes, verbose = F)
+    MarkdownHelpers::ww.assign_to_global(name = "all.genes", value = all.genes, verbose = F)
   } else {print("variable 'all.genes' exits in the global namespace")}
 }
 
@@ -1660,13 +1660,13 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
   if (!exists('n.datasets')) {
     n.datasets <- obj@misc$n.datasets
     print(head(unlist(n.datasets)))
-    ww.assign_to_global(name = "n.datasets", value = n.datasets)
+    MarkdownHelpers::ww.assign_to_global(name = "n.datasets", value = n.datasets)
   } else {print("variable 'n.datasets' exits in the global namespace")}
 
   if (!exists('meta.tags')) {
     meta.tags <- obj@misc$meta.tags
     print(head(unlist(meta.tags)))
-    ww.assign_to_global(name = "meta.tags", value = meta.tags)
+    MarkdownHelpers::ww.assign_to_global(name = "meta.tags", value = meta.tags)
   } else {print("variable 'meta.tags' exits in the global namespace")}
 
 }
@@ -1693,7 +1693,7 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
     if (exists('p')) iprint("variable 'p' exits in the global namespace:");
 
     if (!exists('p') | (exists('p') & overwrite == TRUE) ) {
-      ww.assign_to_global(name = "p", value = p); print("Overwritten.")
+      MarkdownHelpers::ww.assign_to_global(name = "p", value = p); print("Overwritten.")
     } else {
       print("Not overwritten.")
     }
@@ -1717,7 +1717,7 @@ recall.genes.ls<- function(obj = combined.obj) { # genes.ls
   if (!exists('genes.ls')) {
     genes.ls <- obj@misc$genes.ls
     print(head(unlist(genes.ls)))
-    ww.assign_to_global(name = "genes.ls", value = genes.ls)
+    MarkdownHelpers::ww.assign_to_global(name = "genes.ls", value = genes.ls)
   } else {print("variable 'genes.ls' exits in the global namespace")}
 }
 
@@ -5541,8 +5541,8 @@ make10Xcellname <- function(cellnames, suffix="_1") { paste0(cellnames, suffix) 
 # _________________________________________________________________________________________________
 #' @title plotTheSoup
 #' @description Plot stats about the ambient RNA content in a 10X experiment.
-#' @param CellRangerOutputDir PARAM_DESCRIPTION, Default: '~/Data/114593/114593'
-#' @param SeqRun PARAM_DESCRIPTION, Default: gsub("*([0-9]+).*", "\\1", x = basename(CellRangerOutputDir))
+#' @param CellRanger_outs_Dir CellRanger 'outs' (output) directory, Default: '~/Data/114593/114593'
+#' @param SeqRun Aka SampleName (the folder above 'outs;). Default: str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)").
 #' @seealso
 #'  \code{\link[Matrix]{colSums}}
 #'  \code{\link[tibble]{rownames}}
@@ -5585,7 +5585,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   OutDirBac <- if(exists("OutDir")) OutDir else getwd()
   OutDir <- file.path(CellRanger_outs_Dir, paste0(kpp("SoupStatistics", SeqRun)))
   MarkdownReports::create_set_OutDir(OutDir)
-  ww.assign_to_global("OutDir", OutDir, 1)
+  MarkdownHelpers::ww.assign_to_global("OutDir", OutDir, 1)
 
   # Read raw and filtered data ___________________________________
   print("Reading raw CellRanger output matrices")
@@ -5642,7 +5642,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Class[grep('^AC', HGNC)]  <- "AC"
   Class[grep('^AL', HGNC)]  <- "AL"
   Fraction.of.Geneclasses <- table(Class)
-  qpie(Fraction.of.Geneclasses)
+  ggExpress::qpie(Fraction.of.Geneclasses)
   # wpie(Fraction.of.Geneclasses)
   Soup.VS.Cells.Av.Exp.gg$Class <- Class
 
@@ -5697,7 +5697,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   # Per Gene ___________________________________
   PC.mRNA.in.Soup <- sum(CR.matrices$'soup')/sum(CR.matrices$'raw')
   PC.mRNA.in.Cells <- 100*sum(CR.matrices$'filt')/sum(CR.matrices$'raw')
-  wbarplot(variable = PC.mRNA.in.Cells, col ="seagreen", plotname = kppd("PC.mRNA.in.Cells", SeqRun)
+  MarkdownReports::wbarplot(variable = PC.mRNA.in.Cells, col ="seagreen", plotname = kppd("PC.mRNA.in.Cells", SeqRun)
            , ylim = c(0,100), ylab = "% mRNA in cells"
            , sub = "% mRNA is more meaningful than % reads reported by CR")
   barplot_label(barplotted_variable = PC.mRNA.in.Cells
@@ -5708,7 +5708,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   # Plot top gene's expression ___________________________________
   Soup.GEMs.top.Genes = 100*head(sort(CR.matrices$'soup.rel.RC', decreasing = T), n = 20)
 
-  wbarplot(Soup.GEMs.top.Genes, plotname = kppd("Soup.GEMs.top.Genes", SeqRun)
+  MarkdownReports::wbarplot(Soup.GEMs.top.Genes, plotname = kppd("Soup.GEMs.top.Genes", SeqRun)
            , ylab="% mRNA in the Soup"
            , sub = paste("Within the", SeqRun, "dataset")
            , tilted_text = T
@@ -5748,7 +5748,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 
   Soup.GEMs.top.Genes.summarized = 100 * soupProfile.summarized[1:NrColumns2Show] / CR.matrices$'soup.total.sum'
   maxx <- max(Soup.GEMs.top.Genes.summarized)
-  wbarplot(Soup.GEMs.top.Genes.summarized, plotname = kppd("Soup.GEMs.top.Genes.summarized", SeqRun)
+  MarkdownReports::wbarplot(Soup.GEMs.top.Genes.summarized, plotname = kppd("Soup.GEMs.top.Genes.summarized", SeqRun)
            , ylab="% mRNA in the Soup", ylim = c(0, maxx+3)
            , sub = paste("Within the", SeqRun, "dataset")
            , tilted_text = T, col = ccc)
@@ -5760,7 +5760,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Absolute.fraction.soupProfile.summarized <- Soup.GEMs.top.Genes.summarized * PC.mRNA.in.Soup
 
   maxx <- max(Absolute.fraction.soupProfile.summarized)
-  wbarplot(Absolute.fraction.soupProfile.summarized, plotname = kppd("Absolute.fraction.soupProfile.summarized", SeqRun)
+  MarkdownReports::wbarplot(Absolute.fraction.soupProfile.summarized, plotname = kppd("Absolute.fraction.soupProfile.summarized", SeqRun)
            , ylab="% of mRNA in cells", ylim = c(0, maxx*1.33)
            , sub = paste(Stringendo::percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", SeqRun)
            , tilted_text = T, col = ccc)
@@ -5772,7 +5772,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   # ___________________________________
   Soup.GEMs.top.Genes.non.summarized <- 100* sort(genes.non.Above, decreasing = T)[1:20]/ CR.matrices$'soup.total.sum'
   maxx <- max(Soup.GEMs.top.Genes.non.summarized)
-  wbarplot(Soup.GEMs.top.Genes.non.summarized, plotname = kppd("Soup.GEMs.top.Genes.non.summarized", SeqRun)
+  MarkdownReports::wbarplot(Soup.GEMs.top.Genes.non.summarized, plotname = kppd("Soup.GEMs.top.Genes.non.summarized", SeqRun)
            , ylab="% mRNA in the Soup"
            , sub = paste("Within the", SeqRun, "dataset")
            , tilted_text = T, col = "#BF3100"
@@ -5781,7 +5781,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
                 , labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.non.summarized/100, digitz = 2)
                 , TopOffset = -maxx*0.2, srt = 90, cex=.75)
 
-  if (exists('OutDirBac'))  ww.assign_to_global("OutDir", OutDirBac, 1)
+  if (exists('OutDirBac'))  MarkdownHelpers::ww.assign_to_global("OutDir", OutDirBac, 1)
 
 } # plotTheSoup
 
