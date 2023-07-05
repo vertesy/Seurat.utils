@@ -5553,13 +5553,10 @@ make10Xcellname <- function(cellnames, suffix="_1") { paste0(cellnames, suffix) 
 #' @importFrom ggrepel geom_text_repel
 #' @importFrom Stringendo percentage_formatter
 
-plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593/outs"
-                        , SeqRun = str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)")
-                        , ls.Alpha = 1) {
-
-  stopifnot(dir.exists(CellRanger_outs_Dir))
-  iprint('SeqRun', SeqRun)
-  stopifnot(nchar(SeqRun)>4)
+plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
+                        SeqRun = str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)"),
+                        ls.Alpha = 1
+) {
 
   # The regular expression `[[:alnum:]_]+(?=/outs/)` matches one or more alphanumeric characters or
   # underscores that are followed by the `/outs/` portion in the string. It ensures that the desired
@@ -5572,37 +5569,42 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593/outs"
   # `/outs/` is present immediately after. It doesn't consume any characters from the string; it
   # just checks for the presence of `/outs/` after the matched substring.
 
-  # Setup ___________________________________
-
+  # Check the directory exists and SeqRun ID is longer than 4
+  stopifnot(dir.exists(CellRanger_outs_Dir))
+  iprint('SeqRun', SeqRun)
+  stopifnot(nchar(SeqRun) > 4)
   Subfolders_10X_outs <- list.dirs(CellRanger_outs_Dir, full.names = F, recursive = F)
-  stopifnot(length(Subfolders_10X_outs) >0)
+  stopifnot(length(Subfolders_10X_outs) > 0)
 
+  # Identify raw and filtered files ___________________________________
   path.raw <- file.path(CellRanger_outs_Dir, grep(x = Subfolders_10X_outs, pattern = "^raw_*", value = T))
   path.filt <- file.path(CellRanger_outs_Dir, grep(x = Subfolders_10X_outs, pattern = "^filt_*", value = T))
   CR.matrices <- list.fromNames(c("raw", "filt"))
 
-  # Adapter for Markdownreports background variable "OutDir" ___________________________________
+  # Adapter for Markdownreports background variable "OutDir"
   OutDirBac <- if(exists("OutDir")) OutDir else getwd()
   OutDir <- file.path(CellRanger_outs_Dir, paste0(kpp("SoupStatistics", SeqRun)))
   MarkdownReports::create_set_OutDir(OutDir)
-
   ww.assign_to_global("OutDir", OutDir, 1)
 
-  # Read In ___________________________________
+  # Read raw and filtered data ___________________________________
   print("Reading raw CellRanger output matrices")
   CR.matrices$'raw' <- Seurat::Read10X(path.raw)
-  if (length(CR.matrices$'raw') == 2 ) { CR.matrices$'raw' <- CR.matrices$'raw'[[1]] } # Maybe AB table is present too at slot 2!
-
+  if (length(CR.matrices$'raw') == 2 ) {
+    CR.matrices$'raw' <- CR.matrices$'raw'[[1]]
+  } # Maybe AB table is present too at slot 2!
   print("Reading filtered CellRanger output matrices")
   CR.matrices$'filt' <- Seurat::Read10X(path.filt)
-  if (length(CR.matrices$'filt') == 2 ) { CR.matrices$'filt' <- CR.matrices$'filt'[[1]] } # Maybe AB table is present too at slot 2!
+  if (length(CR.matrices$'filt') == 2 ) {
+    CR.matrices$'filt' <- CR.matrices$'filt'[[1]]
+  } # Maybe AB table is present too at slot 2!
 
   # Profiling the soup ___________________________________
   print("Profiling the soup")
   GEMs.all <- CR.matrices$'raw'@Dimnames[[2]]
   GEMs.cells <- CR.matrices$'filt'@Dimnames[[2]]
-  iprint("There are", length(GEMs.all), "GEMs sequenced, and",length(GEMs.cells), "are cells among those." )
-  EmptyDroplets.and.Cells <- c('EmptyDroplets'=length(GEMs.all)-length(GEMs.cells), 'Cells'=length(GEMs.cells) )
+  iprint("There are", length(GEMs.all), "GEMs sequenced, and", length(GEMs.cells), "are cells among those.")
+  EmptyDroplets.and.Cells <- c('EmptyDroplets' = length(GEMs.all) - length(GEMs.cells), 'Cells' = length(GEMs.cells))
   ggExpress::qbarplot(EmptyDroplets.and.Cells, label = EmptyDroplets.and.Cells, palette_use = 'npg', col = 1:2, ylab = 'GEMs')
 
   GEMs.soup <- setdiff(GEMs.all, GEMs.cells)
@@ -5778,11 +5780,11 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593/outs"
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes.non.summarized
                 , labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.non.summarized/100, digitz = 2)
                 # , labels = paste0(round(1e6 * Soup.GEMs.top.Genes.non.summarized), " ppm")
-                , TopOffset = -maxx*0.2, srt = 90, cex=.75)
-
+                , TopOffset = -maxx*0.2, srt = 90, cex=.75),
   if (exists('OutDirBac'))  ww.assign_to_global("OutDir", OutDirBac, 1)
 
 } # plotTheSoup
+
 
 
 
