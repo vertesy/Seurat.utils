@@ -2430,19 +2430,23 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 # ________________________________________________________________________
 #' scEnhancedVolcano
 #'
-#' @param toptable
-#' @param lab
-#' @param suffix
-#' @param title
-#' @param subtitle
-#' @param x
-#' @param y
-#' @param selectLab
-#' @param h
-#' @param w
-#' @export
+#' This function creates an enhanced volcano plot.
 #'
-#' @examples
+#' @param toptable A data frame with the results of differential gene expression analysis.
+#' @param lab A vector of gene symbols to label on the plot.
+#' @param suffix A string to append to the title of the plot.
+#' @param title The title of the plot.
+#' @param subtitle The subtitle of the plot.
+#' @param x The x-axis, which is typically the average log2 fold change.
+#' @param y The y-axis, which is typically the adjusted p-value.
+#' @param selectLab A vector of gene symbols to select for labeling.
+#' @param h The height of the plot.
+#' @param w The width of the plot.
+#'
+#' @return A ggplot object.
+#'
+#' @export
+
 scEnhancedVolcano <- function(toptable = df.markers.X, lab = rownames(toptable)
                               , suffix = ""
                               , title = kppd("DGEA", suffix)
@@ -2451,13 +2455,17 @@ scEnhancedVolcano <- function(toptable = df.markers.X, lab = rownames(toptable)
                               , selectLab = lab[1:3]
                               , h = 8, w = h
 ) {
+
+  # Create an enhanced volcano plot.
   pobj <- EnhancedVolcano::EnhancedVolcano(toptable = toptable
                                            , title = title, subtitle = subtitle
                                            , lab =lab, selectLab = selectLab
                                            , x = x, y = y
   )
+
+  # Save the plot.
   qqSave(ggobj = pobj, title = title, h = h, w = w)
-  pobj
+  return(pobj)
 }
 
 
