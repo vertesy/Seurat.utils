@@ -211,14 +211,14 @@ PlotFilters <- function(ls.obj = ls.Seurat
   create_set_OutDir(parentdir, subdir)
   if (suffices == length(ls.obj)) print("ls.obj elements have no names (required).")
 
+  Calculate_nFeature_LowPass <- if(below.nFeature_RNA < 1) below.nFeature_RNA else FALSE
   for (i in 1:length(ls.obj)) {
     print(suffices[i])
     mm =  ls.obj[[i]]@meta.data
 
-    if(below.nFeature_RNA < 1) {
-      # "if below.nFeature_RNA is a qunaitle, then take that as the low-pass cutoff"
-      below.nFeature_RNA <- floor(quantile(ls.obj[[i]]$'nFeature_RNA', probs = below.nFeature_RNA))
-      iprint("below.nFeature_RNA at 99.75% percentile:", below.nFeature_RNA)
+    if(Calculate_nFeature_LowPass < 1) {
+      below.nFeature_RNA <- floor(quantile(ls.obj[[i]]$'nFeature_RNA', probs = Calculate_nFeature_LowPass))
+      iprint("below.nFeature_RNA at", percentage_formatter(Calculate_nFeature_LowPass), "percentile:", below.nFeature_RNA)
     }
 
     AllMetaColumnsPresent <- all(c('nFeature_RNA', 'percent.mito', 'percent.ribo') %in% colnames(mm))
