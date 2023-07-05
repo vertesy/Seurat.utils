@@ -2992,23 +2992,23 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
 # _________________________________________________________________________________________________
 #' plot.GeneExpHist
 #'
-#' @description Plot the summed expression of a set of genes as a histogram per cell.
-#' @param obj
-#' @param genes
-#' @param assay
-#' @param slot_
-#' @param thr_expr
-#' @param suffix
-#' @param xlab
-#' @param return_cells_passing
-#' @param quantile_thr
-#' @param return_quantile
-#' @param ...
+#' This function creates a histogram of gene expression for a given set of genes in a Seurat object.
+#' @param obj A Seurat object.
+#' @param genes A vector of genes to plot.
+#' @param assay The name of the assay to use.
+#' @param slot_ The slot to use.
+#' @param thr_expr The expression threshold to use for filtering.
+#' @param suffix A string to append to the title of the plot.
+#' @param xlab The x-axis label.
+#' @param return_cells_passing Whether to return the number of cells passing the filter.
+#' @param quantile_thr The quantile to use for clipping the counts slot.
+#' @param return_quantile Whether to return the number of cells passing the quantile filter.
+#' @param ... Additional arguments passed to `qhistogram()`.
 #'
-#' @return
+#' @return A ggplot object.
+#'
 #' @export
-#'
-#' @examples
+
 plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN")
                              , assay = 'RNA', slot_ = 'data'
                              , thr_expr = 10
@@ -3018,18 +3018,25 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
                              , quantile_thr = 0.95
                              , return_quantile
                              , ...) {
+
+  # Check arguments
+  stopifnot(length(genes) > 0)
+  stopifnot(slot_ %in% c('data', 'counts'))
+
+  # Aggregate genes if necessary
   aggregate = length(genes) > 1
   G_expression = colSums(GetAssayData(object = obj, assay = assay, slot = slot_)[genes, ])
 
+  # Add a subtitle with the number of genes and the expression threshold
   subx <- filter_HP(G_expression, threshold = thr_expr, return_conclusion = T, plot.hist = F)
   if (aggregate) subx <- p0(subx,"\n", length(genes), " aggregated:", paste(head(genes), collapse = " "))
 
+  # Clip counts if necessary
+  if (slot_ == 'counts') G_expression <- CodeAndRoll2::clip.at.fixed.value(distribution = G_expression, thr = quantile(G_expression, probs = .95))
 
-  if (slot_ == 'counts') G_expression <- CodeAndRoll2::clip.at.fixed.value(distribution = G_expression, thr = quantile(G_expression, probs = .95)) # clip values for counts
-
+  # Create the plot
   title_ = paste("Gene expression histogram", Stringendo::flag.nameiftrue(aggregate, prefix = '- '), suffix, slot_)
-
-  pobj <- qhistogram(G_ex,pression
+  pobj <- qhistogram(G_expression
                      , plotname = title_
                      , suffix = suffix
                      , vline = thr_expr, filtercol = -1
@@ -3039,8 +3046,12 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
                      , caption = paste('cutoff at', iround(thr_expr))
                      , w = 7, h = 6
                      , ...)
+
+  # Print the plot
   print(pobj)
-  if (return_cells_passing) MarkdownHelpers::filter_HP(G_expression, threshold = thr_expr, plot.hist = F)
+
+  # Return the number of cells passing the filter
+  if (return_cells_passing) return(MarkdownHelpers::filter_HP(G_expression, threshold = thr_expr, plot.hist = F))
 
 }
 
