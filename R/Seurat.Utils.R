@@ -2959,30 +2959,34 @@ qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined
 # _________________________________________________________________________________________________
 #' qSeuViolin
 #'
-#' @param object
-#' @param suffix
-#' @param features
-#' @param split.by
-#' @param logY
+#' This function creates a violin plot of a single feature in a Seurat object, split by a grouping variable.
+#' @param object A Seurat object.
+#' @param suffix A string to append to the title of the plot.
+#' @param features The name of the feature to plot.
+#' @param split.by The grouping variable to split the plot by.
+#' @param logY Whether to plot the y-axis on a log scale.
 #'
-#' @return
+#' @return A ggplot object.
+#'
 #' @export
-#'
-#' @examples
+
 qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
                        , features = 'nFeature_RNA', split.by = 'orig.ident', logY = TRUE) {
 
-  # onm <- kollapse(gsub("[[:punct:]]", "", substitute(object)))
+  # Create a violin plot of the feature, split by the grouping variable.
   p <- VlnPlot(object = object, features = features, split.by = split.by) +
-    ggtitle( label = features, subtitle = paste(suffix, 'by', split.by)) +
+    ggtitle(label = features, subtitle = paste(suffix, 'by', split.by)) +
     theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
-  if (logY)
-    p <- p + ggplot2::scale_y_log10()
 
+  # If `logY` is TRUE, plot the y-axis on a log scale.
+  if (logY) p <- p + ggplot2::scale_y_log10()
+
+  # Save the plot.
   title_ <- ppp(as.character(features), GEX_library, flag.nameiftrue(logY))
   qqSave(p, title = title_, w = 7, h = 5)
   p
 }
+
 
 
 # _________________________________________________________________________________________________
@@ -3025,7 +3029,7 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
 
   title_ = paste("Gene expression histogram", Stringendo::flag.nameiftrue(aggregate, prefix = '- '), suffix, slot_)
 
-  pobj <- qhistogram(G_expression
+  pobj <- qhistogram(G_ex,pression
                      , plotname = title_
                      , suffix = suffix
                      , vline = thr_expr, filtercol = -1
