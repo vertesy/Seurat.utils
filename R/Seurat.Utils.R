@@ -5779,8 +5779,8 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
              , ylim = c(0, maxx*1.5))
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes.non.summarized
                 , labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.non.summarized/100, digitz = 2)
-                # , labels = paste0(round(1e6 * Soup.GEMs.top.Genes.non.summarized), " ppm")
-                , TopOffset = -maxx*0.2, srt = 90, cex=.75),
+                , TopOffset = -maxx*0.2, srt = 90, cex=.75)
+
   if (exists('OutDirBac'))  ww.assign_to_global("OutDir", OutDirBac, 1)
 
 } # plotTheSoup

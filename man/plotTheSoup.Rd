@@ -5,24 +5,18 @@
 \title{plotTheSoup}
 \usage{
 plotTheSoup(
-  CellRangerOutputDir = "~/Data/114593/114593",
-  SeqRun = gsub("*([0-9]+).*", "\\\\1", x = basename(CellRangerOutputDir))
+  CellRanger_outs_Dir = "~/Data/114593/114593",
+  SeqRun = str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)"),
+  ls.Alpha = 1
 )
 }
 \arguments{
-\item{CellRangerOutputDir}{PARAM_DESCRIPTION, Default: '~/Data/114593/114593'}
-
 \item{SeqRun}{PARAM_DESCRIPTION, Default: gsub("\emph{(\link{0-9}+).}", "\\1", x = basename(CellRangerOutputDir))}
+
+\item{CellRangerOutputDir}{PARAM_DESCRIPTION, Default: '~/Data/114593/114593'}
 }
 \description{
 Plot stats about the ambient RNA content in a 10X experiment.
-}
-\examples{
-\dontrun{
-if(interactive()){
- plotTheSoup(CellRangerOutputDir = "~/Data/114593/114593" , SeqRun = gsub('*([0-9]+).*','\\\\1', x = basename(CellRangerOutputDir)))
- }
-}
 }
 \seealso{
 \code{\link[Matrix]{colSums}}

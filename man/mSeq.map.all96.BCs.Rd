@@ -7,8 +7,8 @@
 mSeq.map.all96.BCs(
   readTable = readTable,
   CellIDs = CellIDs,
- 
-    path2allBCs = "~/Google_Drive/Science/IMBA/MULTI.seq/from.US/All.MULTI-seq_barcodes.Mar2019.tsv"
+  path2allBCs =
+    "~/Google_Drive/Science/IMBA/MULTI.seq/from.US/All.MULTI-seq_barcodes.Mar2019.tsv"
 )
 }
 \arguments{

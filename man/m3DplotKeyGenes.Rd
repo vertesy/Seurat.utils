@@ -7,11 +7,11 @@
 m3DplotKeyGenes(
   obj = cds.10pc,
   cex = iround(log10(idim(obj)[2])),
-  ls.genes = c(`S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C", oRG = "ID4", oRG =
-    "HOPX", `Intermediate progenitor` = "EOMES", `Intermediate progenitor1` = "TAC3",
-    Astroglia = "GFAP", Astrocyte = "S100B", `Immature neurons` = "SLA", Interneurons =
-    "DLX6-AS1", `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1", `Low-Quality` =
-    "POLR2A", PGC = "DCN", `dl-EN` = "KAZN", `ul-EN` = "SATB2"),
+  ls.genes = c(`S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C", oRG = "ID4", oRG = "HOPX",
+    `Intermediate progenitor` = "EOMES", `Intermediate progenitor1` = "TAC3", Astroglia =
+    "GFAP", Astrocyte = "S100B", `Immature neurons` = "SLA", Interneurons = "DLX6-AS1",
+    `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1", `Low-Quality` = "POLR2A", PGC =
+    "DCN", `dl-EN` = "KAZN", `ul-EN` = "SATB2"),
   reduction = "UMAP",
   suffix = ""
 )
