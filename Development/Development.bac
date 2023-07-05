@@ -2430,19 +2430,23 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 # ________________________________________________________________________
 #' scEnhancedVolcano
 #'
-#' @param toptable
-#' @param lab
-#' @param suffix
-#' @param title
-#' @param subtitle
-#' @param x
-#' @param y
-#' @param selectLab
-#' @param h
-#' @param w
-#' @export
+#' This function creates an enhanced volcano plot.
 #'
-#' @examples
+#' @param toptable A data frame with the results of differential gene expression analysis.
+#' @param lab A vector of gene symbols to label on the plot.
+#' @param suffix A string to append to the title of the plot.
+#' @param title The title of the plot.
+#' @param subtitle The subtitle of the plot.
+#' @param x The x-axis, which is typically the average log2 fold change.
+#' @param y The y-axis, which is typically the adjusted p-value.
+#' @param selectLab A vector of gene symbols to select for labeling.
+#' @param h The height of the plot.
+#' @param w The width of the plot.
+#'
+#' @return A ggplot object.
+#'
+#' @export
+
 scEnhancedVolcano <- function(toptable = df.markers.X, lab = rownames(toptable)
                               , suffix = ""
                               , title = kppd("DGEA", suffix)
@@ -2451,13 +2455,17 @@ scEnhancedVolcano <- function(toptable = df.markers.X, lab = rownames(toptable)
                               , selectLab = lab[1:3]
                               , h = 8, w = h
 ) {
+
+  # Create an enhanced volcano plot.
   pobj <- EnhancedVolcano::EnhancedVolcano(toptable = toptable
                                            , title = title, subtitle = subtitle
                                            , lab =lab, selectLab = selectLab
                                            , x = x, y = y
   )
+
+  # Save the plot.
   qqSave(ggobj = pobj, title = title, h = h, w = w)
-  pobj
+  return(pobj)
 }
 
 
@@ -2951,52 +2959,56 @@ qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined
 # _________________________________________________________________________________________________
 #' qSeuViolin
 #'
-#' @param object
-#' @param suffix
-#' @param features
-#' @param split.by
-#' @param logY
+#' This function creates a violin plot of a single feature in a Seurat object, split by a grouping variable.
+#' @param object A Seurat object.
+#' @param suffix A string to append to the title of the plot.
+#' @param features The name of the feature to plot.
+#' @param split.by The grouping variable to split the plot by.
+#' @param logY Whether to plot the y-axis on a log scale.
 #'
-#' @return
+#' @return A ggplot object.
+#'
 #' @export
-#'
-#' @examples
+
 qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
                        , features = 'nFeature_RNA', split.by = 'orig.ident', logY = TRUE) {
 
-  # onm <- kollapse(gsub("[[:punct:]]", "", substitute(object)))
+  # Create a violin plot of the feature, split by the grouping variable.
   p <- VlnPlot(object = object, features = features, split.by = split.by) +
-    ggtitle( label = features, subtitle = paste(suffix, 'by', split.by)) +
+    ggtitle(label = features, subtitle = paste(suffix, 'by', split.by)) +
     theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
-  if (logY)
-    p <- p + ggplot2::scale_y_log10()
 
+  # If `logY` is TRUE, plot the y-axis on a log scale.
+  if (logY) p <- p + ggplot2::scale_y_log10()
+
+  # Save the plot.
   title_ <- ppp(as.character(features), GEX_library, flag.nameiftrue(logY))
   qqSave(p, title = title_, w = 7, h = 5)
   p
 }
 
 
+
 # _________________________________________________________________________________________________
 #' plot.GeneExpHist
 #'
-#' @description Plot the summed expression of a set of genes as a histogram per cell.
-#' @param obj
-#' @param genes
-#' @param assay
-#' @param slot_
-#' @param thr_expr
-#' @param suffix
-#' @param xlab
-#' @param return_cells_passing
-#' @param quantile_thr
-#' @param return_quantile
-#' @param ...
+#' This function creates a histogram of gene expression for a given set of genes in a Seurat object.
+#' @param obj A Seurat object.
+#' @param genes A vector of genes to plot.
+#' @param assay The name of the assay to use.
+#' @param slot_ The slot to use.
+#' @param thr_expr The expression threshold to use for filtering.
+#' @param suffix A string to append to the title of the plot.
+#' @param xlab The x-axis label.
+#' @param return_cells_passing Whether to return the number of cells passing the filter.
+#' @param quantile_thr The quantile to use for clipping the counts slot.
+#' @param return_quantile Whether to return the number of cells passing the quantile filter.
+#' @param ... Additional arguments passed to `qhistogram()`.
 #'
-#' @return
+#' @return A ggplot object.
+#'
 #' @export
-#'
-#' @examples
+
 plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN")
                              , assay = 'RNA', slot_ = 'data'
                              , thr_expr = 10
@@ -3006,17 +3018,24 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
                              , quantile_thr = 0.95
                              , return_quantile
                              , ...) {
+
+  # Check arguments
+  stopifnot(length(genes) > 0)
+  stopifnot(slot_ %in% c('data', 'counts'))
+
+  # Aggregate genes if necessary
   aggregate = length(genes) > 1
   G_expression = colSums(GetAssayData(object = obj, assay = assay, slot = slot_)[genes, ])
 
+  # Add a subtitle with the number of genes and the expression threshold
   subx <- filter_HP(G_expression, threshold = thr_expr, return_conclusion = T, plot.hist = F)
   if (aggregate) subx <- p0(subx,"\n", length(genes), " aggregated:", paste(head(genes), collapse = " "))
 
+  # Clip counts if necessary
+  if (slot_ == 'counts') G_expression <- CodeAndRoll2::clip.at.fixed.value(distribution = G_expression, thr = quantile(G_expression, probs = .95))
 
-  if (slot_ == 'counts') G_expression <- CodeAndRoll2::clip.at.fixed.value(distribution = G_expression, thr = quantile(G_expression, probs = .95)) # clip values for counts
-
+  # Create the plot
   title_ = paste("Gene expression histogram", Stringendo::flag.nameiftrue(aggregate, prefix = '- '), suffix, slot_)
-
   pobj <- qhistogram(G_expression
                      , plotname = title_
                      , suffix = suffix
@@ -3027,8 +3046,12 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
                      , caption = paste('cutoff at', iround(thr_expr))
                      , w = 7, h = 6
                      , ...)
+
+  # Print the plot
   print(pobj)
-  if (return_cells_passing) MarkdownHelpers::filter_HP(G_expression, threshold = thr_expr, plot.hist = F)
+
+  # Return the number of cells passing the filter
+  if (return_cells_passing) return(MarkdownHelpers::filter_HP(G_expression, threshold = thr_expr, plot.hist = F))
 
 }
 

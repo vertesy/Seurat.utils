@@ -13,8 +13,19 @@ qSeuViolin(
 )
 }
 \arguments{
-\item{logY}{}
+\item{object}{A Seurat object.}
+
+\item{suffix}{A string to append to the title of the plot.}
+
+\item{features}{The name of the feature to plot.}
+
+\item{split.by}{The grouping variable to split the plot by.}
+
+\item{logY}{Whether to plot the y-axis on a log scale.}
+}
+\value{
+A ggplot object.
 }
 \description{
-qSeuViolin
+This function creates a violin plot of a single feature in a Seurat object, split by a grouping variable.
 }

@@ -17,6 +17,30 @@ scEnhancedVolcano(
   w = h
 )
 }
+\arguments{
+\item{toptable}{A data frame with the results of differential gene expression analysis.}
+
+\item{lab}{A vector of gene symbols to label on the plot.}
+
+\item{suffix}{A string to append to the title of the plot.}
+
+\item{title}{The title of the plot.}
+
+\item{subtitle}{The subtitle of the plot.}
+
+\item{x}{The x-axis, which is typically the average log2 fold change.}
+
+\item{y}{The y-axis, which is typically the adjusted p-value.}
+
+\item{selectLab}{A vector of gene symbols to select for labeling.}
+
+\item{h}{The height of the plot.}
+
+\item{w}{The width of the plot.}
+}
+\value{
+A ggplot object.
+}
 \description{
-scEnhancedVolcano
+This function creates an enhanced volcano plot.
 }

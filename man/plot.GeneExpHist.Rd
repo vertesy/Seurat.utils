@@ -19,8 +19,31 @@
 )
 }
 \arguments{
-\item{...}{}
+\item{obj}{A Seurat object.}
+
+\item{genes}{A vector of genes to plot.}
+
+\item{assay}{The name of the assay to use.}
+
+\item{slot_}{The slot to use.}
+
+\item{thr_expr}{The expression threshold to use for filtering.}
+
+\item{suffix}{A string to append to the title of the plot.}
+
+\item{xlab}{The x-axis label.}
+
+\item{return_cells_passing}{Whether to return the number of cells passing the filter.}
+
+\item{quantile_thr}{The quantile to use for clipping the counts slot.}
+
+\item{return_quantile}{Whether to return the number of cells passing the quantile filter.}
+
+\item{...}{Additional arguments passed to \code{qhistogram()}.}
+}
+\value{
+A ggplot object.
 }
 \description{
-Plot the summed expression of a set of genes as a histogram per cell.
+This function creates a histogram of gene expression for a given set of genes in a Seurat object.
 }

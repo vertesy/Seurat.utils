@@ -20,7 +20,7 @@ require('CodeAndRoll2')
 
 # Setup ------------------------
 PackageName = 	"Seurat.utils"
-package.version = "1.7.8"
+package.version = "1.7.9"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir = kollapse("~/GitHub/Packages/", PackageName, "/")
