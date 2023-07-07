@@ -2982,7 +2982,7 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
   if (logY) p <- p + ggplot2::scale_y_log10()
 
   # Save the plot.
-  title_ <- ppp(as.character(features), GEX_library, flag.nameiftrue(logY))
+  title_ <- ppp(as.character(features), suffix, flag.nameiftrue(logY))
   qqSave(p, title = title_, w = 7, h = 5)
   p
 }
@@ -4873,11 +4873,11 @@ calculate.observable.multiplet.rate.10X.LT <- function(
 #'
 #' @description Fix SNP demux table results coming from SoupOrCell
 #' @param GT.table A 2 column Genotype assignment table with singlet status
+#' @param obj Seurat object.
 #' @param col1 'assignment.named'
 #' @param col1.new.name New name 'Genotype'
 #' @param col2 'status'
 #' @param col2.new.name New name 'Singlet.status'
-#' @param obj Seurat object.
 #' @param cellname_prefix prefix for cell names added by Seurat to distingish 10X lanes
 #' @param suffix Add this to 'Singlet.status', then overwrite 'Genotype'
 #' @param return_tbl_for_cells_found_in_object cells.found.in.both
@@ -4973,6 +4973,8 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
 
   return(GT.table)
 }
+
+
 # _________________________________________________________________________________________________
 
 
