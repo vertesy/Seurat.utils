@@ -3890,12 +3890,12 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
 
 # _________________________________________________________________________________________________
 #' @title plot3D.umap
-#' @description Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87. #
-#' @param category PARAM_DESCRIPTION, Default: 'v.project'
-#' @param obj Seurat object, Default: combined.obj
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param AutoAnnotBy PARAM_DESCRIPTION, Default: GetNamedClusteringRuns(obj)[1]
-#' @param dotsize PARAM_DESCRIPTION, Default: 1.25
+#' @description Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
+#' @param category The metadata column based on which the 3D UMAP will be plotted. Default: 'v.project'
+#' @param obj The Seurat object for which the 3D umap plot will be generated. Default: combined.obj
+#' @param suffix A suffix added to the filename. Default: NULL
+#' @param AutoAnnotBy The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.
+#' @param dotsize The size of the dots in the plot. Default: 1.25
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -3903,6 +3903,7 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
 #'  }
 #' }
 #' @export
+
 plot3D.umap <- function(category="v.project", obj = combined.obj # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
                         , suffix = NULL, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]
                         , dotsize = 1.25) {
