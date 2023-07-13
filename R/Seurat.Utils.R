@@ -3972,7 +3972,7 @@ SavePlotlyAsHtml <- function(plotly_obj, category.= category, suffix. = NULL) { 
 #' @export
 BackupReduction <- function(obj = combined.obj, dim = 2, reduction="umap") { # Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`.
   if (is.null(obj@misc$"reductions.backup")) obj@misc$"reductions.backup" <- list()
-  dslot = paste0(reduction,dim,"d")
+  dslot <- paste0(reduction,dim,"d")
   obj@misc$reductions.backup[[dslot]] <- obj@reductions[[reduction]]
   return(obj)
 }
@@ -4038,17 +4038,12 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction="umap") { # S
 
 # _________________________________________________________________________________________________
 #' @title Annotate4Plotly3D
-#' @description Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations #
-#' @param obj Seurat object, Default: combined.obj
-#' @param plotting.data. PARAM_DESCRIPTION, Default: plotting.data
-#' @param AnnotCateg PARAM_DESCRIPTION, Default: AutoAnnotBy
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#' @description Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations.
+#' @param obj The Seurat object for which the 3D plot annotations will be generated. Default: combined.obj
+#' @param plotting.data. The data frame containing plotting data. Default: plotting.data
+#' @param AnnotCateg The category for which the annotation is generated. Default: AutoAnnotBy
 #' @export
+
 Annotate4Plotly3D <- function(obj = combined.obj # Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations
                               , plotting.data. = plotting.data
                               , AnnotCateg = AutoAnnotBy) {
@@ -4186,15 +4181,15 @@ sparse.cor <- function(smat){
   list(cov = covmat, cor = cormat)
 }
 
-
-sparse.cor4 <- function(x){
-  n <- nrow(x)
-  cMeans <- colMeans(x)
-  covmat <- (as.matrix(crossprod(x)) - n*tcrossprod(cMeans))/(n-1)
-  sdvec <- sqrt(diag(covmat))
-  cormat <- covmat/tcrossprod(sdvec)
-  list(cov=covmat,cor=cormat)
-}
+#
+# sparse.cor4 <- function(x){
+#   n <- nrow(x)
+#   cMeans <- colMeans(x)
+#   covmat <- (as.matrix(crossprod(x)) - n*tcrossprod(cMeans))/(n-1)
+#   sdvec <- sqrt(diag(covmat))
+#   cormat <- covmat/tcrossprod(sdvec)
+#   list(cov=covmat,cor=cormat)
+# }
 
 # _________________________________________________________________________________________________
 # Calc.Cor.Seurat
