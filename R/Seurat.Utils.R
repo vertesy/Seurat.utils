@@ -4161,17 +4161,15 @@ Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3
 # _________________________________________________________________________________________________
 
 #' @title sparse.cor
-#' @description Sparse, fast correlation.
-#' @param smat PARAM_DESCRIPTION
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#'
+#' @description Calculate a sparse correlation matrix.
+#' @param smat A sparse matrix.
+#' @return A list with two elements:
+#'   * `cov`: The covariance matrix.
+#'   * `cor`: The correlation matrix.
+#'
 #' @export
-#'
-#'
+
 sparse.cor <- function(smat){
   n <- nrow(smat)
   cMeans <- colMeans(smat)
