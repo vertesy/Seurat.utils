@@ -3936,21 +3936,19 @@ plot3D.umap <- function(category="v.project", obj = combined.obj # Plot a 3D uma
 
 # _________________________________________________________________________________________________
 #' @title SavePlotlyAsHtml
-#' @description Save Plotly 3D scatterplot as an html file. #
-#' @param plotly_obj PARAM_DESCRIPTION
-#' @param category. PARAM_DESCRIPTION, Default: category
-#' @param suffix. PARAM_DESCRIPTION, Default: NULL
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#'
+#' @description Save a Plotly 3D scatterplot as an HTML file.
+#'
+#' @param plotly_obj The Plotly object to save.
+#' @param category The category of the plot.
+#' @param suffix A suffix to add to the filename.
+#' @param OutputDir The output directory.
 #' @seealso
 #'  \code{\link[htmlwidgets]{saveWidget}}
+#'
 #' @export
 #' @importFrom htmlwidgets saveWidget
-SavePlotlyAsHtml <- function(plotly_obj, category.=category, suffix. = NULL) { # Save Plotly 3D scatterplot as an html file.
+SavePlotlyAsHtml <- function(plotly_obj, category.= category, suffix. = NULL) { # Save Plotly 3D scatterplot as an html file.
   OutputDir <- if (exists("OutDir")) OutDir else getwd()
   name.trunk <- kpp("umap.3D", category., suffix., idate(), "html")
   fname <- kpps(OutputDir, name.trunk)
