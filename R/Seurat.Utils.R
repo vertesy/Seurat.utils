@@ -3326,29 +3326,29 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 # _________________________________________________________________________________________________
 #' @title multiFeaturePlot.A4
 #'
-#' @description Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names. #
-#' @param list.of.genes PARAM_DESCRIPTION
+#' @description Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
+#' @param list.of.genes List of gene names for which the plots are to be generated. No default.
 #' @param obj Seurat object, Default: combined.obj
-#' @param foldername PARAM_DESCRIPTION, Default: substitute(list.of.genes)
-#' @param plot.reduction PARAM_DESCRIPTION, Default: 'umap'
-#' @param intersectionAssay PARAM_DESCRIPTION, Default: c("RNA", "integrated")[1]
-#' @param layout PARAM_DESCRIPTION, Default: c("tall", "wide", FALSE)[2]
-#' @param colors PARAM_DESCRIPTION, Default: c("grey", "red")
-#' @param nr.Col PARAM_DESCRIPTION, Default: 2
-#' @param nr.Row PARAM_DESCRIPTION, Default: 4
-#' @param cex Point size, Default: round(0.1/(nr.Col * nr.Row), digits = 2)
-#' @param gene.min.exp PARAM_DESCRIPTION, Default: 'q01'
-#' @param gene.max.exp PARAM_DESCRIPTION, Default: 'q99'
-#' @param subdir PARAM_DESCRIPTION, Default: T
-#' @param prefix PARAM_DESCRIPTION, Default: NULL
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param background_col background color def: White
-#' @param saveGeneList PARAM_DESCRIPTION, Default: FALSE
-#' @param w width of the plot, Default: wA4
-#' @param h height of the plot, Default: hA4
-#' @param scaling PARAM_DESCRIPTION, Default: 1
-#' @param aspect.ratio Fix the aspect ratio? Default: Yes, at 0.6
-#' @param format PARAM_DESCRIPTION, Default: c("jpg", "pdf", "png")[1]
+#' @param foldername Folder name to save the generated plots. Default: The name of the list of genes.
+#' @param plot.reduction Dimension reduction technique to use for plots. Default: 'umap'
+#' @param intersectionAssay The assay to intersect with, either 'RNA' or 'integrated'. Default: 'RNA'
+#' @param layout Layout orientation of the plot. Default: 'wide'
+#' @param colors Vector of colors to be used in the plot. Default: c("grey", "red")
+#' @param nr.Col Number of columns in the plot grid. Default: 2
+#' @param nr.Row Number of rows in the plot grid. Default: 4
+#' @param cex Point size in the plot. Default: round(0.1/(nr.Col * nr.Row), digits = 2)
+#' @param gene.min.exp Minimum gene expression level for plotting. Default: 'q01'
+#' @param gene.max.exp Maximum gene expression level for plotting. Default: 'q99'
+#' @param subdir Should plots be saved in a sub-directory? Default: TRUE
+#' @param prefix Prefix for the plot filenames. Default: NULL
+#' @param suffix Suffix for the plot filenames. Default: NULL
+#' @param background_col Background color of the plots. Default: "white"
+#' @param saveGeneList Should the list of genes be saved? Default: FALSE
+#' @param w Width of the plot. Default: wA4
+#' @param h Height of the plot. Default: hA4
+#' @param scaling Scaling factor for plot size. Default: 1
+#' @param aspect.ratio Should the aspect ratio be fixed? Default: Yes, at 0.6
+#' @param format Format to save the plot file. Default: 'jpg'
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -3362,7 +3362,6 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' @export
 #' @importFrom tictoc tic toc
 #' @importFrom cowplot plot_grid
-
 
 multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
                                 , obj = combined.obj
