@@ -4192,14 +4192,13 @@ sparse.cor <- function(smat){
 # _________________________________________________________________________________________________
 #' @title Calc.Cor.Seurat
 #' @description Calculate gene correlation on a Seurat object.
-#' @param assay.use PARAM_DESCRIPTION, Default: 'RNA'
-#' @param slot.use PARAM_DESCRIPTION, Default: 'data'
-#' @param quantileX Quantile level, Default: 0.95
-#' @param max.cells PARAM_DESCRIPTION, Default: 10000
-#' @param seed random seed used, Default: p$seed
-#' @param seed random seed used, Default: p$seed
-#' @param digits PARAM_DESCRIPTION, Default: 2
-#' @param obj Seurat object, Default: combined.obj
+#' @param assay.use The assay to use from the Seurat object. Default: 'RNA'
+#' @param slot.use The slot to use from the assay in the Seurat object. Default: 'data'
+#' @param quantileX The quantile level for the calculation. Default: 0.95
+#' @param max.cells Maximum number of cells to be used in the calculation. Default: 40000
+#' @param seed The random seed used for the calculation. Default: p$seed
+#' @param digits The number of decimal places to round the correlation and covariance values. Default: 2
+#' @param obj The Seurat object to perform calculations on. Default: combined.obj
 #' @examples
 #' \dontrun{
 #' if(interactive()){
