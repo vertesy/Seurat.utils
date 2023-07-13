@@ -3693,21 +3693,16 @@ DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster nam
 # _________________________________________________________________________________________________
 #' @title save2umaps.A4
 #' @description Save 2 umaps on 1 A4
-#' @param plot_list PARAM_DESCRIPTION
-#' @param pname PARAM_DESCRIPTION, Default: F
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param scale PARAM_DESCRIPTION, Default: 1
-#' @param nrow PARAM_DESCRIPTION, Default: 2
-#' @param ncol PARAM_DESCRIPTION, Default: 1
-#' @param h height of the plot, Default: hA4 * scale
-#' @param w width of the plot, Default: wA4 * scale
+#' @param plot_list A list of plots to be saved on an A4 page.
+#' @param pname Boolean to determine if name is generated automatically. If FALSE, name is generated based on plot_list and suffix. Default: F
+#' @param suffix A suffix added to the filename. Default: NULL
+#' @param scale Scaling factor for the size of the plot. Default: 1
+#' @param nrow Number of rows to arrange the plots in. Default: 2
+#' @param ncol Number of columns to arrange the plots in. Default: 1
+#' @param h Height of the plot, calculated as height of A4 page times the scale. Default: hA4 * scale
+#' @param w Width of the plot, calculated as width of A4 page times the scale. Default: wA4 * scale
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#'
 #' @export
 save2umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
                           , nrow = 2, ncol = 1
