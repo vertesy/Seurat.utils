@@ -4068,14 +4068,14 @@ Annotate4Plotly3D <- function(obj = combined.obj # Create annotation labels for 
 
 # _________________________________________________________________________________________________
 #' @title Plot3D.ListOfGenes
-#' @description Plot and save list of 3D UMAP ot tSNE plots using plotly. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param annotate.by PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.7'
-#' @param opacity PARAM_DESCRIPTION, Default: 0.5
-#' @param cex Point size, Default: 1.25
-#' @param default.assay PARAM_DESCRIPTION, Default: c("integrated", "RNA")[2]
-#' @param ListOfGenes PARAM_DESCRIPTION, Default: c("BCL11B", "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4")
-#' @param SubFolderName PARAM_DESCRIPTION, Default: ppp("plot3D", substitute(ListOfGenes))
+#' @description Plot and save list of 3D UMAP or tSNE plots using plotly.
+#' @param obj Seurat object to be used for the plot. Default: combined.obj
+#' @param annotate.by Variable to annotate the clusters by. Default: 'integrated_snn_res.0.7'
+#' @param opacity Opacity for the plot points. Default: 0.5
+#' @param cex Point size for the plot. Default: 1.25
+#' @param default.assay Default assay to be used from the Seurat object. Default: second entry from c("integrated", "RNA")
+#' @param ListOfGenes List of genes to be plotted. Default: c("BCL11B", "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4")
+#' @param SubFolderName Name of the subfolder where the plots will be saved. Default: a subfolder named 'plot3D' concatenated with the list of genes.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -4190,7 +4190,6 @@ sparse.cor <- function(smat){
 # }
 
 # _________________________________________________________________________________________________
-# Calc.Cor.Seurat
 #' @title Calc.Cor.Seurat
 #' @description Calculate gene correlation on a Seurat object.
 #' @param assay.use PARAM_DESCRIPTION, Default: 'RNA'
