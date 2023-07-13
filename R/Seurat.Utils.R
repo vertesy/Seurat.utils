@@ -3078,28 +3078,29 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
 
 # _________________________________________________________________________________________________
 #' @title qUMAP
-#' @description The quickest way to draw a gene expression UMAP #
-#' @param feature PARAM_DESCRIPTION, Default: 'TOP2A'
-#' @param obj Seurat object, Default: combined.obj
-#' @param title Title of the plot, Default: feature
-#' @param sub Subtitle of the plot, Default: NULL
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param splitby PARAM_DESCRIPTION, Default: NULL
-#' @param prefix A prefix added before the filename, Default: NULL
-#' @param suffix A suffix added to the end of the filename, Default: subtitle
-#' @param save.plot Save the plot into a file?, Default: T
-#' @param PNG Save file as .png?, Default: T
-#' @param h height of the plot, Default: 7
-#' @param w width of the plot, Default: NULL
-#' @param nr.cols Number of columns to combine multiple feature plots to, ignored if split.by is not NULL, Default: NULL
-#' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
-#' @param HGNC.lookup PARAM_DESCRIPTION, Default: TRUE
-#' @param axes Show axes? Default: FALSE
-#' @param aspect.ratio Fix the aspect ratio?  Default: Yes, at 0.6
-#' @param make.uppercase PARAM_DESCRIPTION, Default: TRUE
-#' @param qlow PARAM_DESCRIPTION, Default: 'q10'
-#' @param qhigh PARAM_DESCRIPTION, Default: 'q90'
-#' @param check_for_2D Check if UMAP is 2 dimensional.
+#'
+#' @description The quickest way to draw a gene expression UMAP.
+#' @param feature Feature to be visualized on the UMAP, Default: 'TOP2A'.
+#' @param obj Seurat object containing single-cell RNA seq data, Default: combined.obj.
+#' @param title Title of the plot, Default: feature.
+#' @param sub Subtitle of the plot, Default: NULL.
+#' @param reduction Dimension reduction technique to be used. Choose from 'umap', 'tsne', or 'pca'. Default: 'umap'.
+#' @param splitby Column in the metadata to split the cells by, Default: NULL.
+#' @param prefix A prefix added before the filename, Default: NULL.
+#' @param suffix A suffix added to the end of the filename, Default: subtitle.
+#' @param save.plot If TRUE, the plot is saved into a file, Default: T.
+#' @param PNG If TRUE, the file is saved as a .png, Default: T.
+#' @param h Height of the plot in inches, Default: 7.
+#' @param w Width of the plot in inches, Default: NULL.
+#' @param nr.cols Number of columns to combine multiple feature plots, ignored if split.by is not NULL, Default: NULL.
+#' @param assay Which assay to use, 'RNA' or 'integrated', Default: 'RNA'.
+#' @param axes If TRUE, the axes are shown on the plot. Default: FALSE.
+#' @param aspect.ratio Ratio of height to width. If TRUE, the ratio is fixed at 0.6. Default: FALSE.
+#' @param HGNC.lookup If TRUE, the HGNC gene symbol lookup is performed. Default: TRUE.
+#' @param make.uppercase If TRUE, feature names are converted to uppercase. Default: FALSE.
+#' @param qlow Lower quantile for the color scale, Default: 'q10'.
+#' @param qhigh Upper quantile for the color scale, Default: 'q90'.
+#' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -3108,6 +3109,7 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
 #'  }
 #' }
 #' @export
+
 
 qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to draw a gene expression UMAP
                    , title = feature, sub =NULL
