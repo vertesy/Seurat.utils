@@ -4606,21 +4606,17 @@ FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA"
 
 # _________________________________________________________________________________________________
 #' @title UpdateGenesSeurat
-#' @description Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names. #
-#' @param obj Seurat object, Default: ls.Seurat[[i]]
-#' @param species_ PARAM_DESCRIPTION, Default: 'human'
-#' @param EnforceUnique PARAM_DESCRIPTION, Default: T
-#' @param ShowStats PARAM_DESCRIPTION, Default: F
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  UpdateGenesSeurat()
-#'  }
-#' }
+#' @description Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
+#' @param obj Seurat object to update gene symbols in. Default: ls.Seurat[[i]]
+#' @param species_ Species to which the gene symbols correspond, used to check gene symbols. Default: 'human'
+#' @param EnforceUnique Logical, if TRUE, enforces unique gene symbols. Default: TRUE
+#' @param ShowStats Logical, if TRUE, displays statistics of gene symbols update. Default: FALSE
 #' @seealso
 #'  \code{\link[HGNChelper]{checkGeneSymbols}}
+#'
 #' @export
 #' @importFrom HGNChelper checkGeneSymbols
+
 UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUnique = T, ShowStats = F ) { # Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
   HGNC.updated <- HGNChelper::checkGeneSymbols(rownames(obj), unmapped.as.na = FALSE, map = NULL, species = species_)
   if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
