@@ -3830,15 +3830,15 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 
 # _________________________________________________________________________________________________
 #' @title plot3D.umap.gene
-#' @description Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87. #
-#' @param gene gene of interest, Default: 'TOP2A'
-#' @param obj Seurat object, Default: combined.obj
-#' @param quantileCutoff PARAM_DESCRIPTION, Default: 0.99
-#' @param def.assay PARAM_DESCRIPTION, Default: c("integrated", "RNA")[2]
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param AutoAnnotBy PARAM_DESCRIPTION, Default: GetNamedClusteringRuns(obj)[1]
-#' @param alpha PARAM_DESCRIPTION, Default: 0.5
-#' @param dotsize PARAM_DESCRIPTION, Default: 1.25
+#' @description Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
+#' @param gene The gene of interest. Default: 'TOP2A'
+#' @param obj The Seurat object for which the 3D umap plot will be generated. Default: combined.obj
+#' @param quantileCutoff Cutoff value for the quantile for clipping outliers in the gene expression data. Default: 0.99
+#' @param def.assay The default assay to be used. Choose between "integrated" and "RNA". Default: "RNA"
+#' @param suffix A suffix added to the filename. Default: NULL
+#' @param AutoAnnotBy The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.
+#' @param alpha Opacity of the points in the plot. Default: 0.5
+#' @param dotsize The size of the dots in the plot. Default: 1.25
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -3848,6 +3848,7 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 #'  }
 #' }
 #' @export
+
 plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
                              , quantileCutoff = .99, def.assay = c("integrated", "RNA")[2]
                              , suffix = NULL, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]
