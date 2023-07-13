@@ -3724,12 +3724,7 @@ save2umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
 #' @param h height of the plot, Default: wA4 * scale
 #' @param w width of the plot, Default: hA4 * scale
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#'
 #' @export
 save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
                           , nrow = 2, ncol = 2
