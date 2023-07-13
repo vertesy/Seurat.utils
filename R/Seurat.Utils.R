@@ -4238,23 +4238,19 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
 
 # _________________________________________________________________________________________________
 #' @title plot.Gene.Cor.Heatmap
+#'
 #' @description Plot a gene correlation heatmap.
-#' @param genes Genes of iinterest, Default: WU.2017.139.IEGsf
-#' @param assay.use PARAM_DESCRIPTION, Default: 'RNA'
-#' @param slot.use PARAM_DESCRIPTION, Default: c("data", "scale.data", "data.imputed")[1]
-#' @param quantileX Quantile level, Default: 0.95
-#' @param min.g.cor PARAM_DESCRIPTION, Default: 0.3
-#' @param calc.COR PARAM_DESCRIPTION, Default: FALSE
-#' @param cutRows PARAM_DESCRIPTION, Default: NULL
-#' @param cutCols PARAM_DESCRIPTION, Default: cutRows
-#' @param obj Seurat object, Default: combined.obj
+#' @param genes The list of genes of interest. Default: WU.2017.139.IEGsf
+#' @param assay.use The assay to use from the Seurat object. Default: 'RNA'
+#' @param slot.use The slot to use from the assay in the Seurat object. Default: First item in the vector c("data", "scale.data", "data.imputed")
+#' @param quantileX The quantile level for the calculation. Default: 0.95
+#' @param min.g.cor The minimum gene correlation. Genes with correlation above this value or below its negative will be included. Default: 0.3
+#' @param calc.COR A logical flag, if TRUE, the correlation will be calculated if not found. Default: FALSE
+#' @param cutRows A number, the dendrogram will be cut at this height into clusters. Default: NULL
+#' @param cutCols A number, the dendrogram will be cut at this height into clusters. If NULL, cutCols will be the same as cutRows. Default: cutRows
+#' @param obj The Seurat object to perform calculations on. Default: combined.obj
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#'
 #' @export plot.Gene.Cor.Heatmap
 plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
                                   , assay.use = "RNA", slot.use = c("data", "scale.data", "data.imputed")[1], quantileX = 0.95
