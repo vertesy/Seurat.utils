@@ -18,33 +18,26 @@
 )
 }
 \arguments{
-\item{genes}{Genes of iinterest, Default: WU.2017.139.IEGsf}
+\item{genes}{The list of genes of interest. Default: WU.2017.139.IEGsf}
 
-\item{assay.use}{PARAM_DESCRIPTION, Default: 'RNA'}
+\item{assay.use}{The assay to use from the Seurat object. Default: 'RNA'}
 
-\item{slot.use}{PARAM_DESCRIPTION, Default: c("data", "scale.data", "data.imputed")\link{1}}
+\item{slot.use}{The slot to use from the assay in the Seurat object. Default: First item in the vector c("data", "scale.data", "data.imputed")}
 
-\item{quantileX}{Quantile level, Default: 0.95}
+\item{quantileX}{The quantile level for the calculation. Default: 0.95}
 
-\item{min.g.cor}{PARAM_DESCRIPTION, Default: 0.3}
+\item{min.g.cor}{The minimum gene correlation. Genes with correlation above this value or below its negative will be included. Default: 0.3}
 
-\item{calc.COR}{PARAM_DESCRIPTION, Default: FALSE}
+\item{calc.COR}{A logical flag, if TRUE, the correlation will be calculated if not found. Default: FALSE}
 
-\item{cutRows}{PARAM_DESCRIPTION, Default: NULL}
+\item{cutRows}{A number, the dendrogram will be cut at this height into clusters. Default: NULL}
 
-\item{cutCols}{PARAM_DESCRIPTION, Default: cutRows}
+\item{cutCols}{A number, the dendrogram will be cut at this height into clusters. If NULL, cutCols will be the same as cutRows. Default: cutRows}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{The Seurat object to perform calculations on. Default: combined.obj}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 Plot a gene correlation heatmap.
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
 }

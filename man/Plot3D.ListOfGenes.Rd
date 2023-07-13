@@ -15,22 +15,22 @@ Plot3D.ListOfGenes(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object to be used for the plot. Default: combined.obj}
 
-\item{annotate.by}{PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.7'}
+\item{annotate.by}{Variable to annotate the clusters by. Default: 'integrated_snn_res.0.7'}
 
-\item{opacity}{PARAM_DESCRIPTION, Default: 0.5}
+\item{opacity}{Opacity for the plot points. Default: 0.5}
 
-\item{cex}{Point size, Default: 1.25}
+\item{cex}{Point size for the plot. Default: 1.25}
 
-\item{default.assay}{PARAM_DESCRIPTION, Default: c("integrated", "RNA")\link{2}}
+\item{default.assay}{Default assay to be used from the Seurat object. Default: second entry from c("integrated", "RNA")}
 
-\item{ListOfGenes}{PARAM_DESCRIPTION, Default: c("BCL11B", "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4")}
+\item{ListOfGenes}{List of genes to be plotted. Default: c("BCL11B", "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4")}
 
-\item{SubFolderName}{PARAM_DESCRIPTION, Default: ppp("plot3D", substitute(ListOfGenes))}
+\item{SubFolderName}{Name of the subfolder where the plots will be saved. Default: a subfolder named 'plot3D' concatenated with the list of genes.}
 }
 \description{
-Plot and save list of 3D UMAP ot tSNE plots using plotly. #
+Plot and save list of 3D UMAP or tSNE plots using plotly.
 }
 \examples{
 \dontrun{

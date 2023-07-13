@@ -11,19 +11,12 @@ Annotate4Plotly3D(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{The Seurat object for which the 3D plot annotations will be generated. Default: combined.obj}
 
-\item{plotting.data.}{PARAM_DESCRIPTION, Default: plotting.data}
+\item{plotting.data.}{The data frame containing plotting data. Default: plotting.data}
 
-\item{AnnotCateg}{PARAM_DESCRIPTION, Default: AutoAnnotBy}
+\item{AnnotCateg}{The category for which the annotation is generated. Default: AutoAnnotBy}
 }
 \description{
-Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations #
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations.
 }

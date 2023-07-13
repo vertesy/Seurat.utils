@@ -7,15 +7,15 @@
 sparse.cor(smat)
 }
 \arguments{
-\item{smat}{PARAM_DESCRIPTION}
+\item{smat}{A sparse matrix.}
+}
+\value{
+A list with two elements:
+\itemize{
+\item \code{cov}: The covariance matrix.
+\item \code{cor}: The correlation matrix.
+}
 }
 \description{
-Sparse, fast correlation.
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+Calculate a sparse correlation matrix.
 }

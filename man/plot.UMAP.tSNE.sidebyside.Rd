@@ -23,38 +23,38 @@
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object. Default: combined.obj}
 
-\item{grouping}{PARAM_DESCRIPTION, Default: 'res.0.6'}
+\item{grouping}{Variable to group cells by. Default: 'res.0.6'}
 
-\item{no_legend}{PARAM_DESCRIPTION, Default: F}
+\item{no_legend}{Logical, whether to display legend. Default: FALSE}
 
-\item{do_return}{PARAM_DESCRIPTION, Default: TRUE}
+\item{do_return}{Logical, whether to return plot object. Default: TRUE}
 
-\item{do_label}{PARAM_DESCRIPTION, Default: T}
+\item{do_label}{Logical, whether to display labels. Default: TRUE}
 
-\item{label_size}{PARAM_DESCRIPTION, Default: 10}
+\item{label_size}{Size of labels. Default: 10}
 
-\item{vector_friendly}{PARAM_DESCRIPTION, Default: TRUE}
+\item{vector_friendly}{Logical, whether to optimize for vector outputs. Default: TRUE}
 
-\item{cells_use}{PARAM_DESCRIPTION, Default: NULL}
+\item{cells_use}{A vector of cell names to use for the plot. Default: NULL}
 
-\item{no_axes}{PARAM_DESCRIPTION, Default: T}
+\item{no_axes}{Logical, whether to hide axes. Default: TRUE}
 
-\item{pt_size}{PARAM_DESCRIPTION, Default: 0.5}
+\item{pt_size}{Size of points. Default: 0.5}
 
-\item{name.suffix}{PARAM_DESCRIPTION, Default: NULL}
+\item{name.suffix}{Suffix to append to the plot's name. Default: NULL}
 
-\item{width}{PARAM_DESCRIPTION, Default: hA4}
+\item{width}{Width of the plot. Default: hA4}
 
-\item{heigth}{PARAM_DESCRIPTION, Default: 1.75 * wA4}
+\item{heigth}{Height of the plot. Default: 1.75 * wA4}
 
-\item{filetype}{PARAM_DESCRIPTION, Default: 'pdf'}
+\item{filetype}{Filetype to save plot as. Default: 'pdf'}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-Plot a UMAP and tSNE sidebyside #
+Plot a UMAP and tSNE side by side.
 }
 \examples{
 \dontrun{

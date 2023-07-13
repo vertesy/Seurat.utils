@@ -15,19 +15,19 @@ check.genes(
 )
 }
 \arguments{
-\item{list.of.genes}{PARAM_DESCRIPTION, Default: ClassicMarkers}
+\item{list.of.genes}{A vector of gene names to check for existence in the Seurat object or HGNC. Default: ClassicMarkers}
 
-\item{makeuppercase}{PARAM_DESCRIPTION, Default: FALSE}
+\item{makeuppercase}{Logical, if TRUE, transforms all gene names to uppercase. Default: FALSE}
 
-\item{verbose}{PARAM_DESCRIPTION, Default: TRUE}
+\item{verbose}{Logical, if TRUE, prints out information about missing genes. Default: TRUE}
 
-\item{HGNC.lookup}{PARAM_DESCRIPTION, Default: FALSE}
+\item{HGNC.lookup}{Logical, if TRUE, looks up missing genes in HGNC database. Default: FALSE}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object that the function uses to check the gene names. Default: combined.obj}
 
-\item{assay.slot}{PARAM_DESCRIPTION, Default: c("RNA", "integrated")\link{1}}
+\item{assay.slot}{The assay slot of the Seurat object to consider. Default: 'RNA'}
 
-\item{dataslot}{PARAM_DESCRIPTION, Default: c("counts", "data")\link{2}}
+\item{dataslot}{The data slot of the Seurat object to consider. Default: 'data'}
 }
 \description{
 Check if a gene name exists in a Seurat object, or in HGNC?

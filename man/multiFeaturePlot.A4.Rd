@@ -31,54 +31,54 @@ multiFeaturePlot.A4(
 )
 }
 \arguments{
-\item{list.of.genes}{PARAM_DESCRIPTION}
+\item{list.of.genes}{List of gene names for which the plots are to be generated. No default.}
 
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{foldername}{PARAM_DESCRIPTION, Default: substitute(list.of.genes)}
+\item{foldername}{Folder name to save the generated plots. Default: The name of the list of genes.}
 
-\item{plot.reduction}{PARAM_DESCRIPTION, Default: 'umap'}
+\item{plot.reduction}{Dimension reduction technique to use for plots. Default: 'umap'}
 
-\item{intersectionAssay}{PARAM_DESCRIPTION, Default: c("RNA", "integrated")\link{1}}
+\item{intersectionAssay}{The assay to intersect with, either 'RNA' or 'integrated'. Default: 'RNA'}
 
-\item{layout}{PARAM_DESCRIPTION, Default: c("tall", "wide", FALSE)\link{2}}
+\item{layout}{Layout orientation of the plot. Default: 'wide'}
 
-\item{colors}{PARAM_DESCRIPTION, Default: c("grey", "red")}
+\item{colors}{Vector of colors to be used in the plot. Default: c("grey", "red")}
 
-\item{nr.Col}{PARAM_DESCRIPTION, Default: 2}
+\item{nr.Col}{Number of columns in the plot grid. Default: 2}
 
-\item{nr.Row}{PARAM_DESCRIPTION, Default: 4}
+\item{nr.Row}{Number of rows in the plot grid. Default: 4}
 
-\item{cex}{Point size, Default: round(0.1/(nr.Col * nr.Row), digits = 2)}
+\item{cex}{Point size in the plot. Default: round(0.1/(nr.Col * nr.Row), digits = 2)}
 
-\item{gene.min.exp}{PARAM_DESCRIPTION, Default: 'q01'}
+\item{gene.min.exp}{Minimum gene expression level for plotting. Default: 'q01'}
 
-\item{gene.max.exp}{PARAM_DESCRIPTION, Default: 'q99'}
+\item{gene.max.exp}{Maximum gene expression level for plotting. Default: 'q99'}
 
-\item{subdir}{PARAM_DESCRIPTION, Default: T}
+\item{subdir}{Should plots be saved in a sub-directory? Default: TRUE}
 
-\item{prefix}{PARAM_DESCRIPTION, Default: NULL}
+\item{prefix}{Prefix for the plot filenames. Default: NULL}
 
-\item{suffix}{A suffix added to the filename, Default: NULL}
+\item{suffix}{Suffix for the plot filenames. Default: NULL}
 
-\item{background_col}{background color def: White}
+\item{background_col}{Background color of the plots. Default: "white"}
 
-\item{aspect.ratio}{Fix the aspect ratio? Default: Yes, at 0.6}
+\item{aspect.ratio}{Should the aspect ratio be fixed? Default: Yes, at 0.6}
 
-\item{saveGeneList}{PARAM_DESCRIPTION, Default: FALSE}
+\item{saveGeneList}{Should the list of genes be saved? Default: FALSE}
 
-\item{w}{width of the plot, Default: wA4}
+\item{w}{Width of the plot. Default: wA4}
 
-\item{h}{height of the plot, Default: hA4}
+\item{h}{Height of the plot. Default: hA4}
 
-\item{scaling}{PARAM_DESCRIPTION, Default: 1}
+\item{scaling}{Scaling factor for plot size. Default: 1}
 
-\item{format}{PARAM_DESCRIPTION, Default: c("jpg", "pdf", "png")\link{1}}
+\item{format}{Format to save the plot file. Default: 'jpg'}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names. #
+Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
 }
 \examples{
 \dontrun{

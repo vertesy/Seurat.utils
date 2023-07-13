@@ -12,23 +12,16 @@ UpdateGenesSeurat(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: ls.Seurat[\link{i}]}
+\item{obj}{Seurat object to update gene symbols in. Default: ls.Seurat[\link{i}]}
 
-\item{species_}{PARAM_DESCRIPTION, Default: 'human'}
+\item{species_}{Species to which the gene symbols correspond, used to check gene symbols. Default: 'human'}
 
-\item{EnforceUnique}{PARAM_DESCRIPTION, Default: T}
+\item{EnforceUnique}{Logical, if TRUE, enforces unique gene symbols. Default: TRUE}
 
-\item{ShowStats}{PARAM_DESCRIPTION, Default: F}
+\item{ShowStats}{Logical, if TRUE, displays statistics of gene symbols update. Default: FALSE}
 }
 \description{
-Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names. #
-}
-\examples{
-\dontrun{
-if(interactive()){
- UpdateGenesSeurat()
- }
-}
+Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
 }
 \seealso{
 \code{\link[HGNChelper]{checkGeneSymbols}}

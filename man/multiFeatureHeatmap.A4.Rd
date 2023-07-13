@@ -22,30 +22,30 @@ multiFeatureHeatmap.A4(
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{list.of.genes}{PARAM_DESCRIPTION}
+\item{list.of.genes}{A list of genes to plot. No default.}
 
-\item{gene.per.page}{PARAM_DESCRIPTION, Default: 5}
+\item{gene.per.page}{Number of genes to plot per page. Default: 5}
 
-\item{group.cells.by}{PARAM_DESCRIPTION, Default: 'batch'}
+\item{group.cells.by}{Cell grouping variable for the heatmap. Default: 'batch'}
 
-\item{plot.reduction}{PARAM_DESCRIPTION, Default: 'umap'}
+\item{plot.reduction}{Dimension reduction technique to use for plots. Default: 'umap'}
 
-\item{cex}{Point size, Default: iround(3/gene.per.page)}
+\item{cex}{Point size in the plot. Default: iround(3/gene.per.page)}
 
-\item{sep_scale}{PARAM_DESCRIPTION, Default: F}
+\item{sep_scale}{Logical, whether to scale the features separately. Default: FALSE}
 
-\item{gene.min.exp}{PARAM_DESCRIPTION, Default: 'q5'}
+\item{gene.min.exp}{Minimum gene expression level for plotting. Default: 'q5'}
 
-\item{gene.max.exp}{PARAM_DESCRIPTION, Default: 'q95'}
+\item{gene.max.exp}{Maximum gene expression level for plotting. Default: 'q95'}
 
-\item{jpeg.res}{PARAM_DESCRIPTION, Default: 225}
+\item{jpeg.res}{Resolution of the jpeg output. Default: 225}
 
-\item{jpeg.q}{PARAM_DESCRIPTION, Default: 90}
+\item{jpeg.q}{Quality of the jpeg output. Default: 90}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-Save multiple FeatureHeatmaps from a list of genes on A4 jpeg #
+Save multiple FeatureHeatmaps from a list of genes on A4 jpeg.
 }
 \examples{
 \dontrun{

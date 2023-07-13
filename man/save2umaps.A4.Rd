@@ -17,31 +17,24 @@ save2umaps.A4(
 )
 }
 \arguments{
-\item{plot_list}{PARAM_DESCRIPTION}
+\item{plot_list}{A list of plots to be saved on an A4 page.}
 
-\item{pname}{PARAM_DESCRIPTION, Default: F}
+\item{pname}{Boolean to determine if name is generated automatically. If FALSE, name is generated based on plot_list and suffix. Default: F}
 
-\item{suffix}{A suffix added to the filename, Default: NULL}
+\item{suffix}{A suffix added to the filename. Default: NULL}
 
-\item{scale}{PARAM_DESCRIPTION, Default: 1}
+\item{scale}{Scaling factor for the size of the plot. Default: 1}
 
-\item{nrow}{PARAM_DESCRIPTION, Default: 2}
+\item{nrow}{Number of rows to arrange the plots in. Default: 2}
 
-\item{ncol}{PARAM_DESCRIPTION, Default: 1}
+\item{ncol}{Number of columns to arrange the plots in. Default: 1}
 
-\item{h}{height of the plot, Default: hA4 * scale}
+\item{h}{Height of the plot, calculated as height of A4 page times the scale. Default: hA4 * scale}
 
-\item{w}{width of the plot, Default: wA4 * scale}
+\item{w}{Width of the plot, calculated as width of A4 page times the scale. Default: wA4 * scale}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
 Save 2 umaps on 1 A4
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
 }

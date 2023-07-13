@@ -20,7 +20,7 @@ require('CodeAndRoll2')
 
 # Setup ------------------------
 PackageName = 	"Seurat.utils"
-package.version = "1.7.9"
+package.version = "1.8.0"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir = kollapse("~/GitHub/Packages/", PackageName, "/")
@@ -77,6 +77,7 @@ file.copy(from = Package_FnP, to = BackupOldFile, overwrite = TRUE)
 setwd(RepositoryDir)
 getwd()
 document()
+warnings()
 
 {
   "update cff version"

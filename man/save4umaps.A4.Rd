@@ -38,10 +38,3 @@ save4umaps.A4(
 \description{
 Save 4 umaps on 1 A4
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

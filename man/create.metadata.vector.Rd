@@ -7,7 +7,7 @@
 create.metadata.vector(vec = All.UVI, obj = combined.obj, min.intersect = 100)
 }
 \arguments{
-\item{vec}{cell - ID vector with partial overlap to cells in a Seurat object.}
+\item{vec}{cell_ID vector with partial overlap to cells in a Seurat object.}
 
 \item{obj}{Seurat object}
 

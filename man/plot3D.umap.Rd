@@ -13,18 +13,18 @@ plot3D.umap(
 )
 }
 \arguments{
-\item{category}{PARAM_DESCRIPTION, Default: 'v.project'}
+\item{category}{The metadata column based on which the 3D UMAP will be plotted. Default: 'v.project'}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{The Seurat object for which the 3D umap plot will be generated. Default: combined.obj}
 
-\item{suffix}{A suffix added to the filename, Default: NULL}
+\item{suffix}{A suffix added to the filename. Default: NULL}
 
-\item{AutoAnnotBy}{PARAM_DESCRIPTION, Default: GetNamedClusteringRuns(obj)\link{1}}
+\item{AutoAnnotBy}{The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.}
 
-\item{dotsize}{PARAM_DESCRIPTION, Default: 1.25}
+\item{dotsize}{The size of the dots in the plot. Default: 1.25}
 }
 \description{
-Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87. #
+Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
 }
 \examples{
 \dontrun{

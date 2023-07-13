@@ -13,18 +13,18 @@ PlotTopGenesPerCluster(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object. Default: combined.obj}
 
-\item{cl_res}{PARAM_DESCRIPTION, Default: res}
+\item{cl_res}{Resolution value to use for determining clusters. Default: res}
 
-\item{nrGenes}{PARAM_DESCRIPTION, Default: p$n.markers}
+\item{nrGenes}{Number of top differentially expressed genes to plot per cluster. Default: p$'n.markers'}
 
-\item{order.by}{Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")\link{1}}
+\item{order.by}{Column name to sort output tibble by. Default: c("combined.score","avg_log2FC", "p_val_adj")\link{1}}
 
-\item{df_markers}{PARAM_DESCRIPTION, Default: combined.obj@misc$df.markers[\link{paste0("res.", cl_res)}]}
+\item{df_markers}{Data frame containing marker gene data. Default: combined.obj@misc$df.markers[\link{paste0("res.", cl_res)}]}
 }
 \description{
-Plot the top N diff. exp. genes in each cluster
+Plot the top N diff. exp. genes in each cluster.
 }
 \examples{
 \dontrun{

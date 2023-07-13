@@ -16,21 +16,21 @@ FindCorrelatedGenes(
 )
 }
 \arguments{
-\item{gene}{gene of interest, Default: 'TOP2A'}
+\item{gene}{Gene of interest. Default: 'TOP2A'}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object to find the correlated genes from. Default: combined.obj}
 
-\item{assay}{RNA or integrated assay, Default: 'RNA'}
+\item{assay}{Assay to be used from the Seurat object. Default: 'RNA'}
 
-\item{slot}{slot in the Seurat object. Default: 'data'}
+\item{slot}{Slot to be used from the specified assay in the Seurat object. Default: 'data'}
 
-\item{HEonly}{PARAM_DESCRIPTION, Default: F}
+\item{HEonly}{Logical, if TRUE, filters matrix to high-expressing genes only. Default: FALSE}
 
-\item{minExpr}{PARAM_DESCRIPTION, Default: 1}
+\item{minExpr}{Minimum expression level for a gene to be considered. Default: 1}
 
-\item{minCells}{PARAM_DESCRIPTION, Default: 1000}
+\item{minCells}{Minimum number of cells expressing a gene for the gene to be considered. Default: 1000}
 
-\item{trailingNgenes}{PARAM_DESCRIPTION, Default: 1000}
+\item{trailingNgenes}{Number of top genes to consider based on their correlation. Default: 1000}
 }
 \description{
 Find correlated genes in a Seurat object

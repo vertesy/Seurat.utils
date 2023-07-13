@@ -35,62 +35,62 @@ clUMAP(
 )
 }
 \arguments{
-\item{ident}{identity used, Default: 'integrated_snn_res.0.5'}
+\item{ident}{Identity to be used for clustering, Default: 'integrated_snn_res.0.5'.}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object containing single-cell RNA seq data, Default: combined.obj.}
 
-\item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
+\item{reduction}{Dimension reduction technique to be used. Choose from 'umap', 'tsne', or 'pca'. Default: 'umap'.}
 
-\item{splitby}{PARAM_DESCRIPTION, Default: NULL}
+\item{splitby}{Column in the metadata to split the cells by, Default: NULL.}
 
-\item{title}{Title of the plot, Default: ident}
+\item{title}{Title of the plot, Default: ident.}
 
-\item{sub}{Subtitle of the plot, Default: NULL}
+\item{sub}{Subtitle of the plot, Default: NULL.}
 
-\item{prefix}{A prefix added before the filename, Default: NULL}
+\item{prefix}{A prefix added before the filename, Default: NULL.}
 
-\item{suffix}{A suffix added to the filename, Default: sub}
+\item{suffix}{A suffix added to the end of the filename, Default: sub.}
 
-\item{label.cex}{PARAM_DESCRIPTION, Default: 7}
+\item{label.cex}{Scaling factor for label sizes, Default: 7.}
 
-\item{h}{height of the plot, Default: 7}
+\item{h}{Height of the plot in inches, Default: 7.}
 
-\item{w}{width of the plot, Default: NULL}
+\item{w}{Width of the plot in inches, Default: NULL.}
 
-\item{nr.cols}{Number of columns to combine multiple feature plots to, ignored if split.by is not NULL, Default: NULL}
+\item{nr.cols}{Number of columns to combine multiple feature plots, ignored if split.by is not NULL, Default: NULL.}
 
-\item{plotname}{Title of the plot, Default: ppp(toupper(reduction), ident)}
+\item{plotname}{Title of the plot, Default: ppp(toupper(reduction), ident).}
 
-\item{cols}{Colors used, Default: getDiscretePalette(ident.used = ident, show.colors = F)}
+\item{cols}{Colors to be used for the plot, Default: NULL.}
 
-\item{palette}{Color palette.}
+\item{palette}{Color palette to be used, Default: 'glasbey'.}
 
-\item{highlight.clusters}{PARAM_DESCRIPTION, Default: NULL}
+\item{highlight.clusters}{Specific clusters to be highlighted, Default: NULL.}
 
-\item{cells.highlight}{PARAM_DESCRIPTION, Default: NULL}
+\item{cells.highlight}{Specific cells to be highlighted, Default: NULL.}
 
-\item{label}{PARAM_DESCRIPTION, Default: T}
+\item{label}{If TRUE, clusters are labeled, Default: T.}
 
-\item{repel}{PARAM_DESCRIPTION, Default: T}
+\item{repel}{If TRUE, labels are repelled to avoid overlap, Default: T.}
 
-\item{legend}{PARAM_DESCRIPTION, Default: !label}
+\item{legend}{If TRUE, a legend is added to the plot, Default: !label.}
 
-\item{MaxCategThrHP}{PARAM_DESCRIPTION, Default: 200}
+\item{MaxCategThrHP}{Maximum threshold for the number of categories, Default: 200.}
 
-\item{axes}{Show axes? Default: FALSE}
+\item{axes}{If TRUE, the axes are shown on the plot. Default: FALSE.}
 
-\item{aspect.ratio}{Fix the aspect ratio? Default: Yes, at 0.6}
+\item{aspect.ratio}{Ratio of height to width. If TRUE, the ratio is fixed at 0.6. Default: TRUE.}
 
-\item{save.plot}{Save the plot into a file?, Default: T}
+\item{save.plot}{If TRUE, the plot is saved into a file, Default: T.}
 
-\item{PNG}{Save file as .png?, Default: T}
+\item{PNG}{If TRUE, the file is saved as a .png, Default: T.}
 
-\item{check_for_2D}{Check if UMAP is 2 dimensional.}
+\item{check_for_2D}{If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-The quickest way to draw a clustering result  UMAP #
+The quickest way to draw a clustering result UMAP.
 }
 \examples{
 \dontrun{

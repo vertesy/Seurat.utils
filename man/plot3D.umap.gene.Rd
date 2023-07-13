@@ -16,24 +16,24 @@ plot3D.umap.gene(
 )
 }
 \arguments{
-\item{gene}{gene of interest, Default: 'TOP2A'}
+\item{gene}{The gene of interest. Default: 'TOP2A'}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{The Seurat object for which the 3D umap plot will be generated. Default: combined.obj}
 
-\item{quantileCutoff}{PARAM_DESCRIPTION, Default: 0.99}
+\item{quantileCutoff}{Cutoff value for the quantile for clipping outliers in the gene expression data. Default: 0.99}
 
-\item{def.assay}{PARAM_DESCRIPTION, Default: c("integrated", "RNA")\link{2}}
+\item{def.assay}{The default assay to be used. Choose between "integrated" and "RNA". Default: "RNA"}
 
-\item{suffix}{A suffix added to the filename, Default: NULL}
+\item{suffix}{A suffix added to the filename. Default: NULL}
 
-\item{AutoAnnotBy}{PARAM_DESCRIPTION, Default: GetNamedClusteringRuns(obj)\link{1}}
+\item{AutoAnnotBy}{The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.}
 
-\item{alpha}{PARAM_DESCRIPTION, Default: 0.5}
+\item{alpha}{Opacity of the points in the plot. Default: 0.5}
 
-\item{dotsize}{PARAM_DESCRIPTION, Default: 1.25}
+\item{dotsize}{The size of the dots in the plot. Default: 1.25}
 }
 \description{
-Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87. #
+Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
 }
 \examples{
 \dontrun{

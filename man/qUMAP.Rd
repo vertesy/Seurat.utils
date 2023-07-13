@@ -30,52 +30,52 @@ qUMAP(
 )
 }
 \arguments{
-\item{feature}{PARAM_DESCRIPTION, Default: 'TOP2A'}
+\item{feature}{Feature to be visualized on the UMAP, Default: 'TOP2A'.}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object containing single-cell RNA seq data, Default: combined.obj.}
 
-\item{title}{Title of the plot, Default: feature}
+\item{title}{Title of the plot, Default: feature.}
 
-\item{sub}{Subtitle of the plot, Default: NULL}
+\item{sub}{Subtitle of the plot, Default: NULL.}
 
-\item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
+\item{reduction}{Dimension reduction technique to be used. Choose from 'umap', 'tsne', or 'pca'. Default: 'umap'.}
 
-\item{splitby}{PARAM_DESCRIPTION, Default: NULL}
+\item{splitby}{Column in the metadata to split the cells by, Default: NULL.}
 
-\item{prefix}{A prefix added before the filename, Default: NULL}
+\item{prefix}{A prefix added before the filename, Default: NULL.}
 
-\item{suffix}{A suffix added to the end of the filename, Default: subtitle}
+\item{suffix}{A suffix added to the end of the filename, Default: subtitle.}
 
-\item{save.plot}{Save the plot into a file?, Default: T}
+\item{save.plot}{If TRUE, the plot is saved into a file, Default: T.}
 
-\item{PNG}{Save file as .png?, Default: T}
+\item{PNG}{If TRUE, the file is saved as a .png, Default: T.}
 
-\item{h}{height of the plot, Default: 7}
+\item{h}{Height of the plot in inches, Default: 7.}
 
-\item{w}{width of the plot, Default: NULL}
+\item{w}{Width of the plot in inches, Default: NULL.}
 
-\item{nr.cols}{Number of columns to combine multiple feature plots to, ignored if split.by is not NULL, Default: NULL}
+\item{nr.cols}{Number of columns to combine multiple feature plots, ignored if split.by is not NULL, Default: NULL.}
 
-\item{assay}{RNA or integrated assay, Default: c("RNA", "integrated")\link{1}}
+\item{assay}{Which assay to use, 'RNA' or 'integrated', Default: 'RNA'.}
 
-\item{axes}{Show axes? Default: FALSE}
+\item{axes}{If TRUE, the axes are shown on the plot. Default: FALSE.}
 
-\item{aspect.ratio}{Fix the aspect ratio?  Default: Yes, at 0.6}
+\item{aspect.ratio}{Ratio of height to width. If TRUE, the ratio is fixed at 0.6. Default: FALSE.}
 
-\item{HGNC.lookup}{PARAM_DESCRIPTION, Default: TRUE}
+\item{HGNC.lookup}{If TRUE, the HGNC gene symbol lookup is performed. Default: TRUE.}
 
-\item{make.uppercase}{PARAM_DESCRIPTION, Default: TRUE}
+\item{make.uppercase}{If TRUE, feature names are converted to uppercase. Default: FALSE.}
 
-\item{check_for_2D}{Check if UMAP is 2 dimensional.}
+\item{check_for_2D}{If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.}
 
-\item{qlow}{PARAM_DESCRIPTION, Default: 'q10'}
+\item{qlow}{Lower quantile for the color scale, Default: 'q10'.}
 
-\item{qhigh}{PARAM_DESCRIPTION, Default: 'q90'}
+\item{qhigh}{Upper quantile for the color scale, Default: 'q90'.}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-The quickest way to draw a gene expression UMAP #
+The quickest way to draw a gene expression UMAP.
 }
 \examples{
 \dontrun{

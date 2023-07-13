@@ -7,21 +7,16 @@
 SavePlotlyAsHtml(plotly_obj, category. = category, suffix. = NULL)
 }
 \arguments{
-\item{plotly_obj}{PARAM_DESCRIPTION}
+\item{plotly_obj}{The Plotly object to save.}
 
-\item{category.}{PARAM_DESCRIPTION, Default: category}
+\item{category}{The category of the plot.}
 
-\item{suffix.}{PARAM_DESCRIPTION, Default: NULL}
+\item{suffix}{A suffix to add to the filename.}
+
+\item{OutputDir}{The output directory.}
 }
 \description{
-Save Plotly 3D scatterplot as an html file. #
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+Save a Plotly 3D scatterplot as an HTML file.
 }
 \seealso{
 \code{\link[htmlwidgets]{saveWidget}}
