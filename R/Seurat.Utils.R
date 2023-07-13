@@ -4317,9 +4317,9 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 
 # _________________________________________________________________________________________________
 #' @title seu.Make.Cl.Label.per.cell
-#' @description Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID". #
-#' @param TopGenes PARAM_DESCRIPTION
-#' @param clID.per.cell PARAM_DESCRIPTION
+#' @description Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID".
+#' @param TopGenes A named vector, where values are gene names and names are cluster IDs.
+#' @param clID.per.cell A vector of cell-IDs used to create the output vector.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -4327,6 +4327,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 #'  }
 #' }
 #' @export
+
 seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) { # Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID".
   Cl.names_class= TopGenes[ clID.per.cell ]
   Cl.names_wNr = paste0(Cl.names_class,' (',names(Cl.names_class),')')
