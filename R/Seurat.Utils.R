@@ -4390,13 +4390,13 @@ gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) { # Check gene names in a
 # _________________________________________________________________________________________________
 #' @title check.genes
 #' @description Check if a gene name exists in a Seurat object, or in HGNC?
-#' @param list.of.genes PARAM_DESCRIPTION, Default: ClassicMarkers
-#' @param makeuppercase PARAM_DESCRIPTION, Default: FALSE
-#' @param verbose PARAM_DESCRIPTION, Default: TRUE
-#' @param HGNC.lookup PARAM_DESCRIPTION, Default: FALSE
-#' @param obj Seurat object, Default: combined.obj
-#' @param assay.slot PARAM_DESCRIPTION, Default: c("RNA", "integrated")[1]
-#' @param dataslot PARAM_DESCRIPTION, Default: c("counts", "data")[2]
+#' @param list.of.genes A vector of gene names to check for existence in the Seurat object or HGNC. Default: ClassicMarkers
+#' @param makeuppercase Logical, if TRUE, transforms all gene names to uppercase. Default: FALSE
+#' @param verbose Logical, if TRUE, prints out information about missing genes. Default: TRUE
+#' @param HGNC.lookup Logical, if TRUE, looks up missing genes in HGNC database. Default: FALSE
+#' @param obj Seurat object that the function uses to check the gene names. Default: combined.obj
+#' @param assay.slot The assay slot of the Seurat object to consider. Default: 'RNA'
+#' @param dataslot The data slot of the Seurat object to consider. Default: 'data'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
