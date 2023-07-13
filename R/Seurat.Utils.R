@@ -4551,14 +4551,14 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
 # _________________________________________________________________________________________________
 #' @title FindCorrelatedGenes
 #' @description Find correlated genes in a Seurat object
-#' @param gene gene of interest, Default: 'TOP2A'
-#' @param obj Seurat object, Default: combined.obj
-#' @param assay RNA or integrated assay, Default: 'RNA'
-#' @param slot slot in the Seurat object. Default: 'data'
-#' @param HEonly PARAM_DESCRIPTION, Default: F
-#' @param minExpr PARAM_DESCRIPTION, Default: 1
-#' @param minCells PARAM_DESCRIPTION, Default: 1000
-#' @param trailingNgenes PARAM_DESCRIPTION, Default: 1000
+#' @param gene Gene of interest. Default: 'TOP2A'
+#' @param obj Seurat object to find the correlated genes from. Default: combined.obj
+#' @param assay Assay to be used from the Seurat object. Default: 'RNA'
+#' @param slot Slot to be used from the specified assay in the Seurat object. Default: 'data'
+#' @param HEonly Logical, if TRUE, filters matrix to high-expressing genes only. Default: FALSE
+#' @param minExpr Minimum expression level for a gene to be considered. Default: 1
+#' @param minCells Minimum number of cells expressing a gene for the gene to be considered. Default: 1000
+#' @param trailingNgenes Number of top genes to consider based on their correlation. Default: 1000
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -4570,6 +4570,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
 #' @export
 #' @importFrom matrixStats rowSums2
 #' @importFrom tictoc tic toc
+
 FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA", slot = "data"
                                 , HEonly =F , minExpr = 1, minCells = 1000
                                 , trailingNgenes = 1000) {
