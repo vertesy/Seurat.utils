@@ -3163,33 +3163,34 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 
 # _________________________________________________________________________________________________
 #' @title clUMAP
-#' @description The quickest way to draw a clustering result  UMAP #
-#' @param ident identity used, Default: 'integrated_snn_res.0.5'
-#' @param obj Seurat object, Default: combined.obj
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param splitby PARAM_DESCRIPTION, Default: NULL
-#' @param title Title of the plot, Default: ident
-#' @param sub Subtitle of the plot, Default: NULL
-#' @param prefix A prefix added before the filename, Default: NULL
-#' @param suffix A suffix added to the filename, Default: sub
-#' @param label.cex PARAM_DESCRIPTION, Default: 7
-#' @param h height of the plot, Default: 7
-#' @param w width of the plot, Default: NULL
-#' @param nr.cols Number of columns to combine multiple feature plots to, ignored if split.by is not NULL, Default: NULL
-#' @param plotname Title of the plot, Default: ppp(toupper(reduction), ident)
-#' @param cols Colors used, Default: getDiscretePalette(ident.used = ident, show.colors = F)
-#' @param palette Color palette.
-#' @param highlight.clusters PARAM_DESCRIPTION, Default: NULL
-#' @param cells.highlight PARAM_DESCRIPTION, Default: NULL
-#' @param label PARAM_DESCRIPTION, Default: T
-#' @param repel PARAM_DESCRIPTION, Default: T
-#' @param legend PARAM_DESCRIPTION, Default: !label
-#' @param axes Show axes? Default: FALSE
-#' @param aspect.ratio Fix the aspect ratio? Default: Yes, at 0.6
-#' @param MaxCategThrHP PARAM_DESCRIPTION, Default: 200
-#' @param save.plot Save the plot into a file?, Default: T
-#' @param PNG Save file as .png?, Default: T
-#' @param check_for_2D Check if UMAP is 2 dimensional.
+#'
+#' @description The quickest way to draw a clustering result UMAP.
+#' @param ident Identity to be used for clustering, Default: 'integrated_snn_res.0.5'.
+#' @param obj Seurat object containing single-cell RNA seq data, Default: combined.obj.
+#' @param reduction Dimension reduction technique to be used. Choose from 'umap', 'tsne', or 'pca'. Default: 'umap'.
+#' @param splitby Column in the metadata to split the cells by, Default: NULL.
+#' @param title Title of the plot, Default: ident.
+#' @param sub Subtitle of the plot, Default: NULL.
+#' @param prefix A prefix added before the filename, Default: NULL.
+#' @param suffix A suffix added to the end of the filename, Default: sub.
+#' @param label.cex Scaling factor for label sizes, Default: 7.
+#' @param h Height of the plot in inches, Default: 7.
+#' @param w Width of the plot in inches, Default: NULL.
+#' @param nr.cols Number of columns to combine multiple feature plots, ignored if split.by is not NULL, Default: NULL.
+#' @param plotname Title of the plot, Default: ppp(toupper(reduction), ident).
+#' @param cols Colors to be used for the plot, Default: NULL.
+#' @param palette Color palette to be used, Default: 'glasbey'.
+#' @param highlight.clusters Specific clusters to be highlighted, Default: NULL.
+#' @param cells.highlight Specific cells to be highlighted, Default: NULL.
+#' @param label If TRUE, clusters are labeled, Default: T.
+#' @param repel If TRUE, labels are repelled to avoid overlap, Default: T.
+#' @param legend If TRUE, a legend is added to the plot, Default: !label.
+#' @param axes If TRUE, the axes are shown on the plot. Default: FALSE.
+#' @param aspect.ratio Ratio of height to width. If TRUE, the ratio is fixed at 0.6. Default: TRUE.
+#' @param MaxCategThrHP Maximum threshold for the number of categories, Default: 200.
+#' @param save.plot If TRUE, the plot is saved into a file, Default: T.
+#' @param PNG If TRUE, the file is saved as a .png, Default: T.
+#' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -3198,7 +3199,6 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #'  }
 #' }
 #' @export
-# #' @param save.object PARAM_DESCRIPTION, Default: F
 
 clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
                    , reduction ="umap", splitby = NULL
@@ -3421,6 +3421,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
 };
 
 
+# _________________________________________________________________________________________________
 # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
 # code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
 
