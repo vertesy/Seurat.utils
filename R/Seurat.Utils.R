@@ -3425,18 +3425,18 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
 # code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
 
 #' @title multiFeatureHeatmap.A4
-#' @description Save multiple FeatureHeatmaps from a list of genes on A4 jpeg #
+#' @description Save multiple FeatureHeatmaps from a list of genes on A4 jpeg.
 #' @param obj Seurat object, Default: combined.obj
-#' @param list.of.genes PARAM_DESCRIPTION
-#' @param gene.per.page PARAM_DESCRIPTION, Default: 5
-#' @param group.cells.by PARAM_DESCRIPTION, Default: 'batch'
-#' @param plot.reduction PARAM_DESCRIPTION, Default: 'umap'
-#' @param cex Point size, Default: iround(3/gene.per.page)
-#' @param sep_scale PARAM_DESCRIPTION, Default: F
-#' @param gene.min.exp PARAM_DESCRIPTION, Default: 'q5'
-#' @param gene.max.exp PARAM_DESCRIPTION, Default: 'q95'
-#' @param jpeg.res PARAM_DESCRIPTION, Default: 225
-#' @param jpeg.q PARAM_DESCRIPTION, Default: 90
+#' @param list.of.genes A list of genes to plot. No default.
+#' @param gene.per.page Number of genes to plot per page. Default: 5
+#' @param group.cells.by Cell grouping variable for the heatmap. Default: 'batch'
+#' @param plot.reduction Dimension reduction technique to use for plots. Default: 'umap'
+#' @param cex Point size in the plot. Default: iround(3/gene.per.page)
+#' @param sep_scale Logical, whether to scale the features separately. Default: FALSE
+#' @param gene.min.exp Minimum gene expression level for plotting. Default: 'q5'
+#' @param gene.max.exp Maximum gene expression level for plotting. Default: 'q95'
+#' @param jpeg.res Resolution of the jpeg output. Default: 225
+#' @param jpeg.q Quality of the jpeg output. Default: 90
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -3448,6 +3448,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
 #'  \code{\link[tictoc]{tic}}
 #' @export
 #' @importFrom tictoc tic toc
+
 multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
                                    , list.of.genes, gene.per.page = 5
                                    , group.cells.by= "batch", plot.reduction='umap'
