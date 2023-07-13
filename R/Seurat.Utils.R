@@ -3479,23 +3479,22 @@ multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHea
 
 
 # __________________________________________
-
 #' @title plot.UMAP.tSNE.sidebyside
-#' @description Plot a UMAP and tSNE sidebyside #
-#' @param obj Seurat object, Default: combined.obj
-#' @param grouping PARAM_DESCRIPTION, Default: 'res.0.6'
-#' @param no_legend PARAM_DESCRIPTION, Default: F
-#' @param do_return PARAM_DESCRIPTION, Default: TRUE
-#' @param do_label PARAM_DESCRIPTION, Default: T
-#' @param label_size PARAM_DESCRIPTION, Default: 10
-#' @param vector_friendly PARAM_DESCRIPTION, Default: TRUE
-#' @param cells_use PARAM_DESCRIPTION, Default: NULL
-#' @param no_axes PARAM_DESCRIPTION, Default: T
-#' @param pt_size PARAM_DESCRIPTION, Default: 0.5
-#' @param name.suffix PARAM_DESCRIPTION, Default: NULL
-#' @param width PARAM_DESCRIPTION, Default: hA4
-#' @param heigth PARAM_DESCRIPTION, Default: 1.75 * wA4
-#' @param filetype PARAM_DESCRIPTION, Default: 'pdf'
+#' @description Plot a UMAP and tSNE side by side.
+#' @param obj Seurat object. Default: combined.obj
+#' @param grouping Variable to group cells by. Default: 'res.0.6'
+#' @param no_legend Logical, whether to display legend. Default: FALSE
+#' @param do_return Logical, whether to return plot object. Default: TRUE
+#' @param do_label Logical, whether to display labels. Default: TRUE
+#' @param label_size Size of labels. Default: 10
+#' @param vector_friendly Logical, whether to optimize for vector outputs. Default: TRUE
+#' @param cells_use A vector of cell names to use for the plot. Default: NULL
+#' @param no_axes Logical, whether to hide axes. Default: TRUE
+#' @param pt_size Size of points. Default: 0.5
+#' @param name.suffix Suffix to append to the plot's name. Default: NULL
+#' @param width Width of the plot. Default: hA4
+#' @param heigth Height of the plot. Default: 1.75 * wA4
+#' @param filetype Filetype to save plot as. Default: 'pdf'
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
