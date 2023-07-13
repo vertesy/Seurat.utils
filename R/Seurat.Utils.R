@@ -3543,12 +3543,13 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
 
 # _________________________________________________________________________________________________
 #' @title PlotTopGenesPerCluster
-#' @description Plot the top N diff. exp. genes in each cluster
-#' @param obj Seurat object, Default: combined.obj
-#' @param cl_res PARAM_DESCRIPTION, Default: res
-#' @param nrGenes PARAM_DESCRIPTION, Default: p$n.markers
-#' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")[1]
-#' @param df_markers PARAM_DESCRIPTION, Default: combined.obj@misc$df.markers[[paste0("res.", cl_res)]]
+#'
+#' @description Plot the top N diff. exp. genes in each cluster.
+#' @param obj Seurat object. Default: combined.obj
+#' @param cl_res Resolution value to use for determining clusters. Default: res
+#' @param nrGenes Number of top differentially expressed genes to plot per cluster. Default: p$'n.markers'
+#' @param order.by Column name to sort output tibble by. Default: c("combined.score","avg_log2FC", "p_val_adj")[1]
+#' @param df_markers Data frame containing marker gene data. Default: combined.obj@misc$df.markers[[paste0("res.", cl_res)]]
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -3556,6 +3557,7 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
 #'  }
 #' }
 #' @export
+
 PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p$'n.markers'
                                    , order.by = c("combined.score","avg_log2FC", "p_val_adj")[1]
                                    , df_markers = obj@misc$"df.markers"[[paste0("res.",cl_res)]]) {
@@ -3573,6 +3575,7 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
 
 # _________________________________________________________________________________________________
 #' @title qQC.plots.BrainOrg
+#'
 #' @description Quickly plot key QC markers in brain organoids
 #' @param QC.Features Any numeric metadata columns
 #' @param obj Seurat object, Default: combined.obj
@@ -3601,6 +3604,7 @@ qQC.plots.BrainOrg <- function(obj = combined.obj, title = "Top 4 QC markers on 
 
 # _________________________________________________________________________________________________
 #' @title qMarkerCheck.BrainOrg
+#'
 #' @description Quickly plot key markers in brain organoids
 #' @param obj Seurat object, Default: combined.obj
 #' @param custom.genes PARAM_DESCRIPTION, Default: F
