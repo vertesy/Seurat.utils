@@ -2516,17 +2516,16 @@ get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_r
 
 
 # _________________________________________________________________________________________________
-# scBarplot.CellFractions
 #' @title scBarplot.CellFractions
-#' @description Barplot the Fraction of cells per cluster.
-#' @param obj Seurat object, Default: combined.obj
-#' @param group.by PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.5.ordered'
-#' @param fill.by PARAM_DESCRIPTION, Default: 'age'
-#' @param downsample PARAM_DESCRIPTION, Default: T
-#' @param plotname Title of the plot, Default: paste(tools::toTitleCase(fill.by), "proportions")
-#' @param hlines PARAM_DESCRIPTION, Default: c(0.25, 0.5, 0.75)
-#' @param seedNr PARAM_DESCRIPTION, Default: 1989
-#' @param return_table return contingency table instead of a barplot, Default: F
+#' @description Generates a bar plot of cell fractions per cluster.
+#' @param obj The Seurat object to use for the analysis. Default: combined.obj.
+#' @param group.by A string specifying the variable to group by. Default: 'integrated_snn_res.0.5.ordered'.
+#' @param fill.by A string specifying the variable to fill by. Default: 'age'.
+#' @param downsample Logical flag indicating whether to downsample the data. If TRUE, the number of cells in each group is equal to the number of cells in the smallest group. Default: TRUE.
+#' @param plotname A string specifying the title of the plot. Default: paste(tools::toTitleCase(fill.by), "proportions").
+#' @param hlines A numeric vector specifying the y-intercepts for horizontal lines on the plot. Default: c(0.25, 0.5, 0.75).
+#' @param seedNr Seed for random number generation to ensure reproducibility. Default: 1989.
+#' @param return_table Logical flag indicating whether to return a contingency table instead of a bar plot. Default: FALSE.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
