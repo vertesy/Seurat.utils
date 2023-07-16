@@ -754,6 +754,7 @@ seu.RemoveMetadata <- function(obj = combined.obj
 
 # _________________________________________________________________________________________________
 #' @title getMetadataColumn
+#'
 #' @description Retrieves a specified metadata column from a Seurat object and returns it as a named vector.
 #' @param ColName.metadata A string specifying the name of the metadata column to be retrieved. Default: 'batch'.
 #' @param obj A Seurat object from which the metadata column will be retrieved. Default: combined.obj.
@@ -779,15 +780,19 @@ getMetadataColumn <- mmeta <- function(ColName.metadata = 'batch', obj = combine
 
 # _________________________________________________________________________________________________
 #' @title seu.add.meta.from.vector
-#' @description Add a new metadata column to a Seurat  object
-#' @param obj Seurat object, Default: combined.obj
-#' @param metaD.colname PARAM_DESCRIPTION, Default: metaD.colname.labeled
-#' @param Label.per.cell PARAM_DESCRIPTION, Default: Cl.Label.per.cell
+#'
+#' @description Adds a new metadata column to a Seurat object.
+#' @param obj A Seurat object to which the new metadata column will be added. Default: combined.obj.
+#' @param metaD.colname A string specifying the name of the new metadata column. Default: metaD.colname.labeled.
+#' @param Label.per.cell A vector of labels for each cell, to be added as new metadata. Default: Cl.Label.per.cell.
+#' @return A Seurat object with the new metadata column added.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj,  # formerly add.Cl.Label.2.Metadata
-#'  metaD.colname = metaD.colname.labeled, Label.per.cell = Cl.Label.per.cell )
+#'   # Example usage:
+#'   combined.obj <- seu.add.meta.from.vector(obj = combined.obj,
+#'                                            metaD.colname = metaD.colname.labeled,
+#'                                            Label.per.cell = Cl.Label.per.cell)
 #'  }
 #' }
 #' @export
@@ -826,7 +831,6 @@ create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.inters
 }
 
 # _________________________________________________________________________________________________
-
 #' @title seu.map.and.add.new.ident.to.meta
 #' @description Add a new metadata column to a Seurat  object
 #' @param obj Seurat object, Default: combined.obj
