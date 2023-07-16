@@ -21,8 +21,8 @@
 
 
 #' @title parallel.computing.by.future
-#' @description Run gc(), load multi-session computing and extend memory limits.
 #'
+#' @description Run gc(), load multi-session computing and extend memory limits.
 #' @param workers_ cores
 #' @param maxMemSize memory limit
 #'
@@ -75,6 +75,7 @@ IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { 
 
 # _________________________________________________________________________________________________
 #' @title SmallestNonAboveX
+#'
 #' @description replace small values with the next smallest value found, which is >X. #
 #' @param vec Numeric input vector
 #' @param X Threshold, Default: 0
@@ -151,6 +152,7 @@ getProject <- function() {
 
 # _________________________________________________________________________________________________
 #' @title PlotFilters
+#'
 #' @description Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.
 #' @param ls.obj A list of Seurat objects to be analyzed. Default is ls.Seurat.
 #' @param parentdir A string representing the parent directory where the plots will be stored. Default is OutDirOrig.
@@ -318,8 +320,9 @@ PlotFilters <- function(ls.obj = ls.Seurat
 # try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
 # require('MarkdownReports') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReports")
 
-# PCA percent of variation associated with each PC
-#' @title seu.PC.var.explained
+# _________________________________________________________________________________________________
+#' @title PCA percent of variation associated with each PC
+#'
 #' @description Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
 #' @param obj Seurat object, Default: combined.obj
 #' @export
@@ -330,9 +333,9 @@ seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of v
 }
 
 # _________________________________________________________________________________________________
-# plot percent of variation associated with each PC
 #' @title seu.plot.PC.var.explained
-#' @description Plot the percent of variation associated with each PC. #
+#'
+#' @description Plot the percent of variation associated with each PC.
 #' @param obj Seurat object, Default: combined.obj
 #' @param use.MDrep PARAM_DESCRIPTION, Default: F
 #' @export
@@ -392,6 +395,7 @@ Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25, width.bar
 
 # _________________________________________________________________________________________________
 #' @title gene.expression.level.plots
+#'
 #' @description Histogram of gene expression levels.
 #' @param gene gene of interest, Default: 'TOP2A'
 #' @param obj Seurat object, Default: ls.Seurat[[1]]
@@ -421,6 +425,7 @@ gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], sl
 
 # _________________________________________________________________________________________________
 #' @title PrctCellExpringGene
+#'
 #' @description From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
 #' @param genes Genes of iinterest
 #' @param group.by PARAM_DESCRIPTION, Default: 'all'
@@ -448,6 +453,7 @@ PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj){ # 
 
 # _________________________________________________________________________________________________
 #' @title ww.calc_helper
+#'
 #' @description From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
 #' @param obj Seurat object
 #' @param genes Genes of iinterest
@@ -598,6 +604,7 @@ scBarplot.FractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', 
 
 # _________________________________________________________________________________________________
 #' @title getMedianMetric
+#'
 #' @description Get the median values of different columns in meta.data, can iterate over a list of Seurat objects.
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
 #' @param n.datasets lenght of list (n objects), Default: length(ls.Seurat)
@@ -623,6 +630,7 @@ getMedianMetric <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), 
 
 # _________________________________________________________________________________________________
 #' @title add.meta.tags
+#'
 #' @description Add metadata tags to a Seurat object dataset.
 #' @param list.of.tags A list of tags to be added as metadata. Default: tags
 #' @param obj A Seurat object to which the metadata tags are to be added. Default: ls.Seurat[[1]]
@@ -698,6 +706,7 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
 
 # _________________________________________________________________________________________________
 #' @title seu.RemoveMetadata
+#'
 #' @description Remove specified metadata columns from a Seurat object.
 #' @param obj A Seurat object from which metadata columns will be removed. Default: combined.obj
 #' @param cols_remove A character vector specifying metadata column names to remove. By default, it will remove all columns that do not start with "integr" or "cl.names".
@@ -854,6 +863,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 
 # _________________________________________________________________________________________________
 #' @title getCellIDs.from.meta
+#'
 #' @description Retrieves cell IDs from a specified metadata column of a Seurat object, where the cell ID matches a provided list of values. The matching operation uses the `%in%` operator.
 #' @param ColName.meta A string specifying the name of the metadata column from which to retrieve cell IDs. Default: 'res.0.6'.
 #' @param values A vector of values to match in the metadata column. Default: NA.
@@ -878,6 +888,7 @@ getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj = co
 
 # _________________________________________________________________________________________________
 #' @title seu.add.meta.from.table
+#'
 #' @description Add multiple new metadata columns to a Seurat object from a table. #
 #' @param obj Seurat object, Default: seu.ORC
 #' @param meta PARAM_DESCRIPTION, Default: MetaData.ORC
@@ -910,6 +921,7 @@ seu.add.meta.from.table <- function(obj = combined.obj, meta = MetaData.ORC, suf
 
 # _________________________________________________________________________________________________
 #' @title sampleNpc
+#'
 #' @description This function samples a specified percentage of a dataframe (specifically a subset of the metadata of a Seurat object) and returns the corresponding cell IDs.
 #' @param metaDF A dataframe representing a subset of the metadata of a Seurat object. Default: Subset of 'MetaData' for which 'Pass' is TRUE.
 #' @param pc The percentage of the dataframe to sample, expressed as a decimal. Default: 0.1.
@@ -1012,6 +1024,7 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
 
 # _________________________________________________________________________________________________
 #' @title fix.orig.ident
+#'
 #' @description Remove the string "filtered_feature_bc_matrix." from "orig.ident". Helper function.
 #' @param obj Seurat object, Default: merged.obj
 #' @examples
@@ -1029,6 +1042,7 @@ fix.orig.ident <- function(obj = merged.obj) {
 
 # _________________________________________________________________________________________________
 #' @title set.all.genes
+#'
 #' @description It is just a reminder to use calc.q99.Expression.and.set.all.genes to create the all.genes variable
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
@@ -1067,7 +1081,7 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 
 
 # _________________________________________________________________________________________________
-#' RenameClustering
+#' @title RenameClustering
 #'
 #' @param namedVector named vector, where values = new, names(vec) = old
 #' @param orig.ident meta.data colname original
@@ -1128,6 +1142,7 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 
 # _________________________________________________________________________________________________
 #' @title GetClusteringRuns
+#'
 #' @description Get Clustering Runs: metadata column names #
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: F
@@ -1150,6 +1165,7 @@ GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0-9
 
 # _________________________________________________________________________________________________
 #' @title GetNamedClusteringRuns
+#'
 #' @description Get Clustering Runs: metadata column names #
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: c(F, 0.5)[1]
@@ -1178,6 +1194,7 @@ GetNamedClusteringRuns <- function(obj = combined.obj  # Get Clustering Runs: me
 
 # _________________________________________________________________________________________________
 #' @title GetOrderedClusteringRuns
+#'
 #' @description Get Clustering Runs: metadata column names #
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: F
@@ -1200,6 +1217,7 @@ GetOrderedClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_re
 
 # _________________________________________________________________________________________________
 #' @title GetNumberOfClusters
+#'
 #' @description Get Number Of Clusters #
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
@@ -1367,6 +1385,7 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
 # _________________________________________________________________________________________________
 
 #' @title plot.Metadata.Cor.Heatmap
+#'
 #' @description Plots a heatmap of metadata correlation values.
 #' @param columns A vector of column names for which to calculate correlations. Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo").
 #' @param cormethod The method to calculate correlations, either "pearson" or "spearman". Default: "pearson".
@@ -1503,6 +1522,7 @@ plot.Metadata.categ.pie <- function(metacol = 'Singlet.status'
 
 # _________________________________________________________________________________________________
 #' @title plot.expression.rank.q90
+#'
 #' @description Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).
 #' @param obj Seurat object, Default: combined.obj
 #' @param gene gene of interest, Default: 'ACTB'
@@ -1553,6 +1573,7 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
 
 # _________________________________________________________________________________________________
 #' @title set.mm
+#'
 #' @description Helps to find metadata columns. It creates a list with the names of of 'obj@meta.data'.
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
@@ -1571,6 +1592,7 @@ set.mm <- function(obj = combined.obj) {
 
 # _________________________________________________________________________________________________
 #' @title recall.all.genes
+#'
 #' @description all.genes set by calc.q99.Expression.and.set.all.genes() #
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
@@ -1591,6 +1613,7 @@ recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q99.E
 
 # _________________________________________________________________________________________________
 #' @title recall.meta.tags.n.datasets
+#'
 #' @description Recall  meta.tags from obj@misc to "meta.tags" in the global environment.
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
@@ -1649,6 +1672,7 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
 
 # _________________________________________________________________________________________________
 #' @title recall.genes.ls
+#'
 #' @description Recall genes.ls from obj@misc to "genes.ls" in the global environment.
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
@@ -1670,6 +1694,7 @@ recall.genes.ls<- function(obj = combined.obj) { # genes.ls
 
 # _________________________________________________________________________________________________
 #' @title save.parameters
+#'
 #' @description Save parameters to obj@misc$p
 #' @param obj Seurat object, Default: combined.obj
 #' @param params PARAM_DESCRIPTION, Default: p
@@ -1694,6 +1719,7 @@ save.parameters <- function(obj = combined.obj, params = p) {
 
 # _________________________________________________________________________________________________
 #' @title subsetSeuObj
+#'
 #' @description Subset a compressed Seurat object and save it in the working directory.
 #' @param obj A Seurat object to subset. Default: the i-th element of the list 'ls.Seurat'.
 #' @param fraction_ The fraction of the object's data to keep. Default: 0.25.
@@ -1719,6 +1745,7 @@ subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, see
 
 # _________________________________________________________________________________________________
 #' @title subsetSeuObj.and.Save
+#'
 #' @description Subset a compressed Seurat Obj and save it in wd. #
 #' @param obj Seurat object, Default: ORC
 #' @param fraction PARAM_DESCRIPTION, Default: 0.25
@@ -1737,6 +1764,7 @@ subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir =
 
 # _________________________________________________________________________________________________
 #' @title subsetSeuObj.ident.class
+#'
 #' @description Subset a Seurat Obj to a given column
 #' @param obj Seurat object, Default: ORC
 #' @param ident identity
@@ -1753,6 +1781,7 @@ subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.
 
 # _________________________________________________________________________________________________
 #' @title Downsample.Seurat.Objects
+#'
 #' @description Downsample a list of Seurat objects
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
 #' @param NrCells PARAM_DESCRIPTION, Default: p$dSample.Organoids
@@ -1795,6 +1824,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
 
 # _________________________________________________________________________________________________
 #' @title Downsample.Seurat.Objects.PC
+#'
 #' @description Downsample a list of Seurat objects, by fraction
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
 #' @param NrCells PARAM_DESCRIPTION, Default: p$dSample.Organoids
@@ -1836,7 +1866,8 @@ Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1) {
 
 
 # _________________________________________________________________________________________________
-#' remove.residual.small.clusters
+#' @title remove.residual.small.clusters
+#'
 #' @description E.g.: after subsetting often some residual cells remain in clusters originally denfined in the full dataset.
 #' @param identitites Identities to scan for residual clusters
 #' @param obj Seurat object, Default: combined.obj
@@ -1876,7 +1907,8 @@ remove.residual.small.clusters <- function(identitites = GetOrderedClusteringRun
 
 
 # _________________________________________________________________________________________________
-#' drop.levels.Seurat
+#' @title drop.levels.Seurat
+#'
 #' @description Drop levels in clustering vectors in metadata (e.g. after subsetting)
 #' @param obj Seurat object, Default: combined.obj
 #' @export
@@ -1899,7 +1931,7 @@ drop.levels.Seurat <- function(obj = combined.obj) {
 
 
 # _________________________________________________________________________________________________
-#' remove.cells.by.UMAP
+#' @title remove.cells.by.UMAP
 #'
 #' @param reduction Dim. reduction: umap or pca or tsne
 #' @param umap_dim Which axis to remove by?
@@ -1956,6 +1988,7 @@ remove.cells.by.UMAP <- function(reduction = 'umap'
 
 # _________________________________________________________________________________________________
 #' @title FlipReductionCoordinates
+#'
 #' @description Flip reduction coordinates (like UMAP upside down).
 #' @param obj Seurat object, Default: combined.obj
 #' @param dim Numer of dimensions used, Default: 2
@@ -1992,6 +2025,7 @@ FlipReductionCoordinates <- function(obj = combined.obj, dim = 2, reduction="uma
 
 # _________________________________________________________________________________________________
 #' @title AutoNumber.by.UMAP
+#'
 #' @description Relabel cluster numbers along a UMAP (or tSNE) axis #
 #' @param obj Seurat object, Default: combined.obj
 #' @param dim Which dimension? Default: 1
@@ -2030,6 +2064,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 
 # _________________________________________________________________________________________________
 #' @title AutoNumber.by.PrinCurve
+#'
 #' @description Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param dim Dimensions to use, Default: 1:2
@@ -2086,6 +2121,7 @@ AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers
 
 # _________________________________________________________________________________________________
 #' @title Add.DE.combined.score
+#'
 #' @description Add a combined score to differential expression (DE) results. The score is calculated as log-fold change (LFC) times negative logarithm of scaled p-value (LFC * -log10( p_cutoff / pval_scaling )).
 #' @param df A data frame that holds the result of a differential gene expression analysis, typically obtained via the 'FindAllMarkers' function. Default: df.markers.
 #' @param p_val_min The minimum p-value considered. All values below this threshold are set to this value. Default: 1e-25.
@@ -2113,6 +2149,7 @@ Add.DE.combined.score <- function(df = df.markers, p_val_min = 1e-25, pval_scali
 
 # _________________________________________________________________________________________________
 #' @title StoreTop25Markers
+#'
 #' @description Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
@@ -2144,6 +2181,7 @@ StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based 
 
 # _________________________________________________________________________________________________
 #' @title StoreAllMarkers
+#'
 #' @description Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
@@ -2167,6 +2205,7 @@ StoreAllMarkers <- function(obj = combined.obj # Save the output table of `FindA
 
 # _________________________________________________________________________________________________
 #' @title GetTopMarkersDF
+#'
 #' @description Get the vector of N most diff. exp. genes. #
 #' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
 #' @param n Number of markers to return, Default: p$n.markers
@@ -2196,6 +2235,7 @@ GetTopMarkersDF <- function(dfDE = df.markers # Get the vector of N most diff. e
 
 # _________________________________________________________________________________________________
 #' @title GetTopMarkers
+#'
 #' @description Get the vector of N most diff. exp. genes. #
 #' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
 #' @param n Number of markers to return, Default: p$n.markers
@@ -2228,6 +2268,7 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 
 # _________________________________________________________________________________________________
 #' @title AutoLabelTop.logFC
+#'
 #' @description Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: 0.2
@@ -2517,6 +2558,7 @@ get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_r
 
 # _________________________________________________________________________________________________
 #' @title scBarplot.CellFractions
+#'
 #' @description Generates a bar plot of cell fractions per cluster.
 #' @param obj The Seurat object to use for the analysis. Default: combined.obj.
 #' @param group.by A string specifying the variable to group by. Default: 'integrated_snn_res.0.5.ordered'.
@@ -2581,8 +2623,8 @@ scBarplot.CellFractions <- function(obj = combined.obj
 
 # _________________________________________________________________________________________________
 #' @title scBarplot.CellsPerCluster
-#' @description Barplot the Fraction of cells per cluster. (dupl?)
 #'
+#' @description Barplot the Fraction of cells per cluster. (dupl?)
 #' @param obj Seurat object, Default: combined.obj
 #' @param ident identity used, Default: 'cl.names.KnownMarkers.0.5'
 #' @param label True: displays cell count, but you can provide anything in a vector.
@@ -2763,6 +2805,7 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
 
 # _________________________________________________________________________________________________
 #' @title getClusterColors
+#'
 #' @description get Seurat's cluster colors.
 #' @param obj Seurat object, Default: combined.obj
 #' @param ident identity used, Default: GetClusteringRuns()[1]
@@ -2803,6 +2846,7 @@ getClusterColors <- function(obj = combined.obj
 
 # _________________________________________________________________________________________________
 #' @title SeuratColorVector
+#'
 #' @description Recall a Seurat color vector.
 #' @param ident identity used, Default: NULL
 #' @param obj Seurat object, Default: combined.obj
@@ -2846,18 +2890,28 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F,
 
 
 # _________________________________________________________________________________________________
-
 #' @title qFeatureScatter
-#' @description Quickly plot and save a FeatureScatter plot.
-#' @param feature1 PARAM_DESCRIPTION, Default: 'TOP2A'
-#' @param feature2 PARAM_DESCRIPTION, Default: 'ID2'
-#' @param obj Seurat object, Default: combined.obj
-#' @param ext File extension for saving, Default: 'png'
-#' @param logX logX
-#' @param logY logY
-#' @param plot PARAM_DESCRIPTION, Default: TRUE
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#'
+#' @description Generates and optionally saves a scatter plot of two features from a Seurat object.
+#' @param feature1 Name of the first feature to plot. Default: 'TOP2A'.
+#' @param feature2 Name of the second feature to plot. Default: 'ID2'.
+#' @param obj Seurat object from which to extract feature data. Default: combined.obj.
+#' @param ext File extension for the saved plot. Default: 'png'.
+#' @param logX Logical indicating whether to apply a logarithmic transformation to the x-axis. Default: FALSE.
+#' @param logY Logical indicating whether to apply a logarithmic transformation to the y-axis. Default: FALSE.
+#' @param plot Logical indicating whether to display the plot. Default: TRUE.
+#' @param ... Additional arguments to pass to the FeatureScatter function.
+#' @return If `plot` is TRUE, a ggplot object containing the feature scatter plot is returned.
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  qFeatureScatter(feature1 = "Gene1", feature2 = "Gene2", obj = seuratObject)
+#'  }
+#' }
+#' @seealso
+#' \code{\link[Seurat]{FeatureScatter}}, \code{\link[ggplot2]{ggplot}}
 #' @export
+
 qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj
                             , ext ="png", plot = TRUE
                             , logX = F, logY = F
@@ -3019,6 +3073,7 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
 #' @param qlow Lower quantile for the color scale, Default: 'q10'.
 #' @param qhigh Upper quantile for the color scale, Default: 'q90'.
 #' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.
+#' @param caption Add caption to the ggplot object (e.g. a description in bottom right).
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -3044,6 +3099,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , make.uppercase = FALSE
                    , check_for_2D = TRUE
                    , qlow = "q10", qhigh = "q90"
+                   , caption = FALSE
                    , ...) {
 
   if (check_for_2D) {
@@ -3068,7 +3124,8 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
     ggtitle(label = title, subtitle = sub) +
     if (!axes) NoAxes() else NULL
 
-  ggplot.obj <- ggplot.obj + if (aspect.ratio) ggplot2::coord_fixed(ratio = aspect.ratio) else NULL
+  if (aspect.ratio) ggplot.obj <- ggplot.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
+  if(!isFALSE(caption)) ggplot.obj <- ggplot.obj + labs(caption = caption)
 
   if (save.plot) {
     fname = ww.FnP_parser(Stringendo::sppp(prefix, toupper(reduction), feature, assay, suffix), if (PNG) "png" else "pdf")
@@ -3109,7 +3166,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #' @param save.plot If TRUE, the plot is saved into a file, Default: T.
 #' @param PNG If TRUE, the file is saved as a .png, Default: T.
 #' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.
-#' @param caption ....
+#' @param caption Add caption to the ggplot object (e.g. a description in bottom right).
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -3195,6 +3252,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
 
 # _________________________________________________________________________________________________
 #' @title umapNamedClusters
+#'
 #' @description Plot and save umap based on a metadata column. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param metaD.colname PARAM_DESCRIPTION, Default: metaD.colname.labeled
@@ -3220,10 +3278,9 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
 
 
 # _________________________________________________________________________________________________
-
-# umapHiLightSel highlight a set of cells based on clusterIDs provided
 #' @title umapHiLightSel
-#' @description Highlight a set of cells based on clusterIDs provided. #
+#'
+#' @description Highlight a set of cells based on clusterIDs provided.
 #' @param obj Seurat object, Default: combined.obj
 #' @param COI PARAM_DESCRIPTION, Default: c("0", "2", "4", "5", "11")
 #' @param res.cl PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.3'
@@ -3334,6 +3391,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
 # code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
 
 #' @title multiFeatureHeatmap.A4
+#'
 #' @description Save multiple FeatureHeatmaps from a list of genes on A4 jpeg.
 #' @param obj Seurat object, Default: combined.obj
 #' @param list.of.genes A list of genes to plot. No default.
@@ -3383,6 +3441,7 @@ multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHea
 
 # __________________________________________
 #' @title plot.UMAP.tSNE.sidebyside
+#'
 #' @description Plot a UMAP and tSNE side by side.
 #' @param obj Seurat object. Default: combined.obj
 #' @param grouping Variable to group cells by. Default: 'res.0.6'
@@ -3542,6 +3601,7 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix =
 
 # _________________________________________________________________________________________________
 #' @title PlotTopGenes
+#'
 #' @description Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param n PARAM_DESCRIPTION, Default: 32
@@ -3562,6 +3622,7 @@ PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = 'expr.q99'){ # P
 
 # _________________________________________________________________________________________________
 #' @title DimPlot.ClusterNames
+#'
 #' @description Plot UMAP with Cluster names. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param ident identity used, Default: 'cl.names.top.gene.res.0.5'
@@ -3589,6 +3650,7 @@ DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster nam
 
 # _________________________________________________________________________________________________
 #' @title save2umaps.A4
+#'
 #' @description Save 2 umaps on 1 A4
 #' @param plot_list A list of plots to be saved on an A4 page.
 #' @param pname Boolean to determine if name is generated automatically. If FALSE, name is generated based on plot_list and suffix. Default: F
@@ -3611,6 +3673,7 @@ save2umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
 
 # _________________________________________________________________________________________________
 #' @title save4umaps.A4
+#'
 #' @description Save 4 umaps on 1 A4
 #' @param plot_list A list of ggplot objects, each of which is one panel.
 #' @param pname Plotname, Default: F
@@ -3635,6 +3698,7 @@ save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
 
 # _________________________________________________________________________________________________
 #' @title qqSaveGridA4
+#'
 #' @description Save 2 or 4 ggplot objects using plot_grid() on an A4 page #
 #' @param plotlist PARAM_DESCRIPTION, Default: pl
 #' @param plots PARAM_DESCRIPTION, Default: 1:2
@@ -5185,9 +5249,10 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 
 # _________________________________________________________________________________________________
 #' @title saveRDS.compress.in.BG
+#'
 #' @description Save and RDS object and compress resulting file in the background using system(gzip). OS X or unix.
 #' @param obj Seurat object.
-#' @param compr PARAM_DESCRIPTION, Default: FALSE
+#' @param compr Compress by R? Default: FALSE (compressed in background via CLI).
 #' @param fname File name
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
@@ -5207,6 +5272,7 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 
 # _________________________________________________________________________________________________
 #' @title isave.RDS
+#'
 #' @description Save an RDS object, using a faster and efficient compression method that runs in the background.
 #' @param obj The object to be saved, typically a Seurat object.
 #' @param prefix A string prefix added to the filename. Default is NULL.
@@ -5250,6 +5316,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = F
 # requires github/vertesy/CodeAndRoll.r
 
 #' @title isave.image
+#'
 #' @description Save an image of the current workspace using a faster and efficient compression method that runs in the background.
 #' @param ... Additional parameters passed to the idate() function in the creation of the file name.
 #' @param path_rdata A string that specifies the path for storing the image of the workspace. Default is "~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/" appended with the basename of OutDir.
@@ -5281,10 +5348,10 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
 
 # _________________________________________________________________________________________________
 #' @title Save workspace - qsave.image
+#'
 #' @description Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression. #
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @param showMemObject PARAM_DESCRIPTION, Default: T
-#' @param options PARAM_DESCRIPTION, Default: c("--force", NULL)[1]
+#' @param options Options passed on to gzip, via CLI. Default: c("--force", NULL)[1]
 #' @seealso
 #'  \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
 #' @export
@@ -5304,15 +5371,17 @@ qsave.image <- function(..., showMemObject = T, options = c("--force", NULL)[1])
 
 # _________________________________________________________________________________________________
 #' @title clip10Xcellname
+#'
 #' @description Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration). #
-#' @param cellnames PARAM_DESCRIPTION
+#' @param cellnames Character vector containing the cellIDs (with numeric suffixes).
 #' @export
 clip10Xcellname <- function(cellnames) { stringr::str_split_fixed(cellnames, "_", n = 2)[,1] }
 
 # _________________________________________________________________________________________________
 #' @title make10Xcellname
+#'
 #' @description Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1". #
-#' @param cellnames PARAM_DESCRIPTION
+#' @param cellnames Character vector containing the cellIDs (WITHOUT numeric suffixes).
 #' @param suffix A suffix added to the filename, Default: '_1'
 #' @export
 make10Xcellname <- function(cellnames, suffix="_1") { paste0(cellnames, suffix) }
@@ -5666,6 +5735,7 @@ jPresenceMatrix <- function(string_list = lst(a = 1:3, b = 2:5,c = 4:9, d=-1:4) 
 
 # _________________________________________________________________________________________________
 #' @title jJaccardIndexBinary
+#'
 #' @description Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
 #' @param x Set X
 #' @param y Set Y
@@ -5693,6 +5763,7 @@ jJaccardIndexBinary <- function(x, y) { # Calculate Jaccard Index. Modified from
 
 # _________________________________________________________________________________________________
 #' @title jPairwiseJaccardIndex
+#'
 #' @description Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
 #' @param binary.presence.matrix PARAM_DESCRIPTION, Default: df.presence
 #' @examples
