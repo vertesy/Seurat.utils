@@ -4458,10 +4458,20 @@ AddNewAnnotation <- function(obj = obj # Create a new metadata column based on a
 # _________________________________________________________________________________________________
 #' @title whitelist.subset.ls.Seurat
 #'
-#' @description Subset cells in a (list of) Seurat objects, based on an externally provided list of cell IDs.
-#' @param ls.obj List of Seurat objects, Default: ls.Seurat
-#' @param metadir PARAM_DESCRIPTION, Default: p$cellWhiteList
-#' @param whitelist.file PARAM_DESCRIPTION, Default: 'NonStressedCellIDs.2020.10.21_18h.tsv'
+#' @description Subsets cells in a list of Seurat objects based on an externally provided list of cell IDs.
+#' @param ls.obj A list of Seurat objects. Default: ls.Seurat.
+#' @param metadir Directory for the metadata. Default: p$cellWhiteList.
+#' @param whitelist.file Filename of the whitelist containing cell IDs. Default: "NonStressedCellIDs.2020.10.21_18h.tsv".
+#' @return A list of Seurat objects containing only the cells specified in the whitelist.
+#' @details The function first validates the presence of all identities from the metadata in the Seurat objects. If all identities are present, the function subsets each Seurat object based on the whitelist of cell IDs.
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'   ls.Seurat.subset <- whitelist.subset.ls.Seurat(ls.obj = ls.Seurat, metadir = p$'cellWhiteList', whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv")
+#' }
+#' }
+#' @seealso
+#' \code{\link[Seurat]{subset}}
 #' @export
 whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
                                        , metadir = p$'cellWhiteList' #  '~/Dropbox/Abel.IMBA/MetadataD/POL.meta/cell.lists/'
@@ -4729,15 +4739,19 @@ GetUpdateStats <- function(genes = HGNC.updated[[i]]) { # Plot the Symbol-update
 # _________________________________________________________________________________________________
 #' @title PlotUpdateStats
 #'
-#' @description Scatter plot of update stats. #
-#' @param mat PARAM_DESCRIPTION, Default: UpdateStatMat
-#' @param column.names PARAM_DESCRIPTION, Default: c("Updated (%)", "Updated (Nr.)")
+#' @description Creates a scatter plot of update statistics.
+#' @param mat A matrix containing update statistics. Default: UpdateStatMat.
+#' @param column.names A character vector of column names in the mat parameter. Default: c("Updated (%)", "Updated (Nr.)").
+#' @return A scatter plot displaying update statistics.
+#' @details This function takes a matrix containing update statistics and column names to plot the corresponding statistics. It colorizes the genes and plots the percentage of total genes updated against the number of genes updated.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
 #'  PlotUpdateStats(mat = result.of.GetUpdateStats)
 #'  }
 #' }
+#' @seealso
+#' \code{\link[wplot]{wplot}}, \code{\link[wcolorize]{wcolorize}}
 #' @export
 PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",  "Updated (Nr.)")) { # Scatter plot of update stats.
   stopifnot(column.names %in% colnames(UpdateStatMat))
@@ -4760,7 +4774,7 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 
 
 
-#' calculate.observable.multiplet.rate.10X.LT
+#' @title calculate.observable.multiplet.rate.10X.LT
 #'
 #' @param fractions Genotype fractions observed or loaded on the machine.
 #' @param FMR.r Factor for calculating Multiplet Rate: Cell count / FMR = multiplet rate. (.r stands for 'estimating from Recovered cell count.')
@@ -4931,6 +4945,7 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
 
 # _________________________________________________________________________________________________
 #' @title Convert10Xfolders
+#'
 #' @description This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.
 #' @param InputDir A character string specifying the input directory.
 #' @param regex A logical value. If TRUE, the folderPattern is treated as a regular expression. Default is FALSE.
@@ -5024,6 +5039,7 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 
 # _________________________________________________________________________________________________
 #' @title ConvertDropSeqfolders
+#'
 #' @description This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.
 #' @param InputDir A character string specifying the input directory.
 #' @param folderPattern A character string specifying the pattern of folder names to be searched. Default is 'SRR*'.
@@ -5098,6 +5114,7 @@ ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a numb
 
 # _________________________________________________________________________________________________
 #' @title LoadAllSeurats
+#'
 #' @description This function loads all Seurat objects found in a directory. It also works with symbolic links (but not with aliases).
 #' @param InputDir A character string specifying the input directory.
 #' @param file.pattern A character string specifying the pattern of file names to be searched. Default is '^filtered.+Rds$'.
@@ -5133,6 +5150,7 @@ LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directo
 
 # _________________________________________________________________________________________________
 #' @title read10x
+#'
 #' @description This function reads a 10X dataset from gzipped matrix.mtx, features.tsv and barcodes.tsv files.
 #' @param dir A character string specifying the directory where the gzipped files are located.
 #' @return A Seurat object constructed from the 10X dataset.
@@ -5435,6 +5453,7 @@ make10Xcellname <- function(cellnames, suffix="_1") { paste0(cellnames, suffix) 
 
 # _________________________________________________________________________________________________
 #' @title plotTheSoup
+#'
 #' @description Plot stats about the ambient RNA content in a 10X experiment.
 #' @param CellRanger_outs_Dir CellRanger 'outs' (output) directory, Default: '~/Data/114593/114593'
 #' @param SeqRun Aka SampleName (the folder above 'outs;). Default: str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)").
@@ -5697,6 +5716,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 
 # _________________________________________________________________________________________________
 #' @title jJaccardIndexVec
+#'
 #' @description Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
 #' @param A Set A, Default: 1:3
 #' @param B Set B, Default: 2:4
@@ -5705,6 +5725,7 @@ jJaccardIndexVec <- function(A = 1:3, B = 2:4) length(intersect(A,B)) / length(u
 
 # _________________________________________________________________________________________________
 #' @title jPairwiseJaccardIndexList
+#'
 #' @description Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
 #' @param lsG List of genes, Default: ls_genes
 #' @examples
@@ -5737,17 +5758,12 @@ jPairwiseJaccardIndexList <- function(lsG = ls_genes) { # Create a pairwise jacc
 }
 
 
-
-
-
-
-
 # Much slower Indirect calculation via PresenceMatrix
 # _________________________________________________________________________________________________
 
-
 # _________________________________________________________________________________________________
 #' @title jPresenceMatrix
+#'
 #' @description Make a binary presence matrix from a list. Source: https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings #
 #' @param string_list PARAM_DESCRIPTION, Default: lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4)
 #' @examples
@@ -5826,9 +5842,8 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 }
 
 
-
 # _________________________________________________________________________________________________
-# New additions,  categorized _____________________________ ------
+# Temp _____________________________ ------
 # _________________________________________________________________________________________________
 
 
@@ -5858,4 +5873,10 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 #   } else { iprint("New ident:", new.ident) }
 #   return(obj)
 # }
+
+
+# _________________________________________________________________________________________________
+# New additions,  categorized _____________________________ ------
+# _________________________________________________________________________________________________
+
 
