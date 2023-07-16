@@ -12,16 +12,16 @@ getDiscretePalette(
 )
 }
 \arguments{
-\item{ident.used}{PARAM_DESCRIPTION, Default: GetClusteringRuns()\link{1}}
+\item{ident.used}{The identity column used for determining the number of clusters, Default: GetClusteringRuns()\link{1}}
 
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{palette.used}{PARAM_DESCRIPTION, Default: c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")\link{1}}
+\item{palette.used}{The name of the palette to use, Default: c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")\link{1}}
 
-\item{show.colors}{PARAM_DESCRIPTION, Default: F}
+\item{show.colors}{Whether to display the colors in the palette, Default: FALSE}
 }
 \description{
-Generate a Discrete color Palette.
+Generate a discrete color palette.
 }
 \examples{
 \dontrun{

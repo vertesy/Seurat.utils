@@ -2708,33 +2708,40 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
 # _________________________________________________________________________________________________
 # Colors ______________________________ ----
 # _________________________________________________________________________________________________
-
-
 #' @title gg_color_hue
-#' @description reproduce the ggplot2 default color palette #
-#' @param n PARAM_DESCRIPTION
-#' @export
+#'
+#' @description Emulates the default color palette of ggplot2. Source:  https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
+#' @param n The number of colors to generate.
+#' @return A vector of colors emulating the default color palette of ggplot2.
+#' @examples
+#' \dontrun{
+#' gg_color_hue(5)
+#' }
+#' @export gg_color_hue
+
 gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
   hues = seq(15, 375, length = n + 1)
   hcl(h = hues, l = 65, c = 100)[1:n]
 }
-# https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
+
 
 
 # _________________________________________________________________________________________________
 #' @title getDiscretePalette
-#' @description Generate a Discrete color Palette.
-#' @param ident.used PARAM_DESCRIPTION, Default: GetClusteringRuns()[1]
+#'
+#' @description Generate a discrete color palette.
+#' @param ident.used The identity column used for determining the number of clusters, Default: GetClusteringRuns()[1]
 #' @param obj Seurat object, Default: combined.obj
-#' @param palette.used PARAM_DESCRIPTION, Default: c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1]
-#' @param show.colors PARAM_DESCRIPTION, Default: F
+#' @param palette.used The name of the palette to use, Default: c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1]
+#' @param show.colors Whether to display the colors in the palette, Default: FALSE
 #' @examples
 #' \dontrun{
 #' if(interactive()){
 #'  getDiscretePalette()
 #'  }
 #' }
-#' @export
+#' @export getDiscretePalette
+
 getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
                                , obj = combined.obj
                                , palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1]

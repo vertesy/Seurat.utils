@@ -7,8 +7,16 @@
 gg_color_hue(n)
 }
 \arguments{
-\item{n}{PARAM_DESCRIPTION}
+\item{n}{The number of colors to generate.}
+}
+\value{
+A vector of colors emulating the default color palette of ggplot2.
 }
 \description{
-reproduce the ggplot2 default color palette #
+Emulates the default color palette of ggplot2. Source:  https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
+}
+\examples{
+\dontrun{
+gg_color_hue(5)
+}
 }
