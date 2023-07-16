@@ -2285,18 +2285,17 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 # _________________________________________________________________________________________________
 #' @title AutoLabel.KnownMarkers
 #'
-#' @description Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param topN Take the top N genes, Default: 1
-#' @param res Clustering resolution to use, Default: 0.5
-#' @param KnownMarkers PARAM_DESCRIPTION, Default: c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1",
-#'    "SALL4", "DDIT4", "PDK1", "SATB2", "FEZF2")
-#' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")[1]
-#' @param df_markers PARAM_DESCRIPTION, Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
+#' @description Creates a new "named identity" column in the metadata of a Seurat object, setting 'Ident' to a clustering output matching the 'res' parameter. This function requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()`, the output is stored under `@misc$df.markers$res...`, which is the default location.
+#' @param obj A Seurat object to work with. Default: combined.obj.
+#' @param topN The top 'N' genes to consider. Default: 1.
+#' @param res The clustering resolution to use. Default: 0.5.
+#' @param KnownMarkers A character vector containing known marker genes to be used for annotation. Default: c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1", "SALL4", "DDIT4", "PDK1", "SATB2", "FEZF2").
+#' @param order.by Specifies the column to sort the output tibble by. Default: 'combined.score' (First among "combined.score", "avg_log2FC", "p_val_adj").
+#' @param df_markers The data frame of markers. By default, it is stored under `@misc$df.markers$res...` in the provided Seurat object. Default: combined.obj@misc$df.markers[[paste0("res.", res)]].
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  combined.obj <- AutoLabel.KnownMarkers(); # combined.obj$cl.names.KnownMarkers.0.5
+#'  combined.obj <- AutoLabel.KnownMarkers();
 #'  DimPlot.ClusterNames(ident = "cl.names.KnownMarkers.0.5")
 #'  }
 #' }
