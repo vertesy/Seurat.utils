@@ -8,18 +8,23 @@
 # _________________________________________________________________________________________________
 
 
-# mplotGene ------------------------
+# ________________________________________________________________________________
 #' @title mplotGene
-#' @description Plot genes in Monocle.
-#' @param gene gene of interest, Default: 'PGK1'
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'UMAP'
-#' @param obj Seurat object, Default: cds_from_seurat
+#'
+#' @description Plots a specific gene in Monocle using a chosen dimensionality reduction method.
+#' @param gene A string representing the gene of interest. Default: 'PGK1'.
+#' @param reduction A string representing the dimensionality reduction method to use. Can be 'UMAP', 'tSNE', or 'PCA'. Default: 'UMAP'.
+#' @param obj A Seurat object that will be plotted. Default: cds_from_seurat.
+#' @return A plot showing the gene of interest.
+#' @details This function takes a specific gene and plots it in Monocle using a specified dimensionality reduction method. The plot is then saved using the ggExpress::qqSave function.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
 #'  mplotGene(); mplotGene("GAPDH")
 #'  }
 #' }
+#' @seealso
+#' \code{\link[plot_cells]{plot_cells}}, \code{\link[qqSave]{qqSave}}
 #' @export
 mplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds_from_seurat) {
   pl1 <- plot_cells(cds = obj,
@@ -37,8 +42,9 @@ mplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds_from_seurat) 
 
 
 
-# mplotManyGenes ------------------------
+# ________________________________________________________________________________
 #' @title mplotManyGenes
+#'
 #' @description Plot many genes in Monocle.
 #' @param ls.genes PARAM_DESCRIPTION, Default: c(`S-phase` = "TOP2A",
 #'    `G2M-phase` = "HIST1H4C", oRG = "ID4",
@@ -73,7 +79,9 @@ mplotManyGenes <- function(ls.genes = c(
 
 
 
+# ________________________________________________________________________________
 #' @title m3DplotGene
+#'
 #' @description Plot a gene in 3D in Monocle.
 #' @param gene gene of interest, Default: 'PGK1'
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'UMAP'
@@ -110,8 +118,9 @@ m3DplotGene <- function(gene = "PGK1", reduction = "UMAP", obj = cds.10pc, ttl.s
 
 
 
-# m3DplotKeyGenes ------------------------
+# ________________________________________________________________________________
 #' @title m3DplotKeyGenes
+#'
 #' @description Plot many genes in 3D in Monocle.
 #' @param obj Seurat object, Default: cds.10pc
 #' @param cex Point size, Default: iround(log10(idim(obj)[2]))
@@ -155,11 +164,14 @@ m3DplotKeyGenes <- function(obj = cds.10pc, cex = iround(log10(idim(obj)[2]))
 
 # subsetMonocleObject ------------------------
 #' @title subsetMonocleObject
-#' @description Subset a compressed Seurat Obj and save it in wd.
-#' @param obj Seurat object, Default: cds_from_seurat
-#' @param fraction_ PARAM_DESCRIPTION, Default: 0.1
-#' @param nCells PARAM_DESCRIPTION, Default: F
-#' @param seed_ PARAM_DESCRIPTION, Default: 1989
+#'
+#' @description Subsets a compressed Seurat object and saves it in the working directory.
+#' @param obj A Seurat object to be subsetted. Default: cds_from_seurat.
+#' @param fraction_ A numeric value indicating the fraction of the object to be kept. Default: 0.1.
+#' @param nCells A numeric or boolean value indicating the number of cells to keep. If FALSE, the function calculates the number of cells to keep based on the fraction parameter. Default: FALSE.
+#' @param seed_ A numeric value specifying the seed for random number generation. Default: 1989.
+#' @return A subset of the original Seurat object.
+#' @details This function subsets a Seurat object by either a specified fraction or a specific number of cells. The subset object is then returned by the function.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -167,8 +179,11 @@ m3DplotKeyGenes <- function(obj = cds.10pc, cex = iround(log10(idim(obj)[2]))
 #'  cds.25pc <- subsetMonocleObject(cds_from_seurat, fraction_ = .25)
 #'  }
 #' }
+#' @seealso
+#' \code{\link[sample]{sample}}, \code{\link[percentage_formatter]{percentage_formatter}}
 #' @export
 #' @importFrom Stringendo percentage_formatter
+
 subsetMonocleObject <- function(obj = cds_from_seurat, fraction_ = 0.1, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
   set.seed(seed_)
   if (isFALSE(nCells)) {
@@ -237,6 +252,7 @@ m3.backup.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2],
 
 # _________________________________________________________________________________________________
 #' @title m3.recall.umap
+#'
 #' @description Fetch UMAP coordinates.
 #' @param obj Seurat object, Default: cds_from_seurat
 #' @param slot slot in the Seurat object. Default: 'UMAP'
@@ -261,10 +277,12 @@ m3.recall.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2],
 
 # _________________________________________________________________________________________________
 #' @title m3.export.umap.2.Seurat
-#' @description Export umap coordinates.
-#' @param mobj PARAM_DESCRIPTION, Default: cds_from_seurat
-#' @param sobj PARAM_DESCRIPTION, Default: combined.obj
-#' @param def.dim PARAM_DESCRIPTION, Default: 2
+#' @description Exports UMAP coordinates from a monocle object to a Seurat object.
+#' @param mobj The Monocle object from which to extract UMAP coordinates. Default: cds_from_seurat.
+#' @param sobj The Seurat object to which UMAP coordinates will be added. Default: combined.obj.
+#' @param def.dim The dimension of the UMAP coordinates to extract (2D or 3D). Default: 2.
+#' @return A Seurat object with the UMAP coordinates added.
+#' @details This function extracts UMAP coordinates from a Monocle object and adds them to a Seurat object. The dimensions of the UMAP coordinates can be specified.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -272,7 +290,13 @@ m3.recall.umap <- function(obj = cds_from_seurat, slot = 'UMAP', dim = (2:3)[2],
 #'  combined.obj <- m3.export.umap.2.Seurat(mobj = cds_from_seurat, sobj = combined.obj); qUMAP("DDIT4")
 #'  }
 #' }
+#' @seealso
+#' \code{\link[m3.get.umap]{m3.get.umap}}
 #' @export
+m3.export.umap.2.Seurat <- function(mobj = cds_from_seurat, sobj = combined.obj, def.dim = 2) {
+  # ... function body ...
+}
+
 m3.export.umap.2.Seurat <- function(mobj = cds_from_seurat, sobj = combined.obj, def.dim = 2) {
 
   reduc_bac <- sobj@misc$reductions.backup
