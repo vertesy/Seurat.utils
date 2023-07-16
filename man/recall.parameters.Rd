@@ -9,7 +9,7 @@ recall.parameters(obj = combined.obj, overwrite = FALSE)
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{overwrite}{PARAM_DESCRIPTION, Default: FALSE}
+\item{overwrite}{Overwrite already existing in environment? Default: FALSE}
 }
 \description{
 Recall parameters from obj@misc to "p" in the global environment.

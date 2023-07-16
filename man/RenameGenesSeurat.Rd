@@ -13,7 +13,7 @@ RenameGenesSeurat(
 \arguments{
 \item{obj}{Seurat object, Default: ls.Seurat[\link{i}]}
 
-\item{newnames}{PARAM_DESCRIPTION, Default: HGNC.updated[\link{i}]$Suggested.Symbol}
+\item{newnames}{A vector of new gene names. Default: HGNC.updated[\link{i}]$Suggested.Symbol}
 
 \item{assay}{Which Seurat assay to replace. Default: RNA. Disclaimer: Intended use on simple objects that ONLY contain an RNA object. I highly advise against selectively replacing name in other assays that may have slots that cannot be updated by this function.}
 }

@@ -16,11 +16,11 @@ subsetSeuObj.and.Save(
 \arguments{
 \item{obj}{Seurat object, Default: ORC}
 
-\item{fraction}{PARAM_DESCRIPTION, Default: 0.25}
+\item{fraction}{Fractional size to downsample to. Default: 0.25}
 
 \item{seed}{random seed used, Default: 1989}
 
-\item{dir}{PARAM_DESCRIPTION, Default: OutDir}
+\item{dir}{Directory to save to. Default: OutDir}
 
 \item{min.features}{Minimum features}
 

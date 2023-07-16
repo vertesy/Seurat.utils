@@ -11,7 +11,7 @@
 
 \item{gene}{gene of interest, Default: 'ACTB'}
 
-\item{filterZero}{PARAM_DESCRIPTION, Default: T}
+\item{filterZero}{Remove genes whose quantile-90 expression in 0? Default: T}
 }
 \description{
 Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).

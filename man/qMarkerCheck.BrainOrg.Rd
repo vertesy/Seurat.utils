@@ -9,7 +9,7 @@ qMarkerCheck.BrainOrg(obj = combined.obj, custom.genes = F, suffix = "")
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{custom.genes}{PARAM_DESCRIPTION, Default: F}
+\item{custom.genes}{Use custom gene set? Default: F}
 
 \item{suffix}{Folder name suffix, Default: ""}
 }

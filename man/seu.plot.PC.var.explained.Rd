@@ -4,12 +4,12 @@
 \alias{seu.plot.PC.var.explained}
 \title{seu.plot.PC.var.explained}
 \usage{
-seu.plot.PC.var.explained(obj = combined.obj, use.MDrep = F)
+seu.plot.PC.var.explained(obj = combined.obj, use.MarkdownReports = F)
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{use.MDrep}{PARAM_DESCRIPTION, Default: F}
+\item{use.MarkdownReports}{Use MarkdownReports for plotting, Default: F}
 }
 \description{
 Plot the percent of variation associated with each PC.

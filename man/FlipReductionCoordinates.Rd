@@ -19,9 +19,9 @@ FlipReductionCoordinates(
 
 \item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
 
-\item{flip}{PARAM_DESCRIPTION, Default: c("x", "y", "xy", NULL)\link{1}}
+\item{flip}{The axis (axes) to flip around. Default: c("x", "y", "xy", NULL)\link{1}}
 
-\item{FlipReductionBackupToo}{PARAM_DESCRIPTION, Default: TRUE}
+\item{FlipReductionBackupToo}{Flip coordinates in backup slot too? Default: TRUE}
 }
 \description{
 Flip reduction coordinates (like UMAP upside down).

@@ -7,7 +7,7 @@
 jPresenceMatrix(string_list = lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4))
 }
 \arguments{
-\item{string_list}{PARAM_DESCRIPTION, Default: lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4)}
+\item{string_list}{List of strings to compare overlapping entries. Default: lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4)}
 }
 \description{
 Make a binary presence matrix from a list. Source: https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings #

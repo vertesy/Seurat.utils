@@ -5,18 +5,18 @@
 \title{remove.residual.small.clusters}
 \usage{
 remove.residual.small.clusters(
-  identitites = GetOrderedClusteringRuns(),
   obj = combined.obj,
-  max.cells = round((ncol(obj))/2000)
+  identitites = GetClusteringRuns(obj = obj),
+  max.cells = max(round((ncol(obj))/2000), 5)
 )
 }
 \arguments{
-\item{identitites}{Identities to scan for residual clusters}
-
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{max.cells}{Max number of cells in cluster to be removed. Default: 0.5\% of the dataset}
+\item{identitites}{Identities to scan for residual clusters}
+
+\item{max.cells}{Max number of cells in cluster to be removed. Default: 0.5\% of the dataset, or 5 cells.}
 }
 \description{
-E.g.: after subsetting often some residual cells remain in clusters originally denfined in the full dataset.
+E.g.: after subsetting often some residual cells remain in clusters originally defined in the full dataset.
 }

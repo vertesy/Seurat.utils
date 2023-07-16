@@ -13,23 +13,24 @@ SetupReductionsNtoKdimensions(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object. Default: combined.obj}
 
-\item{nPCs}{PARAM_DESCRIPTION, Default: p$n.PC}
+\item{nPCs}{A numeric value representing the number of principal components to use. Default: p$n.PC}
 
-\item{dimensions}{PARAM_DESCRIPTION, Default: 3:2}
+\item{dimensions}{A numeric vector specifying the dimensions to use for the dimensionality reductions. Default: 3:2}
 
-\item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
-
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{reduction}{A character string specifying the type of dimensionality reduction to perform. Can be "umap", "tsne", or "pca". Default: 'umap'}
+}
+\value{
+The input Seurat object with computed dimensionality reductions and backups of these reductions.
 }
 \description{
-Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to \code{obj@misc$reductions.backup} from @reductions$umap #
+Function to compute dimensionality reductions for a given Seurat object and backup the computed reductions.
 }
 \examples{
 \dontrun{
 if(interactive()){
- combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = p$'n.PC', dimensions = 2:3, reduction="umap"); qUMAP()
- }
+  combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction="umap")
+}
 }
 }

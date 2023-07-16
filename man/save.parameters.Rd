@@ -9,7 +9,7 @@ save.parameters(obj = combined.obj, params = p)
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{params}{PARAM_DESCRIPTION, Default: p}
+\item{params}{List of parameters, Default: p}
 }
 \description{
 Save parameters to obj@misc$p

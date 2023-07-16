@@ -11,12 +11,20 @@ ww.check.quantile.cutoff.and.clip.outliers(
 )
 }
 \arguments{
-\item{expr.vec}{PARAM_DESCRIPTION, Default: plotting.data\link{, gene}}
+\item{expr.vec}{A numeric vector representing gene expression data. Default: plotting.data\link{, gene}}
 
-\item{quantileCutoffX}{PARAM_DESCRIPTION, Default: quantileCutoff}
+\item{quantileCutoffX}{A numeric value representing the quantile at which to clip outliers. Default: quantileCutoff}
 
-\item{min.cells.expressing}{PARAM_DESCRIPTION, Default: 10}
+\item{min.cells.expressing}{A numeric value representing the minimum number of cells expressing a gene that should remain after clipping outliers. Default: 10}
+}
+\value{
+The input expression vector with outliers clipped.
 }
 \description{
-Helper function.
+Function to check a specified quantile cutoff and clip outliers from a given expression vector.
+}
+\examples{
+\dontrun{
+ww.check.quantile.cutoff.and.clip.outliers(expr.vec = expr.data, quantileCutoffX = 0.99, min.cells.expressing = 10)
+}
 }

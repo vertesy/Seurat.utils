@@ -9,7 +9,7 @@ Downsample.Seurat.Objects(ls.obj = ls.Seurat, NrCells = p$dSample.Organoids)
 \arguments{
 \item{ls.obj}{List of Seurat objects, Default: ls.Seurat}
 
-\item{NrCells}{PARAM_DESCRIPTION, Default: p$dSample.Organoids}
+\item{NrCells}{Number of cells to downsample to.}
 }
 \description{
 Downsample a list of Seurat objects

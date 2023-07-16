@@ -7,7 +7,7 @@
 jPairwiseJaccardIndex(binary.presence.matrix = df.presence)
 }
 \arguments{
-\item{binary.presence.matrix}{PARAM_DESCRIPTION, Default: df.presence}
+\item{binary.presence.matrix}{A boolean matrix. Default: df.presence}
 }
 \description{
 Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #

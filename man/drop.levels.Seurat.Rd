@@ -4,11 +4,13 @@
 \alias{drop.levels.Seurat}
 \title{drop.levels.Seurat}
 \usage{
-drop.levels.Seurat(obj = combined.obj)
+drop.levels.Seurat(obj = combined.obj, verbose = TRUE)
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object.}
+
+\item{verbose}{Logical. Whether to print a message indicating which levels are being dropped.}
 }
 \description{
-Drop levels in clustering vectors in metadata (e.g. after subsetting)
+Drop unused levels from factor variables in a Seurat object.
 }

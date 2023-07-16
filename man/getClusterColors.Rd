@@ -17,7 +17,7 @@ getClusterColors(
 
 \item{ident}{identity used, Default: GetClusteringRuns()\link{1}}
 
-\item{show}{PARAM_DESCRIPTION, Default: T}
+\item{show}{Show plot of colors? Default: T}
 }
 \description{
 get Seurat's cluster colors.

@@ -16,7 +16,7 @@ SeuratColorVector(
 
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{plot.colors}{PARAM_DESCRIPTION, Default: F}
+\item{plot.colors}{Show colors? Default: F}
 
 \item{simple}{Return simply the unique colors, in order? Default: F}
 }

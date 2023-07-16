@@ -7,10 +7,10 @@
 HGNC.EnforceUnique(updatedSymbols)
 }
 \arguments{
-\item{updatedSymbols}{PARAM_DESCRIPTION}
+\item{updatedSymbols}{Gene symbols, it is the output of HGNChelper::checkGeneSymbols. #}
 }
 \description{
-Enforce Unique names after HGNC symbol update. updatedSymbols is the output of HGNChelper::checkGeneSymbols. #
+Enforce Unique names after HGNC symbol update.
 }
 \examples{
 \dontrun{

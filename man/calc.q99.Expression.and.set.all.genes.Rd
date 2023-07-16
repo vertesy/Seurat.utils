@@ -19,7 +19,7 @@ calc.q99.Expression.and.set.all.genes(
 
 \item{quantileX}{Quantile level, Default: 0.9}
 
-\item{max.cells}{PARAM_DESCRIPTION, Default: 1e+05}
+\item{max.cells}{Max number of cells to do the calculation on. Downsample if excdeeded. Default: 1e+05}
 
 \item{slot}{slot in the Seurat object. Default: 'data'}
 
@@ -27,7 +27,7 @@ calc.q99.Expression.and.set.all.genes(
 
 \item{set.all.genes}{Create the "all.genes" variable in the global env?, Default: TRUE}
 
-\item{show}{PARAM_DESCRIPTION, Default: TRUE}
+\item{show}{Show plot? Default: TRUE}
 }
 \description{
 Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10\% cells). #

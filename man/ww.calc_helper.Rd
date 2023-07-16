@@ -3,14 +3,25 @@
 \name{ww.calc_helper}
 \alias{ww.calc_helper}
 \title{ww.calc_helper}
+\source{
+Adapted from code by Ryan-Zhu on Github (https://github.com/satijalab/seurat/issues/371)
+}
 \usage{
 ww.calc_helper(obj, genes)
 }
 \arguments{
-\item{obj}{Seurat object}
+\item{obj}{A Seurat object containing cell data.}
 
-\item{genes}{Genes of iinterest}
+\item{genes}{A character vector of genes of interest.}
+}
+\value{
+The proportion of cells in obj that express the specified gene.
 }
 \description{
-From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
+Helper function for PrctCellExpringGene() to calculate the proportion of cells in a Seurat object that express a given gene.
+}
+\examples{
+\dontrun{
+ww.calc_helper(obj = seurat_object, genes = "Gene1")
+}
 }

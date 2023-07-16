@@ -9,7 +9,7 @@ Downsample.Seurat.Objects.PC(ls.obj = ls.Seurat, fraction = 0.1)
 \arguments{
 \item{ls.obj}{List of Seurat objects, Default: ls.Seurat}
 
-\item{NrCells}{PARAM_DESCRIPTION, Default: p$dSample.Organoids}
+\item{NrCells}{Number of cells to downsample to. Default: p$dSample.Organoids}
 }
 \description{
 Downsample a list of Seurat objects, by fraction

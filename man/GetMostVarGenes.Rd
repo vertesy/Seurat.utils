@@ -9,8 +9,8 @@ GetMostVarGenes(obj, nGenes = p$nVarGenes)
 \arguments{
 \item{obj}{A Seurat object.}
 
-\item{nGenes}{PARAM_DESCRIPTION, Default: p$nVarGenes}
+\item{nGenes}{Number of genes, Default: p$nVarGenes}
 }
 \description{
-Get the most variable rGenes #
+Get the N most variable Genes
 }

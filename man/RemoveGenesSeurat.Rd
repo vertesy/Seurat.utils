@@ -9,7 +9,7 @@ RemoveGenesSeurat(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 \arguments{
 \item{obj}{Seurat object, Default: ls.Seurat[\link{i}]}
 
-\item{symbols2remove}{PARAM_DESCRIPTION, Default: c("TOP2A")}
+\item{symbols2remove}{Genes to remove from a Seurat object. Default: c("TOP2A")}
 }
 \description{
 Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data. #

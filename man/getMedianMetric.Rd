@@ -15,7 +15,7 @@ getMedianMetric(
 
 \item{n.datasets}{lenght of list (n objects), Default: length(ls.Seurat)}
 
-\item{mColname}{PARAM_DESCRIPTION, Default: 'percent.mito'}
+\item{mColname}{Metadata column name to calculate on. Default: 'percent.mito'}
 }
 \description{
 Get the median values of different columns in meta.data, can iterate over a list of Seurat objects.

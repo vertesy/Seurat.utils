@@ -14,7 +14,7 @@ umapNamedClusters(
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{metaD.colname}{PARAM_DESCRIPTION, Default: metaD.colname.labeled}
+\item{metaD.colname}{Metadata column name. Default: metaD.colname.labeled}
 
 \item{ext}{File extension for saving, Default: 'png'}
 

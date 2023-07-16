@@ -19,7 +19,7 @@ AutoLabelTop.logFC(
 
 \item{res}{Clustering resoluton to use, Default: 0.2}
 
-\item{plot.top.genes}{PARAM_DESCRIPTION, Default: T}
+\item{plot.top.genes}{Show plot? Default: T}
 
 \item{order.by}{Sort output tibble by which column, Default: c("combined.score", "avg_logFC", "p_val_adj")\link{1}}
 

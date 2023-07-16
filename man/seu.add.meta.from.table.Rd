@@ -4,16 +4,12 @@
 \alias{seu.add.meta.from.table}
 \title{seu.add.meta.from.table}
 \usage{
-seu.add.meta.from.table(
-  obj = combined.obj,
-  meta = MetaData.ORC,
-  suffix = ".fromMeta"
-)
+seu.add.meta.from.table(obj = combined.obj, meta, suffix = ".fromMeta")
 }
 \arguments{
 \item{obj}{Seurat object, Default: seu.ORC}
 
-\item{meta}{PARAM_DESCRIPTION, Default: MetaData.ORC}
+\item{meta}{Metadata data frame.}
 
 \item{suffix}{A suffix added to the filename, Default: '.fromMeta'}
 }
