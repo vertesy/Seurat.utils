@@ -12,34 +12,32 @@
 # _________________________________________________________________________________________________
 # https://github.com/kstreet13/slingshot/issues/73#issuecomment-585376827
 
-#' @title Point on curve
-#' @description Helper to visualize points_on_curve in slingshot. ggplot for slinshot by @HectorRDB.
-#' @param curve PARAM_DESCRIPTION
-#' @param lambda PARAM_DESCRIPTION
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+
+
+
+# _________________________________________________________________________________________________
+#' @title points_on_curve
+#'
+#' @description Helper function to visualize points on a curve in Slingshot.
+#' @param curve The curve on which to visualize points. Default: PARAM_DEFAULT_VALUE.
+#' @param lambda The parametric location of points along the curve. Default: PARAM_DEFAULT_VALUE.
+#' @return A function call to points_on_curve based on the class of the curve.
+#' @details This function uses method dispatch based on the class of the 'curve' argument to visualize points on the curve.
 #' @export
 points_on_curve <- function(curve, lambda, ...) {
   UseMethod("points_on_curve", curve)
 }
 
+# _________________________________________________________________________________________________
 #' @title points_on_curve.principal_curve
-#' @description Helper to visualize points_on_curve in slingshot.
-#' @param curve PARAM_DESCRIPTION
-#' @param lambda PARAM_DESCRIPTION
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export points_on_curve.principal_curve
+#' @description Helper function to visualize points on a principal curve in Slingshot.
+#' @param curve The principal curve on which to visualize points. Default: PARAM_DEFAULT_VALUE.
+#' @param lambda The parametric location of points along the principal curve. Default: PARAM_DEFAULT_VALUE.
+#' @return Coordinates of points on the principal curve.
+#' @details This function interpolates the coordinates of points along the principal curve in Slingshot.
+#' @seealso
+#' \code{\link[slingshot]{SlingshotDataSet}}
+#' @export
 points_on_curve.principal_curve <- function(curve, lambda, ...) {
   if (nrow(curve$s) == length(curve$lambda)) { # didn't use approx_points
     S <- apply(curve$s, 2, function(sjj) {
@@ -64,18 +62,16 @@ points_on_curve.principal_curve <- function(curve, lambda, ...) {
   return(S)
 }
 
+# _________________________________________________________________________________________________
 #' @title points_on_curve.SlingshotDataSet
-#' @description Helper to visualize points_on_curve in slingshot.
-#' @param curve PARAM_DESCRIPTION
-#' @param lambda PARAM_DESCRIPTION
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
-#' @export points_on_curve.SlingshotDataSet
+#' @description Helper function to visualize points on a SlingshotDataSet in Slingshot.
+#' @param curve The SlingshotDataSet on which to visualize points. Default: PARAM_DEFAULT_VALUE.
+#' @param lambda The parametric location of points along the curves in the SlingshotDataSet. Default: PARAM_DEFAULT_VALUE.
+#' @return A dataframe of coordinates of points on the curves in the SlingshotDataSet.
+#' @details This function interpolates the coordinates of points along the curves in a SlingshotDataSet.
+#' @seealso
+#' \code{\link[slingshot]{SlingshotDataSet}}
+#' @export
 points_on_curve.SlingshotDataSet <- function(curve, lambda, ...) {
   locs <- lapply(slingCurves(curve), function(crv) {
     points_on_curve(crv, lambda, ...)
@@ -113,15 +109,16 @@ ggplotColours <- function(n = 6, h = c(0, 360) + 15){
 ### Extend ggplot function
 
 #' @title gg_plot
-#' @description Adjusted gg_plot for slingshot
-#' @param sds PARAM_DESCRIPTION
-#' @param col PARAM_DESCRIPTION, Default: NULL
-#' @param title Title of the plot, Default: NULL
-#' @param lineSize PARAM_DESCRIPTION, Default: 1
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'UMAP'
-#' @param titleFsize PARAM_DESCRIPTION, Default: 20
-#' @param line.colors PARAM_DESCRIPTION, Default: gray.colors(n = length(sds@curves), start = 0, end = 0.6, alpha = 1)
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description An adjusted ggplot function for visualizing Slingshot datasets.
+#' @param sds A Slingshot dataset. Default: PARAM_DEFAULT_VALUE.
+#' @param col The color to be used for points. Default: NULL.
+#' @param title The title of the plot. Default: NULL.
+#' @param lineSize The size of the lines drawn. Default: 1.
+#' @param reduction The dimension reduction method used ('UMAP', 'tSNE', or 'PCA'). Default: 'UMAP'.
+#' @param titleFsize The font size for the title. Default: 20.
+#' @param line.colors The colors to be used for lines, specified as a vector of colors. Default: gray scale colors.
+#' @return A ggplot object.
+#' @details This function creates a ggplot object that visualizes a Slingshot dataset, with curves representing the pseudotime trajectories.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -129,6 +126,8 @@ ggplotColours <- function(n = 6, h = c(0, 360) + 15){
 #'  panel_first = grid(NULL) )
 #'  }
 #' }
+#' @seealso
+#' \code{\link[slingshot]{SlingshotDataSet}}, \code{\link[ggplot2]{ggplot}}
 #' @export
 gg_plot <- function(sds, col = NULL, title = NULL, lineSize = 1, reduction = "UMAP"
                     , titleFsize = 20
