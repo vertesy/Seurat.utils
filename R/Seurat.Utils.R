@@ -2404,11 +2404,12 @@ scEnhancedVolcano <- function(toptable = df.markers.X, lab = rownames(toptable)
 
 # _________________________________________________________________________________________________
 #' @title BulkGEScatterPlot
-#' @description Plot bulk scatterplots to identify differential expressed genes across conditions #
-#' @param obj Seurat object, Default: combined.obj
-#' @param clusters PARAM_DESCRIPTION, Default: 'cl.names.KnownMarkers.0.2'
-#' @param TwoCategIdent PARAM_DESCRIPTION, Default: 'age'
-#' @param genes.from.bulk.DE PARAM_DESCRIPTION, Default: rownames(df.markers.per.AGE)
+#'
+#' @description Plots scatterplots of bulk gene expression to identify differentially expressed genes across conditions.
+#' @param obj The Seurat object to use for the analysis. Default: combined.obj.
+#' @param clusters A string specifying the identity class in the Seurat object to use for cluster assignment. Default: 'cl.names.KnownMarkers.0.2'.
+#' @param TwoCategIdent A string specifying the binary categorical identity to split the data for comparison. Default: 'age'.
+#' @param genes.from.bulk.DE A character vector specifying the genes obtained from bulk differential expression analysis to be highlighted in the scatterplots. Default: rownames(df.markers.per.AGE).
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -2474,8 +2475,8 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
 # Compositional analysis ______________________________ ----
 # _________________________________________________________________________________________________
 
-
 #' @title get.clustercomposition
+#'
 #' @description Get cluster composition: which datasets contribute to each cluster?
 #' @param obj Seurat object, Default: combined.obj
 #' @param x Bars along the X axis, Default: 'integrated_snn_res.0.3'
