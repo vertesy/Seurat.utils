@@ -653,10 +653,10 @@ getMedianMetric <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), 
 
 # _________________________________________________________________________________________________
 #' @title add.meta.tags
-#' @description N is the for which dataset #
-#' @param list.of.tags PARAM_DESCRIPTION, Default: tags
-#' @param obj Seurat object, Default: ls.Seurat[[1]]
-#' @param n PARAM_DESCRIPTION, Default: 1
+#' @description Add metadata tags to a Seurat object dataset.
+#' @param list.of.tags A list of tags to be added as metadata. Default: tags
+#' @param obj A Seurat object to which the metadata tags are to be added. Default: ls.Seurat[[1]]
+#' @param n The index specifying the dataset for which the tags should be applied. Default: 1
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -679,12 +679,13 @@ add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) {  #
 
 # _________________________________________________________________________________________________
 #' @title add.meta.fraction
-#' @description Add a new metadata column, with the fraction of gene set in the transcripome (percentage).
-#' @param col.name PARAM_DESCRIPTION, Default: 'percent.mito'
-#' @param gene.symbol.pattern PARAM_DESCRIPTION, Default: c("^MT\\.|^MT-", F)[1]
-#' @param gene.set PARAM_DESCRIPTION, Default: F
-#' @param obj Seurat object, Default: ls.Seurat[[1]]
-#' @param verbose PARAM_DESCRIPTION, Default: T
+#'
+#' @description Add a new metadata column to a Seurat object, representing the fraction of a gene set in the transcriptome (expressed as a percentage).
+#' @param col.name Name of the new metadata column to be added. Default: 'percent.mito'
+#' @param gene.symbol.pattern Regular expression pattern to match gene symbols. Default: c("^MT\\.|^MT-", F)[1]
+#' @param gene.set A set of gene symbols. If specified, it will be used instead of gene.symbol.pattern. Default: F
+#' @param obj Seurat object to which the new metadata column will be added. Default: ls.Seurat[[1]]
+#' @param verbose Logical indicating whether to display detailed messages (TRUE) or not (FALSE). Default: T
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -726,12 +727,16 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
 
 
 # _________________________________________________________________________________________________
-#' seu.RemoveMetadata
-#'
-#' @param obj Seurat object, Default: combined.obj
-#' @param cols_remove columns to remove
+#' @title seu.RemoveMetadata
+#' @description Remove specified metadata columns from a Seurat object.
+#' @param obj A Seurat object from which metadata columns will be removed. Default: combined.obj
+#' @param cols_remove A character vector specifying metadata column names to remove. By default, it will remove all columns that do not start with "integr" or "cl.names".
+#' @return A Seurat object with specified metadata columns removed.
 #' @export
-
+#' @examples
+#' \dontrun{
+#'   combined.obj <- seu.RemoveMetadata(obj = combined.obj, cols_remove = c("column1", "column2"))
+#' }
 seu.RemoveMetadata <- function(obj = combined.obj
                                , cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = T)
 ) {
