@@ -964,6 +964,7 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc = 0.1) { # Sample N % 
 
 # _________________________________________________________________________________________________
 #' @title calc.q99.Expression.and.set.all.genes
+#'
 #' @description Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells). #
 #' @param obj Seurat object, Default: combined.obj
 #' @param quantileX Quantile level, Default: 0.9
@@ -1250,34 +1251,31 @@ GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
 
 # _________________________________________________________________________________________________
 #' @title calc.cluster.averages
-#' @description Calculate the average of a metadata column (numeric) per cluster.
-#' @param col_name PARAM_DESCRIPTION, Default: 'Score.GO.0006096'
-#' @param plot.UMAP.too PARAM_DESCRIPTION, Default: TRUE
-#' @param return.plot PARAM_DESCRIPTION, Default: F
-#' @param obj Seurat object, Default: combined.obj
-#' @param split_by PARAM_DESCRIPTION, Default: GetNamedClusteringRuns()[1]
-#' @param scale.zscore PARAM_DESCRIPTION, Default: FALSE
-#' @param simplify PARAM_DESCRIPTION, Default: T
-#' @param plotit Plot results (& show it), Default: T
-#' @param histogram PARAM_DESCRIPTION, Default: FALSE
-#' @param nbins PARAM_DESCRIPTION, Default: 50
-#' @param report Summary sentence, Default: F
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param stat PARAM_DESCRIPTION, Default: c("mean", "median")[2]
-#' @param quantile.thr PARAM_DESCRIPTION, Default: 0.9
-#' @param absolute.thr PARAM_DESCRIPTION, Default: FALSE
-#' @param filter PARAM_DESCRIPTION, Default: c(FALSE, "above", "below")[1]
-#' @param ylab.text PARAM_DESCRIPTION, Default: paste("Cluster", stat, "score")
-#' @param title Title of the plot, Default: paste("Cluster", stat, col_name)
-#' @param subtitle PARAM_DESCRIPTION, Default: NULL
-#' @param width PARAM_DESCRIPTION, Default: 8
-#' @param height PARAM_DESCRIPTION, Default: 6
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @param xlb PARAM_DESCRIPTION, Default: if (absolute.thr) paste("Threshold at", absolute.thr) else paste("Black lines: ",
-#'    kppd(Stringendo::percentage_formatter(c(1 - quantile.thr, quantile.thr))),
-#'    "quantiles |", "Cl. >", Stringendo::percentage_formatter(quantile.thr),
-#'    "are highlighted. |", split_by)
-#' @param fname File name, Default: ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)
+#'
+#' @description Calculates the average of a metadata column (numeric) per cluster.
+#' @param col_name The name of the column for which the average is calculated. Default: 'Score.GO.0006096'.
+#' @param plot.UMAP.too Whether to plot a UMAP as well. Default: TRUE.
+#' @param return.plot Whether to return the plot. Default: FALSE.
+#' @param obj The main Seurat object used for calculations. Default: combined.obj.
+#' @param split_by Cluster to split by. Default: First entry of GetNamedClusteringRuns().
+#' @param scale.zscore Whether to scale z-scores. Default: FALSE.
+#' @param simplify Whether to simplify the result. Default: TRUE.
+#' @param plotit Whether to plot the results. Default: TRUE.
+#' @param histogram Whether to produce a histogram. Default: FALSE.
+#' @param nbins The number of bins for the histogram. Default: 50.
+#' @param suffix Suffix added to the filename. Default: NULL.
+#' @param stat Statistical method applied, "mean" or "median". Default: "median".
+#' @param quantile.thr The threshold for quantiles. Default: 0.9.
+#' @param absolute.thr Absolute threshold used in computations. Default: FALSE.
+#' @param filter The filter mode: 'above', 'below', or FALSE. Default: FALSE.
+#' @param ylab.text Text for the y-axis label. Default: "Cluster" followed by the statistical method and "score".
+#' @param title Title for the plot. Default: "Cluster" followed by the statistical method and column name.
+#' @param subtitle The subtitle for the plot. Default: NULL.
+#' @param width The width of the plot. Default: 8.
+#' @param height The height of the plot. Default: 6.
+#' @param ... Additional parameters passed to the internally called functions.
+#' @param xlb The label for the x-axis. Default depends on the 'absolute.thr' parameter.
+#' @param fname The filename for the plot. Default is based on column name and split_by value.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
