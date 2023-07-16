@@ -1730,12 +1730,11 @@ save.parameters <- function(obj = combined.obj, params = p) {
 
 # _________________________________________________________________________________________________
 #' @title subsetSeuObj
-#'
-#' @description Subset a compressed Seurat Obj and save it in wd. #
-#' @param obj Seurat object, Default: ls.Seurat[[i]]
-#' @param fraction_ PARAM_DESCRIPTION, Default: 0.25
-#' @param nCells PARAM_DESCRIPTION, Default: F
-#' @param seed_ PARAM_DESCRIPTION, Default: 1989
+#' @description Subset a compressed Seurat object and save it in the working directory.
+#' @param obj A Seurat object to subset. Default: the i-th element of the list 'ls.Seurat'.
+#' @param fraction_ The fraction of the object's data to keep. Default: 0.25.
+#' @param nCells If set to a number greater than 1, indicates the absolute number of cells to keep. If FALSE, the function uses 'fraction_' to determine the number of cells. Default: FALSE.
+#' @param seed_ A seed for random number generation to ensure reproducible results. Default: 1989.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -1744,6 +1743,7 @@ save.parameters <- function(obj = combined.obj, params = p) {
 #' }
 #' @export
 #' @importFrom Stringendo percentage_formatter
+
 subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
   set.seed(seed_)
   if (isFALSE(nCells)) {
