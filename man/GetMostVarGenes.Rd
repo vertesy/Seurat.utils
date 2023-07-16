@@ -4,10 +4,10 @@
 \alias{GetMostVarGenes}
 \title{GetMostVarGenes}
 \usage{
-GetMostVarGenes(obj = org, nGenes = p$nVarGenes)
+GetMostVarGenes(obj, nGenes = p$nVarGenes)
 }
 \arguments{
-\item{obj}{Seurat object, Default: org}
+\item{obj}{A Seurat object.}
 
 \item{nGenes}{PARAM_DESCRIPTION, Default: p$nVarGenes}
 }

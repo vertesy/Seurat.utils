@@ -16,22 +16,35 @@ qFeatureScatter(
 )
 }
 \arguments{
-\item{feature1}{PARAM_DESCRIPTION, Default: 'TOP2A'}
+\item{feature1}{Name of the first feature to plot. Default: 'TOP2A'.}
 
-\item{feature2}{PARAM_DESCRIPTION, Default: 'ID2'}
+\item{feature2}{Name of the second feature to plot. Default: 'ID2'.}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object from which to extract feature data. Default: combined.obj.}
 
-\item{ext}{File extension for saving, Default: 'png'}
+\item{ext}{File extension for the saved plot. Default: 'png'.}
 
-\item{plot}{PARAM_DESCRIPTION, Default: TRUE}
+\item{plot}{Logical indicating whether to display the plot. Default: TRUE.}
 
-\item{logX}{logX}
+\item{logX}{Logical indicating whether to apply a logarithmic transformation to the x-axis. Default: FALSE.}
 
-\item{logY}{logY}
+\item{logY}{Logical indicating whether to apply a logarithmic transformation to the y-axis. Default: FALSE.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{...}{Additional arguments to pass to the FeatureScatter function.}
+}
+\value{
+If \code{plot} is TRUE, a ggplot object containing the feature scatter plot is returned.
 }
 \description{
-Quickly plot and save a FeatureScatter plot.
+Generates and optionally saves a scatter plot of two features from a Seurat object.
+}
+\examples{
+\dontrun{
+if(interactive()){
+ qFeatureScatter(feature1 = "Gene1", feature2 = "Gene2", obj = seuratObject)
+ }
+}
+}
+\seealso{
+\code{\link[Seurat]{FeatureScatter}}, \code{\link[ggplot2]{ggplot}}
 }

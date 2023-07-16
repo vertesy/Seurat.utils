@@ -11,12 +11,25 @@ umapHiLightSel(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object. Default: combined.obj.}
 
-\item{COI}{PARAM_DESCRIPTION, Default: c("0", "2", "4", "5", "11")}
+\item{COI}{A vector of cluster IDs to highlight in the UMAP plot. Default: c("0", "2", "4", "5",  "11").}
 
-\item{res.cl}{PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.3'}
+\item{res.cl}{Name of the column in the Seurat object metadata that contains the cluster IDs. Default: 'integrated_snn_res.0.3'.}
+}
+\value{
+This function does not return a value. It saves a UMAP plot to the current working directory.
 }
 \description{
-Highlight a set of cells based on clusterIDs provided. #
+Generates a UMAP plot from a Seurat object with a subset of cells highlighted.
+}
+\examples{
+\dontrun{
+if(interactive()){
+  umapHiLightSel(obj = seuratObject, COI = c("0", "1"), res.cl = "resolution_0.8")
+}
+}
+}
+\seealso{
+\code{\link[Seurat]{DimPlot}}
 }

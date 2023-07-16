@@ -31,6 +31,7 @@ clUMAP(
   save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots"),
   PNG = TRUE,
   check_for_2D = TRUE,
+  caption = FALSE,
   ...
 )
 }
@@ -86,6 +87,8 @@ clUMAP(
 \item{PNG}{If TRUE, the file is saved as a .png, Default: T.}
 
 \item{check_for_2D}{If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.}
+
+\item{caption}{Add caption to the ggplot object (e.g. a description in bottom right).}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }

@@ -7,7 +7,7 @@
 make10Xcellname(cellnames, suffix = "_1")
 }
 \arguments{
-\item{cellnames}{PARAM_DESCRIPTION}
+\item{cellnames}{Character vector containing the cellIDs (WITHOUT numeric suffixes).}
 
 \item{suffix}{A suffix added to the filename, Default: '_1'}
 }

@@ -11,14 +11,17 @@ AddNewAnnotation(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: obj}
+\item{obj}{A Seurat object for which the new annotation is to be created. Default is 'obj'.}
 
-\item{source}{PARAM_DESCRIPTION, Default: 'RNA_snn_res.0.5'}
+\item{source}{A character string specifying the existing metadata column to be used as the basis for the new annotation. Default is 'RNA_snn_res.0.5'.}
 
-\item{named.list.of.identities}{PARAM_DESCRIPTION, Default: ls.Subset.ClusterLists}
+\item{named.list.of.identities}{A named list providing the mappings for the new annotation. Default is 'ls.Subset.ClusterLists'.}
+}
+\value{
+A character vector representing the new metadata column.
 }
 \description{
-Create a new metadata column based on an exisiting metadata column and a list of mappings (name <- IDs). #
+This function creates a new metadata column based on an existing metadata column and a list of mappings (name <- IDs).
 }
 \examples{
 \dontrun{

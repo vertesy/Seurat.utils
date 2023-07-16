@@ -15,22 +15,32 @@ load10Xv3(
 )
 }
 \arguments{
-\item{dataDir}{PARAM_DESCRIPTION}
+\item{dataDir}{A character string specifying the directory containing the 10X output folders.}
 
-\item{cellIDs}{PARAM_DESCRIPTION, Default: NULL}
+\item{cellIDs}{A vector specifying the cell IDs. Default: NULL.}
 
-\item{channelName}{PARAM_DESCRIPTION, Default: NULL}
+\item{channelName}{A character string specifying the channel name. Default: NULL.}
 
-\item{readArgs}{PARAM_DESCRIPTION, Default: list()}
+\item{readArgs}{A list of arguments to pass to the internal Read10X function. Default: list().}
 
-\item{includeFeatures}{PARAM_DESCRIPTION, Default: c("Gene Expression")}
+\item{includeFeatures}{A character vector specifying which features to include. Default: c("Gene Expression").}
 
-\item{verbose}{PARAM_DESCRIPTION, Default: TRUE}
+\item{verbose}{A logical flag indicating whether to print status messages. Default: TRUE.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{...}{Additional arguments to pass to the internally called functions.}
+}
+\value{
+An object of class "SoupChannel" representing the loaded 10X data.
 }
 \description{
 Load 10X output folders.
+}
+\examples{
+\dontrun{
+if(interactive()){
+ channel <- load10Xv3(dataDir = dataDir)
+ }
+}
 }
 \seealso{
 \code{\link[SoupX]{SoupChannel}}

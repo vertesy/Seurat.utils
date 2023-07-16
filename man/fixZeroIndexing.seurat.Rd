@@ -7,7 +7,7 @@
 fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
 }
 \arguments{
-\item{ColName.metadata}{PARAM_DESCRIPTION, Default: 'res.0.6'}
+\item{ColName.metadata}{Metadata column name to use, Default: 'res.0.6'}
 
 \item{obj}{Seurat object, Default: org}
 }

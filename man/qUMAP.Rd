@@ -26,6 +26,7 @@ qUMAP(
   check_for_2D = TRUE,
   qlow = "q10",
   qhigh = "q90",
+  caption = FALSE,
   ...
 )
 }
@@ -71,6 +72,8 @@ qUMAP(
 \item{qlow}{Lower quantile for the color scale, Default: 'q10'.}
 
 \item{qhigh}{Upper quantile for the color scale, Default: 'q90'.}
+
+\item{caption}{Add caption to the ggplot object (e.g. a description in bottom right).}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }

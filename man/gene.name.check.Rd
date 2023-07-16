@@ -4,10 +4,10 @@
 \alias{gene.name.check}
 \title{gene.name.check}
 \usage{
-gene.name.check(Seu.obj = ls.Seurat[[1]])
+gene.name.check(Seu.obj)
 }
 \arguments{
-\item{Seu.obj}{PARAM_DESCRIPTION, Default: ls.Seurat[\link{1}]}
+\item{Seu.obj}{A Seurat object.}
 }
 \description{
 Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #

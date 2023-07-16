@@ -7,7 +7,7 @@
 clip10Xcellname(cellnames)
 }
 \arguments{
-\item{cellnames}{PARAM_DESCRIPTION}
+\item{cellnames}{Character vector containing the cellIDs (with numeric suffixes).}
 }
 \description{
 Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration). #

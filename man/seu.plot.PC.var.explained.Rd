@@ -12,5 +12,5 @@ seu.plot.PC.var.explained(obj = combined.obj, use.MDrep = F)
 \item{use.MDrep}{PARAM_DESCRIPTION, Default: F}
 }
 \description{
-Plot the percent of variation associated with each PC. #
+Plot the percent of variation associated with each PC.
 }

@@ -14,20 +14,20 @@ Plot3D.ListOfCategories(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object for which the plot is to be created. Default is 'combined.obj'.}
 
-\item{annotate.by}{PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.7'}
+\item{annotate.by}{Character vector specifying the metadata column to be used for annotating the plot. Default is 'integrated_snn_res.0.7'.}
 
-\item{cex}{Point size, Default: 1.25}
+\item{cex}{Numeric value specifying the point size on the plot. Default is 1.25.}
 
-\item{default.assay}{PARAM_DESCRIPTION, Default: c("integrated", "RNA")\link{2}}
+\item{default.assay}{Character vector specifying the assay to be used. Default is 'RNA' (second element in the vector c("integrated", "RNA")).}
 
-\item{ListOfCategories}{PARAM_DESCRIPTION, Default: c("v.project", "experiment", "Phase", "integrated_snn_res.0.7")}
+\item{ListOfCategories}{Character vector specifying the categories to be included in the plot. Default categories are "v.project", "experiment", "Phase", "integrated_snn_res.0.7".}
 
-\item{SubFolderName}{PARAM_DESCRIPTION, Default: ppp("plot3D", substitute(ListOfCategories))}
+\item{SubFolderName}{String specifying the name of the subfolder where the plots will be saved. By default, it's created using the function ppp("plot3D", substitute(ListOfCategories)).}
 }
 \description{
-Plot and save list of 3D UMAP ot tSNE plots using plotly. #
+This function plots and saves a list of 3D UMAP or tSNE plots using plotly.
 }
 \examples{
 \dontrun{

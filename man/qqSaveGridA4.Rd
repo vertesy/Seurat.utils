@@ -15,27 +15,34 @@ qqSaveGridA4(
 )
 }
 \arguments{
-\item{plotlist}{PARAM_DESCRIPTION, Default: pl}
+\item{plotlist}{A list of ggplot objects. Default: pl.}
 
-\item{plots}{PARAM_DESCRIPTION, Default: 1:2}
+\item{plots}{A numeric vector indicating the indices of the plots to save from the 'plotlist'. Default: 1:2.}
 
-\item{NrPlots}{PARAM_DESCRIPTION, Default: length(plots)}
+\item{NrPlots}{Number of plots to save. Default: length(plots).}
 
-\item{height}{PARAM_DESCRIPTION, Default: hA4}
+\item{height}{Height for the saved image. Default: hA4.}
 
-\item{width}{PARAM_DESCRIPTION, Default: wA4}
+\item{width}{Width for the saved image. Default: wA4.}
 
-\item{fname}{File name, Default: 'Fractions.Organoid-to-organoid variation.png'}
+\item{fname}{File name for the saved image. Default: "Fractions.Organoid-to-organoid variation.png".}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{...}{Additional arguments passed to the plot_grid function.}
+}
+\value{
+This function does not return a value. It saves a grid plot of ggplot objects to the specified file.
 }
 \description{
-Save 2 or 4 ggplot objects using plot_grid() on an A4 page #
+Saves a grid of 2 or 4 ggplot objects onto an A4 page.
 }
 \examples{
 \dontrun{
 if(interactive()){
- qqSaveGridA4(plotlist= pl, plots = 1:2, fname = "Fractions.per.Cl.png"); qqSaveGridA4(plotlist= pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
- }
+  qqSaveGridA4(plotlist= pl, plots = 1:2, fname = "Fractions.per.Cl.png")
+  qqSaveGridA4(plotlist= pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
 }
+}
+}
+\seealso{
+\code{\link[ggplot2]{plot_grid}}
 }

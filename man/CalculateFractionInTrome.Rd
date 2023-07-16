@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{CalculateFractionInTrome}
 \alias{CalculateFractionInTrome}
-\title{CalculateFractionInTrome}
+\title{CalculateFractionInTranscriptome}
 \usage{
 CalculateFractionInTrome(
   genesCalc.Cor.Seuratet = c("MALAT1"),
@@ -11,12 +11,15 @@ CalculateFractionInTrome(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object from which the gene data is extracted. Default is 'combined.obj'.}
 
-\item{dataslot}{PARAM_DESCRIPTION, Default: c("counts", "data")\link{2}}
+\item{dataslot}{A character vector specifying the data slot to be used in the calculation. Default is 'data' (second element in the vector c("counts", "data")).}
 
-\item{geneset}{PARAM_DESCRIPTION, Default: c("MALAT1")}
+\item{geneset}{A character vector specifying the set of genes for which the fraction in the transcriptome is to be calculated. Default is c("MALAT1").}
+}
+\value{
+A numeric vector containing the fraction of the specified genes in the transcriptome of each cell.
 }
 \description{
-Calculate the fraction of a set of genes within the full Transcriptome of each cell. #
+This function calculates the fraction of a set of genes within the full transcriptome of each cell.
 }

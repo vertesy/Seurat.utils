@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{seu.PC.var.explained}
 \alias{seu.PC.var.explained}
-\title{seu.PC.var.explained}
+\title{PCA percent of variation associated with each PC}
 \usage{
 seu.PC.var.explained(obj = combined.obj)
 }

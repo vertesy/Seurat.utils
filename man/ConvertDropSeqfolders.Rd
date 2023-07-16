@@ -19,35 +19,35 @@ ConvertDropSeqfolders(
 )
 }
 \arguments{
-\item{InputDir}{Input directory}
+\item{InputDir}{A character string specifying the input directory.}
 
-\item{folderPattern}{PARAM_DESCRIPTION, Default: 'SRR*'}
+\item{folderPattern}{A character string specifying the pattern of folder names to be searched. Default is 'SRR*'.}
 
-\item{filePattern}{PARAM_DESCRIPTION, Default: 'expression.tsv.gz'}
+\item{filePattern}{A character string specifying the pattern of file names to be searched. Default is 'expression.tsv.gz'.}
 
-\item{useVroom}{PARAM_DESCRIPTION, Default: T}
+\item{useVroom}{A logical value indicating whether to use vroom. Default is TRUE.}
 
-\item{col_types.vroom}{PARAM_DESCRIPTION, Default: list(GENE = "c", .default = "d")}
+\item{col_types.vroom}{A list defining column types for vroom. Default is list("GENE" = "c", .default = "d").}
 
-\item{min.cells}{PARAM_DESCRIPTION, Default: 10}
+\item{min.cells}{An integer value specifying the minimum number of cells. Default is 10.}
 
-\item{min.features}{PARAM_DESCRIPTION, Default: 200}
+\item{min.features}{An integer value specifying the minimum number of features. Default is 200.}
 
-\item{updateHGNC}{PARAM_DESCRIPTION, Default: T}
+\item{updateHGNC}{A logical value indicating whether to update the HGNC. Default is TRUE.}
 
-\item{ShowStats}{PARAM_DESCRIPTION, Default: T}
+\item{ShowStats}{A logical value indicating whether to show statistics. Default is TRUE.}
 
-\item{minDimension}{PARAM_DESCRIPTION, Default: 10}
+\item{minDimension}{An integer value specifying the minimum dimension. Default is 10.}
 
-\item{overwrite}{PARAM_DESCRIPTION, Default: FALSE}
+\item{overwrite}{A logical value indicating whether to overwrite files. Default is FALSE.}
 }
 \description{
-Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
+This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.
 }
 \examples{
 \dontrun{
 if(interactive()){
- ConvertDropSeqfolders(InputDir)
+ ConvertDropSeqfolders(InputDir = InputDir)
  }
 }
 }

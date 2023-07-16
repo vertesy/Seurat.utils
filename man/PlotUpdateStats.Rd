@@ -10,12 +10,18 @@ PlotUpdateStats(
 )
 }
 \arguments{
-\item{mat}{PARAM_DESCRIPTION, Default: UpdateStatMat}
+\item{mat}{A matrix containing update statistics. Default: UpdateStatMat.}
 
-\item{column.names}{PARAM_DESCRIPTION, Default: c("Updated (\%)", "Updated (Nr.)")}
+\item{column.names}{A character vector of column names in the mat parameter. Default: c("Updated (\%)", "Updated (Nr.)").}
+}
+\value{
+A scatter plot displaying update statistics.
 }
 \description{
-Scatter plot of update stats. #
+Creates a scatter plot of update statistics.
+}
+\details{
+This function takes a matrix containing update statistics and column names to plot the corresponding statistics. It colorizes the genes and plots the percentage of total genes updated against the number of genes updated.
 }
 \examples{
 \dontrun{
@@ -23,4 +29,7 @@ if(interactive()){
  PlotUpdateStats(mat = result.of.GetUpdateStats)
  }
 }
+}
+\seealso{
+\code{\link[wplot]{wplot}}, \code{\link[wcolorize]{wcolorize}}
 }

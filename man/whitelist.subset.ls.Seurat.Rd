@@ -11,12 +11,28 @@ whitelist.subset.ls.Seurat(
 )
 }
 \arguments{
-\item{ls.obj}{List of Seurat objects, Default: ls.Seurat}
+\item{ls.obj}{A list of Seurat objects. Default: ls.Seurat.}
 
-\item{metadir}{PARAM_DESCRIPTION, Default: p$cellWhiteList}
+\item{metadir}{Directory for the metadata. Default: p$cellWhiteList.}
 
-\item{whitelist.file}{PARAM_DESCRIPTION, Default: 'NonStressedCellIDs.2020.10.21_18h.tsv'}
+\item{whitelist.file}{Filename of the whitelist containing cell IDs. Default: "NonStressedCellIDs.2020.10.21_18h.tsv".}
+}
+\value{
+A list of Seurat objects containing only the cells specified in the whitelist.
 }
 \description{
-Subset cells in a (list of) Seurat objects, based on an externally provided list of cell IDs.
+Subsets cells in a list of Seurat objects based on an externally provided list of cell IDs.
+}
+\details{
+The function first validates the presence of all identities from the metadata in the Seurat objects. If all identities are present, the function subsets each Seurat object based on the whitelist of cell IDs.
+}
+\examples{
+\dontrun{
+if(interactive()){
+  ls.Seurat.subset <- whitelist.subset.ls.Seurat(ls.obj = ls.Seurat, metadir = p$'cellWhiteList', whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv")
+}
+}
+}
+\seealso{
+\code{\link[Seurat]{subset}}
 }

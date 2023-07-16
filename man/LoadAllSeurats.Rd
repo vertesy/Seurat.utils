@@ -12,21 +12,21 @@ LoadAllSeurats(
 )
 }
 \arguments{
-\item{InputDir}{Input directory}
+\item{InputDir}{A character string specifying the input directory.}
 
-\item{file.pattern}{PARAM_DESCRIPTION, Default: '^filtered.+Rds$'}
+\item{file.pattern}{A character string specifying the pattern of file names to be searched. Default is '^filtered.+Rds$'.}
 
-\item{string.remove1}{PARAM_DESCRIPTION, Default: c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")\link{2}}
+\item{string.remove1}{A character string or FALSE. If a string is provided, it is removed from file names. Default is "filtered_feature_bc_matrix.".}
 
-\item{string.remove2}{PARAM_DESCRIPTION, Default: c(F, ".min.cells.10.min.features.200.Rds")\link{2}}
+\item{string.remove2}{A character string or FALSE. If a string is provided, it is removed from file names. Default is ".min.cells.10.min.features.200.Rds".}
 }
 \description{
-Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases). #
+This function loads all Seurat objects found in a directory. It also works with symbolic links (but not with aliases).
 }
 \examples{
 \dontrun{
 if(interactive()){
- ls.Seurat <- LoadAllSeurats(InputDir)
+ ls.Seurat <- LoadAllSeurats(InputDir = InputDir)
  }
 }
 }

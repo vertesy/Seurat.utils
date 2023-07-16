@@ -19,33 +19,31 @@ Convert10Xfolders(
 )
 }
 \arguments{
-\item{InputDir}{Input directory}
+\item{InputDir}{A character string specifying the input directory.}
 
-\item{regex}{PARAM_DESCRIPTION, Default: F}
+\item{regex}{A logical value. If TRUE, the folderPattern is treated as a regular expression. Default is FALSE.}
 
-\item{folderPattern}{PARAM_DESCRIPTION, Default: c("filtered_feature", "SoupX_decont")\link{1}}
+\item{folderPattern}{A character vector specifying the pattern of folder names to be searched. Default is 'filtered_feature'.}
 
-\item{depth}{Depth of scan (How many levels below InputDir). Def 2}
+\item{depth}{An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default is 2.}
 
-\item{min.cells}{PARAM_DESCRIPTION, Default: 5}
+\item{min.cells}{An integer value specifying the minimum number of cells. Default is 5.}
 
-\item{min.features}{PARAM_DESCRIPTION, Default: 200}
+\item{min.features}{An integer value specifying the minimum number of features. Default is 200.}
 
-\item{updateHGNC}{PARAM_DESCRIPTION, Default: T}
+\item{updateHGNC}{A logical value indicating whether to update the HGNC. Default is TRUE.}
 
-\item{ShowStats}{PARAM_DESCRIPTION, Default: T}
+\item{ShowStats}{A logical value indicating whether to show statistics. Default is TRUE.}
 
-\item{writeCBCtable}{write out a list of cell barcodes (CBC) as tsv, Default: T}
+\item{writeCBCtable}{A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default is TRUE.}
 
-\item{sample.barcoding}{Cell Ranger run with sample barcoding. The folder structure is different.}
+\item{sample.barcoding}{A logical value indicating whether Cell Ranger was run with sample barcoding. Default is FALSE.}
 }
 \description{
-Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
+This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.
 }
 \examples{
 \dontrun{
-if(interactive()){
- Convert10Xfolders(InputDir)
- }
+if(interactive()) Convert10Xfolders(InputDir)
 }
 }

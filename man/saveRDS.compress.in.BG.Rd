@@ -9,7 +9,7 @@ saveRDS.compress.in.BG(obj, compr = FALSE, fname)
 \arguments{
 \item{obj}{Seurat object.}
 
-\item{compr}{PARAM_DESCRIPTION, Default: FALSE}
+\item{compr}{Compress by R? Default: FALSE (compressed in background via CLI).}
 
 \item{fname}{File name}
 }

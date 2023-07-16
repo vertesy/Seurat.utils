@@ -7,10 +7,20 @@
 read10x(dir)
 }
 \arguments{
-\item{dir}{PARAM_DESCRIPTION}
+\item{dir}{A character string specifying the directory where the gzipped files are located.}
+}
+\value{
+A Seurat object constructed from the 10X dataset.
 }
 \description{
-read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv #
+This function reads a 10X dataset from gzipped matrix.mtx, features.tsv and barcodes.tsv files.
+}
+\examples{
+\dontrun{
+if(interactive()){
+ seuratObject <- read10x(dir = dir)
+ }
+}
 }
 \seealso{
 \code{\link[tictoc]{tic}}
