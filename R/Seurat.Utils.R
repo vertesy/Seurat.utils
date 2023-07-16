@@ -884,14 +884,16 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 
 # _________________________________________________________________________________________________
 #' @title getCellIDs.from.meta
-#' @description Get cellIDs from a metadata column, matching a list of values (using %in%). #
-#' @param ColName.meta PARAM_DESCRIPTION, Default: 'res.0.6'
-#' @param values PARAM_DESCRIPTION, Default: NA
-#' @param obj Seurat object, Default: combined.obj
-#' @param inverse PARAM_DESCRIPTION, Default: F
+#' @description Retrieves cell IDs from a specified metadata column of a Seurat object, where the cell ID matches a provided list of values. The matching operation uses the `%in%` operator.
+#' @param ColName.meta A string specifying the name of the metadata column from which to retrieve cell IDs. Default: 'res.0.6'.
+#' @param values A vector of values to match in the metadata column. Default: NA.
+#' @param obj The Seurat object from which to retrieve the cell IDs. Default: combined.obj.
+#' @param inverse A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of values. Default: F.
+#' @return A vector of cell IDs that match (or don't match, if `inverse = TRUE`) the provided list of values.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
+#'  # Example usage:
 #'  getCellIDs.from.meta()
 #'  }
 #' }
