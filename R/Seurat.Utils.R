@@ -4925,22 +4925,22 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
 
 # _________________________________________________________________________________________________
 #' @title ConvertDropSeqfolders
-#' @description Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
-#' @param InputDir Input directory
-#' @param folderPattern PARAM_DESCRIPTION, Default: 'SRR*'
-#' @param filePattern PARAM_DESCRIPTION, Default: 'expression.tsv.gz'
-#' @param useVroom PARAM_DESCRIPTION, Default: T
-#' @param col_types.vroom PARAM_DESCRIPTION, Default: list(GENE = "c", .default = "d")
-#' @param min.cells PARAM_DESCRIPTION, Default: 10
-#' @param min.features PARAM_DESCRIPTION, Default: 200
-#' @param updateHGNC PARAM_DESCRIPTION, Default: T
-#' @param ShowStats PARAM_DESCRIPTION, Default: T
-#' @param minDimension PARAM_DESCRIPTION, Default: 10
-#' @param overwrite PARAM_DESCRIPTION, Default: FALSE
+#' @description This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.
+#' @param InputDir A character string specifying the input directory.
+#' @param folderPattern A character string specifying the pattern of folder names to be searched. Default is 'SRR*'.
+#' @param filePattern A character string specifying the pattern of file names to be searched. Default is 'expression.tsv.gz'.
+#' @param useVroom A logical value indicating whether to use vroom. Default is TRUE.
+#' @param col_types.vroom A list defining column types for vroom. Default is list("GENE" = "c", .default = "d").
+#' @param min.cells An integer value specifying the minimum number of cells. Default is 10.
+#' @param min.features An integer value specifying the minimum number of features. Default is 200.
+#' @param updateHGNC A logical value indicating whether to update the HGNC. Default is TRUE.
+#' @param ShowStats A logical value indicating whether to show statistics. Default is TRUE.
+#' @param minDimension An integer value specifying the minimum dimension. Default is 10.
+#' @param overwrite A logical value indicating whether to overwrite files. Default is FALSE.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  ConvertDropSeqfolders(InputDir)
+#'  ConvertDropSeqfolders(InputDir = InputDir)
 #'  }
 #' }
 #' @seealso
@@ -4999,15 +4999,15 @@ ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a numb
 
 # _________________________________________________________________________________________________
 #' @title LoadAllSeurats
-#' @description Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases). #
-#' @param InputDir Input directory
-#' @param file.pattern PARAM_DESCRIPTION, Default: '^filtered.+Rds$'
-#' @param string.remove1 PARAM_DESCRIPTION, Default: c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[2]
-#' @param string.remove2 PARAM_DESCRIPTION, Default: c(F, ".min.cells.10.min.features.200.Rds")[2]
+#' @description This function loads all Seurat objects found in a directory. It also works with symbolic links (but not with aliases).
+#' @param InputDir A character string specifying the input directory.
+#' @param file.pattern A character string specifying the pattern of file names to be searched. Default is '^filtered.+Rds$'.
+#' @param string.remove1 A character string or FALSE. If a string is provided, it is removed from file names. Default is "filtered_feature_bc_matrix.".
+#' @param string.remove2 A character string or FALSE. If a string is provided, it is removed from file names. Default is ".min.cells.10.min.features.200.Rds".
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  ls.Seurat <- LoadAllSeurats(InputDir)
+#'  ls.Seurat <- LoadAllSeurats(InputDir = InputDir)
 #'  }
 #' }
 #' @export
