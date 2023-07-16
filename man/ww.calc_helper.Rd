@@ -14,10 +14,3 @@ ww.calc_helper(obj, genes)
 \description{
 From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

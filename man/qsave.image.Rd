@@ -16,13 +16,6 @@ qsave.image(..., showMemObject = T, options = c("--force", NULL)[1])
 \description{
 Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression. #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}
 \seealso{
 \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
 }

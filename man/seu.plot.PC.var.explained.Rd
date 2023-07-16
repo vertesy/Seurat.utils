@@ -14,10 +14,3 @@ seu.plot.PC.var.explained(obj = combined.obj, use.MDrep = F)
 \description{
 Plot the percent of variation associated with each PC. #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

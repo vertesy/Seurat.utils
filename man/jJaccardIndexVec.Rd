@@ -14,10 +14,3 @@ jJaccardIndexVec(A = 1:3, B = 2:4)
 \description{
 Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

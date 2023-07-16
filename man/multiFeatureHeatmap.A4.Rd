@@ -47,13 +47,6 @@ multiFeatureHeatmap.A4(
 \description{
 Save multiple FeatureHeatmaps from a list of genes on A4 jpeg.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}
 \seealso{
 \code{\link[tictoc]{tic}}
 }

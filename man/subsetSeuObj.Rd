@@ -7,21 +7,14 @@
 subsetSeuObj(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_ = 1989)
 }
 \arguments{
-\item{obj}{Seurat object, Default: ls.Seurat[\link{i}]}
+\item{obj}{A Seurat object to subset. Default: the i-th element of the list 'ls.Seurat'.}
 
-\item{fraction_}{PARAM_DESCRIPTION, Default: 0.25}
+\item{fraction_}{The fraction of the object's data to keep. Default: 0.25.}
 
-\item{nCells}{PARAM_DESCRIPTION, Default: F}
+\item{nCells}{If set to a number greater than 1, indicates the absolute number of cells to keep. If FALSE, the function uses 'fraction_' to determine the number of cells. Default: FALSE.}
 
-\item{seed_}{PARAM_DESCRIPTION, Default: 1989}
+\item{seed_}{A seed for random number generation to ensure reproducible results. Default: 1989.}
 }
 \description{
-Subset a compressed Seurat Obj and save it in wd. #
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+Subset a compressed Seurat object and save it in the working directory.
 }

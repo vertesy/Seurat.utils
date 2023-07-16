@@ -14,10 +14,3 @@ make10Xcellname(cellnames, suffix = "_1")
 \description{
 Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1". #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

@@ -36,64 +36,52 @@ calc.cluster.averages(
 )
 }
 \arguments{
-\item{col_name}{PARAM_DESCRIPTION, Default: 'Score.GO.0006096'}
+\item{col_name}{The name of the column for which the average is calculated. Default: 'Score.GO.0006096'.}
 
-\item{plot.UMAP.too}{PARAM_DESCRIPTION, Default: TRUE}
+\item{plot.UMAP.too}{Whether to plot a UMAP as well. Default: TRUE.}
 
-\item{return.plot}{PARAM_DESCRIPTION, Default: F}
+\item{return.plot}{Whether to return the plot. Default: FALSE.}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{The main Seurat object used for calculations. Default: combined.obj.}
 
-\item{split_by}{PARAM_DESCRIPTION, Default: GetNamedClusteringRuns()\link{1}}
+\item{split_by}{Cluster to split by. Default: First entry of GetNamedClusteringRuns().}
 
-\item{scale.zscore}{PARAM_DESCRIPTION, Default: FALSE}
+\item{scale.zscore}{Whether to scale z-scores. Default: FALSE.}
 
-\item{simplify}{PARAM_DESCRIPTION, Default: T}
+\item{simplify}{Whether to simplify the result. Default: TRUE.}
 
-\item{plotit}{Plot results (& show it), Default: T}
+\item{plotit}{Whether to plot the results. Default: TRUE.}
 
-\item{histogram}{PARAM_DESCRIPTION, Default: FALSE}
+\item{histogram}{Whether to produce a histogram. Default: FALSE.}
 
-\item{nbins}{PARAM_DESCRIPTION, Default: 50}
+\item{nbins}{The number of bins for the histogram. Default: 50.}
 
-\item{suffix}{A suffix added to the filename, Default: NULL}
+\item{suffix}{Suffix added to the filename. Default: NULL.}
 
-\item{stat}{PARAM_DESCRIPTION, Default: c("mean", "median")\link{2}}
+\item{stat}{Statistical method applied, "mean" or "median". Default: "median".}
 
-\item{quantile.thr}{PARAM_DESCRIPTION, Default: 0.9}
+\item{quantile.thr}{The threshold for quantiles. Default: 0.9.}
 
-\item{absolute.thr}{PARAM_DESCRIPTION, Default: FALSE}
+\item{absolute.thr}{Absolute threshold used in computations. Default: FALSE.}
 
-\item{filter}{PARAM_DESCRIPTION, Default: c(FALSE, "above", "below")\link{1}}
+\item{filter}{The filter mode: 'above', 'below', or FALSE. Default: FALSE.}
 
-\item{ylab.text}{PARAM_DESCRIPTION, Default: paste("Cluster", stat, "score")}
+\item{ylab.text}{Text for the y-axis label. Default: "Cluster" followed by the statistical method and "score".}
 
-\item{title}{Title of the plot, Default: paste("Cluster", stat, col_name)}
+\item{title}{Title for the plot. Default: "Cluster" followed by the statistical method and column name.}
 
-\item{report}{Summary sentence, Default: F}
+\item{subtitle}{The subtitle for the plot. Default: NULL.}
 
-\item{subtitle}{PARAM_DESCRIPTION, Default: NULL}
+\item{width}{The width of the plot. Default: 8.}
 
-\item{width}{PARAM_DESCRIPTION, Default: 8}
+\item{height}{The height of the plot. Default: 6.}
 
-\item{height}{PARAM_DESCRIPTION, Default: 6}
+\item{...}{Additional parameters passed to the internally called functions.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{xlb}{The label for the x-axis. Default depends on the 'absolute.thr' parameter.}
 
-\item{xlb}{PARAM_DESCRIPTION, Default: if (absolute.thr) paste("Threshold at", absolute.thr) else paste("Black lines: ",
-kppd(Stringendo::percentage_formatter(c(1 - quantile.thr, quantile.thr))),
-"quantiles |", "Cl. >", Stringendo::percentage_formatter(quantile.thr),
-"are highlighted. |", split_by)}
-
-\item{fname}{File name, Default: ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)}
+\item{fname}{The filename for the plot. Default is based on column name and split_by value.}
 }
 \description{
-Calculate the average of a metadata column (numeric) per cluster.
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+Calculates the average of a metadata column (numeric) per cluster.
 }

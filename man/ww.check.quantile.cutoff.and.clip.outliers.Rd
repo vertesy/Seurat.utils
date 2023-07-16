@@ -20,10 +20,3 @@ ww.check.quantile.cutoff.and.clip.outliers(
 \description{
 Helper function.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

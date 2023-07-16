@@ -20,10 +20,3 @@ CalculateFractionInTrome(
 \description{
 Calculate the fraction of a set of genes within the full Transcriptome of each cell. #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

@@ -56,13 +56,6 @@
 \description{
 Plot a UMAP and tSNE side by side.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}
 \seealso{
 \code{\link[cowplot]{save_plot}}
 }

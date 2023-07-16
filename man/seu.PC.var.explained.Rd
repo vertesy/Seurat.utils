@@ -12,10 +12,3 @@ seu.PC.var.explained(obj = combined.obj)
 \description{
 Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

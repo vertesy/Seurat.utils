@@ -7,17 +7,23 @@
 sampleNpc(metaDF = MetaData[which(Pass), ], pc = 0.1)
 }
 \arguments{
-\item{metaDF}{PARAM_DESCRIPTION, Default: MetaData\link{which(Pass), }}
+\item{metaDF}{A dataframe representing a subset of the metadata of a Seurat object. Default: Subset of 'MetaData' for which 'Pass' is TRUE.}
 
-\item{pc}{PARAM_DESCRIPTION, Default: 0.1}
+\item{pc}{The percentage of the dataframe to sample, expressed as a decimal. Default: 0.1.}
+}
+\value{
+A vector of sampled cell IDs.
 }
 \description{
-Sample N \% of a dataframe (obj@metadata), and return the cell IDs. #
+This function samples a specified percentage of a dataframe (specifically a subset of the metadata of a Seurat object) and returns the corresponding cell IDs.
 }
 \examples{
 \dontrun{
 if(interactive()){
- #EXAMPLE1
+ # Example usage:
+ # Suppose 'MetaData' is a dataframe and 'Pass' is a boolean vector with the same length.
+ # The following example will sample 10\% of the rows of 'MetaData' where 'Pass' is TRUE.
+ sampleNpc(metaDF = MetaData[which(Pass),], pc = 0.1)
  }
 }
 }

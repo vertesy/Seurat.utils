@@ -26,40 +26,38 @@ PlotFilters(
 )
 }
 \arguments{
-\item{ls.obj}{List of Seurat objects, Default: ls.Seurat}
+\item{ls.obj}{A list of Seurat objects to be analyzed. Default is ls.Seurat.}
 
-\item{parentdir}{PARAM_DESCRIPTION, Default: OutDirOrig}
+\item{parentdir}{A string representing the parent directory where the plots will be stored. Default is OutDirOrig.}
 
-\item{suffices}{PARAM_DESCRIPTION, Default: names(ls.obj)}
+\item{suffices}{A vector of strings that will be used as suffixes in the output plot file names. Default is the names of the Seurat objects in ls.obj.}
 
-\item{filetype}{PARAM_DESCRIPTION, Default: '.png'}
+\item{filetype}{A string indicating the file type of the output plot images. Default is '.png'.}
 
-\item{below.mito}{PARAM_DESCRIPTION, Default: p$thr.lp.mito}
+\item{below.mito}{Numeric threshold for the lower bound of mitochondrial content. Default is p$thr.lp.mito.}
 
-\item{above.mito}{PARAM_DESCRIPTION, Default: p$thr.hp.mito}
+\item{above.mito}{Numeric threshold for the upper bound of mitochondrial content. Default is p$thr.hp.mito.}
 
-\item{below.ribo}{PARAM_DESCRIPTION, Default: p$thr.lp.ribo}
+\item{below.ribo}{Numeric threshold for the lower bound of ribosomal content. Default is p$thr.lp.ribo.}
 
-\item{above.ribo}{PARAM_DESCRIPTION, Default: p$thr.hp.ribo}
+\item{above.ribo}{Numeric threshold for the upper bound of ribosomal content. Default is p$thr.hp.ribo.}
 
-\item{below.nFeature_RNA}{PARAM_DESCRIPTION, Default: p$thr.lp.nFeature_RNA}
+\item{below.nFeature_RNA}{Numeric threshold for the lower bound of RNA features. Default is p$thr.lp.nFeature_RNA.}
 
-\item{above.nFeature_RNA}{PARAM_DESCRIPTION, Default: p$thr.hp.nFeature_RNA}
+\item{above.nFeature_RNA}{Numeric threshold for the upper bound of RNA features. Default is p$thr.hp.nFeature_RNA.}
 
-\item{subdir}{PARAM_DESCRIPTION, Default: kpp("Filtering.plots", "mito", p$thr.hp.mito, p$thr.lp.mito,
-"ribo", p$thr.hp.ribo, p$thr.lp.ribo, "nFeature", p$thr.hp.nFeature_RNA,
-p$thr.lp.nFeature_RNA, "/")}
+\item{subdir}{A string specifying the subdirectory within the parent directory where the plots will be stored. Default is generated using a call to kpp().}
 
-\item{transparency}{PARAM_DESCRIPTION, Default: 0.25}
+\item{transparency}{Numeric value controlling the transparency of points on the scatter plots. Default is 0.25.}
 
-\item{cex}{Point size, Default: 0.75}
+\item{cex}{Numeric value controlling the size of points on the scatter plots. Default is 0.75.}
 
-\item{theme.used}{PARAM_DESCRIPTION, Default: theme_bw(base_size = 18)}
+\item{theme.used}{A ggplot2 theme to be used for all plots. Default is theme_bw(base_size = 18).}
 
-\item{LabelDistFromTop}{PARAM_DESCRIPTION, Default: 200}
+\item{LabelDistFromTop}{Numeric value specifying the distance from the top of the plot for the label placement. Default is 200.}
 }
 \description{
-Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content. #
+Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.
 }
 \examples{
 \dontrun{

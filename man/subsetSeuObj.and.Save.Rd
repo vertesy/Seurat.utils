@@ -29,10 +29,3 @@ subsetSeuObj.and.Save(
 \description{
 Subset a compressed Seurat Obj and save it in wd. #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

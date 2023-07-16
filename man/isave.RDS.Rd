@@ -18,31 +18,27 @@ isave.RDS(
 )
 }
 \arguments{
-\item{obj}{Seurat object}
+\item{obj}{The object to be saved, typically a Seurat object.}
 
-\item{prefix}{PARAM_DESCRIPTION, Default: NULL}
+\item{prefix}{A string prefix added to the filename. Default is NULL.}
 
-\item{suffix}{A suffix added to the filename, Default: NULL}
+\item{suffix}{A string suffix added to the filename. Default is NULL.}
 
-\item{inOutDir}{PARAM_DESCRIPTION, Default: F}
+\item{inOutDir}{A boolean flag, if TRUE the OutDir is used as save directory, if FALSE the alternative_path_rdata is used. Default is FALSE.}
 
-\item{project}{project code appended to the saved file name. Default: try(basename(rstudioapi::getActiveProject()), silent=T) using  getProject().}
+\item{project}{A string representing the project code. This is appended to the saved file name. Default is the active project determined by getProject().}
 
-\item{alternative_path_rdata}{PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))}
+\item{alternative_path_rdata}{A string that specifies the alternative path for storing the RDS file if inOutDir is FALSE. Default is "~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/" appended with the basename of OutDir.}
 
-\item{homepath}{homepath to replace '~', Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))}
+\item{homepath}{A string representing the homepath. Will be replaced by '~' in the file path. Default is '/Users/abel.vertesy/'.}
 
-\item{showMemObject}{PARAM_DESCRIPTION, Default: T}
+\item{showMemObject}{A boolean flag, if TRUE the function will print out the memory size of the largest objects in the workspace. Default is TRUE.}
 
-\item{saveParams}{PARAM_DESCRIPTION, Default: T}
+\item{saveParams}{A boolean flag, if TRUE the parameters 'p' and 'all.genes' are added to the 'misc' slot of the Seurat object if the object is of class Seurat. Default is TRUE.}
 }
 \description{
-Save and RDS object.
+Save an RDS object, using a faster and efficient compression method that runs in the background.
 }
 \examples{
-\dontrun{
-if(interactive()){
- isave.RDS(my.R.object)
- }
-}
+\dontrun{ if(interactive()){ isave.RDS(my.R.object)  } }
 }

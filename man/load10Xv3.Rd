@@ -32,13 +32,6 @@ load10Xv3(
 \description{
 Load 10X output folders.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}
 \seealso{
 \code{\link[SoupX]{SoupChannel}}
 }

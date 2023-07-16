@@ -12,10 +12,3 @@ gg_color_hue(n)
 \description{
 reproduce the ggplot2 default color palette #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

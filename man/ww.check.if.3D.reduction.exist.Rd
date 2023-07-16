@@ -12,10 +12,3 @@ ww.check.if.3D.reduction.exist(obj = obj)
 \description{
 ww.check.if.3D.reduction.exist in backup slot #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

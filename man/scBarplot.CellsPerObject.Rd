@@ -13,19 +13,16 @@ scBarplot.CellsPerObject(
 )
 }
 \arguments{
-\item{ls.Seu}{PARAM_DESCRIPTION, Default: ls.Seurat}
+\item{ls.Seu}{A list of Seurat objects. Default: ls.Seurat.}
 
-\item{plotname}{Title of the plot, Default: 'Nr.Cells.After.Filtering'}
+\item{plotname}{A string specifying the title of the plot. Default: 'Nr.Cells.After.Filtering'.}
 
-\item{names}{PARAM_DESCRIPTION, Default: F}
+\item{xlab.angle}{The angle at which the x-axis labels should be displayed. Default: 45.}
+
+\item{names}{A logical value indicating whether to use the provided names as labels on the x-axis. If FALSE, the names of the Seurat objects will be used. Default: FALSE.}
+
+\item{...}{Additional arguments to be passed to the qbarplot function.}
 }
 \description{
-Take a List of Seurat objects and draw a barplot for the number of cells per object. #
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+Creates a bar plot for the number of cells per object from a list of Seurat objects.
 }

@@ -23,10 +23,3 @@ gene.expression.level.plots(
 \description{
 Histogram of gene expression levels.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

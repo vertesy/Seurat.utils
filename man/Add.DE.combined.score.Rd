@@ -14,19 +14,18 @@ Add.DE.combined.score(
 )
 }
 \arguments{
-\item{df}{Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers}
+\item{df}{A data frame that holds the result of a differential gene expression analysis, typically obtained via the 'FindAllMarkers' function. Default: df.markers.}
 
-\item{p_val_min}{PARAM_DESCRIPTION, Default: 1e-25}
+\item{p_val_min}{The minimum p-value considered. All values below this threshold are set to this value. Default: 1e-25.}
 
-\item{pval_scaling}{PARAM_DESCRIPTION, Default: 0.001}
+\item{pval_scaling}{The value to scale p-values by in the calculation of the combined score. Default: 0.001.}
 
-\item{colP}{PARAM_DESCRIPTION, Default: 'p_val'}
+\item{colP}{The name of the column in the input data frame that holds p-values. Default: 'p_val'.}
 
-\item{colLFC}{PARAM_DESCRIPTION, Default: CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df),
-perl = T)}
+\item{colLFC}{The name of the column in the input data frame that holds log-fold change values. By default, it selects the first column not named "avg_logFC" or "avg_log2FC".}
 }
 \description{
-Add combined score to DE results. (LFC * -log10( p_cutoff / pval_scaling ) )
+Add a combined score to differential expression (DE) results. The score is calculated as log-fold change (LFC) times negative logarithm of scaled p-value (LFC * -log10( p_cutoff / pval_scaling )).
 }
 \examples{
 \dontrun{

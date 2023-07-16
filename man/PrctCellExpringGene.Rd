@@ -16,10 +16,3 @@ PrctCellExpringGene(genes, group.by = "all", obj = combined.obj)
 \description{
 From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

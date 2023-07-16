@@ -11,19 +11,23 @@ getMetadataColumn(
 )
 }
 \arguments{
-\item{ColName.metadata}{PARAM_DESCRIPTION, Default: 'batch'}
+\item{ColName.metadata}{A string specifying the name of the metadata column to be retrieved. Default: 'batch'.}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object from which the metadata column will be retrieved. Default: combined.obj.}
 
-\item{as_numeric}{PARAM_DESCRIPTION, Default: F}
+\item{as_numeric}{A logical flag indicating whether the returned values should be converted to numeric format. Default: F (FALSE).}
+}
+\value{
+A named vector containing the values from the specified metadata column. If 'as_numeric' is TRUE, the values are converted to numeric format.
 }
 \description{
-Get a metadata column from a Seurat object as a named vector. get Cells from metadata.
+Retrieves a specified metadata column from a Seurat object and returns it as a named vector.
 }
 \examples{
 \dontrun{
 if(interactive()){
- #EXAMPLE1
+  # Example usage:
+  batch_metadata <- getMetadataColumn(ColName.metadata = 'batch', obj = combined.obj, as_numeric = T)
  }
 }
 }

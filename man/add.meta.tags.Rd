@@ -7,14 +7,14 @@
 add.meta.tags(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1)
 }
 \arguments{
-\item{list.of.tags}{PARAM_DESCRIPTION, Default: tags}
+\item{list.of.tags}{A list of tags to be added as metadata. Default: tags}
 
-\item{obj}{Seurat object, Default: ls.Seurat[\link{1}]}
+\item{obj}{A Seurat object to which the metadata tags are to be added. Default: ls.Seurat[\link{1}]}
 
-\item{n}{PARAM_DESCRIPTION, Default: 1}
+\item{n}{The index specifying the dataset for which the tags should be applied. Default: 1}
 }
 \description{
-N is the for which dataset #
+Add metadata tags to a Seurat object dataset.
 }
 \examples{
 \dontrun{

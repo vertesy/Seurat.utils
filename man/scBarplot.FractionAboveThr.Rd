@@ -16,24 +16,24 @@ scBarplot.FractionAboveThr(
 )
 }
 \arguments{
-\item{thrX}{PARAM_DESCRIPTION, Default: 0}
+\item{thrX}{The threshold value to determine the fraction of cells. Default: 0.3}
 
-\item{suffix}{Suffix for filename}
+\item{suffix}{An optional suffix for the filename.}
 
-\item{value.col}{PARAM_DESCRIPTION, Default: 'percent.ribo'}
+\item{value.col}{Column name from metadata which holds the values for calculating the fraction of cells. Default: 'percent.ribo'}
 
-\item{id.col}{PARAM_DESCRIPTION, Default: 'cl.names.top.gene.res.0.3'}
+\item{id.col}{Column name from metadata to be used for identifying clusters. Default: 'cl.names.top.gene.res.0.3'}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object holding single cell data. Default: combined.obj}
 
-\item{return.df}{PARAM_DESCRIPTION, Default: F}
+\item{return.df}{A logical indicating if the function should return the data frame used to create the plot. Default: FALSE}
 
-\item{label}{label barplot}
+\item{label}{A logical indicating if labels should be added to the bar plot. Default: FALSE}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{...}{Additional parameters to pass to internally called functions.}
 }
 \description{
-Barplot the fraction of cell above a threshold value (based on a meta.data column), in each cluster.
+Create a bar plot showing the fraction of cells, within each cluster, that exceed a certain threshold based on a metadata column.
 }
 \examples{
 \dontrun{

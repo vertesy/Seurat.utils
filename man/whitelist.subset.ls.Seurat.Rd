@@ -20,10 +20,3 @@ whitelist.subset.ls.Seurat(
 \description{
 Subset cells in a (list of) Seurat objects, based on an externally provided list of cell IDs.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

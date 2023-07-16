@@ -14,10 +14,3 @@ GetMostVarGenes(obj = org, nGenes = p$nVarGenes)
 \description{
 Get the most variable rGenes #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

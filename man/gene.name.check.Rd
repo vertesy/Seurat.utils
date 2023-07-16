@@ -12,10 +12,3 @@ gene.name.check(Seu.obj = ls.Seurat[[1]])
 \description{
 Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

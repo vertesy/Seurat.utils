@@ -16,13 +16,6 @@ saveRDS.compress.in.BG(obj, compr = FALSE, fname)
 \description{
 Save and RDS object and compress resulting file in the background using system(gzip). OS X or unix.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}
 \seealso{
 \code{\link[tictoc]{tic}}
 }

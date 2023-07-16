@@ -12,24 +12,21 @@ isave.image(
 )
 }
 \arguments{
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{...}{Additional parameters passed to the idate() function in the creation of the file name.}
 
-\item{path_rdata}{PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))}
+\item{path_rdata}{A string that specifies the path for storing the image of the workspace. Default is "~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/" appended with the basename of OutDir.}
 
-\item{showMemObject}{PARAM_DESCRIPTION, Default: T}
+\item{showMemObject}{A boolean flag, if TRUE the function will print out the memory size of the largest objects in the workspace. Default is TRUE.}
 
-\item{options}{PARAM_DESCRIPTION, Default: c("--force", NULL)\link{1}}
+\item{options}{A string for gzip options. Default is "--force".}
 }
 \description{
-Save and RData image.
+Save an image of the current workspace using a faster and efficient compression method that runs in the background.
 }
 \examples{
 \dontrun{
 if(interactive()){
- #EXAMPLE1
+ isave.image(my.R.image)
  }
 }
-}
-\seealso{
-\code{\link[Stringendo]{kollapse}}, \code{\link[MarkdownReports]{iprint}}
 }

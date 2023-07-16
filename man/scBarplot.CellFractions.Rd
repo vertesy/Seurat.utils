@@ -16,24 +16,24 @@ scBarplot.CellFractions(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{The Seurat object to use for the analysis. Default: combined.obj.}
 
-\item{group.by}{PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.5.ordered'}
+\item{group.by}{A string specifying the variable to group by. Default: 'integrated_snn_res.0.5.ordered'.}
 
-\item{fill.by}{PARAM_DESCRIPTION, Default: 'age'}
+\item{fill.by}{A string specifying the variable to fill by. Default: 'age'.}
 
-\item{downsample}{PARAM_DESCRIPTION, Default: T}
+\item{downsample}{Logical flag indicating whether to downsample the data. If TRUE, the number of cells in each group is equal to the number of cells in the smallest group. Default: TRUE.}
 
-\item{plotname}{Title of the plot, Default: paste(tools::toTitleCase(fill.by), "proportions")}
+\item{plotname}{A string specifying the title of the plot. Default: paste(tools::toTitleCase(fill.by), "proportions").}
 
-\item{hlines}{PARAM_DESCRIPTION, Default: c(0.25, 0.5, 0.75)}
+\item{hlines}{A numeric vector specifying the y-intercepts for horizontal lines on the plot. Default: c(0.25, 0.5, 0.75).}
 
-\item{return_table}{return contingency table instead of a barplot, Default: F}
+\item{return_table}{Logical flag indicating whether to return a contingency table instead of a bar plot. Default: FALSE.}
 
-\item{seedNr}{PARAM_DESCRIPTION, Default: 1989}
+\item{seedNr}{Seed for random number generation to ensure reproducibility. Default: 1989.}
 }
 \description{
-Barplot the Fraction of cells per cluster.
+Generates a bar plot of cell fractions per cluster.
 }
 \examples{
 \dontrun{

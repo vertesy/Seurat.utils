@@ -23,46 +23,38 @@
 )
 }
 \arguments{
-\item{columns}{PARAM_DESCRIPTION, Default: c("percent.mito", "percent.ribo")}
+\item{columns}{A vector of column names to consider for the barplot. Default: c("percent.mito", "percent.ribo").}
 
-\item{suffix}{A suffix added to the filename, Default: NULL}
+\item{suffix}{A suffix added to the output filename. Default: NULL.}
 
-\item{group.by}{PARAM_DESCRIPTION, Default: GetClusteringRuns(obj = obj)\link{2}}
+\item{group.by}{The variable to group by for calculations. Default: Second result of GetClusteringRuns(obj).}
 
-\item{method}{PARAM_DESCRIPTION, Default: c("median", "mean")\link{1}}
+\item{method}{Method used for calculations, either "median" or "mean". Default: "median".}
 
-\item{min.thr}{PARAM_DESCRIPTION, Default: 2.5}
+\item{min.thr}{Minimum threshold percentage for a cluster. Default: 2.5.}
 
-\item{return.matrix}{PARAM_DESCRIPTION, Default: F}
+\item{return.matrix}{Logical; if TRUE, returns a matrix. Default: FALSE.}
 
-\item{main}{PARAM_DESCRIPTION, Default: paste(method, "read fractions per transcript class and cluster",
-suffix)}
+\item{main}{Main title for the plot. Default: "read fractions per transcript class and cluster" followed by the method and suffix.}
 
-\item{ylab}{PARAM_DESCRIPTION, Default: 'Fraction of transcriptome (\%)'}
+\item{ylab}{Label for the y-axis. Default: "Fraction of transcriptome (\%)".}
 
-\item{percentify}{PARAM_DESCRIPTION, Default: T}
+\item{percentify}{Logical; if TRUE, multiplies the fraction by 100. Default: TRUE.}
 
-\item{subt}{PARAM_DESCRIPTION, Default: NULL}
+\item{subt}{Subtitle for the plot. Default: NULL.}
 
-\item{position}{PARAM_DESCRIPTION, Default: position_stack()}
+\item{position}{Position adjustment for geoms. Default: position_stack().}
 
-\item{w}{width of the plot, Default: 10}
+\item{w}{The width of the plot. Default: 10.}
 
-\item{h}{height of the plot, Default: 6}
+\item{h}{The height of the plot. Default: 6.}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{The main Seurat object used for calculations. Default: combined.obj.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{...}{Additional parameters passed to the internally called functions.}
 }
 \description{
-Barplot Metadata median values
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+Generates a barplot of metadata median values.
 }
 \seealso{
 \code{\link[dplyr]{summarise_all}}

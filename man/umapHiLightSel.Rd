@@ -20,10 +20,3 @@ umapHiLightSel(
 \description{
 Highlight a set of cells based on clusterIDs provided. #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

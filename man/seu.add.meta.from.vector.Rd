@@ -11,20 +11,25 @@ seu.add.meta.from.vector(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object to which the new metadata column will be added. Default: combined.obj.}
 
-\item{metaD.colname}{PARAM_DESCRIPTION, Default: metaD.colname.labeled}
+\item{metaD.colname}{A string specifying the name of the new metadata column. Default: metaD.colname.labeled.}
 
-\item{Label.per.cell}{PARAM_DESCRIPTION, Default: Cl.Label.per.cell}
+\item{Label.per.cell}{A vector of labels for each cell, to be added as new metadata. Default: Cl.Label.per.cell.}
+}
+\value{
+A Seurat object with the new metadata column added.
 }
 \description{
-Add a new metadata column to a Seurat  object
+Adds a new metadata column to a Seurat object.
 }
 \examples{
 \dontrun{
 if(interactive()){
- combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj,  # formerly add.Cl.Label.2.Metadata
- metaD.colname = metaD.colname.labeled, Label.per.cell = Cl.Label.per.cell )
+  # Example usage:
+  combined.obj <- seu.add.meta.from.vector(obj = combined.obj,
+                                           metaD.colname = metaD.colname.labeled,
+                                           Label.per.cell = Cl.Label.per.cell)
  }
 }
 }

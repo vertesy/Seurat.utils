@@ -80,13 +80,6 @@ multiFeaturePlot.A4(
 \description{
 Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}
 \seealso{
 \code{\link[tictoc]{tic}}
 \code{\link[cowplot]{plot_grid}}

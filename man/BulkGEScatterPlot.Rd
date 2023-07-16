@@ -12,16 +12,16 @@ BulkGEScatterPlot(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{The Seurat object to use for the analysis. Default: combined.obj.}
 
-\item{clusters}{PARAM_DESCRIPTION, Default: 'cl.names.KnownMarkers.0.2'}
+\item{clusters}{A string specifying the identity class in the Seurat object to use for cluster assignment. Default: 'cl.names.KnownMarkers.0.2'.}
 
-\item{TwoCategIdent}{PARAM_DESCRIPTION, Default: 'age'}
+\item{TwoCategIdent}{A string specifying the binary categorical identity to split the data for comparison. Default: 'age'.}
 
-\item{genes.from.bulk.DE}{PARAM_DESCRIPTION, Default: rownames(df.markers.per.AGE)}
+\item{genes.from.bulk.DE}{A character vector specifying the genes obtained from bulk differential expression analysis to be highlighted in the scatterplots. Default: rownames(df.markers.per.AGE).}
 }
 \description{
-Plot bulk scatterplots to identify differential expressed genes across conditions #
+Plots scatterplots of bulk gene expression to identify differentially expressed genes across conditions.
 }
 \examples{
 \dontrun{

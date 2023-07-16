@@ -13,18 +13,18 @@
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{The Seurat object to be used for the plot. Default: combined.obj.}
 
-\item{ident}{identity used, Default: GetClusteringRuns()\link{2}}
+\item{ident}{The identity or clustering to be used for the plot. Default: The second result from GetClusteringRuns().}
 
-\item{plot}{PARAM_DESCRIPTION, Default: T}
+\item{plot}{A logical value indicating whether to plot the data. If FALSE, a vector of the cluster size distribution will be returned. Default: TRUE.}
 
-\item{thr.hist}{PARAM_DESCRIPTION, Default: 30}
+\item{thr.hist}{A threshold for the number of clusters above which a histogram will be plotted instead of a bar plot. Default: 30.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{...}{Additional arguments to be passed to the internally called plotting functions.}
 }
 \description{
-Barplot of Histogram of cluster size distribution
+Creates a bar plot or histogram of the cluster size distribution from a given Seurat object.
 }
 \examples{
 \dontrun{

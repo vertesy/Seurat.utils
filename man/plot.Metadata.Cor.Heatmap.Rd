@@ -15,29 +15,22 @@
 )
 }
 \arguments{
-\item{columns}{PARAM_DESCRIPTION, Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")}
+\item{columns}{A vector of column names for which to calculate correlations. Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo").}
 
-\item{cormethod}{PARAM_DESCRIPTION, Default: c("pearson", "spearman")\link{1}}
+\item{cormethod}{The method to calculate correlations, either "pearson" or "spearman". Default: "pearson".}
 
-\item{main}{PARAM_DESCRIPTION, Default: paste("Metadata", cormethod, "correlations")}
+\item{main}{The main title for the plot. Default: "Metadata correlations" followed by the correlation method.}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{The main Seurat object used for calculations. Default: combined.obj.}
 
-\item{w}{width of the plot, Default: 10}
+\item{w}{The width of the plot. Default: 10.}
 
-\item{h}{height of the plot, Default: w}
+\item{h}{The height of the plot. Default: width of the plot (w).}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{...}{Additional parameters passed to the internally called functions.}
 }
 \description{
-Plot a heatmap with Metadata correlation values.
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+Plots a heatmap of metadata correlation values.
 }
 \seealso{
 \code{\link[ggcorrplot]{ggcorrplot}}

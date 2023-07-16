@@ -14,10 +14,3 @@ fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
 \description{
 Fix zero indexing in seurat clustering, to 1-based indexing. replace zero indexed clusternames.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}

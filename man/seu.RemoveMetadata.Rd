@@ -10,10 +10,18 @@ seu.RemoveMetadata(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object from which metadata columns will be removed. Default: combined.obj}
 
-\item{cols_remove}{columns to remove}
+\item{cols_remove}{A character vector specifying metadata column names to remove. By default, it will remove all columns that do not start with "integr" or "cl.names".}
+}
+\value{
+A Seurat object with specified metadata columns removed.
 }
 \description{
-seu.RemoveMetadata
+Remove specified metadata columns from a Seurat object.
+}
+\examples{
+\dontrun{
+  combined.obj <- seu.RemoveMetadata(obj = combined.obj, cols_remove = c("column1", "column2"))
+}
 }

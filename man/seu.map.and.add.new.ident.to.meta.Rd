@@ -12,20 +12,26 @@ seu.map.and.add.new.ident.to.meta(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{The Seurat object to which the new metadata column will be added. Default: combined.obj.}
 
-\item{ident.table}{PARAM_DESCRIPTION, Default: clusterIDs.GO.process}
+\item{ident.table}{A data frame or matrix with identity mapping data. This parameter is used to map the old identities to the new ones. Default: clusterIDs.GO.process.}
 
-\item{metaD.colname}{PARAM_DESCRIPTION, Default: substitute(ident.table)}
+\item{orig.ident}{The original identities of the Seurat object. Default: Idents(obj).}
+
+\item{metaD.colname}{A string specifying the name of the new metadata column. The default value is the name of the provided ident.table.}
+}
+\value{
+A Seurat object with the new metadata column added.
 }
 \description{
-Add a new metadata column to a Seurat  object
+Adds a new metadata column to a Seurat object based on an identity mapping table.
 }
 \examples{
 \dontrun{
 if(interactive()){
- combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj,
- dent.table = clusterIDs.GO.process)
+  # Example usage:
+  combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj,
+                                                    ident.table = clusterIDs.GO.process)
  }
 }
 }

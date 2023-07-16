@@ -13,18 +13,18 @@ add.meta.fraction(
 )
 }
 \arguments{
-\item{col.name}{PARAM_DESCRIPTION, Default: 'percent.mito'}
+\item{col.name}{Name of the new metadata column to be added. Default: 'percent.mito'}
 
-\item{gene.symbol.pattern}{PARAM_DESCRIPTION, Default: c("^MT\\.|^MT-", F)\link{1}}
+\item{gene.symbol.pattern}{Regular expression pattern to match gene symbols. Default: c("^MT\\.|^MT-", F)\link{1}}
 
-\item{gene.set}{PARAM_DESCRIPTION, Default: F}
+\item{gene.set}{A set of gene symbols. If specified, it will be used instead of gene.symbol.pattern. Default: F}
 
-\item{obj}{Seurat object, Default: ls.Seurat[\link{1}]}
+\item{obj}{Seurat object to which the new metadata column will be added. Default: ls.Seurat[\link{1}]}
 
-\item{verbose}{PARAM_DESCRIPTION, Default: T}
+\item{verbose}{Logical indicating whether to display detailed messages (TRUE) or not (FALSE). Default: T}
 }
 \description{
-Add a new metadata column, with the fraction of gene set in the transcripome (percentage).
+Add a new metadata column to a Seurat object, representing the fraction of a gene set in the transcriptome (expressed as a percentage).
 }
 \examples{
 \dontrun{

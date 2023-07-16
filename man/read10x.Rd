@@ -12,13 +12,6 @@ read10x(dir)
 \description{
 read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv #
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}
 \seealso{
 \code{\link[tictoc]{tic}}
 \code{\link[R.utils]{compressFile}}

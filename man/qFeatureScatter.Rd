@@ -35,10 +35,3 @@ qFeatureScatter(
 \description{
 Quickly plot and save a FeatureScatter plot.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
-}
