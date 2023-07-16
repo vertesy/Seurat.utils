@@ -3109,6 +3109,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #' @param save.plot If TRUE, the plot is saved into a file, Default: T.
 #' @param PNG If TRUE, the file is saved as a .png, Default: T.
 #' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.
+#' @param caption ....
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -3134,6 +3135,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , save.plot = MarkdownHelpers::TRUE.unless('b.save.wplots')
                    , PNG = TRUE
                    , check_for_2D = TRUE
+                   , caption = FALSE
                    # , save.object = F
                    , ...) {
 
@@ -3174,8 +3176,9 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
         ggtitle(label = title, subtitle = sub) +
         if (!legend) NoLegend() else NULL
 
-    ggplot.obj <- ggplot.obj + if (!axes) NoAxes() else NULL
-    ggplot.obj <- ggplot.obj + if (aspect.ratio) ggplot2::coord_fixed(ratio = aspect.ratio) else NULL
+    if (!axes) ggplot.obj <- ggplot.obj + NoAxes()
+    if (aspect.ratio) ggplot.obj <- ggplot.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
+    if(!isFALSE(caption)) ggplot.obj <- ggplot.obj + labs(caption = caption)
 
     if (save.plot) {
       pname = Stringendo::sppp(prefix, plotname, suffix, sppp(highlight.clusters))
@@ -3993,13 +3996,14 @@ Plot3D.ListOfGenes <- function(obj = combined.obj # Plot and save list of 3D UMA
 # _________________________________________________________________________________________________
 # _________________________________________________________________________________________________
 #' @title Plot3D.ListOfCategories
-#' @description Plot and save list of 3D UMAP ot tSNE plots using plotly. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param annotate.by PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.7'
-#' @param cex Point size, Default: 1.25
-#' @param default.assay PARAM_DESCRIPTION, Default: c("integrated", "RNA")[2]
-#' @param ListOfCategories PARAM_DESCRIPTION, Default: c("v.project", "experiment", "Phase", "integrated_snn_res.0.7")
-#' @param SubFolderName PARAM_DESCRIPTION, Default: ppp("plot3D", substitute(ListOfCategories))
+#'
+#' @description This function plots and saves a list of 3D UMAP or tSNE plots using plotly.
+#' @param obj A Seurat object for which the plot is to be created. Default is 'combined.obj'.
+#' @param annotate.by Character vector specifying the metadata column to be used for annotating the plot. Default is 'integrated_snn_res.0.7'.
+#' @param cex Numeric value specifying the point size on the plot. Default is 1.25.
+#' @param default.assay Character vector specifying the assay to be used. Default is 'RNA' (second element in the vector c("integrated", "RNA")).
+#' @param ListOfCategories Character vector specifying the categories to be included in the plot. Default categories are "v.project", "experiment", "Phase", "integrated_snn_res.0.7".
+#' @param SubFolderName String specifying the name of the subfolder where the plots will be saved. By default, it's created using the function ppp("plot3D", substitute(ListOfCategories)).
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -4307,11 +4311,13 @@ fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj = org) { # 
 
 
 # _________________________________________________________________________________________________
-#' @title CalculateFractionInTrome
-#' @description Calculate the fraction of a set of genes within the full Transcriptome of each cell. #
-#' @param geneset PARAM_DESCRIPTION, Default: c("MALAT1")
-#' @param obj Seurat object, Default: combined.obj
-#' @param dataslot PARAM_DESCRIPTION, Default: c("counts", "data")[2]
+#' @title CalculateFractionInTranscriptome
+#'
+#' @description This function calculates the fraction of a set of genes within the full transcriptome of each cell.
+#' @param geneset A character vector specifying the set of genes for which the fraction in the transcriptome is to be calculated. Default is c("MALAT1").
+#' @param obj A Seurat object from which the gene data is extracted. Default is 'combined.obj'.
+#' @param dataslot A character vector specifying the data slot to be used in the calculation. Default is 'data' (second element in the vector c("counts", "data")).
+#' @return A numeric vector containing the fraction of the specified genes in the transcriptome of each cell.
 #' @export
 CalculateFractionInTrome <- function(genesCalc.Cor.Seuratet = c("MALAT1") # Calculate the fraction of a set of genes within the full Transcriptome of each cell.
                                      , obj = combined.obj
@@ -4332,10 +4338,11 @@ CalculateFractionInTrome <- function(genesCalc.Cor.Seuratet = c("MALAT1") # Calc
 
 # _________________________________________________________________________________________________
 #' @title AddNewAnnotation
-#' @description Create a new metadata column based on an exisiting metadata column and a list of mappings (name <- IDs). #
-#' @param obj Seurat object, Default: obj
-#' @param source PARAM_DESCRIPTION, Default: 'RNA_snn_res.0.5'
-#' @param named.list.of.identities PARAM_DESCRIPTION, Default: ls.Subset.ClusterLists
+#' @description This function creates a new metadata column based on an existing metadata column and a list of mappings (name <- IDs).
+#' @param obj A Seurat object for which the new annotation is to be created. Default is 'obj'.
+#' @param source A character string specifying the existing metadata column to be used as the basis for the new annotation. Default is 'RNA_snn_res.0.5'.
+#' @param named.list.of.identities A named list providing the mappings for the new annotation. Default is 'ls.Subset.ClusterLists'.
+#' @return A character vector representing the new metadata column.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -4825,22 +4832,20 @@ SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
 
 # _________________________________________________________________________________________________
 #' @title Convert10Xfolders
-#' @description Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
-#' @param InputDir Input directory
-#' @param regex PARAM_DESCRIPTION, Default: F
-#' @param folderPattern PARAM_DESCRIPTION, Default: c("filtered_feature", "SoupX_decont")[1]
-#' @param min.cells PARAM_DESCRIPTION, Default: 5
-#' @param min.features PARAM_DESCRIPTION, Default: 200
-#' @param updateHGNC PARAM_DESCRIPTION, Default: T
-#' @param ShowStats PARAM_DESCRIPTION, Default: T
-#' @param writeCBCtable write out a list of cell barcodes (CBC) as tsv, Default: T
-#' @param depth Depth of scan (How many levels below InputDir). Def 2
-#' @param sample.barcoding Cell Ranger run with sample barcoding. The folder structure is different.
+#' @description This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.
+#' @param InputDir A character string specifying the input directory.
+#' @param regex A logical value. If TRUE, the folderPattern is treated as a regular expression. Default is FALSE.
+#' @param folderPattern A character vector specifying the pattern of folder names to be searched. Default is 'filtered_feature'.
+#' @param min.cells An integer value specifying the minimum number of cells. Default is 5.
+#' @param min.features An integer value specifying the minimum number of features. Default is 200.
+#' @param updateHGNC A logical value indicating whether to update the HGNC. Default is TRUE.
+#' @param ShowStats A logical value indicating whether to show statistics. Default is TRUE.
+#' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default is TRUE.
+#' @param depth An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default is 2.
+#' @param sample.barcoding A logical value indicating whether Cell Ranger was run with sample barcoding. Default is FALSE.
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  Convert10Xfolders(InputDir)
-#'  }
+#' if(interactive()) Convert10Xfolders(InputDir)
 #' }
 #' @export
 Convert10Xfolders <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
@@ -4916,55 +4921,6 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
   } else { iprint("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3]) }
 }
 
-
-
-# _________________________________________________________________________________________________
-#' @title Convert10Xfolders.old
-#' @description Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
-#' @param InputDir Input directory
-#' @param folderPattern PARAM_DESCRIPTION, Default: c("filtered", "SoupX_decont")[1]
-#' @param min.cells PARAM_DESCRIPTION, Default: 10
-#' @param min.features PARAM_DESCRIPTION, Default: 200
-#' @param updateHGNC PARAM_DESCRIPTION, Default: T
-#' @param ShowStats PARAM_DESCRIPTION, Default: T
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  Convert10Xfolders(InputDir = InputDir)
-#'  }
-#' }
-#' @export
-Convert10Xfolders.old <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
-                                  , folderPattern = c("filtered", "SoupX_decont")[1]
-                                  , min.cells = 10, min.features = 200, updateHGNC = T, ShowStats = T) {
-  fin <- list.dirs(InputDir, recursive = F)
-  fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = F)
-
-  for (i in 1:length(fin)) {
-    pathIN = fin[i]; print(pathIN)
-    fnameIN = basename(fin[i])
-    fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
-    count_matrix <- Read10X(pathIN)
-
-    if ( !is.list(count_matrix) | length(count_matrix) == 1) {
-      seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
-                                min.cells = min.cells, min.features = min.features)
-    } else if (is.list(count_matrix) & length(count_matrix) == 2)  {
-      seu <- CreateSeuratObject(counts = count_matrix[[1]], project = fnameIN,
-                                min.cells = min.cells, min.features = min.features)
-
-      # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
-      LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
-      LSBnameOUT = ppp(paste0(InputDir, '/LSB.', fnameIN),"Rds")
-      saveRDS(LSB, file = LSBnameOUT)
-    } else {
-      print('More than 2 elements in the list of matrices')
-    }
-    # update --- --- --- ---
-    if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
-    saveRDS(seu, file = fnameOUT)
-  }
-}
 
 
 # _________________________________________________________________________________________________
