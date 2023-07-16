@@ -30,6 +30,7 @@ points_on_curve <- function(curve, lambda, ...) {
 
 # _________________________________________________________________________________________________
 #' @title points_on_curve.principal_curve
+#'
 #' @description Helper function to visualize points on a principal curve in Slingshot.
 #' @param curve The principal curve on which to visualize points. Default: PARAM_DEFAULT_VALUE.
 #' @param lambda The parametric location of points along the principal curve. Default: PARAM_DEFAULT_VALUE.
@@ -64,6 +65,7 @@ points_on_curve.principal_curve <- function(curve, lambda, ...) {
 
 # _________________________________________________________________________________________________
 #' @title points_on_curve.SlingshotDataSet
+#'
 #' @description Helper function to visualize points on a SlingshotDataSet in Slingshot.
 #' @param curve The SlingshotDataSet on which to visualize points. Default: PARAM_DEFAULT_VALUE.
 #' @param lambda The parametric location of points along the curves in the SlingshotDataSet. Default: PARAM_DEFAULT_VALUE.
@@ -86,17 +88,14 @@ points_on_curve.SlingshotDataSet <- function(curve, lambda, ...) {
 # Colors and visuals ----
 # _________________________________________________________________________________________________
 
-
 #' @title ggplotColours
-#' @description Generate ggplot colours for slingshot
-#' @param n PARAM_DESCRIPTION, Default: 6
-#' @param h height of the plot, Default: c(0, 360) + 15
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#'
+#' @description Generate a color palette suitable for ggplot2.
+#' @param n The number of colors to be generated. Default: 6.
+#' @param h The range of hues to be used in the generation of the color palette. Default: c(0, 360) + 15.
+#' @return A color palette.
+#' @seealso
+#' \code{\link[ggplot2]{scale_color_manual}}
 #' @export
 ggplotColours <- function(n = 6, h = c(0, 360) + 15){
   if ((diff(h) %% 360) < 1) h[2] <- h[2] - 360/n
@@ -225,16 +224,11 @@ setMethod(
 
 # _________________________________________________________________________________________________
 #' @title cell_pal
-#' @description Generate palette
-#' @param cell_vars PARAM_DESCRIPTION
-#' @param pal_fun PARAM_DESCRIPTION
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#'
+#' @description Generate a color palette for cell variables.
+#' @param cell_vars A vector of cell variables. Default: PARAM_DEFAULT_VALUE.
+#' @param pal_fun A function to generate the color palette. Default: PARAM_DEFAULT_VALUE.
+#' @return A color palette.
 #' @export
 cell_pal <- function(cell_vars, pal_fun,...) {
   if (is.numeric(cell_vars)) {
