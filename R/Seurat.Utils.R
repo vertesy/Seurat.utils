@@ -2637,13 +2637,14 @@ scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
 
 
 # _________________________________________________________________________________________________
-# scBarplot.CellsPerObject
-
 #' @title scBarplot.CellsPerObject
-#' @description Take a List of Seurat objects and draw a barplot for the number of cells per object. #
-#' @param ls.Seu PARAM_DESCRIPTION, Default: ls.Seurat
-#' @param plotname Title of the plot, Default: 'Nr.Cells.After.Filtering'
-#' @param names PARAM_DESCRIPTION, Default: F
+#'
+#' @description Creates a bar plot for the number of cells per object from a list of Seurat objects.
+#' @param ls.Seu A list of Seurat objects. Default: ls.Seurat.
+#' @param plotname A string specifying the title of the plot. Default: 'Nr.Cells.After.Filtering'.
+#' @param xlab.angle The angle at which the x-axis labels should be displayed. Default: 45.
+#' @param names A logical value indicating whether to use the provided names as labels on the x-axis. If FALSE, the names of the Seurat objects will be used. Default: FALSE.
+#' @param ... Additional arguments to be passed to the qbarplot function.
 #' @export
 scBarplot.CellsPerObject <- function(ls.Seu = ls.Seurat
                                      , plotname="Nr.Cells.After.Filtering", xlab.angle = 45
