@@ -940,13 +940,17 @@ seu.add.meta.from.table <- function(obj = combined.obj, meta = MetaData.ORC, suf
 
 # _________________________________________________________________________________________________
 #' @title sampleNpc
-#' @description Sample N % of a dataframe (obj@metadata), and return the cell IDs. #
-#' @param metaDF PARAM_DESCRIPTION, Default: MetaData[which(Pass), ]
-#' @param pc PARAM_DESCRIPTION, Default: 0.1
+#' @description This function samples a specified percentage of a dataframe (specifically a subset of the metadata of a Seurat object) and returns the corresponding cell IDs.
+#' @param metaDF A dataframe representing a subset of the metadata of a Seurat object. Default: Subset of 'MetaData' for which 'Pass' is TRUE.
+#' @param pc The percentage of the dataframe to sample, expressed as a decimal. Default: 0.1.
+#' @return A vector of sampled cell IDs.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  #EXAMPLE1
+#'  # Example usage:
+#'  # Suppose 'MetaData' is a dataframe and 'Pass' is a boolean vector with the same length.
+#'  # The following example will sample 10% of the rows of 'MetaData' where 'Pass' is TRUE.
+#'  sampleNpc(metaDF = MetaData[which(Pass),], pc = 0.1)
 #'  }
 #' }
 #' @export
@@ -1131,32 +1135,6 @@ RenameClustering <- function(namedVector = ManualNames
   return(obj)
 }
 
-
-# RenameClustering <- function(namedVector = ManualNames
-#                              , orig.ident =  "RNA_snn_res.0.3"
-#                              , suffix = substitute(obj)
-#                              , suffx.new.ident = "ManualNames" # dont name it suffix... stupid autoguess feature
-#                              , new.ident = ppp(orig.ident, suffx.new.ident)
-#                              , obj = combined.obj
-#                              , plot_umaps = FALSE
-#                              , ...) {
-#
-#   NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
-#                     , oldvalues = names(namedVector)
-#                     , newvalues = namedVector)
-#   obj@meta.data[[new.ident]] <- NewX
-#   print(0)
-#   if (plot_umaps) {
-#     "There is an error here prob some arguments get passed that should not"
-#     "I removed the ', ...'  argument, but maybe the problem is with suffix..."
-#     "Did not test either"
-#     clUMAP(orig.ident, suffix = suffix, obj = obj)
-#     print(1)
-#     clUMAP(new.ident, suffix = suffix, obj = obj)
-#     print(11)
-#   } else { iprint("New ident:", new.ident) }
-#   return(obj)
-# }
 
 
 
@@ -5954,4 +5932,32 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 # _________________________________________________________________________________________________
 # New additions,  categorized _____________________________ ------
 # _________________________________________________________________________________________________
+
+
+
+# RenameClustering <- function(namedVector = ManualNames
+#                              , orig.ident =  "RNA_snn_res.0.3"
+#                              , suffix = substitute(obj)
+#                              , suffx.new.ident = "ManualNames" # dont name it suffix... stupid autoguess feature
+#                              , new.ident = ppp(orig.ident, suffx.new.ident)
+#                              , obj = combined.obj
+#                              , plot_umaps = FALSE
+#                              , ...) {
+#
+#   NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
+#                     , oldvalues = names(namedVector)
+#                     , newvalues = namedVector)
+#   obj@meta.data[[new.ident]] <- NewX
+#   print(0)
+#   if (plot_umaps) {
+#     "There is an error here prob some arguments get passed that should not"
+#     "I removed the ', ...'  argument, but maybe the problem is with suffix..."
+#     "Did not test either"
+#     clUMAP(orig.ident, suffix = suffix, obj = obj)
+#     print(1)
+#     clUMAP(new.ident, suffix = suffix, obj = obj)
+#     print(11)
+#   } else { iprint("New ident:", new.ident) }
+#   return(obj)
+# }
 
