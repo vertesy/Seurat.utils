@@ -832,15 +832,19 @@ create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.inters
 
 # _________________________________________________________________________________________________
 #' @title seu.map.and.add.new.ident.to.meta
-#' @description Add a new metadata column to a Seurat  object
-#' @param obj Seurat object, Default: combined.obj
-#' @param ident.table PARAM_DESCRIPTION, Default: clusterIDs.GO.process
-#' @param metaD.colname PARAM_DESCRIPTION, Default: substitute(ident.table)
+#'
+#' @description Adds a new metadata column to a Seurat object based on an identity mapping table.
+#' @param obj The Seurat object to which the new metadata column will be added. Default: combined.obj.
+#' @param ident.table A data frame or matrix with identity mapping data. This parameter is used to map the old identities to the new ones. Default: clusterIDs.GO.process.
+#' @param orig.ident The original identities of the Seurat object. Default: Idents(obj).
+#' @param metaD.colname A string specifying the name of the new metadata column. The default value is the name of the provided ident.table.
+#' @return A Seurat object with the new metadata column added.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj,
-#'  dent.table = clusterIDs.GO.process)
+#'   # Example usage:
+#'   combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj,
+#'                                                     ident.table = clusterIDs.GO.process)
 #'  }
 #' }
 #' @export
