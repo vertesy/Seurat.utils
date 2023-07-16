@@ -5034,16 +5034,24 @@ LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directo
 
 # _________________________________________________________________________________________________
 #' @title read10x
-#' @description read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv #
-#' @param dir PARAM_DESCRIPTION
+#' @description This function reads a 10X dataset from gzipped matrix.mtx, features.tsv and barcodes.tsv files.
+#' @param dir A character string specifying the directory where the gzipped files are located.
+#' @return A Seurat object constructed from the 10X dataset.
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  seuratObject <- read10x(dir = dir)
+#'  }
+#' }
+#' @export
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
 #'  \code{\link[R.utils]{compressFile}}
 #'  \code{\link[Seurat]{Read10X}}
-#' @export
 #' @importFrom tictoc tic toc
 #' @importFrom R.utils gunzip gzip
 #' @importFrom Seurat Read10X
+
 read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv
   tictoc::tic()
   names <- c("barcodes.tsv", "features.tsv", "matrix.mtx")
@@ -5062,20 +5070,29 @@ read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and b
 
 
 
-
+# _________________________________________________________________________________________________
 #' @title load10Xv3
+#'
 #' @description Load 10X output folders.
-#' @param dataDir PARAM_DESCRIPTION
-#' @param cellIDs PARAM_DESCRIPTION, Default: NULL
-#' @param channelName PARAM_DESCRIPTION, Default: NULL
-#' @param readArgs PARAM_DESCRIPTION, Default: list()
-#' @param includeFeatures PARAM_DESCRIPTION, Default: c("Gene Expression")
-#' @param verbose PARAM_DESCRIPTION, Default: TRUE
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @param dataDir A character string specifying the directory containing the 10X output folders.
+#' @param cellIDs A vector specifying the cell IDs. Default: NULL.
+#' @param channelName A character string specifying the channel name. Default: NULL.
+#' @param readArgs A list of arguments to pass to the internal Read10X function. Default: list().
+#' @param includeFeatures A character vector specifying which features to include. Default: c("Gene Expression").
+#' @param verbose A logical flag indicating whether to print status messages. Default: TRUE.
+#' @param ... Additional arguments to pass to the internally called functions.
+#' @return An object of class "SoupChannel" representing the loaded 10X data.
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  channel <- load10Xv3(dataDir = dataDir)
+#'  }
+#' }
 #' @seealso
 #'  \code{\link[SoupX]{SoupChannel}}
 #' @export
 #' @importFrom SoupX SoupChannel
+
 load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
                       includeFeatures = c("Gene Expression"), verbose = TRUE,
                       ...)
@@ -5156,6 +5173,8 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
   if (is.null(channelName))
     channelName = ifelse(is.null(names(dataDir)), dataDir,
                          names(dataDir))
+
+  "Maybe the one below should be within the above if statement?"
   channel = SoupX::SoupChannel(tod = dat, toc = datCells, metaData = mDat,
                                channelName = channelName, dataDir = dataDir, dataType = "10X",
                                isV3 = isV3, DR = DR, ...)
