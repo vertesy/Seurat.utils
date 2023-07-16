@@ -16,24 +16,28 @@ gg_plot(
 )
 }
 \arguments{
-\item{sds}{PARAM_DESCRIPTION}
+\item{sds}{A Slingshot dataset. Default: PARAM_DEFAULT_VALUE.}
 
-\item{col}{PARAM_DESCRIPTION, Default: NULL}
+\item{col}{The color to be used for points. Default: NULL.}
 
-\item{title}{Title of the plot, Default: NULL}
+\item{title}{The title of the plot. Default: NULL.}
 
-\item{lineSize}{PARAM_DESCRIPTION, Default: 1}
+\item{lineSize}{The size of the lines drawn. Default: 1.}
 
-\item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'UMAP'}
+\item{reduction}{The dimension reduction method used ('UMAP', 'tSNE', or 'PCA'). Default: 'UMAP'.}
 
-\item{titleFsize}{PARAM_DESCRIPTION, Default: 20}
+\item{titleFsize}{The font size for the title. Default: 20.}
 
-\item{line.colors}{PARAM_DESCRIPTION, Default: gray.colors(n = length(sds@curves), start = 0, end = 0.6, alpha = 1)}
-
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{line.colors}{The colors to be used for lines, specified as a vector of colors. Default: gray scale colors.}
+}
+\value{
+A ggplot object.
 }
 \description{
-Adjusted gg_plot for slingshot
+An adjusted ggplot function for visualizing Slingshot datasets.
+}
+\details{
+This function creates a ggplot object that visualizes a Slingshot dataset, with curves representing the pseudotime trajectories.
 }
 \examples{
 \dontrun{
@@ -42,4 +46,7 @@ if(interactive()){
  panel_first = grid(NULL) )
  }
 }
+}
+\seealso{
+\code{\link[slingshot]{SlingshotDataSet}}, \code{\link[ggplot2]{ggplot}}
 }

@@ -12,16 +12,22 @@ subsetMonocleObject(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: cds_from_seurat}
+\item{obj}{A Seurat object to be subsetted. Default: cds_from_seurat.}
 
-\item{fraction_}{PARAM_DESCRIPTION, Default: 0.1}
+\item{fraction_}{A numeric value indicating the fraction of the object to be kept. Default: 0.1.}
 
-\item{nCells}{PARAM_DESCRIPTION, Default: F}
+\item{nCells}{A numeric or boolean value indicating the number of cells to keep. If FALSE, the function calculates the number of cells to keep based on the fraction parameter. Default: FALSE.}
 
-\item{seed_}{PARAM_DESCRIPTION, Default: 1989}
+\item{seed_}{A numeric value specifying the seed for random number generation. Default: 1989.}
+}
+\value{
+A subset of the original Seurat object.
 }
 \description{
-Subset a compressed Seurat Obj and save it in wd.
+Subsets a compressed Seurat object and saves it in the working directory.
+}
+\details{
+This function subsets a Seurat object by either a specified fraction or a specific number of cells. The subset object is then returned by the function.
 }
 \examples{
 \dontrun{
@@ -30,4 +36,7 @@ if(interactive()){
  cds.25pc <- subsetMonocleObject(cds_from_seurat, fraction_ = .25)
  }
 }
+}
+\seealso{
+\code{\link[sample]{sample}}, \code{\link[percentage_formatter]{percentage_formatter}}
 }

@@ -7,16 +7,19 @@
 BarTableSweepList(min = 0.01, max = 0.99, step = 0.02, bar_table = bar.table)
 }
 \arguments{
-\item{min}{PARAM_DESCRIPTION, Default: 0.01}
+\item{min}{The minimum quantile value. Default: 0.01.}
 
-\item{max}{PARAM_DESCRIPTION, Default: 0.99}
+\item{max}{The maximum quantile value. Default: 0.99.}
 
-\item{step}{PARAM_DESCRIPTION, Default: 0.02}
+\item{step}{The step size to increment the quantile. Default: 0.02.}
 
-\item{bar_table}{PARAM_DESCRIPTION, Default: bar.table}
+\item{bar_table}{The barcode table to be used. Default: bar.table.}
+}
+\value{
+A list of classified cells for each quantile in the specified range.
 }
 \description{
-BarTableSweepList
+Generate a list of classified cells for a range of quantiles.
 }
 \examples{
 \dontrun{

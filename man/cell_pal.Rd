@@ -7,19 +7,13 @@
 cell_pal(cell_vars, pal_fun, ...)
 }
 \arguments{
-\item{cell_vars}{PARAM_DESCRIPTION}
+\item{cell_vars}{A vector of cell variables. Default: PARAM_DEFAULT_VALUE.}
 
-\item{pal_fun}{PARAM_DESCRIPTION}
-
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{pal_fun}{A function to generate the color palette. Default: PARAM_DEFAULT_VALUE.}
+}
+\value{
+A color palette.
 }
 \description{
-Generate palette
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+Generate a color palette for cell variables.
 }

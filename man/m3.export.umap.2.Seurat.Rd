@@ -11,14 +11,20 @@ m3.export.umap.2.Seurat(
 )
 }
 \arguments{
-\item{mobj}{PARAM_DESCRIPTION, Default: cds_from_seurat}
+\item{mobj}{The Monocle object from which to extract UMAP coordinates. Default: cds_from_seurat.}
 
-\item{sobj}{PARAM_DESCRIPTION, Default: combined.obj}
+\item{sobj}{The Seurat object to which UMAP coordinates will be added. Default: combined.obj.}
 
-\item{def.dim}{PARAM_DESCRIPTION, Default: 2}
+\item{def.dim}{The dimension of the UMAP coordinates to extract (2D or 3D). Default: 2.}
+}
+\value{
+A Seurat object with the UMAP coordinates added.
 }
 \description{
-Export umap coordinates.
+Exports UMAP coordinates from a monocle object to a Seurat object.
+}
+\details{
+This function extracts UMAP coordinates from a Monocle object and adds them to a Seurat object. The dimensions of the UMAP coordinates can be specified.
 }
 \examples{
 \dontrun{
@@ -27,4 +33,7 @@ if(interactive()){
  combined.obj <- m3.export.umap.2.Seurat(mobj = cds_from_seurat, sobj = combined.obj); qUMAP("DDIT4")
  }
 }
+}
+\seealso{
+\code{\link[m3.get.umap]{m3.get.umap}}
 }

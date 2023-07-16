@@ -7,17 +7,16 @@
 ggplotColours(n = 6, h = c(0, 360) + 15)
 }
 \arguments{
-\item{n}{PARAM_DESCRIPTION, Default: 6}
+\item{n}{The number of colors to be generated. Default: 6.}
 
-\item{h}{height of the plot, Default: c(0, 360) + 15}
+\item{h}{The range of hues to be used in the generation of the color palette. Default: c(0, 360) + 15.}
+}
+\value{
+A color palette.
 }
 \description{
-Generate ggplot colours for slingshot
+Generate a color palette suitable for ggplot2.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+\seealso{
+\code{\link[ggplot2]{scale_color_manual}}
 }

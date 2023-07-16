@@ -7,19 +7,19 @@
 \method{points_on_curve}{principal_curve}(curve, lambda, ...)
 }
 \arguments{
-\item{curve}{PARAM_DESCRIPTION}
+\item{curve}{The principal curve on which to visualize points. Default: PARAM_DEFAULT_VALUE.}
 
-\item{lambda}{PARAM_DESCRIPTION}
-
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{lambda}{The parametric location of points along the principal curve. Default: PARAM_DEFAULT_VALUE.}
+}
+\value{
+Coordinates of points on the principal curve.
 }
 \description{
-Helper to visualize points_on_curve in slingshot.
+Helper function to visualize points on a principal curve in Slingshot.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
+\details{
+This function interpolates the coordinates of points along the principal curve in Slingshot.
 }
+\seealso{
+\code{\link[slingshot]{SlingshotDataSet}}
 }

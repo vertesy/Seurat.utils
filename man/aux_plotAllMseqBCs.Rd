@@ -11,14 +11,17 @@ aux_plotAllMseqBCs(
 )
 }
 \arguments{
-\item{bar.table}{PARAM_DESCRIPTION, Default: bar.table\link{, 1:96}}
+\item{bar.table}{The barcode table to be used. Default: bar.table\link{,1:96}.}
 
-\item{barcodes.used}{PARAM_DESCRIPTION, Default: BCs.used}
+\item{barcodes.used}{The barcodes that have been used. Default: BCs.used.}
 
-\item{plotname}{Title of the plot, Default: 'Barcode seq depth'}
+\item{plotname}{The title of the plot. Default: 'Barcode seq depth'.}
+}
+\value{
+A plot of all MULTI-seq barcodes.
 }
 \description{
-aux_plotAllMseqBCs
+Plot all MULTI-seq barcodes.
 }
 \examples{
 \dontrun{

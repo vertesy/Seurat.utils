@@ -7,19 +7,19 @@
 \method{points_on_curve}{SlingshotDataSet}(curve, lambda, ...)
 }
 \arguments{
-\item{curve}{PARAM_DESCRIPTION}
+\item{curve}{The SlingshotDataSet on which to visualize points. Default: PARAM_DEFAULT_VALUE.}
 
-\item{lambda}{PARAM_DESCRIPTION}
-
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{lambda}{The parametric location of points along the curves in the SlingshotDataSet. Default: PARAM_DEFAULT_VALUE.}
+}
+\value{
+A dataframe of coordinates of points on the curves in the SlingshotDataSet.
 }
 \description{
-Helper to visualize points_on_curve in slingshot.
+Helper function to visualize points on a SlingshotDataSet in Slingshot.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
+\details{
+This function interpolates the coordinates of points along the curves in a SlingshotDataSet.
 }
+\seealso{
+\code{\link[slingshot]{SlingshotDataSet}}
 }

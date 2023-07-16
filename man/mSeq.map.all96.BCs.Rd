@@ -12,14 +12,17 @@ mSeq.map.all96.BCs(
 )
 }
 \arguments{
-\item{readTable}{PARAM_DESCRIPTION, Default: readTable}
+\item{readTable}{The table of read counts. Default: readTable.}
 
-\item{CellIDs}{PARAM_DESCRIPTION, Default: CellIDs}
+\item{CellIDs}{The identifiers for the cells. Default: CellIDs.}
 
-\item{path2allBCs}{PARAM_DESCRIPTION, Default: '~/Google_Drive/Science/IMBA/MULTI.seq/from.US/All.MULTI-seq_barcodes.Mar2019.tsv'}
+\item{path2allBCs}{The path to the reference barcode sequences file. Default: '~/Google_Drive/Science/IMBA/MULTI.seq/from.US/All.MULTI-seq_barcodes.Mar2019.tsv'.}
+}
+\value{
+The mapped barcode sequences.
 }
 \description{
-mSeq.map.all96.BCs
+Map all 96 barcode sequences.
 }
 \examples{
 \dontrun{

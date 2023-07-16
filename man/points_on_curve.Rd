@@ -2,24 +2,21 @@
 % Please edit documentation in R/Slingshot.Utils.R
 \name{points_on_curve}
 \alias{points_on_curve}
-\title{Point on curve}
+\title{points_on_curve}
 \usage{
 points_on_curve(curve, lambda, ...)
 }
 \arguments{
-\item{curve}{PARAM_DESCRIPTION}
+\item{curve}{The curve on which to visualize points. Default: PARAM_DEFAULT_VALUE.}
 
-\item{lambda}{PARAM_DESCRIPTION}
-
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{lambda}{The parametric location of points along the curve. Default: PARAM_DEFAULT_VALUE.}
+}
+\value{
+A function call to points_on_curve based on the class of the curve.
 }
 \description{
-Helper to visualize points_on_curve in slingshot. ggplot for slinshot by @HectorRDB.
+Helper function to visualize points on a curve in Slingshot.
 }
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+\details{
+This function uses method dispatch based on the class of the 'curve' argument to visualize points on the curve.
 }

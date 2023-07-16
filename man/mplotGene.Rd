@@ -7,14 +7,20 @@
 mplotGene(gene = "PGK1", reduction = "UMAP", obj = cds_from_seurat)
 }
 \arguments{
-\item{gene}{gene of interest, Default: 'PGK1'}
+\item{gene}{A string representing the gene of interest. Default: 'PGK1'.}
 
-\item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'UMAP'}
+\item{reduction}{A string representing the dimensionality reduction method to use. Can be 'UMAP', 'tSNE', or 'PCA'. Default: 'UMAP'.}
 
-\item{obj}{Seurat object, Default: cds_from_seurat}
+\item{obj}{A Seurat object that will be plotted. Default: cds_from_seurat.}
+}
+\value{
+A plot showing the gene of interest.
 }
 \description{
-Plot genes in Monocle.
+Plots a specific gene in Monocle using a chosen dimensionality reduction method.
+}
+\details{
+This function takes a specific gene and plots it in Monocle using a specified dimensionality reduction method. The plot is then saved using the ggExpress::qqSave function.
 }
 \examples{
 \dontrun{
@@ -22,4 +28,7 @@ if(interactive()){
  mplotGene(); mplotGene("GAPDH")
  }
 }
+}
+\seealso{
+\code{\link[plot_cells]{plot_cells}}, \code{\link[qqSave]{qqSave}}
 }
