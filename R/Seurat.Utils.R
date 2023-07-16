@@ -1439,35 +1439,30 @@ plot.Metadata.Cor.Heatmap <- function(
 
 # _________________________________________________________________________________________________
 #' @title plot.Metadata.median.fraction.barplot
-#' @description Barplot Metadata median values
-#' @param columns PARAM_DESCRIPTION, Default: c("percent.mito", "percent.ribo")
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param group.by PARAM_DESCRIPTION, Default: GetClusteringRuns(obj = obj)[2]
-#' @param method PARAM_DESCRIPTION, Default: c("median", "mean")[1]
-#' @param min.thr PARAM_DESCRIPTION, Default: 2.5
-#' @param return.matrix PARAM_DESCRIPTION, Default: F
-#' @param main PARAM_DESCRIPTION, Default: paste(method, "read fractions per transcript class and cluster",
-#'    suffix)
-#' @param ylab PARAM_DESCRIPTION, Default: 'Fraction of transcriptome (%)'
-#' @param percentify PARAM_DESCRIPTION, Default: T
-#' @param subt PARAM_DESCRIPTION, Default: NULL
-#' @param position PARAM_DESCRIPTION, Default: position_stack()
-#' @param w width of the plot, Default: 10
-#' @param h height of the plot, Default: 6
-#' @param obj Seurat object, Default: combined.obj
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#'
+#' @description Generates a barplot of metadata median values.
+#' @param columns A vector of column names to consider for the barplot. Default: c("percent.mito", "percent.ribo").
+#' @param suffix A suffix added to the output filename. Default: NULL.
+#' @param group.by The variable to group by for calculations. Default: Second result of GetClusteringRuns(obj).
+#' @param method Method used for calculations, either "median" or "mean". Default: "median".
+#' @param min.thr Minimum threshold percentage for a cluster. Default: 2.5.
+#' @param return.matrix Logical; if TRUE, returns a matrix. Default: FALSE.
+#' @param main Main title for the plot. Default: "read fractions per transcript class and cluster" followed by the method and suffix.
+#' @param ylab Label for the y-axis. Default: "Fraction of transcriptome (%)".
+#' @param percentify Logical; if TRUE, multiplies the fraction by 100. Default: TRUE.
+#' @param subt Subtitle for the plot. Default: NULL.
+#' @param position Position adjustment for geoms. Default: position_stack().
+#' @param w The width of the plot. Default: 10.
+#' @param h The height of the plot. Default: 6.
+#' @param obj The main Seurat object used for calculations. Default: combined.obj.
+#' @param ... Additional parameters passed to the internally called functions.
 #' @seealso
 #'  \code{\link[dplyr]{summarise_all}}
 #'  \code{\link[reshape2]{melt}}
 #' @export plot.Metadata.median.fraction.barplot
 #' @importFrom dplyr summarize_all
 #' @importFrom reshape2 melt
+
 plot.Metadata.median.fraction.barplot <- function(
     columns = c(  "percent.mito", "percent.ribo")
     , suffix =  NULL
@@ -1516,7 +1511,6 @@ plot.Metadata.median.fraction.barplot <- function(
   if (return.matrix) mat.cluster.medians1 else pl
 }
 
-# plot.Metadata.median.fraction.barplot()
 
 # _________________________________________________________________________________________________
 #' plot.Metadata.categ.pie
@@ -1660,6 +1654,7 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
 
 # _________________________________________________________________________________________________
 #' @title recall.parameters
+#'
 #' @description Recall parameters from obj@misc to "p" in the global environment.
 #' @param obj Seurat object, Default: combined.obj
 #' @param overwrite PARAM_DESCRIPTION, Default: FALSE
@@ -1734,8 +1729,8 @@ save.parameters <- function(obj = combined.obj, params = p) {
 
 
 # _________________________________________________________________________________________________
-# subsetSeuObj
 #' @title subsetSeuObj
+#'
 #' @description Subset a compressed Seurat Obj and save it in wd. #
 #' @param obj Seurat object, Default: ls.Seurat[[i]]
 #' @param fraction_ PARAM_DESCRIPTION, Default: 0.25
