@@ -1402,27 +1402,20 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
 # Plot metadata ______________________________ ----
 # _________________________________________________________________________________________________
 
-
-
 #' @title plot.Metadata.Cor.Heatmap
-#' @description Plot a heatmap with Metadata correlation values.
-#' @param columns PARAM_DESCRIPTION, Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
-#' @param cormethod PARAM_DESCRIPTION, Default: c("pearson", "spearman")[1]
-#' @param main PARAM_DESCRIPTION, Default: paste("Metadata", cormethod, "correlations")
-#' @param obj Seurat object, Default: combined.obj
-#' @param w width of the plot, Default: 10
-#' @param h height of the plot, Default: w
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
+#' @description Plots a heatmap of metadata correlation values.
+#' @param columns A vector of column names for which to calculate correlations. Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo").
+#' @param cormethod The method to calculate correlations, either "pearson" or "spearman". Default: "pearson".
+#' @param main The main title for the plot. Default: "Metadata correlations" followed by the correlation method.
+#' @param obj The main Seurat object used for calculations. Default: combined.obj.
+#' @param w The width of the plot. Default: 10.
+#' @param h The height of the plot. Default: width of the plot (w).
+#' @param ... Additional parameters passed to the internally called functions.
 #' @seealso
 #'  \code{\link[ggcorrplot]{ggcorrplot}}
 #' @export plot.Metadata.Cor.Heatmap
 #' @importFrom ggcorrplot ggcorrplot
+
 plot.Metadata.Cor.Heatmap <- function(
     columns = c( "nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
     , cormethod = c('pearson', 'spearman')[1]
