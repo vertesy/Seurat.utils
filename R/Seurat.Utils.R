@@ -337,11 +337,11 @@ seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of v
 #'
 #' @description Plot the percent of variation associated with each PC.
 #' @param obj Seurat object, Default: combined.obj
-#' @param use.MDrep PARAM_DESCRIPTION, Default: F
+#' @param use.MarkdownReports Use MarkdownReports for plotting, Default: F
 #' @export
-seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Plot the percent of variation associated with each PC.
+seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MarkdownReports = F) { # Plot the percent of variation associated with each PC.
   pct <- seu.PC.var.explained(obj)
-  if (use.MDrep) {
+  if (use.MarkdownReports) {
     wbarplot(pct , xlab = "Principal Components", ylab = "% of variation explained")
     barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5 )
   } else {
@@ -352,7 +352,8 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Pl
 
 
 # _________________________________________________________________________________________________
-#' Percent.in.Trome
+#' @title Percent.in.Trome
+#'
 #' @description Gene expression as fraction of all UMI's
 #' @param obj Seurat object
 #' @param n.genes.barplot number of top genes shows
@@ -361,7 +362,9 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Pl
 #' @examples # combined.obj <- Percent.in.Trome()
 
 #' @export
-Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25, width.barplot = round(n.genes.barplot/4)) {
+Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25
+                             , width.barplot = round(n.genes.barplot/4)) {
+
   m.expr <- combined.obj@assays$RNA@counts
   total.Expr <- sort(rowSums(m.expr), decreasing = T)
   relative.total.Expr <- total.Expr / sum(total.Expr)
@@ -402,9 +405,9 @@ Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25, width.bar
 #' @param slot slot in the Seurat object. Default: c("counts", "data")[2]
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @export
-gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], slot = c('counts', 'data')[2]
+gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]]
+                                        , slot = c('counts', 'data')[2]
                                         , ... ) {
-  slot = 'data'
   print(gene)
   if (gene %in% rownames(obj)) {
     GEX.Counts <- GetAssayData(object = obj, assay = 'RNA', slot = slot)
@@ -426,20 +429,24 @@ gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], sl
 # _________________________________________________________________________________________________
 #' @title PrctCellExpringGene
 #'
-#' @description From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
-#' @param genes Genes of iinterest
-#' @param group.by PARAM_DESCRIPTION, Default: 'all'
-#' @param obj Seurat object, Default: combined.obj
+#' @description Function to calculate the proportion of cells expressing a given set of genes.
+#' @param genes A character vector of genes of interest.
+#' @param group.by Grouping variable, Default: 'all'.
+#' @param obj A Seurat object containing cell data. Default: combined.obj.
+#' @return A data frame with the proportion of cells expressing each gene, grouped by the group.by variable.
+#' @examples
+#' \dontrun{
+#' PrctCellExpringGene(genes = c("Gene1", "Gene2"), obj = seurat_object)
+#' }
+#' @source Adapted from code by Ryan-Zhu on Github (https://github.com/satijalab/seurat/issues/371)
 #' @export
 PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj){ # From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371
   if(group.by == "all"){
     prct = unlist(lapply(genes, ww.calc_helper, object = obj))
     result = data.frame(Markers = genes, Cell_proportion = prct)
     return(result)
-  }
-
-  else{
-    list = SplitObject(obj, group.by)
+  } else{
+    list = Seurat::SplitObject(object = obj, split.by = group.by)
     factors = names(list)
     results = lapply(list, PrctCellExpringGene, genes = genes)
     for (i in 1:length(factors)) {
@@ -454,11 +461,17 @@ PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj){ # 
 # _________________________________________________________________________________________________
 #' @title ww.calc_helper
 #'
-#' @description From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
-#' @param obj Seurat object
-#' @param genes Genes of iinterest
+#' @description Helper function for PrctCellExpringGene() to calculate the proportion of cells in a Seurat object that express a given gene.
+#' @param obj A Seurat object containing cell data.
+#' @param genes A character vector of genes of interest.
+#' @return The proportion of cells in obj that express the specified gene.
+#' @examples
+#' \dontrun{
+#' ww.calc_helper(obj = seurat_object, genes = "Gene1")
+#' }
+#' @source Adapted from code by Ryan-Zhu on Github (https://github.com/satijalab/seurat/issues/371)
 #' @export
-ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371
+ww.calc_helper <- function(obj, genes){
   counts = obj[['RNA']]@counts
   ncells = ncol(counts)
   if (genes %in% row.names(counts)) {
@@ -608,7 +621,7 @@ scBarplot.FractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', 
 #' @description Get the median values of different columns in meta.data, can iterate over a list of Seurat objects.
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
 #' @param n.datasets lenght of list (n objects), Default: length(ls.Seurat)
-#' @param mColname PARAM_DESCRIPTION, Default: 'percent.mito'
+#' @param mColname Metadata column name to calculate on. Default: 'percent.mito'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -891,7 +904,7 @@ getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj = co
 #'
 #' @description Add multiple new metadata columns to a Seurat object from a table. #
 #' @param obj Seurat object, Default: seu.ORC
-#' @param meta PARAM_DESCRIPTION, Default: MetaData.ORC
+#' @param meta Metadata data frame.
 #' @param suffix A suffix added to the filename, Default: '.fromMeta'
 #' @examples
 #' \dontrun{
@@ -900,7 +913,7 @@ getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj = co
 #'  }
 #' }
 #' @export
-seu.add.meta.from.table <- function(obj = combined.obj, meta = MetaData.ORC, suffix = ".fromMeta") { # Add multiple new metadata columns to a Seurat object from a table.
+seu.add.meta.from.table <- function(obj = combined.obj, meta, suffix = ".fromMeta") { # Add multiple new metadata columns to a Seurat object from a table.
   NotFound  = setdiff(colnames(obj), rownames(meta))
   Found     = intersect(colnames(obj), rownames(meta))
   if (length(NotFound)) iprint(length(NotFound), 'cells were not found in meta, e.g.: ', trail(NotFound, N = 10))
@@ -950,11 +963,11 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc = 0.1) { # Sample N % 
 #' @description Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells). #
 #' @param obj Seurat object, Default: combined.obj
 #' @param quantileX Quantile level, Default: 0.9
-#' @param max.cells PARAM_DESCRIPTION, Default: 1e+05
+#' @param max.cells Max number of cells to do the calculation on. Downsample if excdeeded. Default: 1e+05
 #' @param slot slot in the Seurat object. Default: 'data'
 #' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
 #' @param set.all.genes Create the "all.genes" variable in the global env?, Default: TRUE
-#' @param show PARAM_DESCRIPTION, Default: TRUE
+#' @param show Show plot? Default: TRUE
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -1002,7 +1015,7 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
                           , vline  = .15
                           , filtercol = T
                           , palette_use = 'npg'
-    )
+                          )
     , silent = TRUE)
 
   {
@@ -1526,7 +1539,7 @@ plot.Metadata.categ.pie <- function(metacol = 'Singlet.status'
 #' @description Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).
 #' @param obj Seurat object, Default: combined.obj
 #' @param gene gene of interest, Default: 'ACTB'
-#' @param filterZero PARAM_DESCRIPTION, Default: T
+#' @param filterZero Remove genes whose quantile-90 expression in 0? Default: T
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -1644,7 +1657,7 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
 #'
 #' @description Recall parameters from obj@misc to "p" in the global environment.
 #' @param obj Seurat object, Default: combined.obj
-#' @param overwrite PARAM_DESCRIPTION, Default: FALSE
+#' @param overwrite Overwrite already existing in environment? Default: FALSE
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -1697,7 +1710,7 @@ recall.genes.ls<- function(obj = combined.obj) { # genes.ls
 #'
 #' @description Save parameters to obj@misc$p
 #' @param obj Seurat object, Default: combined.obj
-#' @param params PARAM_DESCRIPTION, Default: p
+#' @param params List of parameters, Default: p
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -1748,10 +1761,10 @@ subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, see
 #'
 #' @description Subset a compressed Seurat Obj and save it in wd. #
 #' @param obj Seurat object, Default: ORC
-#' @param fraction PARAM_DESCRIPTION, Default: 0.25
+#' @param fraction Fractional size to downsample to. Default: 0.25
 #' @param seed random seed used, Default: 1989
 #' @param min.features Minimum features
-#' @param dir PARAM_DESCRIPTION, Default: OutDir
+#' @param dir Directory to save to. Default: OutDir
 #' @param suffix A suffix added to the filename, Default: ''
 #' @export
 subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir
@@ -1784,7 +1797,7 @@ subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.
 #'
 #' @description Downsample a list of Seurat objects
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
-#' @param NrCells PARAM_DESCRIPTION, Default: p$dSample.Organoids
+#' @param NrCells Number of cells to downsample to.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -1827,7 +1840,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
 #'
 #' @description Downsample a list of Seurat objects, by fraction
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
-#' @param NrCells PARAM_DESCRIPTION, Default: p$dSample.Organoids
+#' @param NrCells Number of cells to downsample to. Default: p$dSample.Organoids
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -1995,8 +2008,8 @@ remove.cells.by.UMAP <- function(reduction = 'umap'
 #' @param obj Seurat object, Default: combined.obj
 #' @param dim Numer of dimensions used, Default: 2
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param flip PARAM_DESCRIPTION, Default: c("x", "y", "xy", NULL)[1]
-#' @param FlipReductionBackupToo PARAM_DESCRIPTION, Default: TRUE
+#' @param flip The axis (axes) to flip around. Default: c("x", "y", "xy", NULL)[1]
+#' @param FlipReductionBackupToo Flip coordinates in backup slot too? Default: TRUE
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -2274,7 +2287,7 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 #' @description Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: 0.2
-#' @param plot.top.genes PARAM_DESCRIPTION, Default: T
+#' @param plot.top.genes Show plot? Default: T
 #' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_logFC", "p_val_adj")[1]
 #' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
 #' @examples
@@ -2811,7 +2824,7 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
 #' @description get Seurat's cluster colors.
 #' @param obj Seurat object, Default: combined.obj
 #' @param ident identity used, Default: GetClusteringRuns()[1]
-#' @param show PARAM_DESCRIPTION, Default: T
+#' @param show Show plot of colors? Default: T
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -2852,7 +2865,7 @@ getClusterColors <- function(obj = combined.obj
 #' @description Recall a Seurat color vector.
 #' @param ident identity used, Default: NULL
 #' @param obj Seurat object, Default: combined.obj
-#' @param plot.colors PARAM_DESCRIPTION, Default: F
+#' @param plot.colors Show colors? Default: F
 #' @param simple Return simply the unique colors, in order? Default: F
 #' @examples
 #' \dontrun{
@@ -3257,7 +3270,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
 #'
 #' @description Plot and save umap based on a metadata column. #
 #' @param obj Seurat object, Default: combined.obj
-#' @param metaD.colname PARAM_DESCRIPTION, Default: metaD.colname.labeled
+#' @param metaD.colname Metadata column name. Default: metaD.colname.labeled
 #' @param ext File extension for saving, Default: 'png'
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
@@ -3575,7 +3588,7 @@ qQC.plots.BrainOrg <- function(obj = combined.obj, title = "Top 4 QC markers on 
 #'
 #' @description Quickly plot key markers in brain organoids
 #' @param obj Seurat object, Default: combined.obj
-#' @param custom.genes PARAM_DESCRIPTION, Default: F
+#' @param custom.genes Use custom gene set? Default: F
 #' @param suffix Folder name suffix, Default: ""
 #' @examples
 #' \dontrun{
@@ -3616,7 +3629,7 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix =
 #'
 #' @description Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before. #
 #' @param obj Seurat object, Default: combined.obj
-#' @param n PARAM_DESCRIPTION, Default: 32
+#' @param n Number of genes to plot, Default: 32
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -3763,10 +3776,11 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
 
 # _________________________________________________________________________________________________
 #' @title ww.check.if.3D.reduction.exist
+#'
 #' @description ww.check.if.3D.reduction.exist in backup slot #
 #' @param obj Seurat object, Default: obj
 #' @export
-ww.check.if.3D.reduction.exist <- function(obj = obj) { # ww.check.if.3D.reduction.exist in backup slot
+ww.check.if.3D.reduction.exist <- function(obj = obj) {
   if( !("UMAP_3" %in% colnames(obj@reductions$'umap'))) {
     stopif2( is.null(obj@misc$reductions.backup$'umap3d')
              , "No 3D umap found in backup slot, @misc$reductions.backup. Run SetupReductionsNtoKdimensions() first.")
@@ -3779,10 +3793,15 @@ ww.check.if.3D.reduction.exist <- function(obj = obj) { # ww.check.if.3D.reducti
 # _________________________________________________________________________________________________
 #' @title ww.check.quantile.cutoff.and.clip.outliers
 #'
-#' @description Helper function.
-#' @param expr.vec PARAM_DESCRIPTION, Default: plotting.data[, gene]
-#' @param quantileCutoffX PARAM_DESCRIPTION, Default: quantileCutoff
-#' @param min.cells.expressing PARAM_DESCRIPTION, Default: 10
+#' @description Function to check a specified quantile cutoff and clip outliers from a given expression vector.
+#' @param expr.vec A numeric vector representing gene expression data. Default: plotting.data[, gene]
+#' @param quantileCutoffX A numeric value representing the quantile at which to clip outliers. Default: quantileCutoff
+#' @param min.cells.expressing A numeric value representing the minimum number of cells expressing a gene that should remain after clipping outliers. Default: 10
+#' @return The input expression vector with outliers clipped.
+#' @examples
+#' \dontrun{
+#' ww.check.quantile.cutoff.and.clip.outliers(expr.vec = expr.data, quantileCutoffX = 0.99, min.cells.expressing = 10)
+#' }
 #' @export
 ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[,gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10) {
   expr.vec.clipped <- CodeAndRoll2::clip.outliers.at.percentile(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
@@ -3949,17 +3968,17 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction="umap") { # B
 # _________________________________________________________________________________________________
 #' @title SetupReductionsNtoKdimensions
 #'
-#' @description Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to `obj@misc$reductions.backup` from @reductions$umap #
-#' @param obj Seurat object, Default: combined.obj
-#' @param nPCs PARAM_DESCRIPTION, Default: p$n.PC
-#' @param dimensions PARAM_DESCRIPTION, Default: 3:2
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description Function to compute dimensionality reductions for a given Seurat object and backup the computed reductions.
+#' @param obj A Seurat object. Default: combined.obj
+#' @param nPCs A numeric value representing the number of principal components to use. Default: p$n.PC
+#' @param dimensions A numeric vector specifying the dimensions to use for the dimensionality reductions. Default: 3:2
+#' @param reduction A character string specifying the type of dimensionality reduction to perform. Can be "umap", "tsne", or "pca". Default: 'umap'
+#' @return The input Seurat object with computed dimensionality reductions and backups of these reductions.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = p$'n.PC', dimensions = 2:3, reduction="umap"); qUMAP()
-#'  }
+#'   combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction="umap")
+#' }
 #' }
 #' @export
 SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$'n.PC', dimensions = 3:2, reduction="umap", ...) { # Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to `obj@misc$reductions.backup` from @reductions$umap
@@ -4314,9 +4333,9 @@ seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) { # Take a named
 # FeaturePlot with different defaults
 
 #' @title GetMostVarGenes
-#' @description Get the most variable rGenes #
+#' @description Get the N most variable Genes
 #' @param obj A Seurat object.
-#' @param nGenes PARAM_DESCRIPTION, Default: p$nVarGenes
+#' @param nGenes Number of genes, Default: p$nVarGenes
 #' @export
 GetMostVarGenes <- function(obj, nGenes = p$nVarGenes) { # Get the most variable rGenes
   head(rownames(slot(object = obj, name = "hvg.info")), n = nGenes)
@@ -4597,7 +4616,7 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
 #' @description Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data. #
 #' @param obj Seurat object, Default: ls.Seurat[[i]]
 #' @param assay Which Seurat assay to replace. Default: RNA. Disclaimer: Intended use on simple objects that ONLY contain an RNA object. I highly advise against selectively replacing name in other assays that may have slots that cannot be updated by this function.
-#' @param newnames PARAM_DESCRIPTION, Default: HGNC.updated[[i]]$Suggested.Symbol
+#' @param newnames A vector of new gene names. Default: HGNC.updated[[i]]$Suggested.Symbol
 #'
 #' @examples
 #' \dontrun{
@@ -4650,7 +4669,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]
 #'
 #' @description Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data. #
 #' @param obj Seurat object, Default: ls.Seurat[[i]]
-#' @param symbols2remove PARAM_DESCRIPTION, Default: c("TOP2A")
+#' @param symbols2remove Genes to remove from a Seurat object. Default: c("TOP2A")
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -4696,8 +4715,8 @@ RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 # _________________________________________________________________________________________________
 #' @title HGNC.EnforceUnique
 #'
-#' @description Enforce Unique names after HGNC symbol update. updatedSymbols is the output of HGNChelper::checkGeneSymbols. #
-#' @param updatedSymbols PARAM_DESCRIPTION
+#' @description Enforce Unique names after HGNC symbol update.
+#' @param updatedSymbols Gene symbols, it is the output of HGNChelper::checkGeneSymbols. #
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -5767,7 +5786,7 @@ jPairwiseJaccardIndexList <- function(lsG = ls_genes) { # Create a pairwise jacc
 #' @title jPresenceMatrix
 #'
 #' @description Make a binary presence matrix from a list. Source: https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings #
-#' @param string_list PARAM_DESCRIPTION, Default: lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4)
+#' @param string_list List of strings to compare overlapping entries. Default: lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4)
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -5818,7 +5837,7 @@ jJaccardIndexBinary <- function(x, y) { # Calculate Jaccard Index. Modified from
 #' @title jPairwiseJaccardIndex
 #'
 #' @description Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
-#' @param binary.presence.matrix PARAM_DESCRIPTION, Default: df.presence
+#' @param binary.presence.matrix A boolean matrix. Default: df.presence
 #' @examples
 #' \dontrun{
 #' if(interactive()){
