@@ -3280,11 +3280,21 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
 # _________________________________________________________________________________________________
 #' @title umapHiLightSel
 #'
-#' @description Highlight a set of cells based on clusterIDs provided.
-#' @param obj Seurat object, Default: combined.obj
-#' @param COI PARAM_DESCRIPTION, Default: c("0", "2", "4", "5", "11")
-#' @param res.cl PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.3'
+#' @description Generates a UMAP plot from a Seurat object with a subset of cells highlighted.
+#' @param obj A Seurat object. Default: combined.obj.
+#' @param COI A vector of cluster IDs to highlight in the UMAP plot. Default: c("0", "2", "4", "5",  "11").
+#' @param res.cl Name of the column in the Seurat object metadata that contains the cluster IDs. Default: 'integrated_snn_res.0.3'.
+#' @return This function does not return a value. It saves a UMAP plot to the current working directory.
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'   umapHiLightSel(obj = seuratObject, COI = c("0", "1"), res.cl = "resolution_0.8")
+#' }
+#' }
+#' @seealso
+#' \code{\link[Seurat]{DimPlot}}
 #' @export
+
 umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based on clusterIDs provided.
                            COI =  c("0", "2", "4", "5",  "11"), res.cl = 'integrated_snn_res.0.3') {
   cellsSel = getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
@@ -3699,20 +3709,24 @@ save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
 # _________________________________________________________________________________________________
 #' @title qqSaveGridA4
 #'
-#' @description Save 2 or 4 ggplot objects using plot_grid() on an A4 page #
-#' @param plotlist PARAM_DESCRIPTION, Default: pl
-#' @param plots PARAM_DESCRIPTION, Default: 1:2
-#' @param NrPlots PARAM_DESCRIPTION, Default: length(plots)
-#' @param height PARAM_DESCRIPTION, Default: hA4
-#' @param width PARAM_DESCRIPTION, Default: wA4
-#' @param fname File name, Default: 'Fractions.Organoid-to-organoid variation.png'
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description Saves a grid of 2 or 4 ggplot objects onto an A4 page.
+#' @param plotlist A list of ggplot objects. Default: pl.
+#' @param plots A numeric vector indicating the indices of the plots to save from the 'plotlist'. Default: 1:2.
+#' @param NrPlots Number of plots to save. Default: length(plots).
+#' @param height Height for the saved image. Default: hA4.
+#' @param width Width for the saved image. Default: wA4.
+#' @param fname File name for the saved image. Default: "Fractions.Organoid-to-organoid variation.png".
+#' @param ... Additional arguments passed to the plot_grid function.
+#' @return This function does not return a value. It saves a grid plot of ggplot objects to the specified file.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  qqSaveGridA4(plotlist= pl, plots = 1:2, fname = "Fractions.per.Cl.png"); qqSaveGridA4(plotlist= pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
-#'  }
+#'   qqSaveGridA4(plotlist= pl, plots = 1:2, fname = "Fractions.per.Cl.png")
+#'   qqSaveGridA4(plotlist= pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
 #' }
+#' }
+#' @seealso
+#' \code{\link[ggplot2]{plot_grid}}
 #' @export
 qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_grid() on an A4 page
                          , plots = 1:2, NrPlots = length(plots), height = hA4, width = wA4
@@ -3762,6 +3776,7 @@ ww.check.if.3D.reduction.exist <- function(obj = obj) { # ww.check.if.3D.reducti
 
 # _________________________________________________________________________________________________
 #' @title ww.check.quantile.cutoff.and.clip.outliers
+#'
 #' @description Helper function.
 #' @param expr.vec PARAM_DESCRIPTION, Default: plotting.data[, gene]
 #' @param quantileCutoffX PARAM_DESCRIPTION, Default: quantileCutoff
@@ -3779,6 +3794,7 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 
 # _________________________________________________________________________________________________
 #' @title plot3D.umap.gene
+#'
 #' @description Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
 #' @param gene The gene of interest. Default: 'TOP2A'
 #' @param obj The Seurat object for which the 3D umap plot will be generated. Default: combined.obj
@@ -3839,6 +3855,7 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
 
 # _________________________________________________________________________________________________
 #' @title plot3D.umap
+#'
 #' @description Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
 #' @param category The metadata column based on which the 3D UMAP will be plotted. Default: 'v.project'
 #' @param obj The Seurat object for which the 3D umap plot will be generated. Default: combined.obj
@@ -3887,7 +3904,6 @@ plot3D.umap <- function(category="v.project", obj = combined.obj # Plot a 3D uma
 #' @title SavePlotlyAsHtml
 #'
 #' @description Save a Plotly 3D scatterplot as an HTML file.
-#'
 #' @param plotly_obj The Plotly object to save.
 #' @param category The category of the plot.
 #' @param suffix A suffix to add to the filename.
@@ -3908,6 +3924,7 @@ SavePlotlyAsHtml <- function(plotly_obj, category.= category, suffix. = NULL) { 
 
 # _________________________________________________________________________________________________
 #' @title BackupReduction
+#'
 #' @description Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param dim Numer of dimensions used, Default: 2
@@ -3929,6 +3946,7 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction="umap") { # B
 
 # _________________________________________________________________________________________________
 #' @title SetupReductionsNtoKdimensions
+#'
 #' @description Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to `obj@misc$reductions.backup` from @reductions$umap #
 #' @param obj Seurat object, Default: combined.obj
 #' @param nPCs PARAM_DESCRIPTION, Default: p$n.PC
@@ -3961,6 +3979,7 @@ SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$'n.PC', d
 
 # _________________________________________________________________________________________________
 #' @title RecallReduction
+#'
 #' @description Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param dim Numer of dimensions used, Default: 2
@@ -3987,6 +4006,7 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction="umap") { # S
 
 # _________________________________________________________________________________________________
 #' @title Annotate4Plotly3D
+#'
 #' @description Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations.
 #' @param obj The Seurat object for which the 3D plot annotations will be generated. Default: combined.obj
 #' @param plotting.data. The data frame containing plotting data. Default: plotting.data
@@ -4017,6 +4037,7 @@ Annotate4Plotly3D <- function(obj = combined.obj # Create annotation labels for 
 
 # _________________________________________________________________________________________________
 #' @title Plot3D.ListOfGenes
+#'
 #' @description Plot and save list of 3D UMAP or tSNE plots using plotly.
 #' @param obj Seurat object to be used for the plot. Default: combined.obj
 #' @param annotate.by Variable to annotate the clusters by. Default: 'integrated_snn_res.0.7'
@@ -4141,6 +4162,7 @@ sparse.cor <- function(smat){
 
 # _________________________________________________________________________________________________
 #' @title Calc.Cor.Seurat
+#'
 #' @description Calculate gene correlation on a Seurat object.
 #' @param assay.use The assay to use from the Seurat object. Default: 'RNA'
 #' @param slot.use The slot to use from the assay in the Seurat object. Default: 'data'
@@ -4267,6 +4289,7 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 
 # _________________________________________________________________________________________________
 #' @title seu.Make.Cl.Label.per.cell
+#'
 #' @description Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID".
 #' @param TopGenes A named vector, where values are gene names and names are cluster IDs.
 #' @param clID.per.cell A vector of cell-IDs used to create the output vector.
@@ -4287,22 +4310,23 @@ seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) { # Take a named
 
 # _________________________________________________________________________________________________
 # FeaturePlot with different defaults
+
 #' @title GetMostVarGenes
 #' @description Get the most variable rGenes #
-#' @param obj Seurat object, Default: org
+#' @param obj A Seurat object.
 #' @param nGenes PARAM_DESCRIPTION, Default: p$nVarGenes
 #' @export
-GetMostVarGenes <- function(obj = org, nGenes = p$nVarGenes) { # Get the most variable rGenes
+GetMostVarGenes <- function(obj, nGenes = p$nVarGenes) { # Get the most variable rGenes
   head(rownames(slot(object = obj, name = "hvg.info")), n = nGenes)
 }
 
 # _________________________________________________________________________________________________
-# gene.name.check for read .mtx /write .rds script
 #' @title gene.name.check
+#'
 #' @description Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #
-#' @param Seu.obj PARAM_DESCRIPTION, Default: ls.Seurat[[1]]
+#' @param Seu.obj A Seurat object.
 #' @export
-gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) { # Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files.
+gene.name.check <- function(Seu.obj ) { # Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files.
   rn = rownames(GetAssayData(object = Seu.obj, slot = "counts"))
   llprint("### Gene name pattern")
 
@@ -4327,6 +4351,7 @@ gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) { # Check gene names in a
 
 # _________________________________________________________________________________________________
 #' @title check.genes
+#'
 #' @description Check if a gene name exists in a Seurat object, or in HGNC?
 #' @param list.of.genes A vector of gene names to check for existence in the Seurat object or HGNC. Default: ClassicMarkers
 #' @param makeuppercase Logical, if TRUE, transforms all gene names to uppercase. Default: FALSE
@@ -4363,8 +4388,9 @@ check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = FALSE, v
 
 # _________________________________________________________________________________________________
 #' @title fixZeroIndexing.seurat
+#'
 #' @description Fix zero indexing in seurat clustering, to 1-based indexing. replace zero indexed clusternames.
-#' @param ColName.metadata PARAM_DESCRIPTION, Default: 'res.0.6'
+#' @param ColName.metadata Metadata column name to use, Default: 'res.0.6'
 #' @param obj Seurat object, Default: org
 #' @export
 fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj = org) { # Fix zero indexing in seurat clustering, to 1-based indexing
@@ -4402,6 +4428,7 @@ CalculateFractionInTrome <- function(genesCalc.Cor.Seuratet = c("MALAT1") # Calc
 
 # _________________________________________________________________________________________________
 #' @title AddNewAnnotation
+#'
 #' @description This function creates a new metadata column based on an existing metadata column and a list of mappings (name <- IDs).
 #' @param obj A Seurat object for which the new annotation is to be created. Default is 'obj'.
 #' @param source A character string specifying the existing metadata column to be used as the basis for the new annotation. Default is 'RNA_snn_res.0.5'.
@@ -4430,6 +4457,7 @@ AddNewAnnotation <- function(obj = obj # Create a new metadata column based on a
 
 # _________________________________________________________________________________________________
 #' @title whitelist.subset.ls.Seurat
+#'
 #' @description Subset cells in a (list of) Seurat objects, based on an externally provided list of cell IDs.
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
 #' @param metadir PARAM_DESCRIPTION, Default: p$cellWhiteList
@@ -4473,6 +4501,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
 
 # _________________________________________________________________________________________________
 #' @title FindCorrelatedGenes
+#'
 #' @description Find correlated genes in a Seurat object
 #' @param gene Gene of interest. Default: 'TOP2A'
 #' @param obj Seurat object to find the correlated genes from. Default: combined.obj
@@ -4529,6 +4558,7 @@ FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA"
 
 # _________________________________________________________________________________________________
 #' @title UpdateGenesSeurat
+#'
 #' @description Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
 #' @param obj Seurat object to update gene symbols in. Default: ls.Seurat[[i]]
 #' @param species_ Species to which the gene symbols correspond, used to check gene symbols. Default: 'human'
@@ -4551,6 +4581,7 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_="human", EnforceUni
 
 # _________________________________________________________________________________________________
 #' @title RenameGenesSeurat
+#'
 #' @description Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data. #
 #' @param obj Seurat object, Default: ls.Seurat[[i]]
 #' @param assay Which Seurat assay to replace. Default: RNA. Disclaimer: Intended use on simple objects that ONLY contain an RNA object. I highly advise against selectively replacing name in other assays that may have slots that cannot be updated by this function.
@@ -4604,6 +4635,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]
 
 # _________________________________________________________________________________________________
 #' @title RemoveGenesSeurat
+#'
 #' @description Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data. #
 #' @param obj Seurat object, Default: ls.Seurat[[i]]
 #' @param symbols2remove PARAM_DESCRIPTION, Default: c("TOP2A")
@@ -4651,6 +4683,7 @@ RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 
 # _________________________________________________________________________________________________
 #' @title HGNC.EnforceUnique
+#'
 #' @description Enforce Unique names after HGNC symbol update. updatedSymbols is the output of HGNChelper::checkGeneSymbols. #
 #' @param updatedSymbols PARAM_DESCRIPTION
 #' @examples
@@ -4674,6 +4707,7 @@ HGNC.EnforceUnique <- function(updatedSymbols) { # Enforce Unique names after HG
 
 # _________________________________________________________________________________________________
 #' @title GetUpdateStats
+#'
 #' @description Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`. #
 #' @param genes Genes of iinterest, Default: HGNC.updated[[i]]
 #' @examples
@@ -4694,6 +4728,7 @@ GetUpdateStats <- function(genes = HGNC.updated[[i]]) { # Plot the Symbol-update
 
 # _________________________________________________________________________________________________
 #' @title PlotUpdateStats
+#'
 #' @description Scatter plot of update stats. #
 #' @param mat PARAM_DESCRIPTION, Default: UpdateStatMat
 #' @param column.names PARAM_DESCRIPTION, Default: c("Updated (%)", "Updated (Nr.)")
