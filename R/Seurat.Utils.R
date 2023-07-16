@@ -2086,13 +2086,12 @@ AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers
 
 # _________________________________________________________________________________________________
 #' @title Add.DE.combined.score
-#' @description Add combined score to DE results. (LFC * -log10( p_cutoff / pval_scaling ) )
-#' @param df Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param p_val_min PARAM_DESCRIPTION, Default: 1e-25
-#' @param pval_scaling PARAM_DESCRIPTION, Default: 0.001
-#' @param colP PARAM_DESCRIPTION, Default: 'p_val'
-#' @param colLFC PARAM_DESCRIPTION, Default: CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df),
-#'    perl = T)
+#' @description Add a combined score to differential expression (DE) results. The score is calculated as log-fold change (LFC) times negative logarithm of scaled p-value (LFC * -log10( p_cutoff / pval_scaling )).
+#' @param df A data frame that holds the result of a differential gene expression analysis, typically obtained via the 'FindAllMarkers' function. Default: df.markers.
+#' @param p_val_min The minimum p-value considered. All values below this threshold are set to this value. Default: 1e-25.
+#' @param pval_scaling The value to scale p-values by in the calculation of the combined score. Default: 0.001.
+#' @param colP The name of the column in the input data frame that holds p-values. Default: 'p_val'.
+#' @param colLFC The name of the column in the input data frame that holds log-fold change values. By default, it selects the first column not named "avg_logFC" or "avg_log2FC".
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -2285,6 +2284,7 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 
 # _________________________________________________________________________________________________
 #' @title AutoLabel.KnownMarkers
+#'
 #' @description Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param topN Take the top N genes, Default: 1
