@@ -2661,17 +2661,15 @@ scBarplot.CellsPerObject <- function(ls.Seu = ls.Seurat
 }
 
 
-
-
 # _________________________________________________________________________________________________
-# plot.clust.size.distr
 #' @title plot.clust.size.distr
-#' @description Barplot of Histogram of cluster size distribution
-#' @param obj Seurat object, Default: combined.obj
-#' @param ident identity used, Default: GetClusteringRuns()[2]
-#' @param plot PARAM_DESCRIPTION, Default: T
-#' @param thr.hist PARAM_DESCRIPTION, Default: 30
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#'
+#' @description Creates a bar plot or histogram of the cluster size distribution from a given Seurat object.
+#' @param obj The Seurat object to be used for the plot. Default: combined.obj.
+#' @param ident The identity or clustering to be used for the plot. Default: The second result from GetClusteringRuns().
+#' @param plot A logical value indicating whether to plot the data. If FALSE, a vector of the cluster size distribution will be returned. Default: TRUE.
+#' @param thr.hist A threshold for the number of clusters above which a histogram will be plotted instead of a bar plot. Default: 30.
+#' @param ... Additional arguments to be passed to the internally called plotting functions.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
