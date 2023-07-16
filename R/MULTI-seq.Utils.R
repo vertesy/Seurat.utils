@@ -11,13 +11,14 @@
 
 
 # _________________________________________________________________________________________________
-# BarTableSweepList
 #' @title BarTableSweepList
-#' @description BarTableSweepList
-#' @param min PARAM_DESCRIPTION, Default: 0.01
-#' @param max PARAM_DESCRIPTION, Default: 0.99
-#' @param step PARAM_DESCRIPTION, Default: 0.02
-#' @param bar_table PARAM_DESCRIPTION, Default: bar.table
+#'
+#' @description Generate a list of classified cells for a range of quantiles.
+#' @param min The minimum quantile value. Default: 0.01.
+#' @param max The maximum quantile value. Default: 0.99.
+#' @param step The step size to increment the quantile. Default: 0.02.
+#' @param bar_table The barcode table to be used. Default: bar.table.
+#' @return A list of classified cells for each quantile in the specified range.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -42,10 +43,12 @@ BarTableSweepList <- function(min = 0.01, max = 0.99, step = 0.02, bar_table =ba
 
 # _________________________________________________________________________________________________
 #' @title mSeq.map.all96.BCs
-#' @description mSeq.map.all96.BCs
-#' @param readTable PARAM_DESCRIPTION, Default: readTable
-#' @param CellIDs PARAM_DESCRIPTION, Default: CellIDs
-#' @param path2allBCs PARAM_DESCRIPTION, Default: '~/Google_Drive/Science/IMBA/MULTI.seq/from.US/All.MULTI-seq_barcodes.Mar2019.tsv'
+#'
+#' @description Map all 96 barcode sequences.
+#' @param readTable The table of read counts. Default: readTable.
+#' @param CellIDs The identifiers for the cells. Default: CellIDs.
+#' @param path2allBCs The path to the reference barcode sequences file. Default: '~/Google_Drive/Science/IMBA/MULTI.seq/from.US/All.MULTI-seq_barcodes.Mar2019.tsv'.
+#' @return The mapped barcode sequences.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -65,10 +68,12 @@ mSeq.map.all96.BCs <- function(readTable = readTable, CellIDs = CellIDs
 # _________________________________________________________________________________________________
 
 #' @title aux_plotAllMseqBCs
-#' @description aux_plotAllMseqBCs
-#' @param bar.table PARAM_DESCRIPTION, Default: bar.table[, 1:96]
-#' @param barcodes.used PARAM_DESCRIPTION, Default: BCs.used
-#' @param plotname Title of the plot, Default: 'Barcode seq depth'
+#'
+#' @description Plot all MULTI-seq barcodes.
+#' @param bar.table The barcode table to be used. Default: bar.table[,1:96].
+#' @param barcodes.used The barcodes that have been used. Default: BCs.used.
+#' @param plotname The title of the plot. Default: 'Barcode seq depth'.
+#' @return A plot of all MULTI-seq barcodes.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
