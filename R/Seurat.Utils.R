@@ -551,16 +551,17 @@ scBarplot.FractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'pe
 
 # _________________________________________________________________________________________________
 #' @title scBarplot.FractionBelowThr
-#' @description Barplot the fraction of cell below a threshold value (based on a meta.data column), in each cluster.
-#' @param thrX PARAM_DESCRIPTION, Default: 0.01
-#' @param value.col PARAM_DESCRIPTION, Default: 'percent.ribo'
-#' @param id.col PARAM_DESCRIPTION, Default: 'cl.names.top.gene.res.0.3'
-#' @param obj Seurat object, Default: combined.obj
-#' @param return.df PARAM_DESCRIPTION, Default: F
+#'
+#' @description Create a bar plot showing the fraction of cells, within each cluster, that are below a certain threshold based on a metadata column.
+#' @param thrX The threshold value to determine the fraction of cells. Default: 0.01
+#' @param value.col Column name from metadata which holds the values for calculating the fraction of cells. Default: 'percent.ribo'
+#' @param id.col Column name from metadata to be used for identifying clusters. Default: 'cl.names.top.gene.res.0.3'
+#' @param obj A Seurat object holding single cell data. Default: combined.obj
+#' @param return.df A logical indicating if the function should return the data frame used to create the plot. Default: FALSE
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  scBarplot.FractionBelowThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0.01, return.df = T)
+#'  scBarplot.FractionBelowThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0.01, return.df = TRUE)
 #'  }
 #' }
 #' @seealso
