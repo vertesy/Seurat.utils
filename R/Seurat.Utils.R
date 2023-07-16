@@ -240,8 +240,8 @@ PlotFilters <- function(ls.obj = ls.Seurat
                                   labels = c(paste0("LQ (<", above.nFeature_RNA,")"),
                                              paste0("HQ (", above.nFeature_RNA,"< X <", below.nFeature_RNA,")"),
                                              paste0("Dbl/Outlier (>", below.nFeature_RNA,")")
-                                             )
                                   )
+    )
 
     A = ggplot(data = mm, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
       geom_histogram(binwidth = 100) +
@@ -322,12 +322,6 @@ PlotFilters <- function(ls.obj = ls.Seurat
 #' @title seu.PC.var.explained
 #' @description Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
 #' @param obj Seurat object, Default: combined.obj
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of variation associated with each PC.
   pct <- obj@reductions$pca@stdev / sum(obj@reductions$pca@stdev) * 100
@@ -341,12 +335,6 @@ seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of v
 #' @description Plot the percent of variation associated with each PC. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param use.MDrep PARAM_DESCRIPTION, Default: F
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Plot the percent of variation associated with each PC.
   pct <- seu.PC.var.explained(obj)
@@ -367,9 +355,9 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Pl
 #' @param n.genes.barplot number of top genes shows
 #' @param width.barplot barplot width
 #' @return Seurat object
-#' @export
 #' @examples # combined.obj <- Percent.in.Trome()
 
+#' @export
 Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25, width.barplot = round(n.genes.barplot/4)) {
   m.expr <- combined.obj@assays$RNA@counts
   total.Expr <- sort(rowSums(m.expr), decreasing = T)
@@ -409,12 +397,6 @@ Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25, width.bar
 #' @param obj Seurat object, Default: ls.Seurat[[1]]
 #' @param slot slot in the Seurat object. Default: c("counts", "data")[2]
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], slot = c('counts', 'data')[2]
                                         , ... ) {
@@ -443,12 +425,6 @@ gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], sl
 #' @param genes Genes of iinterest
 #' @param group.by PARAM_DESCRIPTION, Default: 'all'
 #' @param obj Seurat object, Default: combined.obj
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj){ # From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371
   if(group.by == "all"){
@@ -475,12 +451,6 @@ PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj){ # 
 #' @description From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
 #' @param obj Seurat object
 #' @param genes Genes of iinterest
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371
   counts = obj[['RNA']]@counts
@@ -1011,15 +981,15 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
   qnameP <- p0(100*quantileX,'th quantile')
   try(
     ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30
-               , plotname = paste("Gene expression in the", qnameP )
-               , subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = T), " genes have ", qname ," expr. > 0.")
-               , caption = paste(n.cells, 'cells in', qnameP)
-               , xlab = paste0("log2(expr. in the ", qnameP,"quantile+1) [UMI]")
-               , ylab = "Nr. of genes"
-               , plot = show, save = TRUE
-               , vline  = .15
-               , filtercol = T
-               , palette_use = 'npg'
+                          , plotname = paste("Gene expression in the", qnameP )
+                          , subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = T), " genes have ", qname ," expr. > 0.")
+                          , caption = paste(n.cells, 'cells in', qnameP)
+                          , xlab = paste0("log2(expr. in the ", qnameP,"quantile+1) [UMI]")
+                          , ylab = "Nr. of genes"
+                          , plot = show, save = TRUE
+                          , vline  = .15
+                          , filtercol = T
+                          , palette_use = 'npg'
     )
     , silent = TRUE)
 
@@ -1276,12 +1246,6 @@ GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
 #' @param ... Additional parameters passed to the internally called functions.
 #' @param xlb The label for the x-axis. Default depends on the 'absolute.thr' parameter.
 #' @param fname The filename for the plot. Default is based on column name and split_by value.
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 #' @importFrom Stringendo percentage_formatter
 
@@ -1735,12 +1699,6 @@ save.parameters <- function(obj = combined.obj, params = p) {
 #' @param fraction_ The fraction of the object's data to keep. Default: 0.25.
 #' @param nCells If set to a number greater than 1, indicates the absolute number of cells to keep. If FALSE, the function uses 'fraction_' to determine the number of cells. Default: FALSE.
 #' @param seed_ A seed for random number generation to ensure reproducible results. Default: 1989.
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 #' @importFrom Stringendo percentage_formatter
 
@@ -1768,12 +1726,6 @@ subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, see
 #' @param min.features Minimum features
 #' @param dir PARAM_DESCRIPTION, Default: OutDir
 #' @param suffix A suffix added to the filename, Default: ''
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir
                                   , min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
@@ -2693,12 +2645,6 @@ scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
 #' @param ls.Seu PARAM_DESCRIPTION, Default: ls.Seurat
 #' @param plotname Title of the plot, Default: 'Nr.Cells.After.Filtering'
 #' @param names PARAM_DESCRIPTION, Default: F
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 scBarplot.CellsPerObject <- function(ls.Seu = ls.Seurat
                                      , plotname="Nr.Cells.After.Filtering", xlab.angle = 45
@@ -2769,12 +2715,6 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
 #' @title gg_color_hue
 #' @description reproduce the ggplot2 default color palette #
 #' @param n PARAM_DESCRIPTION
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
   hues = seq(15, 375, length = n + 1)
@@ -2912,12 +2852,6 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F,
 #' @param logY logY
 #' @param plot PARAM_DESCRIPTION, Default: TRUE
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj
                             , ext ="png", plot = TRUE
@@ -3120,12 +3054,12 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 
   DefaultAssay(obj) <- assay
   ggplot.obj <- Seurat::FeaturePlot(obj, features = feature
-                            , reduction = reduction
-                            , min.cutoff = qlow, max.cutoff = qhigh
-                            # , plotname = ppp(toupper(reduction), feature)
-                            , ncol = nr.cols
-                            , split.by = splitby
-                            , ...) +
+                                    , reduction = reduction
+                                    , min.cutoff = qlow, max.cutoff = qhigh
+                                    # , plotname = ppp(toupper(reduction), feature)
+                                    , ncol = nr.cols
+                                    , split.by = splitby
+                                    , ...) +
     ggtitle(label = title, subtitle = sub) +
     if (!axes) NoAxes() else NULL
 
@@ -3228,10 +3162,10 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
     if( length(unique(identity)) < MaxCategThrHP )
       ggplot.obj <-
         Seurat::DimPlot(object = obj, group.by = ident
-                , cols = cols
-                , reduction = reduction, split.by = splitby
-                , ncol = nr.cols, cells.highlight = highlight.these
-                , label = label, repel = repel, label.size = label.cex, ...) +
+                        , cols = cols
+                        , reduction = reduction, split.by = splitby
+                        , ncol = nr.cols, cells.highlight = highlight.these
+                        , label = label, repel = repel, label.size = label.cex, ...) +
         ggtitle(label = title, subtitle = sub) +
         if (!legend) NoLegend() else NULL
 
@@ -3285,12 +3219,6 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
 #' @param obj Seurat object, Default: combined.obj
 #' @param COI PARAM_DESCRIPTION, Default: c("0", "2", "4", "5", "11")
 #' @param res.cl PARAM_DESCRIPTION, Default: 'integrated_snn_res.0.3'
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based on clusterIDs provided.
                            COI =  c("0", "2", "4", "5",  "11"), res.cl = 'integrated_snn_res.0.3') {
@@ -3329,12 +3257,6 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' @param aspect.ratio Should the aspect ratio be fixed? Default: Yes, at 0.6
 #' @param format Format to save the plot file. Default: 'jpg'
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
 #'  \code{\link[cowplot]{plot_grid}}
@@ -3351,7 +3273,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , prefix = NULL , suffix = NULL
                                 , background_col = "white"
-                                , aspect.ratio = c(FALSE, 0.6)[2]
+                                  , aspect.ratio = c(FALSE, 0.6)[2]
                                 , saveGeneList = FALSE
                                 , w = wA4, h = hA4, scaling = 1
                                 , format = c('jpg', 'pdf', 'png')[1]
@@ -3375,9 +3297,9 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
     plotname = kpp(c(prefix, plot.reduction,i, genes, suffix, format ))
 
     plot.list = Seurat::FeaturePlot(object = obj, features = genes, reduction = plot.reduction, combine = F
-                            , ncol = nr.Col, cols = colors
-                            , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp
-                            , pt.size = cex, ...)
+                                    , ncol = nr.Col, cols = colors
+                                    , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp
+                                    , pt.size = cex, ...)
 
     for (i in 1:length(plot.list)) {
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
@@ -3417,12 +3339,6 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
 #' @param jpeg.res Resolution of the jpeg output. Default: 225
 #' @param jpeg.q Quality of the jpeg output. Default: 90
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
 #' @export
@@ -3475,12 +3391,6 @@ multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHea
 #' @param heigth Height of the plot. Default: 1.75 * wA4
 #' @param filetype Filetype to save plot as. Default: 'pdf'
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @seealso
 #'  \code{\link[cowplot]{save_plot}}
 #' @export plot.UMAP.tSNE.sidebyside
@@ -3498,13 +3408,13 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
                                       width = hA4, heigth = 1.75*wA4, filetype = "pdf", ...) {
 
   p1 <- Seurat::DimPlot(object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
-                , no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size
-                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...) +
+                        , no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size
+                        , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...) +
     ggtitle("tSNE") + theme(plot.title = element_text(hjust = 0.5))
 
   p2 <- Seurat::DimPlot(object = obj, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use
-                , no.legend = T, do.return = do_return, do.label = do_label, label.size = label_size
-                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...) +
+                        , no.legend = T, do.return = do_return, do.label = do_label, label.size = label_size
+                        , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...) +
     ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
 
   plots = plot_grid(p1, p2, labels = c("A", "B"), ncol = 2)
@@ -3767,12 +3677,6 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
 #' @title ww.check.if.3D.reduction.exist
 #' @description ww.check.if.3D.reduction.exist in backup slot #
 #' @param obj Seurat object, Default: obj
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 ww.check.if.3D.reduction.exist <- function(obj = obj) { # ww.check.if.3D.reduction.exist in backup slot
   if( !("UMAP_3" %in% colnames(obj@reductions$'umap'))) {
@@ -3790,12 +3694,6 @@ ww.check.if.3D.reduction.exist <- function(obj = obj) { # ww.check.if.3D.reducti
 #' @param expr.vec PARAM_DESCRIPTION, Default: plotting.data[, gene]
 #' @param quantileCutoffX PARAM_DESCRIPTION, Default: quantileCutoff
 #' @param min.cells.expressing PARAM_DESCRIPTION, Default: 10
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[,gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10) {
   expr.vec.clipped <- CodeAndRoll2::clip.outliers.at.percentile(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
@@ -4320,12 +4218,6 @@ seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) { # Take a named
 #' @description Get the most variable rGenes #
 #' @param obj Seurat object, Default: org
 #' @param nGenes PARAM_DESCRIPTION, Default: p$nVarGenes
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 GetMostVarGenes <- function(obj = org, nGenes = p$nVarGenes) { # Get the most variable rGenes
   head(rownames(slot(object = obj, name = "hvg.info")), n = nGenes)
@@ -4336,12 +4228,6 @@ GetMostVarGenes <- function(obj = org, nGenes = p$nVarGenes) { # Get the most va
 #' @title gene.name.check
 #' @description Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #
 #' @param Seu.obj PARAM_DESCRIPTION, Default: ls.Seurat[[1]]
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) { # Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files.
   rn = rownames(GetAssayData(object = Seu.obj, slot = "counts"))
@@ -4407,12 +4293,6 @@ check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = FALSE, v
 #' @description Fix zero indexing in seurat clustering, to 1-based indexing. replace zero indexed clusternames.
 #' @param ColName.metadata PARAM_DESCRIPTION, Default: 'res.0.6'
 #' @param obj Seurat object, Default: org
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj = org) { # Fix zero indexing in seurat clustering, to 1-based indexing
   obj@meta.data[ ,ColName.metadata] =  as.numeric(obj@meta.data[ ,ColName.metadata])+1
@@ -4427,12 +4307,6 @@ fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj = org) { # 
 #' @param geneset PARAM_DESCRIPTION, Default: c("MALAT1")
 #' @param obj Seurat object, Default: combined.obj
 #' @param dataslot PARAM_DESCRIPTION, Default: c("counts", "data")[2]
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 CalculateFractionInTrome <- function(genesCalc.Cor.Seuratet = c("MALAT1") # Calculate the fraction of a set of genes within the full Transcriptome of each cell.
                                      , obj = combined.obj
@@ -4484,12 +4358,6 @@ AddNewAnnotation <- function(obj = obj # Create a new metadata column based on a
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
 #' @param metadir PARAM_DESCRIPTION, Default: p$cellWhiteList
 #' @param whitelist.file PARAM_DESCRIPTION, Default: 'NonStressedCellIDs.2020.10.21_18h.tsv'
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
                                        , metadir = p$'cellWhiteList' #  '~/Dropbox/Abel.IMBA/MetadataD/POL.meta/cell.lists/'
@@ -4632,15 +4500,15 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]
     if (all(dim(myobj)) > 0) {
       stopifnot(nrow(myobj) == length(newnames))
       if ("dgCMatrix" %in% class(myobj) ) {
-      message(assay, "@", slotname," is of type dgeCMatrix!")
-      myobj@Dimnames[[1]] <- newnames
-    } else if ("matrix" %in% class(myobj) ) {
-      message(assay, "@", slotname," is of type Matrix!")
-      rownames(myobj) <- newnames
-    } else {
-      warning(">>> No renaming: ", assay, "@", slotname, " not of type dgeCMatrix or Matrix.")
-    }
-    slot(assayobj, slotname) <- myobj
+        message(assay, "@", slotname," is of type dgeCMatrix!")
+        myobj@Dimnames[[1]] <- newnames
+      } else if ("matrix" %in% class(myobj) ) {
+        message(assay, "@", slotname," is of type Matrix!")
+        rownames(myobj) <- newnames
+      } else {
+        warning(">>> No renaming: ", assay, "@", slotname, " not of type dgeCMatrix or Matrix.")
+      }
+      slot(assayobj, slotname) <- myobj
     } # id dim >0
     return(assayobj)
   } # fun
@@ -5207,12 +5075,6 @@ LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directo
 #' @title read10x
 #' @description read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv #
 #' @param dir PARAM_DESCRIPTION
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
 #'  \code{\link[R.utils]{compressFile}}
@@ -5249,12 +5111,6 @@ read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and b
 #' @param includeFeatures PARAM_DESCRIPTION, Default: c("Gene Expression")
 #' @param verbose PARAM_DESCRIPTION, Default: TRUE
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @seealso
 #'  \code{\link[SoupX]{SoupChannel}}
 #' @export
@@ -5353,12 +5209,6 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #' @param obj Seurat object.
 #' @param compr PARAM_DESCRIPTION, Default: FALSE
 #' @param fname File name
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
 #' @export
@@ -5455,12 +5305,6 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @param showMemObject PARAM_DESCRIPTION, Default: T
 #' @param options PARAM_DESCRIPTION, Default: c("--force", NULL)[1]
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @seealso
 #'  \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
 #' @export
@@ -5482,12 +5326,6 @@ qsave.image <- function(..., showMemObject = T, options = c("--force", NULL)[1])
 #' @title clip10Xcellname
 #' @description Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration). #
 #' @param cellnames PARAM_DESCRIPTION
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 clip10Xcellname <- function(cellnames) { stringr::str_split_fixed(cellnames, "_", n = 2)[,1] }
 
@@ -5496,12 +5334,6 @@ clip10Xcellname <- function(cellnames) { stringr::str_split_fixed(cellnames, "_"
 #' @description Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1". #
 #' @param cellnames PARAM_DESCRIPTION
 #' @param suffix A suffix added to the filename, Default: '_1'
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 make10Xcellname <- function(cellnames, suffix="_1") { paste0(cellnames, suffix) }
 
@@ -5677,8 +5509,8 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   PC.mRNA.in.Soup <- sum(CR.matrices$'soup')/sum(CR.matrices$'raw')
   PC.mRNA.in.Cells <- 100*sum(CR.matrices$'filt')/sum(CR.matrices$'raw')
   MarkdownReports::wbarplot(variable = PC.mRNA.in.Cells, col ="seagreen", plotname = kppd("PC.mRNA.in.Cells", SeqRun)
-           , ylim = c(0,100), ylab = "% mRNA in cells"
-           , sub = "% mRNA is more meaningful than % reads reported by CR")
+                            , ylim = c(0,100), ylab = "% mRNA in cells"
+                            , sub = "% mRNA is more meaningful than % reads reported by CR")
   barplot_label(barplotted_variable = PC.mRNA.in.Cells
                 , labels = Stringendo::percentage_formatter(PC.mRNA.in.Cells/100, digitz = 2)
                 , TopOffset = 10)
@@ -5688,10 +5520,10 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes = 100*head(sort(CR.matrices$'soup.rel.RC', decreasing = T), n = 20)
 
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes, plotname = kppd("Soup.GEMs.top.Genes", SeqRun)
-           , ylab="% mRNA in the Soup"
-           , sub = paste("Within the", SeqRun, "dataset")
-           , tilted_text = T
-           , ylim = c(0, max(Soup.GEMs.top.Genes)*1.5))
+                            , ylab="% mRNA in the Soup"
+                            , sub = paste("Within the", SeqRun, "dataset")
+                            , tilted_text = T
+                            , ylim = c(0, max(Soup.GEMs.top.Genes)*1.5))
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes
                 , labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes/100, digitz = 2)
                 , TopOffset = -.5, srt = 90, cex=.75)
@@ -5728,9 +5560,9 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes.summarized = 100 * soupProfile.summarized[1:NrColumns2Show] / CR.matrices$'soup.total.sum'
   maxx <- max(Soup.GEMs.top.Genes.summarized)
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes.summarized, plotname = kppd("Soup.GEMs.top.Genes.summarized", SeqRun)
-           , ylab="% mRNA in the Soup", ylim = c(0, maxx+3)
-           , sub = paste("Within the", SeqRun, "dataset")
-           , tilted_text = T, col = ccc)
+                            , ylab="% mRNA in the Soup", ylim = c(0, maxx+3)
+                            , sub = paste("Within the", SeqRun, "dataset")
+                            , tilted_text = T, col = ccc)
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes.summarized
                 , srt = 45, labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.summarized/100, digitz = 2)
                 , TopOffset = -1.5)
@@ -5740,9 +5572,9 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 
   maxx <- max(Absolute.fraction.soupProfile.summarized)
   MarkdownReports::wbarplot(Absolute.fraction.soupProfile.summarized, plotname = kppd("Absolute.fraction.soupProfile.summarized", SeqRun)
-           , ylab="% of mRNA in cells", ylim = c(0, maxx*1.33)
-           , sub = paste(Stringendo::percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", SeqRun)
-           , tilted_text = T, col = ccc)
+                            , ylab="% of mRNA in cells", ylim = c(0, maxx*1.33)
+                            , sub = paste(Stringendo::percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", SeqRun)
+                            , tilted_text = T, col = ccc)
   barplot_label(barplotted_variable = Absolute.fraction.soupProfile.summarized
                 , srt = 45, labels = Stringendo::percentage_formatter(Absolute.fraction.soupProfile.summarized/100, digitz = 2)
                 # formatC(Absolute.fraction.soupProfile.summarized, format="f", big.mark = " ", digits = 0)
@@ -5752,10 +5584,10 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes.non.summarized <- 100* sort(genes.non.Above, decreasing = T)[1:20]/ CR.matrices$'soup.total.sum'
   maxx <- max(Soup.GEMs.top.Genes.non.summarized)
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes.non.summarized, plotname = kppd("Soup.GEMs.top.Genes.non.summarized", SeqRun)
-           , ylab="% mRNA in the Soup"
-           , sub = paste("Within the", SeqRun, "dataset")
-           , tilted_text = T, col = "#BF3100"
-             , ylim = c(0, maxx*1.5))
+                            , ylab="% mRNA in the Soup"
+                            , sub = paste("Within the", SeqRun, "dataset")
+                            , tilted_text = T, col = "#BF3100"
+                              , ylim = c(0, maxx*1.5))
   barplot_label(barplotted_variable = Soup.GEMs.top.Genes.non.summarized
                 , labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.non.summarized/100, digitz = 2)
                 , TopOffset = -maxx*0.2, srt = 90, cex=.75)
@@ -5784,12 +5616,6 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 #' @description Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
 #' @param A Set A, Default: 1:3
 #' @param B Set B, Default: 2:4
-#' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
-#' }
 #' @export
 jJaccardIndexVec <- function(A = 1:3, B = 2:4) length(intersect(A,B)) / length(union(A,B))
 
