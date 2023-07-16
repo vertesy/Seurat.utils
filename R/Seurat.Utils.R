@@ -1868,16 +1868,16 @@ Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1) {
 # _________________________________________________________________________________________________
 #' @title remove.residual.small.clusters
 #'
-#' @description E.g.: after subsetting often some residual cells remain in clusters originally denfined in the full dataset.
+#' @description E.g.: after subsetting often some residual cells remain in clusters originally defined in the full dataset.
 #' @param identitites Identities to scan for residual clusters
 #' @param obj Seurat object, Default: combined.obj
-#' @param max.cells Max number of cells in cluster to be removed. Default: 0.5% of the dataset
+#' @param max.cells Max number of cells in cluster to be removed. Default: 0.5% of the dataset, or 5 cells.
 #' @export
-
-remove.residual.small.clusters <- function(identitites = GetOrderedClusteringRuns()
-                                           , obj = combined.obj
-                                           , max.cells = round((ncol(obj))/2000)
+remove.residual.small.clusters <- function(obj = combined.obj
+                                           , identitites = GetClusteringRuns(obj = obj)
+                                           , max.cells = max(round((ncol(obj))/2000), 5)
 ) {
+
   META <- obj@meta.data
   all.cells <- rownames(META)
 
@@ -1890,8 +1890,10 @@ remove.residual.small.clusters <- function(identitites = GetOrderedClusteringRun
 
     small.clusters[[i]] <- which_names(tbl <= max.cells )
     cells.to.remove[[i]] <- all.cells[which(META[[colX]] %in% small.clusters[[i]])]
-    if (length(cells.to.remove[[i]])) iprint(length(cells.to.remove[[i]]), "cells in small clusters:", small.clusters[[i]]
-                                             , "| Cell counts:",tbl[small.clusters[[i]]]) # , head(cells.to.remove[[i]])
+    if (length(cells.to.remove[[i]])) {
+      iprint(length(cells.to.remove[[i]]), "cells in small clusters:", small.clusters[[i]]
+             , "| Cell counts:",tbl[small.clusters[[i]]])
+    }
   }
 
   all.cells.2.remove <- unique(unlist(cells.to.remove))
@@ -1909,15 +1911,15 @@ remove.residual.small.clusters <- function(identitites = GetOrderedClusteringRun
 # _________________________________________________________________________________________________
 #' @title drop.levels.Seurat
 #'
-#' @description Drop levels in clustering vectors in metadata (e.g. after subsetting)
-#' @param obj Seurat object, Default: combined.obj
+#' @description Drop unused levels from factor variables in a Seurat object.
+#' @param obj A Seurat object.
+#' @param verbose Logical. Whether to print a message indicating which levels are being dropped.
 #' @export
-
-drop.levels.Seurat <- function(obj = combined.obj) {
+drop.levels.Seurat <- function(obj = combined.obj, verbose = TRUE) {
   META <- obj@meta.data
   colclasses <- sapply(META, class)
   drop_in_these <- names(colclasses[ colclasses == 'factor'])
-  iprint("Dropping levels in", length(drop_in_these), drop_in_these)
+  if(verbose) iprint("Dropping levels in", length(drop_in_these), drop_in_these)
   for (i in 1:length(drop_in_these)) {
     colX <- drop_in_these[i]
     META[[colX]] <- droplevels(META[[colX]])
