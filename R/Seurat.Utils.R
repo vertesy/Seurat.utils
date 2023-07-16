@@ -493,17 +493,17 @@ ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.co
 }
 
 # _________________________________________________________________________________________________
-
 #' @title scBarplot.FractionAboveThr
-#' @description Barplot the fraction of cell above a threshold value (based on a meta.data column), in each cluster.
-#' @param thrX PARAM_DESCRIPTION, Default: 0
-#' @param value.col PARAM_DESCRIPTION, Default: 'percent.ribo'
-#' @param id.col PARAM_DESCRIPTION, Default: 'cl.names.top.gene.res.0.3'
-#' @param obj Seurat object, Default: combined.obj
-#' @param suffix Suffix for filename
-#' @param return.df PARAM_DESCRIPTION, Default: F
-#' @param label label barplot
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#'
+#' @description Create a bar plot showing the fraction of cells, within each cluster, that exceed a certain threshold based on a metadata column.
+#' @param thrX The threshold value to determine the fraction of cells. Default: 0.3
+#' @param value.col Column name from metadata which holds the values for calculating the fraction of cells. Default: 'percent.ribo'
+#' @param id.col Column name from metadata to be used for identifying clusters. Default: 'cl.names.top.gene.res.0.3'
+#' @param obj A Seurat object holding single cell data. Default: combined.obj
+#' @param suffix An optional suffix for the filename.
+#' @param return.df A logical indicating if the function should return the data frame used to create the plot. Default: FALSE
+#' @param label A logical indicating if labels should be added to the bar plot. Default: FALSE
+#' @param ... Additional parameters to pass to internally called functions.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -514,7 +514,6 @@ ww.calc_helper <- function(obj, genes){ # From Github/Ryan-Zhu https://github.co
 #'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
 #' @export
 #' @importFrom dplyr select group_by_
-
 scBarplot.FractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
                                        , obj = combined.obj, return.df = F, label = F
                                        , ...) { # Calculat the fraction of cells per cluster above a certain threhold
