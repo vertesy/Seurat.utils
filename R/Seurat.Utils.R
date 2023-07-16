@@ -151,24 +151,22 @@ getProject <- function() {
 
 # _________________________________________________________________________________________________
 #' @title PlotFilters
-#' @description Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content. #
-#' @param ls.obj List of Seurat objects, Default: ls.Seurat
-#' @param parentdir PARAM_DESCRIPTION, Default: OutDirOrig
-#' @param suffices PARAM_DESCRIPTION, Default: names(ls.obj)
-#' @param filetype PARAM_DESCRIPTION, Default: '.png'
-#' @param below.mito PARAM_DESCRIPTION, Default: p$thr.lp.mito
-#' @param above.mito PARAM_DESCRIPTION, Default: p$thr.hp.mito
-#' @param below.ribo PARAM_DESCRIPTION, Default: p$thr.lp.ribo
-#' @param above.ribo PARAM_DESCRIPTION, Default: p$thr.hp.ribo
-#' @param below.nFeature_RNA PARAM_DESCRIPTION, Default: p$thr.lp.nFeature_RNA
-#' @param above.nFeature_RNA PARAM_DESCRIPTION, Default: p$thr.hp.nFeature_RNA
-#' @param subdir PARAM_DESCRIPTION, Default: kpp("Filtering.plots", "mito", p$thr.hp.mito, p$thr.lp.mito,
-#'    "ribo", p$thr.hp.ribo, p$thr.lp.ribo, "nFeature", p$thr.hp.nFeature_RNA,
-#'    p$thr.lp.nFeature_RNA, "/")
-#' @param transparency PARAM_DESCRIPTION, Default: 0.25
-#' @param cex Point size, Default: 0.75
-#' @param theme.used PARAM_DESCRIPTION, Default: theme_bw(base_size = 18)
-#' @param LabelDistFromTop PARAM_DESCRIPTION, Default: 200
+#' @description Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.
+#' @param ls.obj A list of Seurat objects to be analyzed. Default is ls.Seurat.
+#' @param parentdir A string representing the parent directory where the plots will be stored. Default is OutDirOrig.
+#' @param suffices A vector of strings that will be used as suffixes in the output plot file names. Default is the names of the Seurat objects in ls.obj.
+#' @param filetype A string indicating the file type of the output plot images. Default is '.png'.
+#' @param below.mito Numeric threshold for the lower bound of mitochondrial content. Default is p$thr.lp.mito.
+#' @param above.mito Numeric threshold for the upper bound of mitochondrial content. Default is p$thr.hp.mito.
+#' @param below.ribo Numeric threshold for the lower bound of ribosomal content. Default is p$thr.lp.ribo.
+#' @param above.ribo Numeric threshold for the upper bound of ribosomal content. Default is p$thr.hp.ribo.
+#' @param below.nFeature_RNA Numeric threshold for the lower bound of RNA features. Default is p$thr.lp.nFeature_RNA.
+#' @param above.nFeature_RNA Numeric threshold for the upper bound of RNA features. Default is p$thr.hp.nFeature_RNA.
+#' @param subdir A string specifying the subdirectory within the parent directory where the plots will be stored. Default is generated using a call to kpp().
+#' @param transparency Numeric value controlling the transparency of points on the scatter plots. Default is 0.25.
+#' @param cex Numeric value controlling the size of points on the scatter plots. Default is 0.75.
+#' @param theme.used A ggplot2 theme to be used for all plots. Default is theme_bw(base_size = 18).
+#' @param LabelDistFromTop Numeric value specifying the distance from the top of the plot for the label placement. Default is 200.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -5397,26 +5395,20 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 
 
 # _________________________________________________________________________________________________
-# Save an object
 #' @title isave.RDS
-#' @description Save and RDS object.
-#' @param obj Seurat object
-#' @param project project code appended to the saved file name. Default: try(basename(rstudioapi::getActiveProject()), silent=T) using  getProject().
-#' @param prefix PARAM_DESCRIPTION, Default: NULL
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param inOutDir PARAM_DESCRIPTION, Default: F
-#' @param alternative_path_rdata PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
-#' @param homepath homepath to replace '~', Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
-#' @param showMemObject PARAM_DESCRIPTION, Default: T
-#' @param saveParams PARAM_DESCRIPTION, Default: T
+#' @description Save an RDS object, using a faster and efficient compression method that runs in the background.
+#' @param obj The object to be saved, typically a Seurat object.
+#' @param prefix A string prefix added to the filename. Default is NULL.
+#' @param suffix A string suffix added to the filename. Default is NULL.
+#' @param inOutDir A boolean flag, if TRUE the OutDir is used as save directory, if FALSE the alternative_path_rdata is used. Default is FALSE.
+#' @param project A string representing the project code. This is appended to the saved file name. Default is the active project determined by getProject().
+#' @param alternative_path_rdata A string that specifies the alternative path for storing the RDS file if inOutDir is FALSE. Default is "~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/" appended with the basename of OutDir.
+#' @param homepath A string representing the homepath. Will be replaced by '~' in the file path. Default is '/Users/abel.vertesy/'.
+#' @param showMemObject A boolean flag, if TRUE the function will print out the memory size of the largest objects in the workspace. Default is TRUE.
+#' @param saveParams A boolean flag, if TRUE the parameters 'p' and 'all.genes' are added to the 'misc' slot of the Seurat object if the object is of class Seurat. Default is TRUE.
 #' @examples
-#' \dontrun{
-#' if(interactive()){
-#'  isave.RDS(my.R.object)
-#'  }
-#' }
+#' \dontrun{ if(interactive()){ isave.RDS(my.R.object)  } }
 #' @export
-
 isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = F
                       , project = getProject()
                       , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
@@ -5447,19 +5439,17 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = F
 # requires github/vertesy/CodeAndRoll.r
 
 #' @title isave.image
-#' @description Save and RData image.
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @param path_rdata PARAM_DESCRIPTION, Default: paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))
-#' @param showMemObject PARAM_DESCRIPTION, Default: T
-#' @param options PARAM_DESCRIPTION, Default: c("--force", NULL)[1]
+#' @description Save an image of the current workspace using a faster and efficient compression method that runs in the background.
+#' @param ... Additional parameters passed to the idate() function in the creation of the file name.
+#' @param path_rdata A string that specifies the path for storing the image of the workspace. Default is "~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/" appended with the basename of OutDir.
+#' @param showMemObject A boolean flag, if TRUE the function will print out the memory size of the largest objects in the workspace. Default is TRUE.
+#' @param options A string for gzip options. Default is "--force".
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  #EXAMPLE1
+#'  isave.image(my.R.image)
 #'  }
 #' }
-#' @seealso
-#'  \code{\link[Stringendo]{kollapse}}, \code{\link[MarkdownReports]{iprint}}
 #' @export
 #' @importFrom Stringendo kollapse iprint
 isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir))
