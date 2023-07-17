@@ -4345,6 +4345,87 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 # source('~/GitHub/Packages/Seurat.utils/Functions/Seurat.object.manipulations.etc.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Seurat.object.manipulations.etc.R"))
 
+
+
+# _________________________________________________________________________________________________
+#' @title prefix_cells_seurat
+#'
+#' @description This function adds prefixes from 'obj_IDs' to cell names in Seurat S4 objects from 'ls_obj'
+#'
+#' @param ls_obj List. A list of Seurat S4 objects
+#' @param obj_IDs Character vector. A vector of sample IDs corresponding to each Seurat S4 object
+#'
+#' @examples
+#' # ls_obj <- list(seurat_obj1, seurat_obj2)
+#' # obj_IDs <- c("sample1", "sample2")
+#' # ls_obj_prefixed <- prefix_cells_seurat(ls_obj = ls_obj, obj_IDs = obj_IDs)
+#' @export
+prefix_cells_seurat <- function(ls_obj, obj_IDs) {
+
+  # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
+  stopifnot(is.list(ls_obj) & all(sapply(ls_obj, function(x) inherits(x, "Seurat"))))
+  stopifnot(is.character(obj_IDs) & length(ls_obj) == length(obj_IDs))
+
+  # Iterate over Seurat objects
+  ls_obj_prefixed <- lapply(seq_along(ls_obj), function(i) {
+    # Get the Seurat object and corresponding prefix
+    obj <- ls_obj[[i]]
+    prefix <- obj_IDs[i]
+
+    # Add prefix to cell names
+    new_cell_names <- paste0(prefix, "_", colnames(obj))
+
+    # Rename cells in the Seurat object
+    obj <- RenameCells(obj, new.names = new_cell_names)
+
+    return(obj)
+  })
+
+  return(ls_obj_prefixed)
+}
+
+# _________________________________________________________________________________________________
+#' @title Check Prefix in Seurat Object Cell IDs
+#'
+#' @description This function checks if a prefix has been added to the standard cell-IDs (16 characters of A,T,C,G)
+#' in a Seurat object. If so, it prints the number of unique prefixes found,
+#' issues a warning if more than one unique prefix is found, and returns the identified prefix(es).
+#' @param obj A Seurat object with cell IDs possibly prefixed.
+#' @param cell_ID_pattern Pattern to match cellIDs (with any suffix).
+#' @return A character vector of the identified prefix(es).
+#'
+#' @examples
+#' # Assuming 'obj' is your Seurat object
+#' # prefix <- find_prefix_in_cell_IDs(obj)
+#'
+#' @export
+
+find_prefix_in_cell_IDs <- function(obj, cell_ID_pattern = "[ATCG]{16}.*$" ) {
+  stopifnot(inherits(obj, "Seurat"))
+
+  # Extract cell IDs
+  cell_IDs <- colnames(obj)
+
+  # Remove the standard 16-character cell-IDs
+  potential_prefixes <- gsub(pattern = cell_ID_pattern, replacement = "", x = cell_IDs)
+
+  # Identify unique prefixes
+  unique_prefixes <- unique(potential_prefixes)
+
+  # Print the number of unique prefixes
+  print(paste(length(unique_prefixes), "unique prefix(es) found:", head(unique_prefixes)))
+
+  # Issue a warning if more than one unique prefix is found
+  if (length(unique_prefixes) > 1) {
+    warning("Multiple unique prefixes identified in cell IDs:", head(unique_prefixes))
+  }
+
+  # Return the identified prefix(es)
+  return(unique_prefixes)
+}
+
+
+
 # _________________________________________________________________________________________________
 #' @title seu.Make.Cl.Label.per.cell
 #'
