@@ -5,36 +5,46 @@
 \title{SNP.demux.fix.GT.table}
 \usage{
 SNP.demux.fix.GT.table(
-  GT.table = Genotypes.37.named,
-  obj = obj.Neurons.37,
+  GT.table,
+  obj,
+  suffix,
   col1 = "assignment.named",
   col1.new.name = "Genotype",
   col2 = "status",
   col2.new.name = "Singlet.status",
-  suffix = "lib.37",
   cellname_prefix = FALSE,
-  return_tbl_for_cells_found_in_object = TRUE
+  return_tbl_for_cells_found_in_object = TRUE,
+  min_cells_overlap = 10
 )
 }
 \arguments{
-\item{GT.table}{A 2 column Genotype assignment table with singlet status}
+\item{GT.table}{A 2-column dataframe representing the Genotype assignment table with singlet status. This is a mandatory input.}
 
-\item{obj}{Seurat object.}
+\item{obj}{A Seurat object to which the corrections will be applied. This is a mandatory input.}
 
-\item{col1}{'assignment.named'}
+\item{suffix}{A character string that will be added to the 'Singlet.status' column and used to overwrite the 'Genotype' column. This is a mandatory input.}
 
-\item{col1.new.name}{New name 'Genotype'}
+\item{col1}{The column to use for the 'Genotype' information in the input table. Defaults to 'assignment.named'.}
 
-\item{col2}{'status'}
+\item{col1.new.name}{The new name to use for the 'Genotype' column. Defaults to 'Genotype'.}
 
-\item{col2.new.name}{New name 'Singlet.status'}
+\item{col2}{The column to use for the 'Singlet.status' information in the input table. Defaults to 'status'.}
 
-\item{suffix}{Add this to 'Singlet.status', then overwrite 'Genotype'}
+\item{col2.new.name}{The new name to use for the 'Singlet.status' column. Defaults to 'Singlet.status'.}
 
-\item{cellname_prefix}{prefix for cell names added by Seurat to distingish 10X lanes}
+\item{cellname_prefix}{If TRUE, the function assumes that Seurat has added a prefix to cell names to distinguish 10X lanes and adjusts accordingly. Defaults to FALSE.}
 
-\item{return_tbl_for_cells_found_in_object}{cells.found.in.both}
+\item{return_tbl_for_cells_found_in_object}{If TRUE, the function returns the subset of the GT table corresponding to cells found in both the GT table and the Seurat object. Defaults to TRUE.}
+
+\item{min_cells_overlap}{min_cells_overlap}
+}
+\value{
+The cleaned and standardized GT table, with specific transformations applied as defined by the input parameters.
 }
 \description{
-Fix SNP demux table results coming from SoupOrCell
+This function cleans and standardizes a Genotype assignment table obtained from the SoupOrCell tool.
+}
+\examples{
+# Assuming 'GT.table' is your Genotype assignment table, 'obj' is your Seurat object and 'suffix' is your chosen suffix
+# GT.table.cleaned <- SNP.demux.fix.GT.table(GT.table = GT.table, obj = obj, suffix = suffix)
 }
