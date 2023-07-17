@@ -4362,6 +4362,8 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 #' @export
 prefix_cells_seurat <- function(ls_obj, obj_IDs) {
 
+
+  if(!is.list(ls_obj) & inherits(ls_obj, "Seurat")) ls_obj <- list(ls_obj)
   # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
   stopifnot(is.list(ls_obj) & all(sapply(ls_obj, function(x) inherits(x, "Seurat"))))
   stopifnot(is.character(obj_IDs) & length(ls_obj) == length(obj_IDs))
