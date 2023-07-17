@@ -4409,6 +4409,12 @@ find_prefix_in_cell_IDs <- function(obj, cell_ID_pattern = "[ATCG]{16}.*$" ) {
   # Remove the standard 16-character cell-IDs
   potential_prefixes <- gsub(pattern = cell_ID_pattern, replacement = "", x = cell_IDs)
 
+  # Check if there is no prefix
+  if(all(potential_prefixes == "")) {
+    print("No prefix found in cell IDs.")
+    return(NULL)
+  }
+
   # Identify unique prefixes
   unique_prefixes <- unique(potential_prefixes)
 
@@ -4423,6 +4429,7 @@ find_prefix_in_cell_IDs <- function(obj, cell_ID_pattern = "[ATCG]{16}.*$" ) {
   # Return the identified prefix(es)
   return(unique_prefixes)
 }
+
 
 
 
