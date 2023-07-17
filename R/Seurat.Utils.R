@@ -4972,21 +4972,25 @@ calculate.observable.multiplet.rate.10X.LT <- function(
 # _________________________________________________________________________________________________
 #' @title SNP.demux.fix.GT.table
 #'
-#' @description Fix SNP demux table results coming from SoupOrCell
-#' @param GT.table A 2 column Genotype assignment table with singlet status
-#' @param obj Seurat object.
-#' @param col1 'assignment.named'
-#' @param col1.new.name New name 'Genotype'
-#' @param col2 'status'
-#' @param col2.new.name New name 'Singlet.status'
-#' @param cellname_prefix prefix for cell names added by Seurat to distingish 10X lanes
-#' @param suffix Add this to 'Singlet.status', then overwrite 'Genotype'
-#' @param return_tbl_for_cells_found_in_object cells.found.in.both
+#' @description This function cleans and standardizes a Genotype assignment table obtained from the SoupOrCell tool.
+#' @param GT.table A 2-column dataframe representing the Genotype assignment table with singlet status. This is a mandatory input.
+#' @param obj A Seurat object to which the corrections will be applied. This is a mandatory input.
+#' @param suffix A character string that will be added to the 'Singlet.status' column and used to overwrite the 'Genotype' column. This is a mandatory input.
+#' @param col1 The column to use for the 'Genotype' information in the input table. Defaults to 'assignment.named'.
+#' @param col1.new.name The new name to use for the 'Genotype' column. Defaults to 'Genotype'.
+#' @param col2 The column to use for the 'Singlet.status' information in the input table. Defaults to 'status'.
+#' @param col2.new.name The new name to use for the 'Singlet.status' column. Defaults to 'Singlet.status'.
+#' @param cellname_prefix If TRUE, the function assumes that Seurat has added a prefix to cell names to distinguish 10X lanes and adjusts accordingly. Defaults to FALSE.
+#' @param return_tbl_for_cells_found_in_object If TRUE, the function returns the subset of the GT table corresponding to cells found in both the GT table and the Seurat object. Defaults to TRUE.
+#'
+#' @return The cleaned and standardized GT table, with specific transformations applied as defined by the input parameters.
 #'
 #' @export
-
-
-
+#'
+#' @examples
+#' # Assuming 'GT.table' is your Genotype assignment table, 'obj' is your Seurat object and 'suffix' is your chosen suffix
+#' # GT.table.cleaned <- SNP.demux.fix.GT.table(GT.table = GT.table, obj = obj, suffix = suffix)
+#' @timestamp 2023-07-17
 SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
                                    , obj = obj.Neurons.37
                                    , col1 = 'assignment.named'
