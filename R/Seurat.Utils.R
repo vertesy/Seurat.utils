@@ -4982,6 +4982,7 @@ calculate.observable.multiplet.rate.10X.LT <- function(
 #' @param col2.new.name The new name to use for the 'Singlet.status' column. Defaults to 'Singlet.status'.
 #' @param cellname_prefix If TRUE, the function assumes that Seurat has added a prefix to cell names to distinguish 10X lanes and adjusts accordingly. Defaults to FALSE.
 #' @param return_tbl_for_cells_found_in_object If TRUE, the function returns the subset of the GT table corresponding to cells found in both the GT table and the Seurat object. Defaults to TRUE.
+#' @param min_cells_overlap min_cells_overlap
 #'
 #' @return The cleaned and standardized GT table, with specific transformations applied as defined by the input parameters.
 #'
@@ -4990,94 +4991,96 @@ calculate.observable.multiplet.rate.10X.LT <- function(
 #' @examples
 #' # Assuming 'GT.table' is your Genotype assignment table, 'obj' is your Seurat object and 'suffix' is your chosen suffix
 #' # GT.table.cleaned <- SNP.demux.fix.GT.table(GT.table = GT.table, obj = obj, suffix = suffix)
-#' @timestamp 2023-07-17
-SNP.demux.fix.GT.table <- function(GT.table = Genotypes.37.named
-                                   , obj = obj.Neurons.37
+SNP.demux.fix.GT.table <- function(GT.table
+                                   , obj
+                                   , suffix
                                    , col1 = 'assignment.named'
                                    , col1.new.name = 'Genotype'
                                    , col2 = 'status'
                                    , col2.new.name = 'Singlet.status'
-                                   , suffix = 'lib.37'
                                    , cellname_prefix = FALSE
-                                   , return_tbl_for_cells_found_in_object = TRUE # cells.found.in.both
-) {
+                                   , return_tbl_for_cells_found_in_object = TRUE
+                                   , min_cells_overlap = 10) {
 
-  # Subset --- --- --- --- ---
+  # Check if the specified columns are present in the GT table
   col_names <- c(col1, col2)
   stopifnot(col_names %in% colnames(GT.table))
 
-  GT.table <-
-    GT.table %>%
-    select(col_names)
+  # Select only the specified columns from the GT table
+  GT.table <- GT.table %>% select(col_names)
 
-  # rename --- --- --- --- ---
+  # Rename the selected columns to standard names
   colnames(GT.table) <- c(col1.new.name, col2.new.name)
 
-  # stats --- --- --- --- ---
+  # Display the frequency of each assignment status
   assignment.status <- GT.table[, col2.new.name]
   tbl.status <- table(assignment.status)
   print(tbl.status)
 
-  # replace entries --- --- --- --- ---
+  # Modify the genotype for doublet and unassigned cells by appending the suffix
   idx.doublet <- which(assignment.status == 'doublet')
   idx.unassigned <- which(assignment.status == 'unassigned')
 
-  GT.table[idx.doublet, col1.new.name] <- kpp('doublet', suffix)
-  GT.table[idx.unassigned, col1.new.name] <- kpp('unassigned', suffix)
+  GT.table[idx.doublet, col1.new.name] <- paste0('doublet', suffix)
+  GT.table[idx.unassigned, col1.new.name] <- paste0('unassigned', suffix)
 
-  # stats --- --- --- --- ---
+  # Display the frequency of each genotype
   gentotype.status <- GT.table[ , col1.new.name]
   tbl.gentotype <- table(gentotype.status)
   print(tbl.gentotype)
 
-  # Plot stats --- --- --- --- ---
+  # Generate pie charts of singlet status and genotype frequencies
   SNP.demux.singlet.status <- sort(table(GT.table$'Singlet.status'))
   qpie(SNP.demux.singlet.status, suffix = suffix, w = 7, h =5, plot = T, both_pc_and_value = T)
 
   SNP.demux.Genotype.status <- sort(table(GT.table$'Genotype'))
   qpie(SNP.demux.Genotype.status, suffix = suffix, w = 7, h =5, plot = T, both_pc_and_value = T)
 
+  # Generate a pie chart of clean genotype frequencies (excluding doublet and unassigned)
   cln.categ <- grepv(names(SNP.demux.Genotype.status), pattern = 'doublet|unassigned', invert = T)
   SNP.demux.Genotype.status.cln <- SNP.demux.Genotype.status[cln.categ]
   qpie(SNP.demux.Genotype.status.cln, suffix = suffix, w = 7, h =5, plot = T, both_pc_and_value = T)
 
-  # Check cell name identity --- --- --- --- ---
+  # Handle possible cell name prefixes in the Seurat object
   cells.GT.table = rownames(GT.table)
   cells.obj = colnames(obj)
 
-  if (!isFALSE(cellname_prefix)) { # if there set to handle cellname prefixes
-    if (is_null(cellname_prefix)) {
+  if (!isFALSE(cellname_prefix)) { # if cellname_prefix is not FALSE
+    if (is.null(cellname_prefix)) {
+      # Infer cell name prefixes from the Seurat object
       tbl_cellID_prefix <- table(stringr::str_split_fixed(cells.obj, pattern = '_', n = 2)[,1])
       cellname_prefix <- paste0(names(tbl_cellID_prefix), '_')
-      iprint(">>> Cellname prefixes in object:", head(cellname_prefix))
+      print("Cellname prefixes in object:", head(cellname_prefix))
       stopifnot(length(cellname_prefix) == 1)
     }
+    # Add the inferred prefix to the GT table's row names
+    iprint(">>> Cellname prefixes in object:", head(cellname_prefix))
     rownames(GT.table) <- paste0(cellname_prefix, rownames(GT.table))
   }
 
-
-  # Visual check cell name identity --- --- --- --- ---
+  # Check for overlap between the cell names in the GT table and the Seurat object
   iprint("Cells GT.table", head(rownames(GT.table)))
   iprint("Cells object", head(cells.obj))
-  Overlap.of.cell.names <- list("Cells in obj" = cells.obj
-                                , "Cells in GT.table" = rownames(GT.table)
-  )
+  Overlap.of.cell.names <- list("Cells in obj" = cells.obj, "Cells in GT.table" = rownames(GT.table))
+
   qvenn(Overlap.of.cell.names, plot = T, suffix = suffix)
   cells.found.in.both <- intersect.ls(Overlap.of.cell.names)
-  stopifnot(length(cells.found.in.both)>1)
+  stopifnot(length(cells.found.in.both) > min_cells_overlap)
 
+  # If return_tbl_for_cells_found_in_object is TRUE, subset the GT table to only cells found in both the GT table and the Seurat object
   if (return_tbl_for_cells_found_in_object) {
     GT.table <- GT.table[ cells.found.in.both, ]
   }
 
-  iprint("dimensions of the table:", idim(GT.table))
+  # Print the dimensions of the final GT table
+  print("dimensions of the table:", dim(GT.table))
   print(head(GT.table))
   print("")
   print("See the 4 plots generated in OutDir!")
 
-
   return(GT.table)
 }
+
 
 
 # _________________________________________________________________________________________________
