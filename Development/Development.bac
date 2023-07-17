@@ -2745,14 +2745,17 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
                      , "| median:", median(clust.size.distr)
                      , "| CV:", Stringendo::percentage_formatter(cv(clust.size.distr))
   )
-  xlb = "Cluster size (cells)"
+  xlb = "Clusters"
+  ylb = "Cluster size (cells)"
   xlim = c(0, max(clust.size.distr))
 
   if (plot) {
     if (length(clust.size.distr) < thr.hist) {
-      ggExpress::qbarplot(clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, ...)
+      ggExpress::qbarplot(clust.size.distr, plotname = ptitle, subtitle = psubtitle
+                          , label = clust.size.distr, xlab = xlb, ylab = ylb, ...)
     } else {
-      ggExpress::qhistogram(vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, xlim = xlim, ...)
+      ggExpress::qhistogram(vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle
+                            , xlab = xlb, ylab = ylb, xlim = xlim, ...)
     }
   } else {    "return vector"
     clust.size.distr

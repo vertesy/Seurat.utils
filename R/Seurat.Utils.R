@@ -1944,6 +1944,40 @@ drop.levels.Seurat <- function(obj = combined.obj, verbose = TRUE) {
 
 
 
+# ____________________________________________________________________
+#' @title Remove Clusters and Drop Levels
+#'
+#' @description This function removes residual small clusters from specified Seurat objects and drops levels in factor-like metadata.
+#' @param ls_obj A list of Seurat objects.
+#' @param object_names A character vector containing the names of the Seurat objects to process. Default is names of all objects in the `ls_obj`.
+#' @param indices A numeric vector indicating which datasets to process by their position in the `object_names` vector. By default, it processes the second and third datasets.
+#' @param ... Additional parameters passed to the `remove.residual.small.clusters` function.
+#'
+#' @details This function applies `remove.residual.small.clusters` and `drop.levels.Seurat` to the Seurat objects specified by the `indices` in the `object_names`.
+#' It operates in place, modifying the input `ls_obj` list.
+#'
+#' @return The function returns the modified list of Seurat objects.
+#' @examples
+#' \dontrun{
+#'   # Process the 2nd and 3rd datasets
+#'   remove_clusters_and_drop_levels(ls_obj, indices = c(2, 3))
+#' }
+#'
+#' @export
+remove_clusters_and_drop_levels <- function(ls_obj, object_names = names(ls_obj)
+                                            , indices = 2:3, ...) {
+  for (index in indices) {
+    dataset_name <- object_names[index]
+    obj <- ls_obj[[dataset_name]]
+    obj <- Seurat.utils::remove.residual.small.clusters(obj = obj, identitites = GetClusteringRuns(obj), ...)
+    obj <- Seurat.utils::drop.levels.Seurat(obj)
+    ls_obj[[dataset_name]] <- obj
+  }
+  return(ls_obj)
+}
+
+
+
 
 # _________________________________________________________________________________________________
 #' @title remove.cells.by.UMAP
@@ -2745,14 +2779,17 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
                      , "| median:", median(clust.size.distr)
                      , "| CV:", Stringendo::percentage_formatter(cv(clust.size.distr))
   )
-  xlb = "Cluster size (cells)"
+  xlb = "Clusters"
+  ylb = "Cluster size (cells)"
   xlim = c(0, max(clust.size.distr))
 
   if (plot) {
     if (length(clust.size.distr) < thr.hist) {
-      ggExpress::qbarplot(clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, ...)
+      ggExpress::qbarplot(clust.size.distr, plotname = ptitle, subtitle = psubtitle
+                          , label = clust.size.distr, xlab = xlb, ylab = ylb, ...)
     } else {
-      ggExpress::qhistogram(vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle, xlab = xlb, xlim = xlim, ...)
+      ggExpress::qhistogram(vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle
+                            , xlab = xlb, ylab = ylb, xlim = xlim, ...)
     }
   } else {    "return vector"
     clust.size.distr
