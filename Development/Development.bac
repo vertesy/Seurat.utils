@@ -1021,7 +1021,7 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
   {
     all.genes = percent_rank(expr.q99);
     names(all.genes) = names(expr.q99);
-    all.genes <- sort.decreasing(all.genes)
+    all.genes <- sort(all.genes, decreasing = TRUE)
     if (set.all.genes) obj@misc$'all.genes' = all.genes = as.list(all.genes)
     assign('all.genes', all.genes, envir = as.environment(1))
   }
@@ -1980,51 +1980,59 @@ remove_clusters_and_drop_levels <- function(ls_obj, object_names = names(ls_obj)
 
 
 # _________________________________________________________________________________________________
-#' @title remove.cells.by.UMAP
+#' @title Remove Cells by Dimension Reduction
 #'
-#' @param reduction Dim. reduction: umap or pca or tsne
-#' @param umap_dim Which axis to remove by?
-#' @param obj Seurat object, Default: combined.obj
-#' @param cutoff Horizontal or vertical cutoff value
-#' @param cut_below Shall we remove below or above the line
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description This function applies a cutoff in the specified dimension of a given dimension reduction (UMAP, PCA, or t-SNE) to remove cells.
+#' @param reduction A string specifying the dimension reduction technique to be used ('umap', 'pca', or 'tsne'). Default is 'umap'.
+#' @param umap_dim An integer specifying which dimension (axis) to apply the cutoff. Default is 1.
+#' @param obj A Seurat object. Default is 'combined.obj'.
+#' @param cutoff A numerical value indicating the cutoff value for the specified dimension. Default is 0.
+#' @param cut_below A logical value indicating whether to remove cells below (TRUE) or above (FALSE) the cutoff line. Default is TRUE.
+#' @param ... Any other parameters to be passed to internally called functions.
+#' @return A Seurat object with cells removed according to the specified cutoff.
 #' @export
-remove.cells.by.UMAP <- function(reduction = 'umap'
-                                 , umap_dim = 1
-                                 , obj = combined.obj
-                                 , cutoff = 0
-                                 , cut_below = TRUE
-                                 , ...
+remove_cells_by_dim_reduction <- function(reduction = 'umap'
+                                          , umap_dim = 1
+                                          , obj = combined.obj
+                                          , cutoff = 0
+                                          , cut_below = TRUE
+                                          , ...
 ) {
+  # Plot cells
+  p <- clUMAP(obj = obj, save.plot = FALSE, ...)
 
-  {
-    p <- clUMAP(obj = obj, save.plot = F)
-    p <-
-      if (umap_dim == 1) {
-        p + geom_vline(xintercept = cutoff)
-      } else if (umap_dim == 1) {
-        p + geom_hline(xintercept = cutoff)
-      }
-    print(p)
+  # Add cutoff line to plot
+  if (umap_dim == 1) {
+    p <- p + geom_vline(xintercept = cutoff)
+  } else if (umap_dim == 2) {
+    p <- p + geom_hline(yintercept = cutoff)
+  }
+  print(p)
+
+  # Retrieve cell embeddings
+  cell_embedding <- obj@reductions[[reduction]]@cell.embeddings
+  all_cells <- rownames(cell_embedding)
+  stopifnot(ncol(cell_embedding) > 0)
+  embedding_dim_x <- cell_embedding[, umap_dim]
+
+  # Determine cells to remove based on cutoff
+  cells_to_remove <- if (cut_below) which_names(embedding_dim_x < cutoff) else which_names(embedding_dim_x >= cutoff)
+
+  # Report on cells removed
+  if (length(cells_to_remove)) {
+    iprint(">>> A total of", length(cells_to_remove), "cells are removed which fell on UMAP aside cutoff:", cutoff)
+  } else {
+    iprint(">>> No cells are removed because of the UMAP dimension cutoff.")
   }
 
-  cell_embedding <- obj@reductions[[reduction]]@cell.embeddings
-  stopifnot(ncol(cell_embedding) > 0)
-  emX <- cell_embedding[, umap_dim]
-
-  all.cells.2.remove <- if (cut_below) which_names(emX < cutoff) else which_names(emX >= cutoff)
-
-
-
-  if (length(all.cells.2.remove)) {
-    iprint(">>> a total of", length(all.cells.2.remove), "cells are removed which fell on UMAP aside cutoff:", cutoff)
-  } else { iprint(">>> No cells are removed because of the UMAP dimension cutoff.")}
-
-  cells.2.keep <- setdiff(all.cells, all.cells.2.remove)
-  obj <- subset(x = obj, cells = cells.2.keep)
+  # Subset object to include only cells not removed
+  cells_to_keep <- setdiff(all_cells, cells_to_remove)
+  obj <- subset(x = obj, cells = cells_to_keep)
 
   return(obj)
 }
+
+
 
 
 
@@ -5077,7 +5085,7 @@ SNP.demux.fix.GT.table <- function(GT.table
   }
 
   # Print the dimensions of the final GT table
-  print("dimensions of the table:", dim(GT.table))
+  iprint("dimensions of the table:", dim(GT.table))
   print(head(GT.table))
   print("")
   print("See the 4 plots generated in OutDir!")

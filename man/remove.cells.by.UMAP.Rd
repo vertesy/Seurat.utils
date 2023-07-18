@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{remove.cells.by.UMAP}
 \alias{remove.cells.by.UMAP}
-\title{remove.cells.by.UMAP}
+\title{Remove Cells by Dimension Reduction}
 \usage{
 remove.cells.by.UMAP(
   reduction = "umap",
@@ -14,18 +14,21 @@ remove.cells.by.UMAP(
 )
 }
 \arguments{
-\item{reduction}{Dim. reduction: umap or pca or tsne}
+\item{reduction}{A string specifying the dimension reduction technique to be used ('umap', 'pca', or 'tsne'). Default is 'umap'.}
 
-\item{umap_dim}{Which axis to remove by?}
+\item{umap_dim}{An integer specifying which dimension (axis) to apply the cutoff. Default is 1.}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object. Default is 'combined.obj'.}
 
-\item{cutoff}{Horizontal or vertical cutoff value}
+\item{cutoff}{A numerical value indicating the cutoff value for the specified dimension. Default is 0.}
 
-\item{cut_below}{Shall we remove below or above the line}
+\item{cut_below}{A logical value indicating whether to remove cells below (TRUE) or above (FALSE) the cutoff line. Default is TRUE.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{...}{Any other parameters to be passed to internally called functions.}
+}
+\value{
+A Seurat object with cells removed according to the specified cutoff.
 }
 \description{
-remove.cells.by.UMAP
+This function applies a cutoff in the specified dimension of a given dimension reduction (UMAP, PCA, or t-SNE) to remove cells.
 }
