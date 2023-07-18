@@ -1021,7 +1021,7 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
   {
     all.genes = percent_rank(expr.q99);
     names(all.genes) = names(expr.q99);
-    all.genes <- sort.decreasing(all.genes)
+    all.genes <- sort(all.genes, decreasing = TRUE)
     if (set.all.genes) obj@misc$'all.genes' = all.genes = as.list(all.genes)
     assign('all.genes', all.genes, envir = as.environment(1))
   }
