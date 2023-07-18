@@ -5077,7 +5077,7 @@ SNP.demux.fix.GT.table <- function(GT.table
   }
 
   # Print the dimensions of the final GT table
-  print("dimensions of the table:", dim(GT.table))
+  iprint("dimensions of the table:", dim(GT.table))
   print(head(GT.table))
   print("")
   print("See the 4 plots generated in OutDir!")
@@ -5487,7 +5487,7 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 #' @param obj The object to be saved, typically a Seurat object.
 #' @param prefix A string prefix added to the filename. Default is NULL.
 #' @param suffix A string suffix added to the filename. Default is NULL.
-#' @param inOutDir A boolean flag, if TRUE the OutDir is used as save directory, if FALSE the alternative_path_rdata is used. Default is FALSE.
+#' @param inOutDir A boolean flag, if TRUE the OutDir is used as save directory, if FALSE the alternative_path_rdata is used. Default is TRUE
 #' @param project A string representing the project code. This is appended to the saved file name. Default is the active project determined by getProject().
 #' @param alternative_path_rdata A string that specifies the alternative path for storing the RDS file if inOutDir is FALSE. Default is "~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/" appended with the basename of OutDir.
 #' @param homepath A string representing the homepath. Will be replaced by '~' in the file path. Default is '/Users/abel.vertesy/'.
@@ -5496,7 +5496,7 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 #' @examples
 #' \dontrun{ if(interactive()){ isave.RDS(my.R.object)  } }
 #' @export
-isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = F
+isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
                       , project = getProject()
                       , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
                       , homepath = '/Users/abel.vertesy/'

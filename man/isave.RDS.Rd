@@ -8,7 +8,7 @@ isave.RDS(
   obj,
   prefix = NULL,
   suffix = NULL,
-  inOutDir = F,
+  inOutDir = TRUE,
   project = getProject(),
   alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/",
     basename(OutDir)),
@@ -24,7 +24,7 @@ isave.RDS(
 
 \item{suffix}{A string suffix added to the filename. Default is NULL.}
 
-\item{inOutDir}{A boolean flag, if TRUE the OutDir is used as save directory, if FALSE the alternative_path_rdata is used. Default is FALSE.}
+\item{inOutDir}{A boolean flag, if TRUE the OutDir is used as save directory, if FALSE the alternative_path_rdata is used. Default is TRUE}
 
 \item{project}{A string representing the project code. This is appended to the saved file name. Default is the active project determined by getProject().}
 
