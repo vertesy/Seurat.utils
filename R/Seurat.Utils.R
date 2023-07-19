@@ -1145,6 +1145,81 @@ transfer_labels_seurat <- function(query_obj, reference_path
 }
 
 
+# _________________________________________________________________________________________________
+#' Replace Categories by the Most Frequent Match
+#'
+#' This function replaces each category in a query column of a data frame with the most
+#' frequently corresponding category in a reference column. It calculates the assignment quality,
+#' reports it, and optionally plots it.
+#'
+#' @title replace_by_most_frequent_categories
+#' @description Replace each category in the 'query_col' column of a data frame
+#'              with the most frequently corresponding category in the 'ref_col' column.
+#'
+#' @param df A data frame containing the data.
+#' @param query_col The name of the column in 'df' whose categories are to be replaced.
+#'                  By default, the first column of 'df' is used.
+#' @param ref_col The name of the column in 'df' used as reference for replacement.
+#'                By default, the second column of 'df' is used.
+#' @param show_plot Logical, whether to plot assignment quality. Defaults to TRUE.
+#' @param ... Additional parameters passed to the qbarplot function.
+#'
+#' @return A data frame with categories in 'query_col' replaced by the most frequent match
+#'         from 'ref_col'.
+#'
+#' @examples
+#' \dontrun{
+#' replace_by_most_frequent_categories(df = my_data)
+#' }
+#'
+replace_by_most_frequent_categories <- function(df, query_col = colnames(df)[1]
+                                                , ref_col = colnames(df)[2]
+                                                , show_plot = TRUE, ...) {
+  # Convert to data frame if it is not
+  if(!is.data.frame(df)) {
+    df <- as.data.frame(df)
+  }
+
+  cat_query <- unique(df[[query_col]])
+  iprint(l(cat_query), "query categories:", head(cat_query))
+  cat_ref <- unique(df[[ref_col]])
+  iprint(l(cat_ref), "query categories:", head(cat_ref))
+
+  # Create a table of the most frequent reference values for each query category
+  replacement_table <- df %>%
+    dplyr::group_by(!!sym(query_col), !!sym(ref_col)) %>%
+    dplyr::summarise(n = n(), .groups = 'drop') %>%
+    dplyr::arrange(!!sym(query_col), desc(n)) %>%
+    dplyr::filter(!duplicated(!!sym(query_col)))
+
+  # Calculate assignment quality
+  total_counts <- table(df[[query_col]])
+  quality <- replacement_table$n / total_counts[replacement_table[[query_col]]]
+  names(quality) <- paste0(names(quality), '->' , replacement_table[[ref_col]])
+
+  # Report assignment quality
+  message("Assignment quality (proportion of total matches):")
+  # print(setNames(quality, replacement_table[[query_col]]))
+
+  # Plot assignment quality
+  if (show_plot) {
+    # barplot(quality, main = "Assignment Quality", xlab = query_col, ylab = "Proportion of Total Matches")
+    px <- qbarplot(quality, label = percentage_formatter(quality)
+                   , plotname = "Assignment Quality"
+                   , subtitle = paste("From", colnames(df)[1], "->", colnames(df)[2])
+                   , xlab = paste("Best query match to reference")
+                   , ylab = "Proportion of Total Matches"
+                   , ...)
+    print(px)
+
+  }
+
+  # Replace the query values with the most frequent reference values
+  df[[query_col]] <- replacement_table[[ref_col]][match(df[[query_col]], replacement_table[[query_col]])]
+
+  return(df)
+}
+
 
 # _________________________________________________________________________________________________
 # Clustering ______________________________ ----
