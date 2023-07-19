@@ -4,12 +4,18 @@
 \alias{Downsample.Seurat.Objects}
 \title{Downsample.Seurat.Objects}
 \usage{
-Downsample.Seurat.Objects(ls.obj = ls.Seurat, NrCells = p$dSample.Organoids)
+Downsample.Seurat.Objects(
+  ls.obj = ls.Seurat,
+  NrCells = p$dSample.Organoids,
+  save_object = TRUE
+)
 }
 \arguments{
-\item{ls.obj}{List of Seurat objects, Default: ls.Seurat}
+\item{ls.obj}{List of Seurat objects. Default: ls.Seurat}
 
 \item{NrCells}{Number of cells to downsample to.}
+
+\item{save_object}{save object by isaveRDS, otherwise return it. Default: TRUE}
 }
 \description{
 Downsample a list of Seurat objects
