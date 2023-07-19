@@ -1137,15 +1137,17 @@ transfer_labels_seurat <- function(query_obj, reference_path
   # Visualize reference object
   Seurat.utils::clUMAP(obj = reference_obj, ident = named_ident, suffix = 'REFERENCE', sub = 'REFERENCE', ...)
 
-  print("Find anchors")
+
   if (is.null(anchors)) {
+    print("Find anchors")
     anchors <- Seurat::FindTransferAnchors(reference = reference_obj, query = query_obj)
     if (save_anchors) isave.RDS(obj = anchors, inOutDir = TRUE)
-  }
+  } else { print("Anchors provided") }
 
 
   print("Transfer labels")
-  transferred_clIDs <- Seurat::TransferData(anchorset = anchors, refdata = reference_obj@meta.data[, named_ident])
+  transferred_clIDs <- Seurat::TransferData(anchorset = anchors
+                                            , refdata = reference_obj@meta.data[, named_ident])
 
   # Add metadata to combined object
   query_obj <- Seurat::AddMetaData(object = query_obj, metadata = transferred_clIDs[, predictions_col]
@@ -1200,7 +1202,7 @@ match_best_identity <- function(obj, ident_from
 
 
   translation <- replace_by_most_frequent_categories(
-    df = dictionary, show_plot = TRUE, ...)
+    df = dictionary, show_plot = TRUE, suffix_barplot = ident_from, ...)
 
   obj@meta.data[, new_ident_name] <- translation[,1]
 
@@ -1227,6 +1229,7 @@ match_best_identity <- function(obj, ident_from
 #' @param ref_col The name of the column in 'df' used as reference for replacement.
 #'                By default, the second column of 'df' is used.
 #' @param show_plot Logical, whether to plot assignment quality. Defaults to TRUE.
+#' @param suffix_barplot Suffix for barplot.
 #' @param ... Additional parameters passed to the qbarplot function.
 #'
 #' @return A data frame with categories in 'query_col' replaced by the most frequent match
@@ -1250,7 +1253,9 @@ match_best_identity <- function(obj, ident_from
 #'
 replace_by_most_frequent_categories <- function(df, query_col = colnames(df)[1]
                                                 , ref_col = colnames(df)[2]
-                                                , show_plot = TRUE, ...) {
+                                                , show_plot = TRUE
+                                                , suffix_barplot = NULL
+                                                , ...) {
   # Convert to data frame if it is not
   if(!is.data.frame(df)) {
     df <- as.data.frame(df)
@@ -1283,7 +1288,9 @@ replace_by_most_frequent_categories <- function(df, query_col = colnames(df)[1]
   if (show_plot) {
     # barplot(quality, main = "Assignment Quality", xlab = query_col, ylab = "Proportion of Total Matches")
     px <- qbarplot(quality, label = percentage_formatter(quality)
+                   , suffix = suffix_barplot
                    , plotname = "Assignment Quality"
+                   , filename = make.names(kpp("Assignment Quality", suffix_barplot, "pdf"))
                    , subtitle = paste("From", colnames(df)[1], "->", colnames(df)[2])
                    , xlab = paste("Best query match to reference")
                    , ylab = "Proportion of Total Matches"
