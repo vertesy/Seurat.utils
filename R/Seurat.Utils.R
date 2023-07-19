@@ -1146,6 +1146,58 @@ transfer_labels_seurat <- function(query_obj, reference_path
 
 
 # _________________________________________________________________________________________________
+#' Match and Translate Best Identity
+#'
+#' @title Match and Translate Best Identity
+#'
+#' @description This function matches the best identity from `ident_from` to `ident_to` in an object,
+#' updates the metadata of the object with this new identity and returns the updated object. Additionally,
+#' it generates a UMAP plot based on the new identity. The function replaces original categories with
+#' the most frequent ones, hence helps to filter out less important categories.
+#'
+#' @param obj The object to update. This object must have a `meta.data` attribute which is a data frame
+#'   containing columns named as `ident_from` and `ident_to`.
+#' @param ident_from A string. The name of the column in `obj@meta.data` that is used as the source of identities.
+#'   There is no default value for this parameter.
+#' @param ident_to A string. The name of the column in `obj@meta.data` that is used as the target of identities.
+#'   There is no default value for this parameter.
+#' @param to_suffix A string. The suffix to add to the new identity name. Default is the output of the `FixPlotName`
+#'   function applied to the `ident_from` string, with all alphabetical and underscore characters removed.
+#' @param new_ident_name A string. The name for the newly created identity column in `obj@meta.data`.
+#'   Default is a concatenation of `ident_from`, "best.match", and `to_suffix` using `kpp` function.
+#' @param ... Additional parameters to be passed to `replace_by_most_frequent_categories` function.
+#'
+#' @return An updated version of `obj` with an additional column in `obj@meta.data` named as `new_ident_name`
+#'   representing the new identity. The function also generates a UMAP plot based on this new identity.
+#'
+#' @seealso \code{\link[clUMAP]{clUMAP}}, \code{\link[kpp]{kpp}}, \code{\link[FixPlotName]{FixPlotName}},
+#'   \code{\link[replace_by_most_frequent_categories]{replace_by_most_frequent_categories}}
+#'
+#' @examples
+#' \dontrun{
+#' updated_obj <- match_best_identity(my_obj, "origin_identity", "target_identity")
+#' }
+#' @export
+
+match_best_identity <- function(obj, ident_from, ident_to
+                                , to_suffix = FixPlotName(gsub(pattern = '[a-zA-Z_]', replacement = "", x = ident_from))
+                                , new_ident_name = kpp(ident_from, "best.match", to_suffix)
+                                , ...){
+  dictionary <- obj@meta.data[, c(ident_from, ident_to)]
+
+
+  translation <- replace_by_most_frequent_categories(
+    df = dictionary, show_plot = TRUE, ...)
+
+  obj@meta.data[, new_ident_name] <- translation[,1]
+
+  px <- clUMAP(ident = new_ident_name, obj = obj)
+  print(px)
+  return(obj)
+}
+
+
+# _________________________________________________________________________________________________
 #' Replace Categories by the Most Frequent Match
 #'
 #' This function replaces each category in a query column of a data frame with the most
