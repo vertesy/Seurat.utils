@@ -1178,8 +1178,8 @@ transfer_labels_seurat <- function(query_obj, reference_path
 #' updated_obj <- match_best_identity(my_obj, "origin_identity", "target_identity")
 #' }
 #' @export
-
-match_best_identity <- function(obj, ident_from, ident_to
+match_best_identity <- function(obj, ident_from
+                                , ident_to = gsub(pattern = 'ordered', replacement = 'transferred', x = ident_from)
                                 , to_suffix = FixPlotName(gsub(pattern = '[a-zA-Z_]', replacement = "", x = ident_from))
                                 , new_ident_name = kpp(ident_from, "best.match", to_suffix)
                                 , ...){
@@ -2008,7 +2008,13 @@ subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.
 #' @export
 #' @importFrom tictoc tic toc
 #' @importFrom Stringendo percentage_formatter
-Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids", save_object = TRUE) {
+Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids"
+                                      , save_object = TRUE) {
+
+  # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
+  if(!is.list(ls.obj) & inherits(ls.obj, "Seurat")) ls.obj <- list(ls.obj)
+  stopifnot(is.list(ls.obj) & all(sapply(ls.obj, function(x) inherits(x, "Seurat"))))
+
   names.ls = names(ls.obj)
   n.datasets = length(ls.obj)
   iprint(NrCells, "cells")
@@ -2058,10 +2064,17 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
 #' @importFrom tictoc tic toc
 #' @importFrom Stringendo percentage_formatter
 
-Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1, save_object = TRUE) {
+Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1
+                                         , save_object = TRUE) {
+
+  # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
+  if(!is.list(ls.obj) & inherits(ls.obj, "Seurat")) ls.obj <- list(ls.obj)
+  stopifnot(is.list(ls.obj) & all(sapply(ls.obj, function(x) inherits(x, "Seurat"))))
+
   names.ls = names(ls.obj)
   n.datasets = length(ls.obj)
   iprint(fraction, "fraction")
+
   tictoc::tic()
   if (foreach::getDoParRegistered() ) {
     ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
