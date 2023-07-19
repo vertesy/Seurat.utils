@@ -1796,8 +1796,9 @@ subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.
 #' @title Downsample.Seurat.Objects
 #'
 #' @description Downsample a list of Seurat objects
-#' @param ls.obj List of Seurat objects, Default: ls.Seurat
+#' @param ls.obj List of Seurat objects. Default: ls.Seurat
 #' @param NrCells Number of cells to downsample to.
+#' @param save_object save object by isaveRDS, otherwise return it. Default: TRUE
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -1807,7 +1808,7 @@ subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.
 #' @export
 #' @importFrom tictoc tic toc
 #' @importFrom Stringendo percentage_formatter
-Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids") {
+Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids", save_object = TRUE) {
   names.ls = names(ls.obj)
   n.datasets = length(ls.obj)
   iprint(NrCells, "cells")
@@ -1829,7 +1830,12 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
   print(head(unlapply(ls.obj, ncol)))
   print(head(unlapply(ls.obj.downsampled, ncol)))
 
-  isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = T)
+  if (save_object) {
+    isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = T)
+  } else {
+    return(ls.obj.downsampled)
+  }
+
 
 }
 
@@ -1841,6 +1847,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
 #' @description Downsample a list of Seurat objects, by fraction
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
 #' @param NrCells Number of cells to downsample to. Default: p$dSample.Organoids
+#' @param save_object save object by isaveRDS, otherwise return it. Default: TRUE
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -1851,7 +1858,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
 #' @importFrom tictoc tic toc
 #' @importFrom Stringendo percentage_formatter
 
-Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1) {
+Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1, save_object = TRUE) {
   names.ls = names(ls.obj)
   n.datasets = length(ls.obj)
   iprint(fraction, "fraction")
@@ -1873,7 +1880,12 @@ Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1) {
 
   print(head(unlapply(ls.obj, ncol)))
   print(head(unlapply(ls.obj.downsampled, ncol)))
-  isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = T)
+  if (save_object) {
+    isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = T)
+  } else {
+    return(ls.obj.downsampled)
+  }
+
 
 }
 
