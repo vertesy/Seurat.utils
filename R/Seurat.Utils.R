@@ -1222,6 +1222,17 @@ match_best_identity <- function(obj, ident_from, ident_to
 #' @examples
 #' \dontrun{
 #' replace_by_most_frequent_categories(df = my_data)
+#' (MXX <- as.tibble(structure(c("Adjut", "Adjut", "Yearn", "Adjut", "Dwarf", "Adjut",
+#' "Dwarf", "Adjut", "Dwarf", "Yearn", "Dwarf", "Dwarf", "Dwarf",
+#' "Yearn", "Dwarf", "Dwarf", "Dwarf", "Zebra", "Yucca", "Plyer",
+#' "Blaze", "Blaze", "Dazed", "Blaze", "Swept", "Bold", "Vixen",
+#' "Bold", "Swept", "Dazed", "Mirth", "Witch", "Vixen", "Dazed",
+#' "Swept", "Mirth", "Swept", "Vexed", "Query", "Yolk")
+#'  , .Dim = c(20L, 2L), .Dimnames =
+#'  list(NULL, c("RNA_snn_res.0.1.ordered", "RNA_snn_res.0.3.ordered" )))))
+#'
+#' z <- replace_by_most_frequent_categories(df = MXX)
+#' head(cbind(MXX[,1],z[,1]))
 #' }
 #'
 replace_by_most_frequent_categories <- function(df, query_col = colnames(df)[1]
@@ -1243,6 +1254,8 @@ replace_by_most_frequent_categories <- function(df, query_col = colnames(df)[1]
     dplyr::summarise(n = n(), .groups = 'drop') %>%
     dplyr::arrange(!!sym(query_col), desc(n)) %>%
     dplyr::filter(!duplicated(!!sym(query_col)))
+
+  replacement_table[[ref_col]] <- make.unique(replacement_table[[ref_col]])
 
   # Calculate assignment quality
   total_counts <- table(df[[query_col]])
@@ -1271,6 +1284,7 @@ replace_by_most_frequent_categories <- function(df, query_col = colnames(df)[1]
 
   return(df)
 }
+
 
 
 # _________________________________________________________________________________________________
