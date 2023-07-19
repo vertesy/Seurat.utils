@@ -1097,9 +1097,11 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 #'
 #' @param query_obj A Seurat object for which the labels are to be transferred.
 #' @param reference_path A character string indicating the file path to the reference Seurat object. The path must exist.
+#' @param reference_obj Alternative to `reference_path`. If provided, the path is not used to load the reference data.
 #' @param named_ident A character string specifying the name of the identity class to be used from the reference Seurat object. Default is 'RNA_snn_res.0.3.ordered.ManualNames'.
 #' @param new_ident A character string specifying the name of the new identity class to be created in the query Seurat object. Default is obtained by replacing 'ordered' with 'transferred' in named_ident.
 #' @param predictions_col A character string specifying the column in the metadata of the transferred Seurat object containing the transferred labels. Default is 'predicted.id'.
+#' @param save_anchors save anchors as RDS file.
 #' @param suffix A character string to be used as a suffix in the visualization. Default is 'NEW'.
 #' @param ... Additional arguments passed to the Seurat.utils::clUMAP function.
 #'
@@ -1112,36 +1114,47 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 #' #                                     reference_path = '~/Dropbox (VBC)/Abel.IMBA/Metadata.D/CON.meta/label.transfer/sc6/reference.obj.sc6.DIET.2023.07.19_13.24.Rds.gz',
 #' #                                     query_obj = combined.obj)
 transfer_labels_seurat <- function(query_obj, reference_path
+                                   , reference_obj = NULL
+                                   , anchors = NULL
                                    , named_ident = 'RNA_snn_res.0.3.ordered.ManualNames'
                                    , new_ident = gsub(pattern = 'ordered'
                                                       , replacement = 'transferred'
                                                       , x = named_ident)
                                    , predictions_col = 'predicted.id'
+                                   , save_anchors = TRUE
                                    , suffix = "NEW"
                                    , ...) {
 
-  stopifnot(file.exists(reference_path))
-
-  iprint("Loading reference object:", basename(reference_path))
-  reference.obj <- readr::read_rds(reference_path)
+  print(named_ident)
+  if (is.null(reference_obj)) {
+    iprint("Loading reference object:", basename(reference_path))
+    stopifnot(file.exists(reference_path))
+    reference_obj <- readr::read_rds(reference_path)
+  } else {
+    stopifnot(inherits(reference_obj, "Seurat") & min(dim(reference_obj)) > 10)
+  }
 
   # Visualize reference object
-  Seurat.utils::clUMAP(obj = reference.obj, ident = named_ident, suffix = 'REFERENCE', sub = 'REFERENCE', ...)
+  Seurat.utils::clUMAP(obj = reference_obj, ident = named_ident, suffix = 'REFERENCE', sub = 'REFERENCE', ...)
 
   print("Find anchors")
-  anchors <- Seurat::FindTransferAnchors(reference = reference.obj, query = combined.obj)
+  if (is.null(anchors)) {
+    anchors <- Seurat::FindTransferAnchors(reference = reference_obj, query = query_obj)
+    if (save_anchors) isave.RDS(obj = anchors, inOutDir = TRUE)
+  }
+
 
   print("Transfer labels")
-  transferred_clIDs <- Seurat::TransferData(anchorset = anchors, refdata = reference.obj[[named_ident]])
+  transferred_clIDs <- Seurat::TransferData(anchorset = anchors, refdata = reference_obj@meta.data[, named_ident])
 
   # Add metadata to combined object
-  combined.obj <- Seurat::AddMetaData(object = combined.obj, metadata = transferred_clIDs[, predictions_col]
-                                      , col.name = new_ident)
+  query_obj <- Seurat::AddMetaData(object = query_obj, metadata = transferred_clIDs[, predictions_col]
+                                   , col.name = new_ident)
 
   # Visualize combined object
-  Seurat.utils::clUMAP(ident = new_ident, obj = combined.obj, suffix = , ...)
+  Seurat.utils::clUMAP(ident = new_ident, obj = query_obj, suffix = , ...)
 
-  return(combined.obj)
+  return(query_obj)
 }
 
 
@@ -1392,7 +1405,9 @@ GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0-9
 #' }
 #' @export
 GetNamedClusteringRuns <- function(obj = combined.obj  # Get Clustering Runs: metadata column names
-                                   , res = c(F, 0.5)[1], topgene = F, pat = "^cl.names.Known.*[0,1]\\.[0-9]$") {
+                                   , res = c(F, 0.5)[1], topgene = F
+                                   , pat = c("^cl.names.Known.*[0,1]\\.[0-9]$", "Name|name")[2]
+                                   ) {
   if (res) pat = gsub(x = pat, pattern = '\\[.*\\]', replacement = res)
   if (topgene) pat = gsub(x = pat, pattern = 'Known', replacement = 'top')
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
