@@ -1084,6 +1084,65 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 
 
 
+# _________________________________________________________________________________________________
+#' Transfer labels from a reference Seurat object to a query Seurat object
+#'
+#' This function takes a query Seurat object and a path to a reference Seurat object,
+#' finds transfer anchors, transfers labels, and visualizes the combined object.
+#'
+#' @title Transfer Labels in Seurat
+#'
+#' @description Function to transfer labels from a reference Seurat object to a query Seurat object using anchoring and transfer data methods from the Seurat package.
+#' It then visualizes the reference and the combined objects using Uniform Manifold Approximation and Projection (UMAP).
+#'
+#' @param query_obj A Seurat object for which the labels are to be transferred.
+#' @param reference_path A character string indicating the file path to the reference Seurat object. The path must exist.
+#' @param named_ident A character string specifying the name of the identity class to be used from the reference Seurat object. Default is 'RNA_snn_res.0.3.ordered.ManualNames'.
+#' @param new_ident A character string specifying the name of the new identity class to be created in the query Seurat object. Default is obtained by replacing 'ordered' with 'transferred' in named_ident.
+#' @param predictions_col A character string specifying the column in the metadata of the transferred Seurat object containing the transferred labels. Default is 'predicted.id'.
+#' @param suffix A character string to be used as a suffix in the visualization. Default is 'NEW'.
+#' @param ... Additional arguments passed to the Seurat.utils::clUMAP function.
+#'
+#' @return The modified query Seurat object with the transferred labels as a new identity class.
+#'
+#' @export
+#'
+#' @examples
+#' # combined.objX <- transfer_labels_seurat(named_ident = 'RNA_snn_res.0.3.ordered.ManualNames',
+#' #                                     reference_path = '~/Dropbox (VBC)/Abel.IMBA/Metadata.D/CON.meta/label.transfer/sc6/reference.obj.sc6.DIET.2023.07.19_13.24.Rds.gz',
+#' #                                     query_obj = combined.obj)
+transfer_labels_seurat <- function(query_obj, reference_path
+                                   , named_ident = 'RNA_snn_res.0.3.ordered.ManualNames'
+                                   , new_ident = gsub(pattern = 'ordered'
+                                                      , replacement = 'transferred'
+                                                      , x = named_ident)
+                                   , predictions_col = 'predicted.id'
+                                   , suffix = "NEW"
+                                   , ...) {
+
+  stopifnot(file.exists(reference_path))
+
+  iprint("Loading reference object:", basename(reference_path))
+  reference.obj <- readr::read_rds(reference_path)
+
+  # Visualize reference object
+  Seurat.utils::clUMAP(obj = reference.obj, ident = named_ident, suffix = 'REFERENCE', sub = 'REFERENCE', ...)
+
+  print("Find anchors")
+  anchors <- Seurat::FindTransferAnchors(reference = reference.obj, query = combined.obj)
+
+  print("Transfer labels")
+  transferred_clIDs <- Seurat::TransferData(anchorset = anchors, refdata = reference.obj[[named_ident]])
+
+  # Add metadata to combined object
+  combined.obj <- Seurat::AddMetaData(object = combined.obj, metadata = transferred_clIDs[, predictions_col]
+                                      , col.name = new_ident)
+
+  # Visualize combined object
+  Seurat.utils::clUMAP(ident = new_ident, obj = combined.obj, suffix = , ...)
+
+  return(combined.obj)
+}
 
 
 
