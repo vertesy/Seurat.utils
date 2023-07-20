@@ -1123,6 +1123,7 @@ transfer_labels_seurat <- function(query_obj, reference_path
                                    , predictions_col = 'predicted.id'
                                    , save_anchors = TRUE
                                    , suffix = "NEW"
+                                   , plot_reference = TRUE
                                    , ...) {
 
   print(named_ident)
@@ -1136,7 +1137,7 @@ transfer_labels_seurat <- function(query_obj, reference_path
 
   # Visualize reference object
   # Seurat.utils::
-    clUMAP(obj = reference_obj, ident = named_ident, suffix = 'REFERENCE', sub = 'REFERENCE', ...)
+  if (plot_reference) clUMAP(obj = reference_obj, ident = named_ident, suffix = 'REFERENCE', sub = 'REFERENCE', ...)
 
 
   if (is.null(anchors)) {
