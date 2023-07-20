@@ -492,7 +492,9 @@ ww.calc_helper <- function(obj, genes){
 #' @param suffix An optional suffix for the filename.
 #' @param return.df A logical indicating if the function should return the data frame used to create the plot. Default: FALSE
 #' @param label A logical indicating if labels should be added to the bar plot. Default: FALSE
+#' @param subtitle
 #' @param ... Additional parameters to pass to internally called functions.
+#'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -503,8 +505,10 @@ ww.calc_helper <- function(obj, genes){
 #'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
 #' @export
 #' @importFrom dplyr select group_by_
-scBarplot.FractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'percent.ribo', id.col =  'cl.names.top.gene.res.0.3'
+scBarplot.FractionAboveThr <- function(thrX = 0.3, value.col = 'percent.ribo'
+                                       , id.col =  'cl.names.top.gene.res.0.3'
                                        , obj = combined.obj, return.df = F, label = F
+                                       , suffix = NULL, subtitle = id.col
                                        , ...) { # Calculat the fraction of cells per cluster above a certain threhold
   meta <- obj@meta.data
   metacol <- meta %>%
@@ -521,16 +525,18 @@ scBarplot.FractionAboveThr <- function(thrX = 0.3, suffix= NULL, value.col = 'pe
 
   df_2vec <- df_cells_above[,c(1,4)]
   (v.fr_n_cells_above <- 100* deframe(df_2vec))
-  if (label == TRUE) lab =  percentage_formatter(deframe(df_2vec)) else lab = NULL
+  if (label == TRUE) lab =  percentage_formatter(deframe(df_2vec), digitz = 2) else lab = NULL
 
-  pname <- paste('Pc. Cells above', thrX, 'of', value.col, '|', id.col) #
+  pname <- paste('Pc. cells above', value.col, 'of', thrX)
   ggobj <- ggExpress::qbarplot(v.fr_n_cells_above
                                , plotname = pname
+                               , filename = FixPlotName(kpp(pname, id.col, '.pdf'))
                                , suffix = suffix
-                               # , subtitle = id.col
-                               , caption = paste('Overall average:', iround(total_average), '%')
+                               , subtitle = subtitle
+                               , caption = paste('Overall average:', iround(total_average), '% |'
+                                                 , substitute(obj)) # , '\n', id.col
                                , xlab.angle = 45
-                               , xlab = 'Clusters', ylab = '% Cells'
+                               , xlab = 'Clusters', ylab = paste('% Cells above thr. (', value.col, ')')
                                , label = lab
                                , hline = total_average
                                , ...)
@@ -2949,39 +2955,36 @@ scBarplot.CellFractions <- function(obj = combined.obj
 #' }
 #' @export scBarplot.CellsPerCluster
 
-scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
-                                      , sort = F
-                                      , label = list(T, 'percent')[[1]]
-                                      , suffix = if (label == 'percent') 'percent' else NULL
-                                      , palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
-                                      , obj = combined.obj
-                                      , return_table = F
-                                      , ylab_adj = 1.1
-                                      , ...) {
-  cell.per.cl <- obj[[ident]][,1]
-  cell.per.cluster <- (table(cell.per.cl))
-  if (sort) cell.per.cluster <- sort(cell.per.cluster)
-  lbl <- if (isFALSE(label)) { NULL
-  } else if (label == 'percent') { percentage_formatter(cell.per.cluster/sum(cell.per.cluster))
-  } else if (label == 'T') { cell.per.cluster
-  } else label
+  scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
+                                        , sort = F
+                                        , label = list(T, 'percent')[[1]]
+                                        , suffix = if (label == 'percent') 'percent' else NULL
+                                        , palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3]
+                                        , obj = combined.obj
+                                        , return_table = F
+                                        , ylab_adj = 1.1
+                                        , ...) {
+    cell.per.cl <- obj[[ident]][,1]
+    cell.per.cluster <- (table(cell.per.cl))
+    if (sort) cell.per.cluster <- sort(cell.per.cluster)
+    lbl <- if (isFALSE(label)) { NULL
+    } else if (label == 'percent') { percentage_formatter(cell.per.cluster/sum(cell.per.cluster))
+    } else if (label == 'T') { cell.per.cluster
+    } else label
 
-  n.clusters <- length(cell.per.cluster)
-  if (return_table) {
-    cell.per.cluster
-  } else {
-    ggExpress::qbarplot(cell.per.cluster, subtitle = ident, suffix = kpp(ident, suffix)
-                        , col = 1:n.clusters
-                        , xlab.angle = 45
-                        , ylim = c(0, ylab_adj * max(cell.per.cluster))
-                        , label = lbl
-                        , ylab = "Cells"
-                        # , col = getClusterColors(ident = ident, show = T)
-                        , palette_use = DiscretePalette(n = n.clusters, palette = palette)
-                        , ...)
+    n.clusters <- length(cell.per.cluster)
+    pl <- ggExpress::qbarplot(cell.per.cluster, subtitle = ident, suffix = kpp(ident, suffix)
+                              , col = 1:n.clusters
+                              , xlab.angle = 45
+                              , ylim = c(0, ylab_adj * max(cell.per.cluster))
+                              , label = lbl
+                              , ylab = "Cells"
+                              # , col = getClusterColors(ident = ident, show = T)
+                              , palette_use = DiscretePalette(n = n.clusters, palette = palette)
+                              , ...)
+
+      if (return_table) return(cell.per.cluster) else return(pl)
   }
-
-}
 
 
 
