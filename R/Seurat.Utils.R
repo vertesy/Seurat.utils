@@ -1135,7 +1135,8 @@ transfer_labels_seurat <- function(query_obj, reference_path
   }
 
   # Visualize reference object
-  Seurat.utils::clUMAP(obj = reference_obj, ident = named_ident, suffix = 'REFERENCE', sub = 'REFERENCE', ...)
+  # Seurat.utils::
+    clUMAP(obj = reference_obj, ident = named_ident, suffix = 'REFERENCE', sub = 'REFERENCE', ...)
 
 
   if (is.null(anchors)) {
@@ -1154,7 +1155,8 @@ transfer_labels_seurat <- function(query_obj, reference_path
                                    , col.name = new_ident)
 
   # Visualize combined object
-  Seurat.utils::clUMAP(ident = new_ident, obj = query_obj, suffix = , ...)
+  # Seurat.utils::
+    clUMAP(ident = new_ident, obj = query_obj, suffix = , ...)
 
   return(query_obj)
 }
@@ -2020,7 +2022,7 @@ subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.
 #' @description Downsample a list of Seurat objects
 #' @param ls.obj List of Seurat objects. Default: ls.Seurat
 #' @param NrCells Number of cells to downsample to.
-#' @param save_object save object by isaveRDS, otherwise return it. Default: TRUE
+#' @param save_object save object by isaveRDS, otherwise return it. Default: FALSE
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -2031,7 +2033,7 @@ subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.
 #' @importFrom tictoc tic toc
 #' @importFrom Stringendo percentage_formatter
 Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids"
-                                      , save_object = TRUE) {
+                                      , save_object = FALSE) {
 
   # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
   if(!is.list(ls.obj) & inherits(ls.obj, "Seurat")) ls.obj <- list(ls.obj)
@@ -2075,7 +2077,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
 #' @description Downsample a list of Seurat objects, by fraction
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
 #' @param NrCells Number of cells to downsample to. Default: p$dSample.Organoids
-#' @param save_object save object by isaveRDS, otherwise return it. Default: TRUE
+#' @param save_object save object by isaveRDS, otherwise return it. Default: FALSE
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -2087,7 +2089,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
 #' @importFrom Stringendo percentage_formatter
 
 Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1
-                                         , save_object = TRUE) {
+                                         , save_object = FALSE) {
 
   # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
   if(!is.list(ls.obj) & inherits(ls.obj, "Seurat")) ls.obj <- list(ls.obj)
