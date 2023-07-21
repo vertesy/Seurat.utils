@@ -2099,7 +2099,8 @@ scBarplot.CellFractions <- function(obj = combined.obj
     } else label
 
     n.clusters <- length(cell.per.cluster)
-    pl <- ggExpress::qbarplot(cell.per.cluster, subtitle = ident, suffix = kpp(ident, suffix)
+    pl <- ggExpress::qbarplot(cell.per.cluster, subtitle = ident
+                              , suffix = kpp(ident, suffix)
                               , col = 1:n.clusters
                               , xlab.angle = 45
                               , ylim = c(0, ylab_adj * max(cell.per.cluster))
