@@ -1,17 +1,8 @@
 # ____________________________________________________________________
-# Seurat.utils ----
+# Seurat.Utils.Metadata ----
 # ____________________________________________________________________
 # source("/Users/abel.vertesy/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Metadata.R")
 
-
-
-
-# _________________________________________________________________________________________________
-# metadata.manipulation.R ______________________________ ----
-# _________________________________________________________________________________________________
-# source('~/GitHub/Packages/Seurat.utils/Functions/Seurat.object.manipulations.etc.R')
-# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Metadata.manipulation.R"))
-# Source: self + web
 
 # _________________________________________________________________________________________________
 #' @title Check if a Column Exists in the Metadata of an S4 Object
