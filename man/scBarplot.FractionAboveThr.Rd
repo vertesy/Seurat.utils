@@ -6,19 +6,18 @@
 \usage{
 scBarplot.FractionAboveThr(
   thrX = 0.3,
-  suffix = NULL,
   value.col = "percent.ribo",
   id.col = "cl.names.top.gene.res.0.3",
   obj = combined.obj,
   return.df = F,
   label = F,
+  suffix = NULL,
+  subtitle = id.col,
   ...
 )
 }
 \arguments{
 \item{thrX}{The threshold value to determine the fraction of cells. Default: 0.3}
-
-\item{suffix}{An optional suffix for the filename.}
 
 \item{value.col}{Column name from metadata which holds the values for calculating the fraction of cells. Default: 'percent.ribo'}
 
@@ -29,6 +28,8 @@ scBarplot.FractionAboveThr(
 \item{return.df}{A logical indicating if the function should return the data frame used to create the plot. Default: FALSE}
 
 \item{label}{A logical indicating if labels should be added to the bar plot. Default: FALSE}
+
+\item{suffix}{An optional suffix for the filename.}
 
 \item{...}{Additional parameters to pass to internally called functions.}
 }

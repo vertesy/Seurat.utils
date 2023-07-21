@@ -7,7 +7,7 @@
 Downsample.Seurat.Objects(
   ls.obj = ls.Seurat,
   NrCells = p$dSample.Organoids,
-  save_object = TRUE
+  save_object = FALSE
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ Downsample.Seurat.Objects(
 
 \item{NrCells}{Number of cells to downsample to.}
 
-\item{save_object}{save object by isaveRDS, otherwise return it. Default: TRUE}
+\item{save_object}{save object by isaveRDS, otherwise return it. Default: FALSE}
 }
 \description{
 Downsample a list of Seurat objects

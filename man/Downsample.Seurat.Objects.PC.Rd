@@ -7,13 +7,13 @@
 Downsample.Seurat.Objects.PC(
   ls.obj = ls.Seurat,
   fraction = 0.1,
-  save_object = TRUE
+  save_object = FALSE
 )
 }
 \arguments{
 \item{ls.obj}{List of Seurat objects, Default: ls.Seurat}
 
-\item{save_object}{save object by isaveRDS, otherwise return it. Default: TRUE}
+\item{save_object}{save object by isaveRDS, otherwise return it. Default: FALSE}
 
 \item{NrCells}{Number of cells to downsample to. Default: p$dSample.Organoids}
 }

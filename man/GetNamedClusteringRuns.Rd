@@ -8,7 +8,7 @@ GetNamedClusteringRuns(
   obj = combined.obj,
   res = c(F, 0.5)[1],
   topgene = F,
-  pat = "^cl.names.Known.*[0,1]\\\\.[0-9]$"
+  pat = c("^cl.names.Known.*[0,1]\\\\.[0-9]$", "Name|name")[2]
 )
 }
 \arguments{
