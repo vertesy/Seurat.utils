@@ -14,6 +14,7 @@ Seurat.utils relies on:
 - [ReadWriter](https://github.com/vertesy/ReadWriter)
 - [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2)
 - [MarkdownHelpers](https://github.com/vertesy/MarkdownHelpers)
+- [Markdownreports](https://github.com/vertesy/Markdownreports)
 - [ggExpress](https://github.com/vertesy/ggExpress)
 
 ... and provides functions for
