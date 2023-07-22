@@ -99,561 +99,576 @@ source("https://raw.githubusercontent.com/vertesy/Rocinante/master/R/Rocinante.R
 ```
 
 
+# List of Functions
+
+## Seurat.Utils.R
+Updated: 2023/07/22 12:18
+
+- #### 1 `parallel.computing.by.future()`
+
+  Run gc(), load multi-session computing and extend memory limits.
+
+- #### 2 `IntersectWithExpressed()`
+
+
+- #### 3 `SmallestNonAboveX()`
+
+  replace small values with the next smallest value found, which is >X. #
+
+- #### 4 `AreTheseCellNamesTheSame()`
+
+  Compare two character vectors (e.g.: cell IDs) how much they overlap and plot a Venn Diagramm.
+
+- #### 5 `getProject()`
+
+  Try to get the project name you are wokring on in Rstudio.
+
+- #### 6 `PlotFilters()`
+
+  Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.
+
+- #### 7 `seu.PC.var.explained()`
+
+  Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
+
+- #### 8 `seu.plot.PC.var.explained()`
+
+  Plot the percent of variation associated with each PC.
+
+- #### 9 `Percent.in.Trome()`
+
+  Gene expression as fraction of all UMI's
+
+- #### 10 `gene.expression.level.plots()`
+
+  Histogram of gene expression levels.
+
+- #### 11 `PrctCellExpringGene()`
+
+  Function to calculate the proportion of cells expressing a given set of genes.
+
+- #### 12 `ww.calc_helper()`
+
+  Helper function for PrctCellExpringGene() to calculate the proportion of cells in a Seurat object that express a given gene.
+
+- #### 13 `scBarplot.FractionAboveThr()`
+
+  Create a bar plot showing the fraction of cells, within each cluster, that exceed a certain threshold based on a metadata column.
+
+- #### 14 `scBarplot.FractionBelowThr()`
+
+  Create a bar plot showing the fraction of cells, within each cluster, that are below a certain threshold based on a metadata column.
+
+- #### 15 `getClusterNames()`
+
+  Rename clustering in a Seurat object.
+
+- #### 16 `GetClusteringRuns()`
+
+  Get Clustering Runs: metadata column names #
+
+- #### 17 `GetNamedClusteringRuns()`
+
+  Get Clustering Runs: metadata column names #
+
+- #### 18 `GetOrderedClusteringRuns()`
+
+  Get Clustering Runs: metadata column names #
+
+- #### 19 `GetNumberOfClusters()`
+
+  Get Number Of Clusters #
+
+- #### 20 `calc.cluster.averages()`
+
+  Calculates the average of a metadata column (numeric) per cluster.
+
+- #### 21 `plot.expression.rank.q90()`
+
+  Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).
+
+- #### 22 `set.mm()`
+
+  Helps to find metadata columns. It creates a list with the names of of 'obj@meta.data'.
+
+- #### 23 `recall.all.genes()`
+
+  all.genes set by calc.q99.Expression.and.set.all.genes() #
+
+- #### 24 `recall.meta.tags.n.datasets()`
+
+  Recall  meta.tags from obj@misc to "meta.tags" in the global environment.
+
+- #### 25 `recall.parameters()`
+
+  Recall parameters from obj@misc to "p" in the global environment.
+
+- #### 26 `recall.genes.ls()`
+
+  Recall genes.ls from obj@misc to "genes.ls" in the global environment.
+
+- #### 27 `save.parameters()`
+
+  Save parameters to obj@misc$p
+
+- #### 28 `subsetSeuObj()`
+
+  Subset a compressed Seurat object and save it in the working directory.
+
+- #### 29 `subsetSeuObj.and.Save()`
+
+  Subset a compressed Seurat Obj and save it in wd. #
+
+- #### 30 `subsetSeuObj.ident.class()`
+
+  Subset a Seurat Obj to a given column
+
+- #### 31 `Downsample.Seurat.Objects()`
+
+  Downsample a list of Seurat objects
+
+- #### 32 `Downsample.Seurat.Objects.PC()`
+
+  Downsample a list of Seurat objects, by fraction
+
+- #### 33 `remove.residual.small.clusters()`
+
+  E.g.: after subsetting often some residual cells remain in clusters originally defined in the full dataset.
+
+- #### 34 `drop.levels.Seurat()`
+
+  Drop unused levels from factor variables in a Seurat object.
+
+- #### 35 `remove_clusters_and_drop_levels()`
+
+  This function removes residual small clusters from specified Seurat objects and drops levels in factor-like metadata.
+
+- #### 36 `remove.cells.by.UMAP()`
+
+  This function applies a cutoff in the specified dimension of a given dimension reduction (UMAP, PCA, or t-SNE) to remove cells.
+
+- #### 37 `FlipReductionCoordinates()`
+
+  Flip reduction coordinates (like UMAP upside down).
+
+- #### 38 `AutoNumber.by.UMAP()`
+
+  Relabel cluster numbers along a UMAP (or tSNE) axis #
+
+- #### 39 `AutoNumber.by.PrinCurve()`
+
+  Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
+
+- #### 40 `Add.DE.combined.score()`
+
+  Add a combined score to differential expression (DE) results. The score is calculated as log-fold change (LFC) times negative logarithm of scaled p-value (LFC * -log10( p_cutoff / pval_scaling )).
+
+- #### 41 `StoreTop25Markers()`
+
+  Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
+
+- #### 42 `StoreAllMarkers()`
+
+  Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
+
+- #### 43 `GetTopMarkersDF()`
+
+  Get the vector of N most diff. exp. genes. #
+
+- #### 44 `GetTopMarkers()`
+
+  Get the vector of N most diff. exp. genes. #
+
+- #### 45 `AutoLabelTop.logFC()`
+
+  Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
+
+- #### 46 `scEnhancedVolcano()`
+
+  Creates a new "named identity" column in the metadata of a Seurat object, setting 'Ident' to a clustering output matching the 'res' parameter. This function requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()`, the output is stored under `@misc$df.markers$res...`, which is the default location.
+
+- #### 47 `BulkGEScatterPlot()`
+
+  Plots scatterplots of bulk gene expression to identify differentially expressed genes across conditions.
+
+- #### 48 `get.clustercomposition()`
+
+  Get cluster composition: which datasets contribute to each cluster?
+
+- #### 49 `scBarplot.CellFractions()`
+
+  Generates a bar plot of cell fractions per cluster.
+
+- #### 50 `  scBarplot.CellsPerCluster()`
+
+  Barplot the Fraction of cells per cluster. (dupl?)
+
+- #### 51 `scBarplot.CellsPerObject()`
+
+  Creates a bar plot for the number of cells per object from a list of Seurat objects.
+
+- #### 52 `plot.clust.size.distr()`
+
+  Creates a bar plot or histogram of the cluster size distribution from a given Seurat object.
+
+- #### 53 `gg_color_hue()`
+
+  Emulates the default color palette of ggplot2. Source:  https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
+
+- #### 54 `getDiscretePalette()`
+
+  Generate a discrete color palette.
+
+- #### 55 `getClusterColors()`
+
+  get Seurat's cluster colors.
+
+- #### 56 `SeuratColorVector()`
+
+  Recall a Seurat color vector.
+
+- #### 57 `plot.GeneExpHist()`
+
+  Generates and optionally saves a scatter plot of two features from a Seurat object.
+
+- #### 58 `qUMAP()`
+
+  The quickest way to draw a gene expression UMAP.
+
+- #### 59 `clUMAP()`
+
+  The quickest way to draw a clustering result UMAP.
+
+- #### 60 `umapNamedClusters()`
+
+  Plot and save umap based on a metadata column. #
+
+- #### 61 `umapHiLightSel()`
+
+  Generates a UMAP plot from a Seurat object with a subset of cells highlighted.
+
+- #### 62 `multiFeaturePlot.A4()`
+
+  Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
+
+- #### 63 `multiFeatureHeatmap.A4()`
+
+  Save multiple FeatureHeatmaps from a list of genes on A4 jpeg.
+
+- #### 64 `plot.UMAP.tSNE.sidebyside()`
+
+  Plot a UMAP and tSNE side by side.
+
+- #### 65 `PlotTopGenesPerCluster()`
+
+  Plot the top N diff. exp. genes in each cluster.
+
+- #### 66 `qQC.plots.BrainOrg()`
+
+  Quickly plot key QC markers in brain organoids
+
+- #### 67 `qMarkerCheck.BrainOrg()`
+
+  Quickly plot key markers in brain organoids
+
+- #### 68 `PlotTopGenes()`
+
+  Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before. #
+
+- #### 69 `DimPlot.ClusterNames()`
+
+  Plot UMAP with Cluster names. #
+
+- #### 70 `save2umaps.A4()`
+
+  Save 2 umaps on 1 A4
+
+- #### 71 `save4umaps.A4()`
+
+  Save 4 umaps on 1 A4
+
+- #### 72 `qqSaveGridA4()`
+
+  Saves a grid of 2 or 4 ggplot objects onto an A4 page.
+
+- #### 73 `ww.check.if.3D.reduction.exist()`
+
+  ww.check.if.3D.reduction.exist in backup slot #
+
+- #### 74 `ww.check.quantile.cutoff.and.clip.outliers()`
+
+  Function to check a specified quantile cutoff and clip outliers from a given expression vector.
+
+- #### 75 `plot3D.umap.gene()`
+
+  Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
+
+- #### 76 `plot3D.umap()`
+
+  Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
+
+- #### 77 `SavePlotlyAsHtml()`
+
+  Save a Plotly 3D scatterplot as an HTML file.
+
+- #### 78 `BackupReduction()`
+
+  Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`. #
+
+- #### 79 `SetupReductionsNtoKdimensions()`
+
+  Function to compute dimensionality reductions for a given Seurat object and backup the computed reductions.
+
+- #### 80 `RecallReduction()`
+
+  Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`. #
+
+- #### 81 `Annotate4Plotly3D()`
+
+  Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations.
+
+- #### 82 `Plot3D.ListOfGenes()`
+
+  Plot and save list of 3D UMAP or tSNE plots using plotly.
+
+- #### 83 `Plot3D.ListOfCategories()`
+
+  This function plots and saves a list of 3D UMAP or tSNE plots using plotly.
+
+- #### 84 `# sparse.cor4()`
+
+  Calculate a sparse correlation matrix.
+
+- #### 85 `Calc.Cor.Seurat()`
+
+  Calculate gene correlation on a Seurat object.
+
+- #### 86 `plot.Gene.Cor.Heatmap()`
+
+  Plot a gene correlation heatmap.
+
+- #### 87 `prefix_cells_seurat()`
+
+  This function adds prefixes from 'obj_IDs' to cell names in Seurat S4 objects from 'ls_obj' 
+
+- #### 88 `find_prefix_in_cell_IDs()`
+
+  This function checks if a prefix has been added to the standard cell-IDs (16 characters of A,T,C,G)  in a Seurat object. If so, it prints the number of unique prefixes found,  issues a warning if more than one unique prefix is found, and returns the identified prefix(es).
+
+- #### 89 `seu.Make.Cl.Label.per.cell()`
+
+  Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID".
+
+- #### 90 `GetMostVarGenes()`
+
+  Get the N most variable Genes
+
+- #### 91 `gene.name.check()`
+
+  Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #
+
+- #### 92 `check.genes()`
+
+  Check if a gene name exists in a Seurat object, or in HGNC?
+
+- #### 93 `fixZeroIndexing.seurat()`
+
+  Fix zero indexing in seurat clustering, to 1-based indexing. replace zero indexed clusternames.
+
+- #### 94 `CalculateFractionInTrome()`
+
+  This function calculates the fraction of a set of genes within the full transcriptome of each cell.
+
+- #### 95 `AddNewAnnotation()`
+
+  This function creates a new metadata column based on an existing metadata column and a list of mappings (name <- IDs).
+
+- #### 96 `whitelist.subset.ls.Seurat()`
+
+  Subsets cells in a list of Seurat objects based on an externally provided list of cell IDs.
+
+- #### 97 `FindCorrelatedGenes()`
+
+  Find correlated genes in a Seurat object
+
+- #### 98 `UpdateGenesSeurat()`
+
+  Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
+
+- #### 99 `  check_and_rename()`
+
+  Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data. #
+
+- #### 100 `RemoveGenesSeurat()`
+
+  Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data. #
+
+- #### 101 `HGNC.EnforceUnique()`
+
+  Enforce Unique names after HGNC symbol update.
+
+- #### 102 `GetUpdateStats()`
+
+  Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`. #
+
+- #### 103 `PlotUpdateStats()`
+
+  Creates a scatter plot of update statistics.
+
+- #### 104 `calculate.observable.multiplet.rate.10X.LT()`
+
+  Calculate the observable multiplet rate for 10X standard lane.
+
+- #### 105 `SNP.demux.fix.GT.table()`
+
+  This function cleans and standardizes a Genotype assignment table obtained from the SoupOrCell tool.
+
+- #### 106 `Convert10Xfolders()`
+
+  This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.
+
+- #### 107 `ConvertDropSeqfolders()`
+
+  This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.
+
+- #### 108 `LoadAllSeurats()`
+
+  This function loads all Seurat objects found in a directory. It also works with symbolic links (but not with aliases).
+
+- #### 109 `read10x()`
+
+  This function reads a 10X dataset from gzipped matrix.mtx, features.tsv and barcodes.tsv files.
+
+- #### 110 `load10Xv3()`
+
+  Load 10X output folders.
+
+- #### 111 `saveRDS.compress.in.BG()`
+
+  Save and RDS object and compress resulting file in the background using system(gzip). OS X or unix.
+
+- #### 112 `isave.RDS()`
+
+  Save an RDS object, using a faster and efficient compression method that runs in the background.
+
+- #### 113 `isave.image()`
+
+  Save an image of the current workspace using a faster and efficient compression method that runs in the background.
+
+- #### 114 `qsave.image()`
+
+  Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression. #
+
+- #### 115 `clip10Xcellname()`
+
+  Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration). #
+
+- #### 116 `make10Xcellname()`
+
+  Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1". #
+
+- #### 117 `plotTheSoup()`
+
+  Plot stats about the ambient RNA content in a 10X experiment.
+
+- #### 118 `jJaccardIndexVec()`
+
+  Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
+
+- #### 119 `jPairwiseJaccardIndexList()`
+
+  Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
+
+- #### 120 `jPresenceMatrix()`
+
+  Make a binary presence matrix from a list. Source: https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings #
+
+- #### 121 `jJaccardIndexBinary()`
+
+  Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
+
+------------------------------------------------------------------------------------------------------------
+## Seurat.Utils.Metadata.R
+Updated: 2023/07/22 12:18
+
+- #### 1 `meta_col_exists()`
+
+  This function checks whether a given column exists in the meta.data of a Seurat object.
+
+- #### 2 `getMedianMetric()`
+
+  Get the median values of different columns in meta.data, can iterate over a list of Seurat objects.
+
+- #### 3 `add.meta.tags()`
+
+  Add metadata tags to a Seurat object dataset.
+
+- #### 4 `add.meta.fraction()`
+
+  Add a new metadata column to a Seurat object, representing the fraction of a gene set in the transcriptome (expressed as a percentage).
+
+- #### 5 `seu.RemoveMetadata()`
+
+  Remove specified metadata columns from a Seurat object.
+
+- #### 6 `getMetadataColumn()`
+
+  Retrieves a specified metadata column from a Seurat object and returns it as a named vector.
+
+- #### 7 `create.metadata.vector()`
+
+  Adds a new metadata column to a Seurat object.
+
+- #### 8 `seu.map.and.add.new.ident.to.meta()`
+
+  Adds a new metadata column to a Seurat object based on an identity mapping table.
+
+- #### 9 `getCellIDs.from.meta()`
+
+  Retrieves cell IDs from a specified metadata column of a Seurat object, where the cell ID matches a provided list of values. The matching operation uses the `%in%` operator.
+
+- #### 10 `seu.add.meta.from.table()`
+
+  Add multiple new metadata columns to a Seurat object from a table. #
+
+- #### 11 `sampleNpc()`
+
+  This function samples a specified percentage of a dataframe (specifically a subset of the metadata of a Seurat object) and returns the corresponding cell IDs.
+
+- #### 12 `calc.q99.Expression.and.set.all.genes()`
+
+  Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells). #
+
+- #### 13 `fix.orig.ident()`
+
+  Remove the string "filtered_feature_bc_matrix." from "orig.ident". Helper function.
+
+- #### 14 `Create.MiscSlot()`
+
+  It is just a reminder to use calc.q99.Expression.and.set.all.genes to create the all.genes variable
+
+- #### 15 `transfer_labels_seurat()`
+
+  Function to transfer labels from a reference Seurat object to a query Seurat object using anchoring and transfer data methods from the Seurat package.  It then visualizes the reference and the combined objects using Uniform Manifold Approximation and Projection (UMAP). 
+
+- #### 16 `match_best_identity()`
+
+  This function matches the best identity from `ident_from` to `ident_to` in an object,  updates the metadata of the object with this new identity and returns the updated object. Additionally,  it generates a UMAP plot based on the new identity. The function replaces original categories with  the most frequent ones, hence helps to filter out less important categories. 
+
+- #### 17 `replace_by_most_frequent_categories()`
+
+  This function replaces each category in a query column of a data frame with the most    frequently corresponding category in a reference column. It calculates the assignment quality,    reports it, and optionally plots it. 
+
+- #### 18 `plot.Metadata.Cor.Heatmap()`
+
+  Plots a heatmap of metadata correlation values.
+
+
 
 
 # Usage
 
 You can use most functions at relevant steps of a standard Seurat analysis.
-
-# Function descriptions
-
-Updated: `01 11 2021`
-
-- #### SmallestNonAboveX
-replace small values with the next smallest value found, which is >X. #
-
-
-- #### Add.DE.combined.score
-Add combined score to DE results. (LFC * -log10( p_cutoff / pval_scaling ) )
-
-
-- #### StoreTop25Markers
-Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
-
-
-- #### StoreAllMarkers
-Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
-
-
-- #### GetTopMarkersDF
-Get the vector of N most diff. exp. genes. #
-
-
-- #### GetTopMarkers
-Get the vector of N most diff. exp. genes. #
-
-
-- #### AutoLabelTop.logFC
-Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
-
-
-- #### AutoLabel.KnownMarkers
-Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
-
-
-- #### DimPlot.ClusterNames
-Plot UMAP with Cluster names. #
-
-
-- #### AutoNumber.by.UMAP
-Relabel cluster numbers along a UMAP (or tSNE) axis #
-
-
-- #### AutoNumber.by.PrinCurve
-Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
-
-
-- #### ggplotColours
-Generate ggplot colours for slingshot
-
-
-- #### points_on_curve
-Helper to visualize points_on_curve in slingshot.
-
-
-- #### points_on_curve.principal_curve
-Helper to visualize points_on_curve in slingshot.
-
-
-- #### points_on_curve.SlingshotDataSet
-Helper to visualize points_on_curve in slingshot.
-
-
-- #### gg_plot
-Adjusted gg_plot for slingshot
-
-
-- #### jJaccardIndexVec
-Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
-
-
-- #### jPairwiseJaccardIndexList
-Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
-
-
-- #### jPresenceMatrix
-Make a binary presence matrix from a list. Source: https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings #
-
-
-- #### jJaccardIndexBinary
-Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
-
-
-- #### jPairwiseJaccardIndex
-Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
-
-
-- #### getMedianMetric
-Get the median values of different columns in meta.data, can iterate over a list of Seurat objects.
-
-
-- #### add.meta.tags
-N is the for which dataset #
-
-
-- #### add.meta.fraction
-Add a new metadata column, with the fraction of gene set in the transcripome (percentage).
-
-
-- #### GetClusteringRuns
-Get Clustering Runs: metadata column names #
-
-
-- #### GetNamedClusteringRuns
-Get Clustering Runs: metadata column names #
-
-
-- #### GetOrderedClusteringRuns
-Get Clustering Runs: metadata column names #
-
-
-- #### GetNumberOfClusters
-Get Number Of Clusters #
-
-
-- #### getMetadataColumn <- mmeta
-Get a metadata column from a Seurat object as a named vector #
-
-
-- #### getCellIDs.from.meta
-Get cellIDs from a metadata column, matching a list of values (using %in%). #
-
-
-- #### seu.add.meta.from.vector
-Add a new metadata column to a Seurat  object
-
-
-- #### seu.map.and.add.new.ident.to.meta
-Add a new metadata column to a Seurat  object
-
-
-- #### calc.cluster.averages
-Calculate the average of a metadata column (numeric) per cluster.
-
-
-- #### seu.add.meta.from.table
-Add multiple new metadata columns to a Seurat object from a table. #
-
-
-- #### sampleNpc
-Sample N % of a dataframe (obj@metadata), and return the cell IDs. #
-
-
-- #### calc.q90.Expression.and.set.all.genes
-Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells). #
-
-
-- #### PlotTopGenes
-Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q90.Expression.and.set.all.genes before. #
-
-
-- #### fix.orig.ident
-Remove the string "filtered_feature_bc_matrix." from "orig.ident". Helper function.
-
-
-- #### set.all.genes
-It is just a reminder to use calc.q90.Expression.and.set.all.genes to create the all.genes variable
-
-
-- #### recall.all.genes
-all.genes set by calc.q90.Expression.and.set.all.genes() #
-
-
-- #### recall.meta.tags.n.datasets
-Recall  meta.tags from obj@misc to "meta.tags" in the global environment.
-
-
-- #### recall.parameters
-Recall parameters from obj@misc to "p" in the global environment.
-
-
-- #### recall.genes.ls
-Recall genes.ls from obj@misc to "genes.ls" in the global environment.
-
-
-- #### save.parameters
-Save parameters to obj@misc$p
-
-
-- #### plot.expression.rank.q90
-Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).
-
-
-- #### FlipReductionCoordinates
-Flip reduction coordinates (like UMAP upside down).
-
-
-- #### SeuratColorVector
-Recall a Seurat color vector.
-
-
-- #### getClusterColors
-get Seurat's cluster colors.
-
-
-- #### get.clustercomposition
-Get cluster composition: which datasets contribute to each cluster?
-
-
-- #### mplotGene
-Plot genes in Monocle.
-
-
-- #### mplotManyGenes
-Plot many genes in Monocle.
-
-
-- #### m3DplotGene
-Plot a gene in 3D in Monocle.
-
-
-- #### m3DplotKeyGenes
-Plot many genes in 3D in Monocle.
-
-
-- #### subsetMonocleObject
-Subset a compressed Seurat Obj and save it in wd.
-
-
-- #### m3.get.umap
-Fetch the umap coordinates from obj@int_colData@listData$reducedDims[[slot]]
-
-
-- #### m3.backup.umap
-Backup umap coordinates to obj@int_colData@listData$reducedDims[[new.slot]]
-
-
-- #### m3.recall.umap
-Fetch UMAP coordinates.
-
-
-- #### m3.export.umap.2.Seurat
-Export umap coordinates.
-
-
-- #### BarTableSweepList
-BarTableSweepList
-
-
-- #### mSeq.map.all96.BCs
-mSeq.map.all96.BCs
-
-
-- #### aux.plotAllMseqBCs
-aux.plotAllMseqBCs
-
-
-- #### qUMAP
-The quickest way to draw a gene expression UMAP #
-
-
-- #### clUMAP
-The quickest way to draw a clustering result  UMAP #
-
-
-- #### gg_color_hue
-reproduce the ggplot2 default color palette #
-
-
-- #### save2umaps.A4
-Save 2 umaps on 1 A4
-
-
-- #### save4umaps.A4
-Save 4 umaps on 1 A4
-
-
-- #### umapNamedClusters
-Plot and save umap based on a metadata column. #
-
-
-- #### qqSaveGridA4
-Save 2 or 4 ggplot objects using plot_grid() on an A4 page #
-
-
-- #### umapHiLightSel
-Highlight a set of cells based on clusterIDs provided. #
-
-
-- #### multiFeaturePlot.A4
-Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names. #
-
-
-- #### multiFeatureHeatmap.A4
-Save multiple FeatureHeatmaps from a list of genes on A4 jpeg #
-
-
-- #### plot.UMAP.tSNE.sidebyside
-Plot a UMAP and tSNE sidebyside #
-
-
-- #### PlotTopGenesPerCluster
-Plot the top N diff. exp. genes in each cluster
-
-
-- #### qFeatureScatter
-Quickly plot and save a FeatureScatter plot.
-
-
-- #### qMarkerCheck.BrainOrg
-Quickly plot key markers in brain organoids
-
-
-- #### getDiscretePalette
-Generate a Discrete color Palette.
-
-
-- #### ww.check.if.3D.reduction.exist
-ww.check.if.3D.reduction.exist in backup slot #
-
-
-- #### ww.check.quantile.cutoff.and.clip.outliers
-Helper function.
-
-
-- #### plot3D.umap.gene
-Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87. #
-
-
-- #### plot3D.umap
-Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87. #
-
-
-- #### SavePlotlyAsHtml
-Save Plotly 3D scatterplot as an html file. #
-
-
-- #### BackupReduction
-Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`. #
-
-
-- #### SetupReductionsNtoKdimensions
-Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to `obj@misc$reductions.backup` from @reductions$umap #
-
-
-- #### RecallReduction
-Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`. #
-
-
-- #### Annotate4Plotly3D
-Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations #
-
-
-- #### Plot3D.ListOfGenes
-Plot and save list of 3D UMAP ot tSNE plots using plotly. #
-
-
-- #### Plot3D.ListOfCategories
-Plot and save list of 3D UMAP ot tSNE plots using plotly. #
-
-
-- #### PlotFilters
-Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content. #
-
-
-- #### seu.PC.var.explained
-Determine percent of variation associated with each PC. #
-
-
-- #### seu.plot.PC.var.explained
-Plot the percent of variation associated with each PC. #
-
-
-- #### BarplotCellsPerObject
-Take a List of Seurat objects and draw a barplot for the number of cells per object. #
-
-
-- #### CellFractionsBarplot2
-Barplot the Fraction of cells per cluster.
-
-
-- #### barplot.cells.per.cluster
-Barplot the Fraction of cells per cluster. (dupl?)
-
-
-- #### BulkGEScatterPlot
-Plot bulk scatterplots to identify differential expressed genes across conditions #
-
-
-- #### sparse.cor
-Sparse, fast correlation.
-
-
-- #### Calc.Cor.Seurat
-Calculate gene correlation on a Seurat object.
-
-
-- #### plot.Metadata.Cor.Heatmap
-Plot a heatmap with Metadata correlation values.
-
-
-- #### plot.Metadata.median.fraction.barplot
-Barplot Metadata median values
-
-
-- #### plot.Gene.Cor.Heatmap
-Plot a gene correlation heatmap.
-
-
-- #### plot.clust.size.distr
-Barplot of Histogram of cluster size distribution
-
-
-- #### gene.expression.level.plots
-Histogram of gene expression levels.
-
-
-- #### PrctCellExpringGene
-From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
-
-
-- #### ww.calc_helper
-From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371 #
-
-
-- #### scBarplotFractionAboveThr
-Barplot the fraction of cell above a threshold value (based on a meta.data column), in each cluster.
-
-
-- #### scBarplotFractionBelowThr
-Barplot the fraction of cell below a threshold value (based on a meta.data column), in each cluster.
-
-
-- #### Convert10Xfolders
-Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
-
-
-- #### Convert10Xfolders.old
-Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
-
-
-- #### ConvertDropSeqfolders
-Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files. #
-
-
-- #### LoadAllSeurats
-Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases). #
-
-
-- #### read10x
-read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv #
-
-
-- #### saveRDS.compress.in.BG
-Save and RDS object and compress resulting file in the background using system(gzip). OS X or unix.
-
-
-- #### isave.RDS
-Save and RDS object.
-
-
-- #### isave.image
-Save and RData image.
-
-
-- #### qsave.image
-Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression. #
-
-
-- #### subsetSeuObj
-Subset a compressed Seurat Obj and save it in wd. #
-
-
-- #### subsetSeuObj.and.Save
-Subset a compressed Seurat Obj and save it in wd. #
-
-
-- #### Downsample.Seurat.Objects
-Downsample a list of Seurat objects
-
-
-- #### clip10Xcellname
-Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration). #
-
-
-- #### make10Xcellname
-Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1". #
-
-
-- #### seu.Make.Cl.Label.per.cell
-Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID". #
-
-
-- #### GetMostVarGenes
-Get the most variable rGenes #
-
-
-- #### gene.name.check
-Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #
-
-
-- #### check.genes
-Check if a gene name exists in a Seurat object, or in HGNC?
-
-
-- #### fixZeroIndexing.seurat
-Fix zero indexing in seurat clustering, to 1-based indexing #
-
-
-- #### CalculateFractionInTrome
-Calculate the fraction of a set of genes within the full Transcriptome of each cell. #
-
-
-- #### AddNewAnnotation
-Create a new metadata column based on an exisiting metadata column and a list of mappings (name <- IDs). #
-
-
-- #### whitelist.subset.ls.Seurat
-Subset cells in a (list of) Seurat objects, based on an externally provided list of cell IDs.
-
-
-- #### FindCorrelatedGenes
-Find correlated genes in a Seurat object
-
-
-- #### UpdateGenesSeurat
-Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names. #
-
-
-- #### RenameGenesSeurat
-Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data. #
-
-
-- #### RemoveGenesSeurat
-Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data. #
-
-
-- #### HGNC.EnforceUnique
-Enforce Unique names after HGNC symbol update. updatedSymbols is the output of HGNChelper::checkGeneSymbols. #
-
-
-- #### GetUpdateStats
-Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`. #
-
-
-- #### PlotUpdateStats
-Scatter plot of update stats. #
-
-
-- #### plotTheSoup
-Plot stats about the ambient RNA content in a 10X experiment.
-
-
-- #### load10Xv3
-Load 10X output folders.
-
-
-
 
 
 -----------
