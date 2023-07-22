@@ -619,27 +619,23 @@ match_best_identity <- function(obj, ident_from
 
 
 # _________________________________________________________________________________________________
-#' Replace Categories by the Most Frequent Match
+#' @title Replace Categories by the Most Frequent Match
 #'
-#' This function replaces each category in a query column of a data frame with the most
-#' frequently corresponding category in a reference column. It calculates the assignment quality,
-#' reports it, and optionally plots it.
-#'
-#' @title replace_by_most_frequent_categories
-#' @description Replace each category in the 'query_col' column of a data frame
-#'              with the most frequently corresponding category in the 'ref_col' column.
+#' @description This function replaces each category in a query column of a data frame with the most
+#'   frequently corresponding category in a reference column. It calculates the assignment quality,
+#'   reports it, and optionally plots it.
 #'
 #' @param df A data frame containing the data.
-#' @param query_col The name of the column in 'df' whose categories are to be replaced.
-#'                  By default, the first column of 'df' is used.
-#' @param ref_col The name of the column in 'df' used as reference for replacement.
-#'                By default, the second column of 'df' is used.
+#' @param query_col The name of the column in 'df' whose categories are to be replaced. By default,
+#'   the first column of 'df' is used.
+#' @param ref_col The name of the column in 'df' used as reference for replacement. By default, the
+#'   second column of 'df' is used.
 #' @param show_plot Logical, whether to plot assignment quality. Defaults to TRUE.
 #' @param suffix_barplot Suffix for barplot.
 #' @param ... Additional parameters passed to the qbarplot function.
 #'
-#' @return A data frame with categories in 'query_col' replaced by the most frequent match
-#'         from 'ref_col'.
+#' @return A data frame with categories in 'query_col' replaced by the most frequent match from
+#'   'ref_col'.
 #'
 #' @examples
 #' \dontrun{

@@ -54,8 +54,9 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
 
 
 # _________________________________________________________________________________________________
-#' IntersectWithExpressed
+#' @title IntersectWithExpressed
 #'
+#' @description
 #' @param genes A vector of gene names.
 #' @param obj Seurat object
 #' @param genes.shown Number of genes printed (head).
@@ -95,6 +96,7 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 # _________________________________________________________________________________________________
 #' @title AreTheseCellNamesTheSame
 #'
+#' @description Compare two character vectors (e.g.: cell IDs) how much they overlap and plot a Venn Diagramm.
 #' @param vec1 Character vector, eg. with cell names
 #' @param vec2 Character vector, eg. with cell names
 #' @param names Names for plotting
@@ -131,7 +133,7 @@ AreTheseCellNamesTheSame  <- function(vec1 = names(UVI.annot)
 
 
 # _________________________________________________________________________________________________
-#' getProject
+#' @title getProject
 #'
 #' @description Try to get the project name you are wokring on in Rstudio.
 #' @returns The final subfolder of your project, or NULL, if you are not running one
@@ -592,6 +594,7 @@ scBarplot.FractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', 
 # _________________________________________________________________________________________________
 #' @title RenameClustering
 #'
+#' @description Rename clustering in a Seurat object.
 #' @param namedVector named vector, where values = new, names(vec) = old
 #' @param orig.ident meta.data colname original
 #' @param suffix.new.ident How to name (suffix) the new identity. Default: "ManualNames"
@@ -3847,9 +3850,8 @@ seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) { # Take a named
 
 
 # _________________________________________________________________________________________________
-# FeaturePlot with different defaults
-
 #' @title GetMostVarGenes
+#'
 #' @description Get the N most variable Genes
 #' @param obj A Seurat object.
 #' @param nGenes Number of genes, Default: p$nVarGenes
@@ -4314,6 +4316,7 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 
 #' @title calculate.observable.multiplet.rate.10X.LT
 #'
+#' @description Calculate the observable multiplet rate for 10X standard lane.
 #' @param fractions Genotype fractions observed or loaded on the machine.
 #' @param FMR.r Factor for calculating Multiplet Rate: Cell count / FMR = multiplet rate. (.r stands for 'estimating from Recovered cell count.')
 #' @param cell.count Number of total cells recovered from a 10X lane.
