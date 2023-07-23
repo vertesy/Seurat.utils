@@ -144,6 +144,98 @@ getProject <- function() {
   tryCatch(basename(rstudioapi::getActiveProject()), error=function(e){})
 }
 
+
+# _________________________________________________________________________________________________
+#' Create.MiscSlot
+#'
+#' @param obj Seurat object
+#' @param NewSlotName Name of the new element inside obj@misc.
+#' @export
+
+Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL ) {
+  if (is.null(obj@misc[[NewSlotName]])) obj@misc[[NewSlotName]] <- list() else iprint(NewSlotName, "already exists in @misc.")
+  if (is.null(obj@misc[[NewSlotName]][[SubSlotName]])) obj@misc[[NewSlotName]][[SubSlotName]] <- list() else iprint(SubSlotName, "subslot already exists in @misc$NewSlot.")
+  return(obj)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title calc.q99.Expression.and.set.all.genes
+#'
+#' @description Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells). #
+#' @param obj Seurat object, Default: combined.obj
+#' @param quantileX Quantile level, Default: 0.9
+#' @param max.cells Max number of cells to do the calculation on. Downsample if excdeeded. Default: 1e+05
+#' @param slot slot in the Seurat object. Default: 'data'
+#' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
+#' @param set.all.genes Create the "all.genes" variable in the global env?, Default: TRUE
+#' @param show Show plot? Default: TRUE
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  combined.obj <- calc.q99.Expression.and.set.all.genes(obj = combined.obj, quantileX = 0.9,
+#'  max.cells =  25000)
+#'  head(sort(as.numeric.wNames(obj@misc$expr.q90), decreasing = T))
+#'  combined.obj <- calc.q99.Expression.and.set.all.genes(obj = combined.obj, quantileX = 0.95,
+#'  max.cells =  25000, set.all.genes = FALSE)
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[sparseMatrixStats]{character(0)}}
+#' @export
+#' @importFrom tictoc tic toc
+#' @importFrom sparseMatrixStats rowQuantiles
+calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
+                                                  , quantileX = 0.99, max.cells =  1e5
+                                                  , slot = "data", assay = c("RNA", "integrated")[1]
+                                                  , set.all.genes = TRUE, show = TRUE) {
+  tictoc::tic()
+  x = GetAssayData(object = obj, assay = assay, slot = slot) #, assay = 'RNA'
+  if (ncol(x) > max.cells) {
+    dsampled = sample(x = 1:ncol(x), size = max.cells)
+    x = x[ , dsampled]
+  }
+  qname = paste0("q", quantileX * 100)
+  slot_name = kpp("expr", qname)
+
+  # expr.q99 = iround(apply(x, 1, quantile, probs = quantileX) )
+  print("Calculating Gene Quantiles")
+  expr.q99.df = sparseMatrixStats::rowQuantiles(x, probs = quantileX)
+  expr.q99 = iround(expr.q99.df)
+
+  log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q99 + 1)) # strip names
+  n.cells <- floor(ncol(obj) * (1-quantileX) )
+  qnameP <- p0(100*quantileX,'th quantile')
+  try(
+    ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30
+                          , plotname = paste("Gene expression in the", qnameP )
+                          , subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = T), " genes have ", qname ," expr. > 0.")
+                          , caption = paste(n.cells, 'cells in', qnameP)
+                          , xlab = paste0("log2(expr. in the ", qnameP,"quantile+1) [UMI]")
+                          , ylab = "Nr. of genes"
+                          , plot = show, save = TRUE
+                          , vline  = .15
+                          , filtercol = T
+                          , palette_use = 'npg'
+    )
+    , silent = TRUE)
+
+  {
+    all.genes = percent_rank(expr.q99);
+    names(all.genes) = names(expr.q99);
+    all.genes <- sort(all.genes, decreasing = TRUE)
+    if (set.all.genes) obj@misc$'all.genes' = all.genes = as.list(all.genes)
+    assign('all.genes', all.genes, envir = as.environment(1))
+  }
+
+  obj@misc[[slot_name]] <-  expr.q99
+
+  iprint('Quantile', quantileX ,'is now stored under obj@misc$all.genes and $', slot_name, ' Please execute all.genes <- obj@misc$all.genes.')
+  return(obj)
+}
+
+
+
 # _________________________________________________________________________________________________
 # plotting.filtering.R ______________________________ ----
 # ____________________________________________________________________
