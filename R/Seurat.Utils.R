@@ -309,7 +309,7 @@ PlotFilters <- function(ls.obj = ls.Seurat
   )
 
   theme_set(theme.used)
-  create_set_OutDir(parentdir, subdir)
+  MarkdownReports::create_set_OutDir(parentdir, subdir)
   if (suffices == length(ls.obj)) print("ls.obj elements have no names (required).")
 
   Calculate_nFeature_LowPass <- if(below.nFeature_RNA < 1) below.nFeature_RNA else FALSE
@@ -2929,7 +2929,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
     ggsave(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
   }
 
-  if (subdir) create_set_OutDir(... = ParentDir)
+  if (subdir) MarkdownReports::create_set_OutDir(... = ParentDir)
   if (saveGeneList) {
     if (is.null(obj@misc$gene.lists)) obj@misc$gene.lists <- list()
     obj@misc$gene.lists[[substitute(list.of.genes)]] <- list.of.genes.found
@@ -5147,7 +5147,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   # Adapter for Markdownreports background variable "OutDir"
   OutDirBac <- if(exists("OutDir")) OutDir else getwd()
   OutDir <- file.path(CellRanger_outs_Dir, paste0(kpp("SoupStatistics", SeqRun)))
-  MarkdownReports::create_set_OutDir(OutDir)
+  MarkdownReports::MarkdownReports::create_set_OutDir(OutDir)
   MarkdownHelpers::ww.assign_to_global("OutDir", OutDir, 1)
 
   # Read raw and filtered data ___________________________________
@@ -5492,8 +5492,9 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 
 
 # _________________________________________________________________________________________________
-# Temp _____________________________ ------
+# New additions,  categorized _____________________________ ------
 # _________________________________________________________________________________________________
+
 
 
 #' @title Regress Out and Recalculate Seurat
@@ -5504,16 +5505,31 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 #'
 #' @param obj The Seurat object.
 #' @param vars.to.regress A vector of variable names to be regressed out.
-#' @param nPCs The number of principal components to use.
-#' @param resolution The resolution for clustering.
-#' @param calc_tSNE Logical, if TRUE, t-SNE will be performed. Default is FALSE.
-#' @param save_obj Logical, if TRUE, the object will be saved. Default is TRUE.
 #' @param suffix A character string to be used as a suffix when saving the object.
-#' @param assayX The assay to be used in scaling data.
+#' @param nPCs The number of principal components to use. Default is the 'n.PC' element from a list 'p'.
+#' @param clust_resolutions The resolution for clustering. Default is the 'snn_res' element from a list 'p'.
+#' @param calc_tSNE Logical, if TRUE, t-SNE will be performed. Default is FALSE.
+#' @param plot_umaps Logical, if TRUE, UMAP plots will be generated. Default is TRUE.
+#' @param save_obj Logical, if TRUE, the object will be saved. Default is TRUE.
+#' @param assayX The assay to be used in scaling data. Default is 'RNA'.
 #' @return Seurat object after calculations and manipulations.
-#' @import Seurat
+#' @importFrom Seurat FindVariableFeatures ScaleData RunPCA SetupReductionsNtoKdimensions FindNeighbors FindClusters RunTSNE
+#' @importFrom MarkdownReports create_set_OutDir
+#' @examples
+#' \dontrun{
+#' # Assuming 'seurat_obj' is a valid Seurat object and 'vars' is a vector of variable names to be regressed out.
+#' result <- regress_out_and_recalculate_seurat(seurat_obj, vars, suffix = "_regressed")
+#' }
 #' @export
-regress_out_and_recalculate_seurat <- function(obj, vars.to.regress, nPCs, resolution, calc_tSNE = F, save_obj = T, suffix, assayX) {
+regress_out_and_recalculate_seurat <- function(obj
+                                               , vars.to.regress
+                                               , suffix
+                                               , nPCs = p$'n.PC'
+                                               , clust_resolutions = p$'snn_res'
+                                               , calc_tSNE = F
+                                               , plot_umaps = T
+                                               , save_obj = T
+                                               , assayX = 'RNA') {
   tic(); print("FindVariableFeatures")
   obj <- FindVariableFeatures(obj, mean.function = 'FastExpMean', dispersion.function = 'FastLogVMR', nfeatures = 10000); toc()
 
@@ -5533,52 +5549,42 @@ regress_out_and_recalculate_seurat <- function(obj, vars.to.regress, nPCs, resol
   obj <- FindNeighbors(obj, reduction = "pca", dims = 1:nPCs); toc()
 
   tic(); print("FindClusters")
-  obj <- FindClusters(obj, resolution = resolution); toc()
+  obj <- FindClusters(obj, resolution = clust_resolutions); toc()
 
   if (calc_tSNE) {
     tic(); print("RunTSNE")
     obj <- RunTSNE(obj, reduction = "pca", dims = 1:nPCs); toc()
   }
 
+  # orig.dir <- getwd()
+  # new_path <- FixPath(orig.dir, suffix)
+  # MarkdownReports::create_set_OutDir(new_path)
+
+  clz <- GetClusteringRuns(obj = obj, pat = "*snn_res.*[0-9]$")
+
+  if (plot_umaps) {
+    print("Plotting umaps")
+    for (v in clz) clUMAP(ident = v, obj = obj, sub = suffix)
+
+    # MarkdownReports::create_set_OutDir(new_path, 'UMAP_stats')
+    for (v in vars.to.regress) qUMAP(feature = v, obj = obj, sub = suffix)
+    # MarkdownReports::create_set_OutDir(new_path)
+  }
+
+
   if (save_obj) {
     print("Save RDS")
     isave.RDS(obj, suffix = suffix, inOutDir = T)
   }
 
+  # try(say(), silent = TRUE)
+  # try(say(), silent = TRUE)
+  # MarkdownReports::create_set_OutDir(orig.dir)
   return(obj)
 }
 
 
 
-# RenameClustering <- function(namedVector = ManualNames
-#                              , orig.ident =  "RNA_snn_res.0.3"
-#                              , suffix = substitute(obj)
-#                              , suffx.new.ident = "ManualNames" # dont name it suffix... stupid autoguess feature
-#                              , new.ident = ppp(orig.ident, suffx.new.ident)
-#                              , obj = combined.obj
-#                              , plot_umaps = FALSE
-#                              , ...) {
-#
-#   NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
-#                     , oldvalues = names(namedVector)
-#                     , newvalues = namedVector)
-#   obj@meta.data[[new.ident]] <- NewX
-#   print(0)
-#   if (plot_umaps) {
-#     "There is an error here prob some arguments get passed that should not"
-#     "I removed the ', ...'  argument, but maybe the problem is with suffix..."
-#     "Did not test either"
-#     clUMAP(orig.ident, suffix = suffix, obj = obj)
-#     print(1)
-#     clUMAP(new.ident, suffix = suffix, obj = obj)
-#     print(11)
-#   } else { iprint("New ident:", new.ident) }
-#   return(obj)
-# }
-
-
 # _________________________________________________________________________________________________
-# New additions,  categorized _____________________________ ------
+# Temp _____________________________ ------
 # _________________________________________________________________________________________________
-
-
