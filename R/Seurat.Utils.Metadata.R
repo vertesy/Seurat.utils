@@ -544,7 +544,8 @@ plot.Metadata.Cor.Heatmap <- function(
 #' @param suffix A character string added to the plot file name if not returning a matrix. Default is NULL.
 #' @param return_matrix A logical indicating whether to return a matrix of medians, or plot a heatmap. Default is FALSE.
 #' @param plotname A character string representing the main title for the plot. Default is "Median metadata values by cluster".
-#' @param n_cut The number of clusters to cut the tree into (if not returning a matrix). Default is 5.
+#' @param n_cut_row The number of row rows to cut the tree into on the `pheatmap`. Default is NA (none).
+#' @param n_cut_col The number of column clusters to cut the tree into on the `pheatmap`. Default is NA (none)
 #' @param w The width of the plot (if not returning a matrix). Default is half the number of variables.
 #' @param ... Additional parameters passed to the pheatmap function.
 #'
@@ -562,7 +563,8 @@ heatmap_calc_clust_median <- function(meta, ident, subset_ident_levels = FALSE
                                      , suffix = NULL
                                      , return_matrix = FALSE
                                      , plotname = "Median metadata values by cluster"
-                                     , n_cut = 5
+                                     , n_cut_row = NA
+                                     , n_cut_col = NA
                                      , w = ceiling(length(variables)/2)
                                      , ...) {
   # Ensure that 'meta' is a dataframe, 'ident' is a column in 'meta', and 'variables' are columns in 'meta'
@@ -589,14 +591,17 @@ heatmap_calc_clust_median <- function(meta, ident, subset_ident_levels = FALSE
   } else {
     plot_name <- FixPlotName(plotname, suffix)
     pl <- pheatmap::pheatmap(df_cluster_medians, main = plot_name
-                             , cutree_rows = n_cut
-                             , cutree_cols = n_cut
+                             , cutree_rows = n_cut_row
+                             , cutree_cols = n_cut_col
                              , ...)
     wplot_save_pheatmap(x = pl, width = w,
                         , plotname = FixPlotName(make.names(plot_name), suffix, 'pdf') )
   }
-
 }
+
+
+heatmap_calc_clust_median(meta = aaa@meta.data, ident = identX, variables = colz, subset_ident_levels = Levels3, suffix = "EN mature only")
+
 
 
 # _________________________________________________________________________________________________
