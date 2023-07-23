@@ -22,11 +22,11 @@
 #' @title parallel.computing.by.future
 #'
 #' @description Run gc(), load multi-session computing and extend memory limits.
-#' @param workers_ cores
+#' @param cores Number of cores
 #' @param maxMemSize memory limit
 #'
 #' @export
-parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^2) { # Run gc(), load multi-session computing and extend memory limits.
+parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) { # Run gc(), load multi-session computing and extend memory limits.
   # https://satijalab.org/seurat/v3.0/future_vignette.html
   cat(
     "1. If you load futures before you finished using foreach loops,
@@ -41,12 +41,16 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
 
   gc(full = T)
   try(memory.biggest.objects(), silent = T)
+  user_input <- readline(prompt="Are you sure that memory should not be cleaned before paralellizng? (y/n)")
 
-  library(future)
-  plan("multiprocess", workers = workers_)
-  # plan("multisession", workers = workers_)
-  # So to set Max mem size to 2GB, you would run :
-  options(future.globals.maxSize = maxMemSize)
+  if (user_input == 'y') {
+    iprint("N. cores", cores)
+    library(future)
+    # plan("multiprocess", workers = cores)
+    plan("multisession", workers = cores)
+    # So to set Max mem size to 2GB, you would run :
+    options(future.globals.maxSize = maxMemSize)
+  } else { print("No parallelization")}
 }
 
 
@@ -54,8 +58,9 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
 
 
 # _________________________________________________________________________________________________
-#' IntersectWithExpressed
+#' @title IntersectWithExpressed
 #'
+#' @description
 #' @param genes A vector of gene names.
 #' @param obj Seurat object
 #' @param genes.shown Number of genes printed (head).
@@ -95,6 +100,7 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 # _________________________________________________________________________________________________
 #' @title AreTheseCellNamesTheSame
 #'
+#' @description Compare two character vectors (e.g.: cell IDs) how much they overlap and plot a Venn Diagramm.
 #' @param vec1 Character vector, eg. with cell names
 #' @param vec2 Character vector, eg. with cell names
 #' @param names Names for plotting
@@ -131,7 +137,7 @@ AreTheseCellNamesTheSame  <- function(vec1 = names(UVI.annot)
 
 
 # _________________________________________________________________________________________________
-#' getProject
+#' @title getProject
 #'
 #' @description Try to get the project name you are wokring on in Rstudio.
 #' @returns The final subfolder of your project, or NULL, if you are not running one
@@ -141,6 +147,102 @@ AreTheseCellNamesTheSame  <- function(vec1 = names(UVI.annot)
 getProject <- function() {
   tryCatch(basename(rstudioapi::getActiveProject()), error=function(e){})
 }
+
+
+# _________________________________________________________________________________________________
+#' Create.MiscSlot
+#'
+#' @param obj Seurat object
+#' @param NewSlotName Name of the new element inside obj@misc.
+#' @export
+
+Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL ) {
+  if (is.null(obj@misc[[NewSlotName]])) obj@misc[[NewSlotName]] <- list() else iprint(NewSlotName, "already exists in @misc.")
+  if (is.null(obj@misc[[NewSlotName]][[SubSlotName]])) obj@misc[[NewSlotName]][[SubSlotName]] <- list() else iprint(SubSlotName, "subslot already exists in @misc$NewSlot.")
+  return(obj)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title calc.q99.Expression.and.set.all.genes
+#'
+#' @description Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells). #
+#' @param obj Seurat object, Default: combined.obj
+#' @param quantileX Quantile level, Default: 0.9
+#' @param max.cells Max number of cells to do the calculation on. Downsample if excdeeded. Default: 1e+05
+#' @param slot slot in the Seurat object. Default: 'data'
+#' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
+#' @param set.all.genes
+#' @param set.misc Create the "all.genes" variable in @misc? Default: TRUE
+#' @param assign_to_global_env Create the "all.genes" variable in the global env?, Default: TRUE
+#' @param show Show plot? Default: TRUE
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  combined.obj <- calc.q99.Expression.and.set.all.genes(obj = combined.obj, quantileX = 0.9,
+#'  max.cells =  25000)
+#'  head(sort(as.numeric.wNames(obj@misc$expr.q90), decreasing = T))
+#'  combined.obj <- calc.q99.Expression.and.set.all.genes(obj = combined.obj, quantileX = 0.95,
+#'  max.cells =  25000, set.all.genes = FALSE)
+#'  }
+#' }
+#' @seealso
+#'  \code{\link[sparseMatrixStats]{character(0)}}
+#' @export
+#' @importFrom tictoc tic toc
+#' @importFrom sparseMatrixStats rowQuantiles
+calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
+                                                  , quantileX = 0.99, max.cells =  1e5
+                                                  , slot = "data", assay = c("RNA", "integrated")[1]
+                                                  , set.all.genes = TRUE
+                                                  , set.misc = TRUE
+                                                  , assign_to_global_env = TRUE
+                                                  , show = TRUE) {
+  tictoc::tic()
+  x = GetAssayData(object = obj, assay = assay, slot = slot) #, assay = 'RNA'
+  if (ncol(x) > max.cells) {
+    dsampled = sample(x = 1:ncol(x), size = max.cells)
+    x = x[ , dsampled]
+  }
+  qname = paste0("q", quantileX * 100)
+  slot_name = kpp("expr", qname)
+
+  # expr.q99 = iround(apply(x, 1, quantile, probs = quantileX) )
+  print("Calculating Gene Quantiles")
+  expr.q99.df = sparseMatrixStats::rowQuantiles(x, probs = quantileX)
+  expr.q99 = iround(expr.q99.df)
+
+  log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q99 + 1)) # strip names
+  n.cells <- floor(ncol(obj) * (1-quantileX) )
+  qnameP <- p0(100*quantileX,'th quantile')
+  try(
+    ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30
+                          , plotname = paste("Gene expression in the", qnameP )
+                          , subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = T), " genes have ", qname ," expr. > 0.")
+                          , caption = paste(n.cells, 'cells in', qnameP)
+                          , xlab = paste0("log2(expr. in the ", qnameP,"quantile+1) [UMI]")
+                          , ylab = "Nr. of genes"
+                          , plot = show, save = TRUE
+                          , vline  = .15
+                          , filtercol = T
+                          , palette_use = 'npg'
+    )
+    , silent = TRUE)
+
+  all.genes = percent_rank(expr.q99);
+  names(all.genes) = names(expr.q99);
+  all.genes <- as.list(sort(all.genes, decreasing = TRUE))
+
+  if (assign_to_global_env) assign('all.genes', all.genes, envir = as.environment(1))
+
+  # if (set.all.genes) obj@misc$'all.genes' = all.genes
+  if (set.misc) obj@misc[[slot_name]] <-  expr.q99
+
+  iprint('Quantile', quantileX ,'is now stored under obj@misc$all.genes and $', slot_name, ' Please execute all.genes <- obj@misc$all.genes.')
+  return(obj)
+}
+
+
 
 # _________________________________________________________________________________________________
 # plotting.filtering.R ______________________________ ----
@@ -207,7 +309,7 @@ PlotFilters <- function(ls.obj = ls.Seurat
   )
 
   theme_set(theme.used)
-  create_set_OutDir(parentdir, subdir)
+  MarkdownReports::create_set_OutDir(parentdir, subdir)
   if (suffices == length(ls.obj)) print("ls.obj elements have no names (required).")
 
   Calculate_nFeature_LowPass <- if(below.nFeature_RNA < 1) below.nFeature_RNA else FALSE
@@ -592,6 +694,7 @@ scBarplot.FractionBelowThr <- function(thrX = 0.01, value.col = 'percent.ribo', 
 # _________________________________________________________________________________________________
 #' @title RenameClustering
 #'
+#' @description Rename clustering in a Seurat object.
 #' @param namedVector named vector, where values = new, names(vec) = old
 #' @param orig.ident meta.data colname original
 #' @param suffix.new.ident How to name (suffix) the new identity. Default: "ManualNames"
@@ -1370,18 +1473,21 @@ remove_clusters_and_drop_levels <- function(ls_obj, object_names = names(ls_obj)
 #' @param obj A Seurat object. Default is 'combined.obj'.
 #' @param cutoff A numerical value indicating the cutoff value for the specified dimension. Default is 0.
 #' @param cut_below A logical value indicating whether to remove cells below (TRUE) or above (FALSE) the cutoff line. Default is TRUE.
+#' @param only_plot_cutoff Simulate and plot cutoff only.
 #' @param ... Any other parameters to be passed to internally called functions.
 #' @return A Seurat object with cells removed according to the specified cutoff.
 #' @export
 remove.cells.by.UMAP <- function(reduction = 'umap'
-                                          , umap_dim = 1
-                                          , obj = combined.obj
-                                          , cutoff = 0
-                                          , cut_below = TRUE
-                                          , ...
+                                  , umap_dim = 1
+                                  , obj = combined.obj
+                                  , cutoff = 0
+                                  , cut_below = TRUE
+                                  , only_plot_cutoff = FALSE
+                                  , ...
 ) {
   # Plot cells
-  p <- clUMAP(obj = obj, save.plot = FALSE, ...)
+  sfx <- if(cut_below) "below" else "above"
+  p <- clUMAP(obj = obj, save.plot = FALSE, sub = paste0("cutoff ", sfx, ": ", cutoff),...)
 
   # Add cutoff line to plot
   if (umap_dim == 1) {
@@ -1389,34 +1495,32 @@ remove.cells.by.UMAP <- function(reduction = 'umap'
   } else if (umap_dim == 2) {
     p <- p + geom_hline(yintercept = cutoff)
   }
-  print(p)
+  print(p);
+  qqSave(p, fname = kpp("UMAP.with.cutoff", umap_dim, sfx, cutoff, "png"), h = 7, w = 7)
 
-  # Retrieve cell embeddings
-  cell_embedding <- obj@reductions[[reduction]]@cell.embeddings
-  all_cells <- rownames(cell_embedding)
-  stopifnot(ncol(cell_embedding) > 0)
-  embedding_dim_x <- cell_embedding[, umap_dim]
+  if (!only_plot_cutoff) {
+    # Retrieve cell embeddings
+    cell_embedding <- obj@reductions[[reduction]]@cell.embeddings
+    all_cells <- rownames(cell_embedding)
+    stopifnot(ncol(cell_embedding) > 0)
+    embedding_dim_x <- cell_embedding[, umap_dim]
 
-  # Determine cells to remove based on cutoff
-  cells_to_remove <- if (cut_below) which_names(embedding_dim_x < cutoff) else which_names(embedding_dim_x >= cutoff)
+    # Determine cells to remove based on cutoff
+    cells_to_remove <- if (cut_below) which_names(embedding_dim_x < cutoff) else which_names(embedding_dim_x >= cutoff)
 
-  # Report on cells removed
-  if (length(cells_to_remove)) {
-    iprint(">>> A total of", length(cells_to_remove), "cells are removed which fell on UMAP aside cutoff:", cutoff)
-  } else {
-    iprint(">>> No cells are removed because of the UMAP dimension cutoff.")
-  }
+    # Report on cells removed
+    if (length(cells_to_remove)) {
+      iprint(">>> A total of", length(cells_to_remove), "cells are removed which fell on UMAP aside cutoff:", cutoff)
+    } else {
+      iprint(">>> No cells are removed because of the UMAP dimension cutoff.")
+    }
 
-  # Subset object to include only cells not removed
-  cells_to_keep <- setdiff(all_cells, cells_to_remove)
-  obj <- subset(x = obj, cells = cells_to_keep)
-
+    # Subset object to include only cells not removed
+    cells_to_keep <- setdiff(all_cells, cells_to_remove)
+    obj <- subset(x = obj, cells = cells_to_keep)
+  } # only_plot_cutoff
   return(obj)
 }
-
-
-
-
 
 
 # _________________________________________________________________________________________________
@@ -1840,9 +1944,9 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 
 
 # ________________________________________________________________________
-#' scEnhancedVolcano
+#' @title scEnhancedVolcano
 #'
-#' This function creates an enhanced volcano plot.
+#' @description This function creates an enhanced volcano plot.
 #'
 #' @param toptable A data frame with the results of differential gene expression analysis.
 #' @param lab A vector of gene symbols to label on the plot.
@@ -1854,7 +1958,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 #' @param selectLab A vector of gene symbols to select for labeling.
 #' @param h The height of the plot.
 #' @param w The width of the plot.
-#'
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @return A ggplot object.
 #'
 #' @export
@@ -1864,16 +1968,17 @@ scEnhancedVolcano <- function(toptable = df.markers.X, lab = rownames(toptable)
                               , title = kppd("DGEA", suffix)
                               , subtitle = paste("min FC:", iround(2^abs(min(toptable$'avg_log2FC'))))
                               , x ="avg_log2FC", y ="p_val_adj"
-                              , selectLab = lab[1:3]
-                              , h = 8, w = h
-) {
+                              , selectLab = trail(lab, 5)
+                              , pCutoffCol = 'p_val_adj'
+                              , h = 8, w = h, ...) {
 
   # Create an enhanced volcano plot.
-  pobj <- EnhancedVolcano::EnhancedVolcano(toptable = toptable
+  pobj <- EnhancedVolcano::EnhancedVolcano(toptable = toptable,
                                            , title = title, subtitle = subtitle
-                                           , lab =lab, selectLab = selectLab
+                                           , lab = lab, selectLab = selectLab
+                                           , pCutoffCol = pCutoffCol
                                            , x = x, y = y
-  )
+                                           , ...)
 
   # Save the plot.
   qqSave(ggobj = pobj, title = title, h = h, w = w)
@@ -2825,7 +2930,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
     ggsave(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
   }
 
-  if (subdir) create_set_OutDir(... = ParentDir)
+  if (subdir) MarkdownReports::create_set_OutDir(... = ParentDir)
   if (saveGeneList) {
     if (is.null(obj@misc$gene.lists)) obj@misc$gene.lists <- list()
     obj@misc$gene.lists[[substitute(list.of.genes)]] <- list.of.genes.found
@@ -3847,9 +3952,8 @@ seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) { # Take a named
 
 
 # _________________________________________________________________________________________________
-# FeaturePlot with different defaults
-
 #' @title GetMostVarGenes
+#'
 #' @description Get the N most variable Genes
 #' @param obj A Seurat object.
 #' @param nGenes Number of genes, Default: p$nVarGenes
@@ -4314,6 +4418,7 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 
 #' @title calculate.observable.multiplet.rate.10X.LT
 #'
+#' @description Calculate the observable multiplet rate for 10X standard lane.
 #' @param fractions Genotype fractions observed or loaded on the machine.
 #' @param FMR.r Factor for calculating Multiplet Rate: Cell count / FMR = multiplet rate. (.r stands for 'estimating from Recovered cell count.')
 #' @param cell.count Number of total cells recovered from a 10X lane.
@@ -5388,40 +5493,99 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 
 
 # _________________________________________________________________________________________________
-# Temp _____________________________ ------
-# _________________________________________________________________________________________________
-
-
-
-# RenameClustering <- function(namedVector = ManualNames
-#                              , orig.ident =  "RNA_snn_res.0.3"
-#                              , suffix = substitute(obj)
-#                              , suffx.new.ident = "ManualNames" # dont name it suffix... stupid autoguess feature
-#                              , new.ident = ppp(orig.ident, suffx.new.ident)
-#                              , obj = combined.obj
-#                              , plot_umaps = FALSE
-#                              , ...) {
-#
-#   NewX <- translate(vec = as.character(obj@meta.data[ ,orig.ident])
-#                     , oldvalues = names(namedVector)
-#                     , newvalues = namedVector)
-#   obj@meta.data[[new.ident]] <- NewX
-#   print(0)
-#   if (plot_umaps) {
-#     "There is an error here prob some arguments get passed that should not"
-#     "I removed the ', ...'  argument, but maybe the problem is with suffix..."
-#     "Did not test either"
-#     clUMAP(orig.ident, suffix = suffix, obj = obj)
-#     print(1)
-#     clUMAP(new.ident, suffix = suffix, obj = obj)
-#     print(11)
-#   } else { iprint("New ident:", new.ident) }
-#   return(obj)
-# }
-
-
-# _________________________________________________________________________________________________
 # New additions,  categorized _____________________________ ------
 # _________________________________________________________________________________________________
 
 
+
+#' @title Regress Out and Recalculate Seurat
+#'
+#' @description The function performs a series of calculations and manipulations on a Seurat object,
+#' including identifying variable features, scaling data, running PCA, setting up reductions, finding neighbors,
+#' and finding clusters. It optionally performs t-SNE and saves the object.
+#'
+#' @param obj The Seurat object.
+#' @param vars.to.regress A vector of variable names to be regressed out.
+#' @param suffix A character string to be used as a suffix when saving the object.
+#' @param nPCs The number of principal components to use. Default is the 'n.PC' element from a list 'p'.
+#' @param clust_resolutions The resolution for clustering. Default is the 'snn_res' element from a list 'p'.
+#' @param calc_tSNE Logical, if TRUE, t-SNE will be performed. Default is FALSE.
+#' @param plot_umaps Logical, if TRUE, UMAP plots will be generated. Default is TRUE.
+#' @param save_obj Logical, if TRUE, the object will be saved. Default is TRUE.
+#' @param assayX The assay to be used in scaling data. Default is 'RNA'.
+#' @return Seurat object after calculations and manipulations.
+#' @importFrom Seurat FindVariableFeatures ScaleData RunPCA SetupReductionsNtoKdimensions FindNeighbors FindClusters RunTSNE
+#' @importFrom MarkdownReports create_set_OutDir
+#' @examples
+#' \dontrun{
+#' # Assuming 'seurat_obj' is a valid Seurat object and 'vars' is a vector of variable names to be regressed out.
+#' result <- regress_out_and_recalculate_seurat(seurat_obj, vars, suffix = "_regressed")
+#' }
+#' @export
+regress_out_and_recalculate_seurat <- function(obj
+                                               , vars.to.regress
+                                               , suffix
+                                               , nPCs = p$'n.PC'
+                                               , clust_resolutions = p$'snn_res'
+                                               , calc_tSNE = F
+                                               , plot_umaps = T
+                                               , save_obj = T
+                                               , assayX = 'RNA') {
+  tic(); print("FindVariableFeatures")
+  obj <- FindVariableFeatures(obj, mean.function = 'FastExpMean', dispersion.function = 'FastLogVMR', nfeatures = 10000); toc()
+
+  tic(); print("calc.q99.Expression.and.set.all.genes")
+  obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc()
+
+  tic(); print("ScaleData")
+  obj <- ScaleData(obj, assay = assayX, verbose = T, vars.to.regress = vars.to.regress); toc()
+
+  tic(); print("RunPCA")
+  obj <- RunPCA(obj, npcs = nPCs, verbose = T); toc()
+
+  tic(); print("SetupReductionsNtoKdimensions")
+  obj <- SetupReductionsNtoKdimensions(obj = obj, nPCs = nPCs, dimensions = 3:2, reduction = "umap"); toc()
+
+  tic(); print("FindNeighbors")
+  obj <- FindNeighbors(obj, reduction = "pca", dims = 1:nPCs); toc()
+
+  tic(); print("FindClusters")
+  obj <- FindClusters(obj, resolution = clust_resolutions); toc()
+
+  if (calc_tSNE) {
+    tic(); print("RunTSNE")
+    obj <- RunTSNE(obj, reduction = "pca", dims = 1:nPCs); toc()
+  }
+
+  # orig.dir <- getwd()
+  # new_path <- FixPath(orig.dir, suffix)
+  # MarkdownReports::create_set_OutDir(new_path)
+
+  clz <- GetClusteringRuns(obj = obj, pat = "*snn_res.*[0-9]$")
+
+  if (plot_umaps) {
+    print("Plotting umaps")
+    for (v in clz) clUMAP(ident = v, obj = obj, sub = suffix)
+
+    # MarkdownReports::create_set_OutDir(new_path, 'UMAP_stats')
+    for (v in vars.to.regress) qUMAP(feature = v, obj = obj, sub = suffix)
+    # MarkdownReports::create_set_OutDir(new_path)
+  }
+
+
+  if (save_obj) {
+    print("Save RDS")
+    isave.RDS(obj, suffix = suffix, inOutDir = T)
+  }
+
+  # try(say(), silent = TRUE)
+  # try(say(), silent = TRUE)
+  # MarkdownReports::create_set_OutDir(orig.dir)
+  return(obj)
+}
+
+
+
+# _________________________________________________________________________________________________
+# Temp _____________________________ ------
+# _________________________________________________________________________________________________

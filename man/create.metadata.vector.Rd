@@ -2,17 +2,27 @@
 % Please edit documentation in R/Seurat.Utils.Metadata.R
 \name{create.metadata.vector}
 \alias{create.metadata.vector}
-\title{create.metadata.vector}
+\title{Create a Metadata Vector}
 \usage{
 create.metadata.vector(vec = All.UVI, obj = combined.obj, min.intersect = 100)
 }
 \arguments{
-\item{vec}{cell_ID vector with partial overlap to cells in a Seurat object.}
+\item{vec}{A named vector where the names represent cell IDs. This vector should have partial overlap with the cells in a Seurat object. Default is 'All.UVI'.}
 
-\item{obj}{Seurat object}
+\item{obj}{A Seurat object that contains cell IDs which partially overlap with 'vec'. Default is 'combined.obj'.}
 
-\item{min.intersect}{Min number of cells to find in both.}
+\item{min.intersect}{The minimum number of cells to find in both 'vec' and 'obj'. The function will stop if the intersection is less than this number. Default is 100.}
+}
+\value{
+A named vector of length equal to the number of cells in 'obj', with names from 'obj' and values from 'vec' for intersecting cell names.
 }
 \description{
-create.metadata.vector
+This function creates a metadata vector from an input vector and a Seurat object.
+The resulting vector contains values from 'vec' for the intersecting cell names between 'vec' and 'obj'.
+It also checks if the intersection between the cell names in 'vec' and 'obj' is more than a minimum intersection size.
+}
+\examples{
+\dontrun{
+create.metadata.vector(vec = my_vector, obj = my_seurat_object, min.intersect = 50)
+}
 }

@@ -2,35 +2,60 @@
 % Please edit documentation in R/Seurat.Utils.Metadata.R
 \name{plot.Metadata.Cor.Heatmap}
 \alias{plot.Metadata.Cor.Heatmap}
-\title{plot.Metadata.Cor.Heatmap}
+\title{Plot Metadata Correlation Heatmap}
 \usage{
 \method{plot}{Metadata.Cor.Heatmap}(
   columns = c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo"),
+  obj,
   cormethod = c("pearson", "spearman")[1],
   main = paste("Metadata", cormethod, "correlations"),
-  obj = combined.obj,
-  w = 10,
+  show_numbers = FALSE,
+  digits = 1,
+  suffix = NULL,
+  add_PCA = TRUE,
+  n_PCs = 8,
+  w = ceiling((length(columns) + n_PCs)/2),
   h = w,
+  use_ggcorrplot = FALSE,
+  n_cutree = (n_PCs),
   ...
 )
 }
 \arguments{
-\item{columns}{A vector of column names for which to calculate correlations. Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo").}
+\item{columns}{A vector of metadata column names to calculate correlations.
+Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo").}
 
-\item{cormethod}{The method to calculate correlations, either "pearson" or "spearman". Default: "pearson".}
+\item{obj}{The main Seurat object used for calculations. No default value.}
+
+\item{cormethod}{The method to calculate correlations. Can be either "pearson" or "spearman". Default: "pearson".}
 
 \item{main}{The main title for the plot. Default: "Metadata correlations" followed by the correlation method.}
 
-\item{obj}{The main Seurat object used for calculations. Default: combined.obj.}
+\item{show_numbers}{Logical, determines if correlation values should be displayed on the plot. Default: FALSE.}
 
-\item{w}{The width of the plot. Default: 10.}
+\item{digits}{The number of decimal places for displayed correlation values. Default: 1.}
 
-\item{h}{The height of the plot. Default: width of the plot (w).}
+\item{suffix}{A suffix added to the output filename. Default: NULL.}
 
-\item{...}{Additional parameters passed to the internally called functions.}
+\item{add_PCA}{Logical, determines if PCA values should be included in the correlation calculation. Default: TRUE.}
+
+\item{n_PCs}{The number of PCA components to be included if 'add_PCA' is TRUE. Default: 8.}
+
+\item{w}{The width of the plot in inches. Default: ceiling((length(columns)+n_PCs)/2).}
+
+\item{h}{The height of the plot in inches. Default: the value of w.}
+
+\item{use_ggcorrplot}{Logical, determines if the ggcorrplot package should be used for plotting. Default: FALSE.}
+
+\item{n_cutree}{The number of clusters to be used in hierarchical clustering. Default: the number of PCs.}
+
+\item{...}{Additional parameters passed to the internally called ggcorrplot function.}
 }
 \description{
-Plots a heatmap of metadata correlation values.
+This function plots a heatmap of metadata correlation values. It accepts a Seurat object
+and a set of metadata columns to correlate. The correlations are calculated using either Pearson
+or Spearman methods, and the resulting heatmap can include the principal component (PCA) values
+and be saved with a specific suffix.
 }
 \seealso{
 \code{\link[ggcorrplot]{ggcorrplot}}

@@ -1473,18 +1473,21 @@ remove_clusters_and_drop_levels <- function(ls_obj, object_names = names(ls_obj)
 #' @param obj A Seurat object. Default is 'combined.obj'.
 #' @param cutoff A numerical value indicating the cutoff value for the specified dimension. Default is 0.
 #' @param cut_below A logical value indicating whether to remove cells below (TRUE) or above (FALSE) the cutoff line. Default is TRUE.
+#' @param only_plot_cutoff Simulate and plot cutoff only.
 #' @param ... Any other parameters to be passed to internally called functions.
 #' @return A Seurat object with cells removed according to the specified cutoff.
 #' @export
 remove.cells.by.UMAP <- function(reduction = 'umap'
-                                          , umap_dim = 1
-                                          , obj = combined.obj
-                                          , cutoff = 0
-                                          , cut_below = TRUE
-                                          , ...
+                                  , umap_dim = 1
+                                  , obj = combined.obj
+                                  , cutoff = 0
+                                  , cut_below = TRUE
+                                  , only_plot_cutoff = FALSE
+                                  , ...
 ) {
   # Plot cells
-  p <- clUMAP(obj = obj, save.plot = FALSE, ...)
+  sfx <- if(cut_below) "below" else "above"
+  p <- clUMAP(obj = obj, save.plot = FALSE, sub = paste0("cutoff ", sfx, ": ", cutoff),...)
 
   # Add cutoff line to plot
   if (umap_dim == 1) {
@@ -1492,34 +1495,32 @@ remove.cells.by.UMAP <- function(reduction = 'umap'
   } else if (umap_dim == 2) {
     p <- p + geom_hline(yintercept = cutoff)
   }
-  print(p)
+  print(p);
+  qqSave(p, fname = kpp("UMAP.with.cutoff", umap_dim, sfx, cutoff, "png"), h = 7, w = 7)
 
-  # Retrieve cell embeddings
-  cell_embedding <- obj@reductions[[reduction]]@cell.embeddings
-  all_cells <- rownames(cell_embedding)
-  stopifnot(ncol(cell_embedding) > 0)
-  embedding_dim_x <- cell_embedding[, umap_dim]
+  if (!only_plot_cutoff) {
+    # Retrieve cell embeddings
+    cell_embedding <- obj@reductions[[reduction]]@cell.embeddings
+    all_cells <- rownames(cell_embedding)
+    stopifnot(ncol(cell_embedding) > 0)
+    embedding_dim_x <- cell_embedding[, umap_dim]
 
-  # Determine cells to remove based on cutoff
-  cells_to_remove <- if (cut_below) which_names(embedding_dim_x < cutoff) else which_names(embedding_dim_x >= cutoff)
+    # Determine cells to remove based on cutoff
+    cells_to_remove <- if (cut_below) which_names(embedding_dim_x < cutoff) else which_names(embedding_dim_x >= cutoff)
 
-  # Report on cells removed
-  if (length(cells_to_remove)) {
-    iprint(">>> A total of", length(cells_to_remove), "cells are removed which fell on UMAP aside cutoff:", cutoff)
-  } else {
-    iprint(">>> No cells are removed because of the UMAP dimension cutoff.")
-  }
+    # Report on cells removed
+    if (length(cells_to_remove)) {
+      iprint(">>> A total of", length(cells_to_remove), "cells are removed which fell on UMAP aside cutoff:", cutoff)
+    } else {
+      iprint(">>> No cells are removed because of the UMAP dimension cutoff.")
+    }
 
-  # Subset object to include only cells not removed
-  cells_to_keep <- setdiff(all_cells, cells_to_remove)
-  obj <- subset(x = obj, cells = cells_to_keep)
-
+    # Subset object to include only cells not removed
+    cells_to_keep <- setdiff(all_cells, cells_to_remove)
+    obj <- subset(x = obj, cells = cells_to_keep)
+  } # only_plot_cutoff
   return(obj)
 }
-
-
-
-
 
 
 # _________________________________________________________________________________________________
@@ -5147,7 +5148,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   # Adapter for Markdownreports background variable "OutDir"
   OutDirBac <- if(exists("OutDir")) OutDir else getwd()
   OutDir <- file.path(CellRanger_outs_Dir, paste0(kpp("SoupStatistics", SeqRun)))
-  MarkdownReports::MarkdownReports::create_set_OutDir(OutDir)
+  MarkdownReports::create_set_OutDir(OutDir)
   MarkdownHelpers::ww.assign_to_global("OutDir", OutDir, 1)
 
   # Read raw and filtered data ___________________________________

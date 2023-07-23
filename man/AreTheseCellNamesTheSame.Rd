@@ -21,7 +21,7 @@ AreTheseCellNamesTheSame(
 \item{min.overlap}{Threhold below there is no there is no meaninful overlap between the tow vectors. The function aborts with an error.}
 }
 \description{
-AreTheseCellNamesTheSame
+Compare two character vectors (e.g.: cell IDs) how much they overlap and plot a Venn Diagramm.
 }
 \examples{
 # reTheseCellNamesTheSame()

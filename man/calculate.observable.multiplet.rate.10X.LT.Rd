@@ -27,5 +27,5 @@ calculate.observable.multiplet.rate.10X.LT(
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-calculate.observable.multiplet.rate.10X.LT
+Calculate the observable multiplet rate for 10X standard lane.
 }

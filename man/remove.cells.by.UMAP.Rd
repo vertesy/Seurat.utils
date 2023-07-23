@@ -10,6 +10,7 @@ remove.cells.by.UMAP(
   obj = combined.obj,
   cutoff = 0,
   cut_below = TRUE,
+  only_plot_cutoff = FALSE,
   ...
 )
 }
@@ -23,6 +24,8 @@ remove.cells.by.UMAP(
 \item{cutoff}{A numerical value indicating the cutoff value for the specified dimension. Default is 0.}
 
 \item{cut_below}{A logical value indicating whether to remove cells below (TRUE) or above (FALSE) the cutoff line. Default is TRUE.}
+
+\item{only_plot_cutoff}{Simulate and plot cutoff only.}
 
 \item{...}{Any other parameters to be passed to internally called functions.}
 }

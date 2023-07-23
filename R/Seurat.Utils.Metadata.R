@@ -600,9 +600,6 @@ heatmap_calc_clust_median <- function(meta, ident, subset_ident_levels = FALSE
 }
 
 
-heatmap_calc_clust_median(meta = aaa@meta.data, ident = identX, variables = colz, subset_ident_levels = Levels3, suffix = "EN mature only")
-
-
 
 # _________________________________________________________________________________________________
 #' @title plot.Metadata.median.fraction.barplot

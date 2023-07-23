@@ -12,9 +12,11 @@ scEnhancedVolcano(
   subtitle = paste("min FC:", iround(2^abs(min(toptable$avg_log2FC)))),
   x = "avg_log2FC",
   y = "p_val_adj",
-  selectLab = lab[1:3],
+  selectLab = trail(lab, 5),
+  pCutoffCol = "p_val_adj",
   h = 8,
-  w = h
+  w = h,
+  ...
 )
 }
 \arguments{
@@ -37,6 +39,8 @@ scEnhancedVolcano(
 \item{h}{The height of the plot.}
 
 \item{w}{The width of the plot.}
+
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \value{
 A ggplot object.

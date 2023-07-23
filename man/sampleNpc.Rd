@@ -2,12 +2,13 @@
 % Please edit documentation in R/Seurat.Utils.Metadata.R
 \name{sampleNpc}
 \alias{sampleNpc}
-\title{sampleNpc}
+\title{Sample N \% of a dataframe (obj@metadata), and return rownames (cell IDs).}
 \usage{
 sampleNpc(metaDF = MetaData[which(Pass), ], pc = 0.1)
 }
 \arguments{
-\item{metaDF}{A dataframe representing a subset of the metadata of a Seurat object. Default: Subset of 'MetaData' for which 'Pass' is TRUE.}
+\item{metaDF}{A dataframe representing a subset of the metadata of a Seurat object. Default:
+Subset of 'MetaData' for which 'Pass' is TRUE.}
 
 \item{pc}{The percentage of the dataframe to sample, expressed as a decimal. Default: 0.1.}
 }
@@ -15,7 +16,8 @@ sampleNpc(metaDF = MetaData[which(Pass), ], pc = 0.1)
 A vector of sampled cell IDs.
 }
 \description{
-This function samples a specified percentage of a dataframe (specifically a subset of the metadata of a Seurat object) and returns the corresponding cell IDs.
+This function samples a specified percentage of a dataframe (specifically a subset
+of the metadata of a Seurat object) and returns the corresponding cell IDs.
 }
 \examples{
 \dontrun{

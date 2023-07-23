@@ -31,5 +31,5 @@ RenameClustering(
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-RenameClustering
+Rename clustering in a Seurat object.
 }

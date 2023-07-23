@@ -4,10 +4,10 @@
 \alias{parallel.computing.by.future}
 \title{parallel.computing.by.future}
 \usage{
-parallel.computing.by.future(workers_ = 6, maxMemSize = 4000 * 1024^2)
+parallel.computing.by.future(cores = 4, maxMemSize = 4000 * 1024^2)
 }
 \arguments{
-\item{workers_}{cores}
+\item{cores}{Number of cores}
 
 \item{maxMemSize}{memory limit}
 }
