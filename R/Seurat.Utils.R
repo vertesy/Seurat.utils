@@ -1843,9 +1843,9 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 
 
 # ________________________________________________________________________
-#' scEnhancedVolcano
+#' @title scEnhancedVolcano
 #'
-#' This function creates an enhanced volcano plot.
+#' @description This function creates an enhanced volcano plot.
 #'
 #' @param toptable A data frame with the results of differential gene expression analysis.
 #' @param lab A vector of gene symbols to label on the plot.
@@ -1857,7 +1857,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 #' @param selectLab A vector of gene symbols to select for labeling.
 #' @param h The height of the plot.
 #' @param w The width of the plot.
-#'
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @return A ggplot object.
 #'
 #' @export
@@ -1867,16 +1867,17 @@ scEnhancedVolcano <- function(toptable = df.markers.X, lab = rownames(toptable)
                               , title = kppd("DGEA", suffix)
                               , subtitle = paste("min FC:", iround(2^abs(min(toptable$'avg_log2FC'))))
                               , x ="avg_log2FC", y ="p_val_adj"
-                              , selectLab = lab[1:3]
-                              , h = 8, w = h
-) {
+                              , selectLab = trail(lab, 5)
+                              , pCutoffCol = 'p_val_adj'
+                              , h = 8, w = h, ...) {
 
   # Create an enhanced volcano plot.
-  pobj <- EnhancedVolcano::EnhancedVolcano(toptable = toptable
+  pobj <- EnhancedVolcano::EnhancedVolcano(toptable = toptable,
                                            , title = title, subtitle = subtitle
-                                           , lab =lab, selectLab = selectLab
+                                           , lab = lab, selectLab = selectLab
+                                           , pCutoffCol = pCutoffCol
                                            , x = x, y = y
-  )
+                                           , ...)
 
   # Save the plot.
   qqSave(ggobj = pobj, title = title, h = h, w = w)
