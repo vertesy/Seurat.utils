@@ -22,11 +22,11 @@
 #' @title parallel.computing.by.future
 #'
 #' @description Run gc(), load multi-session computing and extend memory limits.
-#' @param workers_ cores
+#' @param cores Number of cores
 #' @param maxMemSize memory limit
 #'
 #' @export
-parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^2) { # Run gc(), load multi-session computing and extend memory limits.
+parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) { # Run gc(), load multi-session computing and extend memory limits.
   # https://satijalab.org/seurat/v3.0/future_vignette.html
   cat(
     "1. If you load futures before you finished using foreach loops,
@@ -41,12 +41,16 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
 
   gc(full = T)
   try(memory.biggest.objects(), silent = T)
+  user_input <- readline(prompt="Are you sure that memory should not be cleaned before paralellizng? (y/n)")
 
-  library(future)
-  plan("multiprocess", workers = workers_)
-  # plan("multisession", workers = workers_)
-  # So to set Max mem size to 2GB, you would run :
-  options(future.globals.maxSize = maxMemSize)
+  if (user_input == 'y') {
+    iprint("N. cores", cores)
+    library(future)
+    # plan("multiprocess", workers = cores)
+    plan("multisession", workers = cores)
+    # So to set Max mem size to 2GB, you would run :
+    options(future.globals.maxSize = maxMemSize)
+  } else { print("No parallelization")}
 }
 
 
