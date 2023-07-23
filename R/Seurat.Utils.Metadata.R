@@ -712,37 +712,81 @@ replace_by_most_frequent_categories <- function(df, query_col = colnames(df)[1]
 # _________________________________________________________________________________________________
 # Plot metadata ______________________________ ----
 # _________________________________________________________________________________________________
-
-#' @title plot.Metadata.Cor.Heatmap
+#' @title Plot Metadata Correlation Heatmap
 #'
-#' @description Plots a heatmap of metadata correlation values.
-#' @param columns A vector of column names for which to calculate correlations. Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo").
-#' @param cormethod The method to calculate correlations, either "pearson" or "spearman". Default: "pearson".
+#' @description This function plots a heatmap of metadata correlation values. It accepts a Seurat object
+#' and a set of metadata columns to correlate. The correlations are calculated using either Pearson
+#' or Spearman methods, and the resulting heatmap can include the principal component (PCA) values
+#' and be saved with a specific suffix.
+#'
+#' @param columns A vector of metadata column names to calculate correlations.
+#' Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo").
+#' @param obj The main Seurat object used for calculations. No default value.
+#' @param cormethod The method to calculate correlations. Can be either "pearson" or "spearman". Default: "pearson".
 #' @param main The main title for the plot. Default: "Metadata correlations" followed by the correlation method.
-#' @param obj The main Seurat object used for calculations. Default: combined.obj.
-#' @param w The width of the plot. Default: 10.
-#' @param h The height of the plot. Default: width of the plot (w).
-#' @param ... Additional parameters passed to the internally called functions.
+#' @param show_numbers Logical, determines if correlation values should be displayed on the plot. Default: FALSE.
+#' @param digits The number of decimal places for displayed correlation values. Default: 1.
+#' @param suffix A suffix added to the output filename. Default: NULL.
+#' @param add_PCA Logical, determines if PCA values should be included in the correlation calculation. Default: TRUE.
+#' @param n_PCs The number of PCA components to be included if 'add_PCA' is TRUE. Default: 8.
+#' @param w The width of the plot in inches. Default: ceiling((length(columns)+n_PCs)/2).
+#' @param h The height of the plot in inches. Default: the value of w.
+#' @param use_ggcorrplot Logical, determines if the ggcorrplot package should be used for plotting. Default: FALSE.
+#' @param n_cutree The number of clusters to be used in hierarchical clustering. Default: the number of PCs.
+#' @param ... Additional parameters passed to the internally called ggcorrplot function.
+#'
 #' @seealso
 #'  \code{\link[ggcorrplot]{ggcorrplot}}
-#' @export plot.Metadata.Cor.Heatmap
 #' @importFrom ggcorrplot ggcorrplot
-
+#' @export
 plot.Metadata.Cor.Heatmap <- function(
     columns = c( "nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
+    , obj
     , cormethod = c('pearson', 'spearman')[1]
-    , main =paste( "Metadata", cormethod,"correlations")
-    , obj = combined.obj
-    , w = 10, h = w
+    , main = paste( "Metadata", cormethod, "correlations")
+    , show_numbers = FALSE
+    , digits = 1
+    , suffix = NULL
+    , add_PCA = TRUE
+    , n_PCs = 8
+    , w = ceiling((length(columns)+n_PCs)/2), h = w
+    , use_ggcorrplot = FALSE
+    , n_cutree = (n_PCs)
     , ...){
 
   meta.data <- obj@meta.data
   columns.found <- intersect(colnames(meta.data), columns)
+  columns.not.found <- setdiff(columns, colnames(meta.data))
+  if (l(columns.not.found)) iprint("columns.not.found:", columns.not.found)
 
-  corX <- cor(meta.data[ , columns.found], method = cormethod)
-  pl <- ggcorrplot::ggcorrplot(corX, hc.order = TRUE, title = main
-                               , type = "full", lab = T)
-  ggExpress::qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
+  meta.data <- meta.data[ , columns.found]
+
+  if (add_PCA) {
+    stopif(is.null(obj@reductions$'pca'), "PCA not found in @reductions.")
+    main = paste( "Metadata and PC", cormethod, "correlations")
+    suffix = FixPlotName(suffix, "w.PCA")
+
+    PCs <- obj@reductions$pca@cell.embeddings
+    stopifnot(nrow(meta.data) == nrow(PCs))
+    meta.data <- cbind(PCs[ ,1:n_PCs], meta.data)
+
+  }
+
+  corX <- cor(meta.data, method = cormethod)
+  if (use_ggcorrplot) {
+    pl <- ggcorrplot::ggcorrplot(corX, title = main
+                                 , hc.order = TRUE
+                                 , digits = digits
+                                 , lab = show_numbers
+                                 , type = "full"
+                                 , ...)
+    ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, 'pdf'), w = w, h = h)
+  } else {
+    pl <- pheatmap::pheatmap(corX, main = main, treeheight_row = 2, treeheight_col = 2
+                             , cutree_rows = n_cutree, cutree_cols = n_cutree)
+    wplot_save_pheatmap(x = pl, width = w,
+                        , plotname = FixPlotName(make.names(main), suffix, 'pdf') )
+  }
   pl
 }
 
