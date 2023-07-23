@@ -168,7 +168,9 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 #' @param max.cells Max number of cells to do the calculation on. Downsample if excdeeded. Default: 1e+05
 #' @param slot slot in the Seurat object. Default: 'data'
 #' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
-#' @param set.all.genes Create the "all.genes" variable in the global env?, Default: TRUE
+#' @param set.all.genes
+#' @param set.misc Create the "all.genes" variable in @misc? Default: TRUE
+#' @param assign_to_global_env Create the "all.genes" variable in the global env?, Default: TRUE
 #' @param show Show plot? Default: TRUE
 #' @examples
 #' \dontrun{
@@ -188,7 +190,10 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
                                                   , quantileX = 0.99, max.cells =  1e5
                                                   , slot = "data", assay = c("RNA", "integrated")[1]
-                                                  , set.all.genes = TRUE, show = TRUE) {
+                                                  , set.all.genes = TRUE
+                                                  , set.misc = TRUE
+                                                  , assign_to_global_env = TRUE
+                                                  , show = TRUE) {
   tictoc::tic()
   x = GetAssayData(object = obj, assay = assay, slot = slot) #, assay = 'RNA'
   if (ncol(x) > max.cells) {
@@ -220,15 +225,14 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
     )
     , silent = TRUE)
 
-  {
-    all.genes = percent_rank(expr.q99);
-    names(all.genes) = names(expr.q99);
-    all.genes <- sort(all.genes, decreasing = TRUE)
-    if (set.all.genes) obj@misc$'all.genes' = all.genes = as.list(all.genes)
-    assign('all.genes', all.genes, envir = as.environment(1))
-  }
+  all.genes = percent_rank(expr.q99);
+  names(all.genes) = names(expr.q99);
+  all.genes <- as.list(sort(all.genes, decreasing = TRUE))
 
-  obj@misc[[slot_name]] <-  expr.q99
+  if (assign_to_global_env) assign('all.genes', all.genes, envir = as.environment(1))
+
+  # if (set.all.genes) obj@misc$'all.genes' = all.genes
+  if (set.misc) obj@misc[[slot_name]] <-  expr.q99
 
   iprint('Quantile', quantileX ,'is now stored under obj@misc$all.genes and $', slot_name, ' Please execute all.genes <- obj@misc$all.genes.')
   return(obj)
@@ -5486,6 +5490,59 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 # _________________________________________________________________________________________________
 # Temp _____________________________ ------
 # _________________________________________________________________________________________________
+
+
+#' @title Regress Out and Recalculate Seurat
+#'
+#' @description The function performs a series of calculations and manipulations on a Seurat object,
+#' including identifying variable features, scaling data, running PCA, setting up reductions, finding neighbors,
+#' and finding clusters. It optionally performs t-SNE and saves the object.
+#'
+#' @param obj The Seurat object.
+#' @param vars.to.regress A vector of variable names to be regressed out.
+#' @param nPCs The number of principal components to use.
+#' @param resolution The resolution for clustering.
+#' @param calc_tSNE Logical, if TRUE, t-SNE will be performed. Default is FALSE.
+#' @param save_obj Logical, if TRUE, the object will be saved. Default is TRUE.
+#' @param suffix A character string to be used as a suffix when saving the object.
+#' @param assayX The assay to be used in scaling data.
+#' @return Seurat object after calculations and manipulations.
+#' @import Seurat
+#' @export
+regress_out_and_recalculate_seurat <- function(obj, vars.to.regress, nPCs, resolution, calc_tSNE = F, save_obj = T, suffix, assayX) {
+  tic(); print("FindVariableFeatures")
+  obj <- FindVariableFeatures(obj, mean.function = 'FastExpMean', dispersion.function = 'FastLogVMR', nfeatures = 10000); toc()
+
+  tic(); print("calc.q99.Expression.and.set.all.genes")
+  obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc()
+
+  tic(); print("ScaleData")
+  obj <- ScaleData(obj, assay = assayX, verbose = T, vars.to.regress = vars.to.regress); toc()
+
+  tic(); print("RunPCA")
+  obj <- RunPCA(obj, npcs = nPCs, verbose = T); toc()
+
+  tic(); print("SetupReductionsNtoKdimensions")
+  obj <- SetupReductionsNtoKdimensions(obj = obj, nPCs = nPCs, dimensions = 3:2, reduction = "umap"); toc()
+
+  tic(); print("FindNeighbors")
+  obj <- FindNeighbors(obj, reduction = "pca", dims = 1:nPCs); toc()
+
+  tic(); print("FindClusters")
+  obj <- FindClusters(obj, resolution = resolution); toc()
+
+  if (calc_tSNE) {
+    tic(); print("RunTSNE")
+    obj <- RunTSNE(obj, reduction = "pca", dims = 1:nPCs); toc()
+  }
+
+  if (save_obj) {
+    print("Save RDS")
+    isave.RDS(obj, suffix = suffix, inOutDir = T)
+  }
+
+  return(obj)
+}
 
 
 
