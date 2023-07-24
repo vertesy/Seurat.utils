@@ -145,7 +145,42 @@ AreTheseCellNamesTheSame  <- function(vec1 = names(UVI.annot)
 #'
 #' @examples getProject()
 getProject <- function() {
-  tryCatch(basename(rstudioapi::getActiveProject()), error=function(e){})
+  tryCatch(basename(rstudioapi::getActiveProject()), error = function(e){})
+}
+
+# _________________________________________________________________________________________________
+#' @title Shorten Clustering Names
+#'
+#' @description This function takes in a string representing a clustering name,
+#' and shortens it according to specific rules. It replaces "snn_res." with "",
+#' "best.matching.names" with "bmatch", "ordered" with "ord",
+#' "ManualNames" with "mNames", and ".long" at the end of the string with ".L".
+#'
+#' @param str A character string representing the clustering name to be shortened.
+#'
+#' @return A character string representing the shortened clustering name.
+#'
+#' @examples
+#' \dontrun{
+#' shorten_clustering_names('RNA_snn_res.0.5.ordered.ManualNames') # Returns 'RNA.0.5.ord.mNames'
+#' shorten_clustering_names('RNA_snn_res.0.3.best.matching.names.ManualNames.long') # Returns 'RNA.0.3.bmatch.mNames.L'
+#' shorten_clustering_names('RNA_snn_res.1.7.ordered.ManualNames.Simplest') # Returns 'RNA.1.7.ord.mNames.Simplest'
+#' shorten_clustering_names('RNA_snn_res.0.5.ordered.ManualNames.Simpler') # Returns 'RNA.0.5.ord.mNames.Simpler'
+#' }
+#'
+#' @export
+shorten_clustering_names <- function(str) {
+  # Replace 'snn_res' with nothing
+  str <- gsub("snn_res.", "", str)
+  # Replace 'best.matching.names' with 'bmatch'
+  str <- gsub("best.matching.names", "bmatch", str)
+  # Replace 'ordered' with 'ord'
+  str <- gsub("ordered", "ord", str)
+  # Replace 'ManualNames' with 'mNames'
+  str <- gsub("ManualNames", "mNames", str)
+  # Replace 'long' with 'L'
+  str <- gsub(".long$", ".L", str)
+  return(str)
 }
 
 
@@ -2101,39 +2136,54 @@ get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_r
 
 
 # _________________________________________________________________________________________________
-#' @title scBarplot.CellFractions
+#' @title Generate Barplot of Cell Fractions
 #'
-#' @description Generates a bar plot of cell fractions per cluster.
-#' @param obj The Seurat object to use for the analysis. Default: combined.obj.
-#' @param group.by A string specifying the variable to group by. Default: 'integrated_snn_res.0.5.ordered'.
-#' @param fill.by A string specifying the variable to fill by. Default: 'age'.
-#' @param downsample Logical flag indicating whether to downsample the data. If TRUE, the number of cells in each group is equal to the number of cells in the smallest group. Default: TRUE.
-#' @param plotname A string specifying the title of the plot. Default: paste(tools::toTitleCase(fill.by), "proportions").
-#' @param hlines A numeric vector specifying the y-intercepts for horizontal lines on the plot. Default: c(0.25, 0.5, 0.75).
-#' @param seedNr Seed for random number generation to ensure reproducibility. Default: 1989.
+#' @description This function generates a bar plot of cell fractions per cluster
+#' from a Seurat object. It offers the option to downsample data, which equalizes
+#' the number of cells in each group to the number in the smallest group.
+#' The plot's bars are grouped by one variable and filled by another.
+#'
+#' @param obj A Seurat object. The default is 'combined.obj'.
+#' @param group.by The variable to group by for the bar plot. The default is 'integrated_snn_res.0.5.ordered'.
+#' @param fill.by The variable to fill by for the bar plot. The default is 'age'.
+#' @param downsample Logical indicating whether to downsample data. The default is TRUE.
+#' @param plotname The title of the plot. The default is 'paste(tools::toTitleCase(fill.by), "proportions")'.
+#' @param hlines A numeric vector for the y-intercepts of horizontal lines on the plot. The default is c(0.25, 0.5, 0.75).
 #' @param return_table Logical flag indicating whether to return a contingency table instead of a bar plot. Default: FALSE.
+#' @param save_plot Logical flag indicating whether to save the plot. Default is TRUE.
+#' @param seedNr Seed for random number generation. The default is 1989.
+#' @param w The width of the plot. The default is 10.
+#' @param h The height of the plot. The default is calculated as 'ceiling(0.5 * w)'.
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
 #' if(interactive()){
 #'  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
 #'  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
-#'  }
+#' }
 #' }
 #' @seealso
 #'  \code{\link[tools]{toTitleCase}}
 #' @export
 #' @importFrom tools toTitleCase
 scBarplot.CellFractions <- function(obj = combined.obj
-                                    , group.by = "integrated_snn_res.0.5.ordered", fill.by = "age", downsample = T
-                                    , plotname = paste(tools::toTitleCase(fill.by), "proportions"), hlines = c(.25, .5, .75)
+                                    , group.by = "integrated_snn_res.0.5.ordered", fill.by = "age"
+                                    , downsample = T
+                                    , plotname = paste(tools::toTitleCase(fill.by), "proportions")
+                                    , hlines = c(.25, .5, .75)
                                     , return_table = F
-                                    , seedNr = 1989) {
+                                    , save_plot = T
+                                    , seedNr = 1989
+                                    , w = 10, h = ceiling(0.5 * w)
+                                    , ...) {
   set.seed(seedNr)
   pname.suffix <- capt.suffix <- NULL
   if (downsample) {
-    downsample <- min (table(obj@meta.data[[fill.by]]))
+    tbl_X <- table(obj@meta.data[[fill.by]])
+    downsample <- min (tbl_X)
+    largest_grp <- max(tbl_X)
     pname.suffix <- "(downsampled)"
-    capt.suffix <- paste("Downsampled to", downsample, "cells in the smallest", fill.by, "group.")
+    capt.suffix <- paste("Downsampled from (max)", largest_grp, "\nto", downsample, "cells in the smallest", fill.by, "group.")
   }
   caption_ <- paste("Numbers denote # cells.", capt.suffix)
   pname_ <- paste(plotname, pname.suffix)
@@ -2146,7 +2196,7 @@ scBarplot.CellFractions <- function(obj = combined.obj
       'percentages' = CodeAndRoll2::colDivide(mat = contingency.table, vec = colSums(contingency.table))
     )
   } else {
-    obj@meta.data %>%
+    pl <- obj@meta.data %>%
       # group_by( (!!as.name(fill.by)) ) %>%
       { if (downsample) sample_n(., downsample) else . } %>%
       group_by( (!!as.name(group.by)) ) %>%
@@ -2155,13 +2205,18 @@ scBarplot.CellFractions <- function(obj = combined.obj
       geom_hline( yintercept = hlines, lwd = 1.5)  +
       geom_bar( position = "fill" ) +
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-      geom_text(aes(label = ..count..), stat='count',position = position_fill(vjust = 0.5)) +
-      labs(title = pname_,  x = "Clusters", y = "Fraction", caption = caption_) +
+      geom_text(aes(label = ..count..), stat = 'count', position = position_fill(vjust = 0.5)) +
+      labs(title = pname_,  subtitle = group.by
+           , x = "Clusters", y = "Fraction", caption = caption_) +
       theme_classic() +
       theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+    if (save_plot) {
+      qqSave(ggobj = pl, title = plotname, also.pdf = T, w = w, h = h
+             , suffix = shorten_clustering_names(group.by), ...)
+    }
+    return(pl)
   } # else barplot
 }
-
 
 
 
