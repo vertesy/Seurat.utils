@@ -5646,7 +5646,7 @@ regress_out_and_recalculate_seurat <- function(obj
 # _________________________________________________________________________________________________
 
 # will it be used?
-cellID_to_cellType <- function(cellIDs =ls.net[[1]], ident = ident_hm_ctc_5, obj =aaa) {
-  celltypes = as.named.vector.df(aaa[[ident_hm_ctc_5]])
+cellID_to_cellType <- function(cellIDs, ident, obj =aaa) {
+  celltypes = as.named.vector.df(obj@meta.data[,ident], verbose = F)
   celltypes[cellIDs]
 }
