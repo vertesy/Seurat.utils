@@ -1277,11 +1277,13 @@ subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir =
 #' @param obj Seurat object, Default: ORC
 #' @param ident identity
 #' @param clusters which value to match
+#' @param invert invert selecion
 #' @export
 
-subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.5.ordered.ManualNames', clusters = "Neuron, unclear" ) {
+subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.5.ordered.ManualNames'
+                                     , clusters = "Neuron, unclear", invert = F ) {
   Idents(obj) <- ident
-  cellz <- WhichCells(obj, idents = clusters)
+  cellz <- WhichCells(obj, idents = clusters, invert = invert)
   iprint(length(cellz), "cells are selected from", ncol(obj), 'using', ident)
   subset(x = obj, cells = cellz)
 }
@@ -2155,6 +2157,10 @@ get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_r
 #' @param w The width of the plot. The default is 10.
 #' @param h The height of the plot. The default is calculated as 'ceiling(0.5 * w)'.
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @param show_numbers Show numbers on bar
+#' @param min_frequency
+#' @param custom_col_palette
+#' @param suffix
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -2170,11 +2176,16 @@ scBarplot.CellFractions <- function(obj = combined.obj
                                     , group.by = "integrated_snn_res.0.5.ordered", fill.by = "age"
                                     , downsample = T
                                     , plotname = paste(tools::toTitleCase(fill.by), "proportions")
+                                    , suffix = NULL
+                                    , sub_title = suffix
                                     , hlines = c(.25, .5, .75)
                                     , return_table = F
                                     , save_plot = T
                                     , seedNr = 1989
                                     , w = 10, h = ceiling(0.5 * w)
+                                    , show_numbers = T
+                                    , min_frequency = 0.025
+                                    , custom_col_palette = c("Standard", "glasbey")[1]
                                     , ...) {
   set.seed(seedNr)
   pname.suffix <- capt.suffix <- NULL
@@ -2186,37 +2197,68 @@ scBarplot.CellFractions <- function(obj = combined.obj
     capt.suffix <- paste("Downsampled from (max)", largest_grp, "\nto", downsample, "cells in the smallest", fill.by, "group.")
   }
   caption_ <- paste("Numbers denote # cells.", capt.suffix)
+  if (min_frequency > 0 ) caption_ <- paste(caption_, "\nCategories <", percentage_formatter(min_frequency), "are shown together as 'Other'")
   pname_ <- paste(plotname, pname.suffix)
 
   contingency.table <- table(obj@meta.data[ ,group.by], obj@meta.data[, fill.by])
   print(contingency.table)
   if (return_table) {
-    list(
-      'values' = contingency.table,
-      'percentages' = CodeAndRoll2::colDivide(mat = contingency.table, vec = colSums(contingency.table))
-    )
+    list( 'values' = contingency.table,
+          'percentages' = CodeAndRoll2::colDivide(mat = contingency.table, vec = colSums(contingency.table)))
   } else {
-    pl <- obj@meta.data %>%
-      # group_by( (!!as.name(fill.by)) ) %>%
-      { if (downsample) sample_n(., downsample) else . } %>%
-      group_by( (!!as.name(group.by)) ) %>%
+    # calculate the proportions and add up small fractions
+    prop_table <- obj@meta.data %>%
+      group_by(!!as.name(fill.by)) %>%
+      summarise(proportion = n() / nrow(obj@meta.data)) %>%
+      mutate('category' = ifelse(proportion < min_frequency, "Other", as.character(!!as.name(fill.by))))
 
-      ggplot( aes(fill = (!!(as.name(fill.by))),  x = (!!(as.name(group.by)))) ) +
+    print(unique(prop_table$category))
+    palette_x <- color_scale[unique(prop_table$category)]
+    print(palette_x)
+
+    # join the proportions back to the original data
+    obj@meta.data <- left_join(obj@meta.data, prop_table, by = fill.by)
+
+    subtt <- FixPlotName(group.by, sub_title)
+    pl <- obj@meta.data %>%
+      # group_by(fill_by = !!sym(fill.by)) %>%
+      # mutate(proportion = n() / nrow(.)) %>%
+      # ungroup() %>%
+      # filter(proportion > min_frequency) %>%
+      { if (downsample) sample_n(., downsample) else . } %>%
+      group_by(group_by = !!sym(group.by) ) %>%
+      ggplot( aes(fill = category,  x = !!sym(group.by)) ) +
       geom_hline( yintercept = hlines, lwd = 1.5)  +
       geom_bar( position = "fill" ) +
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-      geom_text(aes(label = ..count..), stat = 'count', position = position_fill(vjust = 0.5)) +
-      labs(title = pname_,  subtitle = group.by
+      labs(title = pname_,  subtitle = subttt
            , x = "Clusters", y = "Fraction", caption = caption_) +
       theme_classic() +
       theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+    if (custom_col_palette != 'Standard') {
+      # palette_x <- DiscretePalette(n = ncol(contingency.table), palette = custom_col_palette)
+      palette_x <- color_scale
+      palette_x <- palette_x[unique(prop_table$category)]
+      pl <- pl + scale_fill_manual(values = palette_x)
+    }
+
+    if (show_numbers) {
+      pl <- pl + geom_text(aes(label = ..count..), stat = 'count', position = position_fill(vjust = 0.5))
+    }
+
     if (save_plot) {
+      sfx <- shorten_clustering_names(group.by)
+      if(!is.null(suffix)) sfx <- sppp(sfx, suffix)
+      if(min_frequency) sfx <- sppp(sfx, min_frequency)
       qqSave(ggobj = pl, title = plotname, also.pdf = T, w = w, h = h
-             , suffix = shorten_clustering_names(group.by), ...)
+             , suffix = sfx, ...)
     }
     return(pl)
   } # else barplot
 }
+
+
 
 
 
@@ -3410,6 +3452,7 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 #' @param AutoAnnotBy The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.
 #' @param alpha Opacity of the points in the plot. Default: 0.5
 #' @param dotsize The size of the dots in the plot. Default: 1.25
+#' @param ... Pass any other parameter to the internally called `plotly::plot_ly`.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -3423,7 +3466,7 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
                              , quantileCutoff = .99, def.assay = c("integrated", "RNA")[2]
                              , suffix = NULL, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]
-                             , alpha = .5, dotsize = 1.25 ){
+                             , alpha = .5, dotsize = 1.25, ...){
   # stopifnot(AutoAnnotBy %in% colnames(obj@meta.data) | AutoAnnotBy = FALSE)
 
   obj <- ww.check.if.3D.reduction.exist(obj = obj)
@@ -3451,7 +3494,9 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
                          # , colors = c('darkgrey', 'red')
                          , colorscale='Viridis'
                          #, hoverinfo="text"
-  ) %>% plotly::layout(title = gene, scene = list(annotations = ls.ann.auto))
+                         , ...) %>%
+    plotly::layout(title = gene, scene = list(annotations = ls.ann.auto))
+
   SavePlotlyAsHtml(plt, category. = gene, suffix. = suffix)
   return(plt)
 }
@@ -3468,6 +3513,7 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
 #' @param suffix A suffix added to the filename. Default: NULL
 #' @param AutoAnnotBy The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.
 #' @param dotsize The size of the dots in the plot. Default: 1.25
+#' @param ... Pass any other parameter to the internally called `plotly::plot_ly`.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -3478,7 +3524,7 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
 
 plot3D.umap <- function(category="v.project", obj = combined.obj # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
                         , suffix = NULL, AutoAnnotBy = GetNamedClusteringRuns(obj)[1]
-                        , dotsize = 1.25) {
+                        , dotsize = 1.25, ...) {
 
   stopifnot(category %in% colnames(obj@meta.data))
   obj <- ww.check.if.3D.reduction.exist(obj = obj)
@@ -3500,7 +3546,9 @@ plot3D.umap <- function(category="v.project", obj = combined.obj # Plot a 3D uma
                          , color = ~category
                          , colors = gg_color_hue(length(unique(plotting.data$'category')))
                          # , hoverinfo="text"
-  ) %>% plotly::layout(title = category, scene = list(annotations = ls.ann.auto))
+                         , ...) %>%
+    plotly::layout(title = category, scene = list(annotations = ls.ann.auto))
+
   SavePlotlyAsHtml(plt, category. = category, suffix. = suffix)
   return(plt)
 }
