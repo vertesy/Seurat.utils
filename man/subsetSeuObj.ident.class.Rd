@@ -7,7 +7,8 @@
 subsetSeuObj.ident.class(
   obj = combined.obj,
   ident = "RNA_snn_res.0.5.ordered.ManualNames",
-  clusters = "Neuron, unclear"
+  clusters = "Neuron, unclear",
+  invert = F
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ subsetSeuObj.ident.class(
 \item{ident}{identity}
 
 \item{clusters}{which value to match}
+
+\item{invert}{invert selecion}
 }
 \description{
 Subset a Seurat Obj to a given column

@@ -9,7 +9,8 @@ plot3D.umap(
   obj = combined.obj,
   suffix = NULL,
   AutoAnnotBy = GetNamedClusteringRuns(obj)[1],
-  dotsize = 1.25
+  dotsize = 1.25,
+  ...
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plot3D.umap(
 \item{AutoAnnotBy}{The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.}
 
 \item{dotsize}{The size of the dots in the plot. Default: 1.25}
+
+\item{...}{Pass any other parameter to the internally called \code{plotly::plot_ly}.}
 }
 \description{
 Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.

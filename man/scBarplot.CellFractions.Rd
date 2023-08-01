@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{scBarplot.CellFractions}
 \alias{scBarplot.CellFractions}
-\title{scBarplot.CellFractions}
+\title{Generate Barplot of Cell Fractions}
 \usage{
 scBarplot.CellFractions(
   obj = combined.obj,
@@ -10,37 +10,62 @@ scBarplot.CellFractions(
   fill.by = "age",
   downsample = T,
   plotname = paste(tools::toTitleCase(fill.by), "proportions"),
+  suffix = NULL,
+  sub_title = suffix,
   hlines = c(0.25, 0.5, 0.75),
   return_table = F,
-  seedNr = 1989
+  save_plot = T,
+  seedNr = 1989,
+  w = 10,
+  h = ceiling(0.5 * w),
+  draw_plot = T,
+  show_numbers = T,
+  min_frequency = 0.025,
+  custom_col_palette = c("Standard", "glasbey")[1],
+  ...
 )
 }
 \arguments{
-\item{obj}{The Seurat object to use for the analysis. Default: combined.obj.}
+\item{obj}{A Seurat object. The default is 'combined.obj'.}
 
-\item{group.by}{A string specifying the variable to group by. Default: 'integrated_snn_res.0.5.ordered'.}
+\item{group.by}{The variable to group by for the bar plot. The default is 'integrated_snn_res.0.5.ordered'.}
 
-\item{fill.by}{A string specifying the variable to fill by. Default: 'age'.}
+\item{fill.by}{The variable to fill by for the bar plot. The default is 'age'.}
 
-\item{downsample}{Logical flag indicating whether to downsample the data. If TRUE, the number of cells in each group is equal to the number of cells in the smallest group. Default: TRUE.}
+\item{downsample}{Logical indicating whether to downsample data. The default is TRUE.}
 
-\item{plotname}{A string specifying the title of the plot. Default: paste(tools::toTitleCase(fill.by), "proportions").}
+\item{plotname}{The title of the plot. The default is 'paste(tools::toTitleCase(fill.by), "proportions")'.}
 
-\item{hlines}{A numeric vector specifying the y-intercepts for horizontal lines on the plot. Default: c(0.25, 0.5, 0.75).}
+\item{hlines}{A numeric vector for the y-intercepts of horizontal lines on the plot. The default is c(0.25, 0.5, 0.75).}
 
 \item{return_table}{Logical flag indicating whether to return a contingency table instead of a bar plot. Default: FALSE.}
 
-\item{seedNr}{Seed for random number generation to ensure reproducibility. Default: 1989.}
+\item{save_plot}{Logical flag indicating whether to save the plot. Default is TRUE.}
+
+\item{seedNr}{Seed for random number generation. The default is 1989.}
+
+\item{w}{The width of the plot. The default is 10.}
+
+\item{h}{The height of the plot. The default is calculated as 'ceiling(0.5 * w)'.}
+
+\item{draw_plot}{Show plot}
+
+\item{show_numbers}{Show numbers on bar}
+
+\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-Generates a bar plot of cell fractions per cluster.
+This function generates a bar plot of cell fractions per cluster
+from a Seurat object. It offers the option to downsample data, which equalizes
+the number of cells in each group to the number in the smallest group.
+The plot's bars are grouped by one variable and filled by another.
 }
 \examples{
 \dontrun{
 if(interactive()){
  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
- }
+}
 }
 }
 \seealso{

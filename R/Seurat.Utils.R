@@ -2158,6 +2158,7 @@ get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_r
 #' @param h The height of the plot. The default is calculated as 'ceiling(0.5 * w)'.
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @param show_numbers Show numbers on bar
+#' @param draw_plot Show plot
 #' @param min_frequency
 #' @param custom_col_palette
 #' @param suffix
@@ -2183,6 +2184,7 @@ scBarplot.CellFractions <- function(obj = combined.obj
                                     , save_plot = T
                                     , seedNr = 1989
                                     , w = 10, h = ceiling(0.5 * w)
+                                    , draw_plot = T
                                     , show_numbers = T
                                     , min_frequency = 0.025
                                     , custom_col_palette = c("Standard", "glasbey")[1]
@@ -2202,10 +2204,8 @@ scBarplot.CellFractions <- function(obj = combined.obj
 
   contingency.table <- table(obj@meta.data[ ,group.by], obj@meta.data[, fill.by])
   print(contingency.table)
-  if (return_table) {
-    list( 'values' = contingency.table,
-          'percentages' = CodeAndRoll2::colDivide(mat = contingency.table, vec = colSums(contingency.table)))
-  } else {
+
+  if (draw_plot) {
     # calculate the proportions and add up small fractions
     prop_table <- obj@meta.data %>%
       group_by(!!as.name(fill.by)) %>%
@@ -2221,17 +2221,13 @@ scBarplot.CellFractions <- function(obj = combined.obj
 
     subtt <- FixPlotName(group.by, sub_title)
     pl <- obj@meta.data %>%
-      # group_by(fill_by = !!sym(fill.by)) %>%
-      # mutate(proportion = n() / nrow(.)) %>%
-      # ungroup() %>%
-      # filter(proportion > min_frequency) %>%
       { if (downsample) sample_n(., downsample) else . } %>%
       group_by(group_by = !!sym(group.by) ) %>%
       ggplot( aes(fill = category,  x = !!sym(group.by)) ) +
       geom_hline( yintercept = hlines, lwd = 1.5)  +
       geom_bar( position = "fill" ) +
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-      labs(title = pname_,  subtitle = subttt
+      labs(title = pname_,  subtitle = subtt
            , x = "Clusters", y = "Fraction", caption = caption_) +
       theme_classic() +
       theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
@@ -2253,7 +2249,14 @@ scBarplot.CellFractions <- function(obj = combined.obj
       if(min_frequency) sfx <- sppp(sfx, min_frequency)
       qqSave(ggobj = pl, title = plotname, also.pdf = T, w = w, h = h
              , suffix = sfx, ...)
-    }
+    } # save_plot
+  } # draw_plot
+
+  if (return_table) {
+    ls.tables <- list( 'values' = contingency.table,
+                       'percentages' = CodeAndRoll2::rowDivide(mat = contingency.table, vec = rowSums(contingency.table)))
+    return(ls.tables)
+  } else {
     return(pl)
   } # else barplot
 }
@@ -2859,8 +2862,12 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
 
 
   if (is.null(cols)) {
-    cols = if (NtCategs > 5) getDiscretePalette(ident.used = ident, palette.used = palette, obj = obj, show.colors = F)
+    cols  <- if (NtCategs > 5) getDiscretePalette(ident.used = ident, palette.used = palette, obj = obj, show.colors = F)
   }
+  if (!is.null(cells.highlight)) {
+    cols <- "lightgrey"
+  }
+
 
   if( NtCategs > MaxCategThrHP ) {
     iprint("Too many categories (",NtCategs,") in ", ident, "- use qUMAP for continous variables.")
@@ -5617,7 +5624,7 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 #' @param save_obj Logical, if TRUE, the object will be saved. Default is TRUE.
 #' @param assayX The assay to be used in scaling data. Default is 'RNA'.
 #' @return Seurat object after calculations and manipulations.
-#' @importFrom Seurat FindVariableFeatures ScaleData RunPCA SetupReductionsNtoKdimensions FindNeighbors FindClusters RunTSNE
+#' @importFrom Seurat FindVariableFeatures ScaleData RunPCA FindNeighbors FindClusters RunTSNE
 #' @importFrom MarkdownReports create_set_OutDir
 #' @examples
 #' \dontrun{

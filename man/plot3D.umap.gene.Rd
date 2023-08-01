@@ -12,7 +12,8 @@ plot3D.umap.gene(
   suffix = NULL,
   AutoAnnotBy = GetNamedClusteringRuns(obj)[1],
   alpha = 0.5,
-  dotsize = 1.25
+  dotsize = 1.25,
+  ...
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ plot3D.umap.gene(
 \item{alpha}{Opacity of the points in the plot. Default: 0.5}
 
 \item{dotsize}{The size of the dots in the plot. Default: 1.25}
+
+\item{...}{Pass any other parameter to the internally called \code{plotly::plot_ly}.}
 }
 \description{
 Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
