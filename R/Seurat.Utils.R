@@ -345,7 +345,8 @@ PlotFilters <- function(ls.obj = ls.Seurat
 
   theme_set(theme.used)
   MarkdownReports::create_set_OutDir(parentdir, subdir)
-  if (suffices == length(ls.obj)) print("ls.obj elements have no names (required).")
+  # if (length(suffices) == length(ls.obj)) print("ls.obj elements have no names (required).")
+  stopifnot(length(suffices) == length(ls.obj))
 
   Calculate_nFeature_LowPass <- if(below.nFeature_RNA < 1) below.nFeature_RNA else FALSE
   for (i in 1:length(ls.obj)) {
