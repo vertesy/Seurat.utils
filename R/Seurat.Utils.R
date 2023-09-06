@@ -5098,6 +5098,7 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 #' @param homepath A string representing the homepath. Will be replaced by '~' in the file path. Default is '/Users/abel.vertesy/'.
 #' @param showMemObject A boolean flag, if TRUE the function will print out the memory size of the largest objects in the workspace. Default is TRUE.
 #' @param saveParams A boolean flag, if TRUE the parameters 'p' and 'all.genes' are added to the 'misc' slot of the Seurat object if the object is of class Seurat. Default is TRUE.
+#' @param compress Compress .Rds file after writing? Default is TRUE.
 #' @examples
 #' \dontrun{ if(interactive()){ isave.RDS(my.R.object)  } }
 #' @export
@@ -5105,7 +5106,8 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
                       , project = getProject()
                       , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
                       , homepath = '/Users/abel.vertesy/'
-                      , showMemObject = T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
+                      , showMemObject = T, saveParams =T
+                      , compress = TRUE){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
   path_rdata = if (inOutDir) OutDir else alternative_path_rdata
   dir.create(path_rdata)
 
@@ -5119,9 +5121,8 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
   FNN <- paste0(path_rdata, fnameBase , ".Rds")
   FNN <- gsub(pattern = '~/', replacement = homepath, x = FNN)
   print(FNN)
-  saveRDS.compress.in.BG(obj = obj, fname =  FNN)
+  if (compress) saveRDS.compress.in.BG(obj = obj, fname =  FNN)
 }
-
 
 
 
