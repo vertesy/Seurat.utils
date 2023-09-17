@@ -5107,7 +5107,8 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
                       , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
                       , homepath = '/Users/abel.vertesy/'
                       , showMemObject = T, saveParams =T
-                      , compress = TRUE){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
+                      , compress = TRUE){
+
   path_rdata = if (inOutDir) OutDir else alternative_path_rdata
   dir.create(path_rdata)
 
@@ -5121,7 +5122,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
   FNN <- paste0(path_rdata, fnameBase , ".Rds")
   FNN <- gsub(pattern = '~/', replacement = homepath, x = FNN)
   print(FNN)
-  if (compress) saveRDS.compress.in.BG(obj = obj, fname =  FNN)
+  saveRDS.compress.in.BG(obj = obj, fname =  FNN, compr = compress)
 }
 
 
