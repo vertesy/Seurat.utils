@@ -14,5 +14,5 @@ IntersectWithExpressed(genes, obj = combined.obj, genes.shown = 10)
 \item{genes.shown}{Number of genes printed (head).}
 }
 \description{
-IntersectWithExpressed
+Intersect a set of genes with genes found in the Seurat object.
 }

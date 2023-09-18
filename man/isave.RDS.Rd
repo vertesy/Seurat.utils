@@ -12,9 +12,11 @@ isave.RDS(
   project = getProject(),
   alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/",
     basename(OutDir)),
-  homepath = "/Users/abel.vertesy/",
+  homepath = if (Sys.info()[1] == "Darwin") "/Users/abel.vertesy/" else
+    "/users/abel.vertesy/",
   showMemObject = T,
-  saveParams = T
+  saveParams = T,
+  compress = TRUE
 )
 }
 \arguments{
@@ -35,6 +37,8 @@ isave.RDS(
 \item{showMemObject}{A boolean flag, if TRUE the function will print out the memory size of the largest objects in the workspace. Default is TRUE.}
 
 \item{saveParams}{A boolean flag, if TRUE the parameters 'p' and 'all.genes' are added to the 'misc' slot of the Seurat object if the object is of class Seurat. Default is TRUE.}
+
+\item{compress}{Compress .Rds file after writing? Default is TRUE.}
 }
 \description{
 Save an RDS object, using a faster and efficient compression method that runs in the background.

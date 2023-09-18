@@ -31,6 +31,8 @@ scBarplot.FractionAboveThr(
 
 \item{suffix}{An optional suffix for the filename.}
 
+\item{subtitle}{Subtitle}
+
 \item{...}{Additional parameters to pass to internally called functions.}
 }
 \description{

@@ -36,6 +36,8 @@ scBarplot.CellFractions(
 
 \item{plotname}{The title of the plot. The default is 'paste(tools::toTitleCase(fill.by), "proportions")'.}
 
+\item{suffix}{Plot suffix}
+
 \item{hlines}{A numeric vector for the y-intercepts of horizontal lines on the plot. The default is c(0.25, 0.5, 0.75).}
 
 \item{return_table}{Logical flag indicating whether to return a contingency table instead of a bar plot. Default: FALSE.}
@@ -51,6 +53,10 @@ scBarplot.CellFractions(
 \item{draw_plot}{Show plot}
 
 \item{show_numbers}{Show numbers on bar}
+
+\item{min_frequency}{Smallest fraction to show individually. Default: 0.025}
+
+\item{custom_col_palette}{Use custom color palette? Default: c("Standard", "glasbey")\link{1}}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }

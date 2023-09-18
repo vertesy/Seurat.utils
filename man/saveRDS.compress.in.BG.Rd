@@ -4,14 +4,24 @@
 \alias{saveRDS.compress.in.BG}
 \title{saveRDS.compress.in.BG}
 \usage{
-saveRDS.compress.in.BG(obj, compr = FALSE, fname)
+saveRDS.compress.in.BG(
+  obj,
+  compr = FALSE,
+  fname,
+  compress_internally = FALSE,
+  ...
+)
 }
 \arguments{
 \item{obj}{Seurat object.}
 
-\item{compr}{Compress by R? Default: FALSE (compressed in background via CLI).}
+\item{compr}{Compress at all? Default: TRUE}
 
 \item{fname}{File name}
+
+\item{compress_internally}{Compress by R? Default: FALSE (still compressed in background via CLI).}
+
+\item{...}{Additional parameters passed to saveRDS() function.}
 }
 \description{
 Save and RDS object and compress resulting file in the background using system(gzip). OS X or unix.

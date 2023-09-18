@@ -10,7 +10,6 @@ calc.q99.Expression.and.set.all.genes(
   max.cells = 1e+05,
   slot = "data",
   assay = c("RNA", "integrated")[1],
-  set.all.genes = TRUE,
   set.misc = TRUE,
   assign_to_global_env = TRUE,
   show = TRUE

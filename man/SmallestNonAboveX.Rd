@@ -12,7 +12,7 @@ SmallestNonAboveX(vec, X = 0)
 \item{X}{Threshold, Default: 0}
 }
 \description{
-replace small values with the next smallest value found, which is >X. #
+replace small values with the next smallest value found, which is >X.
 }
 \examples{
 \dontrun{

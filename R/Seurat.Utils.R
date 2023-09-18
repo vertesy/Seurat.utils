@@ -60,13 +60,13 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
 # _________________________________________________________________________________________________
 #' @title IntersectWithExpressed
 #'
-#' @description
+#' @description Intersect a set of genes with genes found in the Seurat object.
 #' @param genes A vector of gene names.
 #' @param obj Seurat object
 #' @param genes.shown Number of genes printed (head).
 #' @export
 
-IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { # Intersect a set of genes with genes in the Seurat object.
+IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) {
   print('IntersectWithExpressed()')
   # print(head(genes, n=15))
   diff = setdiff(genes, rownames(obj))
@@ -80,7 +80,7 @@ IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) { 
 # _________________________________________________________________________________________________
 #' @title SmallestNonAboveX
 #'
-#' @description replace small values with the next smallest value found, which is >X. #
+#' @description replace small values with the next smallest value found, which is >X.
 #' @param vec Numeric input vector
 #' @param X Threshold, Default: 0
 #' @examples
@@ -100,7 +100,7 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 # _________________________________________________________________________________________________
 #' @title AreTheseCellNamesTheSame
 #'
-#' @description Compare two character vectors (e.g.: cell IDs) how much they overlap and plot a Venn Diagramm.
+#' @description Compare two character vectors (e.g.: cell IDs) how much they overlap and plot a Venn Diagram.
 #' @param vec1 Character vector, eg. with cell names
 #' @param vec2 Character vector, eg. with cell names
 #' @param names Names for plotting
@@ -207,7 +207,7 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 #' @param max.cells Max number of cells to do the calculation on. Downsample if excdeeded. Default: 1e+05
 #' @param slot slot in the Seurat object. Default: 'data'
 #' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
-#' @param set.all.genes
+# #' @param set.all.genes
 #' @param set.misc Create the "all.genes" variable in @misc? Default: TRUE
 #' @param assign_to_global_env Create the "all.genes" variable in the global env?, Default: TRUE
 #' @param show Show plot? Default: TRUE
@@ -229,7 +229,7 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
                                                   , quantileX = 0.99, max.cells =  1e5
                                                   , slot = "data", assay = c("RNA", "integrated")[1]
-                                                  , set.all.genes = TRUE
+                                                  # , set.all.genes = TRUE
                                                   , set.misc = TRUE
                                                   , assign_to_global_env = TRUE
                                                   , show = TRUE) {
@@ -629,7 +629,7 @@ ww.calc_helper <- function(obj, genes){
 #' @param suffix An optional suffix for the filename.
 #' @param return.df A logical indicating if the function should return the data frame used to create the plot. Default: FALSE
 #' @param label A logical indicating if labels should be added to the bar plot. Default: FALSE
-#' @param subtitle
+#' @param subtitle Subtitle
 #' @param ... Additional parameters to pass to internally called functions.
 #'
 #' @examples
@@ -2160,9 +2160,9 @@ get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_r
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @param show_numbers Show numbers on bar
 #' @param draw_plot Show plot
-#' @param min_frequency
-#' @param custom_col_palette
-#' @param suffix
+#' @param min_frequency Smallest fraction to show individually. Default: 0.025
+#' @param custom_col_palette Use custom color palette? Default: c("Standard", "glasbey")[1]
+#' @param suffix Plot suffix
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -5067,18 +5067,20 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #'
 #' @description Save and RDS object and compress resulting file in the background using system(gzip). OS X or unix.
 #' @param obj Seurat object.
-#' @param compr Compress by R? Default: FALSE (compressed in background via CLI).
+#' @param compress_internally Compress by R? Default: FALSE (still compressed in background via CLI).
+#' @param compr Compress at all? Default: TRUE
 #' @param fname File name
+#' @param ... Additional parameters passed to saveRDS() function.
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
 #' @export
 #' @importFrom tictoc tic toc
-saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
+saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internally = FALSE, ...) {
   try(tictoc::tic(), silent = T)
-  saveRDS(object = obj, compress = compr, file = fname)
+  saveRDS(object = obj, compress = compress_internally, file = fname, ...)
   try(tictoc::toc(), silent = T)
-  print(paste("Saved, being compressed", fname))
-  system(command = paste0("gzip '", fname,"'"),  wait = FALSE) # execute in the background
+  if (compr) system(command = paste0("gzip '", fname, "'"), wait = FALSE) # execute in the background
+  print(paste("Saved, optionally being .gz compressed", fname))
   try(say(), silent = T)
 }
 
@@ -5154,7 +5156,7 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
   dir.create(path_rdata)
 
   if (showMemObject) { try(memory.biggest.objects(), silent = T) }
-  fname = Stringendo::kollapse(path_rdata, "/",idate(),...,".Rdata")
+  fname = Stringendo::kollapse(path_rdata, "/", idate(), ..., ".Rdata")
   print(fname)
   if (nchar(fname) > 2000) stop()
   save.image(file = fname, compress = F)
