@@ -5105,7 +5105,7 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname) {
 isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
                       , project = getProject()
                       , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
-                      , homepath = '/Users/abel.vertesy/'
+                      , homepath = if(Sys.info()[1]=="Darwin") '/Users/abel.vertesy/' else '/users/abel.vertesy/'
                       , showMemObject = T, saveParams =T
                       , compress = TRUE){
 
