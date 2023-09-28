@@ -1098,6 +1098,23 @@ set.mm <- function(obj = combined.obj) {
 }
 
 
+# _________________________________________________________________________________________________
+#' @title ww.get.1st.Seur.element
+#'
+#' @description Get the first Seurat object from a list of Seurat objects. Returns itself if not a list.
+#' @param obj Seurat object OR list of Seurat objects OR any other list
+
+
+ww.get.1st.Seur.element <- function(obj) {
+  if (is(obj)[1] == 'list') {
+    iprint('A list of objects is provided, taking the 1st from', length(obj), 'elements.')
+    obj <- obj[[1]]
+  }
+  stopifnot (is(obj) == 'Seurat')
+  return(obj)
+}
+# ww.get.1st.Seur.element(ls.Seurat[[1]])
+
 
 # _________________________________________________________________________________________________
 #' @title recall.all.genes
@@ -1112,11 +1129,15 @@ set.mm <- function(obj = combined.obj) {
 #' }
 #' @export
 recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q99.Expression.and.set.all.genes()
-  if (!exists('all.genes')) {
-    all.genes <- obj@misc$all.genes
-    print(head(unlist(all.genes)))
-    MarkdownHelpers::ww.assign_to_global(name = "all.genes", value = all.genes, verbose = F)
-  } else {print("variable 'all.genes' exits in the global namespace")}
+  obj <- ww.get.1st.Seur.element(obj)
+
+  if ('all.genes' %in% names(obj@misc)) {
+    if (!exists('all.genes')) {
+      all.genes <- obj@misc$all.genes
+      print(head(unlist(all.genes)))
+      MarkdownHelpers::ww.assign_to_global(name = "all.genes", value = all.genes, verbose = F)
+    } else { print("  ->   Variable 'all.genes' exits in the global namespace.") }
+  } else{ print("  ->   Slot 'all.genes' does not exist in obj@misc.") }
 }
 
 
@@ -1133,17 +1154,24 @@ recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q99.E
 #' }
 #' @export
 recall.meta.tags.n.datasets <- function(obj = combined.obj) {
-  if (!exists('n.datasets')) {
-    n.datasets <- obj@misc$n.datasets
-    print(head(unlist(n.datasets)))
-    MarkdownHelpers::ww.assign_to_global(name = "n.datasets", value = n.datasets)
-  } else {print("variable 'n.datasets' exits in the global namespace")}
+  obj <- ww.get.1st.Seur.element(obj)
 
-  if (!exists('meta.tags')) {
-    meta.tags <- obj@misc$meta.tags
-    print(head(unlist(meta.tags)))
-    MarkdownHelpers::ww.assign_to_global(name = "meta.tags", value = meta.tags)
-  } else {print("variable 'meta.tags' exits in the global namespace")}
+  if ('n.datasets' %in% names(obj@misc)) {
+    if (!exists('n.datasets')) {
+      n.datasets <- obj@misc$n.datasets
+      print(head(unlist(n.datasets)))
+      MarkdownHelpers::ww.assign_to_global(name = "n.datasets", value = n.datasets)
+    } else { print("  ->   Variable 'n.datasets' already exists in the global namespace:", n.datasets) }
+  } else{ print("  ->   Slot 'n.datasets' does not exist in obj@misc.") }
+
+
+  if ('meta.tags' %in% names(obj@misc)) {
+    if (!exists('meta.tags')) {
+      meta.tags <- obj@misc$meta.tags
+      print(head(unlist(meta.tags)))
+      MarkdownHelpers::ww.assign_to_global(name = "meta.tags", value = meta.tags)
+    } else { iprint("  ->   Variable 'meta.tags' already exists in the global namespace:", meta.tags) }
+  } else{ print("  ->   Slot 'meta.tags' does not exist in obj@misc.") }
 
 }
 
@@ -1162,19 +1190,16 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
 #' }
 #' @export
 recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
-  if (is.null(obj@misc$'p')) {
-    print("obj does not have: obj@misc$p")
-  } else {
-    p <- obj@misc$'p'
-    print(head(p))
-    if (exists('p')) iprint("variable 'p' exits in the global namespace:");
+  obj <- ww.get.1st.Seur.element(obj)
+
+  if ('p' %in% names(obj@misc)) {
+    if (!exists('p')) iprint("variable 'p' exits in the global namespace:", head(p))
 
     if (!exists('p') | (exists('p') & overwrite == TRUE) ) {
-      MarkdownHelpers::ww.assign_to_global(name = "p", value = p); print("Overwritten.")
-    } else {
-      print("Not overwritten.")
-    }
-  } # else if obj@misc$'p'
+      MarkdownHelpers::ww.assign_to_global(name = "p", value = obj@misc$'p'); print("Overwritten.")
+    } else { print("Not overwritten.") }
+
+  } else { print("  ->   Slot 'p' does not exist in obj@misc.") }
 }
 
 
@@ -1191,12 +1216,17 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
 #'  }
 #' }
 #' @export
-recall.genes.ls<- function(obj = combined.obj) { # genes.ls
-  if (!exists('genes.ls')) {
-    genes.ls <- obj@misc$genes.ls
-    print(head(unlist(genes.ls)))
-    MarkdownHelpers::ww.assign_to_global(name = "genes.ls", value = genes.ls)
-  } else {print("variable 'genes.ls' exits in the global namespace")}
+
+recall.genes.ls <- function(obj = combined.obj, overwrite = FALSE) { # genes.ls
+  obj <- ww.get.1st.Seur.element(obj)
+
+  if ('genes.ls' %in% names(obj@misc)) {
+    if (!exists('genes.ls')) iprint("variable 'genes.ls' exits in the global namespace:", head(p))
+
+    if (!exists('genes.ls') | (exists('genes.ls') & overwrite == TRUE) ) {
+      MarkdownHelpers::ww.assign_to_global(name = 'genes.ls', value = obj@misc$'genes.ls'); print("Overwritten.")
+    } else { print("Not overwritten.") }
+  } else { print("  ->   Slot 'genes.ls' does not exist in obj@misc.") }
 }
 
 
@@ -1214,10 +1244,18 @@ recall.genes.ls<- function(obj = combined.obj) { # genes.ls
 #'  }
 #' }
 #' @export
-save.parameters <- function(obj = combined.obj, params = p) {
-  if (!is.null(obj@misc$'p')) print("Overwriting already existing obj@misc$p. Old version:") ; print(head(unlist(obj@misc$'p')))
-  obj@misc$p <- params
+save.parameters <- function(obj = combined.obj, params = p, overwrite = TRUE) {
+  obj <- ww.get.1st.Seur.element(obj)
+
+  if (!is.null(obj@misc$'p') && overwrite ) {
+    print("Overwriting already existing obj@misc$p. Old version:")
+    print(head(unlist(obj@misc$'p')))
+    obj@misc$p <- params
+  } else if(is.null(obj@misc$'p')) {
+    obj@misc$p <- params
+  }
 }
+
 
 
 # _________________________________________________________________________________________________
@@ -5124,7 +5162,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
   FNN <- paste0(path_rdata, fnameBase , ".Rds")
   FNN <- gsub(pattern = '~/', replacement = homepath, x = FNN)
   print(FNN)
-  saveRDS.compress.in.BG(obj = obj, fname =  FNN, compr = compress)
+  saveRDS.compress.in.BG(obj = obj, fname =  FNN, compr = compress, compress_internally = FALSE)
 }
 
 

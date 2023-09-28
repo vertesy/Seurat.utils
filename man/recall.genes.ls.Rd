@@ -4,7 +4,7 @@
 \alias{recall.genes.ls}
 \title{recall.genes.ls}
 \usage{
-recall.genes.ls(obj = combined.obj)
+recall.genes.ls(obj = combined.obj, overwrite = FALSE)
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}

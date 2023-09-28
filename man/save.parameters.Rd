@@ -4,7 +4,7 @@
 \alias{save.parameters}
 \title{save.parameters}
 \usage{
-save.parameters(obj = combined.obj, params = p)
+save.parameters(obj = combined.obj, params = p, overwrite = TRUE)
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
