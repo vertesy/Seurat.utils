@@ -4628,7 +4628,7 @@ calculate.observable.multiplet.rate.10X.LT <- function(
 #' @param col2.new.name The new name to use for the 'Singlet.status' column. Defaults to 'Singlet.status'.
 #' @param cellname_prefix If TRUE, the function assumes that Seurat has added a prefix to cell names to distinguish 10X lanes and adjusts accordingly. Defaults to FALSE.
 #' @param return_tbl_for_cells_found_in_object If TRUE, the function returns the subset of the GT table corresponding to cells found in both the GT table and the Seurat object. Defaults to TRUE.
-#' @param min_cells_overlap min_cells_overlap
+#' @param min_cells_overlap min_cells_overlap. Defaults to 2% of cellcount in the object.
 #'
 #' @return The cleaned and standardized GT table, with specific transformations applied as defined by the input parameters.
 #'
@@ -4646,7 +4646,8 @@ SNP.demux.fix.GT.table <- function(GT.table
                                    , col2.new.name = 'Singlet.status'
                                    , cellname_prefix = FALSE
                                    , return_tbl_for_cells_found_in_object = TRUE
-                                   , min_cells_overlap = 10) {
+                                   , min_cells_overlap = floor(ncol(obj) * 0.02)
+                                   ) {
 
   # Check if the specified columns are present in the GT table
   col_names <- c(col1, col2)
