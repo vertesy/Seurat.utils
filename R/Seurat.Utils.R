@@ -1161,7 +1161,7 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
       n.datasets <- obj@misc$n.datasets
       print(head(unlist(n.datasets)))
       MarkdownHelpers::ww.assign_to_global(name = "n.datasets", value = n.datasets)
-    } else { print("  ->   Variable 'n.datasets' already exists in the global namespace:", n.datasets) }
+    } else { print("  ->   Variable 'n.datasets' already exists in the global namespace.") }
   } else{ print("  ->   Slot 'n.datasets' does not exist in obj@misc.") }
 
 
@@ -1170,7 +1170,7 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
       meta.tags <- obj@misc$meta.tags
       print(head(unlist(meta.tags)))
       MarkdownHelpers::ww.assign_to_global(name = "meta.tags", value = meta.tags)
-    } else { iprint("  ->   Variable 'meta.tags' already exists in the global namespace:", meta.tags) }
+    } else { iprint("  ->   Variable 'meta.tags' already exists in the global namespace.") }
   } else{ print("  ->   Slot 'meta.tags' does not exist in obj@misc.") }
 
 }
@@ -5140,6 +5140,7 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internall
 #' @param showMemObject A boolean flag, if TRUE the function will print out the memory size of the largest objects in the workspace. Default is TRUE.
 #' @param saveParams A boolean flag, if TRUE the parameters 'p' and 'all.genes' are added to the 'misc' slot of the Seurat object if the object is of class Seurat. Default is TRUE.
 #' @param compress Compress .Rds file after writing? Default is TRUE.
+#' @param test_read Provide command to test validity by reading in the object just written.
 #' @examples
 #' \dontrun{ if(interactive()){ isave.RDS(my.R.object)  } }
 #' @export
@@ -5148,7 +5149,8 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
                       , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
                       , homepath = if(Sys.info()[1]=="Darwin") '/Users/abel.vertesy/' else '/users/abel.vertesy/'
                       , showMemObject = T, saveParams =T
-                      , compress = TRUE){
+                      , compress = TRUE
+                      , test_read = FALSE){
 
   path_rdata = if (inOutDir) OutDir else alternative_path_rdata
   dir.create(path_rdata)
@@ -5163,7 +5165,11 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
   FNN <- paste0(path_rdata, fnameBase , ".Rds")
   FNN <- gsub(pattern = '~/', replacement = homepath, x = FNN)
   print(FNN)
+  if (test_read) {
+    print(p0('xx5 <- read_rds(\\"', FNN, '\\")'))
+  } else
   saveRDS.compress.in.BG(obj = obj, fname =  FNN, compr = compress, compress_internally = FALSE)
+
 }
 
 
