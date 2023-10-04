@@ -1231,7 +1231,6 @@ recall.genes.ls <- function(obj = combined.obj, overwrite = FALSE) { # genes.ls
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title save.parameters
 #'
@@ -4049,30 +4048,30 @@ prefix_cells_seurat <- function(ls_obj, obj_IDs) {
 
 find_prefix_in_cell_IDs <- function(obj, cell_ID_pattern = "[ATCG]{16}.*$" ) {
   stopifnot(inherits(obj, "Seurat"))
-
+  
   # Extract cell IDs
   cell_IDs <- colnames(obj)
-
+  
   # Remove the standard 16-character cell-IDs
   potential_prefixes <- gsub(pattern = cell_ID_pattern, replacement = "", x = cell_IDs)
-
+  
   # Check if there is no prefix
   if(all(potential_prefixes == "")) {
     print("No prefix found in cell IDs.")
     return(NULL)
   }
-
+  
   # Identify unique prefixes
   unique_prefixes <- unique(potential_prefixes)
-
+  
   # Print the number of unique prefixes
   print(paste(length(unique_prefixes), "unique prefix(es) found:", head(unique_prefixes)))
-
+  
   # Issue a warning if more than one unique prefix is found
   if (length(unique_prefixes) > 1) {
     warning("Multiple unique prefixes identified in cell IDs:", head(unique_prefixes))
   }
-
+  
   # Return the identified prefix(es)
   return(unique_prefixes)
 }
@@ -5801,6 +5800,15 @@ regress_out_and_recalculate_seurat <- function(obj
   return(obj)
 }
 
+
+# _________________________________________________________________________________________________
+
+get_levels_seu <- function(ident, obj = combined.obj, max_levels = 100, dput = T) {
+  Levels <- unique(deframe(obj[[ident]]))
+  stopifnot(length(Levels) < max_levels)
+  if (dput) { cat('Levels <- '); dput(Levels) }
+  return(Levels)
+}
 
 
 # _________________________________________________________________________________________________
