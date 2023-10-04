@@ -16,7 +16,8 @@ isave.RDS(
     "/users/abel.vertesy/",
   showMemObject = T,
   saveParams = T,
-  compress = TRUE
+  compress = TRUE,
+  test_read = FALSE
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ isave.RDS(
 \item{saveParams}{A boolean flag, if TRUE the parameters 'p' and 'all.genes' are added to the 'misc' slot of the Seurat object if the object is of class Seurat. Default is TRUE.}
 
 \item{compress}{Compress .Rds file after writing? Default is TRUE.}
+
+\item{test_read}{Provide command to test validity by reading in the object just written.}
 }
 \description{
 Save an RDS object, using a faster and efficient compression method that runs in the background.

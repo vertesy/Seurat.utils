@@ -14,7 +14,7 @@ SNP.demux.fix.GT.table(
   col2.new.name = "Singlet.status",
   cellname_prefix = FALSE,
   return_tbl_for_cells_found_in_object = TRUE,
-  min_cells_overlap = 10
+  min_cells_overlap = floor(ncol(obj) * 0.02)
 )
 }
 \arguments{
@@ -36,7 +36,7 @@ SNP.demux.fix.GT.table(
 
 \item{return_tbl_for_cells_found_in_object}{If TRUE, the function returns the subset of the GT table corresponding to cells found in both the GT table and the Seurat object. Defaults to TRUE.}
 
-\item{min_cells_overlap}{min_cells_overlap}
+\item{min_cells_overlap}{min_cells_overlap. Defaults to 2\% of cellcount in the object.}
 }
 \value{
 The cleaned and standardized GT table, with specific transformations applied as defined by the input parameters.
