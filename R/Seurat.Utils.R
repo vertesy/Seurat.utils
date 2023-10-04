@@ -4606,11 +4606,14 @@ calculate.observable.multiplet.rate.10X <- function(
 
   hetero.doublet.rate = 1 - sum(homo.doublet)
 
+  
   doublet.distribution <- c(homo.doublet, 'hetero' = hetero.doublet.rate)
+  annotation <- paste(names(empir.factor), "10X chip | Fractions:\n", paste_w_names(percentage_formatter(fractions, keep.names = T)), sep = ': ')
+  
   if (draw_plots) {
     qpie(doublet.distribution
-         , subtitle = paste(names(empir.factor), "10X chip")
-         , caption = paste('We can only observe hetero.doublets', percentage_formatter(hetero.doublet.rate))
+         , caption = paste('We can only observe hetero.doublets', percentage_formatter(hetero.doublet.rate)
+                           , '\n', annotation)
          , suffix = suffix
          , plot = T
          , ...) 
@@ -4621,7 +4624,7 @@ calculate.observable.multiplet.rate.10X <- function(
   
   if (draw_plots) {
     qbarplot(Expected.singlet.doublet.distribution
-             , subtitle = paste(names(empir.factor), "10X chip | Fractions:", paste_w_names(iround(fractions)), sep = ': ')
+             , subtitle = annotation
              , label = percentage_formatter(Expected.singlet.doublet.distribution)
              , col = c(3,1,1,2), xlab.angle = 45
              , ylab = "Fraction of 'Cells'", xlab = 'Doublet status'

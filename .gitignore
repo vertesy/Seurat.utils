@@ -21,7 +21,7 @@ Thumbs.db
 # Output files from R CMD check
 /*.Rcheck/
 # RStudio files
-.Rproj.user/
+
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
@@ -41,4 +41,3 @@ PlayGround.DoNotUse.R
 # Plots accidentally saved
 .pdf
 .png
-Seurat.utils.Rproj
