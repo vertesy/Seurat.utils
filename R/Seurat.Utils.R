@@ -26,6 +26,7 @@
 #' @param maxMemSize memory limit
 #'
 #' @export
+
 parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) { # Run gc(), load multi-session computing and extend memory limits.
   # https://satijalab.org/seurat/v3.0/future_vignette.html
   cat(
@@ -4563,13 +4564,19 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 # _________________________________________________________________________________________________
 
 
+multiplet.rate.10x <- function(cellct =1e4, empirical.factor = c('ST' = 131000, 'HT' = 250000)[2]) {
+  signif(cellct/empirical.factor, digits = 2)
+}
 
 
-#' @title calculate.observable.multiplet.rate.10X.LT
+
+
+# _________________________________________________________________________________________________
+#' @title calculate.observable.multiplet.rate.10X
 #'
 #' @description Calculate the observable multiplet rate for 10X standard lane.
 #' @param fractions Genotype fractions observed or loaded on the machine.
-#' @param FMR.r Factor for calculating Multiplet Rate: Cell count / FMR = multiplet rate. (.r stands for 'estimating from Recovered cell count.')
+#' @param empir.factor Factor for calculating Multiplet Rate: Cell count / FMR = multiplet rate. (.r stands for 'estimating from Recovered cell count.')
 #' @param cell.count Number of total cells recovered from a 10X lane.
 #' @param multiplet.rate Expected multiplet rate for your number of recovered cells. Default FALSE. If FALSE, it auto-calculates it based on an inferred FMR: Factor for calculating multiplet rate: Cell count / FMR = multiplet rate.
 #' @param suffix A suffix added to the filename, Default: ''
@@ -4577,10 +4584,11 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #'
 #' @export
 
-calculate.observable.multiplet.rate.10X.LT <- function(
+calculate.observable.multiplet.rate.10X <- function(
     fractions = c('176' = 0.07, 'h9' = 0.93)
     , multiplet.rate = FALSE
-    , FMR.r = 131000
+    , empir.factor = c('ST' = 131000, 'HT' = 250000)[1]
+    , draw_plots = TRUE
     , cell.count
     , suffix = ''
     , ...) {
@@ -4588,32 +4596,80 @@ calculate.observable.multiplet.rate.10X.LT <- function(
   iprint("cell.count", cell.count)
   if (!multiplet.rate) {
     iprint("multiplet.rate is calculated...")
-    if (FMR.r == 131000) iprint("...based on the LT 10X controller.")
-    multiplet.rate = cell.count/FMR.r
+    if (empir.factor == 131000) iprint("...based on the Standard 10X chip")
+    if (empir.factor == 250000) iprint("...based on the High-Throughput 10X chip")
+    multiplet.rate = cell.count/empir.factor
     iprint(percentage_formatter(multiplet.rate, prefix = 'The estimated total multiplet rate is:'))
   }
 
   homo.doublet <- fractions^2 # same genotype
   names(homo.doublet) <- ppp('homo', names(homo.doublet))
 
-  hetero.doublet.rate = 1-sum(homo.doublet)
+  hetero.doublet.rate = 1 - sum(homo.doublet)
 
   doublet.distribution <- c(homo.doublet, 'hetero' = hetero.doublet.rate)
-  qpie(doublet.distribution
-       , caption = paste('We can only observe hetero.doublets', percentage_formatter(hetero.doublet.rate))
-       , suffix = suffix
-       , ...)
-
+  if (draw_plots) {
+    qpie(doublet.distribution
+         , subtitle = paste(names(empir.factor), "10X chip")
+         , caption = paste('We can only observe hetero.doublets', percentage_formatter(hetero.doublet.rate))
+         , suffix = suffix
+         , plot = T
+         , ...) 
+  }
+  
   tot.doublet.distribution <- doublet.distribution * multiplet.rate
   Expected.singlet.doublet.distribution <- c('singlet' = 1 - sum(tot.doublet.distribution), tot.doublet.distribution)
-  qbarplot(Expected.singlet.doublet.distribution
-           , label = percentage_formatter(Expected.singlet.doublet.distribution)
-           , col = c(3,1,1,2), xlab.angle = 45
-           , ylab = "Fraction of 'Cells'", xlab = 'Doublet status'
-           , suffix = suffix
-           , ...)
+  
+  if (draw_plots) {
+    qbarplot(Expected.singlet.doublet.distribution
+             , subtitle = paste(names(empir.factor), "10X chip | Fractions:", paste_w_names(iround(fractions)), sep = ': ')
+             , label = percentage_formatter(Expected.singlet.doublet.distribution)
+             , col = c(3,1,1,2), xlab.angle = 45
+             , ylab = "Fraction of 'Cells'", xlab = 'Doublet status'
+             , suffix = suffix
+             , plot = T
+             , ...) 
+  }
+  
+  return(doublet.distribution)
+  
 }
 
+
+# _________________________________________________________________________________________________
+#' Calculate Observable Multiplet Rate for 10X Objects
+#'
+#' @description This function calculates the observable multiplet rate for 10X Genomics objects based on the given parameters and returns the result. It requires a valid object, chipset, empirical factors, a flag for drawing plots, and a genotype tag. The default empirical factors are `c('ST' = 131000, 'HT' = 250000)`, and by default, it draws plots.
+#' @param obj An object for which the observable multiplet rate will be calculated. No default value is provided.
+#' @param chipset The chipset used in the experiment. No default value is provided.
+#' @param empir.factors A named vector of empirical factors. Default is `c('ST' = 131000, 'HT' = 250000)`.
+#' @param draw_plots A logical flag indicating whether to draw plots. Default is `TRUE`.
+#' @param gtt A string representing the genotype tag. Default is `'Genotype'`.
+#' @examples 
+#' \dontrun{
+#' calculate.observable.multiplet.rate.10X_obj_based(obj = my_obj, chipset = "my_chipset", draw_plots = FALSE, gtt = "MyGenotype")
+#' }
+#' @export
+
+calculate.observable.multiplet.rate.10X_obj_based <- function(obj, chipset
+                                                              , empir.factors = c('ST' = 131000, 'HT' = 250000) 
+                                                              , draw_plots = TRUE
+                                                              , gtt = 'Genotype') {
+  
+  stopifnot(gtt %in% colnames(obj@meta.data))
+  Genotype <- as.character(unlist(obj[[gtt]]))
+  fr_GT <- fractions(ww.keep.HQ.singlets(genotypes = Genotype, removal_pattern = '^unassigned|^doublet') )
+  nCells <- ncol(obj)
+  
+  calculate.observable.multiplet.rate.10X(
+    fractions = fr_GT
+    , multiplet.rate = FALSE
+    , empir.factor = empir.factors[chipset]
+    , cell.count = nCells
+    , draw_plots = draw_plots
+    , suffix = '')
+  
+}
 
 # _________________________________________________________________________________________________
 #' @title SNP.demux.fix.GT.table
