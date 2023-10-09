@@ -27,6 +27,7 @@ qUMAP(
   qlow = "q10",
   qhigh = "q90",
   caption = FALSE,
+  raster = MarkdownHelpers::FALSE.unless("b.raster"),
   ...
 )
 }
@@ -74,6 +75,8 @@ qUMAP(
 \item{qhigh}{Upper quantile for the color scale, Default: 'q90'.}
 
 \item{caption}{Add caption to the ggplot object (e.g. a description in bottom right).}
+
+\item{raster}{Use raster image for single cells. Necessary for large objects. Default: Only true when 'b.raster'  global variable is defined as TRUE. Code: MarkdownHelpers::FALSE.unless('b.raster')}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }

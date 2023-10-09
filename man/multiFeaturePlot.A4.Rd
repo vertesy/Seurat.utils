@@ -27,6 +27,8 @@ multiFeaturePlot.A4(
   h = hA4,
   scaling = 1,
   format = c("jpg", "pdf", "png")[1],
+  raster = MarkdownHelpers::FALSE.unless("b.raster"),
+  raster.dpi = c(512, 512)/4,
   ...
 )
 }
@@ -74,6 +76,8 @@ multiFeaturePlot.A4(
 \item{scaling}{Scaling factor for plot size. Default: 1}
 
 \item{format}{Format to save the plot file. Default: 'jpg'}
+
+\item{raster}{Use raster image for single cells. Necessary for large objects. Default: Only true when 'b.raster'  global variable is defined as TRUE. Code: MarkdownHelpers::FALSE.unless('b.raster')}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }

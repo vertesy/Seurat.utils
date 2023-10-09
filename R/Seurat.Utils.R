@@ -2,6 +2,7 @@
 # Seurat.utils ----
 # ____________________________________________________________________
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
+# devtools::load_all(path = '~/GitHub/Packages/Seurat.utils');
 
 
 # _________________________________________________________________________________________________
@@ -2758,6 +2759,7 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
 #' @param qhigh Upper quantile for the color scale, Default: 'q90'.
 #' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.
 #' @param caption Add caption to the ggplot object (e.g. a description in bottom right).
+#' @param raster Use raster image for single cells. Necessary for large objects. Default: Only true when 'b.raster'  global variable is defined as TRUE. Code: MarkdownHelpers::FALSE.unless('b.raster')
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -2853,6 +2855,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #' @param PNG If TRUE, the file is saved as a .png, Default: T.
 #' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.
 #' @param caption Add caption to the ggplot object (e.g. a description in bottom right).
+#' @param raster Use raster image for single cells. Necessary for large objects. Default: Only true when 'b.raster'  global variable is defined as TRUE. Code: MarkdownHelpers::FALSE.unless('b.raster')
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples
 #' \dontrun{
@@ -3023,6 +3026,7 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' @param scaling Scaling factor for plot size. Default: 1
 #' @param aspect.ratio Should the aspect ratio be fixed? Default: Yes, at 0.6
 #' @param format Format to save the plot file. Default: 'jpg'
+#' @param raster Use raster image for single cells. Necessary for large objects. Default: Only true when 'b.raster'  global variable is defined as TRUE. Code: MarkdownHelpers::FALSE.unless('b.raster')
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
@@ -3040,10 +3044,12 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , prefix = NULL , suffix = NULL
                                 , background_col = "white"
-                                  , aspect.ratio = c(FALSE, 0.6)[2]
+                                , aspect.ratio = c(FALSE, 0.6)[2]
                                 , saveGeneList = FALSE
                                 , w = wA4, h = hA4, scaling = 1
                                 , format = c('jpg', 'pdf', 'png')[1]
+                                , raster = MarkdownHelpers::FALSE.unless('b.raster')
+                                , raster.dpi = c(512, 512)/4
                                 , ...
                                 # , jpeg.res = 225, jpeg.q = 90
 ) {
@@ -3066,6 +3072,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
     plot.list = Seurat::FeaturePlot(object = obj, features = genes, reduction = plot.reduction, combine = F
                                     , ncol = nr.Col, cols = colors
                                     , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp
+                                    , raster = TRUE, raster.dpi = raster.dpi
                                     , pt.size = cex, ...)
 
     for (i in 1:length(plot.list)) {

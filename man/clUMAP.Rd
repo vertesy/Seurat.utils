@@ -32,6 +32,7 @@ clUMAP(
   PNG = TRUE,
   check_for_2D = TRUE,
   caption = FALSE,
+  raster = MarkdownHelpers::FALSE.unless("b.raster"),
   ...
 )
 }
@@ -89,6 +90,8 @@ clUMAP(
 \item{check_for_2D}{If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.}
 
 \item{caption}{Add caption to the ggplot object (e.g. a description in bottom right).}
+
+\item{raster}{Use raster image for single cells. Necessary for large objects. Default: Only true when 'b.raster'  global variable is defined as TRUE. Code: MarkdownHelpers::FALSE.unless('b.raster')}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
