@@ -2784,6 +2784,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , check_for_2D = TRUE
                    , qlow = "q10", qhigh = "q90"
                    , caption = FALSE
+                   , raster = MarkdownHelpers::FALSE.unless('b.raster')
                    , ...) {
 
   if (check_for_2D) {
@@ -2804,6 +2805,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                                     # , plotname = ppp(toupper(reduction), feature)
                                     , ncol = nr.cols
                                     , split.by = splitby
+                                    , raster = raster
                                     , ...) +
     ggtitle(label = title, subtitle = sub) +
     if (!axes) NoAxes() else NULL
@@ -2877,6 +2879,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , PNG = TRUE
                    , check_for_2D = TRUE
                    , caption = FALSE
+                   , raster = MarkdownHelpers::FALSE.unless('b.raster')
                    # , save.object = F
                    , ...) {
 
@@ -2917,7 +2920,8 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                         , cols = cols
                         , reduction = reduction, split.by = splitby
                         , ncol = nr.cols, cells.highlight = highlight.these
-                        , label = label, repel = repel, label.size = label.cex, ...) +
+                        , label = label, repel = repel, label.size = label.cex
+                        , raster = raster, ...) +
         ggtitle(label = title, subtitle = sub) +
         if (!legend) NoLegend() else NULL
 
@@ -4048,30 +4052,30 @@ prefix_cells_seurat <- function(ls_obj, obj_IDs) {
 
 find_prefix_in_cell_IDs <- function(obj, cell_ID_pattern = "[ATCG]{16}.*$" ) {
   stopifnot(inherits(obj, "Seurat"))
-  
+
   # Extract cell IDs
   cell_IDs <- colnames(obj)
-  
+
   # Remove the standard 16-character cell-IDs
   potential_prefixes <- gsub(pattern = cell_ID_pattern, replacement = "", x = cell_IDs)
-  
+
   # Check if there is no prefix
   if(all(potential_prefixes == "")) {
     print("No prefix found in cell IDs.")
     return(NULL)
   }
-  
+
   # Identify unique prefixes
   unique_prefixes <- unique(potential_prefixes)
-  
+
   # Print the number of unique prefixes
   print(paste(length(unique_prefixes), "unique prefix(es) found:", head(unique_prefixes)))
-  
+
   # Issue a warning if more than one unique prefix is found
   if (length(unique_prefixes) > 1) {
     warning("Multiple unique prefixes identified in cell IDs:", head(unique_prefixes))
   }
-  
+
   # Return the identified prefix(es)
   return(unique_prefixes)
 }
@@ -4606,22 +4610,22 @@ calculate.observable.multiplet.rate.10X <- function(
 
   hetero.doublet.rate = 1 - sum(homo.doublet)
 
-  
+
   doublet.distribution <- c(homo.doublet, 'hetero' = hetero.doublet.rate)
   annotation <- paste(names(empir.factor), "10X chip | Fractions:\n", paste_w_names(percentage_formatter(fractions, keep.names = T)), sep = ': ')
-  
+
   if (draw_plots) {
     qpie(doublet.distribution
          , caption = paste('We can only observe hetero.doublets', percentage_formatter(hetero.doublet.rate)
                            , '\n', annotation)
          , suffix = suffix
          , plot = T
-         , ...) 
+         , ...)
   }
-  
+
   tot.doublet.distribution <- doublet.distribution * multiplet.rate
   Expected.singlet.doublet.distribution <- c('singlet' = 1 - sum(tot.doublet.distribution), tot.doublet.distribution)
-  
+
   if (draw_plots) {
     qbarplot(Expected.singlet.doublet.distribution
              , subtitle = annotation
@@ -4630,11 +4634,11 @@ calculate.observable.multiplet.rate.10X <- function(
              , ylab = "Fraction of 'Cells'", xlab = 'Doublet status'
              , suffix = suffix
              , plot = T
-             , ...) 
+             , ...)
   }
-  
+
   return(doublet.distribution)
-  
+
 }
 
 
@@ -4647,22 +4651,22 @@ calculate.observable.multiplet.rate.10X <- function(
 #' @param empir.factors A named vector of empirical factors. Default is `c('ST' = 131000, 'HT' = 250000)`.
 #' @param draw_plots A logical flag indicating whether to draw plots. Default is `TRUE`.
 #' @param gtt A string representing the genotype tag. Default is `'Genotype'`.
-#' @examples 
+#' @examples
 #' \dontrun{
 #' calculate.observable.multiplet.rate.10X_obj_based(obj = my_obj, chipset = "my_chipset", draw_plots = FALSE, gtt = "MyGenotype")
 #' }
 #' @export
 
 calculate.observable.multiplet.rate.10X_obj_based <- function(obj, chipset
-                                                              , empir.factors = c('ST' = 131000, 'HT' = 250000) 
+                                                              , empir.factors = c('ST' = 131000, 'HT' = 250000)
                                                               , draw_plots = TRUE
                                                               , gtt = 'Genotype') {
-  
+
   stopifnot(gtt %in% colnames(obj@meta.data))
   Genotype <- as.character(unlist(obj[[gtt]]))
   fr_GT <- fractions(ww.keep.HQ.singlets(genotypes = Genotype, removal_pattern = '^unassigned|^doublet') )
   nCells <- ncol(obj)
-  
+
   calculate.observable.multiplet.rate.10X(
     fractions = fr_GT
     , multiplet.rate = FALSE
@@ -4670,7 +4674,7 @@ calculate.observable.multiplet.rate.10X_obj_based <- function(obj, chipset
     , cell.count = nCells
     , draw_plots = draw_plots
     , suffix = '')
-  
+
 }
 
 # _________________________________________________________________________________________________
