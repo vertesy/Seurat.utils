@@ -2616,6 +2616,20 @@ qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined
 
 
 # _________________________________________________________________________________________________
+#' ww.replace.na.SeuMeta
+
+
+ww.replace.na.SeuMeta <- function(obj, feature, replacewith = NULL) {
+  featurez <- obj[[feature]]
+  n_na <- sum(is.na(featurez))
+  if (n_na) {
+    iprint(n_na, "NA values found in", feature, "of", l(featurez))
+  }
+  obj[[feature]] <- na.replace(x = featurez, replace = replacewith)
+  return(obj)
+}
+
+# _________________________________________________________________________________________________
 #' qSeuViolin
 #'
 #' This function creates a violin plot of a single feature in a Seurat object, split by a grouping variable.
@@ -2630,8 +2644,10 @@ qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined
 #' @export
 
 qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
-                       , features = 'nFeature_RNA', split.by = 'orig.ident', logY = TRUE) {
+                       , features = 'nFeature_RNA', split.by = 'orig.ident', logY = TRUE
+                       , replaceNAwith = NaN, caption = FALSE) {
 
+  object<- ww.replace.na.SeuMeta(obj = object, feature = features, replacewith = replaceNAwith)
   # Create a violin plot of the feature, split by the grouping variable.
   p <- VlnPlot(object = object, features = features, split.by = split.by) +
     ggtitle(label = features, subtitle = paste(suffix, 'by', split.by)) +
@@ -2639,6 +2655,8 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
 
   # If `logY` is TRUE, plot the y-axis on a log scale.
   if (logY) p <- p + ggplot2::scale_y_log10()
+
+  if (!isFALSE(caption)) p <- p + ggplot2::labs(caption = caption)
 
   # Save the plot.
   title_ <- ppp(as.character(features), suffix, flag.nameiftrue(logY))
