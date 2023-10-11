@@ -1195,7 +1195,7 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
   obj <- ww.get.1st.Seur.element(obj)
 
   if ('p' %in% names(obj@misc)) {
-    if (!exists('p')) iprint("variable 'p' exits in the global namespace:", head(p))
+    if (exists('p')) iprint("variable 'p' exits in the global namespace:", head(p))
 
     if (!exists('p') | (exists('p') & overwrite == TRUE) ) {
       MarkdownHelpers::ww.assign_to_global(name = "p", value = obj@misc$'p'); print("Overwritten.")
@@ -3048,6 +3048,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 , saveGeneList = FALSE
                                 , w = wA4, h = hA4, scaling = 1
                                 , format = c('jpg', 'pdf', 'png')[1]
+                                # , solo = MarkdownHelpers::FALSE.unless('b.plot.solo')
                                 , raster = MarkdownHelpers::FALSE.unless('b.raster')
                                 , raster.dpi = c(512, 512)/4
                                 , ...

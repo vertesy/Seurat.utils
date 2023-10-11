@@ -1,7 +1,7 @@
 ######################################################################################################
 # Create_the_Seurat.utils_Package.R
 ######################################################################################################
-# source("/Users/abel.vertesy/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.v0.1.R")
+# source("~/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.v0.1.R")
 # rm(list = ls(all.names = TRUE));
 try(dev.off(), silent = TRUE)
 
@@ -56,6 +56,7 @@ if ( !dir.exists(RepositoryDir) ) { create(path = RepositoryDir, description = D
   try(file.remove(c("DESCRIPTION","NAMESPACE"))) # , "Seurat.utils.Rproj"
   usethis::create_package(path = RepositoryDir, fields = DESCRIPTION, open = F)
 }
+
 
 
 # go and write fun's ------------------------------------------------------------------------
