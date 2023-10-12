@@ -9,7 +9,9 @@ qSeuViolin(
   suffix = GEX_library,
   features = "nFeature_RNA",
   split.by = "orig.ident",
-  logY = TRUE
+  logY = TRUE,
+  replaceNAwith = NaN,
+  caption = FALSE
 )
 }
 \arguments{
