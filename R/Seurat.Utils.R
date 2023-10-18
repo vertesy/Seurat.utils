@@ -1321,10 +1321,10 @@ subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir =
 #' @export
 
 subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.5.ordered.ManualNames'
-                                     , clusters = "Neuron, unclear", invert = F ) {
+                                     , clusters = "Neuron, unclear", invert = F, suffix = NULL ) {
   Idents(obj) <- ident
   cellz <- WhichCells(obj, idents = clusters, invert = invert)
-  iprint(length(cellz), "cells are selected from", ncol(obj), 'using', ident)
+  iprint(length(cellz), "cells are selected from", ncol(obj), 'using', ident, suffix)
   subset(x = obj, cells = cellz)
 }
 
