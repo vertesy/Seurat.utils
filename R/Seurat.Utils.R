@@ -4,7 +4,6 @@
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
 # devtools::load_all(path = '~/GitHub/Packages/Seurat.utils');
 
-
 # _________________________________________________________________________________________________
 # Cluster.Auto-naming.DE.R
 # _________________________________________________________________________________________________
@@ -54,8 +53,6 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
     options(future.globals.maxSize = maxMemSize)
   } else { print("No parallelization")}
 }
-
-
 
 
 
@@ -1254,6 +1251,88 @@ save.parameters <- function(obj = combined.obj, params = p, overwrite = TRUE) {
     obj@misc$p <- params
   } else if(is.null(obj@misc$'p')) {
     obj@misc$p <- params
+  }
+}
+
+# _________________________________________________________________________________________________
+#' Write Metadata to TSV files from a List of Seurat Objects
+#'
+#' Extracts metadata from a list of Seurat objects. Each metadata is written to its own TSV file.
+#' Optionally, the function can combine the metadata from all objects and write them to a single TSV.
+#' The function also has capabilities to handle columns that are matrices, data.frames, or tibbles,
+#' and optionally save only a subset of the metadata columns.
+#'
+#' @param obj_list A list of Seurat objects. Default is `ls.Seurat.Per.Tracing.GT`.
+#' @param current_dir Current working directory. Default is `OutDirOrig`.
+#' @param out_dir Output directory for the TSV files. Default is "Cell_Meta" within `current_dir`.
+#'        If `cols_subset` is provided, "_subset" is appended to the directory name.
+#' @param combined Logical. If TRUE, the metadata from all Seurat objects are combined and
+#'        written to a single TSV file. Default is FALSE.
+#' @param check_columns Logical. If TRUE, checks for columns that are matrices, data.frames,
+#'        or tibbles, and converts them to vectors. Default is TRUE.
+#' @param cols_subset A character vector specifying a subset of columns to keep in the output TSVs.
+#'        If NULL, all columns are kept. Default is NULL.
+#' @param ... Additional arguments passed to `ReadWriter::write.simple.tsv`.
+#'
+#' @return Invisibly returns `NULL`. The main side effect of this function is writing files to the `out_dir`.
+#'
+#' @examples
+#' # Assuming you have a list called list_of_seurat_objects
+#' # write_metadata_to_tsv(obj_list = list_of_seurat_objects)
+#'
+#' @importFrom ReadWriter write.simple.tsv
+#'
+#' @export
+
+write_metadata_to_tsv <- function(obj_list = ls.Seurat.Per.Tracing.GT
+                                  , current_dir = OutDirOrig
+                                  , out_dir = pps(current_dir, "Cell_Meta")
+                                  , combined = FALSE
+                                  , check_columns = TRUE
+                                  , cols_subset = NULL
+) {
+
+  if (!is.null(cols_subset)) {
+    out_dir <- paste0(out_dir, "_subset") # appending the "_subset" suffix
+  }
+
+  MarkdownReports::create_set_OutDir(out_dir)
+
+  nmz <- names(obj_list)
+  meta_data_list <- list.fromNames(nmz)
+
+  # Loop through objects and save individual TSVs
+  for (o in seq_along(obj_list)) {
+    metadata <- obj_list[[o]]@meta.data
+
+    # If cols_subset is provided, subset the metadata  -------------------------
+    if (!is.null(cols_subset)) {
+      if (all(cols_subset %in% names(metadata))) {
+        metadata <- metadata[, cols_subset, drop = FALSE]
+      } else {
+        warning(paste("Some columns in cols_subset not found in metadata for", nmz[o]))
+      }
+    }
+
+    # Check and Replace Misformatted Columns -----------------------------------
+    if (check_columns) {
+      for (i in seq_along(metadata)) {
+        if (is.matrix(metadata[,i]) || is.data.frame(metadata[,i]) || tibble::is_tibble(metadata[,i])) {
+          cat("Column", i, names(metadata)[i], "is misformatted: ", is(metadata[,i])[1],"\n")
+          metadata[,i]  <- as.vector(unlist(metadata[,i]))
+        }
+      }
+    }
+
+    meta_data_list[[o]] <- metadata
+    ReadWriter::write.simple.tsv(input_df = metadata, suffix = nmz[o])
+  }
+
+  # Combine into a single file -----------------------------------
+  if (combined) {
+    combined_metadata <- do.call(rbind, meta_data_list) # rbind all metadata tables and write to one CSV
+    ReadWriter::write.simple.tsv(input_df = combined_metadata, suffix = substitute(obj_list))
+    create_set_OutDir(current_dir)
   }
 }
 

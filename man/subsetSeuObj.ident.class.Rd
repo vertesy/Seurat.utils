@@ -8,7 +8,8 @@ subsetSeuObj.ident.class(
   obj = combined.obj,
   ident = "RNA_snn_res.0.5.ordered.ManualNames",
   clusters = "Neuron, unclear",
-  invert = F
+  invert = F,
+  suffix = NULL
 )
 }
 \arguments{

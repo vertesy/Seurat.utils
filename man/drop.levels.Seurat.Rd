@@ -4,7 +4,7 @@
 \alias{drop.levels.Seurat}
 \title{drop.levels.Seurat}
 \usage{
-drop.levels.Seurat(obj = combined.obj, verbose = TRUE)
+\method{drop.levels}{Seurat}(obj = combined.obj, verbose = TRUE)
 }
 \arguments{
 \item{obj}{A Seurat object.}
