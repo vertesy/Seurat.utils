@@ -1,8 +1,8 @@
 # ____________________________________________________________________
 # Seurat.utils ----
 # ____________________________________________________________________
-# source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
 # devtools::load_all(path = '~/GitHub/Packages/Seurat.utils');
+# source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
 
 # _________________________________________________________________________________________________
 # Cluster.Auto-naming.DE.R
@@ -3127,7 +3127,7 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
-#'  \code{\link[cowplot]{plot_grid}}
+#'  \code{\link[cowplot]{plot_grid save_plot}}
 #' @export
 #' @importFrom tictoc tic toc
 #' @importFrom cowplot plot_grid
@@ -3137,7 +3137,8 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 , foldername = substitute(list.of.genes), plot.reduction='umap'
                                 , intersectionAssay = c('RNA', 'integrated')[1]
                                 , layout = c('tall', 'wide', FALSE )[2]
-                                , colors = c("grey", "red"), nr.Col = 2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
+                                , colors = c("grey", "red"), nr.Col = 2, nr.Row =4
+                                , cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , prefix = NULL , suffix = NULL
                                 , background_col = "white"
@@ -3145,9 +3146,8 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 , saveGeneList = FALSE
                                 , w = wA4, h = hA4, scaling = 1
                                 , format = c('jpg', 'pdf', 'png')[1]
-                                # , solo = MarkdownHelpers::FALSE.unless('b.plot.solo')
-                                , raster = MarkdownHelpers::FALSE.unless('b.raster')
-                                , raster.dpi = c(512, 512)/4
+                                , raster = TRUE # MarkdownHelpers::FALSE.unless('b.raster')
+                                # , raster.dpi = c(512, 512)/4
                                 , ...
                                 # , jpeg.res = 225, jpeg.q = 90
 ) {
@@ -3167,19 +3167,25 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
     iprint(i,genes )
     plotname = kpp(c(prefix, plot.reduction,i, genes, suffix, format ))
 
+    if (raster == TRUE) cex <- 1 # https://github.com/satijalab/seurat/issues/7466#issuecomment-1601276032
+
     plot.list = Seurat::FeaturePlot(object = obj, features = genes, reduction = plot.reduction, combine = F
                                     , ncol = nr.Col, cols = colors
                                     , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp
-                                    , raster = TRUE, raster.dpi = raster.dpi
-                                    , pt.size = cex, ...)
+                                    , raster = raster
+                                    # , raster.dpi = raster.dpi
+                                    , pt.size = cex
+                                    , ...)
 
     for (i in 1:length(plot.list)) {
+      print(plot.list[[i]])
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
       if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + ggplot2::coord_fixed(ratio = aspect.ratio)
     }
 
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row )
     ggsave(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
+    # cowplot::save_plot(filename = plotname, base_width = w, base_height = h, plot = pltGrid) # , bg = background_col
   }
 
   if (subdir) MarkdownReports::create_set_OutDir(... = ParentDir)
@@ -3191,7 +3197,6 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
   }
   tictoc::toc()
 };
-
 
 # _________________________________________________________________________________________________
 # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
