@@ -3328,13 +3328,14 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
 
 PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p$'n.markers'
                                    , order.by = c("combined.score","avg_log2FC", "p_val_adj")[1]
-                                   , df_markers = obj@misc$"df.markers"[[paste0("res.",cl_res)]]) {
+                                   , df_markers = obj@misc$"df.markers"[[paste0("res.",cl_res)]]
+                                   , ...) {
   topX.markers <- GetTopMarkers(df = df_markers,  n= nrGenes
                                 , order.by = order.by )
   ls.topMarkers <-  splitbyitsnames(topX.markers)
   for (i in 1:length(ls.topMarkers)) {
     multiFeaturePlot.A4(list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = F
-                        , prefix = ppp("DEG.markers.res",cl_res,"cluster",names(ls.topMarkers)[i]))
+                        , prefix = ppp("DEG.markers.res", cl_res, "cluster", names(ls.topMarkers)[i]), ...)
   }
 }
 
@@ -3424,9 +3425,9 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix =
 #'  }
 #' }
 #' @export
-PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = 'expr.q99'){ # Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before.
+PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = 'expr.q99', raster = TRUE){ # Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before.
   Highest.Expressed.Genes = names(head(sort(obj@misc[[exp.slot]], decreasing = T), n = n))
-  multiFeaturePlot.A4(list.of.genes = Highest.Expressed.Genes, foldername = "Highest.Expressed.Genes" )
+  multiFeaturePlot.A4(list.of.genes = Highest.Expressed.Genes, foldername = "Highest.Expressed.Genes", raster = raster)
 }
 
 
