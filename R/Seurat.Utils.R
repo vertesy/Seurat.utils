@@ -1973,6 +1973,9 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 #' @param res Clustering resoluton to use, Default: 0.2
 #' @param plot.top.genes Show plot? Default: T
 #' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_logFC", "p_val_adj")[1]
+#' @param exclude_vague_genes Exclude vague or non-coding gene names from automatic annotations, starting with AC, AL, RP, MT-
+#' @param excl_pattern Exclusion pattern in gene symbol. Default: "^AC[0-9]|^AL[0-9]|^RPL|^RPS|^MT-"
+#' @param gene_sym_col Column name in df.markers. Default: gene
 #' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
 #' @examples
 #' \dontrun{
@@ -1986,9 +1989,15 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
                                , res = 0.2, plot.top.genes = T
                                , suffix = res
                                , order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]
+                               , exclude_vague_genes = TRUE, excl_pattern = "^AC[0-9]|^AL[0-9]|^RPL|^RPS|^MT-", gene_sym_col = "gene"
                                , df_markers = obj@misc$"df.markers"[[paste0("res.",res)]] ) {
   stopifnot(!is.null("df_markers"))
   stopifnot(order.by %in% colnames(df_markers))
+
+  if (exclude_vague_genes) {
+    idx_coding <- !grepl(pattern = excl_pattern, x = df_markers[, gene_sym_col])
+    df_markers <- df_markers[ idx_coding, ]
+  }
 
   top.markers <-
     GetTopMarkersDF(df = df_markers, order.by = order.by, n = 1) %>%
