@@ -12,7 +12,7 @@
 
 # _________________________________________________________________________________________________
 # require(princurve) # only for AutoNumber.by.PrinCurve
-
+backup
 
 # _________________________________________________________________________________________________
 # General ______________________________ ----
@@ -2067,7 +2067,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
     df_markers %>%
     dplyr::select(keep) %>%
     arrange(desc(!!as.name(order.by))) %>%
-    filter(gene %in%  KnownMarkers) %>%
+    dplyr::filter(gene %in%  KnownMarkers) %>%
     group_by(gene) %>%
     dplyr::slice(1:topN) %>%
     arrange(desc(!!as.name(order.by))) %>%
@@ -2090,7 +2090,7 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 
   missing.annotations <-
     top.markers.df %>%
-    filter(!cluster %in%  unique.matches$cluster) # filter for clusters that do not have a unique label already
+    dplyr::filter(!cluster %in%  unique.matches$cluster) # filter for clusters that do not have a unique label already
 
   named.annotations <-
     rbind(unique.matches, missing.annotations) %>%  # merge the 2 df's
@@ -3187,7 +3187,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                     , ...)
 
     for (i in 1:length(plot.list)) {
-      print(plot.list[[i]])
+      # print(plot.list[[i]])
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
       if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + ggplot2::coord_fixed(ratio = aspect.ratio)
     }
@@ -5104,6 +5104,8 @@ ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a numb
 #' @param file.pattern A character string specifying the pattern of file names to be searched. Default is '^filtered.+Rds$'.
 #' @param string.remove1 A character string or FALSE. If a string is provided, it is removed from file names. Default is "filtered_feature_bc_matrix.".
 #' @param string.remove2 A character string or FALSE. If a string is provided, it is removed from file names. Default is ".min.cells.10.min.features.200.Rds".
+#' @param string.replace1  Replacement "string.remove1" to this string. Default is "".
+#' @param string.replace2 Replacement "string.remove1" to this string. Default is "".
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -5115,14 +5117,15 @@ ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a numb
 LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
                            , file.pattern = "^filtered.+Rds$"
                            , string.remove1 = c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix." )[2]
-                           , string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]) {
+                           , string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]
+                           , string.replace1 = "", string.replace2 = "") {
   tictoc::tic()
   InputDir <- AddTrailingSlash(InputDir) # add '/' if necessary
 
   fin.orig <- list.files(InputDir, include.dirs = F, pattern = file.pattern)
   print(fin.orig)
-  fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = "") else fin.orig
-  fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = "") else fin
+  fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = string.replace1) else fin.orig
+  fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = string.replace2) else fin
 
   ls.Seu <- list.fromNames(fin)
   for (i in 1:length(fin)) {print(fin[i]); ls.Seu[[i]] <- readRDS(paste0(InputDir, fin.orig[i]))}
@@ -5327,12 +5330,12 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internall
 #' @examples
 #' \dontrun{ if(interactive()){ isave.RDS(my.R.object)  } }
 #' @export
-isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
+isave.RDS <- function(obj, prefix = NULL, suffix = NULL, inOutDir = TRUE
                       , project = getProject()
                       , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
                       , homepath = if(Sys.info()[1]=="Darwin") '/Users/abel.vertesy/' else '/users/abel.vertesy/'
-                      , showMemObject = T, saveParams =T
-                      , compress = TRUE
+                      , showMemObject = T, saveParams = T
+                      , compress = FALSE
                       , test_read = FALSE){
 
   path_rdata = if (inOutDir) OutDir else alternative_path_rdata
