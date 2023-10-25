@@ -87,5 +87,5 @@ Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a 
 }
 \seealso{
 \code{\link[tictoc]{tic}}
-\code{\link[cowplot]{plot_grid}}
+\code{\link[cowplot]{plot_grid save_plot}}
 }

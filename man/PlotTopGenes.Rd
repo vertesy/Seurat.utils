@@ -4,7 +4,7 @@
 \alias{PlotTopGenes}
 \title{PlotTopGenes}
 \usage{
-PlotTopGenes(obj = combined.obj, n = 32, exp.slot = "expr.q99")
+PlotTopGenes(obj = combined.obj, n = 32, exp.slot = "expr.q99", raster = TRUE)
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}

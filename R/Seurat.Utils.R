@@ -27,10 +27,10 @@
 #'
 #' @export
 
-parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) { # Run gc(), load multi-session computing and extend memory limits.
+parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2, strategy = 'multicore') { # Run gc(), load multi-session computing and extend memory limits.
   # https://satijalab.org/seurat/v3.0/future_vignette.html
   cat(
-    "1. If you load futures before you finished using foreach loops,
+    "\n1. If you load futures before you finished using foreach loops,
     NormalizeData inside a foreach loop fails (Error writing to connection)
     -> I assume 'future' and 'doMC' are not compatible
 
@@ -38,20 +38,20 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
     If you run out of memory, the system starts using the SSD as memory, and it slows you down extremely extremely extremely.
     -> Therefore it is important to clean up the memory space before setting up multicore computation.
 
-    Loaded: library(future), workers set to 6 (def),set Max mem size to 2GB (def)."   )
+    Loaded: library(future), workers set to 6 (def),set Max mem size to 2GB (def).\n"   )
 
   gc(full = T)
   try(memory.biggest.objects(), silent = T)
-  user_input <- readline(prompt="Are you sure that memory should not be cleaned before paralellizng? (y/n)")
+  user_input <- readline(prompt="\nDo you want to clean up memory before paralellizng (recommened)? (y/n)")
 
-  if (user_input == 'y') {
-    iprint("N. cores", cores)
-    library(future)
-    # plan("multiprocess", workers = cores)
-    plan("multisession", workers = cores)
+  if (user_input == 'n') {
+    iprint("\nN. cores:", cores)
     # So to set Max mem size to 2GB, you would run :
     options(future.globals.maxSize = maxMemSize)
-  } else { print("No parallelization")}
+
+    future::plan(strategy = strategy, workers = cores)
+    future::nbrOfWorkers()
+  } else { print("\nNo parallelization") }
 }
 
 
@@ -3155,7 +3155,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 , saveGeneList = FALSE
                                 , w = wA4, h = hA4, scaling = 1
                                 , format = c('jpg', 'pdf', 'png')[1]
-                                , raster = TRUE # MarkdownHelpers::FALSE.unless('b.raster')
+                                , raster = MarkdownHelpers::FALSE.unless('b.raster')
                                 # , raster.dpi = c(512, 512)/4
                                 , ...
                                 # , jpeg.res = 225, jpeg.q = 90
@@ -3338,12 +3338,13 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
 PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p$'n.markers'
                                    , order.by = c("combined.score","avg_log2FC", "p_val_adj")[1]
                                    , df_markers = obj@misc$"df.markers"[[paste0("res.",cl_res)]]
+                                   , raster = TRUE
                                    , ...) {
   topX.markers <- GetTopMarkers(df = df_markers,  n= nrGenes
                                 , order.by = order.by )
   ls.topMarkers <-  splitbyitsnames(topX.markers)
   for (i in 1:length(ls.topMarkers)) {
-    multiFeaturePlot.A4(list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = F
+    multiFeaturePlot.A4(list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = F, raster = raster
                         , prefix = ppp("DEG.markers.res", cl_res, "cluster", names(ls.topMarkers)[i]), ...)
   }
 }
@@ -4310,7 +4311,7 @@ check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = FALSE, v
 #' @export
 fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj = org) { # Fix zero indexing in seurat clustering, to 1-based indexing
   obj@meta.data[ ,ColName.metadata] =  as.numeric(obj@meta.data[ ,ColName.metadata])+1
-  print(obj@meta.data[ ,ColName.metadata])
+  print(obj@meta.data[ , ColName.metadata])
   return(obj)
 }
 

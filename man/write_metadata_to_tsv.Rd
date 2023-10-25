@@ -2,32 +2,47 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{write_metadata_to_tsv}
 \alias{write_metadata_to_tsv}
-\title{Write Metadata to a (list of) TSV file(s)}
+\title{Write Metadata to TSV files from a List of Seurat Objects}
 \usage{
 write_metadata_to_tsv(
   obj_list = ls.Seurat.Per.Tracing.GT,
-  out_dir = pps(OutDirOrig, "Cell_Meta"),
-  combined = FALSE
+  current_dir = OutDirOrig,
+  out_dir = pps(current_dir, "Cell_Meta"),
+  combined = FALSE,
+  check_columns = TRUE,
+  cols_subset = NULL
 )
 }
 \arguments{
-\item{obj_list}{A list of Seurat objects from which metadata will be extracted.
-Default is \code{ls.Seurat.Per.Tracing.GT}.}
+\item{obj_list}{A list of Seurat objects. Default is \code{ls.Seurat.Per.Tracing.GT}.}
 
-\item{out_dir}{Directory where the TSV and CSV files will be saved.
-Default is a "Cell_Meta" directory within the current working directory.}
+\item{current_dir}{Current working directory. Default is \code{OutDirOrig}.}
+
+\item{out_dir}{Output directory for the TSV files. Default is "Cell_Meta" within \code{current_dir}.
+If \code{cols_subset} is provided, "_subset" is appended to the directory name.}
+
+\item{combined}{Logical. If TRUE, the metadata from all Seurat objects are combined and
+written to a single TSV file. Default is FALSE.}
+
+\item{check_columns}{Logical. If TRUE, checks for columns that are matrices, data.frames,
+or tibbles, and converts them to vectors. Default is TRUE.}
+
+\item{cols_subset}{A character vector specifying a subset of columns to keep in the output TSVs.
+If NULL, all columns are kept. Default is NULL.}
 
 \item{...}{Additional arguments passed to \code{ReadWriter::write.simple.tsv}.}
 }
 \value{
-Invisibly returns \code{NULL}. The function writes metadata to specified directory.
+Invisibly returns \code{NULL}. The main side effect of this function is writing files to the \code{out_dir}.
 }
 \description{
-This function extracts the metadata from a list of Seurat objects and writes
-each metadata as an individual TSV file. Additionally, it combines all metadata
-and writes them as a single CSV file.
+Extracts metadata from a list of Seurat objects. Each metadata is written to its own TSV file.
+Optionally, the function can combine the metadata from all objects and write them to a single TSV.
+The function also has capabilities to handle columns that are matrices, data.frames, or tibbles,
+and optionally save only a subset of the metadata columns.
 }
 \examples{
-# write_metadata_to_csv(obj_list = list_of_seurat_objects)
+# Assuming you have a list called list_of_seurat_objects
+# write_metadata_to_tsv(obj_list = list_of_seurat_objects)
 
 }
