@@ -8,6 +8,8 @@ gene.expression.level.plots(
   gene = "TOP2A",
   obj = ls.Seurat[[1]],
   slot = c("counts", "data")[2],
+  w = 7,
+  h = 4,
   ...
 )
 }

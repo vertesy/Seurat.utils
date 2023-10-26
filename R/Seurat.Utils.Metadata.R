@@ -694,7 +694,7 @@ plot.Metadata.categ.pie <- function(metacol = 'Singlet.status'
                                     , obj = combined.obj, max.categs = 20, both_pc_and_value = T, ...) {
   categ_pivot <- table(obj[[metacol]])
   stopifnot(length(categ_pivot) < max.categs)
-  qpie(categ_pivot, plotname = plot_name
+  qpie(categ_pivot, plotname = FixPlotName(make.names(plot_name))
        , both_pc_and_value = both_pc_and_value
        , LegendSide = F, labels = NULL, LegendTitle = '', ...)
 }

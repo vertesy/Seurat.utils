@@ -16,7 +16,7 @@ isave.RDS(
     "/users/abel.vertesy/",
   showMemObject = T,
   saveParams = T,
-  compress = TRUE,
+  compress = FALSE,
   test_read = FALSE
 )
 }

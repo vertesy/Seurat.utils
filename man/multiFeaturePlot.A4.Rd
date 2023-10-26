@@ -27,9 +27,7 @@ multiFeaturePlot.A4(
   h = hA4,
   scaling = 1,
   format = c("jpg", "pdf", "png")[1],
-  solo = MarkdownHelpers::FALSE.unless("b.solo.plot"),
   raster = MarkdownHelpers::FALSE.unless("b.raster"),
-  raster.dpi = c(512, 512)/4,
   ...
 )
 }

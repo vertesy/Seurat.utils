@@ -3,6 +3,7 @@
 # ____________________________________________________________________
 # devtools::load_all(path = '~/GitHub/Packages/Seurat.utils');
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
+# source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Metadata.R")
 
 # _________________________________________________________________________________________________
 # Cluster.Auto-naming.DE.R
@@ -12,7 +13,7 @@
 
 # _________________________________________________________________________________________________
 # require(princurve) # only for AutoNumber.by.PrinCurve
-backup
+
 
 # _________________________________________________________________________________________________
 # General ______________________________ ----
@@ -543,7 +544,7 @@ Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25
 #' @export
 gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]]
                                         , slot = c('counts', 'data')[2]
-                                        , w = 7, h = 4
+                                        , w = 9, h = 4
                                         , ... ) {
   print(gene)
   if (gene %in% rownames(obj)) {
