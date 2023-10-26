@@ -543,6 +543,7 @@ Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25
 #' @export
 gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]]
                                         , slot = c('counts', 'data')[2]
+                                        , w = 7, h = 4
                                         , ... ) {
   print(gene)
   if (gene %in% rownames(obj)) {
@@ -555,7 +556,7 @@ gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]]
     suffx = if (slot == 'counts') 'raw' else 'normalised, logtransformed'
     (pname = paste(gene, 'and the', suffx, 'transcript count distribution'))
 
-    ggExpress::qhistogram(GEX.Counts.total, vline = genes.expression, logX = T, w = 7, h = 4
+    ggExpress::qhistogram(GEX.Counts.total, vline = genes.expression, logX = T, w = w, h = h
                           , subtitle = paste('It belong to the top', pc_TRUE(GEX.Counts.total > genes.expression), 'of genes (black line). Mean expr:', mean.expr)
                           , plotname = pname, xlab = 'Total Transcripts in Dataset', ylab = 'Number of Genes'
                           , ...)
