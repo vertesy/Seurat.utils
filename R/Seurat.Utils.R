@@ -2779,11 +2779,13 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
 plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN")
                              , assay = 'RNA', slot_ = 'data'
                              , thr_expr = 10
+                             , prefix = "Gene expression"
                              , suffix = NULL
                              , xlab = p0("log10(Summed UMI count @",slot_,")")
                              , return_cells_passing = TRUE
                              , quantile_thr = 0.95
                              , return_quantile
+                             , w = 8, h = 5
                              , ...) {
 
   # Check arguments
@@ -2802,7 +2804,7 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
   if (slot_ == 'counts') G_expression <- CodeAndRoll2::clip.at.fixed.value(distribution = G_expression, thr = quantile(G_expression, probs = .95))
 
   # Create the plot
-  title_ = paste("Gene expression histogram", Stringendo::flag.nameiftrue(aggregate, prefix = '- '), suffix, slot_)
+  title_ = paste(prefix, Stringendo::flag.nameiftrue(aggregate, prefix = '- '), suffix, slot_)
   pobj <- qhistogram(G_expression
                      , plotname = title_
                      , suffix = suffix
@@ -2811,7 +2813,7 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
                      , ylab = "# of cells"
                      , subtitle = subx
                      , caption = paste('cutoff at', iround(thr_expr))
-                     , w = 7, h = 6
+                     , w = w, h = h
                      , ...)
 
   # Print the plot
