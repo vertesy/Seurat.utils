@@ -19,7 +19,6 @@
 # General ______________________________ ----
 # _________________________________________________________________________________________________
 
-
 #' @title parallel.computing.by.future
 #'
 #' @description Run gc(), load multi-session computing and extend memory limits.
@@ -2735,11 +2734,12 @@ ww.replace.na.SeuMeta <- function(obj, feature, replacewith = NULL) {
 
 qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
                        , features = 'nFeature_RNA', split.by = 'orig.ident', logY = TRUE
-                       , replaceNAwith = NaN, caption = FALSE) {
+                       , replaceNAwith = NaN, caption = FALSE
+                       , w = 9, h = 6, ...) {
 
   object<- ww.replace.na.SeuMeta(obj = object, feature = features, replacewith = replaceNAwith)
   # Create a violin plot of the feature, split by the grouping variable.
-  p <- VlnPlot(object = object, features = features, split.by = split.by) +
+  p <- VlnPlot(object = object, features = features, split.by = split.by, ...) +
     ggtitle(label = features, subtitle = paste(suffix, 'by', split.by)) +
     theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
 
@@ -2750,7 +2750,7 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
 
   # Save the plot.
   title_ <- ppp(as.character(features), suffix, flag.nameiftrue(logY))
-  qqSave(p, title = title_, w = 7, h = 5)
+  qqSave(p, title = title_, w = w, h = h)
   p
 }
 
