@@ -2785,7 +2785,7 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
                              , return_cells_passing = TRUE
                              , quantile_thr = 0.95
                              , return_quantile
-                             , w = 8, h = 5
+                             , w = 9, h = 5
                              , ...) {
 
   # Check arguments
@@ -2807,7 +2807,7 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
   title_ = paste(prefix, Stringendo::flag.nameiftrue(aggregate, prefix = '- '), suffix, slot_)
   pobj <- qhistogram(G_expression
                      , plotname = title_
-                     , suffix = suffix
+                     # , suffix = suffix
                      , vline = thr_expr, filtercol = -1
                      , xlab = xlab
                      , ylab = "# of cells"
