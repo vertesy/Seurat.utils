@@ -4834,7 +4834,8 @@ SNP.demux.fix.GT.table <- function(GT.table
                                    , cellname_prefix = FALSE
                                    , return_tbl_for_cells_found_in_object = TRUE
                                    , min_cells_overlap = floor(ncol(obj) * 0.02)
-                                   ) {
+                                   , qpiesubtitle = "GT-table-based"
+) {
 
   # Check if the specified columns are present in the GT table
   col_names <- c(col1, col2)
@@ -4865,23 +4866,21 @@ SNP.demux.fix.GT.table <- function(GT.table
 
   # Generate pie charts of singlet status and genotype frequencies
   SNP.demux.singlet.status <- sort(table(GT.table$'Singlet.status'))
-  qpie(SNP.demux.singlet.status, suffix = suffix, w = 7, h =5, plot = T, both_pc_and_value = T)
+  qpie(SNP.demux.singlet.status, subtitle = qpiesubtitle, suffix = suffix, w = 7, h =5, plot = T, both_pc_and_value = T)
 
   SNP.demux.Genotype.status <- sort(table(GT.table$'Genotype'))
-  qpie(SNP.demux.Genotype.status, suffix = suffix, w = 7, h =5, plot = T, both_pc_and_value = T)
+  qpie(SNP.demux.Genotype.status, subtitle = qpiesubtitle, suffix = suffix, w = 7, h =5, plot = T, both_pc_and_value = T)
 
   # Generate a pie chart of clean genotype frequencies (excluding doublet and unassigned)
   cln.categ <- grepv(names(SNP.demux.Genotype.status), pattern = 'doublet|unassigned', invert = T)
   SNP.demux.Genotype.status.cln <- SNP.demux.Genotype.status[cln.categ]
-  qpie(SNP.demux.Genotype.status.cln, suffix = suffix, w = 7, h =5, plot = T, both_pc_and_value = T)
+  qpie(SNP.demux.Genotype.status.cln, subtitle = qpiesubtitle, suffix = suffix, w = 7, h =5, plot = T, both_pc_and_value = T)
 
   # Handle possible cell name prefixes in the Seurat object
-  cells.GT.table = rownames(GT.table)
   cells.obj = colnames(obj)
 
-  if (!isFALSE(cellname_prefix)) { # if cellname_prefix is not FALSE
-    if (is.null(cellname_prefix)) {
-      # Infer cell name prefixes from the Seurat object
+  if (!isFALSE(cellname_prefix)) {
+    if (is.null(cellname_prefix)) { # Infer cell name prefixes from the Seurat object
       tbl_cellID_prefix <- table(stringr::str_split_fixed(cells.obj, pattern = '_', n = 2)[,1])
       cellname_prefix <- paste0(names(tbl_cellID_prefix), '_')
       print("Cellname prefixes in object:", head(cellname_prefix))
@@ -4891,11 +4890,12 @@ SNP.demux.fix.GT.table <- function(GT.table
     iprint(">>> Cellname prefixes in object:", head(cellname_prefix))
     rownames(GT.table) <- paste0(cellname_prefix, rownames(GT.table))
   }
+  cells.GT.table = rownames(GT.table)
 
   # Check for overlap between the cell names in the GT table and the Seurat object
-  iprint("Cells GT.table", head(rownames(GT.table)))
+  iprint("Cells GT.table", head(cells.GT.table))
   iprint("Cells object", head(cells.obj))
-  Overlap.of.cell.names <- list("Cells in obj" = cells.obj, "Cells in GT.table" = rownames(GT.table))
+  Overlap.of.cell.names <- list("Cells in obj" = cells.obj, "Cells in GT.table" = cells.GT.table)
 
   qvenn(Overlap.of.cell.names, plot = T, suffix = suffix)
   cells.found.in.both <- intersect.ls(Overlap.of.cell.names)
