@@ -2672,8 +2672,10 @@ ww.replace.na.SeuMeta <- function(obj, feature, replacewith = NULL) {
 #' This function creates a violin plot of a single feature in a Seurat object, split by a grouping variable.
 #' @param object A Seurat object.
 #' @param suffix A string to append to the title of the plot.
+#' @param caption Text for bottom right of the plot.
 #' @param features The name of the feature to plot.
-#' @param split.by The grouping variable to split the plot by.
+#' @param group.by The grouping variable to separate the data by.
+#' @param split.by Sub-grouping variable to further split the data by.
 #' @param logY Whether to plot the y-axis on a log scale.
 #' @param h Height of the plot in inches, Default: 9.
 #' @param w Width of the plot in inches, Default: 6.
@@ -2682,23 +2684,30 @@ ww.replace.na.SeuMeta <- function(obj, feature, replacewith = NULL) {
 #' @return A ggplot object.
 #'
 #' @export
-qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
-                       , features = 'nFeature_RNA', split.by = 'orig.ident', logY = TRUE
-                       , replaceNAwith = NaN, caption = FALSE
+qSeuViolin <- function(object = ls.Seurat[[1]]
+                       , features = 'nFeature_RNA'
+                       , group.by = 'orig.ident'
+                       , split.by = NULL
+                       , caption = NULL
+                       , suffix = NULL
+                       , logY = TRUE
+                       , replaceNAwith = NaN
+                       , ylab = features
                        , w = 9, h = 6, ...) {
 
-  object<- ww.replace.na.SeuMeta(obj = object, feature = features, replacewith = replaceNAwith)
+  Idents(object) <- group.by
+  object <- ww.replace.na.SeuMeta(obj = object, feature = features, replacewith = replaceNAwith)
+
   # Create a violin plot of the feature, split by the grouping variable.
   p <- VlnPlot(object = object, features = features, split.by = split.by, ...) +
-    ggtitle(label = features, subtitle = paste(suffix, 'by', split.by)) +
-    theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
+    ggplot2::labs(title = features, subtitle = paste(suffix, 'divided by', group.by, split.by), caption = caption) +
+    theme(axis.title.x = element_blank()) + labs(y = ylab)
 
   if (logY) p <- p + ggplot2::scale_y_log10()
-
-  if (!isFALSE(caption)) p <- p + ggplot2::labs(caption = caption)
+  # if (!is.null(caption)) p <- p + ggplot2::labs(caption = caption)
 
   # Save the plot.
-  title_ <- ppp(as.character(features), suffix, flag.nameiftrue(logY))
+  title_ <- ppp(as.character(features), suffix, flag.nameiftrue(logY), 'violin')
   qqSave(p, title = title_, w = w, h = h)
   p
 }
