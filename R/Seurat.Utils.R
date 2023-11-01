@@ -2162,7 +2162,7 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
     p.clAv[[i]] <- LabelPoints(plot = p.clAv[[i]], points = genes.from.bulk.DE, repel = TRUE, size = 2);
   }
 
-  PlotIter <- iterBy.over(1:NrPlots, by = 4)
+  PlotIter <- split_vec_to_list_by_N(1:NrPlots, by = 4)
   for (i in 1:length(PlotIter)) {
     plotLS = p.clAv.AutoLabel[PlotIter[[i]]]
     qqSaveGridA4(plotlist = plotLS, plots = 1:4, fname = ppp("BulkGEScatterPlot.AutoGenes",kpp(PlotIter[[i]]), "png"))
@@ -3087,7 +3087,8 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 , caption = NULL
                                 , intersectionAssay = c('RNA', 'integrated')[1]
                                 , layout = c('tall', 'wide', FALSE )[2]
-                                , colors = c("grey", "red"), nr.Col = 2, nr.Row =4
+                                , colors = c("grey", "red")
+                                , nr.Col = 2, nr.Row = 4
                                 , cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , prefix = NULL , suffix = NULL
@@ -3106,7 +3107,11 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
 
   if (is.null(foldername)) foldername = "genes"
   if (subdir) create_set_SubDir( paste0(foldername,'-', plot.reduction),'/')
-  if (!is.null(caption) & length(caption) == 1) caption <-  rep(x = caption, length(list.of.genes))
+
+  if (!is.null(caption)) {
+    if (length(caption) == 1) caption <- rep(x = caption, length(list.of.genes) )
+    ls.caption <- split_vec_to_list_by_N(caption, by = nr.Row * nr.Col)
+  }
 
   list.of.genes.found = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay, makeuppercase = F)
   DefaultAssay(obj) <- intersectionAssay
@@ -3114,7 +3119,8 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
   if (layout == 'tall') { w = wA4 * scaling; h = hA4 * scaling; nr.Col = 2; nr.Row = 4; print('layout active, nr.Col ignored.') }
   if (layout == 'wide') { w = hA4 * scaling; h = wA4 * scaling; nr.Col = 2; nr.Row = 2; print('layout active, nr.Col ignored.') }
 
-  lsG = iterBy.over(1:length(list.of.genes.found), by = nr.Row * nr.Col)
+  lsG = split_vec_to_list_by_N(vec = 1:length(list.of.genes.found), by = nr.Row * nr.Col)
+
   for (i in 1:length(lsG)) {
     genes = list.of.genes.found[lsG[[i]]]
     iprint(i,genes )
@@ -3130,10 +3136,10 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                     , pt.size = cex
                                     , ...)
 
-    for (i in 1:length(plot.list)) {
-      plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
-      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + ggplot2::coord_fixed(ratio = aspect.ratio)
-      if (!is.null(caption)) plot.list[[i]] <- plot.list[[i]] + labs(caption = caption[i])
+    for (j in 1:length(plot.list)) {
+      plot.list[[j]] <- plot.list[[j]] + NoLegend() + NoAxes()
+      if (aspect.ratio) plot.list[[j]] <- plot.list[[j]] + ggplot2::coord_fixed(ratio = aspect.ratio)
+      if (!is.null(caption)) plot.list[[j]] <- plot.list[[j]] + labs(caption = ls.caption[[i]][j])
     }
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row )
     ggsave(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
@@ -3184,7 +3190,7 @@ multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHea
   tictoc::tic()
   list.of.genes = check.genes(list.of.genes, obj = obj)
 
-  lsG = iterBy.over(1:length(list.of.genes), by = gene.per.page)
+  lsG = split_vec_to_list_by_N(1:length(list.of.genes), by = gene.per.page)
   for (i in 1:length(lsG)) { print(i )
     genes = list.of.genes[lsG[[i]]]
     plotname = kpp(c("FeatureHeatmap",plot.reduction,i, genes, 'jpg' ))
@@ -3340,16 +3346,16 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix =
       , `Interneurons` = "DLX6-AS1", `Interneurons` = "ERBB4",  `CLIP cells` = "SCGN"
       ,  `Interneurons` = "GAD2"
       , `Intermediate progenitor` = "EOMES"
-      , `S-phase` = "TOP2A", `G2M-phase` = 'H4C3' # formerly: HIST1H4C
-      , `oRG` = "ID4", `oRG` = "HOPX" # oRG outer radial glia
+      , `S-phase` = "TOP2A", `G2M-phase` = 'H4C3' # formerly: HIST1H4C POLA1 replacing
+      , `Progenitor` = "ID4", `oRG` = "HOPX" # oRG outer radial glia
       , `Astroglia` = "GFAP", `Astrocyte` = "S100B"
       , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
       , `Low-Quality` = "POLR2A"
-      , `Choroid.Plexus` = "DCN", `Choroid.Plexus` = "TTR"
+      , `Choroid.Plexus-A` = "DCN", `Choroid.Plexus-B` = "TTR"
       ,  `Cytoplasm` = "RPL34"
       # , `Choroid.Plexus` = "OTX2", `Choroid.Plexus` = "BMP4"
-      , `Mispatterned1` = "MGP", `Mispatterned1` = "COL3A1"
-      , `Mispatterned2` = "COL2A1", `Mispatterned3` = "KRT19"
+      , `Mispatterned-1` = "MGP", `Mispatterned-1` = "COL3A1"
+      , `Mispatterned-2` = "COL2A1", `Mispatterned-3` = "KRT19"
     )
     print(Signature.Genes.Top24)
   }
