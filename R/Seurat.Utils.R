@@ -4876,6 +4876,7 @@ seu_reclassify_doublets_by_q95_nFeature_of_unassigned <- function(obj,
                                                                   true_doublet_str = "TrueDoublet",
                                                                   unassigned_doublet_str = "UnassignedDoublet",
                                                                   quantile_val = 0.95,
+                                                                  suffix  = "Reassigned Doublets", # Samples[i]
                                                                   plot_vio = TRUE) {
 
   # Step 1: Create a "Genotype.orig" column
@@ -4898,7 +4899,7 @@ seu_reclassify_doublets_by_q95_nFeature_of_unassigned <- function(obj,
 
   if (plot_vio) {
     qSeuViolin(object = obj, features = features_col, group.by = genotype_col, hline = quantile_cutoff_value
-               , suffix = "Reassigned Doublets"
+               , suffix = suffix
                , caption = paste('quantile', quantile_val,'; quantile_cutoff_value', round(quantile_cutoff_value)))
   }
 
