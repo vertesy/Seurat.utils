@@ -3425,7 +3425,9 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix =
     print(Signature.Genes.Top24)
   }
   print(as_tibble_from_namedVec(Signature.Genes.Top24))
-  multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top24, layout = "tall"
+  multiFeaturePlot.A4(obj = obj, layout = "tall"
+                      , list.of.genes = Signature.Genes.Top24
+                      , caption = names(Signature.Genes.Top24)
                       , foldername = sppp('Signature.Genes.Top24', suffix))
 }
 
