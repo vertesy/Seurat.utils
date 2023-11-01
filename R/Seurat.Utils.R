@@ -2895,7 +2895,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
                    , make.uppercase = FALSE
                    , check_for_2D = TRUE
                    , qlow = "q10", qhigh = "q90"
-                   , caption = FALSE
+                   , caption = NULL
                    , raster = MarkdownHelpers::FALSE.unless('b.raster')
                    , ...) {
 
@@ -2923,7 +2923,7 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
     if (!axes) NoAxes() else NULL
 
   if (aspect.ratio) ggplot.obj <- ggplot.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
-  if(!isFALSE(caption)) ggplot.obj <- ggplot.obj + labs(caption = caption)
+  if(!is.null(caption)) ggplot.obj <- ggplot.obj + labs(caption = caption)
 
   if (save.plot) {
     fname = ww.FnP_parser(Stringendo::sppp(prefix, toupper(reduction), feature, assay, suffix), if (PNG) "png" else "pdf")
@@ -2991,7 +2991,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
                    , save.plot = MarkdownHelpers::TRUE.unless('b.save.wplots')
                    , PNG = TRUE
                    , check_for_2D = TRUE
-                   , caption = FALSE
+                   , caption = NULL
                    , raster = MarkdownHelpers::FALSE.unless('b.raster')
                    # , save.object = F
                    , ...) {
@@ -3040,7 +3040,7 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
 
     if (!axes) ggplot.obj <- ggplot.obj + NoAxes()
     if (aspect.ratio) ggplot.obj <- ggplot.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
-    if(!isFALSE(caption)) ggplot.obj <- ggplot.obj + labs(caption = caption)
+    if(!is.null(caption)) ggplot.obj <- ggplot.obj + labs(caption = caption)
 
     if (save.plot) {
       pname = Stringendo::sppp(prefix, plotname, suffix, sppp(highlight.clusters))
@@ -3148,6 +3148,7 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
                                 , obj = combined.obj
                                 , foldername = substitute(list.of.genes), plot.reduction='umap'
+                                , caption = NULL
                                 , intersectionAssay = c('RNA', 'integrated')[1]
                                 , layout = c('tall', 'wide', FALSE )[2]
                                 , colors = c("grey", "red"), nr.Col = 2, nr.Row =4
@@ -3163,11 +3164,15 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 # , raster.dpi = c(512, 512)/4
                                 , ...
                                 # , jpeg.res = 225, jpeg.q = 90
-) {
+                                ) {
+
   tictoc::tic()
   ParentDir = OutDir
+
   if (is.null(foldername)) foldername = "genes"
   if (subdir) create_set_SubDir( paste0(foldername,'-', plot.reduction),'/')
+  if (!is.null(caption) & length(caption) == 1) caption <-  rep(x = caption, length(list.of.genes))
+
   list.of.genes.found = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay, makeuppercase = F)
   DefaultAssay(obj) <- intersectionAssay
 
@@ -3191,11 +3196,10 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                     , ...)
 
     for (i in 1:length(plot.list)) {
-      # print(plot.list[[i]])
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
       if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + ggplot2::coord_fixed(ratio = aspect.ratio)
+      if (!is.null(caption)) plot.list[[i]] <- plot.list[[i]] + labs(caption = caption[i])
     }
-
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row )
     ggsave(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
     # cowplot::save_plot(filename = plotname, base_width = w, base_height = h, plot = pltGrid) # , bg = background_col
@@ -3400,26 +3404,29 @@ qQC.plots.BrainOrg <- function(obj = combined.obj, title = "Top 4 QC markers on 
 #' }
 #' @export
 qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix = "") {
-  Signature.Genes.Top16 <- if (!isFALSE(custom.genes)) custom.genes else
+  Signature.Genes.Top24 <- if (!isFALSE(custom.genes)) custom.genes else
   {
-    Signature.Genes.Top16  <- c(
-      `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
-      , `Immature neurons` = "SLA"
-      , Interneurons = "DLX6-AS1", Interneurons = "ERBB4"
+    Signature.Genes.Top24  <- c(
+      `dl-EN` = "KAZN", `ul-EN` = "SATB2", `Immature neurons` = "SLA"
+      , `Interneurons` = "DLX6-AS1", `Interneurons` = "ERBB4",  `CLIP cells` = "SCGN"
+      ,  `Interneurons` = "GAD2"
       , `Intermediate progenitor` = "EOMES"
-      # ,  `Intermediate progenitor1` = "TAC3"
-      , `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C"
+      , `S-phase` = "TOP2A", `G2M-phase` = 'H4C3' # formerly: HIST1H4C
       , `oRG` = "ID4", `oRG` = "HOPX" # oRG outer radial glia
-      , Astroglia = "GFAP", Astrocyte = "S100B"
+      , `Astroglia` = "GFAP", `Astrocyte` = "S100B"
       , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
-      , `Low-Quality` = "POLR2A", `Choroid.Plexus` = "DCN"
+      , `Low-Quality` = "POLR2A"
+      , `Choroid.Plexus` = "DCN", `Choroid.Plexus` = "TTR"
+      ,  `Cytoplasm` = "RPL34"
       # , `Choroid.Plexus` = "OTX2", `Choroid.Plexus` = "BMP4"
+      , `Mispatterned1` = "MGP", `Mispatterned1` = "COL3A1"
+      , `Mispatterned2` = "COL2A1", `Mispatterned3` = "KRT19"
     )
-    print(Signature.Genes.Top16)
+    print(Signature.Genes.Top24)
   }
-  print(as_tibble_from_namedVec(Signature.Genes.Top16))
-  multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall"
-                      , foldername = sppp('Signature.Genes.Top16', suffix))
+  print(as_tibble_from_namedVec(Signature.Genes.Top24))
+  multiFeaturePlot.A4(obj = obj, list.of.genes = Signature.Genes.Top24, layout = "tall"
+                      , foldername = sppp('Signature.Genes.Top24', suffix))
 }
 
 
