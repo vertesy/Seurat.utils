@@ -55,7 +55,6 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2, 
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title IntersectWithExpressed
 #'
@@ -67,7 +66,6 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2, 
 
 IntersectWithExpressed <- function(genes, obj=combined.obj, genes.shown = 10) {
   print('IntersectWithExpressed()')
-  # print(head(genes, n=15))
   diff = setdiff(genes, rownames(obj))
   Stringendo::iprint(length(diff),"genes (of",length(genes), ") are MISSING from the Seurat object:",head(diff, genes.shown))
   return(intersect(rownames(obj), genes))
@@ -260,16 +258,13 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
                           , vline  = .15
                           , filtercol = T
                           , palette_use = 'npg'
-    )
-    , silent = TRUE)
+    ), silent = TRUE)
 
   all.genes = percent_rank(expr.q99);
   names(all.genes) = names(expr.q99);
   all.genes <- as.list(sort(all.genes, decreasing = TRUE))
 
   if (assign_to_global_env) assign('all.genes', all.genes, envir = as.environment(1))
-
-  # if (set.all.genes) obj@misc$'all.genes' = all.genes
   if (set.misc) obj@misc[[slot_name]] <-  expr.q99
 
   iprint('Quantile', quantileX ,'is now stored under obj@misc$all.genes and $', slot_name, ' Please execute all.genes <- obj@misc$all.genes.')
@@ -344,7 +339,6 @@ PlotFilters <- function(ls.obj = ls.Seurat
 
   theme_set(theme.used)
   MarkdownReports::create_set_OutDir(parentdir, subdir)
-  # if (length(suffices) == length(ls.obj)) print("ls.obj elements have no names (required).")
   stopifnot(length(suffices) == length(ls.obj))
 
   Calculate_nFeature_LowPass <- if(below.nFeature_RNA < 1) below.nFeature_RNA else FALSE
@@ -486,7 +480,6 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MarkdownReports =
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title Percent.in.Trome
 #'
@@ -529,7 +522,6 @@ Percent.in.Trome <- function(obj = combined.obj, n.genes.barplot = 25
   return(combined.obj)
 
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -769,9 +761,6 @@ RenameClustering <- function(namedVector = ManualNames
 }
 
 
-
-
-
 # _________________________________________________________________________________________________
 #' getClusterNames
 #'
@@ -784,8 +773,6 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
   clz <- as.character(sort(deframe(unique(obj[[ident]]))))
   cat(dput(clz))
 }
-
-
 
 
 # _________________________________________________________________________________________________
@@ -808,7 +795,6 @@ GetClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_res.*[0-9
   if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
   return(clustering.results)
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -841,7 +827,6 @@ GetNamedClusteringRuns <- function(obj = combined.obj  # Get Clustering Runs: me
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title GetOrderedClusteringRuns
 #'
@@ -862,7 +847,6 @@ GetOrderedClusteringRuns <- function(obj = combined.obj, res = F, pat = "*snn_re
   if ( identical(clustering.results, character(0)) ) warning("No matching column found!")
   return(clustering.results)
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -936,16 +920,13 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
                                   , report = TRUE
                                   , subtitle = NULL
                                   , width = 8, height =6
-                                  , ...
                                   # , ylb = paste(ylab.text, col_name)
-                                  # , xlb = paste("Clusters >",Stringendo::percentage_formatter(quantile.thr),"quantile are highlighted. |", split_by)
                                   , xlb = if (absolute.thr) paste("Threshold at", absolute.thr) else paste(
                                     "Black lines: " , kppd(Stringendo::percentage_formatter(c(1-quantile.thr, quantile.thr))) ,"quantiles |"
-                                    , "Cl. >",Stringendo::percentage_formatter(quantile.thr),"are highlighted. |", split_by
-                                  )
-
+                                    , "Cl. >",Stringendo::percentage_formatter(quantile.thr),"are highlighted. |", split_by)
                                   , fname = ppp(col_name,split_by,"cluster.average.barplot.pdf", ...)
-) { # calc.cluster.averages of a m
+                                  , ...) {
+
   iprint(substitute(obj), "split by", split_by)
   if(absolute.thr) iprint('In case of the absolute threshold, only the returned values are correct, the plot annotations are not!')
 
@@ -1023,10 +1004,6 @@ calc.cluster.averages <- function(col_name = "Score.GO.0006096"
     return(df.summary)
   }
 }
-
-
-
-
 
 
 # _________________________________________________________________________________________________
@@ -1164,7 +1141,6 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
     } else { print("  ->   Variable 'n.datasets' already exists in the global namespace.") }
   } else{ print("  ->   Slot 'n.datasets' does not exist in obj@misc.") }
 
-
   if ('meta.tags' %in% names(obj@misc)) {
     if (!exists('meta.tags')) {
       meta.tags <- obj@misc$meta.tags
@@ -1201,7 +1177,6 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
 
   } else { print("  ->   Slot 'p' does not exist in obj@misc.") }
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -1338,7 +1313,6 @@ write_metadata_to_tsv <- function(obj_list = ls.Seurat.Per.Tracing.GT
 }
 
 
-
 # _________________________________________________________________________________________________
 # Subsetting the Seurat object ______________________________ ----
 # _________________________________________________________________________________________________
@@ -1363,7 +1337,7 @@ subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, see
     iprint(length(cellIDs.keep), "or",Stringendo::percentage_formatter(fraction_),"of the cells are kept. Seed:", seed_)
   } else if (nCells > 1) {
     nKeep = min(ncol(obj), nCells)
-    # print(nKeep)
+
     cellIDs.keep = sample(colnames(obj), size = nKeep, replace = F)
     if (nKeep < nCells) iprint("Only",nCells,"cells were found in the object, so downsampling is not possible.")
   }
@@ -1458,10 +1432,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
   } else {
     return(ls.obj.downsampled)
   }
-
-
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -1515,8 +1486,6 @@ Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1
   } else {
     return(ls.obj.downsampled)
   }
-
-
 }
 
 
@@ -1579,7 +1548,6 @@ drop.levels.Seurat <- function(obj = combined.obj, verbose = TRUE) {
     colX <- drop_in_these[i]
     META[[colX]] <- droplevels(META[[colX]])
   }
-
   obj@meta.data <- META
   return(obj)
 }
@@ -1761,7 +1729,6 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title AutoNumber.by.PrinCurve
 #'
@@ -1813,7 +1780,6 @@ AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers
 }
 
 
-
 # _________________________________________________________________________________________________
 # DEA ______________________________ ----
 # _________________________________________________________________________________________________
@@ -1843,8 +1809,6 @@ Add.DE.combined.score <- function(df = df.markers, p_val_min = 1e-25, pval_scali
   df$'combined.score' <- round(df[[colLFC]] * -log10( p_cutoff / pval_scaling ) )
   return(df)
 }
-
-
 
 
 # _________________________________________________________________________________________________
@@ -1964,8 +1928,6 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 }
 
 
-
-
 # _________________________________________________________________________________________________
 #' @title AutoLabelTop.logFC
 #'
@@ -2026,10 +1988,6 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 
   return(obj)
 }
-
-
-
-
 
 
 # _________________________________________________________________________________________________
@@ -2108,7 +2066,6 @@ AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Crea
 }
 
 
-
 # ________________________________________________________________________
 #' @title scEnhancedVolcano
 #'
@@ -2139,18 +2096,16 @@ scEnhancedVolcano <- function(toptable = df.markers.X, lab = rownames(toptable)
                               , h = 8, w = h, ...) {
 
   # Create an enhanced volcano plot.
-  pobj <- EnhancedVolcano::EnhancedVolcano(toptable = toptable,
+  pobj <- EnhancedVolcano::EnhancedVolcano(toptable = toptable
                                            , title = title, subtitle = subtitle
                                            , lab = lab, selectLab = selectLab
                                            , pCutoffCol = pCutoffCol
                                            , x = x, y = y
                                            , ...)
-
   # Save the plot.
   qqSave(ggobj = pobj, title = title, h = h, w = w)
   return(pobj)
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -2179,7 +2134,6 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
   NrPlots <- length(IdentsUsed)
   p.clAv <- p.clAv.AutoLabel <- genes.to.label <- list.fromNames(IdentsUsed)
 
-  # i = 1
   for (i in 1:NrPlots) {
     print(IdentsUsed[i])
     ClX <- subset(obj, idents = IdentsUsed[i])
@@ -2219,9 +2173,6 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
 }
 
 
-
-
-
 # _________________________________________________________________________________________________
 # Compositional analysis ______________________________ ----
 # _________________________________________________________________________________________________
@@ -2238,8 +2189,6 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples get.clustercomposition(); get.clustercomposition()
 #' @export
-
-
 get.clustercomposition <- function(obj = combined.obj, ident = 'integrated_snn_res.0.3', splitby = 'ShortNames'
                                    , color = y
                                    , plot = TRUE, ScaleTo100pc = TRUE
@@ -2391,9 +2340,6 @@ scBarplot.CellFractions <- function(obj = combined.obj
 }
 
 
-
-
-
 # _________________________________________________________________________________________________
 #' @title scBarplot.CellsPerCluster
 #'
@@ -2414,8 +2360,7 @@ scBarplot.CellFractions <- function(obj = combined.obj
 #'  }
 #' }
 #' @export scBarplot.CellsPerCluster
-
-  scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
+scBarplot.CellsPerCluster <- function(ident =  GetOrderedClusteringRuns()[1]
                                         , sort = F
                                         , label = list(T, 'percent')[[1]]
                                         , suffix = if (label == 'percent') 'percent' else NULL
@@ -2443,10 +2388,8 @@ scBarplot.CellFractions <- function(obj = combined.obj
                               # , col = getClusterColors(ident = ident, show = T)
                               , palette_use = DiscretePalette(n = n.clusters, palette = palette)
                               , ...)
-
       if (return_table) return(cell.per.cluster) else return(pl)
   }
-
 
 
 # _________________________________________________________________________________________________
@@ -2470,7 +2413,6 @@ scBarplot.CellsPerObject <- function(ls.Seu = ls.Seurat
            , xlab.angle =  xlab.angle
            , ylab = "Cells"
            , ...)
-
 }
 
 
@@ -2516,9 +2458,7 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
   } else {    "return vector"
     clust.size.distr
   }
-
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -2541,7 +2481,6 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title getDiscretePalette
 #'
@@ -2557,7 +2496,6 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 #'  }
 #' }
 #' @export getDiscretePalette
-
 getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
                                , obj = combined.obj
                                , palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1]
@@ -2574,7 +2512,6 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
   if (show.colors) Color_Check(colz)
   return(colz)
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -2615,7 +2552,6 @@ getClusterColors <- function(obj = combined.obj
   if (show) color_check(unique(colz)) # MarkdownReports
   colz
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -2674,6 +2610,8 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F,
 #' @param logX Logical indicating whether to apply a logarithmic transformation to the x-axis. Default: FALSE.
 #' @param logY Logical indicating whether to apply a logarithmic transformation to the y-axis. Default: FALSE.
 #' @param plot Logical indicating whether to display the plot. Default: TRUE.
+#' @param h Height of the plot in inches, Default: 9.
+#' @param w Width of the plot in inches, Default: 6.
 #' @param ... Additional arguments to pass to the FeatureScatter function.
 #' @return If `plot` is TRUE, a ggplot object containing the feature scatter plot is returned.
 #' @examples
@@ -2689,6 +2627,7 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F,
 qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj
                             , ext ="png", plot = TRUE
                             , logX = F, logY = F
+                            , w = 8, h = 5
                             , ...) {
   plotname <- kpp(feature1,"VS", feature2)
   p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2, ...) +
@@ -2699,15 +2638,24 @@ qFeatureScatter <- function(feature1 = "TOP2A", feature2 = "ID2", obj = combined
   if (logY) p <- p + scale_y_log10()
 
   fname = kpp("FeatureScatter", plotname)
-  ggExpress::qqSave(ggobj = p, title = plotname, ext = ext, w = 8, h = 5)
+  ggExpress::qqSave(ggobj = p, title = plotname, fname = fname, ext = ext, w = 8, h = h)
   if (plot) p
 }
 
 
 # _________________________________________________________________________________________________
-#' ww.replace.na.SeuMeta
-
-
+#' @title Replace NA values in a Seurat object's metadata
+#'
+#' This function replaces NA values in a specific feature (metadata column) of a Seurat object.
+#' @param obj A Seurat object.
+#' @param feature The name of the metadata column to process.
+#' @param replacewith The value to replace NA with. Default is NULL.
+#' @return A Seurat object with the specified feature updated.
+#' @examples
+#' # Assuming 'seurat_obj' is a Seurat object:
+#' seurat_obj_updated <- ww.replace.na.SeuMeta(seurat_obj, feature = "sample_type")
+#'
+#' @export
 ww.replace.na.SeuMeta <- function(obj, feature, replacewith = NULL) {
   featurez <- obj[[feature]]
   n_na <- sum(is.na(featurez))
@@ -2727,11 +2675,13 @@ ww.replace.na.SeuMeta <- function(obj, feature, replacewith = NULL) {
 #' @param features The name of the feature to plot.
 #' @param split.by The grouping variable to split the plot by.
 #' @param logY Whether to plot the y-axis on a log scale.
+#' @param h Height of the plot in inches, Default: 9.
+#' @param w Width of the plot in inches, Default: 6.
+#' @param ... Additional arguments passed to `VlnPlot()`.
 #'
 #' @return A ggplot object.
 #'
 #' @export
-
 qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
                        , features = 'nFeature_RNA', split.by = 'orig.ident', logY = TRUE
                        , replaceNAwith = NaN, caption = FALSE
@@ -2743,7 +2693,6 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
     ggtitle(label = features, subtitle = paste(suffix, 'by', split.by)) +
     theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
 
-  # If `logY` is TRUE, plot the y-axis on a log scale.
   if (logY) p <- p + ggplot2::scale_y_log10()
 
   if (!isFALSE(caption)) p <- p + ggplot2::labs(caption = caption)
@@ -2753,7 +2702,6 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
   qqSave(p, title = title_, w = w, h = h)
   p
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -2770,12 +2718,13 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
 #' @param return_cells_passing Whether to return the number of cells passing the filter.
 #' @param quantile_thr The quantile to use for clipping the counts slot.
 #' @param return_quantile Whether to return the number of cells passing the quantile filter.
+#' @param h Height of the plot in inches, Default: 9.
+#' @param w Width of the plot in inches, Default: 5.
 #' @param ... Additional arguments passed to `qhistogram()`.
 #'
 #' @return A ggplot object.
 #'
 #' @export
-
 plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN")
                              , assay = 'RNA', slot_ = 'data'
                              , thr_expr = 10
@@ -2821,9 +2770,7 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
 
   # Return the number of cells passing the filter
   if (return_cells_passing) return(MarkdownHelpers::filter_HP(G_expression, threshold = thr_expr, plot.hist = F))
-
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -2878,8 +2825,6 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
 #'  }
 #' }
 #' @export
-
-
 qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to draw a gene expression UMAP
                    , title = feature, sub =NULL
                    , reduction ="umap", splitby = NULL
@@ -2933,7 +2878,6 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title clUMAP
 #'
@@ -2974,7 +2918,6 @@ qUMAP <- function( feature= 'TOP2A', obj =  combined.obj  # The quickest way to 
 #'  }
 #' }
 #' @export
-
 clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The quickest way to draw a clustering result  UMAP
                    , reduction ="umap", splitby = NULL
                    , title = ident, sub =NULL
@@ -3022,8 +2965,6 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
   if (!is.null(cells.highlight)) {
     cols <- "lightgrey"
   }
-
-
   if( NtCategs > MaxCategThrHP ) {
     iprint("Too many categories (",NtCategs,") in ", ident, "- use qUMAP for continous variables.")
   } else {
@@ -3053,8 +2994,6 @@ clUMAP <- function(ident = "integrated_snn_res.0.5", obj =  combined.obj   # The
 }
 
 
-
-
 # _________________________________________________________________________________________________
 #' @title umapNamedClusters
 #'
@@ -3078,8 +3017,6 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
     ggtitle(metaD.colname)
   save_plot(p.named, filename = fname); p.named
 }
-
-
 
 
 # _________________________________________________________________________________________________
@@ -3107,7 +3044,6 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
                   label = T, cells.highlight = cellsSel)
   ggsave(filename = extPNG(kollapse("cells",COI, collapseby = '.')))
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -3321,8 +3257,6 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
                      , nrow = 1 # and 2 rows
                      , base_width = width
                      , base_height = heigth
-                     # each individual subplot should have an aspect ratio of 1.3
-                     # , base_aspect_ratio = 1.5
   )
 }
 
@@ -3357,9 +3291,6 @@ PlotTopGenesPerCluster <- function(obj = combined.obj, cl_res = res, nrGenes = p
   }
 }
 
-
-
-
 # _________________________________________________________________________________________________
 #' @title qQC.plots.BrainOrg
 #'
@@ -3382,8 +3313,7 @@ qQC.plots.BrainOrg <- function(obj = combined.obj, title = "Top 4 QC markers on 
     'C' = qUMAP(QC.Features[3], save.plot = F, obj = obj) + NoAxes(),
     'D' = qUMAP(QC.Features[4], save.plot = F, obj = obj) + NoAxes()
   )
-  qA4_grid_plot(plot_list = px
-                , plotname = title
+  qA4_grid_plot(plot_list = px, plotname = title
                 , w = hA4, h = wA4
                 , nrow = nrow, ncol = ncol
   )
@@ -3685,9 +3615,6 @@ plot3D.umap.gene <- function(gene="TOP2A", obj = combined.obj # Plot a 3D umap w
   return(plt)
 }
 
-
-
-
 # _________________________________________________________________________________________________
 #' @title plot3D.umap
 #'
@@ -3737,7 +3664,6 @@ plot3D.umap <- function(category="v.project", obj = combined.obj # Plot a 3D uma
   return(plt)
 }
 
-
 # _________________________________________________________________________________________________
 #' @title SavePlotlyAsHtml
 #'
@@ -3759,7 +3685,6 @@ SavePlotlyAsHtml <- function(plotly_obj, category.= category, suffix. = NULL) { 
   htmlwidgets::saveWidget(plotly_obj, file = fname, selfcontained = TRUE, title = category.)
 }
 
-
 # _________________________________________________________________________________________________
 #' @title BackupReduction
 #'
@@ -3780,7 +3705,6 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction="umap") { # B
   obj@misc$reductions.backup[[dslot]] <- obj@reductions[[reduction]]
   return(obj)
 }
-
 
 # _________________________________________________________________________________________________
 #' @title SetupReductionsNtoKdimensions
@@ -3839,7 +3763,6 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction="umap") { # S
   obj@reductions[[reduction]] <- reduction.backup
   return(obj)
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -3963,8 +3886,6 @@ Plot3D.ListOfCategories <- function(obj = combined.obj # Plot and save list of 3
 
 
 
-
-
 # _________________________________________________________________________________________________
 # Correlations _________________________ ----
 # _________________________________________________________________________________________________
@@ -3987,16 +3908,6 @@ sparse.cor <- function(smat){
   cormat <- covmat / tcrossprod(sdvec)
   list(cov = covmat, cor = cormat)
 }
-
-#
-# sparse.cor4 <- function(x){
-#   n <- nrow(x)
-#   cMeans <- colMeans(x)
-#   covmat <- (as.matrix(crossprod(x)) - n*tcrossprod(cMeans))/(n-1)
-#   sdvec <- sqrt(diag(covmat))
-#   cormat <- covmat/tcrossprod(sdvec)
-#   list(cov=covmat,cor=cormat)
-# }
 
 # _________________________________________________________________________________________________
 #' @title Calc.Cor.Seurat
@@ -4117,14 +4028,11 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
 
 
 
-
-
 # _________________________________________________________________________________________________
 # Seurat.object.manipulations.etc.R ______________________________ ----
 # _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/Seurat.object.manipulations.etc.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Seurat.object.manipulations.etc.R"))
-
 
 
 # _________________________________________________________________________________________________
@@ -4213,8 +4121,6 @@ find_prefix_in_cell_IDs <- function(obj, cell_ID_pattern = "[ATCG]{16}.*$" ) {
   # Return the identified prefix(es)
   return(unique_prefixes)
 }
-
-
 
 
 # _________________________________________________________________________________________________
@@ -4314,7 +4220,6 @@ check.genes <- function(list.of.genes = ClassicMarkers, makeuppercase = FALSE, v
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title fixZeroIndexing.seurat
 #'
@@ -4407,7 +4312,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
                                        , whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv"
 ) {
   cells.before <- unlapply(ls.obj, ncol)
-  # Find file
+
   df.cell.whitelist <- ReadWriter::read.simple.tsv(metadir, whitelist.file)
   dsets <- table(df.cell.whitelist[,1])
 
@@ -4420,7 +4325,6 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
                                      , kpps(dsets.in.lsSeu),"vs.", kpps(names(dsets) ) )
   )
 
-  # identX <- ls.orig.idents[[1]]
   for (i in 1:length(ls.orig.idents)) {
     identX <- ls.orig.idents[[i]]; print(identX)
 
@@ -4482,10 +4386,8 @@ FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA"
 }
 
 
-
 # _________________________________________________________________________________________________
 # _________________________________________________________________________________________________
-
 
 
 # _________________________________________________________________________________________________
@@ -4571,7 +4473,6 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title RemoveGenesSeurat
 #'
@@ -4642,8 +4543,6 @@ HGNC.EnforceUnique <- function(updatedSymbols) { # Enforce Unique names after HG
 }
 
 
-
-
 # _________________________________________________________________________________________________
 #' @title GetUpdateStats
 #'
@@ -4695,7 +4594,6 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 }
 
 
-
 # _________________________________________________________________________________________________
 # Handling SNP demux table results coming from SoupOrCell ______________________________ ----
 # _________________________________________________________________________________________________
@@ -4704,8 +4602,6 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 multiplet.rate.10x <- function(cellct =1e4, empirical.factor = c('ST' = 131000, 'HT' = 250000)[2]) {
   signif(cellct/empirical.factor, digits = 2)
 }
-
-
 
 
 # _________________________________________________________________________________________________
@@ -4770,9 +4666,7 @@ calculate.observable.multiplet.rate.10X <- function(
              , plot = T
              , ...)
   }
-
   return(doublet.distribution)
-
 }
 
 
@@ -4808,8 +4702,8 @@ calculate.observable.multiplet.rate.10X_obj_based <- function(obj, chipset
     , cell.count = nCells
     , draw_plots = draw_plots
     , suffix = '')
-
 }
+
 
 # _________________________________________________________________________________________________
 #' @title SNP.demux.fix.GT.table
@@ -4925,9 +4819,7 @@ SNP.demux.fix.GT.table <- function(GT.table
 }
 
 
-
 # _________________________________________________________________________________________________
-
 
 # _________________________________________________________________________________________________
 # Read.Write.Save.Load.functions.R ______________________________ ----
@@ -4968,8 +4860,6 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
                               , sample.barcoding = F
                               , ...) {
 
-  # if (sample.barcoding) depth = 4
-
   finOrig <- list.dirs.depth.n(InputDir, depth = depth)
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
 
@@ -4990,7 +4880,6 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
       } else {
         strsplit(basename(dirname(pathIN)),split = "_")[[1]][1]
       }
-
       print(fnameIN)
 
       count_matrix <- Read10X(pathIN)
@@ -5009,12 +4898,10 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
         print('More than 2 elements in the list of matrices')
       }
 
-
       ncells = ncol(seu)
       fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells
                      , 'min.features', min.features, 'cells', ncells, "Rds")
       print(fnameOUT)
-
 
       # update --- --- ---
       if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
@@ -5025,13 +4912,10 @@ Convert10Xfolders <- function(InputDir # Take a parent directory with a number o
         fnameCBC <- ppp(fnameOUT, "CBC.tsv")
         CBCs <- t(t(colnames(seu)))
         write.simple.tsv(CBCs, ManualName = fnameCBC)
-
       }
-
     } # for
   } else { iprint("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3]) }
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -5211,11 +5095,9 @@ read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and b
 #' @importFrom SoupX SoupChannel
 
 load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
-                      includeFeatures = c("Gene Expression"), verbose = TRUE,
-                      ...)
-{
+                      includeFeatures = c("Gene Expression"), verbose = TRUE
+                      , ...) {
 
-  # include
   dirz <- list.dirs(dataDir, full.names = F, recursive = F)
   path.raw <- file.path(dataDir, grep(x = dirz, pattern = "^raw_*", value = T))
   path.filt <- file.path(dataDir, grep(x = dirz, pattern = "^filt_*", value = T))
@@ -5238,8 +5120,7 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
     if (!all(cellIDs %in% colnames(dat)))
       stop("Not all supplied cellIDs found in raw data.")
     datCells = dat[, match(cellIDs, colnames(dat))]
-  }
-  else {
+  } else {
     tgt = path.filt
     if (!isV3)
       tgt = file.path(tgt, list.files(tgt))
@@ -5272,14 +5153,12 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
     if (is.null(mDat)) {
       mDat = data.frame(tSNE1 = tsne$TSNE.1, tSNE2 = tsne$TSNE.2,
                         row.names = tsne$Barcode)
-    }
-    else {
+    } else {
       mDat$tSNE1 = tsne$TSNE.1[match(rownames(mDat), tsne$Barcode)]
       mDat$tSNE2 = tsne$TSNE.2[match(rownames(mDat), tsne$Barcode)]
     }
     DR = c("tSNE1", "tSNE2")
-  }
-  else {
+  } else {
     DR = NULL
   }
   if (!is.null(mDat) && any(rownames(mDat) != colnames(datCells))) {
@@ -5321,8 +5200,6 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internall
   print(paste("Saved, optionally being .gz compressed", fname))
   try(say(), silent = T)
 }
-
-
 
 
 # _________________________________________________________________________________________________
@@ -5370,7 +5247,6 @@ isave.RDS <- function(obj, prefix = NULL, suffix = NULL, inOutDir = TRUE
   saveRDS.compress.in.BG(obj = obj, fname =  FNN, compr = compress, compress_internally = FALSE)
 
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -5450,15 +5326,12 @@ clip10Xcellname <- function(cellnames) { stringr::str_split_fixed(cellnames, "_"
 make10Xcellname <- function(cellnames, suffix="_1") { paste0(cellnames, suffix) }
 
 
-
-
 # _________________________________________________________________________________________________
 # Soup.Analysis.of.ambient.RNA.R ______________________________ ----
 # _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/Functions/Soup.Analysis.of.ambient.RNA.R')
 # try (source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Soup.Analysis.of.ambient.RNA.R'))
 # Source: self + web
-
 
 
 # _________________________________________________________________________________________________
@@ -5604,8 +5477,6 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
       Outlier <- Outlier &  rowSums(Soup.VS.Cells.Av.Exp) > HP.thr.mod
     }
 
-
-
     pgg <-
       ggplot(Soup.VS.Cells.Av.Exp.gg, aes(x= Soup, y= Cells, label = gene,
                                           col= Outlier))  +
@@ -5617,7 +5488,6 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
     ggsave(pgg, filename = file.path(OutDir, fname))
   }
 
-
   # Per Gene ___________________________________
   PC.mRNA.in.Soup <- sum(CR.matrices$'soup')/sum(CR.matrices$'raw')
   PC.mRNA.in.Cells <- 100*sum(CR.matrices$'filt')/sum(CR.matrices$'raw')
@@ -5627,7 +5497,6 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   barplot_label(barplotted_variable = PC.mRNA.in.Cells
                 , labels = Stringendo::percentage_formatter(PC.mRNA.in.Cells/100, digitz = 2)
                 , TopOffset = 10)
-
 
   # Plot top gene's expression ___________________________________
   Soup.GEMs.top.Genes = 100*head(sort(CR.matrices$'soup.rel.RC', decreasing = T), n = 20)
@@ -5669,7 +5538,6 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   NrColumns2Show  = min(10, nrow(soupProfile.summarized))
   ccc <- c("#FF4E00","#778B04","#8ea604","#8ea604","#F5BB00","#F5BB00","#EC9F05",rep(x = "#BF3100", times = NrColumns2Show-6)) # ,"#"
 
-
   Soup.GEMs.top.Genes.summarized = 100 * soupProfile.summarized[1:NrColumns2Show] / CR.matrices$'soup.total.sum'
   maxx <- max(Soup.GEMs.top.Genes.summarized)
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes.summarized, plotname = kppd("Soup.GEMs.top.Genes.summarized", SeqRun)
@@ -5706,7 +5574,6 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
                 , TopOffset = -maxx*0.2, srt = 90, cex=.75)
 
   if (exists('OutDirBac'))  MarkdownHelpers::ww.assign_to_global("OutDir", OutDirBac, 1)
-
 } # plotTheSoup
 
 
@@ -5820,8 +5687,6 @@ jJaccardIndexBinary <- function(x, y) { # Calculate Jaccard Index. Modified from
 }
 
 
-
-
 # _________________________________________________________________________________________________
 #' @title jPairwiseJaccardIndex
 #'
@@ -5917,30 +5782,18 @@ regress_out_and_recalculate_seurat <- function(obj
     obj <- RunTSNE(obj, reduction = "pca", dims = 1:nPCs); toc()
   }
 
-  # orig.dir <- getwd()
-  # new_path <- FixPath(orig.dir, suffix)
-  # MarkdownReports::create_set_OutDir(new_path)
-
   clz <- GetClusteringRuns(obj = obj, pat = "*snn_res.*[0-9]$")
 
   if (plot_umaps) {
     print("Plotting umaps")
     for (v in clz) clUMAP(ident = v, obj = obj, sub = suffix)
-
-    # MarkdownReports::create_set_OutDir(new_path, 'UMAP_stats')
     for (v in vars.to.regress) qUMAP(feature = v, obj = obj, sub = suffix)
-    # MarkdownReports::create_set_OutDir(new_path)
   }
-
 
   if (save_obj) {
     print("Save RDS")
     isave.RDS(obj, suffix = suffix, inOutDir = T)
   }
-
-  # try(say(), silent = TRUE)
-  # try(say(), silent = TRUE)
-  # MarkdownReports::create_set_OutDir(orig.dir)
   return(obj)
 }
 
@@ -5964,6 +5817,7 @@ cellID_to_cellType_v1 <- function(cellIDs, ident, obj =aaa) {
   celltypes = as.named.vector.df(obj@meta.data[,ident], verbose = F)
   celltypes[cellIDs]
 }
+
 
 cellID_to_cellType <- function(cellIDs, ident_w_names) {
   ident_w_names[cellIDs]
