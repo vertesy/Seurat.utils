@@ -3098,7 +3098,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 , w = wA4, h = hA4, scaling = 1
                                 , format = c('jpg', 'pdf', 'png')[1]
                                 , raster = MarkdownHelpers::FALSE.unless('b.raster')
-                                # , raster.dpi = c(512, 512)/4
+                                , raster.dpi = NULL
                                 , ...
                                 # , jpeg.res = 225, jpeg.q = 90
                                 ) {
@@ -3125,14 +3125,13 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
     genes = list.of.genes.found[lsG[[i]]]
     iprint(i,genes )
     plotname = kpp(c(prefix, plot.reduction,i, genes, suffix, format ))
-
-    if (raster == TRUE) cex <- 1 # https://github.com/satijalab/seurat/issues/7466#issuecomment-1601276032
+    if (raster == TRUE) cex <- 1 # https://github.com/satijalab/seurat/issues/7466#issuecomment-1601276032 "Remove in 2024, fixed in 4.4.0"
 
     plot.list = Seurat::FeaturePlot(object = obj, features = genes, reduction = plot.reduction, combine = F
                                     , ncol = nr.Col, cols = colors
                                     , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp
                                     , raster = raster
-                                    # , raster.dpi = raster.dpi
+                                    , raster.dpi = raster.dpi
                                     , pt.size = cex
                                     , ...)
 
@@ -3338,7 +3337,8 @@ qQC.plots.BrainOrg <- function(obj = combined.obj, title = "Top 4 QC markers on 
 #'  }
 #' }
 #' @export
-qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix = "") {
+qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix = ""
+                                  , raster.dpi = c(512, 256) / 2) {
   Signature.Genes.Top24 <- if (!isFALSE(custom.genes)) custom.genes else
   {
     Signature.Genes.Top24  <- c(
@@ -3364,7 +3364,8 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix =
   multiFeaturePlot.A4(obj = obj, layout = "tall"
                       , list.of.genes = Signature.Genes.Top24
                       , caption = names(Signature.Genes.Top24)
-                      , foldername = sppp('Signature.Genes.Top24', suffix))
+                      , foldername = sppp('Signature.Genes.Top24', suffix)
+                      , raster.dpi = raster.dpi)
 }
 
 
