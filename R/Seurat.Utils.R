@@ -2688,6 +2688,7 @@ qSeuViolin <- function(object = ls.Seurat[[1]]
                        , features = 'nFeature_RNA'
                        , group.by = 'orig.ident'
                        , split.by = NULL
+                       , title = ppp(as.character(features), 'by', as.character(group.by))
                        , caption = NULL
                        , suffix = NULL
                        , logY = TRUE
@@ -2707,7 +2708,7 @@ qSeuViolin <- function(object = ls.Seurat[[1]]
   # if (!is.null(caption)) p <- p + ggplot2::labs(caption = caption)
 
   # Save the plot.
-  title_ <- ppp(as.character(features), suffix, flag.nameiftrue(logY), 'violin')
+  title_ <- ppp(title, suffix, flag.nameiftrue(logY), 'violin')
   qqSave(p, title = title_, w = w, h = h)
   p
 }
@@ -3347,7 +3348,7 @@ qQC.plots.BrainOrg <- function(obj = combined.obj, title = "Top 4 QC markers on 
 #' }
 #' @export
 qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix = ""
-                                  , raster.dpi = c(512, 256) / 2) {
+                                  , raster = FALSE, raster.dpi = c(512, 256) / 2) {
   Signature.Genes.Top24 <- if (!isFALSE(custom.genes)) custom.genes else
   {
     Signature.Genes.Top24  <- c(
@@ -3374,7 +3375,7 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix =
                       , list.of.genes = Signature.Genes.Top24
                       , caption = names(Signature.Genes.Top24)
                       , foldername = sppp('Signature.Genes.Top24', suffix)
-                      , raster.dpi = raster.dpi)
+                      , raster = raster, raster.dpi = raster.dpi)
 }
 
 
