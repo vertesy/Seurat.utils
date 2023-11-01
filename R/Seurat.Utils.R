@@ -2694,6 +2694,7 @@ qSeuViolin <- function(object = ls.Seurat[[1]]
                        , logY = TRUE
                        , replaceNAwith = NaN
                        , ylab = features
+                       , hline = FALSE
                        , w = 9, h = 6, ...) {
 
   Idents(object) <- group.by
@@ -2705,7 +2706,7 @@ qSeuViolin <- function(object = ls.Seurat[[1]]
     theme(axis.title.x = element_blank()) + labs(y = ylab)
 
   if (logY) p <- p + ggplot2::scale_y_log10()
-  # if (!is.null(caption)) p <- p + ggplot2::labs(caption = caption)
+  if (hline) p <- p + geom_hline(yintercept = hline)
 
   # Save the plot.
   title_ <- ppp(title, suffix, flag.nameiftrue(logY), 'violin')
@@ -4841,6 +4842,69 @@ SNP.demux.fix.GT.table <- function(GT.table
 
 
 # _________________________________________________________________________________________________
+#' Reclassify doublets based on 95th percentile of a feature for unassigned cells in a Seurat object
+#'
+#' This function modifies the `genotype_col` metadata column of a Seurat object based on
+#' a given quantile of the `features_col` for cells that match the `unassigned_str` pattern.
+#' If the `plot_vio` flag is set to TRUE, a violin plot is generated for visualization.
+#'
+#' @param obj A Seurat object.
+#' @param genotype_col A string indicating the metadata column storing genotype information. Default is "Genotype".
+#' @param features_col A string indicating the metadata column with the feature (e.g., nFeature_RNA) to use for reclassification. Default is "nFeature_RNA".
+#' @param genotype_orig_col A string indicating the column where the original genotype information will be stored. Default is "Genotype.orig".
+#' @param unassigned_str A regular expression string to match cells that are unassigned. Default is "^unassigned".
+#' @param doublet_str A regular expression string to match cells that are doublets. Default is "^doublet".
+#' @param true_doublet_str A string indicating the name for true doublets. Default is "TrueDoublet".
+#' @param unassigned_doublet_str A string indicating the name for unassigned doublets. Default is "UnassignedDoublet".
+#' @param quantile_val The quantile value to use for reclassification. Default is 0.95.
+#' @param plot_vio A boolean indicating if a violin plot should be generated. Default is TRUE.
+#'
+#' @return A modified Seurat object.
+#'
+#' @examples
+#' # Assuming `seurat_obj` is a valid Seurat object
+#' modified_seurat_obj <- seu_reclassify_doublets_by_q95_nFeature_of_unassigned(seurat_obj)
+#'
+#' @export
+
+seu_reclassify_doublets_by_q95_nFeature_of_unassigned <- function(obj,
+                                                                  genotype_col = "Genotype",
+                                                                  features_col = "nFeature_RNA",
+                                                                  genotype_orig_col = "Genotype.orig",
+                                                                  unassigned_str = "^unassigned",
+                                                                  doublet_str = "^doublet",
+                                                                  true_doublet_str = "TrueDoublet",
+                                                                  unassigned_doublet_str = "UnassignedDoublet",
+                                                                  quantile_val = 0.95,
+                                                                  plot_vio = TRUE) {
+
+  # Step 1: Create a "Genotype.orig" column
+  GT_orig <- obj@meta.data[, genotype_orig_col] <- obj@meta.data[, genotype_col]
+
+  # Step 2: Calculate the 95th percentile for cells with the specified unassigned_str in Genotype
+  unassigned_cells <- which(grepl(unassigned_str, GT_orig, perl = TRUE))
+  iprint(l(unassigned_cells), "unassigned_cells")
+  quantile_cutoff_value <- quantile(obj@meta.data[unassigned_cells, features_col], quantile_val)
+
+  # Step 3: Update the Genotype column for cells starting with doublet_str
+  doublet_cells <- which(grepl(doublet_str, GT_orig, perl = TRUE))
+  iprint(l(doublet_cells), "doublet_cells")
+
+  obj@meta.data[doublet_cells, genotype_col] <- ifelse(
+    obj@meta.data[doublet_cells, features_col] > quantile_cutoff_value,
+    true_doublet_str,
+    unassigned_doublet_str
+  )
+
+  if (plot_vio) {
+    qSeuViolin(object = obj, features = features_col, group.by = genotype_col, hline = quantile_cutoff_value
+               , suffix = "Reassigned Doublets"
+               , caption = paste('quantile', quantile_val,'; quantile_cutoff_value', round(quantile_cutoff_value)))
+  }
+
+  # Step 4: Return the modified Seurat object
+  return(obj)
+}
 
 # _________________________________________________________________________________________________
 # Read.Write.Save.Load.functions.R ______________________________ ----
