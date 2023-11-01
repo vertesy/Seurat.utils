@@ -3101,7 +3101,6 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
                                 , ...
                                 # , jpeg.res = 225, jpeg.q = 90
                                 ) {
-
   tictoc::tic()
   ParentDir = OutDir
 
@@ -3355,6 +3354,7 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = F, suffix =
     print(Signature.Genes.Top24)
   }
   print(as_tibble_from_namedVec(Signature.Genes.Top24))
+
   multiFeaturePlot.A4(obj = obj, layout = "tall"
                       , list.of.genes = Signature.Genes.Top24
                       , caption = names(Signature.Genes.Top24)
@@ -4738,7 +4738,10 @@ SNP.demux.fix.GT.table <- function(GT.table
                                    , return_tbl_for_cells_found_in_object = TRUE
                                    , min_cells_overlap = floor(ncol(obj) * 0.02)
                                    , qpiesubtitle = "GT-table-based"
-) {
+                                   , subdir = TRUE
+                                   ) {
+
+  if (subdir) { ParentDir = OutDir; create_set_SubDir( 'GT.table.stats/') }
 
   # Check if the specified columns are present in the GT table
   col_names <- c(col1, col2)
@@ -4816,6 +4819,7 @@ SNP.demux.fix.GT.table <- function(GT.table
   print("See the 4 plots generated in OutDir!")
 
   return(GT.table)
+  if (subdir) { create_set_OutDir(ParentDir) }
 }
 
 
