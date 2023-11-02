@@ -2694,7 +2694,8 @@ qSeuViolin <- function(object = ls.Seurat[[1]]
                        , logY = TRUE
                        , replaceNAwith = NaN
                        , ylab = features
-                       , hline = FALSE
+                       , hline = NULL
+                       , grid = 'y'
                        , w = 9, h = 6, ...) {
 
   Idents(object) <- group.by
@@ -2705,8 +2706,10 @@ qSeuViolin <- function(object = ls.Seurat[[1]]
     ggplot2::labs(title = features, subtitle = paste(suffix, 'divided by', group.by, split.by), caption = caption) +
     theme(axis.title.x = element_blank()) + labs(y = ylab)
 
-  if (logY) p <- p + ggplot2::scale_y_log10()
-  if (hline) p <- p + geom_hline(yintercept = hline)
+  # if (logY) p <- p + ggplot2::scale_y_log10(breaks =  10^(2:6), minor_breaks =  rep(1:9, 21)*(10^rep(-10:10, each=9)) ) + ggplot2::annotation_logticks(sides = 'l')
+  if (logY) p <- p + ggplot2::scale_y_log10() + ggplot2::annotation_logticks(sides = 'l')
+  if (!is.null(hline)) p <- p + geom_hline(yintercept = hline, lty = 1:length(hline) )
+  if (grid %in% c("xy", "x", "y")) p <- p + grids(axis = grid )
 
   # Save the plot.
   title_ <- ppp(title, suffix, flag.nameiftrue(logY), 'violin')
@@ -4877,15 +4880,31 @@ seu_reclassify_doublets_by_q95_nFeature_of_unassigned <- function(obj,
                                                                   unassigned_doublet_str = "UnassignedDoublet",
                                                                   quantile_val = 0.95,
                                                                   suffix  = "Reassigned Doublets", # Samples[i]
-                                                                  plot_vio = TRUE) {
+                                                                  plot_vio = TRUE,
+                                                                  show_plot = FALSE,
+                                                                  min_unassigned_cells = 20,
+                                                                  fixed_cutoff = 2500) {
 
   # Step 1: Create a "Genotype.orig" column
-  GT_orig <- obj@meta.data[, genotype_orig_col] <- obj@meta.data[, genotype_col]
+  if (genotype_orig_col %!in% colnames(obj@meta.data)) {
+    "Make a copy of the original column"
+    GT_orig <- obj@meta.data[, genotype_orig_col] <- obj@meta.data[, genotype_col]
+  } else {
+    "Reset Genotype based on Genotype.orig already present"
+    GT_orig <- obj@meta.data[, genotype_col] <- obj@meta.data[, genotype_orig_col]
+    iprint(genotype_orig_col, "already present in the object - resetting.")
+  }
 
   # Step 2: Calculate the 95th percentile for cells with the specified unassigned_str in Genotype
   unassigned_cells <- which(grepl(unassigned_str, GT_orig, perl = TRUE))
-  iprint(l(unassigned_cells), "unassigned_cells")
-  quantile_cutoff_value <- quantile(obj@meta.data[unassigned_cells, features_col], quantile_val)
+  iprint(length(unassigned_cells), "unassigned_cells")
+  if (length(unassigned_cells) >  min_unassigned_cells) {
+    quantile_cutoff_value <- quantile(obj@meta.data[unassigned_cells, features_col], quantile_val)
+    hlines <- c(quantile_cutoff_value, fixed_cutoff)
+  } else {
+    quantile_cutoff_value <- fixed_cutoff
+    hlines <- c(fixed_cutoff)
+  }
 
   # Step 3: Update the Genotype column for cells starting with doublet_str
   doublet_cells <- which(grepl(doublet_str, GT_orig, perl = TRUE))
@@ -4898,14 +4917,16 @@ seu_reclassify_doublets_by_q95_nFeature_of_unassigned <- function(obj,
   )
 
   if (plot_vio) {
-    qSeuViolin(object = obj, features = features_col, group.by = genotype_col, hline = quantile_cutoff_value
+    p <- qSeuViolin(object = obj, features = features_col, group.by = genotype_col, hline = hlines
                , suffix = suffix
                , caption = paste('quantile', quantile_val,'; quantile_cutoff_value', round(quantile_cutoff_value)))
+    if (show_plot) print(p)
   }
 
   # Step 4: Return the modified Seurat object
   return(obj)
 }
+
 
 # _________________________________________________________________________________________________
 # Read.Write.Save.Load.functions.R ______________________________ ----
