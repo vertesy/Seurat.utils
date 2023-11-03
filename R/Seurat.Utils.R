@@ -3,7 +3,8 @@
 # ____________________________________________________________________
 # devtools::load_all(path = '~/GitHub/Packages/Seurat.utils');
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
-source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Metadata.R")
+# source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Metadata.R")
+# source('~/.pack.R')
 
 # _________________________________________________________________________________________________
 # Cluster.Auto-naming.DE.R

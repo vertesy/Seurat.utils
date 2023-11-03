@@ -4,6 +4,7 @@
 # source("/Users/abel.vertesy/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Metadata.R")
 # devtools::load_all(path = '~/GitHub/Packages/Seurat.utils');
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
+# source('~/.pack.R')
 
 
 
