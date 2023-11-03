@@ -10,6 +10,7 @@
   obj = combined.obj,
   max.categs = 20,
   both_pc_and_value = T,
+  subtitle = NULL,
   ...
 )
 }

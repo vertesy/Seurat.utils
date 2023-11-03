@@ -14,7 +14,9 @@ SNP.demux.fix.GT.table(
   col2.new.name = "Singlet.status",
   cellname_prefix = FALSE,
   return_tbl_for_cells_found_in_object = TRUE,
-  min_cells_overlap = floor(ncol(obj) * 0.02)
+  min_cells_overlap = floor(ncol(obj) * 0.02),
+  qpiesubtitle = "GT-table-based",
+  subdir = TRUE
 )
 }
 \arguments{

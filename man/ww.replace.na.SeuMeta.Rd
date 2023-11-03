@@ -2,10 +2,29 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{ww.replace.na.SeuMeta}
 \alias{ww.replace.na.SeuMeta}
-\title{ww.replace.na.SeuMeta}
+\title{Replace NA values in a Seurat object's metadata
+
+This function replaces NA values in a specific feature (metadata column) of a Seurat object.}
 \usage{
 ww.replace.na.SeuMeta(obj, feature, replacewith = NULL)
 }
+\arguments{
+\item{obj}{A Seurat object.}
+
+\item{feature}{The name of the metadata column to process.}
+
+\item{replacewith}{The value to replace NA with. Default is NULL.}
+}
+\value{
+A Seurat object with the specified feature updated.
+}
 \description{
-ww.replace.na.SeuMeta
+Replace NA values in a Seurat object's metadata
+
+This function replaces NA values in a specific feature (metadata column) of a Seurat object.
+}
+\examples{
+# Assuming 'seurat_obj' is a Seurat object:
+seurat_obj_updated <- ww.replace.na.SeuMeta(seurat_obj, feature = "sample_type")
+
 }

@@ -26,7 +26,7 @@ qUMAP(
   check_for_2D = TRUE,
   qlow = "q10",
   qhigh = "q90",
-  caption = FALSE,
+  caption = NULL,
   raster = MarkdownHelpers::FALSE.unless("b.raster"),
   ...
 )

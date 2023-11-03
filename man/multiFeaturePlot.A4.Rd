@@ -9,6 +9,7 @@ multiFeaturePlot.A4(
   obj = combined.obj,
   foldername = substitute(list.of.genes),
   plot.reduction = "umap",
+  caption = NULL,
   intersectionAssay = c("RNA", "integrated")[1],
   layout = c("tall", "wide", FALSE)[2],
   colors = c("grey", "red"),
@@ -28,6 +29,7 @@ multiFeaturePlot.A4(
   scaling = 1,
   format = c("jpg", "pdf", "png")[1],
   raster = MarkdownHelpers::FALSE.unless("b.raster"),
+  raster.dpi = NULL,
   ...
 )
 }

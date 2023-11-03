@@ -1,7 +1,7 @@
 # ____________________________________________________________________
 # Seurat.utils ----
 # ____________________________________________________________________
-# devtools::load_all(path = '~/GitHub/Packages/Seurat.utils');
+# devtools::load_all('~/GitHub/Packages/Seurat.utils'); # devtools::document( '~/GitHub/Packages/Seurat.utils')
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Metadata.R")
 # source('~/.pack.R')
@@ -5354,6 +5354,76 @@ isave.RDS <- function(obj, prefix = NULL, suffix = NULL, inOutDir = TRUE
   } else
   saveRDS.compress.in.BG(obj = obj, fname =  FNN, compr = compress, compress_internally = FALSE)
 
+}
+
+
+# _________________________________________________________________________________________________
+#' Save an R Object Using 'qs' Package for Fast Compressed Saving
+#'
+#' This function saves an R object to a file in a quick and efficient format using the 'qs' package.
+#' It constructs the file name based on various inputs and stores additional metadata if the object is a Seurat object.
+#' The saving path can be adjusted by the presence of 'OutDir' in the global environment or defaults to the working directory.
+#'
+#' @param obj The R object to be saved.
+#' @param prefix Optional; a prefix to add to the filename.
+#' @param suffix Optional; a suffix to add to the filename.
+#' @param nthreads Number of threads to use when saving, defaults to 12.
+#' @param preset Compression preset, defaults to 'high'.
+#' @param project The project name to be included in the filename, defaults to the result of `getProject()`.
+#' @param showMemObject Logical; if TRUE, displays the memory size of the largest objects.
+#' @param saveParams Logical; if TRUE and if the object is a Seurat object, additional parameters are saved within it.
+#' @return Invisible; The function is called for its side effects (saving a file) and does not return anything.
+#' @export
+#' @note The function uses the 'qs' package for quick and efficient serialization of objects and includes a timing feature from the 'tictoc' package.
+#' @seealso \code{\link[qs]{qsave}} for the underlying save function used.
+#' @importFrom qs qsave
+#' @importFrom tictoc tic toc
+qqsave <- function(obj, prefix = NULL
+                   , suffix = NULL
+                   , nthreads = 12
+                   , preset = 'high'
+                   , project = getProject()
+                   , showMemObject = T, saveParams = T) {
+
+  path_rdata = if (exists('OutDir')) OutDir else getwd()
+
+  try(tictoc::tic(), silent = TRUE)
+  if (showMemObject) { try(memory.biggest.objects(), silent = T) }
+
+  if ( "seurat" %in% is(obj) & saveParams) {
+    try(obj@misc$p <- p, silent = T)
+    try(obj@misc$all.genes  <- all.genes, silent = T)
+  }
+
+  fnameBase = trimws(kppu(prefix, substitute(obj), suffix, project, preset, 'compr', idate(Format = "%Y.%m.%d_%H.%M")), whitespace = '_')
+  FNN <- paste0(path_rdata, fnameBase , ".qs")
+  iprint(substitute(obj), '<- qqread("', FNN, '")')
+
+  qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
+  try(tictoc::toc(), silent = TRUE)
+}
+
+# _________________________________________________________________________________________________
+#' Read an R Object Using 'qs' Package for Fast Decompression
+#'
+#' This function reads an R object from a file saved in a format specific to the 'qs' package,
+#' which is designed for quick and efficient compression and decompression of R objects.
+#' It also times the read operation, providing feedback on the duration of the operation.
+#'
+#' @param file A character string specifying the path to the file where the R object is saved.
+#' @param nthreads The number of threads to use when reading the object, defaults to 4.
+#' @param ... Further arguments passed on to the 'qs::qread' function.
+#' @return The R object that was saved in the specified file.
+#' @export
+#' @note The function uses the 'qs' package for fast and efficient deserialization of objects
+#' and includes a timing feature from the 'tictoc' package.
+#' @seealso \code{\link[qs]{qread}} for the underlying read function used.
+#' @importFrom qs qread
+#' @importFrom tictoc tic toc
+qqread <- function(file, nthreads = 4, ...) {
+  try(tictoc::tic(), silent = TRUE)
+  qs::qread(file = , nthreads = nthreads, ...)
+  try(tictoc::toc(), silent = TRUE)
 }
 
 

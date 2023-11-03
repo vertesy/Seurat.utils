@@ -12,6 +12,8 @@ qFeatureScatter(
   plot = TRUE,
   logX = F,
   logY = F,
+  w = 8,
+  h = 5,
   ...
 )
 }
@@ -29,6 +31,10 @@ qFeatureScatter(
 \item{logX}{Logical indicating whether to apply a logarithmic transformation to the x-axis. Default: FALSE.}
 
 \item{logY}{Logical indicating whether to apply a logarithmic transformation to the y-axis. Default: FALSE.}
+
+\item{w}{Width of the plot in inches, Default: 6.}
+
+\item{h}{Height of the plot in inches, Default: 9.}
 
 \item{...}{Additional arguments to pass to the FeatureScatter function.}
 }
