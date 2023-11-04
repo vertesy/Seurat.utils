@@ -5422,8 +5422,10 @@ qqsave <- function(obj, prefix = NULL
 #' @importFrom tictoc tic toc
 qqread <- function(file, nthreads = 4, ...) {
   try(tictoc::tic(), silent = TRUE)
-  qs::qread(file = file, nthreads = nthreads, ...)
+  x <- qs::qread(file = file, nthreads = nthreads, ...)
+  iprint(is(x)[1], 'of length:', length(x))
   try(tictoc::toc(), silent = TRUE)
+  return(x)
 }
 
 
