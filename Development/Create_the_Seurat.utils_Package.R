@@ -1,33 +1,33 @@
 ######################################################################################################
 # Create_the_Seurat.utils_Package.R
 ######################################################################################################
-# source("~/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.v0.1.R")
+# source("~/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.R")
 # rm(list = ls(all.names = TRUE));
 try(dev.off(), silent = TRUE)
 
 # Functions ------------------------
 # install_version("devtools", version = "2.0.2", repos = "http://cran.at.r-project.org") # install.packages("devtools")
-require("devtools")
-require("RcppArmadillo")
-require("roxygen2")
-require("stringr")
+# require("devtools")
+# require("RcppArmadillo")
+# require("roxygen2")
+# require("stringr")
 
-# devtools::install_github(repo = "vertesy/CodeAndRoll2")
-require('Stringendo')
-require('CodeAndRoll2')
+# # devtools::install_github(repo = "vertesy/CodeAndRoll2")
+# require('Stringendo')
+# require('CodeAndRoll2')
 
 
 
 # Setup ------------------------
-PackageName = 	"Seurat.utils"
-package.version = "2.0.0"
+package.name <- 	"Seurat.utils"
+package.version <- "2.0.0"
 setwd("~/GitHub/Packages/")
 
-RepositoryDir = kollapse("~/GitHub/Packages/", PackageName, "/")
-fname = 	kollapse(PackageName, ".R")
-Package_FnP = 	kollapse(RepositoryDir, "R/", fname)
+RepositoryDir <- paste0("~/GitHub/Packages/", PackageName, "/")
+fname <-	paste0(PackageName, ".R")
+Package_FnP <-		paste0(RepositoryDir, "R/", fname)
 
-BackupDir = "~/GitHub/Packages/Seurat.utils/Development/"
+BackupDir <- "~/GitHub/Packages/Seurat.utils/Development/"
 dir.create(BackupDir)
 
 DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
@@ -66,8 +66,8 @@ if ( !dir.exists(RepositoryDir) ) { create(path = RepositoryDir, description = D
 # RoxygenReady(Package_FnP)
 
 # replace output files ------------------------------------------------
-BackupOldFile = 	kollapse(BackupDir, "Development", ".bac", print = FALSE)
-AnnotatedFile = 	kollapse(BackupDir, "Development", ".annot.R", print = FALSE)
+BackupOldFile <-	paste0(BackupDir, "Development", ".bac", print = FALSE)
+AnnotatedFile <-	paste0(BackupDir, "Development", ".annot.R", print = FALSE)
 file.copy(from = Package_FnP, to = BackupOldFile, overwrite = TRUE)
 # file.copy(from = AnnotatedFile, to = Package_FnP, overwrite = TRUE)
 
@@ -77,7 +77,7 @@ file.copy(from = Package_FnP, to = BackupOldFile, overwrite = TRUE)
 # Compile a package ------------------------------------------------
 setwd(RepositoryDir)
 getwd()
-document()
+devtools::document()
 warnings()
 
 {
@@ -90,7 +90,7 @@ warnings()
 
 # Install your package ------------------------------------------------
 # # setwd(RepositoryDir)
-install(RepositoryDir, upgrade = F)
+devtools::install(RepositoryDir, upgrade = F)
 # unload(Seurat.utils)
 # require("Seurat.utils")
 # # remove.packages("Seurat.utils")
