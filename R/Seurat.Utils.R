@@ -1293,6 +1293,7 @@ create_scCombinedMeta <- function(experiment, project_ = Seurat.utils::getProjec
 
 
 
+
 # _________________________________________________________________________________________________
 # Subsetting the Seurat object ______________________________ ----
 # _________________________________________________________________________________________________
@@ -1342,7 +1343,7 @@ subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir =
   obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed, nthreads = 6)
   nr.cells.kept <- ncol(obj_Xpc)
   # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)), suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
-  qqsave(obj_Xpc, suffix = ppp(suffix, nr.cells.kept, 'cells.with.min.features', min.features)
+  xsave(obj_Xpc, suffix = ppp(suffix, nr.cells.kept, 'cells.with.min.features', min.features)
          , nthreads = nthreads, project = getProject(), showMemObject = T, saveParams = F)
 }
 
@@ -5189,7 +5190,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
                       , compress = TRUE
                       , test_read = FALSE){
 
-  warning("isave.RDS() is deprecated. Use qqsave() to save in .qs format.")
+  warning("isave.RDS() is deprecated. Use xsave() to save in .qs format.")
   path_rdata = if (inOutDir) OutDir else alternative_path_rdata
   dir.create(path_rdata)
 
@@ -5231,7 +5232,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
 #' @seealso \code{\link[qs]{qsave}} for the underlying save function used.
 #' @importFrom qs qsave
 #' @importFrom tictoc tic toc
-qqsave <- function(obj, prefix = NULL
+xsave <- function(obj, prefix = NULL
                    , suffix = NULL
                    , nthreads = 12
                    , preset = 'high'
@@ -5250,7 +5251,7 @@ qqsave <- function(obj, prefix = NULL
 
   fnameBase = trimws(kppu(prefix, substitute(obj), suffix, project, preset, 'compr', idate(Format = "%Y.%m.%d_%H.%M")), whitespace = '_')
   FNN <- paste0(path_rdata, fnameBase , ".qs")
-  iprint(substitute(obj), '<- qqread("', FNN, '")')
+  iprint(substitute(obj), '<- xread("', FNN, '")')
 
   qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
   try(tictoc::toc(), silent = TRUE)
@@ -5273,7 +5274,7 @@ qqsave <- function(obj, prefix = NULL
 #' @seealso \code{\link[qs]{qread}} for the underlying read function used.
 #' @importFrom qs qread
 #' @importFrom tictoc tic toc
-qqread <- function(file, nthreads = 4, ...) {
+xread <- function(file, nthreads = 4, ...) {
   try(tictoc::tic(), silent = TRUE)
   x <- qs::qread(file = file, nthreads = nthreads, ...)
   iprint(is(x)[1], 'of length:', length(x))
