@@ -8,9 +8,7 @@ LoadAllSeurats(
   InputDir,
   file.pattern = "^filtered.+Rds$",
   string.remove1 = c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[2],
-  string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2],
-  string.replace1 = "",
-  string.replace2 = ""
+  string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]
 )
 }
 \arguments{
@@ -21,10 +19,6 @@ LoadAllSeurats(
 \item{string.remove1}{A character string or FALSE. If a string is provided, it is removed from file names. Default is "filtered_feature_bc_matrix.".}
 
 \item{string.remove2}{A character string or FALSE. If a string is provided, it is removed from file names. Default is ".min.cells.10.min.features.200.Rds".}
-
-\item{string.replace1}{Replacement "string.remove1" to this string. Default is "".}
-
-\item{string.replace2}{Replacement "string.remove1" to this string. Default is "".}
 }
 \description{
 This function loads all Seurat objects found in a directory. It also works with symbolic links (but not with aliases).

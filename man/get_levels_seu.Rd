@@ -4,12 +4,12 @@
 \alias{get_levels_seu}
 \title{Get Unique Levels of a Seurat Object Ident Slot}
 \usage{
-get_levels_seu(ident, obj = combined.obj, max_levels = 100, dput = T)
+get_levels_seu(obj, ident, max_levels = 100, dput = T)
 }
 \arguments{
-\item{ident}{A character string representing the name of the slot in the Seurat object.}
-
 \item{obj}{A Seurat object.}
+
+\item{ident}{A character string representing the name of the slot in the Seurat object.}
 
 \item{max_levels}{An integer that sets the maximum number of levels allowed. Default is 100.}
 

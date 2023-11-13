@@ -4,13 +4,7 @@
 \alias{qMarkerCheck.BrainOrg}
 \title{qMarkerCheck.BrainOrg}
 \usage{
-qMarkerCheck.BrainOrg(
-  obj = combined.obj,
-  custom.genes = F,
-  suffix = "",
-  raster = FALSE,
-  raster.dpi = c(512, 256)/2
-)
+qMarkerCheck.BrainOrg(obj = combined.obj, custom.genes = F, suffix = "")
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}

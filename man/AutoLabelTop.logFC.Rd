@@ -11,9 +11,6 @@ AutoLabelTop.logFC(
   plot.top.genes = T,
   suffix = res,
   order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2],
-  exclude_vague_genes = TRUE,
-  excl_pattern = "^AC[0-9]|^AL[0-9]|^RPL|^RPS|^MT-",
-  gene_sym_col = "gene",
   df_markers = obj@misc$df.markers[[paste0("res.", res)]]
 )
 }
@@ -25,12 +22,6 @@ AutoLabelTop.logFC(
 \item{plot.top.genes}{Show plot? Default: T}
 
 \item{order.by}{Sort output tibble by which column, Default: c("combined.score", "avg_logFC", "p_val_adj")\link{1}}
-
-\item{exclude_vague_genes}{Exclude vague or non-coding gene names from automatic annotations, starting with AC, AL, RP, MT-}
-
-\item{excl_pattern}{Exclusion pattern in gene symbol. Default: "^AC\link{0-9}|^AL\link{0-9}|^RPL|^RPS|^MT-"}
-
-\item{gene_sym_col}{Column name in df.markers. Default: gene}
 
 \item{df_markers}{Data frame, result of DGEA analysis (FindAllMarkers), Default: combined.obj@misc$df.markers[\link{paste0("res.", res)}]}
 }

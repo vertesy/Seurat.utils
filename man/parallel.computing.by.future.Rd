@@ -4,11 +4,7 @@
 \alias{parallel.computing.by.future}
 \title{parallel.computing.by.future}
 \usage{
-parallel.computing.by.future(
-  cores = 4,
-  maxMemSize = 4000 * 1024^2,
-  strategy = "multicore"
-)
+parallel.computing.by.future(cores = 4, maxMemSize = 4000 * 1024^2)
 }
 \arguments{
 \item{cores}{Number of cores}

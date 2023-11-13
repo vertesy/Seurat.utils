@@ -9,7 +9,6 @@ multiFeaturePlot.A4(
   obj = combined.obj,
   foldername = substitute(list.of.genes),
   plot.reduction = "umap",
-  caption = NULL,
   intersectionAssay = c("RNA", "integrated")[1],
   layout = c("tall", "wide", FALSE)[2],
   colors = c("grey", "red"),
@@ -28,8 +27,6 @@ multiFeaturePlot.A4(
   h = hA4,
   scaling = 1,
   format = c("jpg", "pdf", "png")[1],
-  raster = MarkdownHelpers::FALSE.unless("b.raster"),
-  raster.dpi = NULL,
   ...
 )
 }
@@ -78,8 +75,6 @@ multiFeaturePlot.A4(
 
 \item{format}{Format to save the plot file. Default: 'jpg'}
 
-\item{raster}{Use raster image for single cells. Necessary for large objects. Default: Only true when 'b.raster'  global variable is defined as TRUE. Code: MarkdownHelpers::FALSE.unless('b.raster')}
-
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
@@ -87,5 +82,5 @@ Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a 
 }
 \seealso{
 \code{\link[tictoc]{tic}}
-\code{\link[cowplot]{plot_grid save_plot}}
+\code{\link[cowplot]{plot_grid}}
 }
