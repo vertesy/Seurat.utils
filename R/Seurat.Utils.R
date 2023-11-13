@@ -5116,7 +5116,7 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
 #' @importFrom tictoc tic toc
-..saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internally = FALSE, ...) {
+.saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internally = FALSE, ...) {
   try(tictoc::tic(), silent = T)
   saveRDS(object = obj, compress = compress_internally, file = fname, ...)
   try(tictoc::toc(), silent = T)
