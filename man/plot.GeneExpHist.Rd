@@ -10,14 +10,11 @@
   assay = "RNA",
   slot_ = "data",
   thr_expr = 10,
-  prefix = "Gene expression",
   suffix = NULL,
   xlab = p0("log10(Summed UMI count @", slot_, ")"),
   return_cells_passing = TRUE,
   quantile_thr = 0.95,
   return_quantile,
-  w = 9,
-  h = 5,
   ...
 )
 }
@@ -41,10 +38,6 @@
 \item{quantile_thr}{The quantile to use for clipping the counts slot.}
 
 \item{return_quantile}{Whether to return the number of cells passing the quantile filter.}
-
-\item{w}{Width of the plot in inches, Default: 5.}
-
-\item{h}{Height of the plot in inches, Default: 9.}
 
 \item{...}{Additional arguments passed to \code{qhistogram()}.}
 }

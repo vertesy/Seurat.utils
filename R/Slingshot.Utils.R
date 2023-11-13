@@ -3,7 +3,6 @@
 # _________________________________________________________________________________________________
 # source('~/GitHub/Packages/Seurat.utils/R/Slingshot.Utils.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Custom.Functions.for.Slingshot.R"))
-
 # _________________________________________________________________________________________________
 
 # require(ggbeeswarm)

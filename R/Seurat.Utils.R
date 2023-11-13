@@ -2,7 +2,8 @@
 # Seurat.utils ----
 # ____________________________________________________________________
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
-
+# devtools::load_all("~/GitHub/Packages/Seurat.utils")
+# devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
 
 # _________________________________________________________________________________________________
 # Cluster.Auto-naming.DE.R

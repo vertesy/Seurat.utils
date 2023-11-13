@@ -27,12 +27,12 @@ calc.cluster.averages(
   subtitle = NULL,
   width = 8,
   height = 6,
+  ...,
   xlb = if (absolute.thr) paste("Threshold at", absolute.thr) else paste("Black lines: ",
     kppd(Stringendo::percentage_formatter(c(1 - quantile.thr, quantile.thr))),
     "quantiles |", "Cl. >", Stringendo::percentage_formatter(quantile.thr),
     "are highlighted. |", split_by),
-  fname = ppp(col_name, split_by, "cluster.average.barplot.pdf", ...),
-  ...
+  fname = ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)
 )
 }
 \arguments{
@@ -76,11 +76,11 @@ calc.cluster.averages(
 
 \item{height}{The height of the plot. Default: 6.}
 
+\item{...}{Additional parameters passed to the internally called functions.}
+
 \item{xlb}{The label for the x-axis. Default depends on the 'absolute.thr' parameter.}
 
 \item{fname}{The filename for the plot. Default is based on column name and split_by value.}
-
-\item{...}{Additional parameters passed to the internally called functions.}
 }
 \description{
 Calculates the average of a metadata column (numeric) per cluster.

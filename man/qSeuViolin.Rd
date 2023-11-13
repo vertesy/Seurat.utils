@@ -6,42 +6,22 @@
 \usage{
 qSeuViolin(
   object = ls.Seurat[[1]],
+  suffix = GEX_library,
   features = "nFeature_RNA",
-  group.by = "orig.ident",
-  split.by = NULL,
-  title = ppp(as.character(features), "by", as.character(group.by)),
-  caption = NULL,
-  suffix = NULL,
-  logY = TRUE,
-  replaceNAwith = NaN,
-  ylab = features,
-  hline = NULL,
-  grid = "y",
-  w = 9,
-  h = 6,
-  ...
+  split.by = "orig.ident",
+  logY = TRUE
 )
 }
 \arguments{
 \item{object}{A Seurat object.}
 
-\item{features}{The name of the feature to plot.}
-
-\item{group.by}{The grouping variable to separate the data by.}
-
-\item{split.by}{Sub-grouping variable to further split the data by.}
-
-\item{caption}{Text for bottom right of the plot.}
-
 \item{suffix}{A string to append to the title of the plot.}
 
+\item{features}{The name of the feature to plot.}
+
+\item{split.by}{The grouping variable to split the plot by.}
+
 \item{logY}{Whether to plot the y-axis on a log scale.}
-
-\item{w}{Width of the plot in inches, Default: 6.}
-
-\item{h}{Height of the plot in inches, Default: 9.}
-
-\item{...}{Additional arguments passed to \code{VlnPlot()}.}
 }
 \value{
 A ggplot object.
