@@ -1260,6 +1260,40 @@ save.parameters <- function(obj = combined.obj, params = p, overwrite = TRUE) {
 
 
 # _________________________________________________________________________________________________
+# List level metadata for ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+#' @title Create Single-Cell Metadata Object for a collection of Seurat Objects
+#'
+#' @description This function creates a metadata object to correspond to a list of
+#'   single-cell experiments, for storing parent level information.
+#'   It initializes the object with the experiment and project name, and the
+#'   creation date. The created object is of class 'scMetadata_class'.
+#' @param experiment The name of the experiment for which metadata is being created.
+#' @param project_ The project information to be associated with the metadata object.
+#'   This defaults to the current project obtained using Seurat.utils::getProject().
+#'
+#' @return An 'scCollectionMetadata_class' object containing the metadata for a collection of experiment.
+#' @export
+#'
+#' @examples
+#' sc_meta <- create_scCombinedMeta(experiment = "Experiment1")
+
+create_scCombinedMeta <- function(experiment, project_ = Seurat.utils::getProject() ) {
+  x <- list(experiment.corresponding = experiment
+            , initialized = Sys.Date()
+            , project = project_
+  )
+  class(x) <- "scCollectionMetadata_class"
+  print(x)
+  return(x)
+}
+
+
+
+
+# _________________________________________________________________________________________________
 # Subsetting the Seurat object ______________________________ ----
 # _________________________________________________________________________________________________
 # Subsetting, downsampling and manipulating the Seurat object
