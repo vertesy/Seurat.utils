@@ -1305,7 +1305,7 @@ subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir =
                                   , min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
   obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
   nr.cells.kept <- ncol(obj_Xpc)
-  saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
+  Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
 }
 
 
@@ -5102,7 +5102,7 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 
 
 # _________________________________________________________________________________________________
-#' @title saveRDS.compress.in.BG
+#' @title .saveRDS.compress.in.BG
 #'
 #' @description Save and RDS object and compress resulting file in the background using system(gzip). OS X or unix.
 #' @param obj Seurat object.
@@ -5112,9 +5112,8 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #' @param ... Additional parameters passed to saveRDS() function.
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
-#' @export
 #' @importFrom tictoc tic toc
-saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internally = FALSE, ...) {
+..saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internally = FALSE, ...) {
   try(tictoc::tic(), silent = T)
   saveRDS(object = obj, compress = compress_internally, file = fname, ...)
   try(tictoc::toc(), silent = T)
@@ -5152,6 +5151,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
                       , compress = TRUE
                       , test_read = FALSE){
 
+  warning("isave.RDS() is deprecated. Use qqsave() to save in .qs format.")
   path_rdata = if (inOutDir) OutDir else alternative_path_rdata
   dir.create(path_rdata)
 
@@ -5168,7 +5168,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
   if (test_read) {
     print(p0('xx5 <- read_rds(\\"', FNN, '\\")'))
   } else
-  saveRDS.compress.in.BG(obj = obj, fname =  FNN, compr = compress, compress_internally = FALSE)
+    Seurat.utils:::.saveRDS.compress.in.BG(obj = obj, fname =  FNN, compr = compress, compress_internally = FALSE)
 
 }
 
