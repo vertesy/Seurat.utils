@@ -5226,18 +5226,21 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
 #' @param project The project name to be included in the filename, defaults to the result of `getProject()`.
 #' @param showMemObject Logical; if TRUE, displays the memory size of the largest objects.
 #' @param saveParams Logical; if TRUE and if the object is a Seurat object, additional parameters are saved within it.
+#' @param background.job Logical; if TRUE save runs as "background job"
 #' @return Invisible; The function is called for its side effects (saving a file) and does not return anything.
 #' @export
 #' @note The function uses the 'qs' package for quick and efficient serialization of objects and includes a timing feature from the 'tictoc' package.
 #' @seealso \code{\link[qs]{qsave}} for the underlying save function used.
 #' @importFrom qs qsave
 #' @importFrom tictoc tic toc
+#' @importFrom job job
 xsave <- function(obj, prefix = NULL
-                   , suffix = NULL
-                   , nthreads = 12
-                   , preset = 'high'
-                   , project = getProject()
-                   , showMemObject = T, saveParams = T) {
+                 , suffix = NULL
+                 , nthreads = 12
+                 , preset = 'high'
+                 , project = getProject()
+                 , background.job = F
+                 , showMemObject = T, saveParams = T) {
 
   path_rdata = if (exists('OutDir')) OutDir else getwd()
 
@@ -5253,7 +5256,18 @@ xsave <- function(obj, prefix = NULL
   FNN <- paste0(path_rdata, fnameBase , ".qs")
   iprint(substitute(obj), '<- xread("', FNN, '")')
 
-  qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
+  if (background.job & rstudioapi::isAvailable()) {
+    "This part is not debugged yet!"
+    "This part is not debugged yet!"
+
+    message("Started saving as background job.")
+    job::job({
+      qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
+    }, import = c('obj', 'FNN', 'nthreads', 'preset'))
+  } else {
+    qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
+  }
+
   try(tictoc::toc(), silent = TRUE)
 }
 
@@ -5276,7 +5290,22 @@ xsave <- function(obj, prefix = NULL
 #' @importFrom tictoc tic toc
 xread <- function(file, nthreads = 4, ...) {
   try(tictoc::tic(), silent = TRUE)
-  x <- qs::qread(file = file, nthreads = nthreads, ...)
+
+
+  if (background.job & rstudioapi::isAvailable()) {
+    "This part is not debugged yet!"
+    "This part is not debugged yet!"
+
+    message("Started reading in as background job.")
+    job::job({
+      qs::qread(file = file, nthreads = nthreads, ...)
+    }, import = c('file', 'nthreads'))
+  } else {
+    x <- qs::qread(file = file, nthreads = nthreads, ...)
+  }
+
+
+
   iprint(is(x)[1], 'of length:', length(x))
   try(tictoc::toc(), silent = TRUE)
   return(x)
