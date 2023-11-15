@@ -20,12 +20,12 @@ try(dev.off(), silent = TRUE)
 
 # Setup ------------------------
 package.name <- 	"Seurat.utils"
-package.version <- "2.0.0"
+package.version <- "2.0.5"
 setwd("~/GitHub/Packages/")
 
-RepositoryDir <- paste0("~/GitHub/Packages/", PackageName, "/")
-fname <-	paste0(PackageName, ".R")
-Package_FnP <-		paste0(RepositoryDir, "R/", fname)
+RepositoryDir <- paste0("~/GitHub/Packages/", package.name, "/")
+fname <-	paste0(package.name, ".R")
+package.FnP <-		paste0(RepositoryDir, "R/", fname)
 
 BackupDir <- "~/GitHub/Packages/Seurat.utils/Development/"
 dir.create(BackupDir)
@@ -40,11 +40,11 @@ DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
                     , "Version" = package.version
                     , "Packaged" =  Sys.time()
                     # , "Repository" =  "CRAN"
-                    , "Depends" =  "Seurat, ggplot2, Stringendo, CodeAndRoll2, ggExpress"
+                    , "Depends" =  "ggplot2, Seurat, Stringendo, CodeAndRoll2, ggExpress"
                     , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
-    htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter,
+    htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter, pheatmap
     R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom, EnhancedVolcano"
-                    , "Suggests" = "SoupX"
+                    , "Suggests" = "SoupX, principal_curve"
                     , "BugReports"= "https://github.com/vertesy/Seurat.utils/issues"
 )
 
@@ -60,19 +60,19 @@ if ( !dir.exists(RepositoryDir) ) { create(path = RepositoryDir, description = D
 
 
 # go and write fun's ------------------------------------------------------------------------
-# file.edit(Package_FnP)
+# file.edit(package.FnP)
 
 # Create Roxygen Skeletons ------------------------
-# RoxygenReady(Package_FnP)
+# RoxygenReady(package.FnP)
 
 # replace output files ------------------------------------------------
-BackupOldFile <-	paste0(BackupDir, "Development", ".bac", print = FALSE)
-AnnotatedFile <-	paste0(BackupDir, "Development", ".annot.R", print = FALSE)
-file.copy(from = Package_FnP, to = BackupOldFile, overwrite = TRUE)
-# file.copy(from = AnnotatedFile, to = Package_FnP, overwrite = TRUE)
+BackupOldFile <-	paste0(BackupDir, "Development", ".bac")
+AnnotatedFile <-	paste0(BackupDir, "Development", ".annot.R")
+file.copy(from = package.FnP, to = BackupOldFile, overwrite = TRUE)
+# file.copy(from = AnnotatedFile, to = package.FnP, overwrite = TRUE)
 
 # Manual editing of descriptors ------------------------------------------------
-# file.edit(Package_FnP)
+# file.edit(package.FnP)
 
 # Compile a package ------------------------------------------------
 setwd(RepositoryDir)
@@ -124,8 +124,8 @@ devtools::install(RepositoryDir, upgrade = F)
 # Check package dependencies ------------------------------------------------
 depFile = paste0(RepositoryDir, 'Development/Dependencies.R')
 
-(f.deps <- NCmisc::list.functions.in.file(filename = Package_FnP))
-# clipr::write_clip(f.deps)
+(f.deps <- NCmisc::list.functions.in.file(filename = package.FnP))
+clipr::write_clip( f.deps$`character(0)`)
 
 sink(file = depFile); print(f.deps); sink()
 p.deps <- gsub(x = names(f.deps), pattern = 'package:', replacement = '')
@@ -133,4 +133,4 @@ write(x = p.deps, file = depFile, append = T)
 
 
 
-# NCmisc::list.functions.in.file(Package_FnP)
+# NCmisc::list.functions.in.file(package.FnP)

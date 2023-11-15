@@ -2,7 +2,8 @@
 # Seurat.utils ----
 # ____________________________________________________________________
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
-
+# devtools::load_all("~/GitHub/Packages/Seurat.utils")
+# devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
 
 # _________________________________________________________________________________________________
 # Cluster.Auto-naming.DE.R
@@ -1161,7 +1162,7 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
       n.datasets <- obj@misc$n.datasets
       print(head(unlist(n.datasets)))
       MarkdownHelpers::ww.assign_to_global(name = "n.datasets", value = n.datasets)
-    } else { print("  ->   Variable 'n.datasets' already exists in the global namespace:", n.datasets) }
+    } else { print("  ->   Variable 'n.datasets' already exists in the global namespace.") }
   } else{ print("  ->   Slot 'n.datasets' does not exist in obj@misc.") }
 
 
@@ -1170,7 +1171,7 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
       meta.tags <- obj@misc$meta.tags
       print(head(unlist(meta.tags)))
       MarkdownHelpers::ww.assign_to_global(name = "meta.tags", value = meta.tags)
-    } else { iprint("  ->   Variable 'meta.tags' already exists in the global namespace:", meta.tags) }
+    } else { iprint("  ->   Variable 'meta.tags' already exists in the global namespace.") }
   } else{ print("  ->   Slot 'meta.tags' does not exist in obj@misc.") }
 
 }
@@ -1259,6 +1260,41 @@ save.parameters <- function(obj = combined.obj, params = p, overwrite = TRUE) {
 
 
 # _________________________________________________________________________________________________
+# List level metadata for ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+#' @title Create Single-Cell Metadata Object for a collection of Seurat Objects
+#'
+#' @description This function creates a metadata object to correspond to a list of
+#'   single-cell experiments, for storing parent level information.
+#'   It initializes the object with the experiment and project name, and the
+#'   creation date. The created object is of class 'scMetadata_class'.
+#' @param experiment The name of the experiment for which metadata is being created.
+#' @param project_ The project information to be associated with the metadata object.
+#'   This defaults to the current project obtained using Seurat.utils::getProject().
+#'
+#' @return An 'scCollectionMetadata_class' object containing the metadata for a collection of experiment.
+#' @export
+#'
+#' @examples
+#' sc_meta <- create_scCombinedMeta(experiment = "Experiment1")
+
+create_scCombinedMeta <- function(experiment, project_ = Seurat.utils::getProject() ) {
+  x <- list(experiment.corresponding = experiment
+            , initialized = Sys.Date()
+            , project = project_
+  )
+  class(x) <- "scCollectionMetadata_class"
+  print(x)
+  return(x)
+}
+
+
+
+
+
+# _________________________________________________________________________________________________
 # Subsetting the Seurat object ______________________________ ----
 # _________________________________________________________________________________________________
 # Subsetting, downsampling and manipulating the Seurat object
@@ -1300,12 +1336,15 @@ subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, see
 #' @param min.features Minimum features
 #' @param dir Directory to save to. Default: OutDir
 #' @param suffix A suffix added to the filename, Default: ''
+#' @param nthreads nthreads for compression
 #' @export
 subsetSeuObj.and.Save <- function(obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir
                                   , min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
-  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
+  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed, nthreads = 6)
   nr.cells.kept <- ncol(obj_Xpc)
-  saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
+  # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)), suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
+  xsave(obj_Xpc, suffix = ppp(suffix, nr.cells.kept, 'cells.with.min.features', min.features)
+         , nthreads = nthreads, project = getProject(), showMemObject = T, saveParams = F)
 }
 
 
@@ -4628,7 +4667,7 @@ calculate.observable.multiplet.rate.10X.LT <- function(
 #' @param col2.new.name The new name to use for the 'Singlet.status' column. Defaults to 'Singlet.status'.
 #' @param cellname_prefix If TRUE, the function assumes that Seurat has added a prefix to cell names to distinguish 10X lanes and adjusts accordingly. Defaults to FALSE.
 #' @param return_tbl_for_cells_found_in_object If TRUE, the function returns the subset of the GT table corresponding to cells found in both the GT table and the Seurat object. Defaults to TRUE.
-#' @param min_cells_overlap min_cells_overlap
+#' @param min_cells_overlap min_cells_overlap. Defaults to 2% of cellcount in the object.
 #'
 #' @return The cleaned and standardized GT table, with specific transformations applied as defined by the input parameters.
 #'
@@ -4646,7 +4685,8 @@ SNP.demux.fix.GT.table <- function(GT.table
                                    , col2.new.name = 'Singlet.status'
                                    , cellname_prefix = FALSE
                                    , return_tbl_for_cells_found_in_object = TRUE
-                                   , min_cells_overlap = 10) {
+                                   , min_cells_overlap = floor(ncol(obj) * 0.02)
+                                   ) {
 
   # Check if the specified columns are present in the GT table
   col_names <- c(col1, col2)
@@ -5101,7 +5141,7 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 
 
 # _________________________________________________________________________________________________
-#' @title saveRDS.compress.in.BG
+#' @title .saveRDS.compress.in.BG
 #'
 #' @description Save and RDS object and compress resulting file in the background using system(gzip). OS X or unix.
 #' @param obj Seurat object.
@@ -5111,9 +5151,8 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #' @param ... Additional parameters passed to saveRDS() function.
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
-#' @export
 #' @importFrom tictoc tic toc
-saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internally = FALSE, ...) {
+.saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internally = FALSE, ...) {
   try(tictoc::tic(), silent = T)
   saveRDS(object = obj, compress = compress_internally, file = fname, ...)
   try(tictoc::toc(), silent = T)
@@ -5139,6 +5178,7 @@ saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internall
 #' @param showMemObject A boolean flag, if TRUE the function will print out the memory size of the largest objects in the workspace. Default is TRUE.
 #' @param saveParams A boolean flag, if TRUE the parameters 'p' and 'all.genes' are added to the 'misc' slot of the Seurat object if the object is of class Seurat. Default is TRUE.
 #' @param compress Compress .Rds file after writing? Default is TRUE.
+#' @param test_read Provide command to test validity by reading in the object just written.
 #' @examples
 #' \dontrun{ if(interactive()){ isave.RDS(my.R.object)  } }
 #' @export
@@ -5147,8 +5187,10 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
                       , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
                       , homepath = if(Sys.info()[1]=="Darwin") '/Users/abel.vertesy/' else '/users/abel.vertesy/'
                       , showMemObject = T, saveParams =T
-                      , compress = TRUE){
+                      , compress = TRUE
+                      , test_read = FALSE){
 
+  warning("isave.RDS() is deprecated. Use xsave() to save in .qs format.")
   path_rdata = if (inOutDir) OutDir else alternative_path_rdata
   dir.create(path_rdata)
 
@@ -5162,7 +5204,111 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
   FNN <- paste0(path_rdata, fnameBase , ".Rds")
   FNN <- gsub(pattern = '~/', replacement = homepath, x = FNN)
   print(FNN)
-  saveRDS.compress.in.BG(obj = obj, fname =  FNN, compr = compress, compress_internally = FALSE)
+  if (test_read) {
+    print(p0('xx5 <- read_rds(\\"', FNN, '\\")'))
+  } else
+    Seurat.utils:::.saveRDS.compress.in.BG(obj = obj, fname =  FNN, compr = compress, compress_internally = FALSE)
+
+}
+
+# _________________________________________________________________________________________________
+#' Save an R Object Using 'qs' Package for Fast Compressed Saving
+#'
+#' This function saves an R object to a file in a quick and efficient format using the 'qs' package.
+#' It constructs the file name based on various inputs and stores additional metadata if the object is a Seurat object.
+#' The saving path can be adjusted by the presence of 'OutDir' in the global environment or defaults to the working directory.
+#'
+#' @param obj The R object to be saved.
+#' @param prefix Optional; a prefix to add to the filename.
+#' @param suffix Optional; a suffix to add to the filename.
+#' @param nthreads Number of threads to use when saving, defaults to 12.
+#' @param preset Compression preset, defaults to 'high'.
+#' @param project The project name to be included in the filename, defaults to the result of `getProject()`.
+#' @param showMemObject Logical; if TRUE, displays the memory size of the largest objects.
+#' @param saveParams Logical; if TRUE and if the object is a Seurat object, additional parameters are saved within it.
+#' @param background.job Logical; if TRUE save runs as "background job"
+#' @return Invisible; The function is called for its side effects (saving a file) and does not return anything.
+#' @export
+#' @note The function uses the 'qs' package for quick and efficient serialization of objects and includes a timing feature from the 'tictoc' package.
+#' @seealso \code{\link[qs]{qsave}} for the underlying save function used.
+#' @importFrom qs qsave
+#' @importFrom tictoc tic toc
+#' @importFrom job job
+xsave <- function(obj, prefix = NULL
+                 , suffix = NULL
+                 , nthreads = 12
+                 , preset = 'high'
+                 , project = getProject()
+                 , background.job = F
+                 , showMemObject = T, saveParams = T) {
+
+  path_rdata = if (exists('OutDir')) OutDir else getwd()
+
+  try(tictoc::tic(), silent = TRUE)
+  if (showMemObject) { try(memory.biggest.objects(), silent = T) }
+
+  if ( "seurat" %in% is(obj) & saveParams) {
+    try(obj@misc$p <- p, silent = T)
+    try(obj@misc$all.genes  <- all.genes, silent = T)
+  }
+
+  fnameBase = trimws(kppu(prefix, substitute(obj), suffix, project, preset, 'compr', idate(Format = "%Y.%m.%d_%H.%M")), whitespace = '_')
+  FNN <- paste0(path_rdata, fnameBase , ".qs")
+  iprint(substitute(obj), '<- xread("', FNN, '")')
+
+  if (background.job & rstudioapi::isAvailable()) {
+    "This part is not debugged yet!"
+    "This part is not debugged yet!"
+
+    message("Started saving as background job.")
+    job::job({
+      qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
+    }, import = c('obj', 'FNN', 'nthreads', 'preset'))
+  } else {
+    qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
+  }
+
+  try(tictoc::toc(), silent = TRUE)
+}
+
+# _________________________________________________________________________________________________
+#' Read an R Object Using 'qs' Package for Fast Decompression
+#'
+#' This function reads an R object from a file saved in a format specific to the 'qs' package,
+#' which is designed for quick and efficient compression and decompression of R objects.
+#' It also times the read operation, providing feedback on the duration of the operation.
+#'
+#' @param file A character string specifying the path to the file where the R object is saved.
+#' @param nthreads The number of threads to use when reading the object, defaults to 4.
+#' @param ... Further arguments passed on to the 'qs::qread' function.
+#' @return The R object that was saved in the specified file.
+#' @export
+#' @note The function uses the 'qs' package for fast and efficient deserialization of objects
+#' and includes a timing feature from the 'tictoc' package.
+#' @seealso \code{\link[qs]{qread}} for the underlying read function used.
+#' @importFrom qs qread
+#' @importFrom tictoc tic toc
+xread <- function(file, nthreads = 4, ...) {
+  try(tictoc::tic(), silent = TRUE)
+
+
+  if (background.job & rstudioapi::isAvailable()) {
+    "This part is not debugged yet!"
+    "This part is not debugged yet!"
+
+    message("Started reading in as background job.")
+    job::job({
+      qs::qread(file = file, nthreads = nthreads, ...)
+    }, import = c('file', 'nthreads'))
+  } else {
+    x <- qs::qread(file = file, nthreads = nthreads, ...)
+  }
+
+
+
+  iprint(is(x)[1], 'of length:', length(x))
+  try(tictoc::toc(), silent = TRUE)
+  return(x)
 }
 
 

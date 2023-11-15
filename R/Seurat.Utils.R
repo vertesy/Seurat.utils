@@ -225,7 +225,7 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 #' @seealso
 #'  \code{\link[sparseMatrixStats]{character(0)}}
 #' @export
-#' @importFrom tictoc tic toc
+#' @importFrom tictoc tictoc::tic tictoc::toc
 #' @importFrom sparseMatrixStats rowQuantiles
 calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
                                                   , quantileX = 0.99, max.cells =  1e5
@@ -250,7 +250,7 @@ calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate
 
   log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q99 + 1)) # strip names
   n.cells <- floor(ncol(obj) * (1-quantileX) )
-  qnameP <- p0(100*quantileX,'th quantile')
+  qnameP <- paste0(100*quantileX,'th quantile')
   try(
     ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile, ext = "pdf", breaks = 30
                           , plotname = paste("Gene expression in the", qnameP )
@@ -480,7 +480,7 @@ seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of v
 seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MarkdownReports = F) { # Plot the percent of variation associated with each PC.
   pct <- seu.PC.var.explained(obj)
   if (use.MarkdownReports) {
-    wbarplot(pct , xlab = "Principal Components", ylab = "% of variation explained")
+    MarkdownReports::wbarplot(pct , xlab = "Principal Components", ylab = "% of variation explained")
     barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5 )
   } else {
     ggExpress::qbarplot(vec = pct, xlab = "Principal Components", ylab =  "% of variation explained", w = 10, h = 5, hline = 1 )
@@ -1067,7 +1067,7 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene="ACTB", filterZero
     title <- paste(gene, "is in the", Stringendo::percentage_formatter(quantile.GOI), "quantile of 'q90-av' expression. \n There are", counts,"counts" )
   }
   suppressWarnings(
-    whist(expr.all, vline = expr.GOI, breaks = 100, main = title, plotname =   make.names(title)
+    MarkdownReports::whist(expr.all, vline = expr.GOI, breaks = 100, main = title, plotname =   make.names(title)
           , ylab = "Genes"
           , xlab = "Av. mRNA in the 10% top expressing cells (q90 av.exp.)")
   )
@@ -1381,7 +1381,7 @@ subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.
 #'  }
 #' }
 #' @export
-#' @importFrom tictoc tic toc
+#' @importFrom tictoc tictoc::tic tictoc::toc
 #' @importFrom Stringendo percentage_formatter
 Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids"
                                       , save_object = FALSE) {
@@ -1406,7 +1406,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
       ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
     };
   } # else
-  toc();
+  tictoc::toc();
 
   print(head(unlapply(ls.obj, ncol)))
   print(head(unlapply(ls.obj.downsampled, ncol)))
@@ -1436,7 +1436,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
 #'  }
 #' }
 #' @export
-#' @importFrom tictoc tic toc
+#' @importFrom tictoc tictoc::tic tictoc::toc
 #' @importFrom Stringendo percentage_formatter
 
 Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1
@@ -1462,7 +1462,7 @@ Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1
       iprint(names(ls.obj)[i], cells, "cells=", Stringendo::percentage_formatter(i/n.datasets, digitz = 2))
       ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], fraction_ = fraction)
     };
-  }; toc(); # else
+  }; tictoc::toc(); # else
 
   NrCells <- sum(unlapply(ls.obj, ncol))
 
@@ -1756,7 +1756,7 @@ AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers
     # points(fit)
     points(coord.umap, pch = 18, cex = .25)
     whiskers(coord.umap, fit$s, lwd = .1)
-    wplot_save_this(plotname = "principal_curve")
+    MarkdownReports::wplot_save_this(plotname = "principal_curve")
   }
 
   ls.perCl <- split(swap * fit$lambda, f = obj[[res]])
@@ -2299,7 +2299,7 @@ scBarplot.CellFractions <- function(obj = combined.obj
 
     subtt <- FixPlotName(group.by, sub_title)
     pl <- obj@meta.data %>%
-      { if (downsample) sample_n(., downsample) else . } %>%
+      { if (downsample) dplyr::sample_n(., downsample) else . } %>%
       group_by(group_by = !!sym(group.by) ) %>%
       ggplot( aes(fill = category,  x = !!sym(group.by)) ) +
       geom_hline( yintercept = hlines, lwd = 1.5)  +
@@ -2520,7 +2520,7 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
     stopif(anyNA(colzFixed))
     colz <- colzFixed
   }
-  if (show.colors) Color_Check(colz)
+  if (show.colors) MarkdownHelpers::Color_Check(colz)
   return(colz)
 }
 
@@ -2710,7 +2710,7 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
                              , assay = 'RNA', slot_ = 'data'
                              , thr_expr = 10
                              , suffix = NULL
-                             , xlab = p0("log10(Summed UMI count @",slot_,")")
+                             , xlab = paste0("log10(Summed UMI count @",slot_,")")
                              , return_cells_passing = TRUE
                              , quantile_thr = 0.95
                              , return_quantile
@@ -2726,7 +2726,7 @@ plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT
 
   # Add a subtitle with the number of genes and the expression threshold
   subx <- filter_HP(G_expression, threshold = thr_expr, return_conclusion = T, plot.hist = F)
-  if (aggregate) subx <- p0(subx,"\n", length(genes), " aggregated:", paste(head(genes), collapse = " "))
+  if (aggregate) subx <- paste0(subx,"\n", length(genes), " aggregated:", paste(head(genes), collapse = " "))
 
   # Clip counts if necessary
   if (slot_ == 'counts') G_expression <- CodeAndRoll2::clip.at.fixed.value(distribution = G_expression, thr = quantile(G_expression, probs = .95))
@@ -3060,10 +3060,10 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' @param format Format to save the plot file. Default: 'jpg'
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @seealso
-#'  \code{\link[tictoc]{tic}}
+#'  \code{\link[tictoc]{tictoc::tic}}
 #'  \code{\link[cowplot]{plot_grid}}
 #' @export
-#' @importFrom tictoc tic toc
+#' @importFrom tictoc tictoc::tic tictoc::toc
 #' @importFrom cowplot plot_grid
 
 multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
@@ -3143,9 +3143,9 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
 #' @param jpeg.q Quality of the jpeg output. Default: 90
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @seealso
-#'  \code{\link[tictoc]{tic}}
+#'  \code{\link[tictoc]{tictoc::tic}}
 #' @export
-#' @importFrom tictoc tic toc
+#' @importFrom tictoc tictoc::tic tictoc::toc
 
 multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
                                    , list.of.genes, gene.per.page = 5
@@ -3918,7 +3918,7 @@ sparse.cor <- function(smat){
 #'  }
 #' }
 #' @export
-#' @importFrom tictoc tic toc
+#' @importFrom tictoc tictoc::tic tictoc::toc
 Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
                             , quantileX = 0.95, max.cells =  40000, seed = p$"seed"
                             , digits = 2, obj = combined.obj) {
@@ -3936,7 +3936,7 @@ Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
   if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- calc.q99.Expression.and.set.all.genes(combined.obj, quantileX =",quantileX," first )")
   genes.HE = which_names(obj@misc[[quantile_name]] > 0)
   iprint("Pearson correlation is calculated for", length(genes.HE), "HE genes with expr.",qname,": > 0.")
-  tictoc::tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); toc()
+  tictoc::tic(); ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); tictoc::toc()
   ls.cor <- lapply(ls.cor, round, digits = 2)
 
   slot__name <- kpp(slot.use, assay.use, quantile_name)
@@ -4008,8 +4008,8 @@ plot.Gene.Cor.Heatmap <- function(genes = WU.2017.139.IEGsf
   iprint(length(corgene.names), "genes are more (anti-)correlated than +/-:", min.g.cor)
 
   pname = paste0("Pearson correlations of ", substitute(genes),"\n min.cor:", min.g.cor, " | ",  assay.use ,'.', slot.use )
-  o.heatmap <- pheatmap(cor.mat[corgene.names,corgene.names],main = pname, cutree_rows = cutRows, cutree_cols = cutCols, ...)
-  wplot_save_pheatmap(o.heatmap, filename = make.names(pname))
+  o.heatmap <- pheatmap::pheatmap(cor.mat[corgene.names,corgene.names],main = pname, cutree_rows = cutRows, cutree_cols = cutCols, ...)
+  MarkdownReports::wplot_save_pheatmap(o.heatmap, filename = make.names(pname))
 
   # return values
   maxCorrz <- rowMax(cor.mat)[corgene.names]; names(maxCorrz) <- corgene.names
@@ -4361,7 +4361,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
 #'  \code{\link[matrixStats]{rowSums2}}
 #' @export
 #' @importFrom matrixStats rowSums2
-#' @importFrom tictoc tic toc
+#' @importFrom tictoc tictoc::tic tictoc::toc
 
 FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA", slot = "data"
                                 , HEonly =F , minExpr = 1, minCells = 1000
@@ -4378,7 +4378,7 @@ FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA"
   correlations <- apply(matrix_mod, 1, cor, geneExpr)
   topGenes <- trail(sort(correlations, decreasing = T), N = trailingNgenes)
   tictoc::toc()
-  wbarplot(head(topGenes, n =25))
+  MarkdownReports::wbarplot(head(topGenes, n =25))
   topGenes
 }
 
@@ -4589,10 +4589,10 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
   HGNC.UpdateStatistics[, "Updated (%)"] <- 100*HGNC.UpdateStatistics[, "Updated (%)"]
   colnames(HGNC.UpdateStatistics) <-  c("Gene Symbols updated (% of Total Genes)",  "Number of Gene Symbols updated")
   lll <- wcolorize(vector = rownames(HGNC.UpdateStatistics))
-  wplot(HGNC.UpdateStatistics, col = lll
+  MarkdownReports::wplot(HGNC.UpdateStatistics, col = lll
         , xlim = c(0,max(HGNC.UpdateStatistics[,1]))
         , ylim = c(0,max(HGNC.UpdateStatistics[,2])) )
-  wlegend(NamedColorVec = lll, poz = 1)
+  MarkdownReports::wlegend(NamedColorVec = lll, poz = 1)
 }
 
 
@@ -4967,7 +4967,7 @@ ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a numb
 #'  }
 #' }
 #' @export
-#' @importFrom tictoc tic toc
+#' @importFrom tictoc tictoc::tic tictoc::toc
 LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
                            , file.pattern = "^filtered.+Rds$"
                            , string.remove1 = c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix." )[2]
@@ -5002,10 +5002,10 @@ LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directo
 #' }
 #' @export
 #' @seealso
-#'  \code{\link[tictoc]{tic}}
+#'  \code{\link[tictoc]{tictoc::tic}}
 #'  \code{\link[R.utils]{compressFile}}
 #'  \code{\link[Seurat]{Read10X}}
-#' @importFrom tictoc tic toc
+#' @importFrom tictoc tictoc::tic tictoc::toc
 #' @importFrom R.utils gunzip gzip
 #' @importFrom Seurat Read10X
 
@@ -5132,7 +5132,7 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
                          names(dataDir))
 
   "Maybe the one below should be within the above if statement?"
-  channel = SoupX::SoupChannel(tod = dat, toc = datCells, metaData = mDat,
+  channel = SoupX::SoupChannel(tod = dat, tictoc::toc = datCells, metaData = mDat,
                                channelName = channelName, dataDir = dataDir, dataType = "10X",
                                isV3 = isV3, DR = DR, ...)
   return(channel)
@@ -5150,8 +5150,8 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #' @param fname File name
 #' @param ... Additional parameters passed to saveRDS() function.
 #' @seealso
-#'  \code{\link[tictoc]{tic}}
-#' @importFrom tictoc tic toc
+#'  \code{\link[tictoc]{tictoc::tic}}
+#' @importFrom tictoc tictoc::tic tictoc::toc
 .saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internally = FALSE, ...) {
   try(tictoc::tic(), silent = T)
   saveRDS(object = obj, compress = compress_internally, file = fname, ...)
@@ -5205,7 +5205,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
   FNN <- gsub(pattern = '~/', replacement = homepath, x = FNN)
   print(FNN)
   if (test_read) {
-    print(p0('xx5 <- read_rds(\\"', FNN, '\\")'))
+    print(paste0('xx5 <- read_rds(\\"', FNN, '\\")'))
   } else
     Seurat.utils:::.saveRDS.compress.in.BG(obj = obj, fname =  FNN, compr = compress, compress_internally = FALSE)
 
@@ -5232,7 +5232,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
 #' @note The function uses the 'qs' package for quick and efficient serialization of objects and includes a timing feature from the 'tictoc' package.
 #' @seealso \code{\link[qs]{qsave}} for the underlying save function used.
 #' @importFrom qs qsave
-#' @importFrom tictoc tic toc
+#' @importFrom tictoc tictoc::tic tictoc::toc
 #' @importFrom job job
 xsave <- function(obj, prefix = NULL
                  , suffix = NULL
@@ -5287,7 +5287,7 @@ xsave <- function(obj, prefix = NULL
 #' and includes a timing feature from the 'tictoc' package.
 #' @seealso \code{\link[qs]{qread}} for the underlying read function used.
 #' @importFrom qs qread
-#' @importFrom tictoc tic toc
+#' @importFrom tictoc tictoc::tic tictoc::toc
 xread <- function(file, nthreads = 4, ...) {
   try(tictoc::tic(), silent = TRUE)
 
@@ -5359,7 +5359,7 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
 #'  \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
 #' @export
 #' @importFrom Stringendo kollapse iprint
-#' @importFrom tictoc tic toc
+#' @importFrom tictoc tictoc::tic tictoc::toc
 qsave.image <- function(..., showMemObject = T, options = c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
   fname = Stringendo::kollapse(getwd(), "/",basename(OutDir),idate(),...,".Rdata")
   print(fname)
@@ -5368,7 +5368,7 @@ qsave.image <- function(..., showMemObject = T, options = c("--force", NULL)[1])
   save.image(file = fname, compress = F)
   iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname),  wait = FALSE) # execute in the background
-  cat(toc)
+  cat(tictoc::toc)
 }
 
 
@@ -5491,7 +5491,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 
   # ggplot prepare ___________________________________
   Soup.VS.Cells.Av.Exp.gg <- tibble::rownames_to_column(as.data.frame(Soup.VS.Cells.Av.Exp.log10), "gene")
-  (Soup.VS.Cells.Av.Exp.gg <- as_tibble(Soup.VS.Cells.Av.Exp.gg))
+  (Soup.VS.Cells.Av.Exp.gg <- dplyr::as_tibble(Soup.VS.Cells.Av.Exp.gg))
   soup.rate <- Soup.VS.Cells.Av.Exp.gg$Soup / (Soup.VS.Cells.Av.Exp.gg$Cells + Soup.VS.Cells.Av.Exp.gg$Soup)
   cell.rate <- Soup.VS.Cells.Av.Exp.gg$Cells / (Soup.VS.Cells.Av.Exp.gg$Cells + Soup.VS.Cells.Av.Exp.gg$Soup)
 
@@ -5831,30 +5831,30 @@ regress_out_and_recalculate_seurat <- function(obj
                                                , plot_umaps = T
                                                , save_obj = T
                                                , assayX = 'RNA') {
-  tic(); print("FindVariableFeatures")
-  obj <- FindVariableFeatures(obj, mean.function = 'FastExpMean', dispersion.function = 'FastLogVMR', nfeatures = 10000); toc()
+  tictoc::tic(); print("FindVariableFeatures")
+  obj <- FindVariableFeatures(obj, mean.function = 'FastExpMean', dispersion.function = 'FastLogVMR', nfeatures = 10000); tictoc::toc()
 
-  tic(); print("calc.q99.Expression.and.set.all.genes")
-  obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc()
+  tictoc::tic(); print("calc.q99.Expression.and.set.all.genes")
+  obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); tictoc::toc()
 
-  tic(); print("ScaleData")
-  obj <- ScaleData(obj, assay = assayX, verbose = T, vars.to.regress = vars.to.regress); toc()
+  tictoc::tic(); print("ScaleData")
+  obj <- ScaleData(obj, assay = assayX, verbose = T, vars.to.regress = vars.to.regress); tictoc::toc()
 
-  tic(); print("RunPCA")
-  obj <- RunPCA(obj, npcs = nPCs, verbose = T); toc()
+  tictoc::tic(); print("RunPCA")
+  obj <- RunPCA(obj, npcs = nPCs, verbose = T); tictoc::toc()
 
-  tic(); print("SetupReductionsNtoKdimensions")
-  obj <- SetupReductionsNtoKdimensions(obj = obj, nPCs = nPCs, dimensions = 3:2, reduction = "umap"); toc()
+  tictoc::tic(); print("SetupReductionsNtoKdimensions")
+  obj <- SetupReductionsNtoKdimensions(obj = obj, nPCs = nPCs, dimensions = 3:2, reduction = "umap"); tictoc::toc()
 
-  tic(); print("FindNeighbors")
-  obj <- FindNeighbors(obj, reduction = "pca", dims = 1:nPCs); toc()
+  tictoc::tic(); print("FindNeighbors")
+  obj <- FindNeighbors(obj, reduction = "pca", dims = 1:nPCs); tictoc::toc()
 
-  tic(); print("FindClusters")
-  obj <- FindClusters(obj, resolution = clust_resolutions); toc()
+  tictoc::tic(); print("FindClusters")
+  obj <- FindClusters(obj, resolution = clust_resolutions); tictoc::toc()
 
   if (calc_tSNE) {
-    tic(); print("RunTSNE")
-    obj <- RunTSNE(obj, reduction = "pca", dims = 1:nPCs); toc()
+    tictoc::tic(); print("RunTSNE")
+    obj <- RunTSNE(obj, reduction = "pca", dims = 1:nPCs); tictoc::toc()
   }
 
   # orig.dir <- getwd()
