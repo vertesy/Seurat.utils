@@ -26,7 +26,11 @@ AutoLabelTop.logFC(
 \item{df_markers}{Data frame, result of DGEA analysis (FindAllMarkers), Default: combined.obj@misc$df.markers[\link{paste0("res.", res)}]}
 }
 \description{
-Create a new "named identity" column in the metadata of a Seurat object, with \code{Ident} set to a clustering output matching the \code{res} parameter of the function. It requires the output table of \code{FindAllMarkers()}. If you used \code{StoreAllMarkers()} is stored under \verb{@misc$df.markers$res...}, which location is assumed by default. #
+Create a new "named identity" column in the metadata of a Seurat object,
+with \code{Ident} set to a clustering output matching the \code{res} parameter of the function.
+t requires the output table of \code{FindAllMarkers()}.
+If you used \code{StoreAllMarkers()} is stored under \verb{@misc$df.markers$res...},
+which location is assumed by default.
 }
 \examples{
 \dontrun{

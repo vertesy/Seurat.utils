@@ -2,13 +2,21 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{ww.get.1st.Seur.element}
 \alias{ww.get.1st.Seur.element}
-\title{ww.get.1st.Seur.element}
+\title{Get the First Seurat Object from a List of Seurat Objects}
 \usage{
 ww.get.1st.Seur.element(obj)
 }
 \arguments{
-\item{obj}{Seurat object OR list of Seurat objects OR any other list}
+\item{obj}{A Seurat object, a list of Seurat objects, or any other list.}
+}
+\value{
+The first Seurat object from the list or the Seurat object itself.
+If the input is not a Seurat object or a list containing at least one Seurat
+object, the function will throw an error.
 }
 \description{
-Get the first Seurat object from a list of Seurat objects. Returns itself if not a list.
+#' If provided with a list of Seurat objects, this function returns the first
+Seurat object in the list. If the input is a single Seurat object, it returns
+the object itself. It is assumed that all elements of the list are Seurat
+objects if the input is a list.
 }
