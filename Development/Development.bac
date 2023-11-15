@@ -1530,13 +1530,13 @@ remove.residual.small.clusters <- function(obj = combined.obj
 
 
 # _________________________________________________________________________________________________
-#' @title drop.levels.Seurat
+#' @title dropLevelsSeurat
 #'
 #' @description Drop unused levels from factor variables in a Seurat object.
 #' @param obj A Seurat object.
 #' @param verbose Logical. Whether to print a message indicating which levels are being dropped.
 #' @export
-drop.levels.Seurat <- function(obj = combined.obj, verbose = TRUE) {
+dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE) {
   META <- obj@meta.data
   colclasses <- sapply(META, class)
   drop_in_these <- names(colclasses[ colclasses == 'factor'])
@@ -1561,7 +1561,7 @@ drop.levels.Seurat <- function(obj = combined.obj, verbose = TRUE) {
 #' @param indices A numeric vector indicating which datasets to process by their position in the `object_names` vector. By default, it processes the second and third datasets.
 #' @param ... Additional parameters passed to the `remove.residual.small.clusters` function.
 #'
-#' @details This function applies `remove.residual.small.clusters` and `drop.levels.Seurat` to the Seurat objects specified by the `indices` in the `object_names`.
+#' @details This function applies `remove.residual.small.clusters` and `dropLevelsSeurat` to the Seurat objects specified by the `indices` in the `object_names`.
 #' It operates in place, modifying the input `ls_obj` list.
 #'
 #' @return The function returns the modified list of Seurat objects.
@@ -1578,7 +1578,7 @@ remove_clusters_and_drop_levels <- function(ls_obj, object_names = names(ls_obj)
     dataset_name <- object_names[index]
     obj <- ls_obj[[dataset_name]]
     obj <- Seurat.utils::remove.residual.small.clusters(obj = obj, identitites = GetClusteringRuns(obj), ...)
-    obj <- Seurat.utils::drop.levels.Seurat(obj)
+    obj <- Seurat.utils::dropLevelsSeurat(obj)
     ls_obj[[dataset_name]] <- obj
   }
   return(ls_obj)
@@ -2711,7 +2711,7 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
 
 
 # _________________________________________________________________________________________________
-#' plot.GeneExpHist
+#' plotGeneExpHist
 #'
 #' This function creates a histogram of gene expression for a given set of genes in a Seurat object.
 #' @param obj A Seurat object.
@@ -2730,7 +2730,7 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
 #'
 #' @export
 
-plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN")
+plotGeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN")
                              , assay = 'RNA', slot_ = 'data'
                              , thr_expr = 10
                              , suffix = NULL

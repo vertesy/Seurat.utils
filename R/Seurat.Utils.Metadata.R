@@ -605,7 +605,7 @@ heatmap_calc_clust_median <- function(meta, ident, subset_ident_levels = FALSE
 
 
 # _________________________________________________________________________________________________
-#' @title plot.Metadata.median.fraction.barplot
+#' @title plotMetadataMedianFractionBarplot
 #'
 #' @description Generates a barplot of metadata median values.
 #' @param columns A vector of column names to consider for the barplot. Default: c("percent.mito", "percent.ribo").
@@ -626,11 +626,11 @@ heatmap_calc_clust_median <- function(meta, ident, subset_ident_levels = FALSE
 #' @seealso
 #'  \code{\link[dplyr]{summarise_all}}
 #'  \code{\link[reshape2]{melt}}
-#' @export plot.Metadata.median.fraction.barplot
+#' @export plotMetadataMedianFractionBarplot
 #' @importFrom dplyr summarize_all
 #' @importFrom reshape2 melt
 
-plot.Metadata.median.fraction.barplot <- function(
+plotMetadataMedianFractionBarplot <- function(
     columns = c(  "percent.mito", "percent.ribo")
     , suffix =  NULL
     , group.by = GetClusteringRuns(obj = obj)[2]
@@ -681,7 +681,7 @@ plot.Metadata.median.fraction.barplot <- function(
 
 
 # _________________________________________________________________________________________________
-#' plot.Metadata.categ.pie
+#' plotMetadataCategPie
 #'
 #' @param metacol Which column in metadata should be used?
 #' @param plot_name Plot name
@@ -692,7 +692,7 @@ plot.Metadata.median.fraction.barplot <- function(
 #'
 #' @export
 
-plot.Metadata.categ.pie <- function(metacol = 'Singlet.status'
+plotMetadataCategPie <- function(metacol = 'Singlet.status'
                                     , plot_name = paste(metacol, "distribution")
                                     , obj = combined.obj, max.categs = 20, both_pc_and_value = T
                                     , subtitle = NULL, ...) {

@@ -2711,7 +2711,7 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
 
 
 # _________________________________________________________________________________________________
-#' plot.GeneExpHist
+#' plotGeneExpHist
 #'
 #' This function creates a histogram of gene expression for a given set of genes in a Seurat object.
 #' @param obj A Seurat object.
@@ -2730,7 +2730,7 @@ qSeuViolin <- function(object = ls.Seurat[[1]], suffix = GEX_library
 #'
 #' @export
 
-plot.GeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN")
+plotGeneExpHist <- function(obj = cobj.H9.L92, genes = c("MALAT1","MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN")
                              , assay = 'RNA', slot_ = 'data'
                              , thr_expr = 10
                              , suffix = NULL
