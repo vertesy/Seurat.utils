@@ -21,7 +21,8 @@ StoreAllMarkers(
 \item{digit}{Number of digits to keep, Default: c(0, 3)\link{2}}
 }
 \description{
-Save the output table of \code{FindAllMarkers()} (df_markers) under \verb{@misc$df.markers$res...}. By default, it rounds up insignificant digits up to 3. #
+Save the output table of \code{FindAllMarkers()} (df_markers) under
+\verb{@misc$df.markers$res...}. By default, it rounds up insignificant digits up to 3.
 }
 \examples{
 \dontrun{

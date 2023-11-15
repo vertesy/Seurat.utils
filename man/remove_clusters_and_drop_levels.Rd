@@ -27,7 +27,7 @@ The function returns the modified list of Seurat objects.
 This function removes residual small clusters from specified Seurat objects and drops levels in factor-like metadata.
 }
 \details{
-This function applies \code{remove.residual.small.clusters} and \code{drop.levels.Seurat} to the Seurat objects specified by the \code{indices} in the \code{object_names}.
+This function applies \code{remove.residual.small.clusters} and \code{dropLevelsSeurat} to the Seurat objects specified by the \code{indices} in the \code{object_names}.
 It operates in place, modifying the input \code{ls_obj} list.
 }
 \examples{

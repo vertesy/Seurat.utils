@@ -56,7 +56,7 @@ if ( !dir.exists(RepositoryDir) ) { create(path = RepositoryDir, description = D
 } else {
   getwd()
   try(file.remove(c("DESCRIPTION","NAMESPACE"))) # , "Seurat.utils.Rproj"
-  usethis::usethis::create_package(path = RepositoryDir, fields = DESCRIPTION, open = F)
+  usethis::create_package(path = RepositoryDir, fields = DESCRIPTION, open = F)
 }
 
 

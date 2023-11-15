@@ -21,14 +21,23 @@ AutoLabel.KnownMarkers(
 
 \item{res}{The clustering resolution to use. Default: 0.5.}
 
-\item{KnownMarkers}{A character vector containing known marker genes to be used for annotation. Default: c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1", "SALL4", "DDIT4", "PDK1", "SATB2", "FEZF2").}
+\item{KnownMarkers}{A character vector containing known marker genes to be used for annotation.
+Default: c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1", "SALL4", "DDIT4",
+"PDK1", "SATB2", "FEZF2").}
 
-\item{order.by}{Specifies the column to sort the output tibble by. Default: 'combined.score' (First among "combined.score", "avg_log2FC", "p_val_adj").}
+\item{order.by}{Specifies the column to sort the output tibble by.
+Default: 'combined.score' (First among "combined.score", "avg_log2FC", "p_val_adj").}
 
-\item{df_markers}{The data frame of markers. By default, it is stored under \verb{@misc$df.markers$res...} in the provided Seurat object. Default: combined.obj@misc$df.markers[\link{paste0("res.", res)}].}
+\item{df_markers}{The data frame of markers. By default, it is stored under
+\verb{@misc$df.markers$res...} in the provided Seurat object.
+Default: combined.obj@misc$df.markers[\link{paste0("res.", res)}].}
 }
 \description{
-Creates a new "named identity" column in the metadata of a Seurat object, setting 'Ident' to a clustering output matching the 'res' parameter. This function requires the output table of \code{FindAllMarkers()}. If you used \code{StoreAllMarkers()}, the output is stored under \verb{@misc$df.markers$res...}, which is the default location.
+Creates a new "named identity" column in the metadata of a Seurat object,
+setting 'Ident' to a clustering output matching the 'res' parameter.
+This function requires the output table of \code{FindAllMarkers()}.
+If you used \code{StoreAllMarkers()}, the output is stored under \verb{@misc$df.markers$res...},
+which is the default location.
 }
 \examples{
 \dontrun{

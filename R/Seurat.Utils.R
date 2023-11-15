@@ -1100,12 +1100,19 @@ set.mm <- function(obj = combined.obj) {
 
 
 # _________________________________________________________________________________________________
-#' @title ww.get.1st.Seur.element
+#' @title Get the First Seurat Object from a List of Seurat Objects
 #'
-#' @description Get the first Seurat object from a list of Seurat objects. Returns itself if not a list.
-#' @param obj Seurat object OR list of Seurat objects OR any other list
-
-
+#' @description #' If provided with a list of Seurat objects, this function returns the first
+#' Seurat object in the list. If the input is a single Seurat object, it returns
+#' the object itself. It is assumed that all elements of the list are Seurat
+#' objects if the input is a list.
+#'
+#' @param obj A Seurat object, a list of Seurat objects, or any other list.
+#'
+#' @return The first Seurat object from the list or the Seurat object itself.
+#' If the input is not a Seurat object or a list containing at least one Seurat
+#' object, the function will throw an error.
+#' @export
 ww.get.1st.Seur.element <- function(obj) {
   if (is(obj)[1] == 'list') {
     iprint('A list of objects is provided, taking the 1st from', length(obj), 'elements.')
@@ -1523,13 +1530,13 @@ remove.residual.small.clusters <- function(obj = combined.obj
 
 
 # _________________________________________________________________________________________________
-#' @title drop.levels.Seurat
+#' @title dropLevelsSeurat
 #'
 #' @description Drop unused levels from factor variables in a Seurat object.
 #' @param obj A Seurat object.
 #' @param verbose Logical. Whether to print a message indicating which levels are being dropped.
 #' @export
-drop.levels.Seurat <- function(obj = combined.obj, verbose = TRUE) {
+dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE) {
   META <- obj@meta.data
   colclasses <- sapply(META, class)
   drop_in_these <- names(colclasses[ colclasses == 'factor'])
@@ -1554,7 +1561,7 @@ drop.levels.Seurat <- function(obj = combined.obj, verbose = TRUE) {
 #' @param indices A numeric vector indicating which datasets to process by their position in the `object_names` vector. By default, it processes the second and third datasets.
 #' @param ... Additional parameters passed to the `remove.residual.small.clusters` function.
 #'
-#' @details This function applies `remove.residual.small.clusters` and `drop.levels.Seurat` to the Seurat objects specified by the `indices` in the `object_names`.
+#' @details This function applies `remove.residual.small.clusters` and `dropLevelsSeurat` to the Seurat objects specified by the `indices` in the `object_names`.
 #' It operates in place, modifying the input `ls_obj` list.
 #'
 #' @return The function returns the modified list of Seurat objects.
@@ -1571,7 +1578,7 @@ remove_clusters_and_drop_levels <- function(ls_obj, object_names = names(ls_obj)
     dataset_name <- object_names[index]
     obj <- ls_obj[[dataset_name]]
     obj <- Seurat.utils::remove.residual.small.clusters(obj = obj, identitites = GetClusteringRuns(obj), ...)
-    obj <- Seurat.utils::drop.levels.Seurat(obj)
+    obj <- Seurat.utils::dropLevelsSeurat(obj)
     ls_obj[[dataset_name]] <- obj
   }
   return(ls_obj)
@@ -1841,7 +1848,8 @@ StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based 
 # _________________________________________________________________________________________________
 #' @title StoreAllMarkers
 #'
-#' @description Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3. #
+#' @description Save the output table of `FindAllMarkers()` (df_markers) under
+#' `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
 #' @param obj Seurat object, Default: combined.obj
 #' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
 #' @param res Clustering resoluton to use, Default: 0.5
@@ -1853,7 +1861,7 @@ StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based 
 #'  }
 #' }
 #' @export
-StoreAllMarkers <- function(obj = combined.obj # Save the output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
+StoreAllMarkers <- function(obj = combined.obj
                             , df_markers = df.markers, res = 0.5, digit = c(0,3)[2]) {
   if (digit) df_markers[,1:5] <- signif(df_markers[,1:5], digits = digit)
   obj@misc$'df.markers'[[ppp('res',res)]] <- df_markers
@@ -1928,7 +1936,11 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 # _________________________________________________________________________________________________
 #' @title AutoLabelTop.logFC
 #'
-#' @description Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default. #
+#' @description Create a new "named identity" column in the metadata of a Seurat object,
+#' with `Ident` set to a clustering output matching the `res` parameter of the function.
+#' t requires the output table of `FindAllMarkers()`.
+#'  If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`,
+#'  which location is assumed by default.
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: 0.2
 #' @param plot.top.genes Show plot? Default: T
@@ -1941,7 +1953,7 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 #'  }
 #' }
 #' @export
-AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
+AutoLabelTop.logFC <- function(obj = combined.obj
                                , ident = GetClusteringRuns()[1]
                                , res = 0.2, plot.top.genes = T
                                , suffix = res
@@ -1985,13 +1997,22 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 # _________________________________________________________________________________________________
 #' @title AutoLabel.KnownMarkers
 #'
-#' @description Creates a new "named identity" column in the metadata of a Seurat object, setting 'Ident' to a clustering output matching the 'res' parameter. This function requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()`, the output is stored under `@misc$df.markers$res...`, which is the default location.
+#' @description Creates a new "named identity" column in the metadata of a Seurat object,
+#'  setting 'Ident' to a clustering output matching the 'res' parameter.
+#'  This function requires the output table of `FindAllMarkers()`.
+#' If you used `StoreAllMarkers()`, the output is stored under `@misc$df.markers$res...`,
+#' which is the default location.
 #' @param obj A Seurat object to work with. Default: combined.obj.
 #' @param topN The top 'N' genes to consider. Default: 1.
 #' @param res The clustering resolution to use. Default: 0.5.
-#' @param KnownMarkers A character vector containing known marker genes to be used for annotation. Default: c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1", "SALL4", "DDIT4", "PDK1", "SATB2", "FEZF2").
-#' @param order.by Specifies the column to sort the output tibble by. Default: 'combined.score' (First among "combined.score", "avg_log2FC", "p_val_adj").
-#' @param df_markers The data frame of markers. By default, it is stored under `@misc$df.markers$res...` in the provided Seurat object. Default: combined.obj@misc$df.markers[[paste0("res.", res)]].
+#' @param KnownMarkers A character vector containing known marker genes to be used for annotation.
+#' Default: c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1", "SALL4", "DDIT4",
+#' "PDK1", "SATB2", "FEZF2").
+#' @param order.by Specifies the column to sort the output tibble by.
+#' Default: 'combined.score' (First among "combined.score", "avg_log2FC", "p_val_adj").
+#' @param df_markers The data frame of markers. By default, it is stored under
+#'  `@misc$df.markers$res...` in the provided Seurat object.
+#'  Default: combined.obj@misc$df.markers[[paste0("res.", res)]].
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -2003,8 +2024,10 @@ AutoLabelTop.logFC <- function(obj = combined.obj # Create a new "named identity
 #'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{slice}}
 #' @export
 #' @importFrom dplyr select slice
-AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5 # Create a new "named identity" column in the metadata of a Seurat object, with `Ident` set to a clustering output matching the `res` parameter of the function. It requires the output table of `FindAllMarkers()`. If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`, which location is assumed by default.
-                                   , KnownMarkers = c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1","SALL4","DDIT4", "PDK1", "SATB2", "FEZF2")
+AutoLabel.KnownMarkers <- function(obj = combined.obj, topN =1, res = 0.5
+                                   , KnownMarkers = c("TOP2A", "EOMES", "SLA", "HOPX", "S100B",
+                                                      "DLX6-AS1", "POU5F1","SALL4","DDIT4", "PDK1",
+                                                      "SATB2", "FEZF2")
                                    , order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1]
 
                                    , df_markers = obj@misc$"df.markers"[[paste0("res.",res)]] ) {
@@ -3456,7 +3479,7 @@ save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
 #' @seealso
 #' \code{\link[cowplot]{plot_grid}}
 #' @export
-qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_grid() on an A4 page
+qqSaveGridA4 <- function(plotlist= pl
                          , plots = 1:2, NrPlots = length(plots), height = hA4, width = wA4
                          , fname = "Fractions.Organoid-to-organoid variation.png", ...) {
   stopifnot(NrPlots %in% c(2,4))
