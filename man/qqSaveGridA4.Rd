@@ -44,5 +44,5 @@ if(interactive()){
 }
 }
 \seealso{
-\code{\link[ggplot2]{plot_grid}}
+\code{\link[cowplot]{plot_grid}}
 }

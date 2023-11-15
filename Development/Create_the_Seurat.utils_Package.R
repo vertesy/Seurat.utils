@@ -20,7 +20,7 @@ try(dev.off(), silent = TRUE)
 
 # Setup ------------------------
 package.name <- 	"Seurat.utils"
-package.version <- "2.0.5"
+package.version <- "2.0.6"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir <- paste0("~/GitHub/Packages/", package.name, "/")
@@ -41,10 +41,12 @@ DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
                     , "Packaged" =  Sys.time()
                     # , "Repository" =  "CRAN"
                     , "Depends" =  "ggplot2, Seurat, Stringendo, CodeAndRoll2, ggExpress"
+
                     , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
-    htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter, pheatmap
-    R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom, EnhancedVolcano"
-                    , "Suggests" = "SoupX, principal_curve"
+                          htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter, pheatmap,
+                          R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom"
+
+                    , "Suggests" = "SoupX, principal_curve, EnhancedVolcano"
                     , "BugReports"= "https://github.com/vertesy/Seurat.utils/issues"
 )
 
@@ -54,7 +56,7 @@ if ( !dir.exists(RepositoryDir) ) { create(path = RepositoryDir, description = D
 } else {
   getwd()
   try(file.remove(c("DESCRIPTION","NAMESPACE"))) # , "Seurat.utils.Rproj"
-  usethis::create_package(path = RepositoryDir, fields = DESCRIPTION, open = F)
+  usethis::usethis::create_package(path = RepositoryDir, fields = DESCRIPTION, open = F)
 }
 
 
@@ -132,5 +134,42 @@ p.deps <- gsub(x = names(f.deps), pattern = 'package:', replacement = '')
 write(x = p.deps, file = depFile, append = T)
 
 
+
+if (F) {
+
+  findFunctionOrigin <- function(function_names) {
+    # Get a list of all installed packages
+    installed_packages <- rownames(installed.packages())
+
+
+    # Initialize an empty list to store the results
+    function_origins <- list()
+
+    # Iterate over each function name
+    for (func_name in function_names) {
+      print(func_name)
+      # Initialize a vector to store the packages where the function is found
+      found_in_packages <- c()
+
+      # Check each package
+      for (pkg in installed_packages) {
+        cat('.', append = T)
+        # Check if the package contains the function
+        if (func_name %in% ls(getNamespace(pkg), all.names = TRUE)) {
+          found_in_packages <- c(found_in_packages, pkg)
+        }
+      }
+
+      # Add the vector of packages to the result list, named by the function
+      function_origins[[func_name]] <- found_in_packages
+    }
+
+    # Return the list
+    return(function_origins)
+  }
+
+  FunctionOrigins <- findFunctionOrigin( f.deps$`character(0)`)
+
+}
 
 # NCmisc::list.functions.in.file(package.FnP)

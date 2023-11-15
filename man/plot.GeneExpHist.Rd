@@ -11,7 +11,7 @@
   slot_ = "data",
   thr_expr = 10,
   suffix = NULL,
-  xlab = p0("log10(Summed UMI count @", slot_, ")"),
+  xlab = paste0("log10(Summed UMI count @", slot_, ")"),
   return_cells_passing = TRUE,
   quantile_thr = 0.95,
   return_quantile,

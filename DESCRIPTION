@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
-Version: 2.0.5
+Version: 2.0.6
 Authors@R: 
     person("Abel", "Vertesy", , "a.vertesy@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <abel.vertesy@imba.oeaw.ac.at> [aut, cre]
@@ -21,7 +21,6 @@ Imports:
     base,
     cowplot,
     dplyr,
-    EnhancedVolcano,
     ggcorrplot,
     ggpubr,
     ggrepel,
@@ -34,6 +33,7 @@ Imports:
     Matrix,
     matrixStats,
     methods,
+    pheatmap,
     princurve,
     R.utils,
     readr,
@@ -50,8 +50,10 @@ Imports:
     utils,
     vroom
 Suggests: 
+    EnhancedVolcano,
+    principal_curve,
     SoupX
 Encoding: UTF-8
-Packaged: 2023-11-15 18:11:55.157119
+Packaged: 2023-11-15 18:44:25.082124
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

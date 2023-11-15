@@ -225,7 +225,7 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL 
 #' @seealso
 #'  \code{\link[sparseMatrixStats]{character(0)}}
 #' @export
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#' @importFrom tictoc tic toc
 #' @importFrom sparseMatrixStats rowQuantiles
 calc.q99.Expression.and.set.all.genes <- function(obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
                                                   , quantileX = 0.99, max.cells =  1e5
@@ -338,7 +338,7 @@ PlotFilters <- function(ls.obj = ls.Seurat
 ) {
 
   stopif(is.null(below.nFeature_RNA))
-  llprint(
+  MarkdownHelpers::llprint(
     "We filtered for high quality cells based on the number of genes detected [", above.nFeature_RNA, ";" ,below.nFeature_RNA
     , "] and the fraction of mitochondrial [", Stringendo::percentage_formatter(above.mito), ";" ,Stringendo::percentage_formatter(below.mito)
     , "] and ribosomal [",Stringendo::percentage_formatter(above.ribo), ";" ,Stringendo::percentage_formatter(below.ribo), "] reads."
@@ -432,7 +432,7 @@ PlotFilters <- function(ls.obj = ls.Seurat
     # D
 
     plot_list = list(A,B,C,D)
-    px = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:4])
+    px = cowplot::plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:4])
     fname = ppp("Filtering.thresholds", suffices[i], filetype)
     save_plot(filename = fname, plot = px, base_height = 12, ncol = 1, nrow = 1) #Figure 2
   } # for
@@ -1381,8 +1381,9 @@ subsetSeuObj.ident.class <- function(obj = combined.obj, ident = 'RNA_snn_res.0.
 #'  }
 #' }
 #' @export
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#' @importFrom tictoc tic toc
 #' @importFrom Stringendo percentage_formatter
+#' @importFrom foreach foreach getDoParRegistered
 Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids"
                                       , save_object = FALSE) {
 
@@ -1395,7 +1396,7 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
   iprint(NrCells, "cells")
   tictoc::tic()
   if (foreach::getDoParRegistered() ) {
-    ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
+    ls.obj.downsampled <- foreach::foreach(i = 1:n.datasets ) %dopar% {
       iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i/n.datasets, digitz = 2))
       subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
     }; names(ls.obj.downsampled)  <- names.ls
@@ -1436,9 +1437,9 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
 #'  }
 #' }
 #' @export
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#' @importFrom tictoc tic toc
 #' @importFrom Stringendo percentage_formatter
-
+#' @importFrom  foreach getDoParRegistered foreach
 Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1
                                          , save_object = FALSE) {
 
@@ -1452,7 +1453,7 @@ Downsample.Seurat.Objects.PC <- function(ls.obj = ls.Seurat, fraction = 0.1
 
   tictoc::tic()
   if (foreach::getDoParRegistered() ) {
-    ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
+    ls.obj.downsampled <- foreach::foreach(i = 1:n.datasets ) %dopar% {
       subsetSeuObj(obj = ls.obj[[i]], fraction_ = fraction)
     }; names(ls.obj.downsampled)  <- names.ls
   } else {
@@ -1755,7 +1756,7 @@ AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers
          , main = "principal_curve")
     # points(fit)
     points(coord.umap, pch = 18, cex = .25)
-    whiskers(coord.umap, fit$s, lwd = .1)
+    princurve::whiskers(coord.umap, fit$s, lwd = .1)
     MarkdownReports::wplot_save_this(plotname = "principal_curve")
   }
 
@@ -3060,10 +3061,10 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' @param format Format to save the plot file. Default: 'jpg'
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @seealso
-#'  \code{\link[tictoc]{tictoc::tic}}
+#'  \code{\link[tictoc]{tic}}
 #'  \code{\link[cowplot]{plot_grid}}
 #' @export
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#' @importFrom tictoc tic toc
 #' @importFrom cowplot plot_grid
 
 multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
@@ -3143,9 +3144,9 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
 #' @param jpeg.q Quality of the jpeg output. Default: 90
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @seealso
-#'  \code{\link[tictoc]{tictoc::tic}}
+#'  \code{\link[tictoc]{tic}}
 #' @export
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#' @importFrom tictoc tic toc
 
 multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
                                    , list.of.genes, gene.per.page = 5
@@ -3221,7 +3222,7 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = 'res.0.6', 
                         , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...) +
     ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
 
-  plots = plot_grid(p1, p2, labels = c("A", "B"), ncol = 2)
+  plots = cowplot::plot_grid(p1, p2, labels = c("A", "B"), ncol = 2)
   plotname = kpp( 'UMAP.tSNE', grouping, name.suffix, filetype)
 
   cowplot::save_plot(filename = plotname, plot = plots
@@ -3404,7 +3405,7 @@ save2umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
                           , nrow = 2, ncol = 1
                           , h = hA4 * scale, w = wA4 * scale, ...) { # Save 2 umaps on an A4 page.
   if (pname ==F) pname = Stringendo::sppp(substitute(plot_list), suffix)
-  p1 = plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
+  p1 = cowplot::plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
 
@@ -3427,7 +3428,7 @@ save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
                           , nrow = 2, ncol = 2
                           , h = wA4 * scale, w = hA4 * scale, ...) { # Save 4 umaps on an A4 page.
   if (pname==F) pname =  Stringendo::sppp(substitute(plot_list), suffix)
-  p1 = plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
+  p1 = cowplot::plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
 
@@ -3453,14 +3454,14 @@ save4umaps.A4 <- function(plot_list, pname = F, suffix = NULL, scale = 1
 #' }
 #' }
 #' @seealso
-#' \code{\link[ggplot2]{plot_grid}}
+#' \code{\link[cowplot]{plot_grid}}
 #' @export
 qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_grid() on an A4 page
                          , plots = 1:2, NrPlots = length(plots), height = hA4, width = wA4
                          , fname = "Fractions.Organoid-to-organoid variation.png", ...) {
   stopifnot(NrPlots %in% c(2,4))
   iprint(NrPlots,"plots found,", plots,"are saved.")
-  pg.cf = plot_grid(plotlist = plotlist[plots], nrow = 2, ncol = NrPlots/2, labels = LETTERS[1:NrPlots], ...  )
+  pg.cf = cowplot::plot_grid(plotlist = plotlist[plots], nrow = 2, ncol = NrPlots/2, labels = LETTERS[1:NrPlots], ...  )
   if (NrPlots == 4) list2env(list(height = width, width = height), envir = as.environment(environment()))
   save_plot(filename = fname,
             plot = pg.cf, base_height = height, base_width = width)
@@ -3918,7 +3919,7 @@ sparse.cor <- function(smat){
 #'  }
 #' }
 #' @export
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#' @importFrom tictoc tic toc
 Calc.Cor.Seurat <- function(assay.use = "RNA", slot.use = "data"
                             , quantileX = 0.95, max.cells =  40000, seed = p$"seed"
                             , digits = 2, obj = combined.obj) {
@@ -4158,24 +4159,24 @@ GetMostVarGenes <- function(obj, nGenes = p$nVarGenes) { # Get the most variable
 #' @export
 gene.name.check <- function(Seu.obj ) { # Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files.
   rn = rownames(GetAssayData(object = Seu.obj, slot = "counts"))
-  llprint("### Gene name pattern")
+  MarkdownHelpers::llprint("### Gene name pattern")
 
-  llogit('`rn = rownames(GetAssayData(object = ls.Seurat[[1]], slot = "counts"))`')
-  llogit('`head(CodeAndRoll2::grepv(rn, pattern = "-"), 10)`')
+  MarkdownHelpers::llogit('`rn = rownames(GetAssayData(object = ls.Seurat[[1]], slot = "counts"))`')
+  MarkdownHelpers::llogit('`head(CodeAndRoll2::grepv(rn, pattern = "-"), 10)`')
   print('pattern = -')
-  llprint(head(CodeAndRoll2::grepv(rn, pattern = "-"), 10))
+  MarkdownHelpers::llprint(head(CodeAndRoll2::grepv(rn, pattern = "-"), 10))
 
-  llogit('`head(CodeAndRoll2::grepv(rn, pattern = "_"), 10)`')
+  MarkdownHelpers::llogit('`head(CodeAndRoll2::grepv(rn, pattern = "_"), 10)`')
   print('pattern = _')
-  llprint(head(CodeAndRoll2::grepv(rn, pattern = "_"), 10))
+  MarkdownHelpers::llprint(head(CodeAndRoll2::grepv(rn, pattern = "_"), 10))
 
-  llogit('`head(CodeAndRoll2::grepv(rn, pattern = "\\."), 10)`')
+  MarkdownHelpers::llogit('`head(CodeAndRoll2::grepv(rn, pattern = "\\."), 10)`')
   print('pattern = \\.')
-  llprint(head(CodeAndRoll2::grepv(rn, pattern = "\\."), 10))
+  MarkdownHelpers::llprint(head(CodeAndRoll2::grepv(rn, pattern = "\\."), 10))
 
-  llogit('`head(CodeAndRoll2::grepv(rn, pattern = "\\.AS[1-9]"), 10)`')
+  MarkdownHelpers::llogit('`head(CodeAndRoll2::grepv(rn, pattern = "\\.AS[1-9]"), 10)`')
   print('pattern = \\.AS[1-9]')
-  llprint(head(CodeAndRoll2::grepv(rn, pattern = "\\.AS[1-9]"), 10))
+  MarkdownHelpers::llprint(head(CodeAndRoll2::grepv(rn, pattern = "\\.AS[1-9]"), 10))
 }
 
 
@@ -4361,7 +4362,7 @@ whitelist.subset.ls.Seurat <- function(ls.obj = ls.Seurat
 #'  \code{\link[matrixStats]{rowSums2}}
 #' @export
 #' @importFrom matrixStats rowSums2
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#' @importFrom tictoc tic toc
 
 FindCorrelatedGenes <- function(gene ="TOP2A", obj = combined.obj, assay = "RNA", slot = "data"
                                 , HEonly =F , minExpr = 1, minCells = 1000
@@ -4525,16 +4526,17 @@ RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 #' @title HGNC.EnforceUnique
 #'
 #' @description Enforce Unique names after HGNC symbol update.
-#' @param updatedSymbols Gene symbols, it is the output of HGNChelper::checkGeneSymbols. #
+#' @param updatedSymbols Gene symbols, it is the output of HGNChelper's checkGeneSymbols)_.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
 #'  x <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
-#'  # While "make.unique" is not the ideal solution, because it generates mismatched, in my integration example it does reduce the mismatching genes from ~800 to 4
+#'  # While "make.unique" is not the ideal solution, because it generates mismatched, in my
+#'  integration example it does reduce the mismatching genes from ~800 to 4
 #'  }
 #' }
 #' @export
-HGNC.EnforceUnique <- function(updatedSymbols) { # Enforce Unique names after HGNC symbol update. updatedSymbols is the output of HGNChelper::checkGeneSymbols.
+HGNC.EnforceUnique <- function(updatedSymbols) {
   NGL <- updatedSymbols[,3]
   if (any.duplicated(NGL)) {
     updatedSymbols[,3] <- make.unique(NGL); "Unique names are enforced by suffixing .1, .2, etc."
@@ -4967,7 +4969,7 @@ ConvertDropSeqfolders <- function(InputDir # Take a parent directory with a numb
 #'  }
 #' }
 #' @export
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#' @importFrom tictoc tic toc
 LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
                            , file.pattern = "^filtered.+Rds$"
                            , string.remove1 = c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix." )[2]
@@ -5002,10 +5004,10 @@ LoadAllSeurats <- function(InputDir # Load all Seurat objects found in a directo
 #' }
 #' @export
 #' @seealso
-#'  \code{\link[tictoc]{tictoc::tic}}
+#'  \code{\link[tictoc]{tic}}
 #'  \code{\link[R.utils]{compressFile}}
 #'  \code{\link[Seurat]{Read10X}}
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#' @importFrom tictoc tic toc
 #' @importFrom R.utils gunzip gzip
 #' @importFrom Seurat Read10X
 
@@ -5132,7 +5134,7 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
                          names(dataDir))
 
   "Maybe the one below should be within the above if statement?"
-  channel = SoupX::SoupChannel(tod = dat, tictoc::toc = datCells, metaData = mDat,
+  channel = SoupX::SoupChannel(tod = dat, toc = datCells, metaData = mDat,
                                channelName = channelName, dataDir = dataDir, dataType = "10X",
                                isV3 = isV3, DR = DR, ...)
   return(channel)
@@ -5150,8 +5152,8 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #' @param fname File name
 #' @param ... Additional parameters passed to saveRDS() function.
 #' @seealso
-#'  \code{\link[tictoc]{tictoc::tic}}
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#'  \code{\link[tictoc]{tic}}
+#' @importFrom tictoc tic toc
 .saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internally = FALSE, ...) {
   try(tictoc::tic(), silent = T)
   saveRDS(object = obj, compress = compress_internally, file = fname, ...)
@@ -5232,7 +5234,7 @@ isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
 #' @note The function uses the 'qs' package for quick and efficient serialization of objects and includes a timing feature from the 'tictoc' package.
 #' @seealso \code{\link[qs]{qsave}} for the underlying save function used.
 #' @importFrom qs qsave
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#' @importFrom tictoc tic toc
 #' @importFrom job job
 xsave <- function(obj, prefix = NULL
                  , suffix = NULL
@@ -5287,7 +5289,7 @@ xsave <- function(obj, prefix = NULL
 #' and includes a timing feature from the 'tictoc' package.
 #' @seealso \code{\link[qs]{qread}} for the underlying read function used.
 #' @importFrom qs qread
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#' @importFrom tictoc tic toc
 xread <- function(file, nthreads = 4, ...) {
   try(tictoc::tic(), silent = TRUE)
 
@@ -5359,7 +5361,7 @@ isave.image <- function(..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/
 #'  \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
 #' @export
 #' @importFrom Stringendo kollapse iprint
-#' @importFrom tictoc tictoc::tic tictoc::toc
+#' @importFrom tictoc tic toc
 qsave.image <- function(..., showMemObject = T, options = c("--force", NULL)[1]){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression.
   fname = Stringendo::kollapse(getwd(), "/",basename(OutDir),idate(),...,".Rdata")
   print(fname)
