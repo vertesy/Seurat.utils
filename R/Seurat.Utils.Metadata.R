@@ -3,6 +3,7 @@
 # ____________________________________________________________________
 # source("/Users/abel.vertesy/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Metadata.R")
 # devtools::load_all(path = '~/GitHub/Packages/Seurat.utils');
+# devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
 # source('~/.pack.R')
 
@@ -480,7 +481,7 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 #'  \code{\link[ggcorrplot]{ggcorrplot}}
 #' @importFrom ggcorrplot ggcorrplot
 #' @export
-plot.Metadata.Cor.Heatmap <- function(
+plotMetadataCorHeatmap <- function(
     columns = c( "nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
     , obj
     , cormethod = c('pearson', 'spearman')[1]
