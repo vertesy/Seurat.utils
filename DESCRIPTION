@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
-Version: 2.0.6
+Version: 2.0.7
 Authors@R: 
     person("Abel", "Vertesy", , "a.vertesy@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <abel.vertesy@imba.oeaw.ac.at> [aut, cre]
@@ -51,9 +51,9 @@ Imports:
     vroom
 Suggests: 
     EnhancedVolcano,
-    principal_curve,
+    princurve,
     SoupX
 Encoding: UTF-8
-Packaged: 2023-11-15 19:15:25.586553
+Packaged: 2023-11-16 15:17:11.829403
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

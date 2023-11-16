@@ -20,7 +20,7 @@ try(dev.off(), silent = TRUE)
 
 # Setup ------------------------
 package.name <- 	"Seurat.utils"
-package.version <- "2.0.6"
+package.version <- "2.0.7"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir <- paste0("~/GitHub/Packages/", package.name, "/")
@@ -41,12 +41,10 @@ DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
                     , "Packaged" =  Sys.time()
                     # , "Repository" =  "CRAN"
                     , "Depends" =  "ggplot2, Seurat, Stringendo, CodeAndRoll2, ggExpress"
-
                     , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
                           htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter, pheatmap,
                           R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom"
-
-                    , "Suggests" = "SoupX, principal_curve, EnhancedVolcano"
+                    , "Suggests" = "SoupX, princurve, EnhancedVolcano"
                     , "BugReports"= "https://github.com/vertesy/Seurat.utils/issues"
 )
 
@@ -91,8 +89,8 @@ warnings()
 
 
 # Install your package ------------------------------------------------
-# # setwd(RepositoryDir)
-devtools::install(RepositoryDir, upgrade = F)
+setwd(RepositoryDir)
+devtools::install_local(RepositoryDir, upgrade = F)
 # unload(Seurat.utils)
 # require("Seurat.utils")
 # # remove.packages("Seurat.utils")
