@@ -20,7 +20,7 @@ try(dev.off(), silent = TRUE)
 
 # Setup ------------------------
 package.name <- 	"Seurat.utils"
-package.version <- "2.0.7"
+package.version <- "2.0.8"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir <- paste0("~/GitHub/Packages/", package.name, "/")
@@ -41,9 +41,10 @@ DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
                     , "Packaged" =  Sys.time()
                     # , "Repository" =  "CRAN"
                     , "Depends" =  "ggplot2, Seurat, Stringendo, CodeAndRoll2, ggExpress"
-                    , "Imports" = "base, cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
-                          htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, methods, princurve, ReadWriter, pheatmap,
-                          R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stats, stringr, tibble, tictoc, utils, vroom"
+                    , "Imports" = "cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
+                          htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, princurve, ReadWriter, pheatmap,
+                          R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stringr, tibble, tictoc,
+                          vroom, job"
                     , "Suggests" = "SoupX, princurve, EnhancedVolcano"
                     , "BugReports"= "https://github.com/vertesy/Seurat.utils/issues"
 )

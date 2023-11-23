@@ -5283,7 +5283,6 @@ xsave <- function(obj, prefix = NULL
 
   if (background.job & rstudioapi::isAvailable()) {
     "This part is not debugged yet!"
-    "This part is not debugged yet!"
 
     message("Started saving as background job.")
     job::job({
@@ -5313,6 +5312,7 @@ xsave <- function(obj, prefix = NULL
 #' @seealso \code{\link[qs]{qread}} for the underlying read function used.
 #' @importFrom qs qread
 #' @importFrom tictoc tic toc
+#' @importFrom job job
 xread <- function(file, nthreads = 4, ...) {
   try(tictoc::tic(), silent = TRUE)
 

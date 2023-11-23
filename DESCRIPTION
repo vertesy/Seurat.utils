@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
-Version: 2.0.7
+Version: 2.0.8
 Authors@R: 
     person("Abel", "Vertesy", , "a.vertesy@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <abel.vertesy@imba.oeaw.ac.at> [aut, cre]
@@ -18,7 +18,6 @@ Depends:
     Seurat,
     Stringendo
 Imports: 
-    base,
     cowplot,
     dplyr,
     ggcorrplot,
@@ -28,11 +27,11 @@ Imports:
     grDevices,
     HGNChelper,
     htmlwidgets,
+    job,
     MarkdownHelpers,
     MarkdownReports,
     Matrix,
     matrixStats,
-    methods,
     pheatmap,
     princurve,
     R.utils,
@@ -43,17 +42,15 @@ Imports:
     Seurat,
     SoupX,
     sparseMatrixStats,
-    stats,
     stringr,
     tibble,
     tictoc,
-    utils,
     vroom
 Suggests: 
     EnhancedVolcano,
     princurve,
     SoupX
 Encoding: UTF-8
-Packaged: 2023-11-16 15:17:11.829403
+Packaged: 2023-11-24 00:16:34.118168
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
