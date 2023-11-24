@@ -20,7 +20,7 @@ try(dev.off(), silent = TRUE)
 
 # Setup ------------------------
 package.name <- 	"Seurat.utils"
-package.version <- "2.0.8"
+package.version <- "2.0.9"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir <- paste0("~/GitHub/Packages/", package.name, "/")
@@ -44,7 +44,7 @@ DESCRIPTION <- list("Title" = "Seurat.utils - utility functions for Seurat"
                     , "Imports" = "cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
                           htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, princurve, ReadWriter, pheatmap,
                           R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stringr, tibble, tictoc,
-                          vroom, job"
+                          vroom, job, qs"
                     , "Suggests" = "SoupX, princurve, EnhancedVolcano"
                     , "BugReports"= "https://github.com/vertesy/Seurat.utils/issues"
 )

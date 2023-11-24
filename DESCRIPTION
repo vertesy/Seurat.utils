@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
-Version: 2.0.8
+Version: 2.0.9
 Authors@R: 
     person("Abel", "Vertesy", , "a.vertesy@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <abel.vertesy@imba.oeaw.ac.at> [aut, cre]
@@ -34,6 +34,7 @@ Imports:
     matrixStats,
     pheatmap,
     princurve,
+    qs,
     R.utils,
     readr,
     ReadWriter,
@@ -51,6 +52,6 @@ Suggests:
     princurve,
     SoupX
 Encoding: UTF-8
-Packaged: 2023-11-24 00:16:34.118168
+Packaged: 2023-11-24 08:10:21.627534
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
