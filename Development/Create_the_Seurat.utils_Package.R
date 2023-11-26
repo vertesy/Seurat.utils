@@ -6,16 +6,7 @@
 try(dev.off(), silent = TRUE)
 
 # Functions ------------------------
-# install_version("devtools", version = "2.0.2", repos = "http://cran.at.r-project.org") # install.packages("devtools")
 # require("devtools")
-# require("RcppArmadillo")
-# require("roxygen2")
-# require("stringr")
-
-# # devtools::install_github(repo = "vertesy/CodeAndRoll2")
-# require('Stringendo')
-# require('CodeAndRoll2')
-
 
 
 # Setup ------------------------
@@ -90,48 +81,62 @@ warnings()
 
 
 # Install your package ------------------------------------------------
-setwd(RepositoryDir)
-devtools::install_local(RepositoryDir, upgrade = F)
-# unload(Seurat.utils)
-# require("Seurat.utils")
-# # remove.packages("Seurat.utils")
-# # Test your package ------------------------------------------------
-# help("wplot")
-# cat("\014")
-# devtools::run_examples()
-
+install(RepositoryDir, upgrade = F)
 
 # Test if you can install from github ------------------------------------------------
-# devtools::install_github(repo = "vertesy/Seurat.utils")
-
+pak::pkg_install("vertesy/Seurat.utils")
+# unload("Seurat.utils")
 # require("Seurat.utils")
+# # remove.packages("Seurat.utils")
 
-# Clean up if not needed anymore ------------------------------------------------
-# View(installed.packages())
-# remove.packages("Seurat.utils")
 
-"check(RepositoryDir, cran = TRUE)"
+# Check CRAN ------------------------------------------------
+check(RepositoryDir, cran = TRUE)
 # as.package(RepositoryDir)
-#
-#
 # # source("https://install-github.me/r-lib/desc")
 # # library(desc)
 # # desc$set("Seurat.utils", "foo")
 # # desc$get(Seurat.utils)
-#
-#
 # system("cd ~/GitHub/Seurat.utils/; ls -a; open .Rbuildignore")
 
+
+
 # Check package dependencies ------------------------------------------------
-depFile = paste0(RepositoryDir, 'Development/Dependencies.R')
+{
+  depFile = paste0(RepositoryDir, 'Development/Dependencies.R')
 
-(f.deps <- NCmisc::list.functions.in.file(filename = package.FnP))
-clipr::write_clip( f.deps$`character(0)`)
+  (f.deps <- NCmisc::list.functions.in.file(filename = package.FnP))
+  clipr::write_clip( f.deps$`character(0)`)
 
-sink(file = depFile); print(f.deps); sink()
-p.deps <- gsub(x = names(f.deps), pattern = 'package:', replacement = '')
-write(x = p.deps, file = depFile, append = T)
+  sink(file = depFile); print(f.deps); sink()
+  p.deps <- gsub(x = names(f.deps), pattern = 'package:', replacement = '')
+  write(x = p.deps, file = depFile, append = T)
+}
 
+
+
+# Package styling, and visualization ------------------------------------------------
+{
+  styler::style_pkg(RepositoryDir)
+  styler::style_file("~/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.R")
+
+  {
+    # Exploring the Structure and Dependencies of my R Package:
+    "works on an installed package!"
+    pkgnet_result <- pkgnet::CreatePackageReport(package.name)
+    fun_graph <- pkgnet_result$FunctionReporter$pkg_graph$"igraph"
+
+    # devtools::load_all('~/GitHub/Packages/PackageTools/R/DependencyTools.R')
+    convert_igraph_to_mermaid(graph = fun_graph, openMermaid = T, copy_to_clipboard = T)
+  }
+
+  if (F) {
+    # Add @importFrom statements
+    (FNP <- package.FnP)
+    PackageTools::add_importFrom_statements(FNP, exclude_packages = "")
+    add_importFrom_statements(FNP, exclude_packages = "")
+  }
+}
 
 
 if (F) {
