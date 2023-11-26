@@ -2042,9 +2042,8 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 #'
 #' @description Create a new "named identity" column in the metadata of a Seurat object,
 #' with `Ident` set to a clustering output matching the `res` parameter of the function.
-#' t requires the output table of `FindAllMarkers()`.
-#'  If you used `StoreAllMarkers()` is stored under `@misc$df.markers$res...`,
-#'  which location is assumed by default.
+#' It requires the output table of `FindAllMarkers()`.  If you used `StoreAllMarkers()`
+#' is stored under `@misc$df.markers$res...`, which location is assumed by default.
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: 0.2
 #' @param plot.top.genes Show plot? Default: T
