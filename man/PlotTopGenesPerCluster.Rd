@@ -28,8 +28,8 @@ Plot the top N diff. exp. genes in each cluster.
 }
 \examples{
 \dontrun{
-if(interactive()){
- PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = p$'n.markers')
- }
+if (interactive()) {
+  PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = p$"n.markers")
+}
 }
 }

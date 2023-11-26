@@ -16,8 +16,8 @@ Save parameters to obj@misc$p
 }
 \examples{
 \dontrun{
-if(interactive()){
- save.parameters(obj = combined.obj, params = p);
- }
+if (interactive()) {
+  save.parameters(obj = combined.obj, params = p)
+}
 }
 }

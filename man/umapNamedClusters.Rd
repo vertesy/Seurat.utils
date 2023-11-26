@@ -25,8 +25,8 @@ Plot and save umap based on a metadata column. #
 }
 \examples{
 \dontrun{
-if(interactive()){
- umapNamedClusters(obj = combined.obj, metaD.colname = metaD.colname.labeled)
- }
+if (interactive()) {
+  umapNamedClusters(obj = combined.obj, metaD.colname = metaD.colname.labeled)
+}
 }
 }

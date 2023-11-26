@@ -16,8 +16,9 @@ Recall parameters from obj@misc to "p" in the global environment.
 }
 \examples{
 \dontrun{
-if(interactive()){
- recall.parameters(); p
- }
+if (interactive()) {
+  recall.parameters()
+  p
+}
 }
 }

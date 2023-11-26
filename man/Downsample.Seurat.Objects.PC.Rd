@@ -22,8 +22,8 @@ Downsample a list of Seurat objects, by fraction
 }
 \examples{
 \dontrun{
-if(interactive()){
- Downsample.Seurat.Objects.PC()
- }
+if (interactive()) {
+  Downsample.Seurat.Objects.PC()
+}
 }
 }

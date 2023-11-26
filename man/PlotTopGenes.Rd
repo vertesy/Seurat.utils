@@ -16,8 +16,8 @@ Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc
 }
 \examples{
 \dontrun{
-if(interactive()){
- PlotTopGenes()
- }
+if (interactive()) {
+  PlotTopGenes()
+}
 }
 }

@@ -26,8 +26,8 @@ Save the output table of \code{FindAllMarkers()} (df_markers) under
 }
 \examples{
 \dontrun{
-if(interactive()){
- combined.obj <- StoreAllMarkers(df_markers = df.markers, res = 0.5)
- }
+if (interactive()) {
+  combined.obj <- StoreAllMarkers(df_markers = df.markers, res = 0.5)
+}
 }
 }

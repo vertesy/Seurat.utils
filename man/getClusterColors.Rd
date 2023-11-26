@@ -24,9 +24,9 @@ get Seurat's cluster colors.
 }
 \examples{
 \dontrun{
-if(interactive()){
- getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[2] )
- }
+if (interactive()) {
+  getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[2])
+}
 }
 }
 \seealso{

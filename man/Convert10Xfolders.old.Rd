@@ -31,8 +31,8 @@ This function takes a parent directory with a number of subfolders, each contain
 }
 \examples{
 \dontrun{
-if(interactive()){
- Convert10Xfolders.old(InputDir = InputDir)
- }
+if (interactive()) {
+  Convert10Xfolders.old(InputDir = InputDir)
+}
 }
 }

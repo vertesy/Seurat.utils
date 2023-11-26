@@ -25,8 +25,8 @@ Get Clustering Runs: metadata column names #
 }
 \examples{
 \dontrun{
-if(interactive()){
- GetNamedClusteringRuns()
- }
+if (interactive()) {
+  GetNamedClusteringRuns()
+}
 }
 }

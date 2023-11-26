@@ -20,10 +20,10 @@ and shortens it according to specific rules. It replaces "snn_res." with "",
 }
 \examples{
 \dontrun{
-shorten_clustering_names('RNA_snn_res.0.5.ordered.ManualNames') # Returns 'RNA.0.5.ord.mNames'
-shorten_clustering_names('RNA_snn_res.0.3.best.matching.names.ManualNames.long') # Returns 'RNA.0.3.bmatch.mNames.L'
-shorten_clustering_names('RNA_snn_res.1.7.ordered.ManualNames.Simplest') # Returns 'RNA.1.7.ord.mNames.Simplest'
-shorten_clustering_names('RNA_snn_res.0.5.ordered.ManualNames.Simpler') # Returns 'RNA.0.5.ord.mNames.Simpler'
+shorten_clustering_names("RNA_snn_res.0.5.ordered.ManualNames") # Returns 'RNA.0.5.ord.mNames'
+shorten_clustering_names("RNA_snn_res.0.3.best.matching.names.ManualNames.long") # Returns 'RNA.0.3.bmatch.mNames.L'
+shorten_clustering_names("RNA_snn_res.1.7.ordered.ManualNames.Simplest") # Returns 'RNA.1.7.ord.mNames.Simplest'
+shorten_clustering_names("RNA_snn_res.0.5.ordered.ManualNames.Simpler") # Returns 'RNA.0.5.ord.mNames.Simpler'
 }
 
 }

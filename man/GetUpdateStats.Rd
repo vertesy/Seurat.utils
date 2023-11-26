@@ -14,8 +14,8 @@ Plot the Symbol-update statistics. Works on the data frame returned by \code{Upd
 }
 \examples{
 \dontrun{
-if(interactive()){
- GetUpdateStats(genes = HGNC.updated.genes)
- }
+if (interactive()) {
+  GetUpdateStats(genes = HGNC.updated.genes)
+}
 }
 }

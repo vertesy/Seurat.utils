@@ -32,8 +32,8 @@ It operates in place, modifying the input \code{ls_obj} list.
 }
 \examples{
 \dontrun{
-  # Process the 2nd and 3rd datasets
-  remove_clusters_and_drop_levels(ls_obj, indices = c(2, 3))
+# Process the 2nd and 3rd datasets
+remove_clusters_and_drop_levels(ls_obj, indices = c(2, 3))
 }
 
 }

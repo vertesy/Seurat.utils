@@ -25,11 +25,13 @@ Adds a new metadata column to a Seurat object.
 }
 \examples{
 \dontrun{
-if(interactive()){
+if (interactive()) {
   # Example usage:
-  combined.obj <- seu.add.meta.from.vector(obj = combined.obj,
-                                           metaD.colname = metaD.colname.labeled,
-                                           Label.per.cell = Cl.Label.per.cell)
- }
+  combined.obj <- seu.add.meta.from.vector(
+    obj = combined.obj,
+    metaD.colname = metaD.colname.labeled,
+    Label.per.cell = Cl.Label.per.cell
+  )
+}
 }
 }

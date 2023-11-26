@@ -31,8 +31,8 @@ Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on githu
 }
 \examples{
 \dontrun{
-if(interactive()){
- plot3D.umap(combined.obj, category = "Phase")
- }
+if (interactive()) {
+  plot3D.umap(combined.obj, category = "Phase")
+}
 }
 }

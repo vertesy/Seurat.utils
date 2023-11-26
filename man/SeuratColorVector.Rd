@@ -25,9 +25,10 @@ Recall a Seurat color vector.
 }
 \examples{
 \dontrun{
-if(interactive()){
- SeuratColorVector(); SeuratColorVector(ident = GetNamedClusteringRuns()[2], plot.colors = T)
- }
+if (interactive()) {
+  SeuratColorVector()
+  SeuratColorVector(ident = GetNamedClusteringRuns()[2], plot.colors = T)
+}
 }
 }
 \seealso{

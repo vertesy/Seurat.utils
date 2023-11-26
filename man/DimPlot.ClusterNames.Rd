@@ -28,8 +28,8 @@ Plot UMAP with Cluster names. #
 }
 \examples{
 \dontrun{
-if(interactive()){
- DimPlot.ClusterNames()
- }
+if (interactive()) {
+  DimPlot.ClusterNames()
+}
 }
 }

@@ -18,8 +18,8 @@ Add multiple new metadata columns to a Seurat object from a table. #
 }
 \examples{
 \dontrun{
-if(interactive()){
- combined.obj <- seu.add.meta.from.table()
- }
+if (interactive()) {
+  combined.obj <- seu.add.meta.from.table()
+}
 }
 }

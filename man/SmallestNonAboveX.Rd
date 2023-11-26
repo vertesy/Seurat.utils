@@ -16,8 +16,8 @@ replace small values with the next smallest value found, which is >X.
 }
 \examples{
 \dontrun{
-if(interactive()){
- SmallestNonZero(vec = df.markers$"p_val")
- }
+if (interactive()) {
+  SmallestNonZero(vec = df.markers$"p_val")
+}
 }
 }

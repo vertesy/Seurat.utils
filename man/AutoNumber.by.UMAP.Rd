@@ -28,9 +28,9 @@ Relabel cluster numbers along a UMAP (or tSNE) axis #
 }
 \examples{
 \dontrun{
-if(interactive()){
- combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction="umap", res = "integrated_snn_res.0.5" );
- DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.ordered")
- }
+if (interactive()) {
+  combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction = "umap", res = "integrated_snn_res.0.5")
+  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.ordered")
+}
 }
 }

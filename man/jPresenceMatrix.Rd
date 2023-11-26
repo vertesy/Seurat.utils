@@ -14,8 +14,8 @@ Make a binary presence matrix from a list. Source: https://stackoverflow.com/que
 }
 \examples{
 \dontrun{
-if(interactive()){
- df.presence <- jPresenceMatrix(string_list = lst(a = 1:3, b = 2:5,c = 4:9, d=-1:4))
- }
+if (interactive()) {
+  df.presence <- jPresenceMatrix(string_list = lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4))
+}
 }
 }

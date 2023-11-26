@@ -14,8 +14,8 @@ Get Number Of Clusters #
 }
 \examples{
 \dontrun{
-if(interactive()){
- GetNumberOfClusters()
- }
+if (interactive()) {
+  GetNumberOfClusters()
+}
 }
 }

@@ -29,8 +29,8 @@ Function to compute dimensionality reductions for a given Seurat object and back
 }
 \examples{
 \dontrun{
-if(interactive()){
-  combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction="umap")
+if (interactive()) {
+  combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction = "umap")
 }
 }
 }

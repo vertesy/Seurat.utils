@@ -46,5 +46,9 @@ isave.RDS(
 Save an RDS object, using a faster and efficient compression method that runs in the background.
 }
 \examples{
-\dontrun{ if(interactive()){ isave.RDS(my.R.object)  } }
+\dontrun{
+if (interactive()) {
+  isave.RDS(my.R.object)
+}
+}
 }

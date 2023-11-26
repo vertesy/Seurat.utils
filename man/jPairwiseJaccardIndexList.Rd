@@ -14,8 +14,8 @@ Create a pairwise jaccard similarity matrix across all combinations of columns i
 }
 \examples{
 \dontrun{
-if(interactive()){
- jPairwiseJaccardIndexList(lsG = ls_genes)
- }
+if (interactive()) {
+  jPairwiseJaccardIndexList(lsG = ls_genes)
+}
 }
 }

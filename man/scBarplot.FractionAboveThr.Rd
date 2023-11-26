@@ -40,9 +40,9 @@ Create a bar plot showing the fraction of cells, within each cluster, that excee
 }
 \examples{
 \dontrun{
-if(interactive()){
- scBarplot.FractionAboveThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0)
- }
+if (interactive()) {
+  scBarplot.FractionAboveThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0)
+}
 }
 }
 \seealso{

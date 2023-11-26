@@ -22,8 +22,8 @@ Replace gene names in different slots of a Seurat object. Run this before integr
 }
 \examples{
 \dontrun{
-if(interactive()){
- RenameGenesSeurat(obj = SeuratObj, newnames = HGNC.updated.genes$Suggested.Symbol)
- }
+if (interactive()) {
+  RenameGenesSeurat(obj = SeuratObj, newnames = HGNC.updated.genes$Suggested.Symbol)
+}
 }
 }

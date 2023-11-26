@@ -28,8 +28,8 @@ The function first validates the presence of all identities from the metadata in
 }
 \examples{
 \dontrun{
-if(interactive()){
-  ls.Seurat.subset <- whitelist.subset.ls.Seurat(ls.obj = ls.Seurat, metadir = p$'cellWhiteList', whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv")
+if (interactive()) {
+  ls.Seurat.subset <- whitelist.subset.ls.Seurat(ls.obj = ls.Seurat, metadir = p$"cellWhiteList", whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv")
 }
 }
 }

@@ -14,8 +14,9 @@ Helps to find metadata columns. It creates a list with the names of of 'obj@meta
 }
 \examples{
 \dontrun{
-if(interactive()){
- set.mm(); mm
- }
+if (interactive()) {
+  set.mm()
+  mm
+}
 }
 }

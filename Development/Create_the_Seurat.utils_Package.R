@@ -11,7 +11,7 @@ try(dev.off(), silent = TRUE)
 
 # Setup ------------------------
 package.name <- "Seurat.utils"
-package.version <- "2.1.0"
+package.version <- "2.2.0"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir <- paste0("~/GitHub/Packages/", package.name, "/")

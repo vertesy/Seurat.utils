@@ -40,9 +40,9 @@ Generates and optionally saves a scatter plot of two features from a Seurat obje
 }
 \examples{
 \dontrun{
-if(interactive()){
- qFeatureScatter(feature1 = "Gene1", feature2 = "Gene2", obj = seuratObject)
- }
+if (interactive()) {
+  qFeatureScatter(feature1 = "Gene1", feature2 = "Gene2", obj = seuratObject)
+}
 }
 }
 \seealso{

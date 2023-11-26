@@ -18,8 +18,8 @@ Quickly plot key markers in brain organoids
 }
 \examples{
 \dontrun{
-if(interactive()){
- qMarkerCheck.BrainOrg(combined.obj)
- }
+if (interactive()) {
+  qMarkerCheck.BrainOrg(combined.obj)
+}
 }
 }

@@ -82,8 +82,9 @@ The quickest way to draw a gene expression UMAP.
 }
 \examples{
 \dontrun{
-if(interactive()){
- qUMAP('nFeature_RNA'); qUMAP('TOP2A')
- }
+if (interactive()) {
+  qUMAP("nFeature_RNA")
+  qUMAP("TOP2A")
+}
 }
 }

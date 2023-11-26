@@ -28,8 +28,8 @@ Creates a bar plot or histogram of the cluster size distribution from a given Se
 }
 \examples{
 \dontrun{
-if(interactive()){
- plot.clust.size.distr()
- }
+if (interactive()) {
+  plot.clust.size.distr()
+}
 }
 }

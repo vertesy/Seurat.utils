@@ -25,7 +25,7 @@ Generates a UMAP plot from a Seurat object with a subset of cells highlighted.
 }
 \examples{
 \dontrun{
-if(interactive()){
+if (interactive()) {
   umapHiLightSel(obj = seuratObject, COI = c("0", "1"), res.cl = "resolution_0.8")
 }
 }

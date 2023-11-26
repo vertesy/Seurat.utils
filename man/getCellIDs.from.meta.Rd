@@ -28,9 +28,9 @@ Retrieves cell IDs from a specified metadata column of a Seurat object, where th
 }
 \examples{
 \dontrun{
-if(interactive()){
- # Example usage:
- getCellIDs.from.meta()
- }
+if (interactive()) {
+  # Example usage:
+  getCellIDs.from.meta()
+}
 }
 }

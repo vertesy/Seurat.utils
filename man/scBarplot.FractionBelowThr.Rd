@@ -28,9 +28,9 @@ Create a bar plot showing the fraction of cells, within each cluster, that are b
 }
 \examples{
 \dontrun{
-if(interactive()){
- scBarplot.FractionBelowThr(id.col =  'cl.names.top.gene.res.0.3', value.col = 'percent.ribo', thrX = 0.01, return.df = TRUE)
- }
+if (interactive()) {
+  scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01, return.df = TRUE)
+}
 }
 }
 \seealso{

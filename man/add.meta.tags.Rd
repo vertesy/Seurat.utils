@@ -18,8 +18,8 @@ Add metadata tags to a Seurat object dataset.
 }
 \examples{
 \dontrun{
-if(interactive()){
- ls.Seurat[[1]] <- add.meta.tags(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1)
- }
+if (interactive()) {
+  ls.Seurat[[1]] <- add.meta.tags(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1)
+}
 }
 }

@@ -25,9 +25,9 @@ This function takes a matrix containing update statistics and column names to pl
 }
 \examples{
 \dontrun{
-if(interactive()){
- PlotUpdateStats(mat = result.of.GetUpdateStats)
- }
+if (interactive()) {
+  PlotUpdateStats(mat = result.of.GetUpdateStats)
+}
 }
 }
 \seealso{

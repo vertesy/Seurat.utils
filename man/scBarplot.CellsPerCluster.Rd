@@ -38,8 +38,9 @@ Barplot the Fraction of cells per cluster. (dupl?)
 }
 \examples{
 \dontrun{
-if(interactive()){
- scBarplot.CellsPerCluster(); scBarplot.CellsPerCluster(sort = T)
- }
+if (interactive()) {
+  scBarplot.CellsPerCluster()
+  scBarplot.CellsPerCluster(sort = T)
+}
 }
 }

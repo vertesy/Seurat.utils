@@ -14,8 +14,8 @@ Create a pairwise jaccard similarity matrix across all combinations of columns i
 }
 \examples{
 \dontrun{
-if(interactive()){
- PairwiseJaccardIndices <- jPairwiseJaccardIndex(binary.presence.matrix = df.presence)
- }
+if (interactive()) {
+  PairwiseJaccardIndices <- jPairwiseJaccardIndex(binary.presence.matrix = df.presence)
+}
 }
 }

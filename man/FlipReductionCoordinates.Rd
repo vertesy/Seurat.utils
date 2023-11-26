@@ -28,8 +28,10 @@ Flip reduction coordinates (like UMAP upside down).
 }
 \examples{
 \dontrun{
-if(interactive()){
- clUMAP(); combined.obj <- FlipReductionCoordinates(combined.obj); clUMAP()
- }
+if (interactive()) {
+  clUMAP()
+  combined.obj <- FlipReductionCoordinates(combined.obj)
+  clUMAP()
+}
 }
 }

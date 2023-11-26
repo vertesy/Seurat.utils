@@ -31,12 +31,14 @@ Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions
 }
 \examples{
 \dontrun{
-if(interactive()){
- DimPlot.ClusterNames(ident = "integrated_snn_res.0.5")
- combined.obj <- AutoNumber.by.PrinCurve(obj = combined.obj, dim = 1:2, reduction="umap", plotit = T,
- swap= -1, res = "integrated_snn_res.0.5" )
- DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.prin.curve")
- }
+if (interactive()) {
+  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5")
+  combined.obj <- AutoNumber.by.PrinCurve(
+    obj = combined.obj, dim = 1:2, reduction = "umap", plotit = T,
+    swap = -1, res = "integrated_snn_res.0.5"
+  )
+  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.prin.curve")
+}
 }
 }
 \seealso{

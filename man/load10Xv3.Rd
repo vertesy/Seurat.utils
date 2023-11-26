@@ -37,9 +37,9 @@ Load 10X output folders.
 }
 \examples{
 \dontrun{
-if(interactive()){
- channel <- load10Xv3(dataDir = dataDir)
- }
+if (interactive()) {
+  channel <- load10Xv3(dataDir = dataDir)
+}
 }
 }
 \seealso{

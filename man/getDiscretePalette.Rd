@@ -25,8 +25,8 @@ Generate a discrete color palette.
 }
 \examples{
 \dontrun{
-if(interactive()){
- getDiscretePalette()
- }
+if (interactive()) {
+  getDiscretePalette()
+}
 }
 }

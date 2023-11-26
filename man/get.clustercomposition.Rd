@@ -33,5 +33,6 @@ get.clustercomposition(
 Get cluster composition: which datasets contribute to each cluster?
 }
 \examples{
-get.clustercomposition(); get.clustercomposition()
+get.clustercomposition()
+get.clustercomposition()
 }

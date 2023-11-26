@@ -21,11 +21,11 @@ of the metadata of a Seurat object) and returns the corresponding cell IDs.
 }
 \examples{
 \dontrun{
-if(interactive()){
- # Example usage:
- # Suppose 'MetaData' is a dataframe and 'Pass' is a boolean vector with the same length.
- # The following example will sample 10\% of the rows of 'MetaData' where 'Pass' is TRUE.
- sampleNpc(metaDF = MetaData[which(Pass),], pc = 0.1)
- }
+if (interactive()) {
+  # Example usage:
+  # Suppose 'MetaData' is a dataframe and 'Pass' is a boolean vector with the same length.
+  # The following example will sample 10\% of the rows of 'MetaData' where 'Pass' is TRUE.
+  sampleNpc(metaDF = MetaData[which(Pass), ], pc = 0.1)
+}
 }
 }

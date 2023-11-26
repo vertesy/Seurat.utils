@@ -34,8 +34,9 @@ which location is assumed by default.
 }
 \examples{
 \dontrun{
-if(interactive()){
- combined.obj <- AutoLabelTop.logFC(); combined.obj$"cl.names.top.gene.res.0.5"
- }
+if (interactive()) {
+  combined.obj <- AutoLabelTop.logFC()
+  combined.obj$"cl.names.top.gene.res.0.5"
+}
 }
 }

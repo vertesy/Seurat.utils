@@ -37,9 +37,10 @@ Find correlated genes in a Seurat object
 }
 \examples{
 \dontrun{
-if(interactive()){
- FindCorrelatedGenes(gene ="TOP2A", obj = combined.obj); write_clip(names(head(topGenes[-(1:6)], n = 50)))
- }
+if (interactive()) {
+  FindCorrelatedGenes(gene = "TOP2A", obj = combined.obj)
+  write_clip(names(head(topGenes[-(1:6)], n = 50)))
+}
 }
 }
 \seealso{

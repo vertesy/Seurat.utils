@@ -28,10 +28,12 @@ Adds a new metadata column to a Seurat object based on an identity mapping table
 }
 \examples{
 \dontrun{
-if(interactive()){
+if (interactive()) {
   # Example usage:
-  combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj,
-                                                    ident.table = clusterIDs.GO.process)
- }
+  combined.obj <- seu.map.and.add.new.ident.to.meta(
+    obj = combined.obj,
+    ident.table = clusterIDs.GO.process
+  )
+}
 }
 }

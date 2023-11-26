@@ -14,8 +14,9 @@ Remove the string "filtered_feature_bc_matrix." from "orig.ident". Helper functi
 }
 \examples{
 \dontrun{
-if(interactive()){
- merged.obj$orig.ident <- fix.orig.ident(obj = merged.obj); table(merged.obj$orig.ident)
- }
+if (interactive()) {
+  merged.obj$orig.ident <- fix.orig.ident(obj = merged.obj)
+  table(merged.obj$orig.ident)
+}
 }
 }

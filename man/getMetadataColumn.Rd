@@ -25,9 +25,9 @@ Retrieves a specified metadata column from a Seurat object and returns it as a n
 }
 \examples{
 \dontrun{
-if(interactive()){
+if (interactive()) {
   # Example usage:
-  batch_metadata <- getMetadataColumn(ColName.metadata = 'batch', obj = combined.obj, as_numeric = T)
- }
+  batch_metadata <- getMetadataColumn(ColName.metadata = "batch", obj = combined.obj, as_numeric = T)
+}
 }
 }

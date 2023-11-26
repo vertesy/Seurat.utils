@@ -18,9 +18,9 @@ Save the top 25 makers based on \code{avg_log2FC} output table of \code{FindAllM
 }
 \examples{
 \dontrun{
-if(interactive()){
- combined.obj <- StoreTop25Markers(df_markers = df.markers, res = 0.)
- }
+if (interactive()) {
+  combined.obj <- StoreTop25Markers(df_markers = df.markers, res = 0.)
+}
 }
 }
 \seealso{

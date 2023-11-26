@@ -31,9 +31,9 @@ This function plots and saves a list of 3D UMAP or tSNE plots using plotly.
 }
 \examples{
 \dontrun{
-if(interactive()){
- categ3Dplots <- c("v.project","experiment", "Phase", "integrated_snn_res.0.7", "Area", "Individual", "Type")
- Plot3D.ListOfCategories(obj = combined.obj, ListOfCategories = categ3Dplots)
- }
+if (interactive()) {
+  categ3Dplots <- c("v.project", "experiment", "Phase", "integrated_snn_res.0.7", "Area", "Individual", "Type")
+  Plot3D.ListOfCategories(obj = combined.obj, ListOfCategories = categ3Dplots)
+}
 }
 }

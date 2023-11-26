@@ -22,9 +22,9 @@ Get the vector of N most diff. exp. genes. #
 }
 \examples{
 \dontrun{
-if(interactive()){
- GetTopMarkers(df = df.markers, n = 3 )
- }
+if (interactive()) {
+  GetTopMarkers(df = df.markers, n = 3)
+}
 }
 }
 \seealso{

@@ -18,8 +18,8 @@ Plot gene expression based on the expression at the 90th quantile (so you will n
 }
 \examples{
 \dontrun{
-if(interactive()){
- plot.expression.rank.q90(gene = "SATB2")
- }
+if (interactive()) {
+  plot.expression.rank.q90(gene = "SATB2")
+}
 }
 }

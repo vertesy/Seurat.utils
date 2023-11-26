@@ -16,8 +16,8 @@ Take a named vector (of e.g. values ="gene names", names = clusterID), and a vec
 }
 \examples{
 \dontrun{
-if(interactive()){
- seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic, clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname)  )
- }
+if (interactive()) {
+  seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic, clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname))
+}
 }
 }

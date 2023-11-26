@@ -40,10 +40,10 @@ Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmast
 }
 \examples{
 \dontrun{
-if(interactive()){
- plot3D.umap.gene(obj = combined.obj, gene = "DDIT4", quantileCutoff = .95)
- plot3D.umap.gene(obj = combined.obj, gene = "percent.mito", quantileCutoff = .95) # for continous meta variables
- plot3D.umap.gene(obj = combined.obj, gene = "nFeature_RNA", quantileCutoff = .95) # for continous meta variables
- }
+if (interactive()) {
+  plot3D.umap.gene(obj = combined.obj, gene = "DDIT4", quantileCutoff = .95)
+  plot3D.umap.gene(obj = combined.obj, gene = "percent.mito", quantileCutoff = .95) # for continous meta variables
+  plot3D.umap.gene(obj = combined.obj, gene = "nFeature_RNA", quantileCutoff = .95) # for continous meta variables
+}
 }
 }

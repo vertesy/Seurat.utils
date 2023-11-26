@@ -34,9 +34,9 @@ Plot and save list of 3D UMAP or tSNE plots using plotly.
 }
 \examples{
 \dontrun{
-if(interactive()){
- CellTypeMarkers <- c(  "PGK1", "CTIP2" = "BCL11B" , "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4","TOP2A", "PTGDS", "EDNRB", "EGFR", "SCGN", "NR2F2", "EMX2", "GAD2", "DLX2", "SATB2")
- Plot3D.ListOfGenes(obj = combined.obj, ListOfGenes = CellTypeMarkers)
- }
+if (interactive()) {
+  CellTypeMarkers <- c("PGK1", "CTIP2" = "BCL11B", "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4", "TOP2A", "PTGDS", "EDNRB", "EGFR", "SCGN", "NR2F2", "EMX2", "GAD2", "DLX2", "SATB2")
+  Plot3D.ListOfGenes(obj = combined.obj, ListOfGenes = CellTypeMarkers)
+}
 }
 }

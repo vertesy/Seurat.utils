@@ -25,8 +25,9 @@ This function creates a new metadata column based on an existing metadata column
 }
 \examples{
 \dontrun{
-if(interactive()){
- ls.Subset.ClusterLists = list( "hESC.h9" = c("4", "10", "14"), "hESC.176" = c("0", "1", "2")); AddNewAnnotation()
- }
+if (interactive()) {
+  ls.Subset.ClusterLists <- list("hESC.h9" = c("4", "10", "14"), "hESC.176" = c("0", "1", "2"))
+  AddNewAnnotation()
+}
 }
 }

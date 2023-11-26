@@ -16,9 +16,11 @@ Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculat
 }
 \examples{
 \dontrun{
-if(interactive()){
- JaccardSimilarity <- jJaccardIndexBinary(  x = sample(x = 0:1, size = 100, replace = T),
- y = sample(x = 0:1, size = 100, replace = T))
- }
+if (interactive()) {
+  JaccardSimilarity <- jJaccardIndexBinary(
+    x = sample(x = 0:1, size = 100, replace = T),
+    y = sample(x = 0:1, size = 100, replace = T)
+  )
+}
 }
 }

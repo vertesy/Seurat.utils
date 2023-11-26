@@ -17,9 +17,9 @@ This function reads a 10X dataset from gzipped matrix.mtx, features.tsv and barc
 }
 \examples{
 \dontrun{
-if(interactive()){
- seuratObject <- read10x(dir = dir)
- }
+if (interactive()) {
+  seuratObject <- read10x(dir = dir)
+}
 }
 }
 \seealso{

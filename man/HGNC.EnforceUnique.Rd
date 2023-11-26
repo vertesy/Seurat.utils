@@ -10,14 +10,14 @@ HGNC.EnforceUnique(updatedSymbols)
 \item{updatedSymbols}{Gene symbols, it is the output of HGNChelper's checkGeneSymbols)_.}
 }
 \description{
-Enforce Unique names after HGNC symbol update.
+Enforce Unique names after HGNC symbol update. While "make.unique" is not the ideal
+solution, because it generates mismatches, in my integration example it does reduce the
+mismatching genes from ~800 to 4
 }
 \examples{
 \dontrun{
-if(interactive()){
- x <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
- # While "make.unique" is not the ideal solution, because it generates mismatched, in my
- integration example it does reduce the mismatching genes from ~800 to 4
- }
+if (interactive()) {
+  x <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
+}
 }
 }

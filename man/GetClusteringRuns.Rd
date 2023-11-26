@@ -18,8 +18,8 @@ Get Clustering Runs: metadata column names #
 }
 \examples{
 \dontrun{
-if(interactive()){
- GetClusteringRuns()
- }
+if (interactive()) {
+  GetClusteringRuns()
+}
 }
 }

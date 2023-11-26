@@ -14,8 +14,9 @@ Recall genes.ls from obj@misc to "genes.ls" in the global environment.
 }
 \examples{
 \dontrun{
-if(interactive()){
- recall.genes.ls(); genes.ls
- }
+if (interactive()) {
+  recall.genes.ls()
+  genes.ls
+}
 }
 }

@@ -29,8 +29,8 @@ Add a combined score to differential expression (DE) results. The score is calcu
 }
 \examples{
 \dontrun{
-if(interactive()){
- df.markers <- Add.DE.combined.score(df.markers)
- }
+if (interactive()) {
+  df.markers <- Add.DE.combined.score(df.markers)
+}
 }
 }

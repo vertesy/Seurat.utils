@@ -61,9 +61,9 @@ Plot filtering threshold and distributions, using four panels to highlight the r
 }
 \examples{
 \dontrun{
-if(interactive()){
- PlotFilters(ls.Seurat)
- }
+if (interactive()) {
+  PlotFilters(ls.Seurat)
+}
 }
 }
 \seealso{

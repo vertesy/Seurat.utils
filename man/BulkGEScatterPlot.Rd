@@ -25,8 +25,8 @@ Plots scatterplots of bulk gene expression to identify differentially expressed 
 }
 \examples{
 \dontrun{
-if(interactive()){
- BulkGEScatterPlot(obj = combined.obj, clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = 'age', genes.from.bulk.DE = rownames(df.markers.per.AGE))
- }
+if (interactive()) {
+  BulkGEScatterPlot(obj = combined.obj, clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = "age", genes.from.bulk.DE = rownames(df.markers.per.AGE))
+}
 }
 }

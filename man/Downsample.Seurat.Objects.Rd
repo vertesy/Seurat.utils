@@ -22,8 +22,9 @@ Downsample a list of Seurat objects
 }
 \examples{
 \dontrun{
-if(interactive()){
- Downsample.Seurat.Objects(NrCells = 2000); Downsample.Seurat.Objects(NrCells = 200)
- }
+if (interactive()) {
+  Downsample.Seurat.Objects(NrCells = 2000)
+  Downsample.Seurat.Objects(NrCells = 200)
+}
 }
 }

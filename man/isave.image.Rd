@@ -25,8 +25,8 @@ Save an image of the current workspace using a faster and efficient compression 
 }
 \examples{
 \dontrun{
-if(interactive()){
- isave.image(my.R.image)
- }
+if (interactive()) {
+  isave.image(my.R.image)
+}
 }
 }

@@ -14,8 +14,9 @@ Recall  meta.tags from obj@misc to "meta.tags" in the global environment.
 }
 \examples{
 \dontrun{
-if(interactive()){
- recall.n.datasets(); n.datasets
- }
+if (interactive()) {
+  recall.n.datasets()
+  n.datasets
+}
 }
 }

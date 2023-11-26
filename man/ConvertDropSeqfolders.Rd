@@ -46,9 +46,9 @@ This function takes a parent directory with a number of subfolders, each contain
 }
 \examples{
 \dontrun{
-if(interactive()){
- ConvertDropSeqfolders(InputDir = InputDir)
- }
+if (interactive()) {
+  ConvertDropSeqfolders(InputDir = InputDir)
+}
 }
 }
 \seealso{

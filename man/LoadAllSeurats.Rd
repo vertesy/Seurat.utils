@@ -25,8 +25,8 @@ This function loads all Seurat objects found in a directory. It also works with 
 }
 \examples{
 \dontrun{
-if(interactive()){
- ls.Seurat <- LoadAllSeurats(InputDir = InputDir)
- }
+if (interactive()) {
+  ls.Seurat <- LoadAllSeurats(InputDir = InputDir)
+}
 }
 }

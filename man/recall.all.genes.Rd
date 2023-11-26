@@ -14,8 +14,9 @@ all.genes set by calc.q99.Expression.and.set.all.genes() #
 }
 \examples{
 \dontrun{
-if(interactive()){
- recall.all.genes(); all.genes
- }
+if (interactive()) {
+  recall.all.genes()
+  all.genes
+}
 }
 }

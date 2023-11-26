@@ -41,10 +41,10 @@ which is the default location.
 }
 \examples{
 \dontrun{
-if(interactive()){
- combined.obj <- AutoLabel.KnownMarkers();
- DimPlot.ClusterNames(ident = "cl.names.KnownMarkers.0.5")
- }
+if (interactive()) {
+  combined.obj <- AutoLabel.KnownMarkers()
+  DimPlot.ClusterNames(ident = "cl.names.KnownMarkers.0.5")
+}
 }
 }
 \seealso{

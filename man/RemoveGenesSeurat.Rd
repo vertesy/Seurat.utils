@@ -16,8 +16,8 @@ Replace gene names in different slots of a Seurat object. Run this before integr
 }
 \examples{
 \dontrun{
-if(interactive()){
- RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
- }
+if (interactive()) {
+  RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
+}
 }
 }

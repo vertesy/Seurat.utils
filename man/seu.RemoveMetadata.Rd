@@ -22,6 +22,6 @@ Remove specified metadata columns from a Seurat object.
 }
 \examples{
 \dontrun{
-  combined.obj <- seu.RemoveMetadata(obj = combined.obj, cols_remove = c("column1", "column2"))
+combined.obj <- seu.RemoveMetadata(obj = combined.obj, cols_remove = c("column1", "column2"))
 }
 }

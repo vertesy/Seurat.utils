@@ -40,17 +40,21 @@ reference column. It calculates the assignment quality, reports it, and optional
 \examples{
 \dontrun{
 replace_by_most_frequent_categories(df = my_data)
-(MXX <- as.tibble(structure(c("Adjut", "Adjut", "Yearn", "Adjut", "Dwarf", "Adjut",
-"Dwarf", "Adjut", "Dwarf", "Yearn", "Dwarf", "Dwarf", "Dwarf",
-"Yearn", "Dwarf", "Dwarf", "Dwarf", "Zebra", "Yucca", "Plyer",
-"Blaze", "Blaze", "Dazed", "Blaze", "Swept", "Bold", "Vixen",
-"Bold", "Swept", "Dazed", "Mirth", "Witch", "Vixen", "Dazed",
-"Swept", "Mirth", "Swept", "Vexed", "Query", "Yolk")
- , .Dim = c(20L, 2L), .Dimnames =
- list(NULL, c("RNA_snn_res.0.1.ordered", "RNA_snn_res.0.3.ordered" )))))
+(MXX <- as.tibble(structure(
+  c(
+    "Adjut", "Adjut", "Yearn", "Adjut", "Dwarf", "Adjut",
+    "Dwarf", "Adjut", "Dwarf", "Yearn", "Dwarf", "Dwarf", "Dwarf",
+    "Yearn", "Dwarf", "Dwarf", "Dwarf", "Zebra", "Yucca", "Plyer",
+    "Blaze", "Blaze", "Dazed", "Blaze", "Swept", "Bold", "Vixen",
+    "Bold", "Swept", "Dazed", "Mirth", "Witch", "Vixen", "Dazed",
+    "Swept", "Mirth", "Swept", "Vexed", "Query", "Yolk"
+  ),
+  .Dim = c(20L, 2L), .Dimnames =
+    list(NULL, c("RNA_snn_res.0.1.ordered", "RNA_snn_res.0.3.ordered"))
+)))
 
 z <- replace_by_most_frequent_categories(df = MXX)
-head(cbind(MXX[,1],z[,1]))
+head(cbind(MXX[, 1], z[, 1]))
 }
 
 }

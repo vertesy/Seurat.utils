@@ -37,9 +37,9 @@ Saves a grid of 2 or 4 ggplot objects onto an A4 page.
 }
 \examples{
 \dontrun{
-if(interactive()){
-  qqSaveGridA4(plotlist= pl, plots = 1:2, fname = "Fractions.per.Cl.png")
-  qqSaveGridA4(plotlist= pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
+if (interactive()) {
+  qqSaveGridA4(plotlist = pl, plots = 1:2, fname = "Fractions.per.Cl.png")
+  qqSaveGridA4(plotlist = pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
 }
 }
 }

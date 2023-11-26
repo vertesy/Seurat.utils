@@ -97,8 +97,9 @@ The quickest way to draw a clustering result UMAP.
 }
 \examples{
 \dontrun{
-if(interactive()){
- clUMAP('cl.names.KnownMarkers.0.5' ); clUMAP('cl.names.KnownMarkers.0.5', cols = NULL)
- }
+if (interactive()) {
+  clUMAP("cl.names.KnownMarkers.0.5")
+  clUMAP("cl.names.KnownMarkers.0.5", cols = NULL)
+}
 }
 }
