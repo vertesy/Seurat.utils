@@ -3695,7 +3695,7 @@ SavePlotlyAsHtml <- function(plotly_obj, category.= category, suffix. = NULL) { 
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  obj <- BackupReduction(obj = obj, dim = 2, reduction = umap"")
+#'  obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
 #'  }
 #' }
 #' @export
@@ -4548,14 +4548,14 @@ RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 # _________________________________________________________________________________________________
 #' @title HGNC.EnforceUnique
 #'
-#' @description Enforce Unique names after HGNC symbol update.
+#' @description Enforce Unique names after HGNC symbol update. While "make.unique" is not the ideal
+#' solution, because it generates mismatches, in my integration example it does reduce the
+#' mismatching genes from ~800 to 4
 #' @param updatedSymbols Gene symbols, it is the output of HGNChelper's checkGeneSymbols)_.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
 #'  x <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
-#'  # While "make.unique" is not the ideal solution, because it generates mismatched, in my
-#'  integration example it does reduce the mismatching genes from ~800 to 4
 #'  }
 #' }
 #' @export
