@@ -32,14 +32,15 @@ DESCRIPTION <- list(
   "Version" = package.version,
   "Packaged" = Sys.time()
   # , "Repository" =  "CRAN"
-  , "Depends" = "ggplot2, Seurat, Stringendo, CodeAndRoll2, ggExpress",
-  "Imports" = "cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, graphics, grDevices, HGNChelper,
-                          htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, princurve, ReadWriter, pheatmap,
-                          R.utils, readr, reshape2, scales, Seurat, SoupX, sparseMatrixStats, stringr, tibble, tictoc,
-                          vroom, job, qs",
+  , "Depends" = "ggplot2, Seurat, Stringendo, CodeAndRoll2, ggExpress, magrittr",
+  "Imports" = "cowplot, Seurat, ReadWriter, dplyr, ggcorrplot, ggpubr, ggrepel, grDevices, HGNChelper,
+                          htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, princurve, pheatmap,
+                          R.utils, readr, reshape2, scales, SoupX, sparseMatrixStats, stringr, tibble, tictoc,
+                          vroom, job, qs, foreach, tidyverse",
   "Suggests" = "SoupX, princurve, EnhancedVolcano",
   "BugReports" = "https://github.com/vertesy/Seurat.utils/issues"
 )
+
 
 
 setwd(RepositoryDir)
@@ -85,7 +86,7 @@ warnings()
 
 
 # Install your package ------------------------------------------------
-install(RepositoryDir, upgrade = F)
+devtools::install(RepositoryDir, upgrade = F)
 
 # Test if you can install from github ------------------------------------------------
 pak::pkg_install("vertesy/Seurat.utils")
@@ -95,7 +96,8 @@ pak::pkg_install("vertesy/Seurat.utils")
 
 
 # Check CRAN ------------------------------------------------
-check(RepositoryDir, cran = TRUE)
+checkres <- devtools::check(RepositoryDir, cran = TRUE)
+head(checkres)
 # as.package(RepositoryDir)
 # # source("https://install-github.me/r-lib/desc")
 # # library(desc)
