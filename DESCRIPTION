@@ -20,10 +20,10 @@ Depends:
 Imports: 
     cowplot,
     dplyr,
+    foreach,
     ggcorrplot,
     ggpubr,
     ggrepel,
-    graphics,
     grDevices,
     HGNChelper,
     htmlwidgets,
@@ -46,12 +46,13 @@ Imports:
     stringr,
     tibble,
     tictoc,
+    tidyverse,
     vroom
 Suggests: 
     EnhancedVolcano,
     princurve,
     SoupX
 Encoding: UTF-8
-Packaged: 2023-11-26 18:13:46.253297
+Packaged: 2023-11-26 18:29:46.80989
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
