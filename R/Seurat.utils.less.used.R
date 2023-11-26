@@ -18,47 +18,53 @@
 #' @param ShowStats A logical value indicating whether to show statistics. Default is TRUE.
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  Convert10Xfolders.old(InputDir = InputDir)
-#'  }
+#' if (interactive()) {
+#'   Convert10Xfolders.old(InputDir = InputDir)
+#' }
 #' }
 #' @export
-Convert10Xfolders.old <- function(InputDir
-                                  , folderPattern = c("filtered", "SoupX_decont")[1]
-                                  , min.cells = 10, min.features = 200
-                                  , updateHGNC = TRUE, ShowStats = TRUE) {
+Convert10Xfolders.old <- function(
+    InputDir,
+    folderPattern = c("filtered", "SoupX_decont")[1],
+    min.cells = 10, min.features = 200,
+    updateHGNC = TRUE, ShowStats = TRUE) {
   # ... function body ...
 }
 
-Convert10Xfolders.old <- function(InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
-                                  , folderPattern = c("filtered", "SoupX_decont")[1]
-                                  , min.cells = 10, min.features = 200, updateHGNC = T, ShowStats = T) {
+Convert10Xfolders.old <- function(
+    InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
+    , folderPattern = c("filtered", "SoupX_decont")[1],
+    min.cells = 10, min.features = 200, updateHGNC = T, ShowStats = T) {
   fin <- list.dirs(InputDir, recursive = F)
   fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = F)
 
   for (i in 1:length(fin)) {
-    pathIN = fin[i]; print(pathIN)
-    fnameIN = basename(fin[i])
-    fnameOUT = ppp(paste0(InputDir, '/', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
+    pathIN <- fin[i]
+    print(pathIN)
+    fnameIN <- basename(fin[i])
+    fnameOUT <- ppp(paste0(InputDir, "/", fnameIN), "min.cells", min.cells, "min.features", min.features, "Rds")
     count_matrix <- Read10X(pathIN)
 
-    if ( !is.list(count_matrix) | length(count_matrix) == 1) {
-      seu <- CreateSeuratObject(counts = count_matrix, project = fnameIN,
-                                min.cells = min.cells, min.features = min.features)
-    } else if (is.list(count_matrix) & length(count_matrix) == 2)  {
-      seu <- CreateSeuratObject(counts = count_matrix[[1]], project = fnameIN,
-                                min.cells = min.cells, min.features = min.features)
+    if (!is.list(count_matrix) | length(count_matrix) == 1) {
+      seu <- CreateSeuratObject(
+        counts = count_matrix, project = fnameIN,
+        min.cells = min.cells, min.features = min.features
+      )
+    } else if (is.list(count_matrix) & length(count_matrix) == 2) {
+      seu <- CreateSeuratObject(
+        counts = count_matrix[[1]], project = fnameIN,
+        min.cells = min.cells, min.features = min.features
+      )
 
       # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
       LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
-      LSBnameOUT = ppp(paste0(InputDir, '/LSB.', fnameIN),"Rds")
+      LSBnameOUT <- ppp(paste0(InputDir, "/LSB.", fnameIN), "Rds")
       saveRDS(LSB, file = LSBnameOUT)
     } else {
-      print('More than 2 elements in the list of matrices')
+      print("More than 2 elements in the list of matrices")
     }
     # update --- --- --- ---
     if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
     saveRDS(seu, file = fnameOUT)
   }
 }
-

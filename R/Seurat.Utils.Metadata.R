@@ -37,19 +37,21 @@ meta_col_exists <- function(col_name, obj) {
 #' @return A named vector containing the values from the specified metadata column. If 'as_numeric' is TRUE, the values are converted to numeric format.
 #' @examples
 #' \dontrun{
-#' if(interactive()){
+#' if (interactive()) {
 #'   # Example usage:
-#'   batch_metadata <- getMetadataColumn(ColName.metadata = 'batch', obj = combined.obj, as_numeric = T)
-#'  }
+#'   batch_metadata <- getMetadataColumn(ColName.metadata = "batch", obj = combined.obj, as_numeric = T)
+#' }
 #' }
 #' @export
-getMetadataColumn <- function(ColName.metadata = 'batch', obj = combined.obj, as_numeric =F) {
+getMetadataColumn <- function(ColName.metadata = "batch", obj = combined.obj, as_numeric = F) {
   stopifnot(ColName.metadata %in% colnames(obj@meta.data))
 
-  x = as.named.vector.df(obj@meta.data[ ,ColName.metadata, drop = F])
+  x <- as.named.vector.df(obj@meta.data[, ColName.metadata, drop = F])
   if (as_numeric) {
-    as.numeric.wNames(x)+1
-  } else {x}
+    as.numeric.wNames(x) + 1
+  } else {
+    x
+  }
 }
 
 # mmeta <- getMetadataColumn
@@ -75,7 +77,10 @@ getMetadataColumn <- function(ColName.metadata = 'batch', obj = combined.obj, as
 get_levels_seu <- function(obj, ident, max_levels = 100, dput = T) {
   Levels <- unique(deframe(obj[[ident]]))
   stopifnot(length(Levels) < max_levels)
-  if (dput) { cat('Levels <- '); dput(Levels) }
+  if (dput) {
+    cat("Levels <- ")
+    dput(Levels)
+  }
   return(Levels)
 }
 
@@ -90,16 +95,18 @@ get_levels_seu <- function(obj, ident, max_levels = 100, dput = T) {
 #' @param mColname Metadata column name to calculate on. Default: 'percent.mito'
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  ls.Seurat <- getMedianMetric(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat),
-#'  mColname = "percent.mito")
-#'  }
+#' if (interactive()) {
+#'   ls.Seurat <- getMedianMetric(
+#'     ls.obj = ls.Seurat, n.datasets = length(ls.Seurat),
+#'     mColname = "percent.mito"
+#'   )
+#' }
 #' }
 #' @export
 getMedianMetric <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito") {
   medMetric <- vec.fromNames(names(ls.obj))
-  for(i in 1:n.datasets ) {
-    medMetric[i] <- median(ls.obj[[i]]@meta.data[,mColname])
+  for (i in 1:n.datasets) {
+    medMetric[i] <- median(ls.obj[[i]]@meta.data[, mColname])
   }
   return(medMetric)
 }
@@ -117,17 +124,21 @@ getMedianMetric <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), 
 #' @return A vector of cell IDs that match (or don't match, if `inverse = TRUE`) the provided list of values.
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  # Example usage:
-#'  getCellIDs.from.meta()
-#'  }
+#' if (interactive()) {
+#'   # Example usage:
+#'   getCellIDs.from.meta()
+#' }
 #' }
 #' @export
-getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj = combined.obj, inverse = F ) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
-  mdat <- obj@meta.data[ , ColName.meta]
-  cells <- if (inverse) {mdat %!in% values} else {mdat %in% values}
-  idx.matching.cells = which(cells)
-  iprint(length(idx.matching.cells), 'cells found.')
+getCellIDs.from.meta <- function(ColName.meta = "res.0.6", values = NA, obj = combined.obj, inverse = F) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
+  mdat <- obj@meta.data[, ColName.meta]
+  cells <- if (inverse) {
+    mdat %!in% values
+  } else {
+    mdat %in% values
+  }
+  idx.matching.cells <- which(cells)
+  iprint(length(idx.matching.cells), "cells found.")
   return(rownames(obj@meta.data)[idx.matching.cells])
 }
 
@@ -145,16 +156,18 @@ getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj = co
 #' @return A Seurat object with the new metadata column added.
 #' @examples
 #' \dontrun{
-#' if(interactive()){
+#' if (interactive()) {
 #'   # Example usage:
-#'   combined.obj <- seu.add.meta.from.vector(obj = combined.obj,
-#'                                            metaD.colname = metaD.colname.labeled,
-#'                                            Label.per.cell = Cl.Label.per.cell)
-#'  }
+#'   combined.obj <- seu.add.meta.from.vector(
+#'     obj = combined.obj,
+#'     metaD.colname = metaD.colname.labeled,
+#'     Label.per.cell = Cl.Label.per.cell
+#'   )
+#' }
 #' }
 #' @export
-seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell = Cl.Label.per.cell ) { # Add a new metadata column to a Seurat  object
-  obj@meta.data[, metaD.colname ] = Label.per.cell
+seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell = Cl.Label.per.cell) { # Add a new metadata column to a Seurat  object
+  obj@meta.data[, metaD.colname] <- Label.per.cell
   iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
   return(obj)
 }
@@ -182,11 +195,13 @@ create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.inters
   cells.in.both <- intersect(cells.vec, cells.obj)
 
   # iprint("intersect:", l(cells.in.both), head(cells.in.both))
-  iprint(l(cells.in.both), 'cells in both;'
-         , l(cells.vec), 'cells in vec;'
-         , l(cells.obj), 'cells in obj'
-         , "intersect, e.g.:", head(cells.in.both, 5))
-  stopifnot(length(cells.in.both) > min.intersect )
+  iprint(
+    l(cells.in.both), "cells in both;",
+    l(cells.vec), "cells in vec;",
+    l(cells.obj), "cells in obj",
+    "intersect, e.g.:", head(cells.in.both, 5)
+  )
+  stopifnot(length(cells.in.both) > min.intersect)
 
   new_assignment <- vec.fromNames(cells.obj)
   new_assignment[cells.in.both] <- vec[cells.in.both]
@@ -205,26 +220,29 @@ create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.inters
 #' @param verbose Logical indicating whether to display detailed messages (TRUE) or not (FALSE). Default: T
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-")
-#'  ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.ribo", gene.symbol.pattern = "^RPL|^RPS")
-#'  ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.AC.GenBank", gene.symbol.pattern = "^AC[0-9]{6}\\.")
-#'  ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.AL.EMBL", gene.symbol.pattern = "^AL[0-9]{6}\\.")
-#'  ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.LINC", gene.symbol.pattern = "^LINC0")
-#'  ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.MALAT1", gene.symbol.pattern = "^MALAT1")
-#'  colnames(ls.Seurat[[1]]@meta.data)
-#'  HGA_MarkerGenes <- c("ENO1", "IGFBP2", "WSB1", "DDIT4", "PGK1", "BNIP3", "FAM162A", "TPI1",
-#'  "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1","NPAS4", "HK2", "BNIP3L",
-#'  "JUN", "ENO2", "GAPDH", "ANKRD37", "ALDOA", "GADD45G", "TXNIP")
-#'  sobj <- add.meta.fraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj =  sobj)
-#'  }
+#' if (interactive()) {
+#'   ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-")
+#'   ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.ribo", gene.symbol.pattern = "^RPL|^RPS")
+#'   ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.AC.GenBank", gene.symbol.pattern = "^AC[0-9]{6}\\.")
+#'   ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.AL.EMBL", gene.symbol.pattern = "^AL[0-9]{6}\\.")
+#'   ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.LINC", gene.symbol.pattern = "^LINC0")
+#'   ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.MALAT1", gene.symbol.pattern = "^MALAT1")
+#'   colnames(ls.Seurat[[1]]@meta.data)
+#'   HGA_MarkerGenes <- c(
+#'     "ENO1", "IGFBP2", "WSB1", "DDIT4", "PGK1", "BNIP3", "FAM162A", "TPI1",
+#'     "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1", "NPAS4", "HK2", "BNIP3L",
+#'     "JUN", "ENO2", "GAPDH", "ANKRD37", "ALDOA", "GADD45G", "TXNIP"
+#'   )
+#'   sobj <- add.meta.fraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj = sobj)
+#' }
 #' }
 #' @seealso
 #'  \code{\link[Matrix]{colSums}}
 #' @export
 #' @importFrom Matrix colSums
-add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c("^MT\\.|^MT-", F)[1]
-                              , gene.set = F, obj = ls.Seurat[[1]], verbose = T) {
+add.meta.fraction <- function(
+    col.name = "percent.mito", gene.symbol.pattern = c("^MT\\.|^MT-", F)[1],
+    gene.set = F, obj = ls.Seurat[[1]], verbose = T) {
   stopif2(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
@@ -232,8 +250,8 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
   total_expr <- Matrix::colSums(GetAssayData(object = obj))
   genes.matching <- if (!isFALSE(gene.set)) intersect(gene.set, rownames(obj)) else CodeAndRoll2::grepv(pattern = gene.symbol.pattern, x = rownames(obj))
 
-  genes.expr = GetAssayData(object = obj)[genes.matching, ]
-  target_expr <- if (length(genes.matching) >1) Matrix::colSums(genes.expr) else genes.expr
+  genes.expr <- GetAssayData(object = obj)[genes.matching, ]
+  target_expr <- if (length(genes.matching) > 1) Matrix::colSums(genes.expr) else genes.expr
 
   iprint(length(genes.matching), "genes found, :", head(genes.matching))
 
@@ -252,14 +270,14 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
 #' @param n The index specifying the dataset for which the tags should be applied. Default: 1
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  ls.Seurat[[1]] <- add.meta.tags(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1)
-#'  }
+#' if (interactive()) {
+#'   ls.Seurat[[1]] <- add.meta.tags(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1)
+#' }
 #' }
 #' @export
-add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) {  # N is the for which dataset
-  stopifnot( length(names(tags)) == length(tags) )
-  nCells = nrow(obj@meta.data)
+add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) { # N is the for which dataset
+  stopifnot(length(names(tags)) == length(tags))
+  nCells <- nrow(obj@meta.data)
   for (i in 1:length(list.of.tags)) {
     tagX <- list.of.tags[[i]]
     new.meta.tag.per.cell <- rep(tagX[n], nCells)
@@ -278,25 +296,25 @@ add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) {  #
 #' @param suffix A suffix added to the filename, Default: '.fromMeta'
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  combined.obj <- seu.add.meta.from.table()
-#'  }
+#' if (interactive()) {
+#'   combined.obj <- seu.add.meta.from.table()
+#' }
 #' }
 #' @export
 seu.add.meta.from.table <- function(obj = combined.obj, meta, suffix = ".fromMeta") { # Add multiple new metadata columns to a Seurat object from a table.
-  NotFound  = setdiff(colnames(obj), rownames(meta))
-  Found     = intersect(colnames(obj), rownames(meta))
-  if (length(NotFound)) iprint(length(NotFound), 'cells were not found in meta, e.g.: ', trail(NotFound, N = 10))
+  NotFound <- setdiff(colnames(obj), rownames(meta))
+  Found <- intersect(colnames(obj), rownames(meta))
+  if (length(NotFound)) iprint(length(NotFound), "cells were not found in meta, e.g.: ", trail(NotFound, N = 10))
 
-  mCols.new = colnames(meta)
-  mCols.old = colnames(obj@meta.data)
-  overlap = intersect(mCols.new, mCols.old)
+  mCols.new <- colnames(meta)
+  mCols.old <- colnames(obj@meta.data)
+  overlap <- intersect(mCols.new, mCols.old)
   if (length(overlap)) {
-    iprint(length(overlap), 'metadata columns already exist in the seurat object: ', overlap, '. These are tagged as: *', suffix)
-    colnames(meta)[overlap] = paste0(overlap, suffix)
+    iprint(length(overlap), "metadata columns already exist in the seurat object: ", overlap, ". These are tagged as: *", suffix)
+    colnames(meta)[overlap] <- paste0(overlap, suffix)
   }
-  mCols.add = colnames(meta)
-  obj@meta.data[Found, mCols.add] = meta[ Found,]
+  mCols.add <- colnames(meta)
+  obj@meta.data[Found, mCols.add] <- meta[Found, ]
 
   return(obj)
 }
@@ -312,16 +330,19 @@ seu.add.meta.from.table <- function(obj = combined.obj, meta, suffix = ".fromMet
 #' @return A Seurat object with the new metadata column added.
 #' @examples
 #' \dontrun{
-#' if(interactive()){
+#' if (interactive()) {
 #'   # Example usage:
-#'   combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj,
-#'                                                     ident.table = clusterIDs.GO.process)
-#'  }
+#'   combined.obj <- seu.map.and.add.new.ident.to.meta(
+#'     obj = combined.obj,
+#'     ident.table = clusterIDs.GO.process
+#'   )
+#' }
 #' }
 #' @export
-seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = clusterIDs.GO.process
-                                              , orig.ident = Idents(obj)
-                                              , metaD.colname = substitute(ident.table) ) {
+seu.map.and.add.new.ident.to.meta <- function(
+    obj = combined.obj, ident.table = clusterIDs.GO.process,
+    orig.ident = Idents(obj),
+    metaD.colname = substitute(ident.table)) {
   # identities should match
   {
     Idents(obj) <- orig.ident
@@ -331,23 +352,28 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
     ident.Seu <- sort.natural(levels(Idents(obj)))
     iprint("ident.Seu: ", ident.Seu)
 
-    OnlyInIdentVec      <- setdiff(ident.X, ident.Seu)
-    OnlyInSeuratIdents  <- setdiff(ident.Seu, ident.X)
+    OnlyInIdentVec <- setdiff(ident.X, ident.Seu)
+    OnlyInSeuratIdents <- setdiff(ident.Seu, ident.X)
 
-    msg.IdentVec <- kollapse("Rownames of 'ident.table' have entries not found in 'Idents(obj)':"
-                             , OnlyInIdentVec, " not found in ", ident.Seu, collapseby = " ")
+    msg.IdentVec <- kollapse("Rownames of 'ident.table' have entries not found in 'Idents(obj)':",
+      OnlyInIdentVec, " not found in ", ident.Seu,
+      collapseby = " "
+    )
 
-    msg.Seu <- kollapse("Rownames of 'Idents(obj)' have entries not found in 'ident.table':"
-                        , OnlyInSeuratIdents, " not found in ", ident.X, collapseby = " ")
+    msg.Seu <- kollapse("Rownames of 'Idents(obj)' have entries not found in 'ident.table':",
+      OnlyInSeuratIdents, " not found in ", ident.X,
+      collapseby = " "
+    )
 
-    stopif (length(OnlyInIdentVec), message = msg.IdentVec)
-    stopif (length(OnlyInSeuratIdents), message = msg.Seu)
+    stopif(length(OnlyInIdentVec), message = msg.IdentVec)
+    stopif(length(OnlyInSeuratIdents), message = msg.Seu)
   }
   # identity mapping
   {
     new.ident <- translate(vec = as.character(Idents(obj)), oldvalues = ident.X, newvalues = ident.Y)
-    obj@meta.data[[metaD.colname]] = new.ident
-    iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:"); cat(paste0("\t", ident.Y, "\n"))
+    obj@meta.data[[metaD.colname]] <- new.ident
+    iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:")
+    cat(paste0("\t", ident.Y, "\n"))
   }
 }
 
@@ -366,13 +392,14 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
 #' @param obj Seurat object, Default: merged.obj
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  merged.obj$orig.ident <- fix.orig.ident(obj = merged.obj); table(merged.obj$orig.ident)
-#'  }
+#' if (interactive()) {
+#'   merged.obj$orig.ident <- fix.orig.ident(obj = merged.obj)
+#'   table(merged.obj$orig.ident)
+#' }
 #' }
 #' @export
 fix.orig.ident <- function(obj = merged.obj) {
-  fixed <- sub(obj$'orig.ident', pattern = 'filtered_feature_bc_matrix.', replacement = '')
+  fixed <- sub(obj$"orig.ident", pattern = "filtered_feature_bc_matrix.", replacement = "")
   return(fixed)
 }
 
@@ -388,17 +415,17 @@ fix.orig.ident <- function(obj = merged.obj) {
 #' @export
 #' @examples
 #' \dontrun{
-#'   combined.obj <- seu.RemoveMetadata(obj = combined.obj, cols_remove = c("column1", "column2"))
+#' combined.obj <- seu.RemoveMetadata(obj = combined.obj, cols_remove = c("column1", "column2"))
 #' }
-seu.RemoveMetadata <- function(obj = combined.obj
-                               , cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = T)
-) {
-
+seu.RemoveMetadata <- function(
+    obj = combined.obj,
+    cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = T)) {
   CNN <- colnames(obj@meta.data)
-  iprint('cols_remove:', cols_remove); print('')
+  iprint("cols_remove:", cols_remove)
+  print("")
   (cols_keep <- setdiff(CNN, cols_remove))
   obj@meta.data <- obj@meta.data[, cols_keep]
-  iprint('meta.data colnames kept:', colnames(obj@meta.data))
+  iprint("meta.data colnames kept:", colnames(obj@meta.data))
 
   return(obj)
 }
@@ -420,18 +447,18 @@ seu.RemoveMetadata <- function(obj = combined.obj
 #' @return A vector of sampled cell IDs.
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  # Example usage:
-#'  # Suppose 'MetaData' is a dataframe and 'Pass' is a boolean vector with the same length.
-#'  # The following example will sample 10% of the rows of 'MetaData' where 'Pass' is TRUE.
-#'  sampleNpc(metaDF = MetaData[which(Pass),], pc = 0.1)
-#'  }
+#' if (interactive()) {
+#'   # Example usage:
+#'   # Suppose 'MetaData' is a dataframe and 'Pass' is a boolean vector with the same length.
+#'   # The following example will sample 10% of the rows of 'MetaData' where 'Pass' is TRUE.
+#'   sampleNpc(metaDF = MetaData[which(Pass), ], pc = 0.1)
+#' }
 #' }
 #' @export
-sampleNpc <- function(metaDF = MetaData[which(Pass),], pc = 0.1) {
-  cellIDs = rownames(metaDF)
-  nr_cells = floor(length(cellIDs) * pc)
-  cellIDs.keep = sample(cellIDs, size = nr_cells, replace = FALSE)
+sampleNpc <- function(metaDF = MetaData[which(Pass), ], pc = 0.1) {
+  cellIDs <- rownames(metaDF)
+  nr_cells <- floor(length(cellIDs) * pc)
+  cellIDs.keep <- sample(cellIDs, size = nr_cells, replace = FALSE)
   return(cellIDs.keep)
 }
 
@@ -443,9 +470,10 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc = 0.1) {
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  set.all.genes(); all.genes
-#'  }
+#' if (interactive()) {
+#'   set.all.genes()
+#'   all.genes
+#' }
 #' }
 #' @export
 set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.and.set.all.genes()")
@@ -482,52 +510,56 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 #' @importFrom ggcorrplot ggcorrplot
 #' @export
 plotMetadataCorHeatmap <- function(
-    columns = c( "nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo")
-    , obj
-    , cormethod = c('pearson', 'spearman')[1]
-    , main = paste( "Metadata", cormethod, "correlations")
-    , show_numbers = FALSE
-    , digits = 1
-    , suffix = NULL
-    , add_PCA = TRUE
-    , n_PCs = 8
-    , w = ceiling((length(columns)+n_PCs)/2), h = w
-    , use_ggcorrplot = FALSE
-    , n_cutree = (n_PCs)
-    , ...){
-
+    columns = c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo"),
+    obj,
+    cormethod = c("pearson", "spearman")[1],
+    main = paste("Metadata", cormethod, "correlations"),
+    show_numbers = FALSE,
+    digits = 1,
+    suffix = NULL,
+    add_PCA = TRUE,
+    n_PCs = 8,
+    w = ceiling((length(columns) + n_PCs) / 2), h = w,
+    use_ggcorrplot = FALSE,
+    n_cutree = (n_PCs),
+    ...) {
   meta.data <- obj@meta.data
   columns.found <- intersect(colnames(meta.data), columns)
   columns.not.found <- setdiff(columns, colnames(meta.data))
   if (l(columns.not.found)) iprint("columns.not.found:", columns.not.found)
 
-  meta.data <- meta.data[ , columns.found]
+  meta.data <- meta.data[, columns.found]
 
   if (add_PCA) {
-    stopif(is.null(obj@reductions$'pca'), "PCA not found in @reductions.")
-    main = paste( "Metadata and PC", cormethod, "correlations")
-    suffix = FixPlotName(suffix, "w.PCA")
+    stopif(is.null(obj@reductions$"pca"), "PCA not found in @reductions.")
+    main <- paste("Metadata and PC", cormethod, "correlations")
+    suffix <- FixPlotName(suffix, "w.PCA")
 
     PCs <- obj@reductions$pca@cell.embeddings
     stopifnot(nrow(meta.data) == nrow(PCs))
-    meta.data <- cbind(PCs[ ,1:n_PCs], meta.data)
-
+    meta.data <- cbind(PCs[, 1:n_PCs], meta.data)
   }
 
   corX <- cor(meta.data, method = cormethod)
   if (use_ggcorrplot) {
-    pl <- ggcorrplot::ggcorrplot(corX, title = main
-                                 , hc.order = TRUE
-                                 , digits = digits
-                                 , lab = show_numbers
-                                 , type = "full"
-                                 , ...)
-    ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, 'pdf'), w = w, h = h)
+    pl <- ggcorrplot::ggcorrplot(corX,
+      title = main,
+      hc.order = TRUE,
+      digits = digits,
+      lab = show_numbers,
+      type = "full",
+      ...
+    )
+    ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, "pdf"), w = w, h = h)
   } else {
-    pl <- pheatmap::pheatmap(corX, main = main, treeheight_row = 2, treeheight_col = 2
-                             , cutree_rows = n_cutree, cutree_cols = n_cutree)
-    wplot_save_pheatmap(x = pl, width = w,
-                        , plotname = FixPlotName(make.names(main), suffix, 'pdf') )
+    pl <- pheatmap::pheatmap(corX,
+      main = main, treeheight_row = 2, treeheight_col = 2,
+      cutree_rows = n_cutree, cutree_cols = n_cutree
+    )
+    wplot_save_pheatmap(
+      x = pl, width = w, ,
+      plotname = FixPlotName(make.names(main), suffix, "pdf")
+    )
   }
   pl
 }
@@ -562,15 +594,16 @@ plotMetadataCorHeatmap <- function(
 #' @importFrom pheatmap pheatmap
 #' @import tidyverse
 #' @export
-heatmap_calc_clust_median <- function(meta, ident, subset_ident_levels = FALSE
-                                     , variables, scale = TRUE
-                                     , suffix = NULL
-                                     , return_matrix = FALSE
-                                     , plotname = "Median metadata values by cluster"
-                                     , n_cut_row = NA
-                                     , n_cut_col = NA
-                                     , w = ceiling(length(variables)/2)
-                                     , ...) {
+heatmap_calc_clust_median <- function(
+    meta, ident, subset_ident_levels = FALSE,
+    variables, scale = TRUE,
+    suffix = NULL,
+    return_matrix = FALSE,
+    plotname = "Median metadata values by cluster",
+    n_cut_row = NA,
+    n_cut_col = NA,
+    w = ceiling(length(variables) / 2),
+    ...) {
   # Ensure that 'meta' is a dataframe, 'ident' is a column in 'meta', and 'variables' are columns in 'meta'
   stopifnot(is.data.frame(meta))
   stopifnot(ident %in% colnames(meta))
@@ -585,7 +618,7 @@ heatmap_calc_clust_median <- function(meta, ident, subset_ident_levels = FALSE
   if (!isFALSE(subset_ident_levels)) {
     stopifnot(all(subset_ident_levels %in% rownames(df_cluster_medians)))
     suffix <- FixPlotName(suffix, "subset")
-    df_cluster_medians <- df_cluster_medians[ subset_ident_levels, ]
+    df_cluster_medians <- df_cluster_medians[subset_ident_levels, ]
   }
 
   df_cluster_medians <- scale(df_cluster_medians)
@@ -594,12 +627,16 @@ heatmap_calc_clust_median <- function(meta, ident, subset_ident_levels = FALSE
     return(df_cluster_medians)
   } else {
     plot_name <- FixPlotName(plotname, suffix)
-    pl <- pheatmap::pheatmap(df_cluster_medians, main = plot_name
-                             , cutree_rows = n_cut_row
-                             , cutree_cols = n_cut_col
-                             , ...)
-    wplot_save_pheatmap(x = pl, width = w,
-                        , plotname = FixPlotName(make.names(plot_name), suffix, 'pdf') )
+    pl <- pheatmap::pheatmap(df_cluster_medians,
+      main = plot_name,
+      cutree_rows = n_cut_row,
+      cutree_cols = n_cut_col,
+      ...
+    )
+    wplot_save_pheatmap(
+      x = pl, width = w, ,
+      plotname = FixPlotName(make.names(plot_name), suffix, "pdf")
+    )
   }
 }
 
@@ -632,36 +669,35 @@ heatmap_calc_clust_median <- function(meta, ident, subset_ident_levels = FALSE
 #' @importFrom reshape2 melt
 
 plotMetadataMedianFractionBarplot <- function(
-    columns = c(  "percent.mito", "percent.ribo")
-    , suffix =  NULL
-    , group.by = GetClusteringRuns(obj = obj)[2]
-    , method = c('median', 'mean' )[1]
-    , min.thr = 2.5 # At least this many percent in at least 1 cluster
-    , return.matrix = F
-    , main = paste( method, "read fractions per transcript class and cluster", suffix)
-    , ylab = "Fraction of transcriptome (%)"
-    , percentify = T
-    , subt = NULL
-    , position = position_stack()
-    , w = 10, h = 6
-    , obj = combined.obj
-    , ...){
-
+    columns = c("percent.mito", "percent.ribo"),
+    suffix = NULL,
+    group.by = GetClusteringRuns(obj = obj)[2],
+    method = c("median", "mean")[1],
+    min.thr = 2.5 # At least this many percent in at least 1 cluster
+    , return.matrix = F,
+    main = paste(method, "read fractions per transcript class and cluster", suffix),
+    ylab = "Fraction of transcriptome (%)",
+    percentify = T,
+    subt = NULL,
+    position = position_stack(),
+    w = 10, h = 6,
+    obj = combined.obj,
+    ...) {
   meta.data <- obj@meta.data
   stopifnot(group.by %in% colnames(meta.data))
-  columns.found <- intersect(colnames(meta.data), c(group.by, columns) )
+  columns.found <- intersect(colnames(meta.data), c(group.by, columns))
 
-  (mat.cluster.medians1 <- meta.data[ , columns.found] %>%
-      group_by_at(group.by) %>%
-      dplyr::summarize_all(median)
+  (mat.cluster.medians1 <- meta.data[, columns.found] %>%
+    group_by_at(group.by) %>%
+    dplyr::summarize_all(median)
   )
-  if (min.thr>0) {
-    pass.cols <- colMax(mat.cluster.medians1[,-1]) > (min.thr/100)
+  if (min.thr > 0) {
+    pass.cols <- colMax(mat.cluster.medians1[, -1]) > (min.thr / 100)
     cols.OK <- which_names(pass.cols)
     cols.FAIL <- which_names(!pass.cols)
-    subt = paste(length(cols.FAIL), "classed do not reach", min.thr, "% :", kpps(cols.FAIL))
+    subt <- paste(length(cols.FAIL), "classed do not reach", min.thr, "% :", kpps(cols.FAIL))
     iprint(subt)
-    mat.cluster.medians1 <- mat.cluster.medians1[ , c( group.by, cols.OK) ]
+    mat.cluster.medians1 <- mat.cluster.medians1[, c(group.by, cols.OK)]
   }
 
 
@@ -669,12 +705,14 @@ plotMetadataMedianFractionBarplot <- function(
     reshape2::melt(id.vars = c(group.by), value.name = "Fraction")
 
 
-  if (percentify)  mat.cluster.medians$'Fraction' = 100*mat.cluster.medians$'Fraction'
+  if (percentify) mat.cluster.medians$"Fraction" <- 100 * mat.cluster.medians$"Fraction"
 
-  pl <- ggbarplot(mat.cluster.medians, x = group.by, y = 'Fraction', fill = 'variable'
-                  , position = position
-                  , title = main, subtitle = subt ,ylab = ylab)
-  ggExpress::qqSave(pl, fname = ppp(make.names(main),'pdf'), w = w, h = h)
+  pl <- ggbarplot(mat.cluster.medians,
+    x = group.by, y = "Fraction", fill = "variable",
+    position = position,
+    title = main, subtitle = subt, ylab = ylab
+  )
+  ggExpress::qqSave(pl, fname = ppp(make.names(main), "pdf"), w = w, h = h)
   pl
   if (return.matrix) mat.cluster.medians1 else pl
 }
@@ -693,15 +731,18 @@ plotMetadataMedianFractionBarplot <- function(
 #'
 #' @export
 
-plotMetadataCategPie <- function(metacol = 'Singlet.status'
-                                    , plot_name = paste(metacol, "distribution")
-                                    , obj = combined.obj, max.categs = 20, both_pc_and_value = T
-                                    , subtitle = NULL, ...) {
+plotMetadataCategPie <- function(
+    metacol = "Singlet.status",
+    plot_name = paste(metacol, "distribution"),
+    obj = combined.obj, max.categs = 20, both_pc_and_value = T,
+    subtitle = NULL, ...) {
   categ_pivot <- table(obj[[metacol]])
   stopifnot(length(categ_pivot) < max.categs)
-  qpie(categ_pivot, plotname = FixPlotName(make.names(plot_name))
-       , both_pc_and_value = both_pc_and_value
-       , LegendSide = F, labels = NULL, LegendTitle = '', subtitle = subtitle, ...)
+  qpie(categ_pivot,
+    plotname = FixPlotName(make.names(plot_name)),
+    both_pc_and_value = both_pc_and_value,
+    LegendSide = F, labels = NULL, LegendTitle = "", subtitle = subtitle, ...
+  )
 }
 
 
@@ -741,19 +782,21 @@ plotMetadataCategPie <- function(metacol = 'Singlet.status'
 #' # combined.objX <- transfer_labels_seurat(named_ident = 'RNA_snn_res.0.3.ordered.ManualNames',
 #' #                                     reference_path = '~/Dropbox (VBC)/Abel.IMBA/Metadata.D/CON.meta/label.transfer/sc6/reference.obj.sc6.DIET.2023.07.19_13.24.Rds.gz',
 #' #                                     query_obj = combined.obj)
-transfer_labels_seurat <- function(query_obj, reference_path
-                                   , reference_obj = NULL
-                                   , anchors = NULL
-                                   , named_ident = 'RNA_snn_res.0.3.ordered.ManualNames'
-                                   , new_ident = gsub(pattern = 'ordered'
-                                                      , replacement = 'transferred'
-                                                      , x = named_ident)
-                                   , predictions_col = 'predicted.id'
-                                   , save_anchors = TRUE
-                                   , suffix = "NEW"
-                                   , plot_reference = TRUE
-                                   , ...) {
-
+transfer_labels_seurat <- function(
+    query_obj, reference_path,
+    reference_obj = NULL,
+    anchors = NULL,
+    named_ident = "RNA_snn_res.0.3.ordered.ManualNames",
+    new_ident = gsub(
+      pattern = "ordered",
+      replacement = "transferred",
+      x = named_ident
+    ),
+    predictions_col = "predicted.id",
+    save_anchors = TRUE,
+    suffix = "NEW",
+    plot_reference = TRUE,
+    ...) {
   print(named_ident)
   if (is.null(reference_obj)) {
     iprint("Loading reference object:", basename(reference_path))
@@ -765,23 +808,29 @@ transfer_labels_seurat <- function(query_obj, reference_path
 
   # Visualize reference object
   # Seurat.utils::
-  if (plot_reference) clUMAP(obj = reference_obj, ident = named_ident, suffix = 'REFERENCE', sub = 'REFERENCE', ...)
+  if (plot_reference) clUMAP(obj = reference_obj, ident = named_ident, suffix = "REFERENCE", sub = "REFERENCE", ...)
 
 
   if (is.null(anchors)) {
     print("Find anchors")
     anchors <- Seurat::FindTransferAnchors(reference = reference_obj, query = query_obj)
     if (save_anchors) isave.RDS(obj = anchors, inOutDir = TRUE)
-  } else { print("Anchors provided") }
+  } else {
+    print("Anchors provided")
+  }
 
 
   print("Transfer labels")
-  transferred_clIDs <- Seurat::TransferData(anchorset = anchors
-                                            , refdata = reference_obj@meta.data[, named_ident])
+  transferred_clIDs <- Seurat::TransferData(
+    anchorset = anchors,
+    refdata = reference_obj@meta.data[, named_ident]
+  )
 
   # Add metadata to combined object
-  query_obj <- Seurat::AddMetaData(object = query_obj, metadata = transferred_clIDs[, predictions_col]
-                                   , col.name = new_ident)
+  query_obj <- Seurat::AddMetaData(
+    object = query_obj, metadata = transferred_clIDs[, predictions_col],
+    col.name = new_ident
+  )
 
   # Visualize combined object
   # Seurat.utils::
@@ -824,18 +873,20 @@ transfer_labels_seurat <- function(query_obj, reference_path
 #' updated_obj <- match_best_identity(my_obj, "origin_identity", "target_identity")
 #' }
 #' @export
-match_best_identity <- function(obj, ident_from
-                                , ident_to = gsub(pattern = 'ordered', replacement = 'transferred', x = ident_from)
-                                , to_suffix = FixPlotName(gsub(pattern = '[a-zA-Z_]', replacement = "", x = ident_from))
-                                , new_ident_name = kpp(ident_from, "best.match", to_suffix)
-                                , ...){
+match_best_identity <- function(
+    obj, ident_from,
+    ident_to = gsub(pattern = "ordered", replacement = "transferred", x = ident_from),
+    to_suffix = FixPlotName(gsub(pattern = "[a-zA-Z_]", replacement = "", x = ident_from)),
+    new_ident_name = kpp(ident_from, "best.match", to_suffix),
+    ...) {
   dictionary <- obj@meta.data[, c(ident_from, ident_to)]
 
 
   translation <- replace_by_most_frequent_categories(
-    df = dictionary, show_plot = TRUE, suffix_barplot = ident_from, ...)
+    df = dictionary, show_plot = TRUE, suffix_barplot = ident_from, ...
+  )
 
-  obj@meta.data[, new_ident_name] <- translation[,1]
+  obj@meta.data[, new_ident_name] <- translation[, 1]
 
   px <- clUMAP(ident = new_ident_name, obj = obj)
   print(px)
@@ -863,26 +914,31 @@ match_best_identity <- function(obj, ident_from
 #' @examples
 #' \dontrun{
 #' replace_by_most_frequent_categories(df = my_data)
-#' (MXX <- as.tibble(structure(c("Adjut", "Adjut", "Yearn", "Adjut", "Dwarf", "Adjut",
-#' "Dwarf", "Adjut", "Dwarf", "Yearn", "Dwarf", "Dwarf", "Dwarf",
-#' "Yearn", "Dwarf", "Dwarf", "Dwarf", "Zebra", "Yucca", "Plyer",
-#' "Blaze", "Blaze", "Dazed", "Blaze", "Swept", "Bold", "Vixen",
-#' "Bold", "Swept", "Dazed", "Mirth", "Witch", "Vixen", "Dazed",
-#' "Swept", "Mirth", "Swept", "Vexed", "Query", "Yolk")
-#'  , .Dim = c(20L, 2L), .Dimnames =
-#'  list(NULL, c("RNA_snn_res.0.1.ordered", "RNA_snn_res.0.3.ordered" )))))
+#' (MXX <- as.tibble(structure(
+#'   c(
+#'     "Adjut", "Adjut", "Yearn", "Adjut", "Dwarf", "Adjut",
+#'     "Dwarf", "Adjut", "Dwarf", "Yearn", "Dwarf", "Dwarf", "Dwarf",
+#'     "Yearn", "Dwarf", "Dwarf", "Dwarf", "Zebra", "Yucca", "Plyer",
+#'     "Blaze", "Blaze", "Dazed", "Blaze", "Swept", "Bold", "Vixen",
+#'     "Bold", "Swept", "Dazed", "Mirth", "Witch", "Vixen", "Dazed",
+#'     "Swept", "Mirth", "Swept", "Vexed", "Query", "Yolk"
+#'   ),
+#'   .Dim = c(20L, 2L), .Dimnames =
+#'     list(NULL, c("RNA_snn_res.0.1.ordered", "RNA_snn_res.0.3.ordered"))
+#' )))
 #'
 #' z <- replace_by_most_frequent_categories(df = MXX)
-#' head(cbind(MXX[,1],z[,1]))
+#' head(cbind(MXX[, 1], z[, 1]))
 #' }
 #'
-replace_by_most_frequent_categories <- function(df, query_col = colnames(df)[1]
-                                                , ref_col = colnames(df)[2]
-                                                , show_plot = TRUE
-                                                , suffix_barplot = NULL
-                                                , ...) {
+replace_by_most_frequent_categories <- function(
+    df, query_col = colnames(df)[1],
+    ref_col = colnames(df)[2],
+    show_plot = TRUE,
+    suffix_barplot = NULL,
+    ...) {
   # Convert to data frame if it is not
-  if(!is.data.frame(df)) {
+  if (!is.data.frame(df)) {
     df <- as.data.frame(df)
   }
 
@@ -894,7 +950,7 @@ replace_by_most_frequent_categories <- function(df, query_col = colnames(df)[1]
   # Create a table of the most frequent reference values for each query category
   replacement_table <- df %>%
     dplyr::group_by(!!sym(query_col), !!sym(ref_col)) %>%
-    dplyr::summarise(n = n(), .groups = 'drop') %>%
+    dplyr::summarise(n = n(), .groups = "drop") %>%
     dplyr::arrange(!!sym(query_col), desc(n)) %>%
     dplyr::filter(!duplicated(!!sym(query_col)))
 
@@ -903,7 +959,7 @@ replace_by_most_frequent_categories <- function(df, query_col = colnames(df)[1]
   # Calculate assignment quality
   total_counts <- table(df[[query_col]])
   quality <- replacement_table$n / total_counts[replacement_table[[query_col]]]
-  names(quality) <- paste0(names(quality), '->' , replacement_table[[ref_col]])
+  names(quality) <- paste0(names(quality), "->", replacement_table[[ref_col]])
 
   # Report assignment quality
   message("Assignment quality (proportion of total matches):")
@@ -912,16 +968,17 @@ replace_by_most_frequent_categories <- function(df, query_col = colnames(df)[1]
   # Plot assignment quality
   if (show_plot) {
     # barplot(quality, main = "Assignment Quality", xlab = query_col, ylab = "Proportion of Total Matches")
-    px <- qbarplot(quality, label = percentage_formatter(quality)
-                   , suffix = suffix_barplot
-                   , plotname = "Assignment Quality"
-                   , filename = make.names(kpp("Assignment Quality", suffix_barplot, "pdf"))
-                   , subtitle = paste("From", colnames(df)[1], "->", colnames(df)[2])
-                   , xlab = paste("Best query match to reference")
-                   , ylab = "Proportion of Total Matches"
-                   , ...)
+    px <- qbarplot(quality,
+      label = percentage_formatter(quality),
+      suffix = suffix_barplot,
+      plotname = "Assignment Quality",
+      filename = make.names(kpp("Assignment Quality", suffix_barplot, "pdf")),
+      subtitle = paste("From", colnames(df)[1], "->", colnames(df)[2]),
+      xlab = paste("Best query match to reference"),
+      ylab = "Proportion of Total Matches",
+      ...
+    )
     print(px)
-
   }
 
   # Replace the query values with the most frequent reference values
@@ -929,5 +986,3 @@ replace_by_most_frequent_categories <- function(df, query_col = colnames(df)[1]
 
   return(df)
 }
-
-
