@@ -12,8 +12,7 @@ isave.RDS(
   project = getProject(),
   alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/",
     basename(OutDir)),
-  homepath = if (Sys.info()[1] == "Darwin") "/Users/abel.vertesy/" else
-    "/users/abel.vertesy/",
+  homepath = if (Sys.info()[1] == "Darwin") "~/" else "/users/abel.vertesy/",
   showMemObject = T,
   saveParams = T,
   compress = TRUE,
@@ -33,7 +32,7 @@ isave.RDS(
 
 \item{alternative_path_rdata}{A string that specifies the alternative path for storing the RDS file if inOutDir is FALSE. Default is "~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/" appended with the basename of OutDir.}
 
-\item{homepath}{A string representing the homepath. Will be replaced by '~' in the file path. Default is '/Users/abel.vertesy/'.}
+\item{homepath}{A string representing the homepath. Will be replaced by '~' in the file path. Default is '~/'.}
 
 \item{showMemObject}{A boolean flag, if TRUE the function will print out the memory size of the largest objects in the workspace. Default is TRUE.}
 

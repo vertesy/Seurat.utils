@@ -5199,7 +5199,7 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #' @param inOutDir A boolean flag, if TRUE the OutDir is used as save directory, if FALSE the alternative_path_rdata is used. Default is TRUE
 #' @param project A string representing the project code. This is appended to the saved file name. Default is the active project determined by getProject().
 #' @param alternative_path_rdata A string that specifies the alternative path for storing the RDS file if inOutDir is FALSE. Default is "~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/" appended with the basename of OutDir.
-#' @param homepath A string representing the homepath. Will be replaced by '~' in the file path. Default is '/Users/abel.vertesy/'.
+#' @param homepath A string representing the homepath. Will be replaced by '~' in the file path. Default is '~/'.
 #' @param showMemObject A boolean flag, if TRUE the function will print out the memory size of the largest objects in the workspace. Default is TRUE.
 #' @param saveParams A boolean flag, if TRUE the parameters 'p' and 'all.genes' are added to the 'misc' slot of the Seurat object if the object is of class Seurat. Default is TRUE.
 #' @param compress Compress .Rds file after writing? Default is TRUE.
@@ -5210,7 +5210,7 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 isave.RDS <- function(obj, prefix =NULL, suffix = NULL, inOutDir = TRUE
                       , project = getProject()
                       , alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir))
-                      , homepath = if(Sys.info()[1]=="Darwin") '/Users/abel.vertesy/' else '/users/abel.vertesy/'
+                      , homepath = if(Sys.info()[1]=="Darwin") '~/' else '/users/abel.vertesy/'
                       , showMemObject = T, saveParams =T
                       , compress = TRUE
                       , test_read = FALSE){

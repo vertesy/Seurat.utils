@@ -1,9 +1,9 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
-Version: 2.0.9
+Version: 2.1.0
 Authors@R: 
-    person("Abel", "Vertesy", , "a.vertesy@imba.oeaw.ac.at", role = c("aut", "cre"))
-Author: Abel Vertesy <abel.vertesy@imba.oeaw.ac.at> [aut, cre]
+    person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
+Author: Abel Vertesy <av@imba.oeaw.ac.at> [aut, cre]
 Description: Seurat.utils Is a collection of utility functions for Seurat
     v3.  Functions allow the automation / multiplexing of plotting, 3D
     plotting, visualisation of statistics & QC, interaction with the
@@ -52,6 +52,6 @@ Suggests:
     princurve,
     SoupX
 Encoding: UTF-8
-Packaged: 2023-11-24 08:10:21.627534
+Packaged: 2023-11-26 16:00:49.032079
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

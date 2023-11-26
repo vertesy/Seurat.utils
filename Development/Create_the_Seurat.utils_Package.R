@@ -11,7 +11,7 @@ try(dev.off(), silent = TRUE)
 
 # Setup ------------------------
 package.name <- "Seurat.utils"
-package.version <- "2.0.9"
+package.version <- "2.1.0"
 setwd("~/GitHub/Packages/")
 
 RepositoryDir <- paste0("~/GitHub/Packages/", package.name, "/")
@@ -23,8 +23,8 @@ dir.create(BackupDir)
 
 DESCRIPTION <- list(
   "Title" = "Seurat.utils - utility functions for Seurat",
-  "Author" = person(given = "Abel", family = "Vertesy", email = "abel.vertesy@imba.oeaw.ac.at", role = c("aut", "cre")),
-  "Authors@R" = 'person(given = "Abel", family = "Vertesy", email = "a.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )',
+  "Author" = person(given = "Abel", family = "Vertesy", email = "av@imba.oeaw.ac.at", role = c("aut", "cre")),
+  "Authors@R" = 'person(given = "Abel", family = "Vertesy", email = "av@imba.oeaw.ac.at", role =  c("aut", "cre") )',
   "Description" = "Seurat.utils Is a collection of utility functions for Seurat v3.
     Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics &
     QC, interaction with the Seurat object, etc. Some functionalities require functions from CodeAndRoll and MarkdownReports libraries.",

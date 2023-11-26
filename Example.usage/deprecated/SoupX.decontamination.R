@@ -22,7 +22,7 @@ v.parentfolder = c(
   # # POL -----
   '123062' = "/Volumes/HN3V3DRXX_R9836/demultiplexed/123062/123062_premRNA_POL/outs",
   '123063' = "/Volumes/HN3V3DRXX_R9836/demultiplexed/123063/123063_premRNA_POL/outs"
-    # "/Users/abel.vertesy/Data/POL/filtered_feature_bc_matrix.123062"
+    # "~/Data/POL/filtered_feature_bc_matrix.123062"
     # "/Volumes/single.cell.RNA.seq/C.Bosone/2020.06/HN3V3DRXX_R9836/aligned_rna/123063_rnacount",
   # TSC -----
   # "/Volumes/single.cell.RNA.seq/O.Eichmueller/diffmedia.d110/101146/101146_premRNA_POL2/outs/",
