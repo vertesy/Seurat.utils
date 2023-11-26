@@ -499,7 +499,7 @@ seu.PC.var.explained <- function(obj = combined.obj) { # Determine percent of va
 #'
 #' @description Plot the percent of variation associated with each PC.
 #' @param obj Seurat object, Default: combined.obj
-#' @param use.MarkdownReports Use MarkdownReports for plotting, Default: F
+#' @param use.MarkdownReports Use MarkdownReports for plotting, Default: FALSE
 #' @export
 seu.plot.PC.var.explained <- function(obj = combined.obj, use.MarkdownReports = FALSE) { # Plot the percent of variation associated with each PC.
   pct <- seu.PC.var.explained(obj)
@@ -848,7 +848,7 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #'
 #' @description Get Clustering Runs: metadata column names #
 #' @param obj Seurat object, Default: combined.obj
-#' @param res Clustering resoluton to use, Default: F
+#' @param res Clustering resoluton to use, Default: FALSE
 #' @param pat Pettern to match, Default: '*snn_res.*[0-9]$'
 #' @examples
 #' \dontrun{
@@ -872,7 +872,7 @@ GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.*
 #' @description Get Clustering Runs: metadata column names #
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: c(F, 0.5)[1]
-#' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: F
+#' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: FALSE
 #' @param pat Pettern to match, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
 #' @examples
 #' \dontrun{
@@ -902,7 +902,7 @@ GetNamedClusteringRuns <- function(
 #'
 #' @description Get Clustering Runs: metadata column names #
 #' @param obj Seurat object, Default: combined.obj
-#' @param res Clustering resoluton to use, Default: F
+#' @param res Clustering resoluton to use, Default: FALSE
 #' @param pat Pettern to match, Default: '*snn_res.*[0,1]\.[0-9]\.ordered$'
 #' @examples
 #' \dontrun{
@@ -1097,7 +1097,7 @@ calc.cluster.averages <- function(
 #' @description Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).
 #' @param obj Seurat object, Default: combined.obj
 #' @param gene gene of interest, Default: 'ACTB'
-#' @param filterZero Remove genes whose quantile-90 expression in 0? Default: T
+#' @param filterZero Remove genes whose quantile-90 expression in 0? Default: TRUE
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -1440,7 +1440,7 @@ subsetSeuObj.and.Save <- function(
   # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)), suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
   xsave(obj_Xpc,
     suffix = ppp(suffix, nr.cells.kept, "cells.with.min.features", min.features),
-    nthreads = nthreads, project = getProject(), showMemObject = TRUE, saveParams = F
+    nthreads = nthreads, project = getProject(), showMemObject = TRUE, saveParams = FALSE
   )
 }
 
@@ -1793,7 +1793,7 @@ FlipReductionCoordinates <- function(
 #' @description Relabel cluster numbers along a UMAP (or tSNE) axis #
 #' @param obj Seurat object, Default: combined.obj
 #' @param dim Which dimension? Default: 1
-#' @param swap Swap direction? Default: F
+#' @param swap Swap direction? Default: FALSE
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
 #' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
 #' @examples
@@ -1831,7 +1831,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 #' @description Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
 #' @param obj Seurat object, Default: combined.obj
 #' @param dim Dimensions to use, Default: 1:2
-#' @param plotit Plot results (& show it), Default: T
+#' @param plotit Plot results (& show it), Default: TRUE
 #' @param swap Swap Lambda paramter (multiplied with this) , Default: -1
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
 #' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
@@ -2046,7 +2046,7 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 #' is stored under `@misc$df.markers$res...`, which location is assumed by default.
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: 0.2
-#' @param plot.top.genes Show plot? Default: T
+#' @param plot.top.genes Show plot? Default: TRUE
 #' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_logFC", "p_val_adj")[1]
 #' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
 #' @examples
@@ -2317,8 +2317,8 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
 #' @param x Bars along the X axis, Default: 'integrated_snn_res.0.3'
 #' @param y Vertical split of each bar, Default: 'project'
 #' @param color Color, Default: y
-#' @param plot  Show plot, Default: T
-#' @param ScaleTo100pc Scale the Y Axis, Default: T
+#' @param plot  Show plot, Default: TRUE
+#' @param ScaleTo100pc Scale the Y Axis, Default: TRUE
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @examples get.clustercomposition()
 #' get.clustercomposition()
@@ -2499,7 +2499,7 @@ scBarplot.CellFractions <- function(
 #' @param palette Color palette. Default: glasbey.
 #' @param return_table Should it return the plotting data instead of the plot?
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @param sort Sort by cluster size? Default: F
+#' @param sort Sort by cluster size? Default: FALSE
 #' @param suffix File name suffix
 #'
 #' @examples
@@ -2700,7 +2700,7 @@ getDiscretePalette <- function(
 #' @description get Seurat's cluster colors.
 #' @param obj Seurat object, Default: combined.obj
 #' @param ident identity used, Default: GetClusteringRuns()[1]
-#' @param show Show plot of colors? Default: T
+#' @param show Show plot of colors? Default: TRUE
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -2742,8 +2742,8 @@ getClusterColors <- function(
 #' @description Recall a Seurat color vector.
 #' @param ident identity used, Default: NULL
 #' @param obj Seurat object, Default: combined.obj
-#' @param plot.colors Show colors? Default: F
-#' @param simple Return simply the unique colors, in order? Default: F
+#' @param plot.colors Show colors? Default: FALSE
+#' @param simple Return simply the unique colors, in order? Default: FALSE
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -3098,7 +3098,7 @@ clUMAP <- function(
     PNG = TRUE,
     check_for_2D = TRUE,
     caption = FALSE
-    # , save.object = F
+    # , save.object = FALSE
     , ...) {
   if (check_for_2D) {
     umap_dims <- ncol(obj@reductions[[reduction]]@cell.embeddings)
@@ -3375,7 +3375,7 @@ multiFeatureHeatmap.A4 <- function(
         sep.scale = sep_scale, min.exp = gene.min.exp, max.exp = gene.max.exp,
         pt.size = cex, key.position = "top", ...
       ),
-      silent = F
+      silent = FALSE
     )
     try.dev.off()
   }
@@ -3518,7 +3518,7 @@ qQC.plots.BrainOrg <- function(
 #'
 #' @description Quickly plot key markers in brain organoids
 #' @param obj Seurat object, Default: combined.obj
-#' @param custom.genes Use custom gene set? Default: F
+#' @param custom.genes Use custom gene set? Default: FALSE
 #' @param suffix Folder name suffix, Default: ""
 #' @examples
 #' \dontrun{
@@ -3611,7 +3611,7 @@ DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster nam
 #'
 #' @description Save 2 umaps on 1 A4
 #' @param plot_list A list of plots to be saved on an A4 page.
-#' @param pname Boolean to determine if name is generated automatically. If FALSE, name is generated based on plot_list and suffix. Default: F
+#' @param pname Boolean to determine if name is generated automatically. If FALSE, name is generated based on plot_list and suffix. Default: FALSE
 #' @param suffix A suffix added to the filename. Default: NULL
 #' @param scale Scaling factor for the size of the plot. Default: 1
 #' @param nrow Number of rows to arrange the plots in. Default: 2
@@ -3635,7 +3635,7 @@ save2umaps.A4 <- function(
 #'
 #' @description Save 4 umaps on 1 A4
 #' @param plot_list A list of ggplot objects, each of which is one panel.
-#' @param pname Plotname, Default: F
+#' @param pname Plotname, Default: FALSE
 #' @param suffix A suffix added to the filename, Default: NULL
 #' @param scale Scaling factor of the canvas, Default: 1
 #' @param nrow number of rows for panelson the page, Default: 2
