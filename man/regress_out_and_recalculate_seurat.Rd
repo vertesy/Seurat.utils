@@ -10,9 +10,9 @@ regress_out_and_recalculate_seurat(
   suffix,
   nPCs = p$n.PC,
   clust_resolutions = p$snn_res,
-  calc_tSNE = F,
-  plot_umaps = T,
-  save_obj = T,
+  calc_tSNE = FALSE,
+  plot_umaps = TRUE,
+  save_obj = TRUE,
   assayX = "RNA"
 )
 }

@@ -4,7 +4,12 @@
 \alias{subsetSeuObj}
 \title{subsetSeuObj}
 \usage{
-subsetSeuObj(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_ = 1989)
+subsetSeuObj(
+  obj = ls.Seurat[[i]],
+  fraction_ = 0.25,
+  nCells = FALSE,
+  seed_ = 1989
+)
 }
 \arguments{
 \item{obj}{A Seurat object to subset. Default: the i-th element of the list 'ls.Seurat'.}

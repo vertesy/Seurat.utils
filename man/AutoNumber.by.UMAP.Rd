@@ -7,7 +7,7 @@
 AutoNumber.by.UMAP(
   obj = combined.obj,
   dim = 1,
-  swap = F,
+  swap = FALSE,
   reduction = "umap",
   res = "RNA_snn_res.0.5"
 )
@@ -17,7 +17,7 @@ AutoNumber.by.UMAP(
 
 \item{dim}{Which dimension? Default: 1}
 
-\item{swap}{Swap direction? Default: F}
+\item{swap}{Swap direction? Default: FALSE}
 
 \item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
 

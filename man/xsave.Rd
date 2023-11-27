@@ -11,9 +11,9 @@ xsave(
   nthreads = 12,
   preset = "high",
   project = getProject(),
-  background.job = F,
-  showMemObject = T,
-  saveParams = T
+  background.job = FALSE,
+  showMemObject = TRUE,
+  saveParams = TRUE
 )
 }
 \arguments{

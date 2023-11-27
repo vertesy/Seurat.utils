@@ -10,7 +10,7 @@ Add.DE.combined.score(
   pval_scaling = 0.001,
   colP = "p_val",
   colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df),
-    perl = T)
+    perl = TRUE)
 )
 }
 \arguments{

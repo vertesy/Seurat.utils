@@ -8,18 +8,18 @@ scBarplot.CellFractions(
   obj = combined.obj,
   group.by = "integrated_snn_res.0.5.ordered",
   fill.by = "age",
-  downsample = T,
+  downsample = TRUE,
   plotname = paste(tools::toTitleCase(fill.by), "proportions"),
   suffix = NULL,
   sub_title = suffix,
   hlines = c(0.25, 0.5, 0.75),
-  return_table = F,
-  save_plot = T,
+  return_table = FALSE,
+  save_plot = TRUE,
   seedNr = 1989,
   w = 10,
   h = ceiling(0.5 * w),
-  draw_plot = T,
-  show_numbers = T,
+  draw_plot = TRUE,
+  show_numbers = TRUE,
   min_frequency = 0.025,
   custom_col_palette = c("Standard", "glasbey")[1],
   ...
@@ -69,8 +69,8 @@ The plot's bars are grouped by one variable and filled by another.
 \examples{
 \dontrun{
 if (interactive()) {
-  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = T)
-  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = F)
+  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = TRUE)
+  scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = FALSE)
 }
 }
 }

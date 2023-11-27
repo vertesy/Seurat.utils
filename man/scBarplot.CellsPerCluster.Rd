@@ -6,12 +6,12 @@
 \usage{
 scBarplot.CellsPerCluster(
   ident = GetOrderedClusteringRuns()[1],
-  sort = F,
+  sort = FALSE,
   label = list(T, "percent")[[1]],
   suffix = if (label == "percent") "percent" else NULL,
   palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
   obj = combined.obj,
-  return_table = F,
+  return_table = FALSE,
   ylab_adj = 1.1,
   ...
 )
@@ -19,7 +19,7 @@ scBarplot.CellsPerCluster(
 \arguments{
 \item{ident}{identity used, Default: 'cl.names.KnownMarkers.0.5'}
 
-\item{sort}{Sort by cluster size? Default: F}
+\item{sort}{Sort by cluster size? Default: FALSE}
 
 \item{label}{True: displays cell count, but you can provide anything in a vector.}
 
@@ -40,7 +40,7 @@ Barplot the Fraction of cells per cluster. (dupl?)
 \dontrun{
 if (interactive()) {
   scBarplot.CellsPerCluster()
-  scBarplot.CellsPerCluster(sort = T)
+  scBarplot.CellsPerCluster(sort = TRUE)
 }
 }
 }

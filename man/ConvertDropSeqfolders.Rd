@@ -8,12 +8,12 @@ ConvertDropSeqfolders(
   InputDir,
   folderPattern = "SRR*",
   filePattern = "expression.tsv.gz",
-  useVroom = T,
+  useVroom = TRUE,
   col_types.vroom = list(GENE = "c", .default = "d"),
   min.cells = 10,
   min.features = 200,
-  updateHGNC = T,
-  ShowStats = T,
+  updateHGNC = TRUE,
+  ShowStats = TRUE,
   minDimension = 10,
   overwrite = FALSE
 )

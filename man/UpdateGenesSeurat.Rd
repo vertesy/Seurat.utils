@@ -7,8 +7,8 @@
 UpdateGenesSeurat(
   obj = ls.Seurat[[i]],
   species_ = "human",
-  EnforceUnique = T,
-  ShowStats = F
+  EnforceUnique = TRUE,
+  ShowStats = FALSE
 )
 }
 \arguments{

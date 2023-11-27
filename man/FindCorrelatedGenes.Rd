@@ -9,7 +9,7 @@ FindCorrelatedGenes(
   obj = combined.obj,
   assay = "RNA",
   slot = "data",
-  HEonly = F,
+  HEonly = FALSE,
   minExpr = 1,
   minCells = 1000,
   trailingNgenes = 1000

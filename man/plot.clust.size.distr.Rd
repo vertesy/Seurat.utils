@@ -7,7 +7,7 @@
 \method{plot}{clust.size.distr}(
   obj = combined.obj,
   ident = GetClusteringRuns()[2],
-  plot = T,
+  plot = TRUE,
   thr.hist = 30,
   ...
 )

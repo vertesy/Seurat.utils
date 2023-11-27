@@ -4,12 +4,12 @@
 \alias{GetClusteringRuns}
 \title{GetClusteringRuns}
 \usage{
-GetClusteringRuns(obj = combined.obj, res = F, pat = "*snn_res.*[0-9]$")
+GetClusteringRuns(obj = combined.obj, res = FALSE, pat = "*snn_res.*[0-9]$")
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{res}{Clustering resoluton to use, Default: F}
+\item{res}{Clustering resoluton to use, Default: FALSE}
 
 \item{pat}{Pettern to match, Default: '\emph{snn_res.}\link{0-9}$'}
 }

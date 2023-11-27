@@ -13,8 +13,8 @@ isave.RDS(
   alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/",
     basename(OutDir)),
   homepath = if (Sys.info()[1] == "Darwin") "~/" else "/users/abel.vertesy/",
-  showMemObject = T,
-  saveParams = T,
+  showMemObject = TRUE,
+  saveParams = TRUE,
   compress = TRUE,
   test_read = FALSE
 )

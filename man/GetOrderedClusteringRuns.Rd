@@ -6,14 +6,14 @@
 \usage{
 GetOrderedClusteringRuns(
   obj = combined.obj,
-  res = F,
+  res = FALSE,
   pat = "*snn_res.*[0,1]\\\\.[0-9]\\\\.ordered$"
 )
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{res}{Clustering resoluton to use, Default: F}
+\item{res}{Clustering resoluton to use, Default: FALSE}
 
 \item{pat}{Pettern to match, Default: '\emph{snn_res.}\link{0,1}\.\link{0-9}\.ordered$'}
 }

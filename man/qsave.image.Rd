@@ -4,7 +4,7 @@
 \alias{qsave.image}
 \title{Save workspace - qsave.image}
 \usage{
-qsave.image(..., showMemObject = T, options = c("--force", NULL)[1])
+qsave.image(..., showMemObject = TRUE, options = c("--force", NULL)[1])
 }
 \arguments{
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}

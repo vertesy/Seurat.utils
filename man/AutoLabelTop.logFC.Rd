@@ -8,7 +8,7 @@ AutoLabelTop.logFC(
   obj = combined.obj,
   ident = GetClusteringRuns()[1],
   res = 0.2,
-  plot.top.genes = T,
+  plot.top.genes = TRUE,
   suffix = res,
   order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2],
   df_markers = obj@misc$df.markers[[paste0("res.", res)]]
@@ -19,7 +19,7 @@ AutoLabelTop.logFC(
 
 \item{res}{Clustering resoluton to use, Default: 0.2}
 
-\item{plot.top.genes}{Show plot? Default: T}
+\item{plot.top.genes}{Show plot? Default: TRUE}
 
 \item{order.by}{Sort output tibble by which column, Default: c("combined.score", "avg_logFC", "p_val_adj")\link{1}}
 
@@ -28,9 +28,8 @@ AutoLabelTop.logFC(
 \description{
 Create a new "named identity" column in the metadata of a Seurat object,
 with \code{Ident} set to a clustering output matching the \code{res} parameter of the function.
-t requires the output table of \code{FindAllMarkers()}.
-If you used \code{StoreAllMarkers()} is stored under \verb{@misc$df.markers$res...},
-which location is assumed by default.
+It requires the output table of \code{FindAllMarkers()}.  If you used \code{StoreAllMarkers()}
+is stored under \verb{@misc$df.markers$res...}, which location is assumed by default.
 }
 \examples{
 \dontrun{

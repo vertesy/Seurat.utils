@@ -8,7 +8,7 @@ scBarplot.CellsPerObject(
   ls.Seu = ls.Seurat,
   plotname = "Nr.Cells.After.Filtering",
   xlab.angle = 45,
-  names = F,
+  names = FALSE,
   ...
 )
 }

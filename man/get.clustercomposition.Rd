@@ -19,9 +19,9 @@ get.clustercomposition(
 
 \item{color}{Color, Default: y}
 
-\item{plot}{Show plot, Default: T}
+\item{plot}{Show plot, Default: TRUE}
 
-\item{ScaleTo100pc}{Scale the Y Axis, Default: T}
+\item{ScaleTo100pc}{Scale the Y Axis, Default: TRUE}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 

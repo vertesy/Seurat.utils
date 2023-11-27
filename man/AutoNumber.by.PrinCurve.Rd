@@ -7,7 +7,7 @@
 AutoNumber.by.PrinCurve(
   obj = combined.obj,
   dim = 1:2,
-  plotit = T,
+  plotit = TRUE,
   swap = -1,
   reduction = "umap",
   res = "integrated_snn_res.0.5"
@@ -18,7 +18,7 @@ AutoNumber.by.PrinCurve(
 
 \item{dim}{Dimensions to use, Default: 1:2}
 
-\item{plotit}{Plot results (& show it), Default: T}
+\item{plotit}{Plot results (& show it), Default: TRUE}
 
 \item{swap}{Swap Lambda paramter (multiplied with this) , Default: -1}
 
@@ -34,7 +34,7 @@ Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions
 if (interactive()) {
   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5")
   combined.obj <- AutoNumber.by.PrinCurve(
-    obj = combined.obj, dim = 1:2, reduction = "umap", plotit = T,
+    obj = combined.obj, dim = 1:2, reduction = "umap", plotit = TRUE,
     swap = -1, res = "integrated_snn_res.0.5"
   )
   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.prin.curve")

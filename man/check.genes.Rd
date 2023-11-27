@@ -36,7 +36,7 @@ Check if a gene name exists in a Seurat object, or in HGNC?
 \dontrun{
 if (interactive()) {
   check.genes("top2a", makeuppercase = TRUE)
-  check.genes("VGLUT2", verbose = F, HGNC.lookup = T)
+  check.genes("VGLUT2", verbose = FALSE, HGNC.lookup = TRUE)
 }
 }
 }

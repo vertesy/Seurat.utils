@@ -6,15 +6,15 @@
 \usage{
 Convert10Xfolders(
   InputDir,
-  regex = F,
+  regex = FALSE,
   folderPattern = c("filtered_feature", "SoupX_decont")[1],
   depth = 4,
   min.cells = 5,
   min.features = 200,
-  updateHGNC = T,
-  ShowStats = T,
+  updateHGNC = TRUE,
+  ShowStats = TRUE,
   writeCBCtable = TRUE,
-  sample.barcoding = F,
+  sample.barcoding = FALSE,
   ...
 )
 }

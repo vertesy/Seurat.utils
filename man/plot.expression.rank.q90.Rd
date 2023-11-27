@@ -4,14 +4,14 @@
 \alias{plot.expression.rank.q90}
 \title{plot.expression.rank.q90}
 \usage{
-\method{plot}{expression.rank.q90}(obj = combined.obj, gene = "ACTB", filterZero = T)
+\method{plot}{expression.rank.q90}(obj = combined.obj, gene = "ACTB", filterZero = TRUE)
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
 \item{gene}{gene of interest, Default: 'ACTB'}
 
-\item{filterZero}{Remove genes whose quantile-90 expression in 0? Default: T}
+\item{filterZero}{Remove genes whose quantile-90 expression in 0? Default: TRUE}
 }
 \description{
 Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).

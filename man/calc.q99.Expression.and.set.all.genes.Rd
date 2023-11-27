@@ -42,7 +42,7 @@ if (interactive()) {
     obj = combined.obj, quantileX = 0.9,
     max.cells = 25000
   )
-  head(sort(as.numeric.wNames(obj@misc$expr.q90), decreasing = T))
+  head(sort(as.numeric.wNames(obj@misc$expr.q90), decreasing = TRUE))
   combined.obj <- calc.q99.Expression.and.set.all.genes(
     obj = combined.obj, quantileX = 0.95,
     max.cells = 25000, set.all.genes = FALSE

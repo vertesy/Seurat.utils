@@ -7,7 +7,7 @@
 isave.image(
   ...,
   path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir)),
-  showMemObject = T,
+  showMemObject = TRUE,
   options = c("--force", NULL)[1]
 )
 }

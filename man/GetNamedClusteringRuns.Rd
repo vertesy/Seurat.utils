@@ -7,7 +7,7 @@
 GetNamedClusteringRuns(
   obj = combined.obj,
   res = c(F, 0.5)[1],
-  topgene = F,
+  topgene = FALSE,
   pat = c("^cl.names.Known.*[0,1]\\\\.[0-9]$", "Name|name")[2]
 )
 }
@@ -16,7 +16,7 @@ GetNamedClusteringRuns(
 
 \item{res}{Clustering resoluton to use, Default: c(F, 0.5)\link{1}}
 
-\item{topgene}{Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: F}
+\item{topgene}{Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: FALSE}
 
 \item{pat}{Pettern to match, Default: '^cl.names.Known.*\link{0,1}\.\link{0-9}$'}
 }
