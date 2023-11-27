@@ -4,7 +4,7 @@
 \alias{create_scCombinedMeta}
 \title{Create Single-Cell Metadata Object for a collection of Seurat Objects}
 \usage{
-create_scCombinedMeta(experiment, project_ = Seurat.utils::getProject())
+create_scCombinedMeta(experiment, project_ = getProject())
 }
 \arguments{
 \item{experiment}{The name of the experiment for which metadata is being created.}

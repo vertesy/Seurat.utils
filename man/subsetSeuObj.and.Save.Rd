@@ -25,8 +25,6 @@ subsetSeuObj.and.Save(
 \item{min.features}{Minimum features}
 
 \item{suffix}{A suffix added to the filename, Default: ''}
-
-\item{nthreads}{nthreads for compression}
 }
 \description{
 Subset a compressed Seurat Obj and save it in wd. #

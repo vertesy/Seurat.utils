@@ -70,9 +70,9 @@ clUMAP(
 
 \item{cells.highlight}{Specific cells to be highlighted, Default: NULL.}
 
-\item{label}{If TRUE, clusters are labeled, Default: T.}
+\item{label}{If TRUE, clusters are labeled, Default: TRUE.}
 
-\item{repel}{If TRUE, labels are repelled to avoid overlap, Default: T.}
+\item{repel}{If TRUE, labels are repelled to avoid overlap, Default: TRUE.}
 
 \item{legend}{If TRUE, a legend is added to the plot, Default: !label.}
 
@@ -82,9 +82,9 @@ clUMAP(
 
 \item{aspect.ratio}{Ratio of height to width. If TRUE, the ratio is fixed at 0.6. Default: TRUE.}
 
-\item{save.plot}{If TRUE, the plot is saved into a file, Default: T.}
+\item{save.plot}{If TRUE, the plot is saved into a file, Default: TRUE.}
 
-\item{PNG}{If TRUE, the file is saved as a .png, Default: T.}
+\item{PNG}{If TRUE, the file is saved as a .png, Default: TRUE.}
 
 \item{check_for_2D}{If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.}
 

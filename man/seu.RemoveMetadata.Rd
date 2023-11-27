@@ -6,7 +6,8 @@
 \usage{
 seu.RemoveMetadata(
   obj = combined.obj,
-  cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = T)
+  cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl =
+    TRUE)
 )
 }
 \arguments{

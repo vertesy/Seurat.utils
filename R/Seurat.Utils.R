@@ -115,7 +115,7 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 AreTheseCellNamesTheSame <- function(
     vec1 = names(UVI.annot),
     vec2 = names(nr_UVI),
-    names = c("Cells in TRUE/AMP", "Cells in GEX"),
+    names = c("Cells in Targ.Ampl", "Cells in GEX"),
     min.overlap = 0.33) {
   Cellname.Overlap <- list(vec1, vec2)
   names(Cellname.Overlap) <- if (!isFALSE(names)) names else c(substitute(vec1), substitute(vec2))
@@ -612,7 +612,7 @@ calc.cluster.averages <- function(
 #' @importFrom Stringendo percentage_formatter
 #' @importFrom MarkdownReports whist
 #'
-#' @export
+#' @export plot.expression.rank.q90
 plot.expression.rank.q90 <- function(obj = combined.obj, gene = "ACTB", filterZero = TRUE) {
   expr.GOI <- obj@misc$expr.q90[gene]
   expr.all <- unlist(obj@misc$expr.q90)
@@ -1050,7 +1050,7 @@ Downsample.Seurat.Objects <- function(
 #' }
 #' @importFrom tictoc tic toc
 #' @importFrom Stringendo percentage_formatter
-#' @importFromforeach getDoParRegistered foreach
+#' @importFrom foreach getDoParRegistered foreach
 #'
 #' @export
 Downsample.Seurat.Objects.PC <- function(

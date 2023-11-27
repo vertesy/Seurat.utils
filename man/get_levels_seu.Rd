@@ -4,7 +4,7 @@
 \alias{get_levels_seu}
 \title{Get Unique Levels of a Seurat Object Ident Slot}
 \usage{
-get_levels_seu(obj, ident, max_levels = 100, dput = T)
+get_levels_seu(obj, ident, max_levels = 100, dput = TRUE)
 }
 \arguments{
 \item{obj}{A Seurat object.}

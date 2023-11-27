@@ -29,7 +29,7 @@ function applied to the \code{ident_from} string, with all alphabetical and unde
 \item{new_ident_name}{A string. The name for the newly created identity column in \code{obj@meta.data}.
 Default is a concatenation of \code{ident_from}, "best.match", and \code{to_suffix} using \code{kpp} function.}
 
-\item{...}{Additional parameters to be passed to \code{replace_by_most_frequent_categories} function.}
+\item{...}{Additional parameters to be passed to \code{.replace_by_most_frequent_categories} function.}
 }
 \value{
 An updated version of \code{obj} with an additional column in \code{obj@meta.data} named as \code{new_ident_name}
@@ -51,5 +51,5 @@ updated_obj <- match_best_identity(my_obj, "origin_identity", "target_identity")
 }
 \seealso{
 \code{\link[clUMAP]{clUMAP}}, \code{\link[kpp]{kpp}}, \code{\link[FixPlotName]{FixPlotName}},
-\code{\link[replace_by_most_frequent_categories]{replace_by_most_frequent_categories}}
+\code{\link[.replace_by_most_frequent_categories]{.replace_by_most_frequent_categories}}
 }

@@ -9,7 +9,7 @@ plotMetadataCategPie(
   plot_name = paste(metacol, "distribution"),
   obj = combined.obj,
   max.categs = 20,
-  both_pc_and_value = T,
+  both_pc_and_value = TRUE,
   subtitle = NULL,
   ...
 )

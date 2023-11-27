@@ -7,7 +7,7 @@
 getMetadataColumn(
   ColName.metadata = "batch",
   obj = combined.obj,
-  as_numeric = F
+  as_numeric = FALSE
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ getMetadataColumn(
 
 \item{obj}{A Seurat object from which the metadata column will be retrieved. Default: combined.obj.}
 
-\item{as_numeric}{A logical flag indicating whether the returned values should be converted to numeric format. Default: F (FALSE).}
+\item{as_numeric}{A logical flag indicating whether the returned values should be converted to numeric format. Default: FALSE (FALSE).}
 }
 \value{
 A named vector containing the values from the specified metadata column. If 'as_numeric' is TRUE, the values are converted to numeric format.
@@ -27,7 +27,7 @@ Retrieves a specified metadata column from a Seurat object and returns it as a n
 \dontrun{
 if (interactive()) {
   # Example usage:
-  batch_metadata <- getMetadataColumn(ColName.metadata = "batch", obj = combined.obj, as_numeric = T)
+  batch_metadata <- getMetadataColumn(ColName.metadata = "batch", obj = combined.obj, as_numeric = TRUE)
 }
 }
 }

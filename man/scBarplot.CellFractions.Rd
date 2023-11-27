@@ -34,7 +34,7 @@ scBarplot.CellFractions(
 
 \item{downsample}{Logical indicating whether to downsample data. The default is TRUE.}
 
-\item{plotname}{The title of the plot. The default is 'paste(tools::toTitleCase(fill.by), "proportions")'.}
+\item{plotname}{The title of the plot. The default is 'paste(toTitleCase(fill.by), "proportions")'.}
 
 \item{suffix}{Plot suffix}
 

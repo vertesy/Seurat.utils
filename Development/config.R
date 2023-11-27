@@ -1,7 +1,7 @@
 # Configuration for the Package
 DESCRIPTION <- list(
   package.name = "Seurat.utils",
-  version = "2.3.0",
+  version = "2.3.5",
   title = "Seurat.utils - utility functions for Seurat",
   description = "Seurat.utils Is a collection of utility functions for Seurat v3.
     Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics &

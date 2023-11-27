@@ -47,9 +47,9 @@ qUMAP(
 
 \item{suffix}{A suffix added to the end of the filename, Default: subtitle.}
 
-\item{save.plot}{If TRUE, the plot is saved into a file, Default: T.}
+\item{save.plot}{If TRUE, the plot is saved into a file, Default: TRUE.}
 
-\item{PNG}{If TRUE, the file is saved as a .png, Default: T.}
+\item{PNG}{If TRUE, the file is saved as a .png, Default: TRUE.}
 
 \item{h}{Height of the plot in inches, Default: 7.}
 

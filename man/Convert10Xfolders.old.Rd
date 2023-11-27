@@ -9,8 +9,8 @@ Convert10Xfolders.old(
   folderPattern = c("filtered", "SoupX_decont")[1],
   min.cells = 10,
   min.features = 200,
-  updateHGNC = T,
-  ShowStats = T
+  updateHGNC = TRUE,
+  ShowStats = TRUE
 )
 }
 \arguments{

@@ -7,7 +7,7 @@
 AreTheseCellNamesTheSame(
   vec1 = names(UVI.annot),
   vec2 = names(nr_UVI),
-  names = c("Cells in T/AMP", "Cells in GEX"),
+  names = c("Cells in Targ.Ampl", "Cells in GEX"),
   min.overlap = 0.33
 )
 }

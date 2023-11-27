@@ -51,14 +51,12 @@
 #' }
 #' @seealso
 #'  \code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{labs}}, \code{\link[ggplot2]{geom_point}}
-#' @export
 #' @importFrom ggplot2 ggplot ggtitle geom_point
 #' @importFrom Stringendo percentage_formatter
-#' @importFrom MarkdownHelpers llprint ADDED_BY_add_importFrom_statements
-#' @importFrom MarkdownReports create_set_OutDir ADDED_BY_add_importFrom_statements
-#' @importFrom cowplot plot_grid ADDED_BY_add_importFrom_statements
-#' @importFrom tools toTitleCase ADDED_BY_add_importFrom_statements
-#' @importFrom devtools install_github ADDED_BY_add_importFrom_statements
+#' @importFrom MarkdownHelpers llprint create_set_OutDir
+#' @importFrom cowplot plot_grid
+#'
+#' @export
 PlotFilters <- function(
     ls.obj = ls.Seurat,
     parentdir = OutDirOrig,
@@ -213,7 +211,7 @@ PlotFilters <- function(
 
 # May also require
 # try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= FALSE) # generic utilities funtions
-# require('MarkdownReports') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReports")
+# require('MarkdownReports') # require("devtools")
 
 # _________________________________________________________________________________________________
 #' @title PCA percent of variation associated with each PC
@@ -233,8 +231,9 @@ seu.PC.var.explained <- function(obj = combined.obj) { # Determine percent of va
 #' @description Plot the percent of variation associated with each PC.
 #' @param obj Seurat object, Default: combined.obj
 #' @param use.MarkdownReports Use MarkdownReports for plotting, Default: FALSE
+#' @importFrom MarkdownReports wbarplot
+#' @importFrom ggExpress qbarplot
 #' @export
-#' @importFrom MarkdownReports wbarplot ADDED_BY_add_importFrom_statements
 seu.plot.PC.var.explained <- function(obj = combined.obj, use.MarkdownReports = FALSE) { # Plot the percent of variation associated with each PC.
   pct <- seu.PC.var.explained(obj)
   if (use.MarkdownReports) {
@@ -405,9 +404,9 @@ ww.calc_helper <- function(obj, genes) {
 #' }
 #' @seealso
 #'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
-#' @export
 #' @importFrom dplyr select group_by_
-#' @importFrom dplyr group_by_ ADDED_BY_add_importFrom_statements
+#'
+#' @export
 scBarplot.FractionAboveThr <- function(
     thrX = 0.3, value.col = "percent.ribo",
     id.col = "cl.names.top.gene.res.0.3",
@@ -474,9 +473,9 @@ scBarplot.FractionAboveThr <- function(
 #' }
 #' @seealso
 #'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
-#' @export
 #' @importFrom dplyr select group_by_
-#' @importFrom dplyr group_by_ ADDED_BY_add_importFrom_statements
+#'
+#' @export
 scBarplot.FractionBelowThr <- function(
     thrX = 0.01, value.col = "percent.ribo", id.col = "cl.names.top.gene.res.0.3",
     obj = combined.obj, return.df = FALSE) { # Calculat the fraction of cells per cluster below a certain threhold
@@ -544,9 +543,9 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 #'   getDiscretePalette()
 #' }
 #' }
+#' @importFrom MarkdownHelpers Color_Check
+#'
 #' @export getDiscretePalette
-#' @importFrom MarkdownHelpers Color_Check ADDED_BY_add_importFrom_statements
-
 getDiscretePalette <- function(
     ident.used = GetClusteringRuns()[1],
     obj = combined.obj,
@@ -749,11 +748,9 @@ qSeuViolin <- function(
 #' @param ... Additional arguments passed to `qhistogram()`.
 #'
 #' @return A ggplot object.
+#' @importFrom MarkdownHelpers filter_HP
 #'
 #' @export
-#' @importFrom MarkdownHelpers filter_HP ADDED_BY_add_importFrom_statements
-#' @importFrom devtools install_github ADDED_BY_add_importFrom_statements
-
 plotGeneExpHist <- function(
     obj = cobj.H9.L92, genes = c("MALAT1", "MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN"),
     assay = "RNA", slot_ = "data",
@@ -818,7 +815,7 @@ plotGeneExpHist <- function(
 
 # May also require
 # try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= FALSE) # generic utilities funtions
-# require('MarkdownReports') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReports")
+# require('MarkdownReports') # require("devtools")
 
 
 # _________________________________________________________________________________________________
@@ -855,10 +852,9 @@ plotGeneExpHist <- function(
 #'   qUMAP("TOP2A")
 #' }
 #' }
+#' @importFrom MarkdownHelpers TRUE.unless
+#'
 #' @export
-#' @importFrom MarkdownHelpers TRUE.unless ADDED_BY_add_importFrom_statements
-
-
 qUMAP <- function(
     feature = "TOP2A", obj = combined.obj # The quickest way to draw a gene expression UMAP
     , title = feature, sub = NULL,
@@ -954,9 +950,9 @@ qUMAP <- function(
 #'   clUMAP("cl.names.KnownMarkers.0.5", cols = NULL)
 #' }
 #' }
+#' @importFrom MarkdownHelpers TRUE.unless
+#'
 #' @export
-#' @importFrom MarkdownHelpers TRUE.unless ADDED_BY_add_importFrom_statements
-
 clUMAP <- function(
     ident = "integrated_snn_res.0.5", obj = combined.obj # The quickest way to draw a clustering result  UMAP
     , reduction = "umap", splitby = NULL,
@@ -1130,12 +1126,11 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
 #'  \code{\link[cowplot]{plot_grid}}
-#' @export
 #' @importFrom tictoc tic toc
 #' @importFrom cowplot plot_grid
-#' @importFrom MarkdownReports create_set_OutDir ADDED_BY_add_importFrom_statements
-#' @importFrom tictoc toc ADDED_BY_add_importFrom_statements
-
+#' @importFrom MarkdownReports create_set_OutDir
+#'
+#' @export
 multiFeaturePlot.A4 <- function(
     list.of.genes # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
     , obj = combined.obj,
@@ -1227,10 +1222,9 @@ multiFeaturePlot.A4 <- function(
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @seealso
 #'  \code{\link[tictoc]{tic}}
-#' @export
 #' @importFrom tictoc tic toc
-#' @importFrom tictoc toc ADDED_BY_add_importFrom_statements
-
+#'
+#' @export
 multiFeatureHeatmap.A4 <- function(
     obj = combined.obj # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
     , list.of.genes, gene.per.page = 5,
@@ -1284,9 +1278,9 @@ multiFeatureHeatmap.A4 <- function(
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @seealso
 #'  \code{\link[cowplot]{save_plot}}
+#' @importFrom cowplot save_plot plot_grid
+#'
 #' @export plot.UMAP.tSNE.sidebyside
-#' @importFrom cowplot save_plot
-#' @importFrom cowplot plot_grid ADDED_BY_add_importFrom_statements
 plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", # Plot a UMAP and tSNE sidebyside
                                       no_legend = FALSE,
                                       do_return = TRUE,
@@ -1587,10 +1581,10 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 #' }
 #' @seealso
 #'  \code{\link[princurve]{principal_curve}}
+#' @importFrom princurve principal_curve whiskers
+#' @importFrom MarkdownReports wplot_save_this
+#'
 #' @export
-#' @importFrom princurve principal_curve
-#' @importFrom princurve whiskers ADDED_BY_add_importFrom_statements
-#' @importFrom MarkdownReports wplot_save_this ADDED_BY_add_importFrom_statements
 AutoNumber.by.PrinCurve <- function(
     obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
     , dim = 1:2, plotit = TRUE, swap = -1,
@@ -1643,9 +1637,9 @@ AutoNumber.by.PrinCurve <- function(
 #' @param h Height of the plot, calculated as height of A4 page times the scale. Default: hA4 * scale
 #' @param w Width of the plot, calculated as width of A4 page times the scale. Default: wA4 * scale
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @importFrom cowplot plot_grid
 #'
 #' @export
-#' @importFrom cowplot plot_grid ADDED_BY_add_importFrom_statements
 save2umaps.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 1,
@@ -1668,9 +1662,9 @@ save2umaps.A4 <- function(
 #' @param h height of the plot, Default: wA4 * scale
 #' @param w width of the plot, Default: hA4 * scale
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @importFrom cowplot plot_grid
 #'
 #' @export
-#' @importFrom cowplot plot_grid ADDED_BY_add_importFrom_statements
 save4umaps.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 2,
@@ -1703,9 +1697,9 @@ save4umaps.A4 <- function(
 #' }
 #' @seealso
 #' \code{\link[cowplot]{plot_grid}}
+#' @importFrom cowplot plot_grid
+#'
 #' @export
-#' @importFrom cowplot plot_grid ADDED_BY_add_importFrom_statements
-#' @importFrom devtools install_github ADDED_BY_add_importFrom_statements
 qqSaveGridA4 <- function(
     plotlist = pl,
     plots = 1:2, NrPlots = length(plots), height = hA4, width = wA4,
@@ -1737,7 +1731,7 @@ qqSaveGridA4 <- function(
 
 # May also require
 # try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= TRUE) # generic utilities funtions
-# require('MarkdownReports') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReports")
+# require('MarkdownReports') # require("devtools")
 
 
 # _________________________________________________________________________________________________
@@ -1770,10 +1764,14 @@ ww.check.if.3D.reduction.exist <- function(obj = obj) {
 #' \dontrun{
 #' ww.check.quantile.cutoff.and.clip.outliers(expr.vec = expr.data, quantileCutoffX = 0.99, min.cells.expressing = 10)
 #' }
+#' @importFrom CodeAndRoll2 clip.outliers.at.percentile
+#'
 #' @export
-#' @importFrom plotly plot_ly ADDED_BY_add_importFrom_statements
-ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[, gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10) {
-  expr.vec.clipped <- CodeAndRoll2::clip.outliers.at.percentile(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
+ww.check.quantile.cutoff.and.clip.outliers <-
+  function(expr.vec = plotting.data[, gene], quantileCutoffX = quantileCutoff,
+           min.cells.expressing = 10) {
+  expr.vec.clipped <-
+    CodeAndRoll2::clip.outliers.at.percentile(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
   if (sum(expr.vec.clipped > 0) > min.cells.expressing) {
     expr.vec <- expr.vec.clipped
   } else {
@@ -1803,9 +1801,9 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 #'   plot3D.umap.gene(obj = combined.obj, gene = "nFeature_RNA", quantileCutoff = .95) # for continous meta variables
 #' }
 #' }
+#' @importFrom plotly plot_ly layout
+#'
 #' @export
-#' @importFrom plotly plot_ly ADDED_BY_add_importFrom_statements
-#' @importFrom plotly layout ADDED_BY_add_importFrom_statements
 
 plot3D.umap.gene <- function(
     gene = "TOP2A", obj = combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
@@ -1870,9 +1868,9 @@ plot3D.umap.gene <- function(
 #'   plot3D.umap(combined.obj, category = "Phase")
 #' }
 #' }
+#' @importFrom plotly plot_ly layout
+#'
 #' @export
-#' @importFrom plotly plot_ly ADDED_BY_add_importFrom_statements
-#' @importFrom plotly layout ADDED_BY_add_importFrom_statements
 
 plot3D.umap <- function(
     category = "v.project", obj = combined.obj # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.

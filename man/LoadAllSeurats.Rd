@@ -7,8 +7,9 @@
 LoadAllSeurats(
   InputDir,
   file.pattern = "^filtered.+Rds$",
-  string.remove1 = c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[2],
-  string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]
+  string.remove1 = list(FALSE, "filtered_feature_bc_matrix.",
+    "raw_feature_bc_matrix.")[[2]],
+  string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]]
 )
 }
 \arguments{

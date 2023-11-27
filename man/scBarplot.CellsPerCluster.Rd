@@ -7,7 +7,7 @@
 scBarplot.CellsPerCluster(
   ident = GetOrderedClusteringRuns()[1],
   sort = FALSE,
-  label = list(T, "percent")[[1]],
+  label = list(TRUE, "percent")[[1]],
   suffix = if (label == "percent") "percent" else NULL,
   palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
   obj = combined.obj,

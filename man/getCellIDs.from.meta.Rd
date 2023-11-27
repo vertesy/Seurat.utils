@@ -8,7 +8,7 @@ getCellIDs.from.meta(
   ColName.meta = "res.0.6",
   values = NA,
   obj = combined.obj,
-  inverse = F
+  inverse = FALSE
 )
 }
 \arguments{
@@ -18,7 +18,7 @@ getCellIDs.from.meta(
 
 \item{obj}{The Seurat object from which to retrieve the cell IDs. Default: combined.obj.}
 
-\item{inverse}{A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of values. Default: F.}
+\item{inverse}{A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of values. Default: FALSE.}
 }
 \value{
 A vector of cell IDs that match (or don't match, if \code{inverse = TRUE}) the provided list of values.
