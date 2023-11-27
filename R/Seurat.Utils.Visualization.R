@@ -543,7 +543,7 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 #'   getDiscretePalette()
 #' }
 #' }
-#' @importFrom MarkdownHelpers MarkdownHelpers::color_check
+#' @importFrom MarkdownHelpers color_check
 #'
 #' @export getDiscretePalette
 getDiscretePalette <- function(

@@ -45,7 +45,6 @@ Imports:
     reshape2,
     rstudioapi,
     scales,
-    Seurat,
     SoupX,
     sparseMatrixStats,
     stringr,
@@ -54,6 +53,6 @@ Imports:
     tidyverse,
     vroom
 Encoding: UTF-8
-Packaged: 2023-11-27 18:43:37.011751
+Packaged: 2023-11-27 19:20:57.386686
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

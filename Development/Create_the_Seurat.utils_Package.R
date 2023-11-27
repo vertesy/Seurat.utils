@@ -30,6 +30,9 @@ devtools::install_local(repository.dir, upgrade = F)
 # Test if you can install from github ------------------------------------------------
 remote.path <- file.path(DESCRIPTION$'github.user', package.name)
 pak::pkg_install(remote.path)
+
+devtools::install_github(repo = "vertesy/Seurat.utils", upgrade = F)
+
 # unload(package.name)
 # require(package.name, character.only = TRUE)
 # # remove.packages(package.name)
