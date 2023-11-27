@@ -115,7 +115,7 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 AreTheseCellNamesTheSame <- function(
     vec1 = names(UVI.annot),
     vec2 = names(nr_UVI),
-    names = c("Cells in T/AMP", "Cells in GEX"),
+    names = c("Cells in TRUE/AMP", "Cells in GEX"),
     min.overlap = 0.33) {
   Cellname.Overlap <- list(vec1, vec2)
   names(Cellname.Overlap) <- if (!isFALSE(names)) names else c(substitute(vec1), substitute(vec2))
@@ -384,9 +384,9 @@ GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.*
 # _________________________________________________________________________________________________
 #' @title GetNamedClusteringRuns
 #'
-#' @description Get Clustering Runs: metadata column names #
+#' @description Get Clustering Runs: metadata column names
 #' @param obj Seurat object, Default: combined.obj
-#' @param res Clustering resoluton to use, Default: c(F, 0.5)[1]
+#' @param res Clustering resoluton to use, Default: c(FALSE, 0.5)[1]
 #' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: FALSE
 #' @param pat Pettern to match, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
 #' @examples
@@ -397,8 +397,8 @@ GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.*
 #' }
 #' @export
 GetNamedClusteringRuns <- function(
-    obj = combined.obj # Get Clustering Runs: metadata column names
-    , res = c(F, 0.5)[1], topgene = FALSE,
+    obj = combined.obj
+    , res = list(FALSE, 0.5)[[1]], topgene = FALSE,
     pat = c("^cl.names.Known.*[0,1]\\.[0-9]$", "Name|name")[2]) {
   if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
   if (topgene) pat <- gsub(x = pat, pattern = "Known", replacement = "top")
@@ -1888,7 +1888,7 @@ scBarplot.CellFractions <- function(
 scBarplot.CellsPerCluster <- function(
     ident = GetOrderedClusteringRuns()[1],
     sort = FALSE,
-    label = list(T, "percent")[[1]],
+    label = list(TRUE, "percent")[[1]],
     suffix = if (label == "percent") "percent" else NULL,
     palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
     obj = combined.obj,
@@ -1902,7 +1902,7 @@ scBarplot.CellsPerCluster <- function(
     NULL
   } else if (label == "percent") {
     percentage_formatter(cell.per.cluster / sum(cell.per.cluster))
-  } else if (label == "T") {
+  } else if (isTRUE(label)) {
     cell.per.cluster
   } else {
     label
@@ -3164,8 +3164,8 @@ ConvertDropSeqfolders <- function(
 LoadAllSeurats <- function(
     InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
     , file.pattern = "^filtered.+Rds$",
-    string.remove1 = c(F, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[2],
-    string.remove2 = c(F, ".min.cells.10.min.features.200.Rds")[2]) {
+    string.remove1 = list(FALSE, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[[2]],
+    string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]]) {
   tictoc::tic()
   InputDir <- AddTrailingSlash(InputDir) # add '/' if necessary
 
