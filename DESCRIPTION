@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
-Version: 2.2.0
+Version: 2.3.0
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <av@imba.oeaw.ac.at> [aut, cre]
@@ -15,6 +15,7 @@ Depends:
     CodeAndRoll2,
     ggExpress,
     ggplot2,
+    magrittr,
     Seurat,
     Stringendo
 Imports: 
@@ -48,11 +49,7 @@ Imports:
     tictoc,
     tidyverse,
     vroom
-Suggests: 
-    EnhancedVolcano,
-    princurve,
-    SoupX
 Encoding: UTF-8
-Packaged: 2023-11-26 18:29:46.80989
+Packaged: 2023-11-27 17:15:40.360306
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
