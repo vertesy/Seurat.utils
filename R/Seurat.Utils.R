@@ -945,7 +945,6 @@ subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = FALSE,
 #' @param min.features Minimum features
 #' @param dir Directory to save to. Default: OutDir
 #' @param suffix A suffix added to the filename, Default: ''
-#' @param nthreads nthreads for compression
 #' @export
 subsetSeuObj.and.Save <- function(
     obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir,

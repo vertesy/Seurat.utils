@@ -1582,8 +1582,8 @@ AutoNumber.by.PrinCurve <- function(
   fit <- princurve::principal_curve(x = as.matrix(coord.umap))
   if (plotit) {
     plot(fit,
-         xlim = range(coord.umap[, 1]), ylim = range(coord.umap[, 2]),
-         main = "principal_curve"
+      xlim = range(coord.umap[, 1]), ylim = range(coord.umap[, 2]),
+      main = "principal_curve"
     )
     # points(fit)
     points(coord.umap, pch = 18, cex = .25)
@@ -2107,6 +2107,4 @@ Plot3D.ListOfCategories <- function(
   }
   try(oo())
   try(create_set_Original_OutDir(NewOutDir = ParentDir))
-
 }
-
