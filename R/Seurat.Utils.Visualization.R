@@ -53,7 +53,7 @@
 #'  \code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{labs}}, \code{\link[ggplot2]{geom_point}}
 #' @importFrom ggplot2 ggplot ggtitle geom_point
 #' @importFrom Stringendo percentage_formatter
-#' @importFrom MarkdownHelpers llprint create_set_OutDir
+#' @importFrom MarkdownHelpers llprint
 #' @importFrom cowplot plot_grid
 #'
 #' @export

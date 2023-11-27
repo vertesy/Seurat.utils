@@ -4,7 +4,7 @@
 # source("~/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.R")
 # rm(list = ls(all.names = TRUE));
 try(dev.off(), silent = TRUE)
-
+create_set_OutDir
 # Functions ------------------------
 require(PackageTools)
 devtools::load_all("~/GitHub/Packages/PackageTools")
