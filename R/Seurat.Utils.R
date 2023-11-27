@@ -139,17 +139,6 @@ AreTheseCellNamesTheSame <- function(
 }
 
 
-# _________________________________________________________________________________________________
-#' @title getProject
-#'
-#' @description Try to get the project name you are wokring on in Rstudio.
-#' @returns The final subfolder of your project, or NULL, if you are not running one
-#' @export
-#'
-#' @examples getProject()
-getProject <- function() {
-  tryCatch(basename(rstudioapi::getActiveProject()), error = function(e) {})
-}
 
 # _________________________________________________________________________________________________
 #' Create.MiscSlot
@@ -174,7 +163,6 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 #' @param max.cells Max number of cells to do the calculation on. Downsample if excdeeded. Default: 1e+05
 #' @param slot slot in the Seurat object. Default: 'data'
 #' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
-# #' @param set.all.genes
 #' @param set.misc Create the "all.genes" variable in @misc? Default: TRUE
 #' @param assign_to_global_env Create the "all.genes" variable in the global env?, Default: TRUE
 #' @param show Show plot? Default: TRUE
@@ -194,14 +182,16 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 #' }
 #' @seealso
 #'  \code{\link[sparseMatrixStats]{character(0)}}
-#' @export
 #' @importFrom tictoc tic toc
 #' @importFrom sparseMatrixStats rowQuantiles
+#'
+#' @export
+
 calc.q99.Expression.and.set.all.genes <- function(
     obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
-    , quantileX = 0.99, max.cells = 1e5,
-    slot = "data", assay = c("RNA", "integrated")[1]
-    # , set.all.genes = TRUE
+    , quantileX = 0.99, max.cells = 1e5
+    , slot = "data"
+    , assay = c("RNA", "integrated")[1]
     , set.misc = TRUE,
     assign_to_global_env = TRUE,
     show = TRUE) {
@@ -619,8 +609,10 @@ calc.cluster.averages <- function(
 #'   plot.expression.rank.q90(gene = "SATB2")
 #' }
 #' }
-#' @export plot.expression.rank.q90
 #' @importFrom Stringendo percentage_formatter
+#' @importFrom MarkdownReports whist
+#'
+#' @export
 plot.expression.rank.q90 <- function(obj = combined.obj, gene = "ACTB", filterZero = TRUE) {
   expr.GOI <- obj@misc$expr.q90[gene]
   expr.all <- unlist(obj@misc$expr.q90)
@@ -714,6 +706,8 @@ ww.get.1st.Seur.element <- function(obj) {
 #'   all.genes
 #' }
 #' }
+#' @importFrom MarkdownHelpers ww.assign_to_global
+#'
 #' @export
 recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q99.Expression.and.set.all.genes()
   obj <- ww.get.1st.Seur.element(obj)
@@ -744,6 +738,8 @@ recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q99.E
 #'   n.datasets
 #' }
 #' }
+#' @importFrom MarkdownHelpers ww.assign_to_global
+#'
 #' @export
 recall.meta.tags.n.datasets <- function(obj = combined.obj) {
   obj <- ww.get.1st.Seur.element(obj)
@@ -788,6 +784,8 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
 #'   p
 #' }
 #' }
+#' @importFrom MarkdownHelpers ww.assign_to_global
+#'
 #' @export
 recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
   obj <- ww.get.1st.Seur.element(obj)
@@ -820,6 +818,8 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
 #'   genes.ls
 #' }
 #' }
+#' @importFrom MarkdownHelpers ww.assign_to_global
+#'
 #' @export
 
 recall.genes.ls <- function(obj = combined.obj, overwrite = FALSE) { # genes.ls
@@ -888,7 +888,7 @@ save.parameters <- function(obj = combined.obj, params = p, overwrite = TRUE) {
 #'
 #' @examples
 #' sc_meta <- create_scCombinedMeta(experiment = "Experiment1")
-create_scCombinedMeta <- function(experiment, project_ = Seurat.utils::getProject()) {
+create_scCombinedMeta <- function(experiment, project_ = getProject()) {
   x <- list(
     experiment.corresponding = experiment,
     initialized = Sys.Date(),
@@ -1048,10 +1048,11 @@ Downsample.Seurat.Objects <- function(
 #'   Downsample.Seurat.Objects.PC()
 #' }
 #' }
-#' @export
 #' @importFrom tictoc tic toc
 #' @importFrom Stringendo percentage_formatter
-#' @importFrom  foreach getDoParRegistered foreach
+#' @importFromforeach getDoParRegistered foreach
+#'
+#' @export
 Downsample.Seurat.Objects.PC <- function(
     ls.obj = ls.Seurat, fraction = 0.1,
     save_object = FALSE) {
@@ -1186,8 +1187,8 @@ remove_clusters_and_drop_levels <- function(
   for (index in indices) {
     dataset_name <- object_names[index]
     obj <- ls_obj[[dataset_name]]
-    obj <- Seurat.utils::remove.residual.small.clusters(obj = obj, identitites = GetClusteringRuns(obj), ...)
-    obj <- Seurat.utils::dropLevelsSeurat(obj)
+    obj <- remove.residual.small.clusters(obj = obj, identitites = GetClusteringRuns(obj), ...)
+    obj <- dropLevelsSeurat(obj)
     ls_obj[[dataset_name]] <- obj
   }
   return(ls_obj)
@@ -1581,6 +1582,7 @@ AutoLabel.KnownMarkers <- function(
 #' @param w The width of the plot.
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @return A ggplot object.
+#' @importFrom EnhancedVolcano EnhancedVolcano
 #'
 #' @export
 
@@ -1697,8 +1699,8 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
 #' @examples get.clustercomposition()
 #' get.clustercomposition()
 #' @export
-
-
+#' @importFrom dplyr group_by_
+#' @importFrom scales percent_format
 get.clustercomposition <- function(
     obj = combined.obj, ident = "integrated_snn_res.0.3", splitby = "ShortNames",
     color = y,
@@ -1738,7 +1740,7 @@ get.clustercomposition <- function(
 #' @param group.by The variable to group by for the bar plot. The default is 'integrated_snn_res.0.5.ordered'.
 #' @param fill.by The variable to fill by for the bar plot. The default is 'age'.
 #' @param downsample Logical indicating whether to downsample data. The default is TRUE.
-#' @param plotname The title of the plot. The default is 'paste(tools::toTitleCase(fill.by), "proportions")'.
+#' @param plotname The title of the plot. The default is 'paste(toTitleCase(fill.by), "proportions")'.
 #' @param hlines A numeric vector for the y-intercepts of horizontal lines on the plot. The default is c(0.25, 0.5, 0.75).
 #' @param return_table Logical flag indicating whether to return a contingency table instead of a bar plot. Default: FALSE.
 #' @param save_plot Logical flag indicating whether to save the plot. Default is TRUE.
@@ -1760,8 +1762,10 @@ get.clustercomposition <- function(
 #' }
 #' @seealso
 #'  \code{\link[tools]{toTitleCase}}
-#' @export
 #' @importFrom tools toTitleCase
+#' @importFrom dplyr sample_n
+#'
+#' @export
 scBarplot.CellFractions <- function(
     obj = combined.obj,
     group.by = "integrated_snn_res.0.5.ordered", fill.by = "age",
@@ -1827,7 +1831,6 @@ scBarplot.CellFractions <- function(
       theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
     if (custom_col_palette != "Standard") {
-      # palette_x <- DiscretePalette(n = ncol(contingency.table), palette = custom_col_palette)
       palette_x <- color_scale
       palette_x <- palette_x[unique(prop_table$category)]
       pl <- pl + scale_fill_manual(values = palette_x)
@@ -2060,8 +2063,9 @@ sparse.cor <- function(smat) {
 #'   combined.obj <- Calc.Cor.Seurat(assay.use = "RNA", slot.use = "data", digits = 2, obj = combined.obj, quantile = 0.99, max.cells = 40000)
 #' }
 #' }
-#' @export
 #' @importFrom tictoc tic toc
+#'
+#' @export
 Calc.Cor.Seurat <- function(
     assay.use = "RNA", slot.use = "data",
     quantileX = 0.95, max.cells = 40000, seed = p$"seed",
@@ -2107,6 +2111,8 @@ Calc.Cor.Seurat <- function(
 #' @param cutCols A number, the dendrogram will be cut at this height into clusters. If NULL, cutCols will be the same as cutRows. Default: cutRows
 #' @param obj The Seurat object to perform calculations on. Default: combined.obj
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @importFrom pheatmap pheatmap
+#' @importFrom MarkdownReports wplot_save_pheatmap
 #'
 #' @export plot.Gene.Cor.Heatmap
 plot.Gene.Cor.Heatmap <- function(
@@ -2304,6 +2310,8 @@ GetMostVarGenes <- function(obj, nGenes = p$nVarGenes) { # Get the most variable
 #'
 #' @description Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #
 #' @param Seu.obj A Seurat object.
+#' @importFrom MarkdownHelpers llprint llogit
+#'
 #' @export
 gene.name.check <- function(Seu.obj) { # Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files.
   rn <- rownames(GetAssayData(object = Seu.obj, slot = "counts"))
@@ -2346,8 +2354,10 @@ gene.name.check <- function(Seu.obj) { # Check gene names in a seurat object, fo
 #'   check.genes("VGLUT2", verbose = FALSE, HGNC.lookup = TRUE)
 #' }
 #' }
-#' @export
+#' @importFrom DatabaseLinke.R qHGNC
 #' @importFrom Stringendo percentage_formatter
+#'
+#' @export
 check.genes <- function(
     list.of.genes = ClassicMarkers, makeuppercase = FALSE, verbose = TRUE, HGNC.lookup = FALSE,
     obj = combined.obj,
@@ -2461,6 +2471,8 @@ AddNewAnnotation <- function(obj = obj # Create a new metadata column based on a
 #' }
 #' @seealso
 #' \code{\link[Seurat]{subset}}
+#' @importFrom ReadWriter read.simple.tsv
+#'
 #' @export
 whitelist.subset.ls.Seurat <- function(
     ls.obj = ls.Seurat,
@@ -2523,10 +2535,11 @@ whitelist.subset.ls.Seurat <- function(
 #' }
 #' @seealso
 #'  \code{\link[matrixStats]{rowSums2}}
-#' @export
 #' @importFrom matrixStats rowSums2
 #' @importFrom tictoc tic toc
-
+#' @importFrom MarkdownReports wbarplot
+#'
+#' @export
 FindCorrelatedGenes <- function(
     gene = "TOP2A", obj = combined.obj, assay = "RNA", slot = "data",
     HEonly = FALSE, minExpr = 1, minCells = 1000,
@@ -2758,6 +2771,8 @@ GetUpdateStats <- function(genes = HGNC.updated[[i]]) { # Plot the Symbol-update
 #' }
 #' @seealso
 #' \code{\link[wplot]{wplot}}, \code{\link[wcolorize]{wcolorize}}
+#' @importFrom MarkdownReports wplot wlegend
+#'
 #' @export
 PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)", "Updated (Nr.)")) { # Scatter plot of update stats.
   stopifnot(column.names %in% colnames(UpdateStatMat))
@@ -2847,14 +2862,14 @@ calculate.observable.multiplet.rate.10X.LT <- function(
 #' @param cellname_prefix If TRUE, the function assumes that Seurat has added a prefix to cell names to distinguish 10X lanes and adjusts accordingly. Defaults to FALSE.
 #' @param return_tbl_for_cells_found_in_object If TRUE, the function returns the subset of the GT table corresponding to cells found in both the GT table and the Seurat object. Defaults to TRUE.
 #' @param min_cells_overlap min_cells_overlap. Defaults to 2% of cellcount in the object.
-#'
 #' @return The cleaned and standardized GT table, with specific transformations applied as defined by the input parameters.
-#'
-#' @export
 #'
 #' @examples
 #' # Assuming 'GT.table' is your Genotype assignment table, 'obj' is your Seurat object and 'suffix' is your chosen suffix
 #' # GT.table.cleaned <- SNP.demux.fix.GT.table(GT.table = GT.table, obj = obj, suffix = suffix)
+#' @importFrom stringr str_split_fixed
+#'
+#' @export
 SNP.demux.fix.GT.table <- function(
     GT.table,
     obj,
@@ -3205,7 +3220,6 @@ LoadAllSeurats <- function(
 #' @importFrom tictoc tic toc
 #' @importFrom R.utils gunzip gzip
 #' @importFrom Seurat Read10X
-
 read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv
   tictoc::tic()
   names <- c("barcodes.tsv", "features.tsv", "matrix.mtx")
@@ -3447,13 +3461,17 @@ isave.RDS <- function(
 #' @param showMemObject Logical; if TRUE, displays the memory size of the largest objects.
 #' @param saveParams Logical; if TRUE and if the object is a Seurat object, additional parameters are saved within it.
 #' @param background.job Logical; if TRUE save runs as "background job"
+#'
 #' @return Invisible; The function is called for its side effects (saving a file) and does not return anything.
-#' @export
+#'
 #' @note The function uses the 'qs' package for quick and efficient serialization of objects and includes a timing feature from the 'tictoc' package.
 #' @seealso \code{\link[qs]{qsave}} for the underlying save function used.
 #' @importFrom qs qsave
 #' @importFrom tictoc tic toc
 #' @importFrom job job
+#' @importFrom rstudioapi isAvailable
+#'
+#' @export
 xsave <- function(
     obj, prefix = NULL,
     suffix = NULL,
@@ -3506,13 +3524,15 @@ xsave <- function(
 #' @param nthreads The number of threads to use when reading the object, defaults to 4.
 #' @param ... Further arguments passed on to the 'qs::qread' function.
 #' @return The R object that was saved in the specified file.
-#' @export
 #' @note The function uses the 'qs' package for fast and efficient deserialization of objects
 #' and includes a timing feature from the 'tictoc' package.
 #' @seealso \code{\link[qs]{qread}} for the underlying read function used.
 #' @importFrom qs qread
 #' @importFrom tictoc tic toc
 #' @importFrom job job
+#' @importFrom rstudioapi isAvailable
+#'
+#' @export
 xread <- function(file, nthreads = 4, ...) {
   try(tictoc::tic(), silent = TRUE)
 
@@ -3608,6 +3628,7 @@ qsave.image <- function(..., showMemObject = TRUE, options = c("--force", NULL)[
 #' @description Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration). #
 #' @param cellnames Character vector containing the cellIDs (with numeric suffixes).
 #' @export
+#' @importFrom stringr str_split_fixed
 clip10Xcellname <- function(cellnames) {
   stringr::str_split_fixed(cellnames, "_", n = 2)[, 1]
 }
@@ -3645,12 +3666,15 @@ make10Xcellname <- function(cellnames, suffix = "_1") {
 #'  \code{\link[Matrix]{colSums}}
 #'  \code{\link[tibble]{rownames}}
 #'  \code{\link[ggrepel]{geom_label_repel}}
-#' @export
 #' @importFrom Matrix rowSums
 #' @importFrom tibble rownames_to_column
 #' @importFrom ggrepel geom_text_repel
 #' @importFrom Stringendo percentage_formatter
-
+#' @importFrom MarkdownReports wbarplot create_set_OutDir
+#' @importFrom MarkdownHelpers ww.assign_to_global
+#' @importFrom dplyr as_tibble
+#'
+#' @export
 plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
                         SeqRun = str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)"),
                         ls.Alpha = 1) {
@@ -4087,6 +4111,8 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 #' # Assuming 'seurat_obj' is a valid Seurat object and 'vars' is a vector of variable names to be regressed out.
 #' result <- regress_out_and_recalculate_seurat(seurat_obj, vars, suffix = "_regressed")
 #' }
+#' @importFrom tictoc tic toc
+#'
 #' @export
 regress_out_and_recalculate_seurat <- function(
     obj,
@@ -4161,12 +4187,26 @@ regress_out_and_recalculate_seurat <- function(
     isave.RDS(obj, suffix = suffix, inOutDir = TRUE)
   }
 
-  # try(say(), silent = TRUE)
-  # try(say(), silent = TRUE)
-  # MarkdownReports::create_set_OutDir(orig.dir)
   return(obj)
 }
 
+
+# _________________________________________________________________________________________________
+# Temp _____________________________ ------
+
+"THIS SHOULD BE MOVED"
+# _________________________________________________________________________________________________
+#' @title getProject
+#'
+#' @description Try to get the project name you are wokring on in Rstudio.
+#' @returns The final subfolder of your project, or NULL, if you are not running one
+#' @importFrom rstudioapi getActiveProject
+#' @export
+#'
+#' @examples getProject()
+getProject <- function() {
+  tryCatch(basename(rstudioapi::getActiveProject()), error = function(e) {})
+}
 
 
 # _________________________________________________________________________________________________
@@ -4182,3 +4222,4 @@ cellID_to_cellType_v1 <- function(cellIDs, ident, obj = aaa) {
 cellID_to_cellType <- function(cellIDs, ident_w_names) {
   ident_w_names[cellIDs]
 }
+

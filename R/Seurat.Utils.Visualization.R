@@ -54,6 +54,11 @@
 #' @export
 #' @importFrom ggplot2 ggplot ggtitle geom_point
 #' @importFrom Stringendo percentage_formatter
+#' @importFrom MarkdownHelpers llprint ADDED_BY_add_importFrom_statements
+#' @importFrom MarkdownReports create_set_OutDir ADDED_BY_add_importFrom_statements
+#' @importFrom cowplot plot_grid ADDED_BY_add_importFrom_statements
+#' @importFrom tools toTitleCase ADDED_BY_add_importFrom_statements
+#' @importFrom devtools install_github ADDED_BY_add_importFrom_statements
 PlotFilters <- function(
     ls.obj = ls.Seurat,
     parentdir = OutDirOrig,
@@ -229,6 +234,7 @@ seu.PC.var.explained <- function(obj = combined.obj) { # Determine percent of va
 #' @param obj Seurat object, Default: combined.obj
 #' @param use.MarkdownReports Use MarkdownReports for plotting, Default: FALSE
 #' @export
+#' @importFrom MarkdownReports wbarplot ADDED_BY_add_importFrom_statements
 seu.plot.PC.var.explained <- function(obj = combined.obj, use.MarkdownReports = FALSE) { # Plot the percent of variation associated with each PC.
   pct <- seu.PC.var.explained(obj)
   if (use.MarkdownReports) {
@@ -401,6 +407,7 @@ ww.calc_helper <- function(obj, genes) {
 #'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
 #' @export
 #' @importFrom dplyr select group_by_
+#' @importFrom dplyr group_by_ ADDED_BY_add_importFrom_statements
 scBarplot.FractionAboveThr <- function(
     thrX = 0.3, value.col = "percent.ribo",
     id.col = "cl.names.top.gene.res.0.3",
@@ -469,6 +476,7 @@ scBarplot.FractionAboveThr <- function(
 #'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
 #' @export
 #' @importFrom dplyr select group_by_
+#' @importFrom dplyr group_by_ ADDED_BY_add_importFrom_statements
 scBarplot.FractionBelowThr <- function(
     thrX = 0.01, value.col = "percent.ribo", id.col = "cl.names.top.gene.res.0.3",
     obj = combined.obj, return.df = FALSE) { # Calculat the fraction of cells per cluster below a certain threhold
@@ -537,6 +545,7 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 #' }
 #' }
 #' @export getDiscretePalette
+#' @importFrom MarkdownHelpers Color_Check ADDED_BY_add_importFrom_statements
 
 getDiscretePalette <- function(
     ident.used = GetClusteringRuns()[1],
@@ -742,6 +751,8 @@ qSeuViolin <- function(
 #' @return A ggplot object.
 #'
 #' @export
+#' @importFrom MarkdownHelpers filter_HP ADDED_BY_add_importFrom_statements
+#' @importFrom devtools install_github ADDED_BY_add_importFrom_statements
 
 plotGeneExpHist <- function(
     obj = cobj.H9.L92, genes = c("MALAT1", "MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN"),
@@ -845,6 +856,7 @@ plotGeneExpHist <- function(
 #' }
 #' }
 #' @export
+#' @importFrom MarkdownHelpers TRUE.unless ADDED_BY_add_importFrom_statements
 
 
 qUMAP <- function(
@@ -943,6 +955,7 @@ qUMAP <- function(
 #' }
 #' }
 #' @export
+#' @importFrom MarkdownHelpers TRUE.unless ADDED_BY_add_importFrom_statements
 
 clUMAP <- function(
     ident = "integrated_snn_res.0.5", obj = combined.obj # The quickest way to draw a clustering result  UMAP
@@ -1120,6 +1133,8 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' @export
 #' @importFrom tictoc tic toc
 #' @importFrom cowplot plot_grid
+#' @importFrom MarkdownReports create_set_OutDir ADDED_BY_add_importFrom_statements
+#' @importFrom tictoc toc ADDED_BY_add_importFrom_statements
 
 multiFeaturePlot.A4 <- function(
     list.of.genes # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
@@ -1214,6 +1229,7 @@ multiFeaturePlot.A4 <- function(
 #'  \code{\link[tictoc]{tic}}
 #' @export
 #' @importFrom tictoc tic toc
+#' @importFrom tictoc toc ADDED_BY_add_importFrom_statements
 
 multiFeatureHeatmap.A4 <- function(
     obj = combined.obj # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
@@ -1270,6 +1286,7 @@ multiFeatureHeatmap.A4 <- function(
 #'  \code{\link[cowplot]{save_plot}}
 #' @export plot.UMAP.tSNE.sidebyside
 #' @importFrom cowplot save_plot
+#' @importFrom cowplot plot_grid ADDED_BY_add_importFrom_statements
 plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", # Plot a UMAP and tSNE sidebyside
                                       no_legend = FALSE,
                                       do_return = TRUE,
@@ -1572,6 +1589,8 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 #'  \code{\link[princurve]{principal_curve}}
 #' @export
 #' @importFrom princurve principal_curve
+#' @importFrom princurve whiskers ADDED_BY_add_importFrom_statements
+#' @importFrom MarkdownReports wplot_save_this ADDED_BY_add_importFrom_statements
 AutoNumber.by.PrinCurve <- function(
     obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
     , dim = 1:2, plotit = TRUE, swap = -1,
@@ -1626,6 +1645,7 @@ AutoNumber.by.PrinCurve <- function(
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #'
 #' @export
+#' @importFrom cowplot plot_grid ADDED_BY_add_importFrom_statements
 save2umaps.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 1,
@@ -1650,6 +1670,7 @@ save2umaps.A4 <- function(
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #'
 #' @export
+#' @importFrom cowplot plot_grid ADDED_BY_add_importFrom_statements
 save4umaps.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 2,
@@ -1683,6 +1704,8 @@ save4umaps.A4 <- function(
 #' @seealso
 #' \code{\link[cowplot]{plot_grid}}
 #' @export
+#' @importFrom cowplot plot_grid ADDED_BY_add_importFrom_statements
+#' @importFrom devtools install_github ADDED_BY_add_importFrom_statements
 qqSaveGridA4 <- function(
     plotlist = pl,
     plots = 1:2, NrPlots = length(plots), height = hA4, width = wA4,
@@ -1748,6 +1771,7 @@ ww.check.if.3D.reduction.exist <- function(obj = obj) {
 #' ww.check.quantile.cutoff.and.clip.outliers(expr.vec = expr.data, quantileCutoffX = 0.99, min.cells.expressing = 10)
 #' }
 #' @export
+#' @importFrom plotly plot_ly ADDED_BY_add_importFrom_statements
 ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[, gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10) {
   expr.vec.clipped <- CodeAndRoll2::clip.outliers.at.percentile(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
   if (sum(expr.vec.clipped > 0) > min.cells.expressing) {
@@ -1780,6 +1804,8 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 #' }
 #' }
 #' @export
+#' @importFrom plotly plot_ly ADDED_BY_add_importFrom_statements
+#' @importFrom plotly layout ADDED_BY_add_importFrom_statements
 
 plot3D.umap.gene <- function(
     gene = "TOP2A", obj = combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
@@ -1845,6 +1871,8 @@ plot3D.umap.gene <- function(
 #' }
 #' }
 #' @export
+#' @importFrom plotly plot_ly ADDED_BY_add_importFrom_statements
+#' @importFrom plotly layout ADDED_BY_add_importFrom_statements
 
 plot3D.umap <- function(
     category = "v.project", obj = combined.obj # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.

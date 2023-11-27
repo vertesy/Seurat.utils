@@ -508,6 +508,7 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 #' @seealso
 #'  \code{\link[ggcorrplot]{ggcorrplot}}
 #' @importFrom ggcorrplot ggcorrplot
+#' @importFrom pheatmap pheatmap
 #' @export
 plotMetadataCorHeatmap <- function(
     columns = c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo"),
@@ -730,7 +731,6 @@ plotMetadataMedianFractionBarplot <- function(
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #'
 #' @export
-
 plotMetadataCategPie <- function(
     metacol = "Singlet.status",
     plot_name = paste(metacol, "distribution"),
@@ -776,6 +776,7 @@ plotMetadataCategPie <- function(
 #'
 #' @return The modified query Seurat object with the transferred labels as a new identity class.
 #'
+#' @importFrom readr read_rds
 #' @export
 #'
 #' @examples
@@ -860,13 +861,13 @@ transfer_labels_seurat <- function(
 #'   function applied to the `ident_from` string, with all alphabetical and underscore characters removed.
 #' @param new_ident_name A string. The name for the newly created identity column in `obj@meta.data`.
 #'   Default is a concatenation of `ident_from`, "best.match", and `to_suffix` using `kpp` function.
-#' @param ... Additional parameters to be passed to `replace_by_most_frequent_categories` function.
+#' @param ... Additional parameters to be passed to `.replace_by_most_frequent_categories` function.
 #'
 #' @return An updated version of `obj` with an additional column in `obj@meta.data` named as `new_ident_name`
 #'   representing the new identity. The function also generates a UMAP plot based on this new identity.
 #'
 #' @seealso \code{\link[clUMAP]{clUMAP}}, \code{\link[kpp]{kpp}}, \code{\link[FixPlotName]{FixPlotName}},
-#'   \code{\link[replace_by_most_frequent_categories]{replace_by_most_frequent_categories}}
+#'   \code{\link[.replace_by_most_frequent_categories]{.replace_by_most_frequent_categories}}
 #'
 #' @examples
 #' \dontrun{
@@ -882,7 +883,7 @@ match_best_identity <- function(
   dictionary <- obj@meta.data[, c(ident_from, ident_to)]
 
 
-  translation <- replace_by_most_frequent_categories(
+  translation <- .replace_by_most_frequent_categories(
     df = dictionary, show_plot = TRUE, suffix_barplot = ident_from, ...
   )
 
@@ -911,9 +912,10 @@ match_best_identity <- function(
 #' @return A data frame with categories in 'query_col' replaced by the most frequent match from
 #'   'ref_col'.
 #'
+#' @importFrom dplyr group_by summarise arrange filter
 #' @examples
 #' \dontrun{
-#' replace_by_most_frequent_categories(df = my_data)
+#' .replace_by_most_frequent_categories(df = my_data)
 #' (MXX <- as.tibble(structure(
 #'   c(
 #'     "Adjut", "Adjut", "Yearn", "Adjut", "Dwarf", "Adjut",
@@ -927,11 +929,10 @@ match_best_identity <- function(
 #'     list(NULL, c("RNA_snn_res.0.1.ordered", "RNA_snn_res.0.3.ordered"))
 #' )))
 #'
-#' z <- replace_by_most_frequent_categories(df = MXX)
+#' z <- .replace_by_most_frequent_categories(df = MXX)
 #' head(cbind(MXX[, 1], z[, 1]))
 #' }
-#'
-replace_by_most_frequent_categories <- function(
+.replace_by_most_frequent_categories <- function(
     df, query_col = colnames(df)[1],
     ref_col = colnames(df)[2],
     show_plot = TRUE,
