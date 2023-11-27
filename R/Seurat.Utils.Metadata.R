@@ -33,20 +33,20 @@ meta_col_exists <- function(col_name, obj) {
 #' @description Retrieves a specified metadata column from a Seurat object and returns it as a named vector.
 #' @param ColName.metadata A string specifying the name of the metadata column to be retrieved. Default: 'batch'.
 #' @param obj A Seurat object from which the metadata column will be retrieved. Default: combined.obj.
-#' @param as_numeric A logical flag indicating whether the returned values should be converted to numeric format. Default: F (FALSE).
+#' @param as_numeric A logical flag indicating whether the returned values should be converted to numeric format. Default: FALSE (FALSE).
 #' @return A named vector containing the values from the specified metadata column. If 'as_numeric' is TRUE, the values are converted to numeric format.
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
 #'   # Example usage:
-#'   batch_metadata <- getMetadataColumn(ColName.metadata = "batch", obj = combined.obj, as_numeric = T)
+#'   batch_metadata <- getMetadataColumn(ColName.metadata = "batch", obj = combined.obj, as_numeric = TRUE)
 #' }
 #' }
 #' @export
-getMetadataColumn <- function(ColName.metadata = "batch", obj = combined.obj, as_numeric = F) {
+getMetadataColumn <- function(ColName.metadata = "batch", obj = combined.obj, as_numeric = FALSE) {
   stopifnot(ColName.metadata %in% colnames(obj@meta.data))
 
-  x <- as.named.vector.df(obj@meta.data[, ColName.metadata, drop = F])
+  x <- as.named.vector.df(obj@meta.data[, ColName.metadata, drop = FALSE])
   if (as_numeric) {
     as.numeric.wNames(x) + 1
   } else {
@@ -74,7 +74,7 @@ getMetadataColumn <- function(ColName.metadata = "batch", obj = combined.obj, as
 #' @import Seurat
 #' @export
 
-get_levels_seu <- function(obj, ident, max_levels = 100, dput = T) {
+get_levels_seu <- function(obj, ident, max_levels = 100, dput = TRUE) {
   Levels <- unique(deframe(obj[[ident]]))
   stopifnot(length(Levels) < max_levels)
   if (dput) {
@@ -120,7 +120,7 @@ getMedianMetric <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), 
 #' @param ColName.meta A string specifying the name of the metadata column from which to retrieve cell IDs. Default: 'res.0.6'.
 #' @param values A vector of values to match in the metadata column. Default: NA.
 #' @param obj The Seurat object from which to retrieve the cell IDs. Default: combined.obj.
-#' @param inverse A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of values. Default: F.
+#' @param inverse A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of values. Default: FALSE.
 #' @return A vector of cell IDs that match (or don't match, if `inverse = TRUE`) the provided list of values.
 #' @examples
 #' \dontrun{
@@ -130,7 +130,7 @@ getMedianMetric <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), 
 #' }
 #' }
 #' @export
-getCellIDs.from.meta <- function(ColName.meta = "res.0.6", values = NA, obj = combined.obj, inverse = F) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
+getCellIDs.from.meta <- function(ColName.meta = "res.0.6", values = NA, obj = combined.obj, inverse = FALSE) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
   mdat <- obj@meta.data[, ColName.meta]
   cells <- if (inverse) {
     mdat %!in% values
@@ -214,10 +214,10 @@ create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.inters
 #'
 #' @description Add a new metadata column to a Seurat object, representing the fraction of a gene set in the transcriptome (expressed as a percentage).
 #' @param col.name Name of the new metadata column to be added. Default: 'percent.mito'
-#' @param gene.symbol.pattern Regular expression pattern to match gene symbols. Default: c("^MT\\.|^MT-", F)[1]
-#' @param gene.set A set of gene symbols. If specified, it will be used instead of gene.symbol.pattern. Default: F
+#' @param gene.symbol.pattern Regular expression pattern to match gene symbols. Default: c("^MT\\.|^MT-", FALSE)[1]
+#' @param gene.set A set of gene symbols. If specified, it will be used instead of gene.symbol.pattern. Default: FALSE
 #' @param obj Seurat object to which the new metadata column will be added. Default: ls.Seurat[[1]]
-#' @param verbose Logical indicating whether to display detailed messages (TRUE) or not (FALSE). Default: T
+#' @param verbose Logical indicating whether to display detailed messages (TRUE) or not (FALSE). Default: TRUE
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -241,8 +241,8 @@ create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.inters
 #' @export
 #' @importFrom Matrix colSums
 add.meta.fraction <- function(
-    col.name = "percent.mito", gene.symbol.pattern = c("^MT\\.|^MT-", F)[1],
-    gene.set = F, obj = ls.Seurat[[1]], verbose = T) {
+    col.name = "percent.mito", gene.symbol.pattern = c("^MT\\.|^MT-", FALSE)[1],
+    gene.set = FALSE, obj = ls.Seurat[[1]], verbose = TRUE) {
   stopif2(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
@@ -419,7 +419,7 @@ fix.orig.ident <- function(obj = merged.obj) {
 #' }
 seu.RemoveMetadata <- function(
     obj = combined.obj,
-    cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = T)) {
+    cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = TRUE)) {
   CNN <- colnames(obj@meta.data)
   iprint("cols_remove:", cols_remove)
   print("")
@@ -674,10 +674,10 @@ plotMetadataMedianFractionBarplot <- function(
     group.by = GetClusteringRuns(obj = obj)[2],
     method = c("median", "mean")[1],
     min.thr = 2.5 # At least this many percent in at least 1 cluster
-    , return.matrix = F,
+    , return.matrix = FALSE,
     main = paste(method, "read fractions per transcript class and cluster", suffix),
     ylab = "Fraction of transcriptome (%)",
-    percentify = T,
+    percentify = TRUE,
     subt = NULL,
     position = position_stack(),
     w = 10, h = 6,
@@ -734,14 +734,14 @@ plotMetadataMedianFractionBarplot <- function(
 plotMetadataCategPie <- function(
     metacol = "Singlet.status",
     plot_name = paste(metacol, "distribution"),
-    obj = combined.obj, max.categs = 20, both_pc_and_value = T,
+    obj = combined.obj, max.categs = 20, both_pc_and_value = TRUE,
     subtitle = NULL, ...) {
   categ_pivot <- table(obj[[metacol]])
   stopifnot(length(categ_pivot) < max.categs)
   qpie(categ_pivot,
     plotname = FixPlotName(make.names(plot_name)),
     both_pc_and_value = both_pc_and_value,
-    LegendSide = F, labels = NULL, LegendTitle = "", subtitle = subtitle, ...
+    LegendSide = FALSE, labels = NULL, LegendTitle = "", subtitle = subtitle, ...
   )
 }
 

@@ -822,8 +822,8 @@ plotGeneExpHist <- function(
 #' @param splitby Column in the metadata to split the cells by, Default: NULL.
 #' @param prefix A prefix added before the filename, Default: NULL.
 #' @param suffix A suffix added to the end of the filename, Default: subtitle.
-#' @param save.plot If TRUE, the plot is saved into a file, Default: T.
-#' @param PNG If TRUE, the file is saved as a .png, Default: T.
+#' @param save.plot If TRUE, the plot is saved into a file, Default: TRUE.
+#' @param PNG If TRUE, the file is saved as a .png, Default: TRUE.
 #' @param h Height of the plot in inches, Default: 7.
 #' @param w Width of the plot in inches, Default: NULL.
 #' @param nr.cols Number of columns to combine multiple feature plots, ignored if split.by is not NULL, Default: NULL.
@@ -924,14 +924,14 @@ qUMAP <- function(
 #' @param palette Color palette to be used, Default: 'glasbey'.
 #' @param highlight.clusters Specific clusters to be highlighted, Default: NULL.
 #' @param cells.highlight Specific cells to be highlighted, Default: NULL.
-#' @param label If TRUE, clusters are labeled, Default: T.
-#' @param repel If TRUE, labels are repelled to avoid overlap, Default: T.
+#' @param label If TRUE, clusters are labeled, Default: TRUE.
+#' @param repel If TRUE, labels are repelled to avoid overlap, Default: TRUE.
 #' @param legend If TRUE, a legend is added to the plot, Default: !label.
 #' @param axes If TRUE, the axes are shown on the plot. Default: FALSE.
 #' @param aspect.ratio Ratio of height to width. If TRUE, the ratio is fixed at 0.6. Default: TRUE.
 #' @param MaxCategThrHP Maximum threshold for the number of categories, Default: 200.
-#' @param save.plot If TRUE, the plot is saved into a file, Default: T.
-#' @param PNG If TRUE, the file is saved as a .png, Default: T.
+#' @param save.plot If TRUE, the plot is saved into a file, Default: TRUE.
+#' @param PNG If TRUE, the file is saved as a .png, Default: TRUE.
 #' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.
 #' @param caption Add caption to the ggplot object (e.g. a description in bottom right).
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).

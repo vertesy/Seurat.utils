@@ -34,9 +34,9 @@ Convert10Xfolders.old <- function(
 Convert10Xfolders.old <- function(
     InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
     , folderPattern = c("filtered", "SoupX_decont")[1],
-    min.cells = 10, min.features = 200, updateHGNC = T, ShowStats = T) {
-  fin <- list.dirs(InputDir, recursive = F)
-  fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = F)
+    min.cells = 10, min.features = 200, updateHGNC = TRUE, ShowStats = TRUE) {
+  fin <- list.dirs(InputDir, recursive = FALSE)
+  fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = FALSE)
 
   for (i in 1:length(fin)) {
     pathIN <- fin[i]
@@ -64,7 +64,7 @@ Convert10Xfolders.old <- function(
       print("More than 2 elements in the list of matrices")
     }
     # update --- --- --- ---
-    if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = T, ShowStats = T)
+    if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
     saveRDS(seu, file = fnameOUT)
   }
 }
