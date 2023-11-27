@@ -64,9 +64,9 @@ PackageTools::extract_package_dependencies(repository.dir)
 
 # Try to find and add missing @importFrom statements------------------------------------------------
 devtools::load_all("~/GitHub/Packages/PackageTools/")
+(ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T))
 if (F) {
   (excluded.packages <- unlist(strsplit(DESCRIPTION$'depends', split = ", ")))
-  (ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T))
   for (scriptX in ls.scripts.full.path) {
     PackageTools::add_importFrom_statements(scriptX, exclude_packages = excluded.packages)
   }
@@ -83,7 +83,7 @@ PackageTools::copy_github_badge("active") # Add badge to readme via clipboard
 
 # Replaces T with TRUE and F with FALSE ------------------------------------------------
 for (scriptX in ls.scripts.full.path) {
-  PackageTools::replace_tf_with_true_false(scriptX)
+  PackageTools::replace_tf_with_true_false(scriptX, strict_mode = F)
 }
 
 
