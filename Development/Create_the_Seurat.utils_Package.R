@@ -16,6 +16,7 @@ config.path <- file.path(repository.dir, "Development/config.R")
 "TAKE A LOOK AT"
 file.edit(config.path)
 source(config.path)
+package.name <- DESCRIPTION$'package.name'
 
 PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
 'git add commit push to remote'
@@ -27,15 +28,20 @@ devtools::install_local(repository.dir, upgrade = F)
 
 
 # Test if you can install from github ------------------------------------------------
-remote.path <- file.path(DESCRIPTION$'github.user', DESCRIPTION$'package.name')
+remote.path <- file.path(DESCRIPTION$'github.user', package.name)
 pak::pkg_install(remote.path)
-# unload(DESCRIPTION$'package.name')
-# require(DESCRIPTION$'package.name')
-# # remove.packages(DESCRIPTION$'package.name')
+# unload(package.name)
+# require(package.name, character.only = TRUE)
+# # remove.packages(package.name)
 
+# if (!require("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(version = "3.18")
+# BiocManager::install("MatrixGenerics")
 
 # CMD CHECK ------------------------------------------------
-checkres <- devtools::check(repository.dir, cran = FALSE)
+# checkres <-
+  devtools::check(repository.dir, cran = FALSE)
 
 
 
@@ -50,7 +56,7 @@ PackageTools::extract_package_dependencies(repository.dir)
 # Visualize function dependencies within the package------------------------------------------------
 {
   warning("works only on the installed version of the package!")
-  pkgnet_result <- pkgnet::CreatePackageReport(DESCRIPTION$'package.name')
+  pkgnet_result <- pkgnet::CreatePackageReport(package.name)
   fun_graph     <- pkgnet_result$FunctionReporter$pkg_graph$'igraph'
   PackageTools::convert_igraph_to_mermaid(graph = fun_graph, openMermaid = T, copy_to_clipboard = T)
 }
