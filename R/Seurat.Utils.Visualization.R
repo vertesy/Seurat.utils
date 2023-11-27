@@ -1463,6 +1463,147 @@ DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster nam
   Seurat::DimPlot(object = obj, reduction = reduction, group.by = ident, label = TRUE, repel = TRUE, ...) + NoLegend() + ggtitle(title)
 }
 
+# _________________________________________________________________________________________________
+# Manipulating UMAP and PCA  ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+
+# _________________________________________________________________________________________________
+#' @title FlipReductionCoordinates
+#'
+#' @description Flip reduction coordinates (like UMAP upside down).
+#' @param obj Seurat object, Default: combined.obj
+#' @param dim Numer of dimensions used, Default: 2
+#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @param flip The axis (axes) to flip around. Default: c("x", "y", "xy", NULL)[1]
+#' @param FlipReductionBackupToo Flip coordinates in backup slot too? Default: TRUE
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   clUMAP()
+#'   combined.obj <- FlipReductionCoordinates(combined.obj)
+#'   clUMAP()
+#' }
+#' }
+#' @export
+FlipReductionCoordinates <- function(
+    obj = combined.obj, dim = 2, reduction = "umap",
+    flip = c("x", "y", "xy", NULL)[1], FlipReductionBackupToo = TRUE) { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+  coordinates <- Embeddings(obj, reduction = reduction)
+  stopifnot(ncol(coordinates) == dim)
+
+  if (flip %in% c("x", "xy")) coordinates[, 1] <- coordinates[, 1] * -1
+  if (flip %in% c("y", "xy")) coordinates[, 2] <- coordinates[, 2] * -1
+  obj@reductions[[reduction]]@cell.embeddings <- coordinates
+
+  if (FlipReductionBackupToo) {
+    bac.slot <- paste0(reduction, dim, "d")
+    if (length(obj@misc$reductions.backup[[bac.slot]])) {
+      obj@misc$reductions.backup[[bac.slot]]@cell.embeddings <- coordinates
+      iprint(dim, "dimensional", reduction, "backup flipped too.")
+    }
+  }
+  return(obj)
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title AutoNumber.by.UMAP
+#'
+#' @description Relabel cluster numbers along a UMAP (or tSNE) axis #
+#' @param obj Seurat object, Default: combined.obj
+#' @param dim Which dimension? Default: 1
+#' @param swap Swap direction? Default: FALSE
+#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction = "umap", res = "integrated_snn_res.0.5")
+#'   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.ordered")
+#' }
+#' }
+#' @export
+AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers along a UMAP (or tSNE) axis
+                               , dim = 1, swap = FALSE, reduction = "umap", res = "RNA_snn_res.0.5") {
+  dim_name <- kppu(toupper(reduction), dim)
+  coord.umap <- as.named.vector.df(FetchData(object = obj, vars = dim_name))
+  identX <- as.character(obj@meta.data[[res]])
+
+  ls.perCl <- split(coord.umap, f = identX)
+  MedianClusterCoordinate <- unlapply(ls.perCl, median)
+
+  OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
+  NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
+  NewMeta <- translate(vec = identX, oldvalues = OldLabel, newvalues = NewLabel)
+  NewMetaCol <- kpp(res, "ordered")
+  iprint("NewMetaCol:", NewMetaCol)
+
+  obj[[NewMetaCol]] <- NewMeta
+  return(obj)
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title AutoNumber.by.PrinCurve
+#'
+#' @description Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
+#' @param obj Seurat object, Default: combined.obj
+#' @param dim Dimensions to use, Default: 1:2
+#' @param plotit Plot results (& show it), Default: TRUE
+#' @param swap Swap Lambda paramter (multiplied with this) , Default: -1
+#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5")
+#'   combined.obj <- AutoNumber.by.PrinCurve(
+#'     obj = combined.obj, dim = 1:2, reduction = "umap", plotit = TRUE,
+#'     swap = -1, res = "integrated_snn_res.0.5"
+#'   )
+#'   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.prin.curve")
+#' }
+#' }
+#' @seealso
+#'  \code{\link[princurve]{principal_curve}}
+#' @export
+#' @importFrom princurve principal_curve
+AutoNumber.by.PrinCurve <- function(
+    obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
+    , dim = 1:2, plotit = TRUE, swap = -1,
+    reduction = "umap", res = "integrated_snn_res.0.5") {
+  # require(princurve)
+  dim_name <- ppu(toupper(reduction), dim)
+  coord.umap <- FetchData(object = obj, vars = dim_name)
+  fit <- princurve::principal_curve(x = as.matrix(coord.umap))
+  if (plotit) {
+    plot(fit,
+         xlim = range(coord.umap[, 1]), ylim = range(coord.umap[, 2]),
+         main = "principal_curve"
+    )
+    # points(fit)
+    points(coord.umap, pch = 18, cex = .25)
+    princurve::whiskers(coord.umap, fit$s, lwd = .1)
+    MarkdownReports::wplot_save_this(plotname = "principal_curve")
+  }
+
+  ls.perCl <- split(swap * fit$lambda, f = obj[[res]])
+  MedianClusterCoordinate <- unlapply(ls.perCl, median)
+  OldLabel <- names(sort(MedianClusterCoordinate))
+  NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
+  NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
+  NewMetaCol <- kpp(res, "prin.curve")
+  iprint("NewMetaCol:", NewMetaCol)
+  obj[[NewMetaCol]] <- NewMeta
+  return(obj)
+}
+
+
+
 
 # _________________________________________________________________________________________________
 # Saving plots ______________________________ ----
