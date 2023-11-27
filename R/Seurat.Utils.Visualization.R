@@ -543,7 +543,7 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 #'   getDiscretePalette()
 #' }
 #' }
-#' @importFrom MarkdownHelpers Color_Check
+#' @importFrom MarkdownHelpers MarkdownHelpers::color_check
 #'
 #' @export getDiscretePalette
 getDiscretePalette <- function(
@@ -560,7 +560,7 @@ getDiscretePalette <- function(
     stopif(anyNA(colzFixed))
     colz <- colzFixed
   }
-  if (show.colors) MarkdownHelpers::Color_Check(colz)
+  if (show.colors) MarkdownHelpers::color_check(colz)
   return(colz)
 }
 

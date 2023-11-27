@@ -299,7 +299,7 @@ $`c("package:sp", "package:graphics", "package:base")`
 [1] "plot"
 
 $`character(0)`
- [1] "barplot_label"              "Color_Check"                "create_set_Original_OutDir"
+ [1] "barplot_label"              "MarkdownHelpers::color_check"                "create_set_Original_OutDir"
  [4] "create_set_OutDir"          "create_set_SubDir"          "deframe"                   
  [7] "FeatureHeatmap"             "FirstCol2RowNames"          "group_by_"                 
 [10] "hue_pal"                    "iterBy.over"                "n"                         

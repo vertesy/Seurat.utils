@@ -1793,7 +1793,7 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
                                , show.colors = F) {
   n.clusters <-  nrow(unique(obj[[ident.used]]))
   colz <- DiscretePalette(n = n.clusters, palette = palette.used)
-  if (show.colors) Color_Check(colz)
+  if (show.colors) MarkdownHelpers::color_check(colz)
   return(colz)
 }
 # getDiscretePalette()
