@@ -5,6 +5,7 @@
 # rm(list = ls(all.names = TRUE));
 try(dev.off(), silent = TRUE)
 create_set_OutDir
+
 # Functions ------------------------
 require(PackageTools)
 devtools::load_all("~/GitHub/Packages/PackageTools")
@@ -43,8 +44,7 @@ devtools::install_github(repo = "vertesy/Seurat.utils", upgrade = F)
 # BiocManager::install("MatrixGenerics")
 
 # CMD CHECK ------------------------------------------------
-# checkres <-
-  devtools::check(repository.dir, cran = FALSE)
+checkres <- devtools::check(repository.dir, cran = FALSE)
 
 
 
