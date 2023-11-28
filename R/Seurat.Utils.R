@@ -57,28 +57,50 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
   }
 }
 
-
-
+setdiff(letters[1:4], letters[1:2])
+setdiff(genes, rownames(obj))
 
 
 # _________________________________________________________________________________________________
-#' @title IntersectWithExpressed
+#' @title Intersect Genes with Seurat Object
 #'
-#' @description Intersect a set of genes with genes found in the Seurat object.
-#' @param genes A vector of gene names.
-#' @param obj Seurat object
-#' @param genes.shown Number of genes printed (head).
+#' @description Intersects a set of gene names with those found in a Seurat object.
+#' @param genes A vector of gene names to be intersected with the Seurat object.
+#' @param obj A Seurat object containing gene expression data.
+#' @param n_genes_shown Number of missing genes to be printed. Default: 10.
+#' @param strict All genes to be present in the Seurat object?  Default: TRUE.
+#' @return A vector of gene names that are found both in the input 'genes' vector and the
+#'         Seurat object.
+#'
 #' @export
+IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown = 10, strict = TRUE) {
+  message("IntersectGeneLsWithObject()")
 
-IntersectWithExpressed <- function(genes, obj = combined.obj, genes.shown = 10) {
-  print("IntersectWithExpressed()")
-  # print(head(genes, n=15))
-  diff <- setdiff(genes, rownames(obj))
-  Stringendo::iprint(length(diff), "genes (of", length(genes), ") are MISSING from the Seurat object:", head(diff, genes.shown))
-  return(intersect(rownames(obj), genes))
+  stopifnot(
+    is.character(genes),
+    is(obj, "Seurat"),
+    is.numeric(n_genes_shown) && n_genes_shown > 0,
+    is.logical(strict)
+  )
+  stopifnot(length(genes) > 0, length(rownames(obj)) > 0)
+
+  # Strict mode: Ensure all genes are present in the Seurat object
+  if (strict) stopifnot(all(genes %in% rownames(obj)))
+
+  # Finding genes that are missing in the Seurat object
+  missing_in_obj <- setdiff(genes, rownames(obj))
+  Stringendo::iprint(length(missing_in_obj), " (of ", length(genes),
+                     ") genes are MISSING from the Seurat object with (", length(rownames(obj)),
+                     ") genes. E.g.:", head(missing_in_obj, n_genes_shown))
+
+  # Finding genes that are found in both the input list and the Seurat object
+  g_found <- intersect(rownames(obj), genes)
+
+  # Output argument assertion
+  stopifnot(length(g_found) > 0)
+
+  return(g_found)
 }
-
-
 
 
 # _________________________________________________________________________________________________
