@@ -100,7 +100,7 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
   stopifnot(length(SplitIdents) == 2)
 
   Idents(obj) <- clusters
-  IdentsUsed <- sort.natural(as.character(unique(Idents(obj))))
+  IdentsUsed <- gtools::mixedsort(as.character(unique(Idents(obj))))
   NrPlots <- length(IdentsUsed)
   p.clAv <- p.clAv.AutoLabel <- genes.to.label <- list.fromNames(IdentsUsed)
 

@@ -173,7 +173,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
   # identities should match ----------------
   ident.X <- names(ident.vec)
   ident.Y <- as.character(ident.vec)
-  ident.Seu <- sort.natural(levels(Idents(obj)))
+  ident.Seu <- gtools::mixedsort(levels(Idents(obj)))
   iprint("ident.Seu: ", ident.Seu)
 
   OnlyInIdentVec      <- setdiff(ident.X, ident.Seu)
