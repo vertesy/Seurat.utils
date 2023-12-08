@@ -910,7 +910,7 @@ save.parameters <- function(obj = combined.obj, params = p, overwrite = TRUE) {
 create_scCombinedMeta <- function(experiment, project_ = getProject()) {
   x <- list(
     experiment.corresponding = experiment,
-    initialized = Sys.Date(),
+    initialized = format(Sys.time(), format = "%Y.%m.%d | %H:%M:%S"),
     project = project_
   )
   class(x) <- "scCollectionMetadata_class"
@@ -3033,12 +3033,13 @@ ConvertDropSeqfolders <- function(
 #' @export
 #' @importFrom tictoc tic toc
 LoadAllSeurats <- function(
-    InputDir # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
-    , file.pattern = "^filtered.+Rds$",
+    InputDir, # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
+    file.pattern = "^filtered.+Rds$",
     string.remove1 = list(FALSE, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[[2]],
     string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]]) {
+
   tictoc::tic()
-  InputDir <- AddTrailingSlash(InputDir) # add '/' if necessary
+  InputDir <- AddTrailingSlashfNonePresent(InputDir) # add '/' if necessary
 
   fin.orig <- list.files(InputDir, include.dirs = FALSE, pattern = file.pattern)
   print(fin.orig)
