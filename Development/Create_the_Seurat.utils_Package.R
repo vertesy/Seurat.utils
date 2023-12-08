@@ -8,7 +8,7 @@ create_set_OutDir
 
 # Functions ------------------------
 require(PackageTools)
-devtools::load_all("~/GitHub/Packages/PackageTools")
+# devtools::load_all("~/GitHub/Packages/PackageTools")
 
 # Setup ------------------------
 repository.dir <- "~/GitHub/Packages/Seurat.utils/"
