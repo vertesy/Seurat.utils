@@ -57,9 +57,6 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
   }
 }
 
-setdiff(letters[1:4], letters[1:2])
-setdiff(genes, rownames(obj))
-
 
 # _________________________________________________________________________________________________
 #' @title Intersect Genes with Seurat Object
