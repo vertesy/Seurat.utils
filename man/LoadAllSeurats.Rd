@@ -9,6 +9,7 @@ LoadAllSeurats(
   file.pattern = "^filtered.+Rds$",
   string.remove1 = list(FALSE, "filtered_feature_bc_matrix.",
     "raw_feature_bc_matrix.")[[2]],
+  string.replace1 = "",
   string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]]
 )
 }
@@ -18,6 +19,8 @@ LoadAllSeurats(
 \item{file.pattern}{A character string specifying the pattern of file names to be searched. Default is '^filtered.+Rds$'.}
 
 \item{string.remove1}{A character string or FALSE. If a string is provided, it is removed from file names. Default is "filtered_feature_bc_matrix.".}
+
+\item{string.replace1}{A character string of the new text instead of "string.remove1".}
 
 \item{string.remove2}{A character string or FALSE. If a string is provided, it is removed from file names. Default is ".min.cells.10.min.features.200.Rds".}
 }

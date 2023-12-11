@@ -183,32 +183,29 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 #' @param sub_slot_value what value to add?
 #' @param overwrite overwrite?
 #' @export
-addToMiscOrToolsSlot <- function(obj, slot_name = 'misc', sub_slot_name = 'x'
+addToMiscOrToolsSlot <- function(obj, slot_name = 'misc'
                                  , sub_slot_value = NULL
+                                 , sub_slot_name = substitute(sub_slot_value)
                                  , overwrite = FALSE) {
 
   stopifnot(is(obj, "Seurat"), slot_name %in% c("misc", "tools"))
+  stopif(is.null(sub_slot_value) && is.null(sub_slot_name), message = "Define 'sub_slot_name' if 'sub_slot_value' is not provided.")
 
   # Accessing the specified slot
   slot_orig <- slot(object = obj, name = slot_name)
 
   # Creating new slot or reporting if it exists
-  if (sub_slot_name %in% names(slot_orig)) {
+  if (sub_slot_name %in% names(slot_orig) & !overwrite ) {
     warning(paste(sub_slot_name, "in", slot_name, "already exists."))
   } else {
-    new_slot_content <- c(slot_orig, sub_slot_name)
-  }
-
-  if (!is.null(sub_slot_value) & overwrite) {
-    new_slot_content[[sub_slot_name]] <- sub_slot_value
+    slot_orig[[sub_slot_name]] <- sub_slot_value
   }
 
   # Assigning the modified slot back to the object
-  slot(object = obj, name = slot_name) <- new_slot_content
+  slot(object = obj, name = slot_name) <- slot_orig
 
   return(obj)
 }
-
 
 
 # _________________________________________________________________________________________________
