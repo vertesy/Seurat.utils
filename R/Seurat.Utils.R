@@ -167,10 +167,48 @@ AreTheseCellNamesTheSame <- function(
 #' @export
 
 Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL) {
-  if (is.null(obj@misc[[NewSlotName]])) obj@misc[[NewSlotName]] <- list() else iprint(NewSlotName, "already exists in @misc.")
-  if (is.null(obj@misc[[NewSlotName]][[SubSlotName]])) obj@misc[[NewSlotName]][[SubSlotName]] <- list() else iprint(SubSlotName, "subslot already exists in @misc$NewSlot.")
+  .Deprecated("addToMiscOrToolsSlot")
+  # if (is.null(obj@misc[[NewSlotName]])) obj@misc[[NewSlotName]] <- list() else iprint(NewSlotName, "already exists in @misc.")
+  # if (is.null(obj@misc[[NewSlotName]][[SubSlotName]])) obj@misc[[NewSlotName]][[SubSlotName]] <- list() else iprint(SubSlotName, "subslot already exists in @misc$NewSlot.")
   return(obj)
 }
+
+# _________________________________________________________________________________________________
+#' @title Create Misc or Tools Slot in Seurat Object
+#'
+#' @description Adds a new sub-slot to either the `@misc` or `@tools`  slots of a Seurat object.
+#' @param obj A Seurat object.
+#' @param slot_name Name of the primary slot (`@misc` or `@tools`).
+#' @param sub_slot_name Name of the new element inside the primary slot.
+#' @param sub_slot_value what value to add?
+#' @param overwrite overwrite?
+#' @export
+addToMiscOrToolsSlot <- function(obj, slot_name = 'misc', sub_slot_name = 'x'
+                                 , sub_slot_value = NULL
+                                 , overwrite = FALSE) {
+
+  stopifnot(is(obj, "Seurat"), slot_name %in% c("misc", "tools"))
+
+  # Accessing the specified slot
+  slot_orig <- slot(object = obj, name = slot_name)
+
+  # Creating new slot or reporting if it exists
+  if (sub_slot_name %in% names(slot_orig)) {
+    warning(paste(sub_slot_name, "in", slot_name, "already exists."))
+  } else {
+    new_slot_content <- c(slot_orig, sub_slot_name)
+  }
+
+  if (!is.null(sub_slot_value) & overwrite) {
+    new_slot_content[[sub_slot_name]] <- sub_slot_value
+  }
+
+  # Assigning the modified slot back to the object
+  slot(object = obj, name = slot_name) <- new_slot_content
+
+  return(obj)
+}
+
 
 
 # _________________________________________________________________________________________________
