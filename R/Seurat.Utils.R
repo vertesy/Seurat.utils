@@ -3023,6 +3023,7 @@ ConvertDropSeqfolders <- function(
 #' @param InputDir A character string specifying the input directory.
 #' @param file.pattern A character string specifying the pattern of file names to be searched. Default is '^filtered.+Rds$'.
 #' @param string.remove1 A character string or FALSE. If a string is provided, it is removed from file names. Default is "filtered_feature_bc_matrix.".
+#' @param string.replace1 A character string of the new text instead of "string.remove1".
 #' @param string.remove2 A character string or FALSE. If a string is provided, it is removed from file names. Default is ".min.cells.10.min.features.200.Rds".
 #' @examples
 #' \dontrun{
@@ -3033,17 +3034,18 @@ ConvertDropSeqfolders <- function(
 #' @export
 #' @importFrom tictoc tic toc
 LoadAllSeurats <- function(
-    InputDir, # Load all Seurat objects found in a directory. Also works with symbolic links (but not with aliases).
+    InputDir,
     file.pattern = "^filtered.+Rds$",
     string.remove1 = list(FALSE, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[[2]],
+    string.replace1   = "",
     string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]]) {
 
   tictoc::tic()
-  InputDir <- AddTrailingSlashfNonePresent(InputDir) # add '/' if necessary
+  InputDir <- AddTrailingSlashfNonePresent(InputDir)
 
   fin.orig <- list.files(InputDir, include.dirs = FALSE, pattern = file.pattern)
   print(fin.orig)
-  fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = "") else fin.orig
+  fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = string.replace1) else fin.orig
   fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = "") else fin
 
   ls.Seu <- list.fromNames(fin)
