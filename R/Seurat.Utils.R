@@ -174,29 +174,34 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 }
 
 # _________________________________________________________________________________________________
-#' @title Create Misc or Tools Slot in Seurat Object
+#' @title Add to Misc or Tools Slot
 #'
-#' @description Adds a new sub-slot to either the `@misc` or `@tools`  slots of a Seurat object.
+#' @description This function adds a sub-slot to either the 'misc' or 'tools' slot of a Seurat object,
+#' allowing for flexible data storage within the object structure.
+#' If the sub-slot already exists, it can either be overwritten or a warning will be issued.
+#'
 #' @param obj A Seurat object.
-#' @param slot_name Name of the primary slot (`@misc` or `@tools`).
-#' @param sub_slot_name Name of the new element inside the primary slot.
-#' @param sub_slot_value what value to add?
-#' @param overwrite overwrite?
+#' @param slot_name The name of the slot to which the sub-slot should be added ('misc' or 'tools').
+#' @param sub_slot_value The value to be assigned to the sub-slot.
+#' @param sub_slot_name The name of the sub-slot. Automatically derived from 'sub_slot_value' if not provided.
+#' @param overwrite A boolean indicating whether to overwrite an existing sub-slot with the same name.
+#'
+#' @return The modified Seurat object with the new or updated sub-slot.
 #' @export
-addToMiscOrToolsSlot <- function(obj, slot_name = 'misc'
-                                 , sub_slot_value = NULL
-                                 , sub_slot_name = substitute(sub_slot_value)
-                                 , overwrite = FALSE) {
+addToMiscOrToolsSlot <- function(obj, slot_name = 'misc', sub_slot_value = NULL,
+                                 sub_slot_name = deparse(substitute(sub_slot_value)),
+                                 overwrite = FALSE) {
 
-  stopifnot(is(obj, "Seurat"), slot_name %in% c("misc", "tools"))
-  stopif(is.null(sub_slot_value) && is.null(sub_slot_name), message = "Define 'sub_slot_name' if 'sub_slot_value' is not provided.")
+  stopifnot(is(obj, "Seurat"), is.character(slot_name), length(slot_name) == 1)
+  stopifnot(is.null(sub_slot_value) || !is.null(sub_slot_name),
+            is.character(sub_slot_name), length(sub_slot_name) == 1)
 
   # Accessing the specified slot
   slot_orig <- slot(object = obj, name = slot_name)
 
   # Creating new slot or reporting if it exists
-  if (sub_slot_name %in% names(slot_orig) & !overwrite ) {
-    warning(paste(sub_slot_name, "in", slot_name, "already exists."))
+  if (sub_slot_name %in% names(slot_orig) && !overwrite) {
+    warning(paste(sub_slot_name, "in", slot_name, "already exists. Not overwritten."), immediate. = TRUE)
   } else {
     slot_orig[[sub_slot_name]] <- sub_slot_value
   }
@@ -2273,6 +2278,7 @@ prefix_cells_seurat <- function(ls_obj, obj_IDs) {
 
     return(obj)
   })
+  print(lapply(lapply(ls_obj_prefixed, colnames), head))
 
   names(ls_obj_prefixed) <- names_orig
   return(ls_obj_prefixed)
