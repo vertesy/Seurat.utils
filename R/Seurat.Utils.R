@@ -3435,24 +3435,23 @@ xsave <- function(
 #'
 #' @export
 xread <- function(file, nthreads = 4, ...) {
+  stopifnot(file.exists(file))
   try(tictoc::tic(), silent = TRUE)
 
-
-  if (background.job & rstudioapi::isAvailable()) {
-    "This part is not debugged yet!"
-    "This part is not debugged yet!"
-
-    message("Started reading in as background job.")
-    job::job(
-      {
-        qs::qread(file = file, nthreads = nthreads, ...)
-      },
-      import = c("file", "nthreads")
-    )
-  } else {
+  # if (background.job & rstudioapi::isAvailable()) {
+  #   "This part is not debugged yet!"
+  #   "This part is not debugged yet!"
+  #
+  #   message("Started reading in as background job.")
+  #   job::job(
+  #     {
+  #       qs::qread(file = file, nthreads = nthreads, ...)
+  #     },
+  #     import = c("file", "nthreads")
+  #   )
+  # } else {
     x <- qs::qread(file = file, nthreads = nthreads, ...)
-  }
-
+  # }
 
 
   iprint(is(x)[1], "of length:", length(x))
