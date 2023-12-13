@@ -82,7 +82,7 @@ CalculateFractionInTrome <- function(geneset = c("MALAT1") # Calculate the fract
                                      , obj = combined.obj
                                      , dataslot = c("counts", "data")[2]
 ) {
-  print("    >>>> Use add.meta.fraction() <<<<")
+  print("    >>>> Use addMetaFraction() <<<<")
   geneset <- check.genes(geneset)
   stopifnot(length(geneset)>0)
 

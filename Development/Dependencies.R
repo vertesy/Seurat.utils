@@ -48,7 +48,7 @@ $`character(0)`
  [9] "melt"                                "n"                                  
 [11] "pheatmap"                            "read_rds"                           
 [13] "replace_by_most_frequent_categories" "gtools::mixedsort"                       
-[15] "stopif2"                             "summarise"                          
+[15] "stopif"                             "summarise"                          
 [17] "summarize_all"                       "summarize_at"                       
 [19] "wplot_save_pheatmap"                
 
@@ -305,7 +305,7 @@ $`character(0)`
 [10] "hue_pal"                    "iterBy.over"                "n"                         
 [13] "oo"                         "plot_grid"                  "plot_ly"                   
 [16] "principal_curve"            "save_plot"                  "saveWidget"                
-[19] "select"                     "stopif2"                    "summarise"                 
+[19] "select"                     "stopif"                    "summarise"                 
 [22] "summarize"                  "tic"                        "toc"                       
 [25] "wbarplot"                   "whiskers"                   "wplot_save_this"           
 

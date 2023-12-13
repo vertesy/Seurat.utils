@@ -18,7 +18,7 @@ try(library(htmlwidgets), silent = T)
 # ------------------------------------------------------------------------
 ww.check.if.3D.reduction.exist <- function(obj = obj) { # ww.check.if.3D.reduction.exist in backup slot
   if( !("UMAP_3" %in% colnames(obj@reductions$'umap'))) {
-    stopif2( is.null(combined.obj@misc$reductions.backup$'umap3d')
+    stopif( is.null(combined.obj@misc$reductions.backup$'umap3d')
              , "No 3D umap found in backup slot, @misc$reductions.backup. Run SetupReductionsNtoKdimensions() first.")
     RecallReduction(obj = obj, dim = 3, reduction = "umap")
   } else { # Reduction found in normal UMAP slot

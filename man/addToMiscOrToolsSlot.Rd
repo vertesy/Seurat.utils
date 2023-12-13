@@ -2,27 +2,32 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{addToMiscOrToolsSlot}
 \alias{addToMiscOrToolsSlot}
-\title{Create Misc or Tools Slot in Seurat Object}
+\title{Add to Misc or Tools Slot}
 \usage{
 addToMiscOrToolsSlot(
   obj,
   slot_name = "misc",
   sub_slot_value = NULL,
-  sub_slot_name = substitute(sub_slot_value),
+  sub_slot_name = deparse(substitute(sub_slot_value)),
   overwrite = FALSE
 )
 }
 \arguments{
 \item{obj}{A Seurat object.}
 
-\item{slot_name}{Name of the primary slot (\verb{@misc} or \verb{@tools}).}
+\item{slot_name}{The name of the slot to which the sub-slot should be added ('misc' or 'tools').}
 
-\item{sub_slot_value}{what value to add?}
+\item{sub_slot_value}{The value to be assigned to the sub-slot.}
 
-\item{sub_slot_name}{Name of the new element inside the primary slot.}
+\item{sub_slot_name}{The name of the sub-slot. Automatically derived from 'sub_slot_value' if not provided.}
 
-\item{overwrite}{overwrite?}
+\item{overwrite}{A boolean indicating whether to overwrite an existing sub-slot with the same name.}
+}
+\value{
+The modified Seurat object with the new or updated sub-slot.
 }
 \description{
-Adds a new sub-slot to either the \verb{@misc} or \verb{@tools}  slots of a Seurat object.
+This function adds a sub-slot to either the 'misc' or 'tools' slot of a Seurat object,
+allowing for flexible data storage within the object structure.
+If the sub-slot already exists, it can either be overwritten or a warning will be issued.
 }

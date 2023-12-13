@@ -47,8 +47,8 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
       print(c('nFeature_RNA', 'percent.mito', 'percent.ribo'))
       print(c('nFeature_RNA', 'percent.mito', 'percent.ribo') %in% colnames(mm))
       print("Try to run:")
-      print('objX <- add.meta.fraction(obj = objX, col.name = "percent.mito", gene.symbol.pattern =  "^MT\\.|^MT-")')
-      print('objX <- add.meta.fraction(obj = objX, col.name = "percent.ribo", gene.symbol.pattern =  "^RPL|^RPS")')
+      print('objX <- addMetaFraction(obj = objX, col.name = "percent.mito", gene.symbol.pattern =  "^MT\\.|^MT-")')
+      print('objX <- addMetaFraction(obj = objX, col.name = "percent.ribo", gene.symbol.pattern =  "^RPL|^RPS")')
       stop()
     }
 

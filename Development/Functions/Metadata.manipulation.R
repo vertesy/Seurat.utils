@@ -7,7 +7,7 @@
 
 # - getMedianMetric
 # - add.meta.tags
-# - add.meta.fraction
+# - addMetaFraction
 # - GetClusteringRuns
 # - GetNamedClusteringRuns
 # - GetOrderedClusteringRuns
@@ -59,10 +59,10 @@ add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) {  #
 # ls.Seurat[[1]] <- add.meta.tags(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1)
 
 
-# add.meta.fraction ------------------------------------------------------------------------------------------------
-add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c("^MT\\.|^MT-", F)[1]
+# addMetaFraction ------------------------------------------------------------------------------------------------
+addMetaFraction <- function(col.name = "percent.mito", gene.symbol.pattern = c("^MT\\.|^MT-", F)[1]
                               , gene.set = F, obj = ls.Seurat[[1]], verbose = T) {
-  stopif2(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
+  stopif(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
   geneset <- check.genes(list.of.genes = gene.set, obj = obj)
@@ -77,15 +77,15 @@ add.meta.fraction <- function(col.name = "percent.mito", gene.symbol.pattern = c
 }
 
 
-# ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-")
-# ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.ribo", gene.symbol.pattern = "^RPL|^RPS")
-# ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.AC.GenBank", gene.symbol.pattern = "^AC[0-9]{6}\\.")
-# ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.AL.EMBL", gene.symbol.pattern = "^AL[0-9]{6}\\.")
-# ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.LINC", gene.symbol.pattern = "^LINC0")
-# ls.Seurat[[1]] <- add.meta.fraction(col.name = "percent.MALAT1", gene.symbol.pattern = "^MALAT1")
+# ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-")
+# ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.ribo", gene.symbol.pattern = "^RPL|^RPS")
+# ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.AC.GenBank", gene.symbol.pattern = "^AC[0-9]{6}\\.")
+# ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.AL.EMBL", gene.symbol.pattern = "^AL[0-9]{6}\\.")
+# ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.LINC", gene.symbol.pattern = "^LINC0")
+# ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.MALAT1", gene.symbol.pattern = "^MALAT1")
 # colnames(ls.Seurat[[1]]@meta.data)
 # HGA_MarkerGenes <- c("ENO1", "IGFBP2", "WSB1", "DDIT4", "PGK1", "BNIP3", "FAM162A", "TPI1", "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1","NPAS4", "HK2", "BNIP3L", "JUN", "ENO2", "GAPDH", "ANKRD37", "ALDOA", "GADD45G", "TXNIP")
-# sobj <- add.meta.fraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj =  sobj)
+# sobj <- addMetaFraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj =  sobj)
 
 
 # ------------------------------------------------------------------------------------

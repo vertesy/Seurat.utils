@@ -106,8 +106,8 @@ PlotFilters <- function(
       print(c("nFeature_RNA", "percent.mito", "percent.ribo"))
       print(c("nFeature_RNA", "percent.mito", "percent.ribo") %in% colnames(mm))
       print("Try to run:")
-      print('objX <- add.meta.fraction(obj = objX, col.name = "percent.mito", gene.symbol.pattern =  "^MT\\.|^MT-")')
-      print('objX <- add.meta.fraction(obj = objX, col.name = "percent.ribo", gene.symbol.pattern =  "^RPL|^RPS")')
+      print('objX <- addMetaFraction(obj = objX, col.name = "percent.mito", gene.symbol.pattern =  "^MT\\.|^MT-")')
+      print('objX <- addMetaFraction(obj = objX, col.name = "percent.ribo", gene.symbol.pattern =  "^RPL|^RPS")')
       stop()
     }
 
@@ -1742,7 +1742,7 @@ qqSaveGridA4 <- function(
 #' @export
 ww.check.if.3D.reduction.exist <- function(obj = obj) {
   if (!("UMAP_3" %in% colnames(obj@reductions$"umap"))) {
-    stopif2(
+    stopif(
       is.null(obj@misc$reductions.backup$"umap3d"),
       "No 3D umap found in backup slot, @misc$reductions.backup. Run SetupReductionsNtoKdimensions() first."
     )

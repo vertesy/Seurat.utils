@@ -2223,7 +2223,7 @@ plot.Gene.Cor.Heatmap <- function(
 
   pname <- paste0("Pearson correlations of ", substitute(genes), "\n min.cor:", min.g.cor, " | ", assay.use, ".", slot.use)
   o.heatmap <- pheatmap::pheatmap(cor.mat[corgene.names, corgene.names], main = pname, cutree_rows = cutRows, cutree_cols = cutCols, ...)
-  MarkdownReports::wplot_save_pheatmap(o.heatmap, filename = make.names(pname))
+  MarkdownReports::wplot_save_pheatmap( o.heatmap, plotname = make.names(pname))
 
   # return values
   maxCorrz <- rowMax(cor.mat)[corgene.names]
@@ -2471,7 +2471,7 @@ CalculateFractionInTrome <- function(
     genesCalc.Cor.Seuratet = c("MALAT1") # Calculate the fraction of a set of genes within the full Transcriptome of each cell.
     , obj = combined.obj,
     dataslot = c("counts", "data")[2]) {
-  print("    >>>> Use add.meta.fraction() <<<<")
+  warning("    >>>> Use addMetaFraction() <<<<")
   geneset <- check.genes(list.of.genes = geneset)
   stopifnot(length(geneset) > 0)
 
@@ -2673,7 +2673,8 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceU
 #' }
 #' @export
 RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol, assay = "RNA") {
-  warning("Run this before integration and downstream processing. It only attempts to change obj@assays$YOUR_ASSAY@counts, @data and @scale.data.")
+  message("Run this before integration and downstream processing.
+          It only attempts to change obj@assays$YOUR_ASSAY@counts, @data and @scale.data.")
 
   assayobj <- obj@assays[[assay]]
 
@@ -2805,8 +2806,8 @@ HGNC.EnforceUnique <- function(updatedSymbols) {
 #'   GetUpdateStats(genes = HGNC.updated.genes)
 #' }
 #' }
-#' @export
 #' @importFrom Stringendo percentage_formatter
+#' @export
 GetUpdateStats <- function(genes = HGNC.updated[[i]]) { # Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`.
   (MarkedAsUpdated <- genes[genes$Approved == FALSE, ])
   (AcutallyUpdated <- sum(MarkedAsUpdated[, 1] != MarkedAsUpdated[, 3]))
