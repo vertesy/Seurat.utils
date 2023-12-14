@@ -2673,45 +2673,74 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceU
 #' }
 #' }
 #' @export
-RenameGenesSeurat <- function(obj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]$Suggested.Symbol, assay = "RNA") {
-  message("Run this before integration and downstream processing.
-          It only attempts to change obj@assays$YOUR_ASSAY@counts, @data and @scale.data.")
-
+RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
+                              newnames = HGNC.updated[[i]]$Suggested.Symbol,
+                              assay = "RNA") {
+  warning("Run this before integration and downstream processing. It only attempts to change
+          @counts, @data, @scale.data and @meta.features in obj@assays$YOUR_ASSAY.")
   assayobj <- obj@assays[[assay]]
 
-  check_and_rename <- function(assayobj, newnames, slotname) {
-    stopifnot(slotname %in% slotNames(assayobj))
-    # slotname = "scale.data"
-    myobj <- slot(assayobj, slotname)
-
-    if (all(dim(myobj)) > 0) {
-      stopifnot(nrow(myobj) == length(newnames))
-      if ("dgCMatrix" %in% class(myobj)) {
-        message(assay, "@", slotname, " is of type dgeCMatrix!")
-        myobj@Dimnames[[1]] <- newnames
-      } else if ("matrix" %in% class(myobj)) {
-        message(assay, "@", slotname, " is of type Matrix!")
-        rownames(myobj) <- newnames
-      } else {
-        warning(">>> No renaming: ", assay, "@", slotname, " not of type dgeCMatrix or Matrix.")
-      }
-      slot(assayobj, slotname) <- myobj
-    } # id dim >0
-    return(assayobj)
-  } # fun
-
   if (nrow(assayobj) == length(newnames)) {
-    assayobj <- check_and_rename(assayobj, newnames = newnames, "counts")
-    assayobj <- check_and_rename(assayobj, newnames = newnames, "data")
-    assayobj <- check_and_rename(assayobj, newnames = newnames, "scale.data")
+    assayobj <- .check_and_rename(assayobj, newnames = newnames, "counts")
+    assayobj <- .check_and_rename(assayobj, newnames = newnames, "data")
+    assayobj <- .check_and_rename(assayobj, newnames = newnames, "scale.data")
+    assayobj <- .check_and_rename(assayobj, newnames = newnames, "meta.features")
   } else {
-    warning("Unequal gene sets: nrow(assayobj) != nrow(newnames). No renaming performed")
+    warning("Unequal gene sets: nrow(assayobj) != nrow(newnames). No renaming performed!")
   }
   obj@assays[[assay]] <- assayobj
   return(obj)
 }
 
 
+# _________________________________________________________________________________________________
+#' @title Check and Rename Gene Names in Seurat Assay Object
+#'
+#' @description This function renames rows (genes) in a specified slot of a Seurat assay object.
+#' It supports slots storing data as either a dense or a sparse matrix (dgCMatrix) or data.frame.
+#'
+#' @param assayobj An Assay object from a Seurat object.
+#' @param newnames A character vector of new gene names to be assigned.
+#' @param slotname A string specifying the slot in the Assay object to be updated.
+#'                 Valid options typically include 'counts', 'data', or 'scale.data'.
+#'
+#' @return An Assay object with updated gene names in the specified slot.
+#' @examples
+#' \dontrun{
+#'   # Assuming 'seurat_obj' is a Seurat object and 'new_gene_names' is a vector of gene names
+#'   updated_assay <- check_and_rename(assayobj = seurat_obj[["RNA"]],
+#'                                     newnames = new_gene_names,
+#'                                     slotname = "counts")
+#' }
+
+.check_and_rename <- function(assayobj, newnames, slotname) {
+  stopifnot(slotname %in% slotNames(assayobj))
+
+  myobj <- slot(assayobj, slotname)
+
+  if (all(dim(myobj)) > 0) {
+    stopifnot(nrow(myobj) == length(newnames))
+
+    if ("dgCMatrix" %in% class(myobj)) {
+      message(assay, "@", slotname, " is of type dgeCMatrix!")
+      myobj@Dimnames[[1]] <- newnames
+
+    } else if ("matrix" %in% class(myobj)) {
+      message(assay, "@", slotname, " is of type Matrix!")
+      rownames(myobj) <- newnames
+
+    } else if ("data.frame" %in% class(myobj)) {
+      message(assay, "@", slotname, " is of type data.frame!")
+      rownames(myobj) <- newnames
+
+    } else {
+      warning(">>> No renaming: ", assay, "@", slotname,
+              " not of type dgeCMatrix / Matrix / data.frame.")
+    }
+    slot(assayobj, slotname) <- myobj
+  }
+  return(assayobj)
+}
 
 # _________________________________________________________________________________________________
 #' @title RemoveGenesSeurat

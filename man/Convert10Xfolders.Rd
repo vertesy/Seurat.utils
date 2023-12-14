@@ -15,6 +15,8 @@ Convert10Xfolders(
   ShowStats = TRUE,
   writeCBCtable = TRUE,
   sample.barcoding = FALSE,
+  nthreads = 12,
+  preset = "high",
   ...
 )
 }
