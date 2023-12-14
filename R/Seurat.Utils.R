@@ -2894,16 +2894,17 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' }
 #' @export
 Convert10Xfolders <- function(
-    InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
-    , regex = FALSE,
+    InputDir,
+    regex = FALSE,
     folderPattern = c("filtered_feature", "SoupX_decont")[1],
     depth = 4,
     min.cells = 5, min.features = 200,
     updateHGNC = TRUE, ShowStats = TRUE,
     writeCBCtable = TRUE,
     sample.barcoding = FALSE,
+    nthreads = 12,
+    preset = "high",
     ...) {
-  # if (sample.barcoding) depth = 4
 
   finOrig <- list.dirs.depth.n(InputDir, depth = depth)
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
@@ -2961,7 +2962,8 @@ Convert10Xfolders <- function(
 
       # update --- --- ---
       if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
-      saveRDS(seu, file = fnameOUT)
+      # saveRDS(seu, file = fnameOUT)
+      qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
 
       # write cellIDs ---  --- ---
       if (writeCBCtable) {
@@ -3382,7 +3384,8 @@ xsave <- function(
     project = getProject(),
     background.job = FALSE,
     showMemObject = TRUE, saveParams = TRUE) {
-  path_rdata <- if (exists("OutDir")) OutDir else getwd()
+
+  out_dir <- if (exists("OutDir")) OutDir else getwd()
 
   try(tictoc::tic(), silent = TRUE)
   if (showMemObject) {
@@ -3395,7 +3398,7 @@ xsave <- function(
   }
 
   fnameBase <- trimws(kppu(prefix, substitute(obj), suffix, project, preset, "compr", idate(Format = "%Y.%m.%d_%H.%M")), whitespace = "_")
-  FNN <- paste0(path_rdata, fnameBase, ".qs")
+  FNN <- paste0(out_dir, fnameBase, ".qs")
   iprint(substitute(obj), '<- xread("', FNN, '")')
 
   if (background.job & rstudioapi::isAvailable()) {
