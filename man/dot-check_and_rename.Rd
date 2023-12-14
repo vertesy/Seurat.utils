@@ -4,10 +4,12 @@
 \alias{.check_and_rename}
 \title{Check and Rename Gene Names in Seurat Assay Object}
 \usage{
-.check_and_rename(assayobj, newnames, slotname)
+.check_and_rename(obj, assay, newnames, slotname)
 }
 \arguments{
-\item{assayobj}{An Assay object from a Seurat object.}
+\item{obj}{A Seurat object.}
+
+\item{assay}{An Assay name in a Seurat object.}
 
 \item{newnames}{A character vector of new gene names to be assigned.}
 

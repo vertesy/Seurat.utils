@@ -2653,7 +2653,7 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceU
   HGNC.updated <- HGNChelper::checkGeneSymbols(rownames(obj), unmapped.as.na = FALSE, map = NULL, species = species_)
   if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
   if (ShowStats) print(GetUpdateStats(HGNC.updated))
-  obj <- RenameGenesSeurat(obj, newnames = HGNC.updated$Suggested.Symbol)
+  obj <- RenameGenesSeurat(obj, newnames = HGNC.updated$"Suggested.Symbol")
   return(obj)
 }
 
@@ -2678,17 +2678,16 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
                               assay = "RNA") {
   warning("Run this before integration and downstream processing. It only attempts to change
           @counts, @data, @scale.data and @meta.features in obj@assays$YOUR_ASSAY.")
-  assayobj <- obj@assays[[assay]]
 
-  if (nrow(assayobj) == length(newnames)) {
-    assayobj <- .check_and_rename(assayobj, newnames = newnames, "counts")
-    assayobj <- .check_and_rename(assayobj, newnames = newnames, "data")
-    assayobj <- .check_and_rename(assayobj, newnames = newnames, "scale.data")
-    assayobj <- .check_and_rename(assayobj, newnames = newnames, "meta.features")
+  if (nrow(obj) == length(newnames)) {
+    # browser()
+    obj <- .check_and_rename(obj, assay, newnames = newnames, slotname = 'data')
+    obj <- .check_and_rename(obj, assay, newnames = newnames, slotname = 'counts')
+    obj <- .check_and_rename(obj, assay, newnames = newnames, slotname = "scale.data")
+    obj <- .check_and_rename(obj, assay, newnames = newnames, slotname = "meta.features")
   } else {
     warning("Unequal gene sets: nrow(assayobj) != nrow(newnames). No renaming performed!")
   }
-  obj@assays[[assay]] <- assayobj
   return(obj)
 }
 
@@ -2699,7 +2698,8 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 #' @description This function renames rows (genes) in a specified slot of a Seurat assay object.
 #' It supports slots storing data as either a dense or a sparse matrix (dgCMatrix) or data.frame.
 #'
-#' @param assayobj An Assay object from a Seurat object.
+#' @param obj A Seurat object.
+#' @param assay An Assay name in a Seurat object.
 #' @param newnames A character vector of new gene names to be assigned.
 #' @param slotname A string specifying the slot in the Assay object to be updated.
 #'                 Valid options typically include 'counts', 'data', or 'scale.data'.
@@ -2713,33 +2713,52 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 #'                                     slotname = "counts")
 #' }
 
-.check_and_rename <- function(assayobj, newnames, slotname) {
-  stopifnot(slotname %in% slotNames(assayobj))
+.check_and_rename <- function(obj, assay, newnames, slotname) {
+  cat(slotname, fill = TRUE)
 
-  myobj <- slot(assayobj, slotname)
+  # browser()
+  stopifnot(
+    is(obj, "Seurat"),
+    is.character(assay),
+    is.character(slotname),
+    is.character(newnames),
+    nrow(obj) == length(newnames)
+    )
 
-  if (all(dim(myobj)) > 0) {
-    stopifnot(nrow(myobj) == length(newnames))
+  assayobj <- obj@assays[[assay]]
 
-    if ("dgCMatrix" %in% class(myobj)) {
-      message(assay, "@", slotname, " is of type dgeCMatrix!")
-      myobj@Dimnames[[1]] <- newnames
+  if(deparse(slotname) %in% slotNames(assayobj)) {
 
-    } else if ("matrix" %in% class(myobj)) {
-      message(assay, "@", slotname, " is of type Matrix!")
-      rownames(myobj) <- newnames
+    myobj <- slot(object = assayobj, name = slotname)
 
-    } else if ("data.frame" %in% class(myobj)) {
-      message(assay, "@", slotname, " is of type data.frame!")
-      rownames(myobj) <- newnames
+    if (all(dim(myobj)) > 0) {
+      stopifnot(nrow(myobj) == length(newnames))
 
-    } else {
-      warning(">>> No renaming: ", assay, "@", slotname,
-              " not of type dgeCMatrix / Matrix / data.frame.")
+      if ("dgCMatrix" %in% class(myobj)) {
+        message(assay, "@", slotname, " is of type dgeCMatrix!")
+        myobj@Dimnames[[1]] <- newnames
+
+      } else if ("matrix" %in% class(myobj)) {
+        message(assay, "@", slotname, " is of type Matrix!")
+        rownames(myobj) <- newnames
+
+      } else if ("data.frame" %in% class(myobj)) {
+        message(assay, "@", slotname, " is of type data.frame!")
+        rownames(myobj) <- newnames
+
+      } else {
+        warning(">>> No renaming: ", assay, "@", slotname,
+                " not of type dgeCMatrix / Matrix / data.frame.")
+      }
+      slot(assayobj, slotname) <- myobj
     }
-    slot(assayobj, slotname) <- myobj
+
+  } else {
+    warning(paste(">>>", assay, "@", slotname, "does not exist!"))
+
   }
-  return(assayobj)
+  obj@assays[[assay]] <- assayobj
+  return(obj)
 }
 
 # _________________________________________________________________________________________________
@@ -2936,6 +2955,8 @@ Convert10Xfolders <- function(
     ext = "qs",
     ...) {
 
+  warning("Since v2.5.0, the output is saved in the more effcient qs format! See qs package.")
+
   finOrig <- list.dirs.depth.n(InputDir, depth = depth)
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
 
@@ -2960,7 +2981,6 @@ Convert10Xfolders <- function(
         basename(dirname(dirname(pathIN)))
       }
       print(""); print(fnameIN)
-
 
       count_matrix <- Read10X(pathIN)
       if (!is.list(count_matrix) | length(count_matrix) == 1) {
@@ -3003,7 +3023,7 @@ Convert10Xfolders <- function(
       if (writeCBCtable) {
         # fnameCBC <- FixPath(f.path.out, "CBC.tsv")
         CBCs <- t(t(colnames(seu)))
-        ReadWriter::write.simple.tsv(input_df = CBCs, suffix = sppp(fnameIN, "CBC") )
+        ReadWriter::write.simple.tsv(input_df = CBCs, suffix = sppp(fnameIN, "CBC"), manual_directory = InputDir)
       }
 
 
