@@ -293,7 +293,7 @@ Percent.in.Trome <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title gene.expression.level.plots
+#' @title geneExpressionLevelPlots
 #'
 #' @description Histogram of gene expression levels.
 #' @param gene gene of interest, Default: 'TOP2A'
@@ -301,9 +301,10 @@ Percent.in.Trome <- function(
 #' @param slot slot in the Seurat object. Default: c("counts", "data")[2]
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @export
-gene.expression.level.plots <- function(
+geneExpressionLevelPlots <- function(
     gene = "TOP2A", obj = ls.Seurat[[1]],
     slot = c("counts", "data")[2],
+    w = 7, h = 4,
     ...) {
   print(gene)
   if (gene %in% rownames(obj)) {
@@ -317,7 +318,7 @@ gene.expression.level.plots <- function(
     (pname <- paste(gene, "and the", suffx, "transcript count distribution"))
 
     ggExpress::qhistogram(GEX.Counts.total,
-      vline = genes.expression, logX = TRUE, w = 7, h = 4,
+      vline = genes.expression, logX = TRUE, w = w, h = h,
       subtitle = paste("It belong to the top", pc_TRUE(GEX.Counts.total > genes.expression), "of genes (black line). Mean expr:", mean.expr),
       plotname = pname, xlab = "Total Transcripts in Dataset", ylab = "Number of Genes",
       ...

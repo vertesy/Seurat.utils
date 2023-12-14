@@ -2,6 +2,7 @@
 # Seurat.utils ----
 # ____________________________________________________________________
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
+# source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
 # devtools::load_all("~/GitHub/Packages/Seurat.utils")
 # devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
 
@@ -3453,10 +3454,9 @@ xread <- function(file, nthreads = 4, ...) {
     x <- qs::qread(file = file, nthreads = nthreads, ...)
   # }
 
-
   iprint(is(x)[1], "of length:", length(x))
   try(tictoc::toc(), silent = TRUE)
-  return(x)
+  invisible(x)
 }
 
 

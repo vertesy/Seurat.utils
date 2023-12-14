@@ -379,7 +379,7 @@ plot.clust.size.distr <- function(obj = combined.obj, ident = GetClusteringRuns(
 
 
 #  ------------------------------------------------
-gene.expression.level.plots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], slot = c('counts', 'data')[2] ) {
+geneExpressionLevelPlots <- function(gene = 'TOP2A', obj = ls.Seurat[[1]], slot = c('counts', 'data')[2] ) {
   slot = 'data'
   print(gene)
   if (gene %in% rownames(obj)) {
