@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
-Version: 2.4.3
+Version: 2.5.0
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <av@imba.oeaw.ac.at> [aut, cre]
@@ -52,6 +52,6 @@ Imports:
     tidyverse,
     vroom
 Encoding: UTF-8
-Packaged: 2023-12-08 15:08:30.92873
+Packaged: 2023-12-14 18:16:59.288898
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

@@ -2933,6 +2933,7 @@ Convert10Xfolders <- function(
     sample.barcoding = FALSE,
     nthreads = 12,
     preset = "high",
+    ext = "qs",
     ...) {
 
   finOrig <- list.dirs.depth.n(InputDir, depth = depth)
@@ -2940,25 +2941,26 @@ Convert10Xfolders <- function(
 
   iprint(length(fin), "samples found.")
 
-  if (sample.barcoding) {
-    samples <- basename(list.dirs(InputDir, recursive = FALSE))
-    iprint("Samples:", samples)
-  }
+  # if (sample.barcoding) {
+  samples <- basename(list.dirs(InputDir, recursive = FALSE))
+  iprint("Samples:", samples)
+  # }
 
   if (length(fin)) {
     for (i in 1:length(fin)) {
       print(i)
-      pathIN <- fin[i]
+      pathIN <- Stringendo::FixPath(fin[i])
       print(pathIN)
 
       # sample.barcoding --- --- ---
       fnameIN <- if (sample.barcoding) {
         samples[i]
       } else {
-        strsplit(basename(dirname(pathIN)), split = "_")[[1]][1]
+        # strsplit(basename(dirname(pathIN)), split = "_")[[1]][1]
+        basename(dirname(dirname(pathIN)))
       }
+      print(""); print(fnameIN)
 
-      print(fnameIN)
 
       count_matrix <- Read10X(pathIN)
       if (!is.list(count_matrix) | length(count_matrix) == 1) {
@@ -2975,31 +2977,36 @@ Convert10Xfolders <- function(
         # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
         LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
         LSBnameOUT <- ppp(paste0(InputDir, "/LSB.", fnameIN), "Rds")
-        saveRDS(LSB, file = LSBnameOUT)
+        # saveRDS(LSB, file = LSBnameOUT)
+        qs::qsave(x = LSB, file = LSBnameOUT)
+
       } else {
         print("More than 2 elements in the list of matrices")
       }
 
-
       ncells <- ncol(seu)
-      fnameOUT <- ppp(
-        paste0(InputDir, "/", fnameIN), "min.cells", min.cells,
-        "min.features", min.features, "cells", ncells, "Rds"
-      )
-      print(fnameOUT)
+      fname_X <- Stringendo::sppp(fnameIN, "min.cells", min.cells, "min.features", min.features,
+                                  "cells", ncells)
+      print(fname_X)
 
+      f.path.out <- Stringendo::ParseFullFilePath(path = InputDir, file_name = fname_X, extension = ext)
+      message(f.path.out)
 
       # update --- --- ---
       if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
-      # saveRDS(seu, file = fnameOUT)
-      qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
+
+      # write out --- --- ---
+      # saveRDS(seu, file = f.path.out)
+      qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)
 
       # write cellIDs ---  --- ---
       if (writeCBCtable) {
-        fnameCBC <- ppp(fnameOUT, "CBC.tsv")
+        # fnameCBC <- FixPath(f.path.out, "CBC.tsv")
         CBCs <- t(t(colnames(seu)))
-        write.simple.tsv(CBCs, ManualName = fnameCBC)
+        ReadWriter::write.simple.tsv(input_df = CBCs, suffix = sppp(fnameIN, "CBC") )
       }
+
+
     } # for
   } else {
     iprint("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3])

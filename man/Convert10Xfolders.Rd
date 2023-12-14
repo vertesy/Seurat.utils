@@ -17,6 +17,7 @@ Convert10Xfolders(
   sample.barcoding = FALSE,
   nthreads = 12,
   preset = "high",
+  ext = "qs",
   ...
 )
 }
