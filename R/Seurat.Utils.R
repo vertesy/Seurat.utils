@@ -2858,9 +2858,9 @@ HGNC.EnforceUnique <- function(updatedSymbols) {
 #' @importFrom Stringendo percentage_formatter
 #' @export
 GetUpdateStats <- function(genes = HGNC.updated[[i]]) { # Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`.
-  (MarkedAsUpdated <- genes[genes$Approved == FALSE, ])
-  (AcutallyUpdated <- sum(MarkedAsUpdated[, 1] != MarkedAsUpdated[, 3]))
-  (UpdateStats <- c("Updated (%)" = Stringendo::percentage_formatter(AcutallyUpdated / nrow(genes)), "Updated Genes" = floor(AcutallyUpdated), "Total Genes" = floor(nrow(genes))))
+  MarkedAsUpdated <- genes[genes$Approved == FALSE, ]
+  AcutallyUpdated <- sum(MarkedAsUpdated[, 1] != MarkedAsUpdated[, 3])
+  UpdateStats <- c("Updated (%)" = Stringendo::percentage_formatter(AcutallyUpdated / nrow(genes)), "Updated Genes" = floor(AcutallyUpdated), "Total Genes" = floor(nrow(genes)))
   return(UpdateStats)
 }
 
@@ -3138,25 +3138,41 @@ LoadAllSeurats <- function(
     InputDir,
     file.pattern = "^filtered.+Rds$",
     string.remove1 = list(FALSE, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[[2]],
-    string.replace1   = "",
+    string.replace1 = "",
     string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]]) {
 
   tictoc::tic()
-  InputDir <- AddTrailingSlashfNonePresent(InputDir)
+  InputDir <- FixPath(InputDir)
+
+  print(file.pattern)
+  use_rds <- grepl(pattern = "Rds", x = file.pattern) && !grepl(pattern = "qs", x = file.pattern)
+  print(use_rds)
 
   fin.orig <- list.files(InputDir, include.dirs = FALSE, pattern = file.pattern)
   print(fin.orig)
+  print(length(fin.orig))
+  stopifnot(length(fin.orig)>0)
   fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = string.replace1) else fin.orig
   fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = "") else fin
 
   ls.Seu <- list.fromNames(fin)
   for (i in 1:length(fin)) {
     print(fin[i])
-    ls.Seu[[i]] <- readRDS(paste0(InputDir, fin.orig[i]))
-  }
+    FNP <- paste0(InputDir, fin.orig[i])
+    print(paste("Attempting to load file:", FNP))  # Debug print
+
+    if (use_rds) {
+      ls.Seu[[i]] <-readRDS(FNP)
+    } else if (!use_rds) {
+      ls.Seu[[i]] <-qs::qread(file = FNP)
+    } else {
+      warning("File pattern ambigous. Use either qs or rds:", file.pattern)
+    }
+  } # for
   print(tictoc::toc())
   return(ls.Seu)
 }
+
 
 
 
