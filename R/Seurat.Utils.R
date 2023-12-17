@@ -2684,9 +2684,12 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
   if (nrow(obj) == length(newnames)) {
     print(paste("Present:", SeuratObject::Layers(obj@assays[[assay]])))
     for (s in slots) {
+      # browser()
+      nrO <- nrow(SeuratObject::GetAssayData(object = obj, assay = assay, layer = s))
       obj <- .check_and_rename(obj, assay, newnames = newnames, layer.name = s)
+      nrN <- nrow(SeuratObject::GetAssayData(object = obj, assay = assay, layer = s))
+      stopifnot(nrN == nrO)
     }
-
   } else {
     warning("Unequal gene sets: nrow(assayobj) != nrow(newnames). No renaming performed!", immediate. = TRUE)
   }
@@ -2976,83 +2979,82 @@ Convert10Xfolders <- function(
 
   warning("Since v2.5.0, the output is saved in the more effcient qs format! See qs package.")
 
-  finOrig <- list.dirs.depth.n(InputDir, depth = depth)
+  finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
 
   iprint(length(fin), "samples found.")
 
-  # if (sample.barcoding) {
   samples <- basename(list.dirs(InputDir, recursive = FALSE))
   if (sort_alphanumeric) samples <- gtools::mixedsort(samples)
   iprint("Samples:", samples)
-  # }
 
-  if (length(fin) == 1) {
-    for (i in 1:length(fin)) {
-      print(i)
-      pathIN <- Stringendo::FixPath(fin[i])
-      print(pathIN)
-
-      # sample.barcoding --- --- ---
-      fnameIN <- if (sample.barcoding) {
-        samples[i]
-      } else {
-        # strsplit(basename(dirname(pathIN)), split = "_")[[1]][1]
-        basename(dirname(dirname(pathIN)))
-      }
-      print(""); print(fnameIN)
-
-      count_matrix <- Read10X(pathIN)
-      if (!is.list(count_matrix) | length(count_matrix) == 1) {
-        seu <- CreateSeuratObject(
-          counts = count_matrix, project = fnameIN,
-          min.cells = min.cells, min.features = min.features
-        )
-
-
-      } else if (is.list(count_matrix) & length(count_matrix) == 2) {
-        seu <- CreateSeuratObject(
-          counts = count_matrix[[1]], project = fnameIN,
-          min.cells = min.cells, min.features = min.features
-        )
-
-        # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
-        LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
-        LSBnameOUT <- ppp(paste0(InputDir, "/LSB.", fnameIN), "Rds")
-        # saveRDS(LSB, file = LSBnameOUT)
-        qs::qsave(x = LSB, file = LSBnameOUT)
-
-      } else {
-        print("More than 2 elements in the list of matrices")
-      }
-
-      ncells <- ncol(seu)
-      fname_X <- Stringendo::sppp(fnameIN, "min.cells", min.cells, "min.features", min.features,
-                                  "cells", ncells)
-      print(fname_X)
-
-      f.path.out <- Stringendo::ParseFullFilePath(path = InputDir, file_name = fname_X, extension = ext)
-      message(f.path.out)
-
-      # update --- --- ---
-      if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
-
-      # write out --- --- ---
-      # saveRDS(seu, file = f.path.out)
-      qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)
-
-      # write cellIDs ---  --- ---
-      if (writeCBCtable) {
-        # fnameCBC <- FixPath(f.path.out, "CBC.tsv")
-        CBCs <- t(t(colnames(seu)))
-        ReadWriter::write.simple.tsv(input_df = CBCs, suffix = sppp(fnameIN, "CBC"), manual_directory = InputDir)
-      }
-
-
-    } # for
-  } else {
-    iprint("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3])
+  if (!length(fin) > 0) {
+    stop(paste("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3]))
   }
+
+  for (i in 1:length(fin)) {
+    print(i)
+    pathIN <- Stringendo::FixPath(fin[i])
+    print(pathIN)
+
+    # sample.barcoding --- --- ---
+    fnameIN <- if (sample.barcoding) {
+      samples[i]
+    } else {
+      # strsplit(basename(dirname(pathIN)), split = "_")[[1]][1]
+      basename(dirname(dirname(pathIN)))
+    }
+    print(""); print(fnameIN)
+
+    count_matrix <- Read10X(pathIN)
+    if (!is.list(count_matrix) | length(count_matrix) == 1) {
+      seu <- CreateSeuratObject(
+        counts = count_matrix, project = fnameIN,
+        min.cells = min.cells, min.features = min.features
+      )
+
+
+    } else if (is.list(count_matrix) & length(count_matrix) == 2) {
+      seu <- CreateSeuratObject(
+        counts = count_matrix[[1]], project = fnameIN,
+        min.cells = min.cells, min.features = min.features
+      )
+
+      # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
+      LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
+      LSBnameOUT <- ppp(paste0(InputDir, "/LSB.", fnameIN), "Rds")
+      # saveRDS(LSB, file = LSBnameOUT)
+      qs::qsave(x = LSB, file = LSBnameOUT)
+
+    } else {
+      print("More than 2 elements in the list of matrices")
+    }
+
+    ncells <- ncol(seu)
+    fname_X <- Stringendo::sppp(fnameIN, "min.cells", min.cells, "min.features", min.features,
+                                "cells", ncells)
+    print(fname_X)
+
+    f.path.out <- Stringendo::ParseFullFilePath(path = InputDir, file_name = fname_X, extension = ext)
+    message(f.path.out)
+
+    # update --- --- ---
+    if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
+
+    # write out --- --- ---
+    # saveRDS(seu, file = f.path.out)
+    qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)
+
+    # write cellIDs ---  --- ---
+    if (writeCBCtable) {
+      # fnameCBC <- FixPath(f.path.out, "CBC.tsv")
+      CBCs <- t(t(colnames(seu)))
+      ReadWriter::write.simple.tsv(input_df = CBCs, suffix = sppp(fnameIN, "CBC"), manual_directory = InputDir)
+    }
+
+
+  } # for
+
 }
 
 
