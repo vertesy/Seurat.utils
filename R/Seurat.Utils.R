@@ -2936,6 +2936,7 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default is TRUE.
 #' @param depth An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default is 2.
 #' @param sample.barcoding A logical value indicating whether Cell Ranger was run with sample barcoding. Default is FALSE.
+#' @param sort_alphanumeric sort files alphanumeric? Default: TRUE.
 #' @examples
 #' \dontrun{
 #' if (interactive()) Convert10Xfolders(InputDir)
@@ -2953,6 +2954,7 @@ Convert10Xfolders <- function(
     nthreads = 12,
     preset = "high",
     ext = "qs",
+    sort_alphanumeric = TRUE,
     ...) {
 
   warning("Since v2.5.0, the output is saved in the more effcient qs format! See qs package.")
@@ -2964,10 +2966,11 @@ Convert10Xfolders <- function(
 
   # if (sample.barcoding) {
   samples <- basename(list.dirs(InputDir, recursive = FALSE))
+  if (sort_alphanumeric) samples <- gtools::mixedsort(samples)
   iprint("Samples:", samples)
   # }
 
-  if (length(fin)) {
+  if (length(fin) == 1) {
     for (i in 1:length(fin)) {
       print(i)
       pathIN <- Stringendo::FixPath(fin[i])
@@ -2988,6 +2991,8 @@ Convert10Xfolders <- function(
           counts = count_matrix, project = fnameIN,
           min.cells = min.cells, min.features = min.features
         )
+
+
       } else if (is.list(count_matrix) & length(count_matrix) == 2) {
         seu <- CreateSeuratObject(
           counts = count_matrix[[1]], project = fnameIN,
@@ -3126,6 +3131,7 @@ ConvertDropSeqfolders <- function(
 #' @param string.remove1 A character string or FALSE. If a string is provided, it is removed from file names. Default is "filtered_feature_bc_matrix.".
 #' @param string.replace1 A character string of the new text instead of "string.remove1".
 #' @param string.remove2 A character string or FALSE. If a string is provided, it is removed from file names. Default is ".min.cells.10.min.features.200.Rds".
+#' @param sort_alphanumeric sort files alphanumeric? Default: TRUE.
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -3139,7 +3145,8 @@ LoadAllSeurats <- function(
     file.pattern = "^filtered.+Rds$",
     string.remove1 = list(FALSE, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[[2]],
     string.replace1 = "",
-    string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]]) {
+    string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]],
+    sort_alphanumeric = TRUE) {
 
   tictoc::tic()
   InputDir <- FixPath(InputDir)
@@ -3154,12 +3161,14 @@ LoadAllSeurats <- function(
   stopifnot(length(fin.orig)>0)
   fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = string.replace1) else fin.orig
   fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = "") else fin
+  if (sort_alphanumeric) fin <- gtools::mixedsort(fin)
+
 
   ls.Seu <- list.fromNames(fin)
   for (i in 1:length(fin)) {
     print(fin[i])
     FNP <- paste0(InputDir, fin.orig[i])
-    print(paste("Attempting to load file:", FNP))  # Debug print
+    # print(paste("Attempting to load file:", FNP))  # Debug print
 
     if (use_rds) {
       ls.Seu[[i]] <-readRDS(FNP)

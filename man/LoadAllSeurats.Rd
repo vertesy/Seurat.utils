@@ -10,7 +10,8 @@ LoadAllSeurats(
   string.remove1 = list(FALSE, "filtered_feature_bc_matrix.",
     "raw_feature_bc_matrix.")[[2]],
   string.replace1 = "",
-  string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]]
+  string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]],
+  sort_alphanumeric = TRUE
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ LoadAllSeurats(
 \item{string.replace1}{A character string of the new text instead of "string.remove1".}
 
 \item{string.remove2}{A character string or FALSE. If a string is provided, it is removed from file names. Default is ".min.cells.10.min.features.200.Rds".}
+
+\item{sort_alphanumeric}{sort files alphanumeric? Default: TRUE.}
 }
 \description{
 This function loads all Seurat objects found in a directory. It also works with symbolic links (but not with aliases).
