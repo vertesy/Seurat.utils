@@ -18,6 +18,7 @@ Convert10Xfolders(
   nthreads = 12,
   preset = "high",
   ext = "qs",
+  sort_alphanumeric = TRUE,
   ...
 )
 }
@@ -41,6 +42,8 @@ Convert10Xfolders(
 \item{writeCBCtable}{A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default is TRUE.}
 
 \item{sample.barcoding}{A logical value indicating whether Cell Ranger was run with sample barcoding. Default is FALSE.}
+
+\item{sort_alphanumeric}{sort files alphanumeric? Default: TRUE.}
 }
 \description{
 This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.

@@ -4,7 +4,7 @@
 \alias{.check_and_rename}
 \title{Check and Rename Gene Names in Seurat Assay Object}
 \usage{
-.check_and_rename(obj, assay, newnames, slotname)
+.check_and_rename(obj, assay, newnames, layer.name)
 }
 \arguments{
 \item{obj}{A Seurat object.}
@@ -13,7 +13,7 @@
 
 \item{newnames}{A character vector of new gene names to be assigned.}
 
-\item{slotname}{A string specifying the slot in the Assay object to be updated.
+\item{layer.name}{A string specifying the slot in the Assay object to be updated.
 Valid options typically include 'counts', 'data', or 'scale.data'.}
 }
 \value{
@@ -28,6 +28,6 @@ It supports slots storing data as either a dense or a sparse matrix (dgCMatrix) 
   # Assuming 'seurat_obj' is a Seurat object and 'new_gene_names' is a vector of gene names
   updated_assay <- check_and_rename(assayobj = seurat_obj[["RNA"]],
                                     newnames = new_gene_names,
-                                    slotname = "counts")
+                                    layer.name = "counts")
 }
 }

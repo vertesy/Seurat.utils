@@ -7,7 +7,8 @@
 RenameGenesSeurat(
   obj = ls.Seurat[[i]],
   newnames = HGNC.updated[[i]]$Suggested.Symbol,
-  assay = "RNA"
+  assay = "RNA",
+  slots = c("data", "counts", "scale.data", "meta.features")
 )
 }
 \arguments{

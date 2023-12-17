@@ -2675,18 +2675,20 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceU
 #' @export
 RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
                               newnames = HGNC.updated[[i]]$Suggested.Symbol,
-                              assay = "RNA") {
+                              assay = "RNA",
+                              slots = c("data", "counts", "scale.data", "meta.features")
+                              ) {
   warning("Run this before integration and downstream processing. It only attempts to change
           @counts, @data, @scale.data and @meta.features in obj@assays$YOUR_ASSAY.")
 
   if (nrow(obj) == length(newnames)) {
-    # browser()
-    obj <- .check_and_rename(obj, assay, newnames = newnames, slotname = 'data')
-    obj <- .check_and_rename(obj, assay, newnames = newnames, slotname = 'counts')
-    obj <- .check_and_rename(obj, assay, newnames = newnames, slotname = "scale.data")
-    obj <- .check_and_rename(obj, assay, newnames = newnames, slotname = "meta.features")
+    print(paste("Present:", SeuratObject::Layers(obj@assays[[assay]])))
+    for (s in slots) {
+      obj <- .check_and_rename(obj, assay, newnames = newnames, layer.name = s)
+    }
+
   } else {
-    warning("Unequal gene sets: nrow(assayobj) != nrow(newnames). No renaming performed!")
+    warning("Unequal gene sets: nrow(assayobj) != nrow(newnames). No renaming performed!", immediate. = TRUE)
   }
   return(obj)
 }
@@ -2701,7 +2703,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 #' @param obj A Seurat object.
 #' @param assay An Assay name in a Seurat object.
 #' @param newnames A character vector of new gene names to be assigned.
-#' @param slotname A string specifying the slot in the Assay object to be updated.
+#' @param layer.name A string specifying the slot in the Assay object to be updated.
 #'                 Valid options typically include 'counts', 'data', or 'scale.data'.
 #'
 #' @return An Assay object with updated gene names in the specified slot.
@@ -2710,53 +2712,68 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 #'   # Assuming 'seurat_obj' is a Seurat object and 'new_gene_names' is a vector of gene names
 #'   updated_assay <- check_and_rename(assayobj = seurat_obj[["RNA"]],
 #'                                     newnames = new_gene_names,
-#'                                     slotname = "counts")
+#'                                     layer.name = "counts")
 #' }
 
-.check_and_rename <- function(obj, assay, newnames, slotname) {
-  cat(slotname, fill = TRUE)
+.check_and_rename <- function(obj, assay, newnames, layer.name) {
+  cat(layer.name, fill = TRUE)
 
-  # browser()
   stopifnot(
     is(obj, "Seurat"),
     is.character(assay),
-    is.character(slotname),
+    is.character(layer.name),
     is.character(newnames),
     nrow(obj) == length(newnames)
     )
 
   assayobj <- obj@assays[[assay]]
+  feature.list <- rownames(assayobj@features@.Data)
 
-  if(deparse(slotname) %in% slotNames(assayobj)) {
+  if (length(feature.list) == length(newnames)) {
+    rownames(assayobj@features@.Data) <- newnames
+    nrX <- length(rownames(assayobj@features@.Data))
+  } else {
+    iprint("length feature.list", length(feature.list), "length newnames", length(newnames))
+    stop()
+  }
 
-    myobj <- slot(object = assayobj, name = slotname)
+  if(layer.name %in% SeuratObject::Layers(assayobj)) {
 
-    if (all(dim(myobj)) > 0) {
-      stopifnot(nrow(myobj) == length(newnames))
+    matrix_n <- SeuratObject::LayerData(assayobj, layer = layer.name)
+    nr1 <- nrow(matrix_n)
 
-      if ("dgCMatrix" %in% class(myobj)) {
-        message(assay, "@", slotname, " is of type dgeCMatrix!")
-        myobj@Dimnames[[1]] <- newnames
+    if (all(dim(matrix_n)) > 0) {
+      # browser()
+      stopifnot(nrow(matrix_n) == length(newnames))
 
-      } else if ("matrix" %in% class(myobj)) {
-        message(assay, "@", slotname, " is of type Matrix!")
-        rownames(myobj) <- newnames
+      if ("dgCMatrix" %in% class(matrix_n)) {
+        message(assay, "@", layer.name, " is of type dgeCMatrix!")
+        matrix_n@Dimnames[[1]] <- newnames
 
-      } else if ("data.frame" %in% class(myobj)) {
-        message(assay, "@", slotname, " is of type data.frame!")
-        rownames(myobj) <- newnames
+      } else if ("matrix" %in% class(matrix_n)) {
+        message(assay, "@", layer.name, " is of type Matrix!")
+        rownames(matrix_n) <- newnames
+
+      } else if ("data.frame" %in% class(matrix_n)) {
+        message(assay, "@", layer.name, " is of type data.frame!")
+        rownames(matrix_n) <- newnames
 
       } else {
-        warning(">>> No renaming: ", assay, "@", slotname,
+        warning(">>> No renaming: ", assay, "@", layer.name,
                 " not of type dgeCMatrix / Matrix / data.frame.")
       }
-      slot(assayobj, slotname) <- myobj
+      stopifnot(nr1 == nrow(matrix_n))
+
+      SeuratObject::LayerData(assayobj, layer = layer.name) <- matrix_n
+      nr3 <- nrow(SeuratObject::LayerData(assayobj, layer = layer.name))
+      stopifnot(nr3 == nrX)
     }
 
   } else {
-    warning(paste(">>>", assay, "@", slotname, "does not exist!"))
+    warning(paste(">>>", assay, "@", layer.name, "does not exist!"))
 
   }
+  # obj <- SetAssayData(obj, layer = layer.name, new.data = matrix_n)
   obj@assays[[assay]] <- assayobj
   return(obj)
 }
