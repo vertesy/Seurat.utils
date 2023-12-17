@@ -3001,7 +3001,6 @@ Convert10Xfolders <- function(
     fnameIN <- if (sample.barcoding) {
       samples[i]
     } else {
-      # strsplit(basename(dirname(pathIN)), split = "_")[[1]][1]
       basename(dirname(dirname(pathIN)))
     }
     print(""); print(fnameIN)
@@ -3023,7 +3022,6 @@ Convert10Xfolders <- function(
       # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
       LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
       LSBnameOUT <- ppp(paste0(InputDir, "/LSB.", fnameIN), "Rds")
-      # saveRDS(LSB, file = LSBnameOUT)
       qs::qsave(x = LSB, file = LSBnameOUT)
 
     } else {
@@ -3042,14 +3040,13 @@ Convert10Xfolders <- function(
     if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
 
     # write out --- --- ---
-    # saveRDS(seu, file = f.path.out)
     qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)
 
     # write cellIDs ---  --- ---
     if (writeCBCtable) {
-      # fnameCBC <- FixPath(f.path.out, "CBC.tsv")
       CBCs <- t(t(colnames(seu)))
-      ReadWriter::write.simple.tsv(input_df = CBCs, suffix = sppp(fnameIN, "CBC"), manual_directory = InputDir)
+      colnames(CBCs) <- "CBC"
+      ReadWriter::write.simple.tsv(input_df = CBCs, manual_file_name = sppp(fnameIN, "CBC"), manual_directory = InputDir)
     }
 
 
