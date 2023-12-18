@@ -54,7 +54,7 @@
 #' @importFrom ggplot2 ggplot ggtitle geom_point
 #' @importFrom Stringendo percentage_formatter
 #' @importFrom MarkdownHelpers llprint
-#' @importFrom cowplot plot_grid
+#' @importFrom cowplot plot_grid save_plot
 #'
 #' @export
 PlotFilters <- function(
@@ -68,17 +68,18 @@ PlotFilters <- function(
     above.ribo = p$"thr.hp.ribo",
     below.nFeature_RNA = if ("quantile.thr.lp.nFeature_RNA" %in% names(p)) p$"quantile.thr.lp.nFeature_RNA" else p$"thr.lp.nFeature_RNA",
     above.nFeature_RNA = p$"thr.hp.nFeature_RNA",
-    subdir = kpp(
+    subdir = Stringendo::FixPlotName(
       "Filtering.plots",
       "mito", p$"thr.hp.mito", p$"thr.lp.mito",
       "ribo", p$"thr.hp.ribo", p$"thr.lp.ribo",
-      "nFeature", p$"thr.hp.nFeature_RNA", below.nFeature_RNA, "/"
+      "nFeature", p$"thr.hp.nFeature_RNA", below.nFeature_RNA
     ),
     transparency = 0.25,
     cex = 0.75,
     theme.used = theme_bw(base_size = 18),
     LabelDistFromTop = 200 # for barplot_label
     ) {
+
   stopif(is.null(below.nFeature_RNA))
   MarkdownHelpers::llprint(
     "We filtered for high quality cells based on the number of genes detected [", above.nFeature_RNA, ";", below.nFeature_RNA,
@@ -87,8 +88,11 @@ PlotFilters <- function(
   )
 
   theme_set(theme.used)
-  MarkdownReports::create_set_OutDir(parentdir, subdir)
-  # if (length(suffices) == length(ls.obj)) print("ls.obj elements have no names (required).")
+  OutDir <- Stringendo::FixPath(parentdir, subdir)
+  # print(OutDir)
+  print(subdir)
+  # stop()
+  MarkdownReports::create_set_OutDir(OutDir)
   stopifnot(length(suffices) == length(ls.obj))
 
   Calculate_nFeature_LowPass <- if (below.nFeature_RNA < 1) below.nFeature_RNA else FALSE
@@ -188,8 +192,11 @@ PlotFilters <- function(
 
     plot_list <- list(A, B, C, D)
     px <- cowplot::plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:4])
-    fname <- ppp("Filtering.thresholds", suffices[i], filetype)
-    save_plot(filename = fname, plot = px, base_height = 12, ncol = 1, nrow = 1) # Figure 2
+    fname <- kpps(OutDir, FixPlotName("Filtering.thresholds", suffices[i], filetype))
+    # print(fname)
+    cowplot::save_plot(filename = fname, plot = px, base_height = 12, ncol = 1, nrow = 1) # Figure 2
+    stopifnot(file.exists(fname))
+
   } # for
   # _________________________________________________________________________________________________
   create_set_Original_OutDir()

@@ -1,7 +1,7 @@
 # ____________________________________________________________________
 # Seurat.Utils.Metadata ----
 # ____________________________________________________________________
-# source("/Users/abel.vertesy/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Metadata.R")
+# source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Metadata.R")
 # devtools::load_all(path = '~/GitHub/Packages/Seurat.utils');
 # devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
