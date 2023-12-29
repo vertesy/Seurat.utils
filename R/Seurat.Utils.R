@@ -3649,7 +3649,7 @@ find10XoutputFolders <- function(root_dir, subdir, recursive = TRUE) {
   for (path in file.path(root_dir, subdir)) {
     iprint("Searching in:", path)
     found_dirs <- fs::dir_ls(path, recurse = recursive, glob = "*/outs", type = "directory")
-    iprint(length(found_files), "10X output folders found.")
+    iprint(length(found_dirs), "10X output folders found.")
     outs_dirs <- c(outs_dirs, found_dirs)
   }
 
