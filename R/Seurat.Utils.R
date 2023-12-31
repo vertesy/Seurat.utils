@@ -3635,21 +3635,20 @@ qsave.image <- function(..., showMemObject = TRUE, options = c("--force", NULL)[
 #' @param recursive Boolean indicating whether to search recursively within subdirectories.
 #' @return A character vector containing the full paths to the 'outs' subdirectories.
 #' @importFrom fs dir_ls
-#' @importFrom base Reduce
-#' @importFrom base gsub
 #' @export
-
 find10XoutputFolders <- function(root_dir, subdir, recursive = TRUE) {
   stopifnot(is.character(root_dir), length(root_dir) == 1, dir.exists(root_dir),
             is.character(subdir), all(dir.exists(file.path(root_dir, subdir))),
             is.logical(recursive))
 
   outs_dirs <- c()
+  for (i in seq_along(subdir)) {
+    path <- file.path(root_dir, subdir[i])
+    printProgress(i, length(subdir), "Processing subdirectory")
 
-  for (path in file.path(root_dir, subdir)) {
     iprint("Searching in:", path)
     found_dirs <- fs::dir_ls(path, recurse = recursive, glob = "*/outs", type = "directory")
-    iprint(length(found_dirs), "10X output folders found.")
+    iprint(length(found_dirs), "output folders found.")
     outs_dirs <- c(outs_dirs, found_dirs)
   }
 
