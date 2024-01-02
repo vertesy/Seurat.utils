@@ -11,7 +11,8 @@ xsave(
   nthreads = 12,
   preset = "high",
   project = getProject(),
-  background.job = FALSE,
+  out_dir = if (exists("OutDir")) OutDir else getwd(),
+  background_job = FALSE,
   showMemObject = TRUE,
   saveParams = TRUE
 )
@@ -29,7 +30,9 @@ xsave(
 
 \item{project}{The project name to be included in the filename, defaults to the result of \code{getProject()}.}
 
-\item{background.job}{Logical; if TRUE save runs as "background job"}
+\item{out_dir}{Output Directory}
+
+\item{background_job}{Logical; if TRUE save runs as "background job"}
 
 \item{showMemObject}{Logical; if TRUE, displays the memory size of the largest objects.}
 

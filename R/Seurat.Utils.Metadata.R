@@ -147,6 +147,45 @@ getCellIDs.from.meta <- function(ColName.meta = "res.0.6", values = NA, obj = co
 # Add new metadata  ______________________________ ----
 # _________________________________________________________________________________________________
 
+
+#' @title Add Metadata to a Seurat object, safely with Checks
+#'
+#' @description Wrapper function for `AddMetaData` that includes additional checks and assertions.
+#'
+#' @param obj Seurat object to which metadata will be added.
+#' @param metadata The metadata to be added.
+#' @param col.name The name of the new metadata column.
+#' @param overwrite Logical; if TRUE, overwrites the existing column.
+#'
+#' @return Modified Seurat object with additional metadata.
+#' @importFrom Seurat AddMetaData
+#' @export
+addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE) {
+
+  stopifnot(
+    is(obj, "Seurat"),
+    is.vector(metadata),
+    is.character(col.name),
+    is.logical(overwrite),
+    "Check for existing column" = (col.name %in% colnames(obj@meta.data) && !overwrite),
+    "Check length" = (length(metadata) != ncol(obj))
+  )
+
+  # Perform the operation
+  obj <- Seurat::AddMetaData(object = obj, metadata = metadata, col.name = col.name)
+
+  # Check for NA or NaN values
+  if (all(is.na(metadata) | is.nan(metadata))) {
+    warning("New metadata column contains only NA or NaN values.")
+  } else if (any(is.na(metadata) | is.nan(metadata))) {
+    message("New metadata column contains NA or NaN values.")
+  }
+
+  return(obj)
+}
+
+
+# _________________________________________________________________________________________________
 #' @title seu.add.meta.from.vector
 #'
 #' @description Adds a new metadata column to a Seurat object.

@@ -427,7 +427,7 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.*[0-9]$") { # Get Clustering Runs: metadata column names
   if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
-  if (identical(clustering.results, character(0))) warning("No matching column found!")
+  if (identical(clustering.results, character(0))) warning("No matching column found!", immediate. = TRUE)
   return(clustering.results)
 }
 
@@ -482,7 +482,7 @@ GetNamedClusteringRuns <- function(
 GetOrderedClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.*[0,1]\\.[0-9]\\.ordered$") { # Get Clustering Runs: metadata column names
   if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
-  if (identical(clustering.results, character(0))) warning("No matching column found!")
+  if (identical(clustering.results, character(0))) warning("No matching column found!", immediate. = TRUE)
   return(clustering.results)
 }
 
@@ -1011,7 +1011,7 @@ subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = FALSE,
 subsetSeuObj.and.Save <- function(
     obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir,
     min.features = p$"min.features", suffix = "") { # Subset a compressed Seurat Obj and save it in wd.
-  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ = fraction, seed_ = seed, nthreads = 6)
+  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ = fraction, seed_ = seed) # , nthreads = 6
   nr.cells.kept <- ncol(obj_Xpc)
   # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)), suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
   xsave(obj_Xpc,
@@ -1505,7 +1505,7 @@ AutoLabelTop.logFC <- function(
   stopifnot(order.by %in% colnames(df_markers))
 
   top.markers <-
-    GetTopMarkersDF(df = df_markers, order.by = order.by, n = 1) %>%
+    GetTopMarkersDF(dfDE = df_markers, order.by = order.by, n = 1) %>%
     col2named.vec.tbl()
 
   obj@misc[[ppp("top.markers.res", res)]] <- top.markers
@@ -1513,14 +1513,14 @@ AutoLabelTop.logFC <- function(
 
   ids <- deframe(unique(obj[[ident]]))
   if (length(ids) != length(top.markers)) {
-    warning("Not all clusters returned DE-genes!")
+    warning("Not all clusters returned DE-genes!", immediate. = TRUE)
     missing <- setdiff(ids, names(top.markers))
     names(missing) <- missing
     iprint("missing:", missing)
     top.markers <- sortbyitsnames(c(top.markers, missing))
   }
 
-  (top.markers.ID <- ppp(names(top.markers), top.markers))
+  top.markers.ID <- ppp(names(top.markers), top.markers)
   names(top.markers.ID) <- names(top.markers)
   named.ident <- top.markers.ID[Idents(object = obj)]
 
@@ -2326,7 +2326,7 @@ find_prefix_in_cell_IDs <- function(obj, cell_ID_pattern = "[ATCG]{16}.*$") {
 
   # Issue a warning if more than one unique prefix is found
   if (length(unique_prefixes) > 1) {
-    warning("Multiple unique prefixes identified in cell IDs:", head(unique_prefixes))
+    warning("Multiple unique prefixes identified in cell IDs:", head(unique_prefixes), immediate. = TRUE)
   }
 
   # Return the identified prefix(es)
@@ -2474,7 +2474,7 @@ CalculateFractionInTrome <- function(
     genesCalc.Cor.Seuratet = c("MALAT1") # Calculate the fraction of a set of genes within the full Transcriptome of each cell.
     , obj = combined.obj,
     dataslot = c("counts", "data")[2]) {
-  warning("    >>>> Use addMetaFraction() <<<<")
+  warning("    >>>> Use addMetaFraction() <<<<", immediate. = TRUE)
   geneset <- check.genes(list.of.genes = geneset)
   stopifnot(length(geneset) > 0)
 
@@ -2681,7 +2681,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
                               slots = c("data", "counts", "scale.data", "meta.features")
                               ) {
   warning("Run this before integration and downstream processing. It only attempts to change
-          @counts, @data, @scale.data and @meta.features in obj@assays$YOUR_ASSAY.")
+          @counts, @data, @scale.data and @meta.features in obj@assays$YOUR_ASSAY.", immediate. = TRUE)
 
   if (nrow(obj) == length(newnames)) {
     print(paste("Present:", SeuratObject::Layers(obj@assays[[assay]])))
@@ -2765,7 +2765,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 
       } else {
         warning(">>> No renaming: ", assay, "@", layer.name,
-                " not of type dgeCMatrix / Matrix / data.frame.")
+                " not of type dgeCMatrix / Matrix / data.frame.", immediate. = TRUE)
       }
       stopifnot(nr1 == nrow(matrix_n))
 
@@ -2775,7 +2775,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
     }
 
   } else {
-    warning(paste(">>>", assay, "@", layer.name, "does not exist!"))
+    warning(paste(">>>", assay, "@", layer.name, "does not exist!"), immediate. = TRUE)
 
   }
   # obj <- SetAssayData(obj, layer = layer.name, new.data = matrix_n)
@@ -2979,7 +2979,7 @@ Convert10Xfolders <- function(
     sort_alphanumeric = TRUE,
     ...) {
 
-  warning("Since v2.5.0, the output is saved in the more effcient qs format! See qs package.")
+  warning("Since v2.5.0, the output is saved in the more effcient qs format! See qs package.", immediate. = TRUE)
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
@@ -3193,7 +3193,7 @@ LoadAllSeurats <- function(
     } else if (!use_rds) {
       ls.Seu[[i]] <-qs::qread(file = FNP)
     } else {
-      warning("File pattern ambigous. Use either qs or rds:", file.pattern)
+      warning("File pattern ambigous. Use either qs or rds:", file.pattern, immediate. = TRUE)
     }
   } # for
   print(tictoc::toc())
@@ -3425,7 +3425,7 @@ isave.RDS <- function(
     showMemObject = TRUE, saveParams = TRUE,
     compress = TRUE,
     test_read = FALSE) {
-  warning("isave.RDS() is deprecated. Use xsave() to save in .qs format.")
+  warning("isave.RDS() is deprecated. Use xsave() to save in .qs format.", immediate. = TRUE)
   path_rdata <- if (inOutDir) OutDir else alternative_path_rdata
   dir.create(path_rdata)
 
@@ -3449,9 +3449,9 @@ isave.RDS <- function(
 }
 
 # _________________________________________________________________________________________________
-#' Save an R Object Using 'qs' Package for Fast Compressed Saving
+#' @title Save an R Object Using 'qs' Package for Fast Compressed Saving
 #'
-#' This function saves an R object to a file in a quick and efficient format using the 'qs' package.
+#' @description This function saves an R object to a file in a quick and efficient format using the 'qs' package.
 #' It constructs the file name based on various inputs and stores additional metadata if the object is a Seurat object.
 #' The saving path can be adjusted by the presence of 'OutDir' in the global environment or defaults to the working directory.
 #'
@@ -3461,9 +3461,10 @@ isave.RDS <- function(
 #' @param nthreads Number of threads to use when saving, defaults to 12.
 #' @param preset Compression preset, defaults to 'high'.
 #' @param project The project name to be included in the filename, defaults to the result of `getProject()`.
+#' @param out_dir Output Directory
+#' @param background_job Logical; if TRUE save runs as "background job"
 #' @param showMemObject Logical; if TRUE, displays the memory size of the largest objects.
 #' @param saveParams Logical; if TRUE and if the object is a Seurat object, additional parameters are saved within it.
-#' @param background.job Logical; if TRUE save runs as "background job"
 #'
 #' @return Invisible; The function is called for its side effects (saving a file) and does not return anything.
 #'
@@ -3481,10 +3482,10 @@ xsave <- function(
     nthreads = 12,
     preset = "high",
     project = getProject(),
-    background.job = FALSE,
+    out_dir = if (exists("OutDir")) OutDir else getwd(),
+    background_job = FALSE,
     showMemObject = TRUE, saveParams = TRUE) {
 
-  out_dir <- if (exists("OutDir")) OutDir else getwd()
 
   try(tictoc::tic(), silent = TRUE)
   if (showMemObject) {
@@ -3500,7 +3501,7 @@ xsave <- function(
   FNN <- paste0(out_dir, fnameBase, ".qs")
   iprint(substitute(obj), '<- xread("', FNN, '")')
 
-  if (background.job & rstudioapi::isAvailable()) {
+  if (background_job & rstudioapi::isAvailable()) {
     "This part is not debugged yet!"
 
     message("Started saving as background job.")
@@ -3518,9 +3519,9 @@ xsave <- function(
 }
 
 # _________________________________________________________________________________________________
-#' Read an R Object Using 'qs' Package for Fast Decompression
+#' @title Read an R Object Using 'qs' Package for Fast Decompression
 #'
-#' This function reads an R object from a file saved in a format specific to the 'qs' package,
+#' @description This function reads an R object from a file saved in a format specific to the 'qs' package,
 #' which is designed for quick and efficient compression and decompression of R objects.
 #' It also times the read operation, providing feedback on the duration of the operation.
 #'
@@ -3541,7 +3542,7 @@ xread <- function(file, nthreads = 4, ...) {
   stopifnot(file.exists(file))
   try(tictoc::tic(), silent = TRUE)
 
-  # if (background.job & rstudioapi::isAvailable()) {
+  # if (background_job & rstudioapi::isAvailable()) {
   #   "This part is not debugged yet!"
   #   "This part is not debugged yet!"
   #
