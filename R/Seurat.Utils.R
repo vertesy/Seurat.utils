@@ -456,7 +456,8 @@ GetNamedClusteringRuns <- function(
   if (topgene) pat <- gsub(x = pat, pattern = "Known", replacement = "top")
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
   if (identical(clustering.results, character(0))) {
-    print("Warning: NO matching column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)")
+    warning("No matching column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)"
+            , immediate. = TRUE)
     clustering.results <- GetClusteringRuns(obj = obj, res = FALSE, pat = "*_res.*[0,1]\\.[0-9]$")
   }
   return(clustering.results)
