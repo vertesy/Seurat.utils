@@ -167,9 +167,19 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE) {
     is.vector(metadata),
     is.character(col.name),
     is.logical(overwrite),
-    "Check for existing column" = (col.name %in% colnames(obj@meta.data) && !overwrite),
-    "Check length" = (length(metadata) != ncol(obj))
+    "Column already exists" = ((!col.name %in% colnames(obj@meta.data)) | !overwrite),
+    "Check length" = (length(metadata) == ncol(obj))
   )
+
+  if (!is.null(names(metadata))) {
+    print(head(names(metadata)))
+    print(head(colnames(obj)))
+    stopifnot(names(metadata) == colnames(obj))
+  } else {
+    message("No CBCs associated with new metadata. Assuming exact order.")
+    names(metadata) <- colnames(obj)
+  }
+
 
   # Perform the operation
   obj <- Seurat::AddMetaData(object = obj, metadata = metadata, col.name = col.name)

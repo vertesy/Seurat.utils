@@ -1635,7 +1635,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
   if (layout == 'tall') { w = wA4 * scaling; h = hA4 * scaling; nr.Col = 2; nr.Row = 4; print('layout active, nr.Col ignored.') }
   if (layout == 'wide') { w = hA4 * scaling; h = wA4 * scaling; nr.Col = 2; nr.Row = 2; print('layout active, nr.Col ignored.') }
 
-  lsG = iterBy.over(1:length(list.of.genes.found), by = nr.Row * nr.Col)
+  lsG = CodeAndRoll2::split_vec_to_list_by_N(1:length(list.of.genes.found), by = nr.Row * nr.Col)
   for (i in 1:length(lsG)) {
     genes = list.of.genes.found[lsG[[i]]]
     iprint(i,genes )
@@ -1679,7 +1679,7 @@ multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHea
   tictoc::tic()
   list.of.genes = check.genes(list.of.genes, obj = obj)
 
-  lsG = iterBy.over(1:length(list.of.genes), by=gene.per.page)
+  lsG = CodeAndRoll2::split_vec_to_list_by_N(1:length(list.of.genes), by=gene.per.page)
   for (i in 1:length(lsG)) { print(i )
     genes = list.of.genes[lsG[[i]]]
     plotname = kpp(c("FeatureHeatmap",plot.reduction,i, genes, 'jpg' ))
@@ -2318,7 +2318,7 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
     p.clAv[[i]] <- LabelPoints(plot = p.clAv[[i]], points = genes.from.bulk.DE, repel = TRUE, size=2);
   }
 
-  PlotIter <- iterBy.over(1:NrPlots, by = 4)
+  PlotIter <- CodeAndRoll2::split_vec_to_list_by_N(1:NrPlots, by = 4)
   for (i in 1:length(PlotIter)) {
     plotLS = p.clAv.AutoLabel[PlotIter[[i]]]
     qqSaveGridA4(plotlist = plotLS, plots = 1:4, fname = ppp("BulkGEScatterPlot.AutoGenes",kpp(PlotIter[[i]]), "png"))

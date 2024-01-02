@@ -133,7 +133,7 @@ BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to ide
     p.clAv[[i]] <- LabelPoints(plot = p.clAv[[i]], points = genes.from.bulk.DE, repel = TRUE, size=2);
   }
 
-  PlotIter <- iterBy.over(1:NrPlots, by = 4)
+  PlotIter <- CodeAndRoll2::split_vec_to_list_by_N(1:NrPlots, by = 4)
   for (i in 1:length(PlotIter)) {
     plotLS = p.clAv.AutoLabel[PlotIter[[i]]]
     qqSaveGridA4(plotlist = plotLS, plots = 1:4, fname = ppp("BulkGEScatterPlot.AutoGenes",kpp(PlotIter[[i]]), "png"))

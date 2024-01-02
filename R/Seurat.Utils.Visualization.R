@@ -1178,7 +1178,7 @@ multiFeaturePlot.A4 <- function(
     print("layout active, nr.Col ignored.")
   }
 
-  lsG <- iterBy.over(1:length(list.of.genes.found), by = nr.Row * nr.Col)
+  lsG <- CodeAndRoll2::split_vec_to_list_by_N(1:length(list.of.genes.found), by = nr.Row * nr.Col)
   for (i in 1:length(lsG)) {
     genes <- list.of.genes.found[lsG[[i]]]
     iprint(i, genes)
@@ -1243,7 +1243,7 @@ multiFeatureHeatmap.A4 <- function(
   tictoc::tic()
   list.of.genes <- check.genes(list.of.genes, obj = obj)
 
-  lsG <- iterBy.over(1:length(list.of.genes), by = gene.per.page)
+  lsG <- CodeAndRoll2::split_vec_to_list_by_N(1:length(list.of.genes), by = gene.per.page)
   for (i in 1:length(lsG)) {
     print(i)
     genes <- list.of.genes[lsG[[i]]]
