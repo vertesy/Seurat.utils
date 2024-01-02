@@ -1164,7 +1164,7 @@ Downsample.Seurat.Objects.PC <- function(
 #' @export
 remove.residual.small.clusters <- function(
     obj = combined.obj,
-    identitites = GetClusteringRuns(obj = obj),
+    identitites = GetClusteringRuns(obj),
     max.cells = max(round((ncol(obj)) / 2000), 5)) {
   META <- obj@meta.data
   all.cells <- rownames(META)
@@ -1429,13 +1429,26 @@ StoreAllMarkers <- function(
 #' @export
 #' @importFrom dplyr slice select
 GetTopMarkersDF <- function(dfDE = df.markers # Get the vector of N most diff. exp. genes.
-                            , n = p$"n.markers", order.by = c("avg_log2FC", "p_val_adj")[1]) {
+                            , n = p$"n.markers", order.by = c("avg_log2FC", "p_val_adj")[1]
+                            , exclude = c("^AL*|^AC*|^LINC*")
+                            ) {
   "Works on active Idents() -> thus we call cluster"
-  TopMarkers <- dfDE %>%
-    arrange(desc(!!as.name(order.by))) %>%
-    group_by(cluster) %>%
-    dplyr::slice(1:n) %>%
-    dplyr::select(gene)
+
+  library(dplyr)
+
+  # browser()
+  TopMarkers <- dfDE |>
+    filter(!grepl(exclude, gene, perl = TRUE)) |>
+    arrange(desc(!!as.name(order.by))) |>
+    dplyr::group_by(cluster) |>
+    dplyr::slice(1:n) |>
+    dplyr::select(cluster, gene, avg_log2FC)
+
+  # TopMarkers <- dfDE %>%
+  #   arrange(desc(!!as.name(order.by))) %>%
+  #   group_by(cluster) %>%
+  #   dplyr::slice(1:n) %>%
+  #   dplyr::select(gene)
 
   return(TopMarkers)
 }
@@ -1481,37 +1494,61 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 #' with `Ident` set to a clustering output matching the `res` parameter of the function.
 #' It requires the output table of `FindAllMarkers()`.  If you used `StoreAllMarkers()`
 #' is stored under `@misc$df.markers$res...`, which location is assumed by default.
-#' @param obj Seurat object, Default: combined.obj
-#' @param res Clustering resoluton to use, Default: 0.2
-#' @param plot.top.genes Show plot? Default: TRUE
-#' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_logFC", "p_val_adj")[1]
-#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: combined.obj@misc$df.markers[[paste0("res.", res)]]
+#' @param obj A Seurat object, with default value `combined.obj`.
+#' @param group.by The clustering group to be used, defaults to the first entry by
+#' `GetClusteringRuns()`.
+#' @param res Clustering resolution to use, with a default value of 0.1.
+#' @param plot.top.genes Logical indicating whether to show a plot, default is `TRUE`.
+#' @param suffix Suffix for the naming, defaults to the value of `res`.
+#' @param order.by Sorting criterion for the output tibble, defaults to the second element
+#' of `c("combined.score", "avg_log2FC", "p_val_adj")`.
+#' @param exclude A vector of regular expressions to specify genes to exclude, with
+#' default value `c("^AL*|^AC*|^LINC*")`.
+#' @param df_markers Data frame resulting from DGEA analysis (`FindAllMarkers`). The default
+#' is `combined.obj@misc$df.markers[[paste0("res.", res)]]`.
+#' @param plotEnrichment Logical indicating whether to plot enrichment, default is `TRUE`.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   combined.obj <- AutoLabelTop.logFC()
-#'   combined.obj$"cl.names.top.gene.res.0.5"
+#'   if (interactive()) {
+#'     combined.obj <- AutoLabelTop.logFC()
+#'     combined.obj$"cl.names.top.gene.res.0.5"
+#'   }
 #' }
-#' }
+
 #' @export
 AutoLabelTop.logFC <- function(
     obj = combined.obj,
-    ident = GetClusteringRuns()[1],
-    res = 0.2, plot.top.genes = TRUE,
+    group.by = GetClusteringRuns(obj)[1],
+    res = 0.1, plot.top.genes = TRUE,
     suffix = res,
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2],
-    df_markers = obj@misc$"df.markers"[[paste0("res.", res)]]) {
-  stopifnot(!is.null("df_markers"))
-  stopifnot(order.by %in% colnames(df_markers))
+    exclude = c("^AL*|^AC*|^LINC*"),
+    df_markers = obj@misc$"df.markers"[[paste0("res.", res)]],
+    plotEnrichment = TRUE) {
 
-  top.markers <-
-    GetTopMarkersDF(dfDE = df_markers, order.by = order.by, n = 1) %>%
-    col2named.vec.tbl()
+  stopifnot(!is.null("df_markers"),
+            order.by %in% colnames(df_markers)
+  )
+
+  df.top.markers <- GetTopMarkersDF(dfDE = df_markers, order.by = order.by, n = 1, exclude = exclude)
+
+  if (plotEnrichment) {
+    top_log2FC <- df.top.markers$"avg_log2FC"
+    names(top_log2FC) <- ppp(df.top.markers$"cluster", df.top.markers$"gene")
+    ggExpress::qbarplot(top_log2FC, label = iround(top_log2FC)
+                        , subtitle = suffix
+                        , ylab = "avg_log2FC", xlab = "clusters"
+                        , suffix = suffix )
+  }
+
+  top.markers <- col2named.vec.tbl(df.top.markers[, 1:2])
 
   obj@misc[[ppp("top.markers.res", res)]] <- top.markers
 
+  ids_CBC <- deframe(obj[[group.by]])
+  ids <- unique(ids_CBC)
 
-  ids <- deframe(unique(obj[[ident]]))
   if (length(ids) != length(top.markers)) {
     warning("Not all clusters returned DE-genes!", immediate. = TRUE)
     missing <- setdiff(ids, names(top.markers))
@@ -1522,15 +1559,15 @@ AutoLabelTop.logFC <- function(
 
   top.markers.ID <- ppp(names(top.markers), top.markers)
   names(top.markers.ID) <- names(top.markers)
-  named.ident <- top.markers.ID[Idents(object = obj)]
+  named.group.by <- top.markers.ID[ids_CBC]
 
   namedIDslot <- ppp("cl.names.top.gene.res", res)
-  obj[[namedIDslot]] <- named.ident
-
+  obj <- addMetaDataSafe(obj, metadata = as.character(named.group.by), col.name = namedIDslot, overwrite = TRUE)
   if (plot.top.genes) multiFeaturePlot.A4(list.of.genes = top.markers, suffix = suffix)
 
   return(obj)
 }
+
 
 
 
@@ -2041,7 +2078,7 @@ scBarplot.CellsPerObject <- function(
 #' @export plot.clust.size.distr
 #' @importFrom Stringendo percentage_formatter
 plot.clust.size.distr <- function(
-    obj = combined.obj, ident = GetClusteringRuns()[2],
+    obj = combined.obj, ident = GetClusteringRuns(obj)[2],
     plot = TRUE, thr.hist = 30, ...) {
   clust.size.distr <- table(obj@meta.data[, ident])
   print(clust.size.distr)
@@ -4248,7 +4285,7 @@ regress_out_and_recalculate_seurat <- function(
   # new_path <- FixPath(orig.dir, suffix)
   # MarkdownReports::create_set_OutDir(new_path)
 
-  clz <- GetClusteringRuns(obj = obj, pat = "*snn_res.*[0-9]$")
+  clz <- GetClusteringRuns(obj, pat = "*snn_res.*[0-9]$")
 
   if (plot_umaps) {
     print("Plotting umaps")

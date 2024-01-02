@@ -162,12 +162,13 @@ getCellIDs.from.meta <- function(ColName.meta = "res.0.6", values = NA, obj = co
 #' @export
 addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE) {
 
+  # browser()
   stopifnot(
     is(obj, "Seurat"),
     is.vector(metadata),
     is.character(col.name),
     is.logical(overwrite),
-    "Column already exists" = ((!col.name %in% colnames(obj@meta.data)) | !overwrite),
+    "Column already exists" = ((!col.name %in% colnames(obj@meta.data)) | overwrite),
     "Check length" = (length(metadata) == ncol(obj))
   )
 
@@ -176,7 +177,7 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE) {
     print(head(colnames(obj)))
     stopifnot(names(metadata) == colnames(obj))
   } else {
-    message("No CBCs associated with new metadata. Assuming exact order.")
+    message("No CBCs associated with new metadata. Assuming exact match.")
     names(metadata) <- colnames(obj)
   }
 

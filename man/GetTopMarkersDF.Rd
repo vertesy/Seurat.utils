@@ -7,7 +7,8 @@
 GetTopMarkersDF(
   dfDE = df.markers,
   n = p$n.markers,
-  order.by = c("avg_log2FC", "p_val_adj")[1]
+  order.by = c("avg_log2FC", "p_val_adj")[1],
+  exclude = c("^AL*|^AC*|^LINC*")
 )
 }
 \arguments{

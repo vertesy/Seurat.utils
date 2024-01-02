@@ -1140,8 +1140,8 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #'
 #' @export
 multiFeaturePlot.A4 <- function(
-    list.of.genes # Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
-    , obj = combined.obj,
+    list.of.genes,
+    obj = combined.obj,
     foldername = substitute(list.of.genes), plot.reduction = "umap",
     intersectionAssay = c("RNA", "integrated")[1],
     layout = c("tall", "wide", FALSE)[2],
@@ -1209,6 +1209,8 @@ multiFeaturePlot.A4 <- function(
   }
   tictoc::toc()
 }
+
+
 # _________________________________________________________________________________________________
 # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
 # code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R

@@ -6,24 +6,38 @@
 \usage{
 AutoLabelTop.logFC(
   obj = combined.obj,
-  ident = GetClusteringRuns()[1],
-  res = 0.2,
+  group.by = GetClusteringRuns()[1],
+  res = 0.1,
   plot.top.genes = TRUE,
   suffix = res,
   order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2],
-  df_markers = obj@misc$df.markers[[paste0("res.", res)]]
+  exclude = c("^AL*|^AC*|^LINC*"),
+  df_markers = obj@misc$df.markers[[paste0("res.", res)]],
+  plotEnrichment = TRUE
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object, with default value \code{combined.obj}.}
 
-\item{res}{Clustering resoluton to use, Default: 0.2}
+\item{group.by}{The clustering group to be used, defaults to the first entry by
+\code{GetClusteringRuns()}.}
 
-\item{plot.top.genes}{Show plot? Default: TRUE}
+\item{res}{Clustering resolution to use, with a default value of 0.1.}
 
-\item{order.by}{Sort output tibble by which column, Default: c("combined.score", "avg_logFC", "p_val_adj")\link{1}}
+\item{plot.top.genes}{Logical indicating whether to show a plot, default is \code{TRUE}.}
 
-\item{df_markers}{Data frame, result of DGEA analysis (FindAllMarkers), Default: combined.obj@misc$df.markers[\link{paste0("res.", res)}]}
+\item{suffix}{Suffix for the naming, defaults to the value of \code{res}.}
+
+\item{order.by}{Sorting criterion for the output tibble, defaults to the second element
+of \code{c("combined.score", "avg_log2FC", "p_val_adj")}.}
+
+\item{exclude}{A vector of regular expressions to specify genes to exclude, with
+default value \code{c("^AL*|^AC*|^LINC*")}.}
+
+\item{df_markers}{Data frame resulting from DGEA analysis (\code{FindAllMarkers}). The default
+is \code{combined.obj@misc$df.markers[[paste0("res.", res)]]}.}
+
+\item{plotEnrichment}{Logical indicating whether to plot enrichment, default is \code{TRUE}.}
 }
 \description{
 Create a new "named identity" column in the metadata of a Seurat object,
@@ -33,9 +47,9 @@ is stored under \verb{@misc$df.markers$res...}, which location is assumed by def
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  combined.obj <- AutoLabelTop.logFC()
-  combined.obj$"cl.names.top.gene.res.0.5"
-}
+  if (interactive()) {
+    combined.obj <- AutoLabelTop.logFC()
+    combined.obj$"cl.names.top.gene.res.0.5"
+  }
 }
 }
