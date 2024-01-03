@@ -74,7 +74,7 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
 #'
 #' @export
 IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown = 10, strict = TRUE) {
-  message("IntersectGeneLsWithObject()")
+  message(">>> Running IntersectGeneLsWithObject(), formerly IntersectWithExpressed()")
 
   stopifnot(
     is.character(genes),

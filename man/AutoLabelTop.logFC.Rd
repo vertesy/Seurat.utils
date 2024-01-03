@@ -6,7 +6,7 @@
 \usage{
 AutoLabelTop.logFC(
   obj = combined.obj,
-  group.by = GetClusteringRuns()[1],
+  group.by = GetClusteringRuns(obj)[1],
   res = 0.1,
   plot.top.genes = TRUE,
   suffix = res,

@@ -9,7 +9,10 @@ qSeuViolin(
   suffix = GEX_library,
   features = "nFeature_RNA",
   split.by = "orig.ident",
-  logY = TRUE
+  logY = TRUE,
+  hline = FALSE,
+  caption = FALSE,
+  ...
 )
 }
 \arguments{
@@ -22,10 +25,15 @@ qSeuViolin(
 \item{split.by}{The grouping variable to split the plot by.}
 
 \item{logY}{Whether to plot the y-axis on a log scale.}
+
+\item{hline}{hline}
+
+\item{caption}{caption}
 }
 \value{
 A ggplot object.
 }
 \description{
-This function creates a violin plot of a single feature in a Seurat object, split by a grouping variable.
+This function creates a violin plot of a single feature in a Seurat object,
+split by a grouping variable.
 }

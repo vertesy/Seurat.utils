@@ -6,7 +6,7 @@
 \usage{
 remove.residual.small.clusters(
   obj = combined.obj,
-  identitites = GetClusteringRuns(obj = obj),
+  identitites = GetClusteringRuns(obj),
   max.cells = max(round((ncol(obj))/2000), 5)
 )
 }
