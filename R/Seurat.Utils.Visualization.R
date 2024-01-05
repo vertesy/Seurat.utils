@@ -723,11 +723,17 @@ qFeatureScatter <- function(
 #'
 #' @export
 qSeuViolin <- function(
-    object = ls.Seurat[[1]], suffix = GEX_library,
-    features = "nFeature_RNA", split.by = "orig.ident", logY = TRUE, hline = FALSE, caption = FALSE
-    , ...) {
+    object = ls.Seurat[[1]],
+    split.by,
+    idents = GetNamedClusteringRuns(object)[1],
+    suffix = GEX_library,
+    features = "nFeature_RNA",
+    logY = TRUE, hline = FALSE, caption = FALSE,
+    ...) {
 
-  p <- VlnPlot(object = object, features = features, split.by = split.by, ...) +
+  print(unique(idents))
+
+  p <- VlnPlot(object = object, features = features, split.by = split.by, group.by = idents, ...) +
     ggtitle(label = features, subtitle = paste(suffix, "by", split.by)) +
     theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
 

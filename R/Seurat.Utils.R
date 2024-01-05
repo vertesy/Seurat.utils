@@ -3535,9 +3535,9 @@ xsave <- function(
     try(obj@misc$all.genes <- all.genes, silent = TRUE)
   }
 
-  fnameBase <- trimws(kppu(prefix, substitute(obj), suffix, project, preset, "compr", idate(Format = "%Y.%m.%d_%H.%M")), whitespace = "_")
+  fnameBase <- trimws(kppu(prefix, substitute(obj), suffix, project, idate(Format = "%Y.%m.%d_%H.%M")), whitespace = "_") # , preset, "compr"
   FNN <- paste0(out_dir, fnameBase, ".qs")
-  iprint(substitute(obj), '<- xread("', FNN, '")')
+  print(paste0(substitute(obj), " <- xread('", FNN, "')" ))
 
   if (background_job & rstudioapi::isAvailable()) {
     "This part is not debugged yet!"
