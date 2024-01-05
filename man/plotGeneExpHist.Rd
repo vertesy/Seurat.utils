@@ -15,6 +15,9 @@ plotGeneExpHist(
   return_cells_passing = TRUE,
   quantile_thr = 0.95,
   return_quantile,
+  w = 9,
+  h = 5,
+  show_plot = T,
   ...
 )
 }

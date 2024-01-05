@@ -6,29 +6,40 @@
 \usage{
 qSeuViolin(
   object = ls.Seurat[[1]],
+  split.by,
+  idents = GetNamedClusteringRuns(object)[1],
   suffix = GEX_library,
+  suffix.2.title = F,
   features = "nFeature_RNA",
-  split.by = "orig.ident",
   logY = TRUE,
   hline = FALSE,
   caption = FALSE,
+  show_plot = T,
+  w = 9,
+  h = 5,
   ...
 )
 }
 \arguments{
 \item{object}{A Seurat object.}
 
+\item{split.by}{The grouping variable to split the plot by.}
+
+\item{idents}{...}
+
 \item{suffix}{A string to append to the title of the plot.}
 
-\item{features}{The name of the feature to plot.}
+\item{suffix.2.title}{...}
 
-\item{split.by}{The grouping variable to split the plot by.}
+\item{features}{The name of the feature to plot.}
 
 \item{logY}{Whether to plot the y-axis on a log scale.}
 
 \item{hline}{hline}
 
 \item{caption}{caption}
+
+\item{show_plot}{...}
 }
 \value{
 A ggplot object.

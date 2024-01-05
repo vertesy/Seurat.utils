@@ -787,11 +787,17 @@ plotGeneExpHist <- function(
     return_cells_passing = TRUE,
     quantile_thr = 0.95,
     return_quantile,
+    w = 9, h = 5,
     show_plot = T,
     ...) {
   # Check arguments
   stopifnot(length(genes) > 0)
   stopifnot(slot_ %in% c("data", "counts"))
+
+  # if (l(thr_expr)>1) {
+  #   thr1 <- thr_expr[1]
+  #   thr2 <- thr_expr[-1]
+  # }
 
   # Aggregate genes if necessary
   aggregate <- length(genes) > 1
@@ -802,21 +808,31 @@ plotGeneExpHist <- function(
   if (aggregate) subx <- paste0(subx, "\n", length(genes), " aggregated:", paste(head(genes), collapse = " "))
 
   # Clip counts if necessary
-  if (slot_ == "counts") G_expression <- CodeAndRoll2::clip.at.fixed.value(distribution = G_expression, thr = quantile(G_expression, probs = .95))
+  if (slot_ == "counts") G_expression <- CodeAndRoll2::clip.at.fixed.value(distribution = G_expression,
+                                                                           thr = quantile(G_expression, probs = .95))
 
   # Create the plot
-  title_ <- paste("Gene expression histogram", Stringendo::flag.nameiftrue(aggregate, prefix = "- "), suffix, slot_)
+  title_ <- paste("Gene Expression", Stringendo::flag.nameiftrue(aggregate, prefix = "- "), suffix, slot_)
   pobj <- qhistogram(G_expression,
     plotname = title_,
     suffix = suffix,
-    vline = thr_expr, filtercol = -1,
+    vline = thr_expr[1], filtercol = -1,
     xlab = xlab,
     ylab = "# of cells",
     subtitle = subx,
     caption = paste("cutoff at", iround(thr_expr)),
-    w = 7, h = 6,
+    w = w, h = h,
     ...
   )
+
+  # draw additional vlines if needed
+  if (length(thr_expr)>1) {
+    pobj <- pobj +
+      ggplot2::geom_vline(xintercept = thr_expr[-1], col=2, lty=2, lwd=1) +
+      ggplot2::labs(caption = "Red line marks original estimate")
+    ggExpress::qqSave(ggobj = pobj, title = sppp(title_, 'w.orig')) # , ext = '.png'
+  }
+
 
   # Print the plot
   if (show_plot) print(pobj)
