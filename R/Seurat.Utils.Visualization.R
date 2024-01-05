@@ -718,6 +718,9 @@ qFeatureScatter <- function(
 #' @param caption caption
 #' @param split.by The grouping variable to split the plot by.
 #' @param logY Whether to plot the y-axis on a log scale.
+#' @param suffix.2.title ...
+#' @param show_plot ...
+#' @param idents ...
 #'
 #' @return A ggplot object.
 #'
@@ -727,14 +730,19 @@ qSeuViolin <- function(
     split.by,
     idents = GetNamedClusteringRuns(object)[1],
     suffix = GEX_library,
+    suffix.2.title = F,
     features = "nFeature_RNA",
     logY = TRUE, hline = FALSE, caption = FALSE,
+    show_plot = T,
+    w = 9, h = 5,
     ...) {
 
   print(unique(idents))
 
+  ttl <- if (suffix.2.title) paste(features, "|", suffix) else features
+
   p <- VlnPlot(object = object, features = features, split.by = split.by, group.by = idents, ...) +
-    ggtitle(label = features, subtitle = paste(suffix, "by", split.by)) +
+    ggtitle(label = ttl, subtitle = paste(suffix, "- by -", split.by)) +
     theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
 
   # If `logY` is TRUE, plot the y-axis on a log scale.
@@ -744,8 +752,8 @@ qSeuViolin <- function(
 
   # Save the plot.
   title_ <- ppp(as.character(features), suffix, flag.nameiftrue(logY))
-  qqSave(p, title = title_, w = 7, h = 5)
-  p
+  qqSave(p, title = title_, w = w, h = h)
+  if(show_plot) p
 }
 
 
@@ -779,6 +787,7 @@ plotGeneExpHist <- function(
     return_cells_passing = TRUE,
     quantile_thr = 0.95,
     return_quantile,
+    show_plot = T,
     ...) {
   # Check arguments
   stopifnot(length(genes) > 0)
@@ -810,7 +819,7 @@ plotGeneExpHist <- function(
   )
 
   # Print the plot
-  print(pobj)
+  if (show_plot) print(pobj)
 
   # Return the number of cells passing the filter
   if (return_cells_passing) {
