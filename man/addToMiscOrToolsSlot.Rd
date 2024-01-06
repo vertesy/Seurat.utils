@@ -6,7 +6,9 @@
 \usage{
 addToMiscOrToolsSlot(
   obj,
-  slot_name = "misc",
+  pocket_name = "misc",
+  slot_value = NULL,
+  slot_name = deparse(substitute(slot_value)),
   sub_slot_value = NULL,
   sub_slot_name = deparse(substitute(sub_slot_value)),
   overwrite = FALSE
@@ -15,7 +17,11 @@ addToMiscOrToolsSlot(
 \arguments{
 \item{obj}{A Seurat object.}
 
-\item{slot_name}{The name of the slot to which the sub-slot should be added ('misc' or 'tools').}
+\item{pocket_name}{Which main pocket to use: 'misc' or 'tools'. Default: 'misc'.}
+
+\item{slot_value}{The value to be assigned to the sub-slot.}
+
+\item{slot_name}{The name of the sub-slot. Automatically derived from 'sub_slot_value' if not provided.}
 
 \item{sub_slot_value}{The value to be assigned to the sub-slot.}
 
@@ -27,7 +33,6 @@ addToMiscOrToolsSlot(
 The modified Seurat object with the new or updated sub-slot.
 }
 \description{
-This function adds a sub-slot to either the 'misc' or 'tools' slot of a Seurat object,
-allowing for flexible data storage within the object structure.
-If the sub-slot already exists, it can either be overwritten or a warning will be issued.
+This function creates and adds a sub-slot to either the 'misc' or 'tools' slot of a
+Seurat object. If the sub-slot already exists, it can either be overwritten or a warning will be issued.
 }
