@@ -4220,6 +4220,42 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 # New additions,  categorized _____________________________ ------
 # _________________________________________________________________________________________________
 
+#' Process Seurat Objects in Parallel
+#'
+#' @description Applies a series of Seurat processing steps to each Seurat object in a list.
+#'              The operations include scaling data, running PCA, UMAP, finding neighbors, and finding clusters.
+#'              This is done in parallel using multiple cores.
+#'
+#' @param obj A Seurat object to be processed.
+#' @param p A list of parameters used in the processing steps.
+#' @return A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and clustering.
+#' @examples
+#' # Assuming ls.Seurat is a list of Seurat objects and params is a list of parameters
+#' # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
+#' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
+#' @export
+processSeuratObject <- function(obj, p) {
+
+  # Assertions to check input types
+  stopifnot("Seurat" %in% class(obj),
+            is.list(p),
+            all(c("n.PC", "snn_res") %in% names(p)),
+            is.numeric(p$'n.PC'),
+            is.numeric(p$'snn_res'),
+            is.character(p$'variables.2.regress') | is.null(p$'variables.2.regress'))
+
+  tictoc::tic()
+  obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = p$"variables.2.regress")
+  obj <- RunPCA(obj, npcs = p$"n.PC", verbose = TRUE)
+  obj <- RunUMAP(obj, reduction = "pca", dims = 1:p$"n.PC")
+  obj <- FindNeighbors(obj, reduction = "pca", dims = 1:p$"n.PC")
+  obj <- FindClusters(obj, resolution = p$"snn_res")
+  tictoc::toc()
+  return(obj)
+}
+
+
+
 
 
 #' @title Regress Out and Recalculate Seurat
