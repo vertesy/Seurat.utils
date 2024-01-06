@@ -179,41 +179,59 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 # _________________________________________________________________________________________________
 #' @title Add to Misc or Tools Slot
 #'
-#' @description This function adds a sub-slot to either the 'misc' or 'tools' slot of a Seurat object,
-#' allowing for flexible data storage within the object structure.
-#' If the sub-slot already exists, it can either be overwritten or a warning will be issued.
+#' @description This function creates and adds a sub-slot to either the 'misc' or 'tools' slot of a
+#' Seurat object. If the sub-slot already exists, it can either be overwritten or a warning will be issued.
 #'
 #' @param obj A Seurat object.
-#' @param slot_name The name of the slot to which the sub-slot should be added ('misc' or 'tools').
+#' @param pocket_name Which main pocket to use: 'misc' or 'tools'. Default: 'misc'.
+#' @param slot_value The value to be assigned to the sub-slot.
+#' @param slot_name The name of the sub-slot. Automatically derived from 'sub_slot_value' if not provided.
 #' @param sub_slot_value The value to be assigned to the sub-slot.
 #' @param sub_slot_name The name of the sub-slot. Automatically derived from 'sub_slot_value' if not provided.
 #' @param overwrite A boolean indicating whether to overwrite an existing sub-slot with the same name.
 #'
 #' @return The modified Seurat object with the new or updated sub-slot.
 #' @export
-addToMiscOrToolsSlot <- function(obj, slot_name = 'misc', sub_slot_value = NULL,
+addToMiscOrToolsSlot <- function(obj, pocket_name = 'misc',
+                                 slot_value = NULL,
+                                 slot_name = deparse(substitute(slot_value)),
+                                 sub_slot_value = NULL,
                                  sub_slot_name = deparse(substitute(sub_slot_value)),
                                  overwrite = FALSE) {
 
-  stopifnot(is(obj, "Seurat"), is.character(slot_name), length(slot_name) == 1)
-  stopifnot(is.null(sub_slot_value) || !is.null(sub_slot_name),
-            is.character(sub_slot_name), length(sub_slot_name) == 1)
+  stopifnot(is(obj, "Seurat"),
+            pocket_name %in% c( 'misc', 'tools'),
+            is.character(slot_name), length(slot_name) == 1,
+            is.character(sub_slot_name), length(sub_slot_name) == 1,
+            "slot name or value is provided" = is.null(slot_value) || !is.null(slot_name),
+            "sub_slot name or value is provided" = is.null(sub_slot_value) || !is.null(sub_slot_name)
+  )
 
   # Accessing the specified slot
-  slot_orig <- slot(object = obj, name = slot_name)
+  pocket <- slot(object = obj, name = pocket_name)
 
-  # Creating new slot or reporting if it exists
-  if (sub_slot_name %in% names(slot_orig) && !overwrite) {
-    warning(paste(sub_slot_name, "in", slot_name, "already exists. Not overwritten."), immediate. = TRUE)
+  # Creating new sub_slot or reporting if it exists
+  if (slot_name %in% names(pocket) && !overwrite) {
+    warning(paste(slot_name, "in", pocket_name, "already exists. Not overwritten."), immediate. = TRUE)
   } else {
-    slot_orig[[sub_slot_name]] <- sub_slot_value
+    pocket[[slot_name]] <- slot_value
   }
 
+
+  # Creating new sub_sub_slot or reporting if it exists
+  if (sub_slot_name %in% names(pocket[[slot_name]]) && !overwrite) {
+    warning(paste(sub_slot_name, "in", pocket_name, "@", slot_name, "already exists. Not overwritten."), immediate. = TRUE)
+  } else {
+    pocket[[slot_name]][[sub_slot_name]] <- sub_slot_value
+  }
+
+
   # Assigning the modified slot back to the object
-  slot(object = obj, name = slot_name) <- slot_orig
+  slot(object = obj, name = pocket_name) <- pocket
 
   return(obj)
 }
+
 
 
 # _________________________________________________________________________________________________
