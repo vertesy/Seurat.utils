@@ -737,13 +737,32 @@ qSeuViolin <- function(
     w = 9, h = 5,
     ...) {
 
-  print(unique(idents))
+  stopifnot("Seurat" %in% class(object),                      # object must be a Seurat object
+            is.character(split.by),                           # split.by must be a character
+            is.character(idents),                             # idents must be a character vector
+            is.character(features),                           # features must be a character
+            is.logical(logY),                                 # logY must be logical (TRUE or FALSE)
+            is.logical(hline) || is.numeric(hline),           # hline must be logical or numeric
+            is.logical(caption) || is.character(caption),     # caption must be logical or character
+            is.logical(suffix.2.title),                       # suffix.2.title must be logical
+            is.numeric(w) && w > 0,                           # w must be a positive number
+            is.numeric(h) && h > 0,                           # h must be a positive number
+            is.logical(show_plot),                            # show_plot must be logical
+            c(split.by, idents) %in% names(object@meta.data),
+            features %in% names(object@meta.data) || features %in% rownames(objects)
+            )
 
-  ttl <- if (suffix.2.title) paste(features, "|", suffix) else features
+  print(unique(idents))
+  # browser()
+
+
+  ttl <- if (suffix.2.title) { paste(features, "|", suffix) } else { as.character(features) }
+  subt <- paste(suffix, "- by -", split.by)
 
   p <- VlnPlot(object = object, features = features, split.by = split.by, group.by = idents, ...) +
-    ggtitle(label = ttl, subtitle = paste(suffix, "- by -", split.by)) +
     theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
+  p <- p + ggtitle(label = ttl, subtitle = subt)
+
 
   # If `logY` is TRUE, plot the y-axis on a log scale.
   if (logY) p <- p + ggplot2::scale_y_log10()

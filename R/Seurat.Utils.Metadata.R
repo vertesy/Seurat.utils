@@ -130,16 +130,14 @@ getMedianMetric <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), 
 #' }
 #' }
 #' @export
-getCellIDs.from.meta <- function(ColName.meta = "res.0.6", values = NA, obj = combined.obj, inverse = FALSE) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
+getCellIDs.from.meta <- function(ColName.meta = "res.0.6", values = NA, obj = combined.obj,
+                                 inverse = FALSE) {
   mdat <- obj@meta.data[, ColName.meta]
-  cells <- if (inverse) {
-    mdat %!in% values
-  } else {
-    mdat %in% values
-  }
-  idx.matching.cells <- which(cells)
-  iprint(length(idx.matching.cells), "cells found.")
-  return(rownames(obj@meta.data)[idx.matching.cells])
+  cells.pass <- mdat %in% values
+  if (inverse) cells.pass <- !cells.pass
+
+  iprint(sum(cells.pass), "cells found.")
+  return(rownames(obj@meta.data)[which(cells.pass), ])
 }
 
 
