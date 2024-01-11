@@ -707,31 +707,42 @@ qFeatureScatter <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title qSeuViolin
+#' @title Create a Violin Plot for a Seurat Object Feature and save the file.
 #'
-#' @description This function creates a violin plot of a single feature in a Seurat object,
-#' split by a grouping variable.
-#' @param object A Seurat object.
-#' @param suffix A string to append to the title of the plot.
-#' @param features The name of the feature to plot.
-#' @param hline hline
-#' @param caption caption
-#' @param split.by The grouping variable to split the plot by.
-#' @param logY Whether to plot the y-axis on a log scale.
-#' @param suffix.2.title ...
-#' @param show_plot ...
-#' @param idents ...
+#' @description Generates a violin plot for a specified feature in a Seurat object,
+#' allowing for the data to be split by a specified grouping variable.
+#' The function supports customization options such as logarithmic scaling, custom titles, and more.
 #'
-#' @return A ggplot object.
+#' @param object A Seurat object to be plotted.
+#' @param features A character string specifying the name of the feature to plot.
+#' @param idents A character vector specifying the identities to be used in the plot.
+#' @param split.by A character string specifying the grouping variable for splitting the plot.
+#' @param replace.na A logical indicating whether NA values should be replaced.
+#' @param suffix An optional string to append to the title of the plot.
+#' @param suffix.2.title A logical indicating whether to append the suffix to the plot title.
+#' @param logY A logical indicating whether to use a logarithmic scale for the y-axis.
+#' @param hline A numeric or logical value; if numeric, the value where a horizontal line should be drawn.
+#' @param caption A character string or logical for the plot caption. If FALSE, no caption is displayed.
+#' @param show_plot A logical indicating whether to display the plot.
+#' @param w Width of the plot.
+#' @param h Height of the plot.
+#' @param ... Additional arguments passed to `VlnPlot`.
+#'
+#' @return A ggplot object representing the violin plot.
+#'
+#' @examples
+#' # Assuming `seurat_obj` is a valid Seurat object
+#' qSeuViolin(object = seurat_obj, features = "nFeature_RNA")
 #'
 #' @export
 qSeuViolin <- function(
     object = ls.Seurat[[1]],
-    split.by,
-    idents = GetNamedClusteringRuns(object)[1],
-    suffix = GEX_library,
-    suffix.2.title = F,
     features = "nFeature_RNA",
+    idents = GetNamedClusteringRuns(object)[1],
+    split.by = NULL,
+    replace.na = FALSE,
+    suffix = NULL,
+    suffix.2.title = F,
     logY = TRUE, hline = FALSE, caption = FALSE,
     show_plot = T,
     w = 9, h = 5,
@@ -758,6 +769,11 @@ qSeuViolin <- function(
 
   ttl <- if (suffix.2.title) { paste(features, "|", suffix) } else { as.character(features) }
   subt <- paste(suffix, "- by -", split.by)
+
+  if (replace.na) {
+    warning("NA's are not, but zeros are displayed on the plot. Avoid replace.na when possible", immediate. = T)
+    object@meta.data[[features]] <- na.replace(x = object@meta.data[[features]], replace = 0)
+}
 
   p <- VlnPlot(object = object, features = features, split.by = split.by, group.by = idents, ...) +
     theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")

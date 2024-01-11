@@ -6,11 +6,12 @@
 \usage{
 qSeuViolin(
   object = ls.Seurat[[1]],
-  split.by,
-  idents = GetNamedClusteringRuns(object)[1],
-  suffix = GEX_library,
-  suffix.2.title = F,
   features = "nFeature_RNA",
+  idents = GetNamedClusteringRuns(object)[1],
+  split.by = NULL,
+  replace.na = FALSE,
+  suffix = NULL,
+  suffix.2.title = F,
   logY = TRUE,
   hline = FALSE,
   caption = FALSE,
@@ -23,15 +24,15 @@ qSeuViolin(
 \arguments{
 \item{object}{A Seurat object.}
 
-\item{split.by}{The grouping variable to split the plot by.}
+\item{features}{The name of the feature to plot.}
 
 \item{idents}{...}
+
+\item{split.by}{The grouping variable to split the plot by.}
 
 \item{suffix}{A string to append to the title of the plot.}
 
 \item{suffix.2.title}{...}
-
-\item{features}{The name of the feature to plot.}
 
 \item{logY}{Whether to plot the y-axis on a log scale.}
 
