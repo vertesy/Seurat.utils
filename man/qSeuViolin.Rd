@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{qSeuViolin}
 \alias{qSeuViolin}
-\title{qSeuViolin}
+\title{Create a Violin Plot for a Seurat Object Feature and save the file.}
 \usage{
 qSeuViolin(
   object = ls.Seurat[[1]],
@@ -22,30 +22,44 @@ qSeuViolin(
 )
 }
 \arguments{
-\item{object}{A Seurat object.}
+\item{object}{A Seurat object to be plotted.}
 
-\item{features}{The name of the feature to plot.}
+\item{features}{A character string specifying the name of the feature to plot.}
 
-\item{idents}{...}
+\item{idents}{A character vector specifying the identities to be used in the plot.}
 
-\item{split.by}{The grouping variable to split the plot by.}
+\item{split.by}{A character string specifying the grouping variable for splitting the plot.}
 
-\item{suffix}{A string to append to the title of the plot.}
+\item{replace.na}{A logical indicating whether NA values should be replaced.}
 
-\item{suffix.2.title}{...}
+\item{suffix}{An optional string to append to the title of the plot.}
 
-\item{logY}{Whether to plot the y-axis on a log scale.}
+\item{suffix.2.title}{A logical indicating whether to append the suffix to the plot title.}
 
-\item{hline}{hline}
+\item{logY}{A logical indicating whether to use a logarithmic scale for the y-axis.}
 
-\item{caption}{caption}
+\item{hline}{A numeric or logical value; if numeric, the value where a horizontal line should be drawn.}
 
-\item{show_plot}{...}
+\item{caption}{A character string or logical for the plot caption. If FALSE, no caption is displayed.}
+
+\item{show_plot}{A logical indicating whether to display the plot.}
+
+\item{w}{Width of the plot.}
+
+\item{h}{Height of the plot.}
+
+\item{...}{Additional arguments passed to \code{VlnPlot}.}
 }
 \value{
-A ggplot object.
+A ggplot object representing the violin plot.
 }
 \description{
-This function creates a violin plot of a single feature in a Seurat object,
-split by a grouping variable.
+Generates a violin plot for a specified feature in a Seurat object,
+allowing for the data to be split by a specified grouping variable.
+The function supports customization options such as logarithmic scaling, custom titles, and more.
+}
+\examples{
+# Assuming `seurat_obj` is a valid Seurat object
+qSeuViolin(object = seurat_obj, features = "nFeature_RNA")
+
 }
