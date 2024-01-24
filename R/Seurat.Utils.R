@@ -232,6 +232,48 @@ addToMiscOrToolsSlot <- function(obj, pocket_name = 'misc',
   return(obj)
 }
 
+# _________________________________________________________________________________________________
+#' @title Display Slots in the @tools of an Seurat Object
+#'
+#' @description
+#' `showToolsSlots` prints the names of slots in the `@tools` of a given object.
+#' It specifically targets list elements, skipping over data frames and other non-list objects.
+#'
+#' @param obj An object whose `@tools` slot needs to be examined.
+#' @param indent An integer specifying the level of indentation for the output.
+#'        Default is 0. Currently not used in the function implementation.
+#'
+#' @details
+#' The function iterates over the slots in the `@tools` of `obj`. If a slot is a list
+#' (and not a data frame), it prints the names of elements within this list. If the slot
+#' is not a list or is a data frame, it skips printing the names. The function currently
+#' does not use the `indent` parameter but it could be incorporated in future enhancements
+#' to control the formatting of the output.
+#'
+#' @examples
+#' # Assuming obj is an S4 object with a 'tools' slot
+#' showToolsSlots(obj)
+#'
+#' @note
+#' This function is specifically designed for S4 objects with a 'tools' slot.
+#' The behavior with other object types or slots may not be as expected.
+#'
+#' @export
+showToolsSlots <- function(obj, indent = 0) {
+  tool__slots <- names(obj@tools)
+  # i=4
+  for (i in seq(tool__slots)) {
+    cat("", fill = T)
+    print(paste0("obj@tools$", tool__slots[i]))
+
+    x <- obj@tools[[tool__slots[i]]]
+    if (!is.data.frame(x) & is.list(x)) {
+      print(paste("  ", names(x)),width = 12)
+    } else {
+      dimz <- idim(x)
+    }
+  }
+}
 
 
 # _________________________________________________________________________________________________
