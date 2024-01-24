@@ -528,6 +528,77 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 
 
 # _________________________________________________________________________________________________
+# Combine metadata ______________________________ ----
+# _________________________________________________________________________________________________
+
+#' @title Combine Metadata and Write to TSV
+#'
+#' @description
+#' `writeMetadataToTsv` takes a list of objects, extracts their `@meta.data` slots,
+#' removes specified columns, checks for column consistency, creates a barplot showing the number
+#' of rows per object, and finally merges these into one large data frame.
+#'
+#' @param objects A list of objects, each containing a `@meta.data` slot.
+#' @param cols.remove A character vector of column names to be removed from each metadata data frame.
+#'        Default is an empty character vector, meaning no columns will be removed.
+#'
+#' @details
+#' The function starts by validating the input to ensure it's a list. It then extracts the `@meta.data`
+#' from each object, removing the specified columns. It checks if all data frames have the same columns
+#' and issues a warning if not. A barplot is created to visualize the number of rows (cells) per object.
+#' Finally, it merges all the metadata into one large data frame and prints its dimensions.
+#'
+#' @return A large data frame that is the row-wise merge of all `@meta.data` data frames.
+#'
+#' @examples
+#' # Assuming a list of Seurat objects with meta.data
+#' mergedMetaData <- writeMetadataToTsv(seuratObjectsList, cols.remove = c("column1", "column2"))
+#'
+#' @note
+#' This function is intended for use with S4 objects that have a `@meta.data` slot.
+#' The function currently contains a `browser()` call for debugging purposes, which should be removed in production.
+#'
+#' @export
+
+writeMetadataToTsv <- function(objects, cols.remove = character(), write_out = T) {
+  warning("writeMetadataToTsv is EXPERIMENTAL. It writes out subset of columns", immediate. = T)
+  stopifnot(is.list(objects)) # Validate that input is a list
+
+  # Extract metadata from each object and remove specified columns
+  metadataList <- lapply(objects, function(obj) {
+    stopifnot("meta.data" %in% slotNames(obj)) # Check for meta.data slot
+    metaData <- obj@meta.data
+    metaData[, !(names(metaData) %in% cols.remove)]
+  })
+
+
+  # Find common columns and subset
+  commonCols <- CodeAndRoll2::intersect.ls(lapply(metadataList, names))
+  metadataList <- lapply(metadataList, function(df) df[, commonCols, drop = FALSE])
+
+  # Check if qbarplot is available and create a barplot showing the number of rows per object
+
+  metadata.cells.per.obj <- sapply(metadataList, nrow)
+  print(metadata.cells.per.obj)
+  pobj <- ggExpress::qbarplot(metadata.cells.per.obj, label = metadata.cells.per.obj, ylab = "cells"
+                              , save = FALSE)
+  print(pobj)
+
+  # Merge metadata into one big data frame
+  mergedMetaData <- do.call(rbind, metadataList)
+
+  # Print dimensions of the merged data frame
+  print(dim(mergedMetaData))
+
+  # Return the merged data frame
+  return(mergedMetaData)
+
+  if (write_out) ReadWriter::write.simple.tsv(mergedMetaData)
+}
+
+
+
+# _________________________________________________________________________________________________
 # Plot metadata ______________________________ ----
 # _________________________________________________________________________________________________
 #' @title Plot Metadata Correlation Heatmap
