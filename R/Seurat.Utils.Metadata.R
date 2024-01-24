@@ -560,7 +560,7 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 #'
 #' @export
 
-writeMetadataToTsv <- function(objects, cols.remove = character(), write_out = T) {
+writeMetadataToTsv <- function(objects, cols.remove = character(), write_out = T, ...) {
   warning("writeMetadataToTsv is EXPERIMENTAL. It writes out subset of columns", immediate. = T)
   stopifnot(is.list(objects)) # Validate that input is a list
 
@@ -593,7 +593,7 @@ writeMetadataToTsv <- function(objects, cols.remove = character(), write_out = T
   # Return the merged data frame
   return(mergedMetaData)
 
-  if (write_out) ReadWriter::write.simple.tsv(mergedMetaData)
+  if (write_out) ReadWriter::write.simple.tsv(mergedMetaData, ...)
 }
 
 
