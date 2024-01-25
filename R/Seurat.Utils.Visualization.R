@@ -79,7 +79,6 @@ PlotFilters <- function(
     theme.used = theme_bw(base_size = 18),
     LabelDistFromTop = 200 # for barplot_label
     ) {
-
   stopif(is.null(below.nFeature_RNA))
   MarkdownHelpers::llprint(
     "We filtered for high quality cells based on the number of genes detected [", above.nFeature_RNA, ";", below.nFeature_RNA,
@@ -196,7 +195,6 @@ PlotFilters <- function(
     # print(fname)
     cowplot::save_plot(filename = fname, plot = px, base_height = 12, ncol = 1, nrow = 1) # Figure 2
     stopifnot(file.exists(fname))
-
   } # for
   # _________________________________________________________________________________________________
   create_set_Original_OutDir()
@@ -742,38 +740,42 @@ qSeuViolin <- function(
     split.by = NULL,
     replace.na = FALSE,
     suffix = NULL,
-    suffix.2.title = F,
+    suffix.2.title = FALSE,
     logY = TRUE, hline = FALSE, caption = FALSE,
-    show_plot = T,
+    show_plot = TRUE,
     w = 9, h = 5,
     ...) {
-
-  stopifnot("Seurat" %in% class(object),                      # object must be a Seurat object
-            is.character(split.by),                           # split.by must be a character
-            is.character(idents),                             # idents must be a character vector
-            is.character(features),                           # features must be a character
-            is.logical(logY),                                 # logY must be logical (TRUE or FALSE)
-            is.logical(hline) || is.numeric(hline),           # hline must be logical or numeric
-            is.logical(caption) || is.character(caption),     # caption must be logical or character
-            is.logical(suffix.2.title),                       # suffix.2.title must be logical
-            is.numeric(w) && w > 0,                           # w must be a positive number
-            is.numeric(h) && h > 0,                           # h must be a positive number
-            is.logical(show_plot),                            # show_plot must be logical
-            c(split.by, idents) %in% names(object@meta.data),
-            features %in% names(object@meta.data) || features %in% rownames(objects)
-            )
+  stopifnot(
+    "Seurat" %in% class(object), # object must be a Seurat object
+    is.character(split.by), # split.by must be a character
+    is.character(idents), # idents must be a character vector
+    is.character(features), # features must be a character
+    is.logical(logY), # logY must be logical (TRUE or FALSE)
+    is.logical(hline) || is.numeric(hline), # hline must be logical or numeric
+    is.logical(caption) || is.character(caption), # caption must be logical or character
+    is.logical(suffix.2.title), # suffix.2.title must be logical
+    is.numeric(w) && w > 0, # w must be a positive number
+    is.numeric(h) && h > 0, # h must be a positive number
+    is.logical(show_plot), # show_plot must be logical
+    c(split.by, idents) %in% names(object@meta.data),
+    features %in% names(object@meta.data) || features %in% rownames(objects)
+  )
 
   print(unique(idents))
   # browser()
 
 
-  ttl <- if (suffix.2.title) { paste(features, "|", suffix) } else { as.character(features) }
+  ttl <- if (suffix.2.title) {
+    paste(features, "|", suffix)
+  } else {
+    as.character(features)
+  }
   subt <- paste(suffix, "- by -", split.by)
 
   if (replace.na) {
-    warning("NA's are not, but zeros are displayed on the plot. Avoid replace.na when possible", immediate. = T)
+    warning("NA's are not, but zeros are displayed on the plot. Avoid replace.na when possible", immediate. = TRUE)
     object@meta.data[[features]] <- na.replace(x = object@meta.data[[features]], replace = 0)
-}
+  }
 
   p <- VlnPlot(object = object, features = features, split.by = split.by, group.by = idents, ...) +
     theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
@@ -788,7 +790,7 @@ qSeuViolin <- function(
   # Save the plot.
   title_ <- ppp(as.character(features), suffix, flag.nameiftrue(logY))
   qqSave(p, title = title_, w = w, h = h)
-  if(show_plot) p
+  if (show_plot) p
 }
 
 
@@ -823,7 +825,7 @@ plotGeneExpHist <- function(
     quantile_thr = 0.95,
     return_quantile,
     w = 9, h = 5,
-    show_plot = T,
+    show_plot = TRUE,
     ...) {
   # Check arguments
   stopifnot(length(genes) > 0)
@@ -843,8 +845,12 @@ plotGeneExpHist <- function(
   if (aggregate) subx <- paste0(subx, "\n", length(genes), " aggregated:", paste(head(genes), collapse = " "))
 
   # Clip counts if necessary
-  if (slot_ == "counts") G_expression <- CodeAndRoll2::clip.at.fixed.value(distribution = G_expression,
-                                                                           thr = quantile(G_expression, probs = .95))
+  if (slot_ == "counts") {
+    G_expression <- CodeAndRoll2::clip.at.fixed.value(
+      distribution = G_expression,
+      thr = quantile(G_expression, probs = .95)
+    )
+  }
 
   # Create the plot
   title_ <- paste("Gene Expression", Stringendo::flag.nameiftrue(aggregate, prefix = "- "), suffix, slot_)
@@ -861,11 +867,11 @@ plotGeneExpHist <- function(
   )
 
   # draw additional vlines if needed
-  if (length(thr_expr)>1) {
+  if (length(thr_expr) > 1) {
     pobj <- pobj +
-      ggplot2::geom_vline(xintercept = thr_expr[-1], col=2, lty=2, lwd=1) +
+      ggplot2::geom_vline(xintercept = thr_expr[-1], col = 2, lty = 2, lwd = 1) +
       ggplot2::labs(caption = "Red line marks original estimate")
-    ggExpress::qqSave(ggobj = pobj, title = sppp(title_, 'w.orig')) # , ext = '.png'
+    ggExpress::qqSave(ggobj = pobj, title = sppp(title_, "w.orig")) # , ext = '.png'
   }
 
 
@@ -1851,15 +1857,15 @@ ww.check.if.3D.reduction.exist <- function(obj = obj) {
 ww.check.quantile.cutoff.and.clip.outliers <-
   function(expr.vec = plotting.data[, gene], quantileCutoffX = quantileCutoff,
            min.cells.expressing = 10) {
-  expr.vec.clipped <-
-    CodeAndRoll2::clip.outliers.at.percentile(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
-  if (sum(expr.vec.clipped > 0) > min.cells.expressing) {
-    expr.vec <- expr.vec.clipped
-  } else {
-    iprint("WARNING: quantile.cutoff too stringent, would leave <", min.cells.expressing, "cells. It is NOT applied.")
+    expr.vec.clipped <-
+      CodeAndRoll2::clip.outliers.at.percentile(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
+    if (sum(expr.vec.clipped > 0) > min.cells.expressing) {
+      expr.vec <- expr.vec.clipped
+    } else {
+      iprint("WARNING: quantile.cutoff too stringent, would leave <", min.cells.expressing, "cells. It is NOT applied.")
+    }
+    return(expr.vec)
   }
-  return(expr.vec)
-}
 
 # _________________________________________________________________________________________________
 #' @title plot3D.umap.gene

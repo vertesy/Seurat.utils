@@ -159,7 +159,6 @@ getCellIDs.from.meta <- function(ColName.meta = "res.0.6", values = NA, obj = co
 #' @importFrom Seurat AddMetaData
 #' @export
 addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE) {
-
   # browser()
   stopifnot(
     is(obj, "Seurat"),
@@ -560,8 +559,8 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 #'
 #' @export
 
-writeMetadataToTsv <- function(objects, cols.remove = character(), write_out = T, ...) {
-  warning("writeMetadataToTsv is EXPERIMENTAL. It writes out subset of columns", immediate. = T)
+writeMetadataToTsv <- function(objects, cols.remove = character(), write_out = TRUE, ...) {
+  warning("writeMetadataToTsv is EXPERIMENTAL. It writes out subset of columns", immediate. = TRUE)
   stopifnot(is.list(objects)) # Validate that input is a list
 
   # Extract metadata from each object and remove specified columns
@@ -580,8 +579,10 @@ writeMetadataToTsv <- function(objects, cols.remove = character(), write_out = T
 
   metadata.cells.per.obj <- sapply(metadataList, nrow)
   print(metadata.cells.per.obj)
-  pobj <- ggExpress::qbarplot(metadata.cells.per.obj, label = metadata.cells.per.obj, ylab = "cells"
-                              , save = FALSE)
+  pobj <- ggExpress::qbarplot(metadata.cells.per.obj,
+    label = metadata.cells.per.obj, ylab = "cells",
+    save = FALSE
+  )
   print(pobj)
 
   # Merge metadata into one big data frame

@@ -24,6 +24,7 @@ PackageTools::document_and_create_package(repository.dir, config_file = 'config.
 
 # Install your package ------------------------------------------------
 "disable rprofile by"
+source('~/GitHub/Packages/Rocinante/R/Rocinante.R')
 rprofile()
 devtools::install_local(repository.dir, upgrade = F)
 
@@ -87,6 +88,8 @@ PackageTools::copy_github_badge("active") # Add badge to readme via clipboard
 # Replaces T with TRUE and F with FALSE ------------------------------------------------
 for (scriptX in ls.scripts.full.path) {
   PackageTools::replace_tf_with_true_false(scriptX, strict_mode = F)
+  # PackageTools::replace_sh(scriptX, strict_mode = F)
+
 }
 
 

@@ -89,9 +89,11 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
 
   # Finding genes that are missing in the Seurat object
   missing_in_obj <- setdiff(genes, rownames(obj))
-  Stringendo::iprint(length(missing_in_obj), " (of ", length(genes),
-                     ") genes are MISSING from the Seurat object with (", length(rownames(obj)),
-                     ") genes. E.g.:", head(missing_in_obj, n_genes_shown))
+  Stringendo::iprint(
+    length(missing_in_obj), " (of ", length(genes),
+    ") genes are MISSING from the Seurat object with (", length(rownames(obj)),
+    ") genes. E.g.:", head(missing_in_obj, n_genes_shown)
+  )
 
   # Finding genes that are found in both the input list and the Seurat object
   g_found <- intersect(rownames(obj), genes)
@@ -191,20 +193,20 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 #' @param overwrite A boolean indicating whether to overwrite an existing sub-slot with the same name.
 #'
 #' @return The modified Seurat object with the new or updated sub-slot.
+#'
 #' @export
-addToMiscOrToolsSlot <- function(obj, pocket_name = 'misc',
+addToMiscOrToolsSlot <- function(obj, pocket_name = "misc",
                                  slot_value = NULL,
                                  slot_name = deparse(substitute(slot_value)),
                                  sub_slot_value = NULL,
                                  sub_slot_name = deparse(substitute(sub_slot_value)),
                                  overwrite = FALSE) {
-
   stopifnot(is(obj, "Seurat"),
-            pocket_name %in% c( 'misc', 'tools'),
-            is.character(slot_name), length(slot_name) == 1,
-            is.character(sub_slot_name), length(sub_slot_name) == 1,
-            "slot name or value is provided" = is.null(slot_value) || !is.null(slot_name),
-            "sub_slot name or value is provided" = is.null(sub_slot_value) || !is.null(sub_slot_name)
+    pocket_name %in% c("misc", "tools"),
+    is.character(slot_name), length(slot_name) == 1,
+    is.character(sub_slot_name), length(sub_slot_name) == 1,
+    "slot name or value is provided" = is.null(slot_value) || !is.null(slot_name),
+    "sub_slot name or value is provided" = is.null(sub_slot_value) || !is.null(sub_slot_name)
   )
 
   # Accessing the specified slot
@@ -263,12 +265,12 @@ showToolsSlots <- function(obj, indent = 0) {
   tool__slots <- names(obj@tools)
   # i=4
   for (i in seq(tool__slots)) {
-    cat("", fill = T)
+    cat("", fill = TRUE)
     print(paste0("obj@tools$", tool__slots[i]))
 
     x <- obj@tools[[tool__slots[i]]]
     if (!is.data.frame(x) & is.list(x)) {
-      print(paste("  ", names(x)),width = 12)
+      print(paste("  ", names(x)), width = 12)
     } else {
       dimz <- idim(x)
     }
@@ -311,10 +313,10 @@ showToolsSlots <- function(obj, indent = 0) {
 
 calc.q99.Expression.and.set.all.genes <- function(
     obj = combined.obj # Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10% cells).
-    , quantileX = 0.99, max.cells = 1e5
-    , slot = "data"
-    , assay = c("RNA", "integrated")[1]
-    , set.misc = TRUE,
+    , quantileX = 0.99, max.cells = 1e5,
+    slot = "data",
+    assay = c("RNA", "integrated")[1],
+    set.misc = TRUE,
     assign_to_global_env = TRUE,
     show = TRUE) {
   tictoc::tic()
@@ -509,15 +511,16 @@ GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.*
 #' }
 #' @export
 GetNamedClusteringRuns <- function(
-    obj = combined.obj
-    , res = list(FALSE, 0.5)[[1]], topgene = FALSE,
+    obj = combined.obj,
+    res = list(FALSE, 0.5)[[1]], topgene = FALSE,
     pat = c("^cl.names.Known.*[0,1]\\.[0-9]$", "Name|name")[2]) {
   if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
   if (topgene) pat <- gsub(x = pat, pattern = "Known", replacement = "top")
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
   if (identical(clustering.results, character(0))) {
-    warning("No matching column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)"
-            , immediate. = TRUE)
+    warning("No matching column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)",
+      immediate. = TRUE
+    )
     clustering.results <- GetClusteringRuns(obj = obj, res = FALSE, pat = "*_res.*[0,1]\\.[0-9]$")
   }
   return(clustering.results)
@@ -1489,10 +1492,10 @@ StoreAllMarkers <- function(
 #'  \code{\link[dplyr]{slice}}, \code{\link[dplyr]{select}}
 #' @export
 #' @importFrom dplyr slice select
-GetTopMarkersDF <- function(dfDE = df.markers # Get the vector of N most diff. exp. genes.
-                            , n = p$"n.markers", order.by = c("avg_log2FC", "p_val_adj")[1]
-                            , exclude = c("^AL*|^AC*|^LINC*")
-                            ) {
+GetTopMarkersDF <- function(
+    dfDE = df.markers # Get the vector of N most diff. exp. genes.
+    , n = p$"n.markers", order.by = c("avg_log2FC", "p_val_adj")[1],
+    exclude = c("^AL*|^AC*|^LINC*")) {
   "Works on active Idents() -> thus we call cluster"
 
   library(dplyr)
@@ -1571,10 +1574,10 @@ GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     combined.obj <- AutoLabelTop.logFC()
-#'     combined.obj$"cl.names.top.gene.res.0.5"
-#'   }
+#' if (interactive()) {
+#'   combined.obj <- AutoLabelTop.logFC()
+#'   combined.obj$"cl.names.top.gene.res.0.5"
+#' }
 #' }
 
 #' @export
@@ -1587,9 +1590,9 @@ AutoLabelTop.logFC <- function(
     exclude = c("^AL*|^AC*|^LINC*"),
     df_markers = obj@misc$"df.markers"[[paste0("res.", res)]],
     plotEnrichment = TRUE) {
-
-  stopifnot(!is.null("df_markers"),
-            order.by %in% colnames(df_markers)
+  stopifnot(
+    !is.null("df_markers"),
+    order.by %in% colnames(df_markers)
   )
 
   df.top.markers <- GetTopMarkersDF(dfDE = df_markers, order.by = order.by, n = 1, exclude = exclude)
@@ -1597,10 +1600,12 @@ AutoLabelTop.logFC <- function(
   if (plotEnrichment) {
     top_log2FC <- df.top.markers$"avg_log2FC"
     names(top_log2FC) <- ppp(df.top.markers$"cluster", df.top.markers$"gene")
-    ggExpress::qbarplot(top_log2FC, label = iround(top_log2FC)
-                        , subtitle = suffix
-                        , ylab = "avg_log2FC", xlab = "clusters"
-                        , suffix = suffix )
+    ggExpress::qbarplot(top_log2FC,
+      label = iround(top_log2FC),
+      subtitle = suffix,
+      ylab = "avg_log2FC", xlab = "clusters",
+      suffix = suffix
+    )
   }
 
   top.markers <- col2named.vec.tbl(df.top.markers[, 1:2])
@@ -2324,7 +2329,7 @@ plot.Gene.Cor.Heatmap <- function(
 
   pname <- paste0("Pearson correlations of ", substitute(genes), "\n min.cor:", min.g.cor, " | ", assay.use, ".", slot.use)
   o.heatmap <- pheatmap::pheatmap(cor.mat[corgene.names, corgene.names], main = pname, cutree_rows = cutRows, cutree_cols = cutCols, ...)
-  MarkdownReports::wplot_save_pheatmap( o.heatmap, plotname = make.names(pname))
+  MarkdownReports::wplot_save_pheatmap(o.heatmap, plotname = make.names(pname))
 
   # return values
   maxCorrz <- rowMax(cor.mat)[corgene.names]
@@ -2388,7 +2393,7 @@ prefix_cells_seurat <- function(ls_obj, obj_IDs) {
 # _________________________________________________________________________________________________
 #' @title Check Prefix in Seurat Object Cell IDs
 #'
-#' @description This function checks if a prefix has been added to the standard cell-IDs (16 characters of A,T,C,G)
+#' @description This function checks if a prefix has been added to the standard cell-IDs (16 characters of A,TRUE,C,G)
 #' in a Seurat object. If so, it prints the number of unique prefixes found,
 #' issues a warning if more than one unique prefix is found, and returns the identified prefix(es).
 #' @param obj A Seurat object with cell IDs possibly prefixed.
@@ -2776,8 +2781,7 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceU
 RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
                               newnames = HGNC.updated[[i]]$Suggested.Symbol,
                               assay = "RNA",
-                              slots = c("data", "counts", "scale.data", "meta.features")
-                              ) {
+                              slots = c("data", "counts", "scale.data", "meta.features")) {
   warning("Run this before integration and downstream processing. It only attempts to change
           @counts, @data, @scale.data and @meta.features in obj@assays$YOUR_ASSAY.", immediate. = TRUE)
 
@@ -2812,12 +2816,13 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 #' @return An Assay object with updated gene names in the specified slot.
 #' @examples
 #' \dontrun{
-#'   # Assuming 'seurat_obj' is a Seurat object and 'new_gene_names' is a vector of gene names
-#'   updated_assay <- check_and_rename(assayobj = seurat_obj[["RNA"]],
-#'                                     newnames = new_gene_names,
-#'                                     layer.name = "counts")
+#' # Assuming 'seurat_obj' is a Seurat object and 'new_gene_names' is a vector of gene names
+#' updated_assay <- check_and_rename(
+#'   assayobj = seurat_obj[["RNA"]],
+#'   newnames = new_gene_names,
+#'   layer.name = "counts"
+#' )
 #' }
-
 .check_and_rename <- function(obj, assay, newnames, layer.name) {
   cat(layer.name, fill = TRUE)
 
@@ -2827,7 +2832,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
     is.character(layer.name),
     is.character(newnames),
     nrow(obj) == length(newnames)
-    )
+  )
 
   assayobj <- obj@assays[[assay]]
   feature.list <- rownames(assayobj@features@.Data)
@@ -2840,8 +2845,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
     stop()
   }
 
-  if(layer.name %in% SeuratObject::Layers(assayobj)) {
-
+  if (layer.name %in% SeuratObject::Layers(assayobj)) {
     matrix_n <- SeuratObject::LayerData(assayobj, layer = layer.name)
     nr1 <- nrow(matrix_n)
 
@@ -2852,18 +2856,17 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
       if ("dgCMatrix" %in% class(matrix_n)) {
         message(assay, "@", layer.name, " is of type dgeCMatrix!")
         matrix_n@Dimnames[[1]] <- newnames
-
       } else if ("matrix" %in% class(matrix_n)) {
         message(assay, "@", layer.name, " is of type Matrix!")
         rownames(matrix_n) <- newnames
-
       } else if ("data.frame" %in% class(matrix_n)) {
         message(assay, "@", layer.name, " is of type data.frame!")
         rownames(matrix_n) <- newnames
-
       } else {
         warning(">>> No renaming: ", assay, "@", layer.name,
-                " not of type dgeCMatrix / Matrix / data.frame.", immediate. = TRUE)
+          " not of type dgeCMatrix / Matrix / data.frame.",
+          immediate. = TRUE
+        )
       }
       stopifnot(nr1 == nrow(matrix_n))
 
@@ -2871,10 +2874,8 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
       nr3 <- nrow(SeuratObject::LayerData(assayobj, layer = layer.name))
       stopifnot(nr3 == nrX)
     }
-
   } else {
     warning(paste(">>>", assay, "@", layer.name, "does not exist!"), immediate. = TRUE)
-
   }
   # obj <- SetAssayData(obj, layer = layer.name, new.data = matrix_n)
   obj@assays[[assay]] <- assayobj
@@ -3076,7 +3077,6 @@ Convert10Xfolders <- function(
     ext = "qs",
     sort_alphanumeric = TRUE,
     ...) {
-
   warning("Since v2.5.0, the output is saved in the more effcient qs format! See qs package.", immediate. = TRUE)
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
@@ -3103,7 +3103,8 @@ Convert10Xfolders <- function(
     } else {
       basename(dirname(dirname(pathIN)))
     }
-    print(""); print(fnameIN)
+    print("")
+    print(fnameIN)
 
     count_matrix <- Read10X(pathIN)
     if (!is.list(count_matrix) | length(count_matrix) == 1) {
@@ -3111,8 +3112,6 @@ Convert10Xfolders <- function(
         counts = count_matrix, project = fnameIN,
         min.cells = min.cells, min.features = min.features
       )
-
-
     } else if (is.list(count_matrix) & length(count_matrix) == 2) {
       seu <- CreateSeuratObject(
         counts = count_matrix[[1]], project = fnameIN,
@@ -3123,14 +3122,15 @@ Convert10Xfolders <- function(
       LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
       LSBnameOUT <- ppp(paste0(InputDir, "/LSB.", fnameIN), "Rds")
       qs::qsave(x = LSB, file = LSBnameOUT)
-
     } else {
       print("More than 2 elements in the list of matrices")
     }
 
     ncells <- ncol(seu)
-    fname_X <- Stringendo::sppp(fnameIN, "min.cells", min.cells, "min.features", min.features,
-                                "cells", ncells)
+    fname_X <- Stringendo::sppp(
+      fnameIN, "min.cells", min.cells, "min.features", min.features,
+      "cells", ncells
+    )
     print(fname_X)
 
     f.path.out <- Stringendo::ParseFullFilePath(path = InputDir, file_name = fname_X, extension = ext)
@@ -3148,10 +3148,7 @@ Convert10Xfolders <- function(
       colnames(CBCs) <- "CBC"
       ReadWriter::write.simple.tsv(input_df = CBCs, manual_file_name = sppp(fnameIN, "CBC"), manual_directory = InputDir)
     }
-
-
   } # for
-
 }
 
 
@@ -3263,7 +3260,6 @@ LoadAllSeurats <- function(
     string.replace1 = "",
     string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]],
     sort_alphanumeric = TRUE) {
-
   tictoc::tic()
   InputDir <- FixPath(InputDir)
 
@@ -3274,7 +3270,7 @@ LoadAllSeurats <- function(
   fin.orig <- list.files(InputDir, include.dirs = FALSE, pattern = file.pattern)
   print(fin.orig)
   print(length(fin.orig))
-  stopifnot(length(fin.orig)>0)
+  stopifnot(length(fin.orig) > 0)
   fin <- if (!isFALSE(string.remove1)) sapply(fin.orig, gsub, pattern = string.remove1, replacement = string.replace1) else fin.orig
   fin <- if (!isFALSE(string.remove2)) sapply(fin, gsub, pattern = string.remove2, replacement = "") else fin
   if (sort_alphanumeric) fin <- gtools::mixedsort(fin)
@@ -3287,9 +3283,9 @@ LoadAllSeurats <- function(
     # print(paste("Attempting to load file:", FNP))  # Debug print
 
     if (use_rds) {
-      ls.Seu[[i]] <-readRDS(FNP)
+      ls.Seu[[i]] <- readRDS(FNP)
     } else if (!use_rds) {
-      ls.Seu[[i]] <-qs::qread(file = FNP)
+      ls.Seu[[i]] <- qs::qread(file = FNP)
     } else {
       warning("File pattern ambigous. Use either qs or rds:", file.pattern, immediate. = TRUE)
     }
@@ -3583,8 +3579,6 @@ xsave <- function(
     out_dir = if (exists("OutDir")) OutDir else getwd(),
     background_job = FALSE,
     showMemObject = TRUE, saveParams = TRUE) {
-
-
   try(tictoc::tic(), silent = TRUE)
   if (showMemObject) {
     try(memory.biggest.objects(), silent = TRUE)
@@ -3597,7 +3591,7 @@ xsave <- function(
 
   fnameBase <- trimws(kppu(prefix, substitute(obj), suffix, project, idate(Format = "%Y.%m.%d_%H.%M")), whitespace = "_") # , preset, "compr"
   FNN <- paste0(out_dir, fnameBase, ".qs")
-  print(paste0(substitute(obj), " <- xread('", FNN, "')" ))
+  print(paste0(substitute(obj), " <- xread('", FNN, "')"))
 
   if (background_job & rstudioapi::isAvailable()) {
     "This part is not debugged yet!"
@@ -3652,7 +3646,7 @@ xread <- function(file, nthreads = 4, ...) {
   #     import = c("file", "nthreads")
   #   )
   # } else {
-    x <- qs::qread(file = file, nthreads = nthreads, ...)
+  x <- qs::qread(file = file, nthreads = nthreads, ...)
   # }
 
   iprint(is(x)[1], "of length:", length(x))
@@ -3736,9 +3730,11 @@ qsave.image <- function(..., showMemObject = TRUE, options = c("--force", NULL)[
 #' @importFrom fs dir_ls
 #' @export
 find10XoutputFolders <- function(root_dir, subdir, recursive = TRUE) {
-  stopifnot(is.character(root_dir), length(root_dir) == 1, dir.exists(root_dir),
-            is.character(subdir), all(dir.exists(file.path(root_dir, subdir))),
-            is.logical(recursive))
+  stopifnot(
+    is.character(root_dir), length(root_dir) == 1, dir.exists(root_dir),
+    is.character(subdir), all(dir.exists(file.path(root_dir, subdir))),
+    is.logical(recursive)
+  )
 
   outs_dirs <- c()
   for (i in seq_along(subdir)) {
@@ -4277,14 +4273,15 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 #' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
 #' @export
 processSeuratObject <- function(obj, p) {
-
   # Assertions to check input types
-  stopifnot("Seurat" %in% class(obj),
-            is.list(p),
-            all(c("n.PC", "snn_res") %in% names(p)),
-            is.numeric(p$'n.PC'),
-            is.numeric(p$'snn_res'),
-            is.character(p$'variables.2.regress') | is.null(p$'variables.2.regress'))
+  stopifnot(
+    "Seurat" %in% class(obj),
+    is.list(p),
+    all(c("n.PC", "snn_res") %in% names(p)),
+    is.numeric(p$"n.PC"),
+    is.numeric(p$"snn_res"),
+    is.character(p$"variables.2.regress") | is.null(p$"variables.2.regress")
+  )
 
   tictoc::tic()
   obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = p$"variables.2.regress")
@@ -4434,4 +4431,3 @@ cellID_to_cellType_v1 <- function(cellIDs, ident, obj = aaa) {
 cellID_to_cellType <- function(cellIDs, ident_w_names) {
   ident_w_names[cellIDs]
 }
-
