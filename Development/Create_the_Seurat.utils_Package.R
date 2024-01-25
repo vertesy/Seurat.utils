@@ -87,9 +87,8 @@ PackageTools::copy_github_badge("active") # Add badge to readme via clipboard
 
 # Replaces T with TRUE and F with FALSE ------------------------------------------------
 for (scriptX in ls.scripts.full.path) {
-  PackageTools::replace_tf_with_true_false(scriptX, strict_mode = F)
-  # PackageTools::replace_sh(scriptX, strict_mode = F)
-
+  # PackageTools::replace_tf_with_true_false(scriptX, strict_mode = F)
+  PackageTools::replace_short_calls(scriptX, strict_mode = F)
 }
 
 
