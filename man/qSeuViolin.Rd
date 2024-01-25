@@ -11,11 +11,11 @@ qSeuViolin(
   split.by = NULL,
   replace.na = FALSE,
   suffix = NULL,
-  suffix.2.title = F,
+  suffix.2.title = FALSE,
   logY = TRUE,
   hline = FALSE,
   caption = FALSE,
-  show_plot = T,
+  show_plot = TRUE,
   w = 9,
   h = 5,
   ...

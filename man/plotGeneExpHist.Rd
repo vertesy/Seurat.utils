@@ -17,7 +17,7 @@ plotGeneExpHist(
   return_quantile,
   w = 9,
   h = 5,
-  show_plot = T,
+  show_plot = TRUE,
   ...
 )
 }

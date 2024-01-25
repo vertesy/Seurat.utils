@@ -25,9 +25,11 @@ It supports slots storing data as either a dense or a sparse matrix (dgCMatrix) 
 }
 \examples{
 \dontrun{
-  # Assuming 'seurat_obj' is a Seurat object and 'new_gene_names' is a vector of gene names
-  updated_assay <- check_and_rename(assayobj = seurat_obj[["RNA"]],
-                                    newnames = new_gene_names,
-                                    layer.name = "counts")
+# Assuming 'seurat_obj' is a Seurat object and 'new_gene_names' is a vector of gene names
+updated_assay <- check_and_rename(
+  assayobj = seurat_obj[["RNA"]],
+  newnames = new_gene_names,
+  layer.name = "counts"
+)
 }
 }

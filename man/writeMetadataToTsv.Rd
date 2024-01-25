@@ -4,7 +4,7 @@
 \alias{writeMetadataToTsv}
 \title{Combine Metadata and Write to TSV}
 \usage{
-writeMetadataToTsv(objects, cols.remove = character(), write_out = T, ...)
+writeMetadataToTsv(objects, cols.remove = character(), write_out = TRUE, ...)
 }
 \arguments{
 \item{objects}{A list of objects, each containing a \verb{@meta.data} slot.}

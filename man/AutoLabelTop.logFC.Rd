@@ -47,9 +47,9 @@ is stored under \verb{@misc$df.markers$res...}, which location is assumed by def
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    combined.obj <- AutoLabelTop.logFC()
-    combined.obj$"cl.names.top.gene.res.0.5"
-  }
+if (interactive()) {
+  combined.obj <- AutoLabelTop.logFC()
+  combined.obj$"cl.names.top.gene.res.0.5"
+}
 }
 }
