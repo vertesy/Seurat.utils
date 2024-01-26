@@ -478,6 +478,31 @@ seu.RemoveMetadata <- function(
 }
 
 
+# _________________________________________________________________________________________________
+# Export metadata  ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+#' @title Save Metadata from a List of Seurat Objects
+#'
+#' @description This function takes a list of Seurat objects, extracts their metadata, and saves it to a file with a specified suffix.
+#'
+#' @param ls.obj A list of Seurat objects.
+#' @param suffix A character string to append to the filename when saving metadata.
+#' @return Invisible list of metadata frames
+#' @export
+saveLsSeuratMetadata <- function(ls.obj, suffix) {
+  stopifnot(is.list(ls.obj))  # Check if input is a list
+  message(length(ls.obj), " objects")
+  ls.meta <- setNames(lapply(ls.obj, function(x) x@meta.data), names(ls.obj))
+
+  ncolz <- unique(unlapply(ls.meta, ncol))
+  message(ncolz, " columns in meta.data")
+  if(length(ncolz) > 1) warning("Different column counts across meta.data!", immediate. = T)
+  xsave(ls.meta, suffix = suffix)
+  invisible(ls.meta)
+}
+
 
 # _________________________________________________________________________________________________
 # Subset metadata  ______________________________ ----
