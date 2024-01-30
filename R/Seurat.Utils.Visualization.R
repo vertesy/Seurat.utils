@@ -1314,7 +1314,7 @@ multiFeaturePlot.A4 <- function(
     }
 
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
-    ggsave(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
+    cowplot::ggsave2(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
   }
 
   if (subdir) MarkdownReports::create_set_OutDir(... = ParentDir)
@@ -1772,7 +1772,13 @@ save2umaps.A4 <- function(
     nrow = 2, ncol = 1,
     h = hA4 * scale, w = wA4 * scale, ...) { # Save 2 umaps on an A4 page.
   if (pname == FALSE) pname <- Stringendo::sppp(substitute(plot_list), suffix)
-  p1 <- cowplot::plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...)
+  p1 <- cowplot::plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol,
+                           labels = LETTERS[1:length(plot_list)], ...)
+  p1 <- cowplot::ggdraw(p1) +
+    theme(plot.background = element_rect(fill="white", color = NA))
+
+  iprint('Saved as:', pname)
+
   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
 
@@ -1797,7 +1803,14 @@ save4umaps.A4 <- function(
     nrow = 2, ncol = 2,
     h = wA4 * scale, w = hA4 * scale, ...) { # Save 4 umaps on an A4 page.
   if (pname == FALSE) pname <- Stringendo::sppp(substitute(plot_list), suffix)
-  p1 <- cowplot::plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol, labels = LETTERS[1:length(plot_list)], ...)
+  p1 <- cowplot::plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol,
+                           labels = LETTERS[1:length(plot_list)], ...)
+  # https://stackoverflow.com/questions/13691415/change-the-background-color-of-grid-arrange-output
+  p1 <- cowplot::ggdraw(p1) +
+    theme(plot.background = element_rect(fill="white", color = NA))
+
+  iprint('Saved as:', pname)
+  # fname <- MarkdownHelpers::ww.FnP_parser(extPNG(pname) )
   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
 
@@ -1839,7 +1852,7 @@ qqSaveGridA4 <- function(
     filename = fname,
     plot = pg.cf, base_height = height, base_width = width
   )
-  ww.FnP_parser(fname)
+  MarkdownHelpers::ww.FnP_parser(fname)
 }
 
 

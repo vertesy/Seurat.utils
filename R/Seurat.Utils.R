@@ -3579,6 +3579,7 @@ xsave <- function(
     out_dir = if (exists("OutDir")) OutDir else getwd(),
     background_job = FALSE,
     showMemObject = TRUE, saveParams = TRUE) {
+
   try(tictoc::tic(), silent = TRUE)
   if (showMemObject) {
     try(memory.biggest.objects(), silent = TRUE)
@@ -3589,7 +3590,7 @@ xsave <- function(
     try(obj@misc$all.genes <- all.genes, silent = TRUE)
   }
 
-  fnameBase <- trimws(kppu(prefix, substitute(obj), suffix, project, idate(Format = "%Y.%m.%d_%H.%M")), whitespace = "_") # , preset, "compr"
+  fnameBase <- trimws(kppu(prefix, substitute(obj), length(obj), suffix, project, idate(Format = "%Y.%m.%d_%H.%M")), whitespace = "_") # , preset, "compr"
   FNN <- paste0(out_dir, fnameBase, ".qs")
   print(paste0(substitute(obj), " <- xread('", FNN, "')"))
 
@@ -3598,9 +3599,7 @@ xsave <- function(
 
     message("Started saving as background job.")
     job::job(
-      {
-        qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
-      },
+      { qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset) },
       import = c("obj", "FNN", "nthreads", "preset")
     )
   } else {
