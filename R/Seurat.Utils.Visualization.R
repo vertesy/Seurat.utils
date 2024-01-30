@@ -389,7 +389,7 @@ ww.calc_helper <- function(obj, genes) {
 }
 
 # _________________________________________________________________________________________________
-#' @title scBarplot.FractionAboveThr
+#' @title  Calculate the fraction of cells per cluster above a certain threhold
 #'
 #' @description Create a bar plot showing the fraction of cells, within each cluster, that exceed a certain threshold based on a metadata column.
 #' @param thrX The threshold value to determine the fraction of cells. Default: 0.3
@@ -418,7 +418,7 @@ scBarplot.FractionAboveThr <- function(
     id.col = "cl.names.top.gene.res.0.3",
     obj = combined.obj, return.df = FALSE, label = FALSE,
     suffix = NULL, subtitle = id.col,
-    ...) { # Calculat the fraction of cells per cluster above a certain threhold
+    ...) {
   meta <- obj@meta.data
   metacol <- meta %>%
     dplyr::select(c(id.col, value.col))
@@ -511,7 +511,47 @@ scBarplot.FractionBelowThr <- function(
   }
 }
 
+# _________________________________________________________________________________________________
+#' @title Stacked Barplot of Metadata Categories for List of Seurat Objects
+#'
+#' @description Creates and saves a stacked barplot for a specified metadata category
+#' from a list of Seurat objects.
+#'
+#' @param ls.obj List of Seurat objects.
+#' @param meta.col The metadata column name to be used for the barplot.
+#' @return A ggplot object representing the stacked barplot.
+#'
+#' @importFrom ggExpress qbarplot.df
+#' @importFrom dplyr group_by summarise select
+#'
+#' @export
+scBarplotStackedMetaCateg_List <- function(ls.obj, meta.col
+                                           , ...) {
+  stopifnot(is.list(ls.obj), all(sapply(ls.obj, inherits, "Seurat")))
+  stopifnot(is.character(meta.col), length(meta.col) == 1)
 
+  # Creating a data frame for the stacked bar plot
+  df <- do.call(rbind, lapply(seq_along(ls.obj), function(x) {
+    data.frame(
+      Sample = names(ls.obj)[x],
+      Category = ls.obj[[x]]@meta.data[[meta.col]],
+      stringsAsFactors = FALSE
+    )
+  }))
+
+  # Summarizing to get counts of cells per category for each sample
+  df <- df %>%
+    dplyr::group_by(Sample, Category) %>%
+    dplyr::summarise(Cells = n(), .groups = 'drop') %>%
+    dplyr::select(Sample, Cells, Category)
+
+  TTL <- paste(meta.col, "per object")
+  p <- ggExpress::qbarplot.df(df, plotname = TTL
+                              , scale = TRUE, hide.legend = F
+                              , ...)
+  print(p)
+  return(df)
+}
 
 
 # _________________________________________________________________________________________________

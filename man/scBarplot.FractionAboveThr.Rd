@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{scBarplot.FractionAboveThr}
 \alias{scBarplot.FractionAboveThr}
-\title{scBarplot.FractionAboveThr}
+\title{Calculate the fraction of cells per cluster above a certain threhold}
 \usage{
 scBarplot.FractionAboveThr(
   thrX = 0.3,
