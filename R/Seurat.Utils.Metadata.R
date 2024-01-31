@@ -555,14 +555,15 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 # Combine metadata ______________________________ ----
 # _________________________________________________________________________________________________
 
-#' @title Combine Metadata and Write to TSV
+
+#' @title Combine Metadata from a list of Seurat objects and Write to TSV
 #'
 #' @description
-#' `writeMetadataToTsv` takes a list of objects, extracts their `@meta.data` slots,
+#' `writeMetadataToTsv` takes a list of ls.Obj, extracts their `@meta.data` slots,
 #' removes specified columns, checks for column consistency, creates a barplot showing the number
 #' of rows per object, and finally merges these into one large data frame.
 #'
-#' @param objects A list of objects, each containing a `@meta.data` slot.
+#' @param ls.Obj A list of objects, each containing a `@meta.data` slot.
 #' @param cols.remove A character vector of column names to be removed from each metadata data frame.
 #'        Default is an empty character vector, meaning no columns will be removed.
 #'
@@ -583,30 +584,28 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 #' The function currently contains a `browser()` call for debugging purposes, which should be removed in production.
 #'
 #' @export
-
-writeMetadataToTsv <- function(objects, cols.remove = character(), write_out = TRUE, ...) {
+writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(), write_out = TRUE, ...) {
   warning("writeMetadataToTsv is EXPERIMENTAL. It writes out subset of columns", immediate. = TRUE)
-  stopifnot(is.list(objects)) # Validate that input is a list
+  stopifnot(is.list(ls.Obj)) # Validate that input is a list
 
   # Extract metadata from each object and remove specified columns
-  metadataList <- lapply(objects, function(obj) {
+  metadataList <- lapply(ls.Obj, function(obj) {
     stopifnot("meta.data" %in% slotNames(obj)) # Check for meta.data slot
     metaData <- obj@meta.data
     metaData[, !(names(metaData) %in% cols.remove)]
   })
 
-
   # Find common columns and subset
   commonCols <- CodeAndRoll2::intersect.ls(lapply(metadataList, names))
   metadataList <- lapply(metadataList, function(df) df[, commonCols, drop = FALSE])
 
-  # Check if qbarplot is available and create a barplot showing the number of rows per object
 
+  # Check if qbarplot is available and create a barplot showing the number of rows per object
   metadata.cells.per.obj <- sapply(metadataList, nrow)
   print(metadata.cells.per.obj)
   pobj <- ggExpress::qbarplot(metadata.cells.per.obj,
-    label = metadata.cells.per.obj, ylab = "cells",
-    save = FALSE
+                              label = metadata.cells.per.obj, ylab = "cells",
+                              save = FALSE
   )
   print(pobj)
 
@@ -616,10 +615,10 @@ writeMetadataToTsv <- function(objects, cols.remove = character(), write_out = T
   # Print dimensions of the merged data frame
   print(dim(mergedMetaData))
 
-  # Return the merged data frame
-  return(mergedMetaData)
-
   if (write_out) ReadWriter::write.simple.tsv(mergedMetaData, ...)
+
+  # Return the merged data frame
+  invisible(mergedMetaData)
 }
 
 
