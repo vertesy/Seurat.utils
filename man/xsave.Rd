@@ -8,7 +8,7 @@ xsave(
   obj,
   prefix = NULL,
   suffix = NULL,
-  nthreads = 12,
+  nthreads = if (exists("CBE.params")) CBE.params$cpus else 12,
   preset = "high",
   project = getProject(),
   out_dir = if (exists("OutDir")) OutDir else getwd(),

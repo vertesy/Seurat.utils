@@ -559,7 +559,7 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 #' @title Combine Metadata from a list of Seurat objects and Write to TSV
 #'
 #' @description
-#' `writeMetadataToTsv` takes a list of ls.Obj, extracts their `@meta.data` slots,
+#' Formerly `writeMetadataToTsv`. `writeCombinedMetadataToTsvFromLsObj` takes a list of ls.Obj, extracts their `@meta.data` slots,
 #' removes specified columns, checks for column consistency, creates a barplot showing the number
 #' of rows per object, and finally merges these into one large data frame.
 #'

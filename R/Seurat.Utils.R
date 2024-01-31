@@ -3580,6 +3580,8 @@ xsave <- function(
     background_job = FALSE,
     showMemObject = TRUE, saveParams = TRUE) {
 
+  message(nthreads, " threads.")
+
   try(tictoc::tic(), silent = TRUE)
   if (showMemObject) {
     try(memory.biggest.objects(), silent = TRUE)
