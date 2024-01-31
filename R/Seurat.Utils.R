@@ -2786,7 +2786,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
           @counts, @data, @scale.data and @meta.features in obj@assays$YOUR_ASSAY.", immediate. = TRUE)
 
   if (nrow(obj) == length(newnames)) {
-    print(paste("Present:", SeuratObject::Layers(obj@assays[[assay]])))
+    iprint("Present:", SeuratObject::Layers(obj@assays[[assay]]))
     for (s in slots) {
       # browser()
       nrO <- nrow(SeuratObject::GetAssayData(object = obj, assay = assay, layer = s))
