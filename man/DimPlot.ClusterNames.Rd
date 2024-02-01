@@ -24,7 +24,7 @@ DimPlot.ClusterNames(
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{
-Plot UMAP with Cluster names. #
+Plot UMAP with Cluster names.
 }
 \examples{
 \dontrun{

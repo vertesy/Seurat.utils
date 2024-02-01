@@ -6,10 +6,13 @@
 \usage{
 qQC.plots.BrainOrg(
   obj = combined.obj,
-  title = "Top 4 QC markers on UMAP",
+  QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction"),
+  prefix = "QC.markers.4",
+  suffix = "",
+  title = sppu(prefix, QC.Features, suffix),
   nrow = 2,
   ncol = 2,
-  QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "log10.HGA_Markers")
+  ...
 )
 }
 \arguments{

@@ -1,27 +1,9 @@
+d# ____________________________________________________________________
+# Seurat.Utils.Visualization.R ----
 # ____________________________________________________________________
-# Seurat.utils ----
-# ____________________________________________________________________
-# source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
+# source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
 # devtools::load_all("~/GitHub/Packages/Seurat.utils")
 # devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
-
-# _________________________________________________________________________________________________
-# Cluster.Auto-naming.DE.R
-# _________________________________________________________________________________________________
-# source('~/GitHub/Packages/Seurat.utils/Functions/Cluster.Auto-naming.DE.R')
-# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Cluster.Auto-naming.DE.R"))
-
-# _________________________________________________________________________________________________
-# require(princurve) # only for AutoNumber.by.PrinCurve
-
-
-
-
-# _________________________________________________________________________________________________
-# plotting.filtering.R ______________________________ ----
-# ____________________________________________________________________
-# source('~/GitHub/Packages/Seurat.utils/Functions/plotting.filtering.R')
-# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.filtering.R"))
 
 
 # _________________________________________________________________________________________________
@@ -1496,7 +1478,45 @@ PlotTopGenesPerCluster <- function(
   }
 }
 
+# _________________________________________________________________________________________________
+#' @title qClusteringUMAPS
+#'
+#' @description Quickly plot 1-4 clustering resolutions on an a4 page
+#' @param dims Any numeric metadata columns
+#' @param obj Seurat object, Default: combined.obj
+#'
+#' @examples qQC.plots.BrainOrg.RV()
+#' @export
+qClusteringUMAPS <- function(
+    obj = combined.obj,
+    dims = na.omit.strip(GetClusteringRuns(obj)[1:4]),
+    prefix = "Clustering.Res",
+    suffix = "",
+    title = sppu(prefix,
+                 as.numeric(str_extract(dims, "\\d+\\.\\d+$")),
+                 suffix),
+    nrow = 2, ncol = 2,
+    ...) {
 
+  # Check that the QC markers are in the object
+  n.found <- intersect(dims, colnames(obj@meta.data))
+  message(kppws(length(n.found), " found of ", dims))
+  stopifnot(length(n.found) > 1)
+
+  px <- list(
+    "A" = clUMAP(dims[1], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "B" = clUMAP(dims[2], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "C" = clUMAP(dims[3], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "D" = clUMAP(dims[4], save.plot = FALSE, obj = obj, ...) + NoAxes()
+  )
+
+  ggExpress::qA4_grid_plot(
+    plot_list = px,
+    plotname = title,
+    w = hA4, h = wA4,
+    nrow = nrow, ncol = ncol
+  )
+}
 
 
 # _________________________________________________________________________________________________
@@ -1508,10 +1528,9 @@ PlotTopGenesPerCluster <- function(
 #'
 #' @examples qQC.plots.BrainOrg.RV()
 #' @export
-
 qQC.plots.BrainOrg <- function(
     obj = combined.obj,
-    QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "log10.HGA_Markers"),
+    QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction"),
     prefix = "QC.markers.4",
     suffix = "",
     title = sppu(prefix, QC.Features, suffix),
@@ -1519,9 +1538,9 @@ qQC.plots.BrainOrg <- function(
     ...) {
 
   # Check that the QC markers are in the object
-  n.found <- setdiff(QC.Features, colnames(obj@meta.data))
-  message(paste(length(n.found), " found of ", QC.Features))
-  stopif(length(n.found), message = paste("n.found:", n.found))
+  n.found <- intersect(QC.Features, colnames(obj@meta.data))
+  message(kppws(length(n.found), " found of ", QC.Features))
+  stopifnot(length(n.found) > 1)
 
   px <- list(
     "A" = qUMAP(QC.Features[1], save.plot = FALSE, obj = obj, ...) + NoAxes(),
@@ -1537,6 +1556,7 @@ qQC.plots.BrainOrg <- function(
     nrow = nrow, ncol = ncol
   )
 }
+
 
 # _________________________________________________________________________________________________
 #' @title qMarkerCheck.BrainOrg
