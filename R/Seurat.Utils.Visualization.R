@@ -1535,15 +1535,14 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE, suff
   } else {
     Signature.Genes.Top16 <- c(
       `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
-      , `Immature neurons` = "SLA",
-      Interneurons = "DLX6-AS1", Interneurons = "ERBB4",
-      `Intermediate progenitor` = "EOMES"
-      # ,  `Intermediate progenitor1` = "TAC3"
-      , `S-phase` = "TOP2A", `G2M-phase` = "HIST1H4C",
-      `oRG` = "ID4", `oRG` = "HOPX" # oRG outer radial glia
-      , Astroglia = "GFAP", Astrocyte = "S100B",
-      `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1",
-      `Low-Quality` = "POLR2A", `Choroid.Plexus` = "DCN"
+      , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
+      , Interneurons = "ERBB4", Interneurons = "SCGN"
+      , `Intermediate progenitor` = "EOMES" # ,  `Intermediate progenitor1` = "TAC3"
+      , `S-phase` = "TOP2A", `G2M-phase` = 'H4C3' # formerly: HIST1H4C
+      , `oRG` = "HOPX" # , `oRG` = "ID4" # oRG outer radial glia
+      , Astroglia = "GFAP", Astrocyte = "S100B"
+      , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
+      , `Low-Quality` = "POLR2A", `Choroid.Plexus` = "DCN"
       # , `Choroid.Plexus` = "OTX2", `Choroid.Plexus` = "BMP4"
     )
     print(Signature.Genes.Top16)
