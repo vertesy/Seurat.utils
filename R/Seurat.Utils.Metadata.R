@@ -584,7 +584,8 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 #' The function currently contains a `browser()` call for debugging purposes, which should be removed in production.
 #'
 #' @export
-writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(), write_out = TRUE, ...) {
+writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(),
+                                                save_as_qs = TRUE, save_as_tsv = TRUE, ...) {
   warning("writeMetadataToTsv is EXPERIMENTAL. It writes out subset of columns", immediate. = TRUE)
   stopifnot(is.list(ls.Obj)) # Validate that input is a list
 
@@ -615,7 +616,8 @@ writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(
   # Print dimensions of the merged data frame
   print(dim(mergedMetaData))
 
-  if (write_out) ReadWriter::write.simple.tsv(mergedMetaData, ...)
+  if (save_as_qs) xsave(mergedMetaData)
+  if (save_as_tsv) ReadWriter::write.simple.tsv(mergedMetaData, ...)
 
   # Return the merged data frame
   invisible(mergedMetaData)
