@@ -10,7 +10,8 @@ subsetSeuObj.and.Save(
   seed = 1989,
   dir = OutDir,
   min.features = p$min.features,
-  suffix = ""
+  suffix = fraction,
+  nthreads = if (exists("CBE.params")) CBE.params$cpus else 12
 )
 }
 \arguments{

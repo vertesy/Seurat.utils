@@ -1074,10 +1074,16 @@ subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = FALSE,
 #' @export
 subsetSeuObj.and.Save <- function(
     obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir,
-    min.features = p$"min.features", suffix = "") { # Subset a compressed Seurat Obj and save it in wd.
-  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ = fraction, seed_ = seed) # , nthreads = 6
+    min.features = p$"min.features", suffix = fraction,
+    nthreads = if(exists('CBE.params')) CBE.params$'cpus' else 12
+    ) {
+
+  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ = fraction, seed_ = seed)
   nr.cells.kept <- ncol(obj_Xpc)
-  # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)), suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
+
+  # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),
+  # suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
+
   xsave(obj_Xpc,
     suffix = ppp(suffix, nr.cells.kept, "cells.with.min.features", min.features),
     nthreads = nthreads, project = getProject(), showMemObject = TRUE, saveParams = FALSE
