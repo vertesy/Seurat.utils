@@ -4446,7 +4446,8 @@ cellID_to_cellType <- function(cellIDs, ident_w_names) {
 #'
 #' @param seuratObj A Seurat object.
 #' @param pattern A regular expression pattern to match layer names.
-#' @importFrom Seurat backup
+#'
+#' @importFrom CodeAndRoll2 grepv
 #' @return A Seurat object with specified layers removed.
 #' @export
 removeLayersByPattern <- function(seuratObj, pattern = 'sc[0-9][0-9]_') {

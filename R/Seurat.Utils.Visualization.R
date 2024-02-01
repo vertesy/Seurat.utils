@@ -927,21 +927,8 @@ plotGeneExpHist <- function(
 
 
 # _________________________________________________________________________________________________
-# plotting.dim.reduction.2D.R ______________________________ ----
+# Plotting 2D UMAPs, etc. ______________________________ ----
 # _________________________________________________________________________________________________
-# source('~/GitHub/Packages/Seurat.utils/Functions/plotting.dim.reduction.2D.R')
-# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.dim.reduction.2D.R"))
-# Source: self + web
-
-# Requirements __________________________________________
-# library(plotly)
-# try(source("~/GitHub/Packages/ggExpressDev/ggExpress.functions.R"), silent = TRUE)
-# try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpress.functions.R"), silent = TRUE)
-
-# May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= FALSE) # generic utilities funtions
-# require('MarkdownReports') # require("devtools")
-
 
 # _________________________________________________________________________________________________
 #' @title qUMAP
@@ -1222,6 +1209,34 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 
 
 # _________________________________________________________________________________________________
+#' @title DimPlot.ClusterNames
+#'
+#' @description Plot UMAP with Cluster names.
+#' @param obj Seurat object, Default: combined.obj
+#' @param ident identity used, Default: 'cl.names.top.gene.res.0.5'
+#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @param title Title of the plot, Default: ident
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   DimPlot.ClusterNames()
+#' }
+#' }
+#' @export
+DimPlot.ClusterNames <- function(obj = combined.obj
+                                 , ident = "cl.names.top.gene.res.0.5", reduction = "umap", title = ident, ...) {
+  Seurat::DimPlot(object = obj, reduction = reduction, group.by = ident, label = TRUE, repel = TRUE, ...) + NoLegend() + ggtitle(title)
+}
+
+
+
+
+# _________________________________________________________________________________________________
+# Multiplex 2D UMAPs, etc. ______________________________ ----
+
+
+# _________________________________________________________________________________________________
 #' @title multiFeaturePlot.A4
 #'
 #' @description Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
@@ -1495,19 +1510,27 @@ PlotTopGenesPerCluster <- function(
 #' @export
 
 qQC.plots.BrainOrg <- function(
-    obj = combined.obj, title = "Top 4 QC markers on UMAP",
+    obj = combined.obj,
+    QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "log10.HGA_Markers"),
+    prefix = "QC.markers.4",
+    suffix = "",
+    title = sppu(prefix, QC.Features, suffix),
     nrow = 2, ncol = 2,
-    QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "log10.HGA_Markers")) {
-  print(QC.Features)
+    ...) {
+
+  # Check that the QC markers are in the object
   n.found <- setdiff(QC.Features, colnames(obj@meta.data))
+  message(paste(length(n.found), " found of ", QC.Features))
   stopif(length(n.found), message = paste("n.found:", n.found))
+
   px <- list(
-    "A" = qUMAP(QC.Features[1], save.plot = FALSE, obj = obj) + NoAxes(),
-    "B" = qUMAP(QC.Features[2], save.plot = FALSE, obj = obj) + NoAxes(),
-    "C" = qUMAP(QC.Features[3], save.plot = FALSE, obj = obj) + NoAxes(),
-    "D" = qUMAP(QC.Features[4], save.plot = FALSE, obj = obj) + NoAxes()
+    "A" = qUMAP(QC.Features[1], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "B" = qUMAP(QC.Features[2], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "C" = qUMAP(QC.Features[3], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "D" = qUMAP(QC.Features[4], save.plot = FALSE, obj = obj, ...) + NoAxes()
   )
-  qA4_grid_plot(
+
+  ggExpress::qA4_grid_plot(
     plot_list = px,
     plotname = title,
     w = hA4, h = wA4,
@@ -1579,34 +1602,13 @@ PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = "expr.q99") { # 
 
 
 
-# _________________________________________________________________________________________________
-#' @title DimPlot.ClusterNames
-#'
-#' @description Plot UMAP with Cluster names. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param ident identity used, Default: 'cl.names.top.gene.res.0.5'
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param title Title of the plot, Default: ident
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   DimPlot.ClusterNames()
-#' }
-#' }
-#' @export
-DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster names.
-                                 , ident = "cl.names.top.gene.res.0.5", reduction = "umap", title = ident, ...) {
-  Seurat::DimPlot(object = obj, reduction = reduction, group.by = ident, label = TRUE, repel = TRUE, ...) + NoLegend() + ggtitle(title)
-}
+
 
 # _________________________________________________________________________________________________
 # Manipulating UMAP and PCA  ______________________________ ----
 # _________________________________________________________________________________________________
 
 
-
-# _________________________________________________________________________________________________
 #' @title FlipReductionCoordinates
 #'
 #' @description Flip reduction coordinates (like UMAP upside down).
@@ -1626,7 +1628,7 @@ DimPlot.ClusterNames <- function(obj = combined.obj # Plot UMAP with Cluster nam
 #' @export
 FlipReductionCoordinates <- function(
     obj = combined.obj, dim = 2, reduction = "umap",
-    flip = c("x", "y", "xy", NULL)[1], FlipReductionBackupToo = TRUE) { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+    flip = c("x", "y", "xy", NULL)[1], FlipReductionBackupToo = TRUE) {
   coordinates <- Embeddings(obj, reduction = reduction)
   stopifnot(ncol(coordinates) == dim)
 
