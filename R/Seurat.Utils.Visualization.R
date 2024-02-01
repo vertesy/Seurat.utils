@@ -1490,7 +1490,7 @@ PlotTopGenesPerCluster <- function(
 qClusteringUMAPS <- function(
     obj = combined.obj,
     dims = na.omit.strip(GetClusteringRuns(obj)[1:4]),
-    prefix = "Clustering.Res",
+    prefix = "Clustering.UMAP.Res",
     suffix = "",
     title = sppu(prefix,
                  as.numeric(str_extract(dims, "\\d+\\.\\d+$")),
@@ -1531,7 +1531,7 @@ qClusteringUMAPS <- function(
 qQC.plots.BrainOrg <- function(
     obj = combined.obj,
     QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction"),
-    prefix = "QC.markers.4",
+    prefix = "QC.markers.4.UMAP",
     suffix = "",
     title = sppu(prefix, QC.Features, suffix),
     nrow = 2, ncol = 2,
