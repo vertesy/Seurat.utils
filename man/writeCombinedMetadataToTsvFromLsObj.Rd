@@ -7,7 +7,8 @@
 writeCombinedMetadataToTsvFromLsObj(
   ls.Obj,
   cols.remove = character(),
-  write_out = TRUE,
+  save_as_qs = TRUE,
+  save_as_tsv = TRUE,
   ...
 )
 }

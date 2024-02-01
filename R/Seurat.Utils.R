@@ -4432,3 +4432,23 @@ cellID_to_cellType_v1 <- function(cellIDs, ident, obj = aaa) {
 cellID_to_cellType <- function(cellIDs, ident_w_names) {
   ident_w_names[cellIDs]
 }
+
+#' @title Remove Layers from Seurat Object by Pattern
+#'
+#' @description This function removes layers from a Seurat object's RNA assay based on a specified regular expression pattern.
+#' It first backs up the object before removing layers that match the pattern.
+#'
+#' @param seuratObj A Seurat object.
+#' @param pattern A regular expression pattern to match layer names.
+#' @importFrom Seurat backup
+#' @return A Seurat object with specified layers removed.
+#' @export
+removeLayersByPattern <- function(seuratObj, pattern = 'sc[0-9][0-9]_') {
+  stopifnot("seuratObj must be a Seurat object" = inherits(seuratObj, "Seurat") )
+
+  layerNames <- names(seuratObj@assays$RNA@layers)
+  layersToRemove <- CodeAndRoll2::grepv(pattern, x = layerNames, perl = TRUE)
+  seuratObj@assays$RNA@layers[layersToRemove] <- NULL
+  return(seuratObj)
+}
+
