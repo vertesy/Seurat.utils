@@ -7,7 +7,7 @@
 qQC.plots.BrainOrg(
   obj = combined.obj,
   QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction"),
-  prefix = "QC.markers.4",
+  prefix = "QC.markers.4.UMAP",
   suffix = "",
   title = sppu(prefix, QC.Features, suffix),
   nrow = 2,
