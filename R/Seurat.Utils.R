@@ -4454,8 +4454,6 @@ removeScaleData <- function(ls.obj) {
 }
 
 
-
-
 #' @title Remove Layers from Seurat Object by Pattern
 #'
 #' @description This function removes layers from a Seurat object's RNA assay based on a specified regular expression pattern.
