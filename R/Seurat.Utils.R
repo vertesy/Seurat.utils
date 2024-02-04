@@ -4441,6 +4441,21 @@ cellID_to_cellType <- function(cellIDs, ident_w_names) {
 
 
 
+#' @title Remove Scale Data from Seurat Objects
+#'
+#' @param ls.obj A list of Seurat objects.
+#' @return A list of Seurat objects with `scale.data` slot removed from RNA assays.
+#' @examples
+#' # Assuming `seuratList` is a list of Seurat objects
+#' seuratList <- removeScaleData(seuratList)
+#' @export
+removeScaleData <- function(ls.obj) {
+  lapply(ls.obj, function(x) { x@assays$RNA@layers$scale.data <- NULL; x })
+}
+
+
+
+
 #' @title Remove Layers from Seurat Object by Pattern
 #'
 #' @description This function removes layers from a Seurat object's RNA assay based on a specified regular expression pattern.

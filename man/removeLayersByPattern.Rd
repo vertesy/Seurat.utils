@@ -4,12 +4,12 @@
 \alias{removeLayersByPattern}
 \title{Remove Layers from Seurat Object by Pattern}
 \usage{
-removeLayersByPattern(seuratObj, pattern = "sc[0-9][0-9]_")
+removeLayersByPattern(obj, pattern = "sc[0-9][0-9]_", perl = TRUE)
 }
 \arguments{
-\item{seuratObj}{A Seurat object.}
-
 \item{pattern}{A regular expression pattern to match layer names.}
+
+\item{seuratObj}{A Seurat object.}
 }
 \value{
 A Seurat object with specified layers removed.
