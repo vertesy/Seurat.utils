@@ -1064,7 +1064,7 @@ copyMiscElements <- function(obj.from, obj.to, elements.needed, overwrite = TRUE
   elements.from <- names(obj.from@misc)
   missing <- setdiff(elements.needed, elements.from)
   if (length(missing) > 0) {
-    warning("Missing elements in obj.from@misc: ", paste(missing, collapse = ", "))
+    warning("Missing elements in obj.from@misc: ", paste(missing, collapse = ", "), immediate. = T)
   }
 
   # Check for existing elements in obj.to@misc
@@ -1075,7 +1075,7 @@ copyMiscElements <- function(obj.from, obj.to, elements.needed, overwrite = TRUE
            paste(elements.already.exisiting, collapse = ", "))
     } else {
       warning("Overwriting the following elements in obj.to@misc: ",
-              paste(elements.already.exisiting, collapse = ", "))
+              paste(elements.already.exisiting, collapse = ", "), immediate. = T)
     }
   }
 
@@ -1088,6 +1088,43 @@ copyMiscElements <- function(obj.from, obj.to, elements.needed, overwrite = TRUE
 
   return(obj.to)
 }
+
+
+# _________________________________________________________________________________________________
+#' @title Copy Tools Slots from Multiple Seurat Objects
+#'
+#' @description This function copies the `@tools` slots from a list of Seurat objects into a new slot
+#' of a target Seurat object. This allows for the aggregation of tools information from multiple
+#' experiments or datasets into a single, consolidated Seurat object.
+#'
+#' @param ls.obj A list of Seurat objects from which the `@tools` slots will be copied.
+#' @param obj.to The target Seurat object to which the `@tools` slots will be added.
+#' @param overwrite A logical parameter that is kept for compatibility but not used in this version.
+#' Its presence does not affect the function's behavior.
+#' @param new.slot The name of the new slot within `obj.to@tools` where the copied `@tools` information
+#' will be stored. This allows for the organization of copied tools under a specific label, facilitating
+#' easy access and interpretation.
+#' @return Returns the modified target Seurat object (`obj.to`) with a new `@tools` slot containing
+#' the copied information from the list of Seurat objects.
+#' @examples
+#' # Assuming `ls.obj` is a list of Seurat objects and `obj.to` is a target Seurat object
+#' obj.to <- copyCompleteToolsSlots(ls.obj, obj.to, overwrite = TRUE, new.slot = "per.experiment")
+#' @export
+copyCompleteToolsSlots <- function(ls.obj, obj.to, overwrite = TRUE, new.slot = "per.experiment") {
+  stopifnot(inherits(obj.to, "Seurat"),
+            all(sapply(ls.obj, inherits, "Seurat")))
+
+  ls.tools <- lapply(ls.obj, function(x) x@tools)
+  obj.to@tools[[new.slot]] <- ls.tools
+
+  return(obj.to)
+}
+
+
+# _________________________________________________________________________________________________
+
+
+# _________________________________________________________________________________________________
 
 
 
