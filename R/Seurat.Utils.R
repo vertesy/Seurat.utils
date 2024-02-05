@@ -1027,6 +1027,68 @@ create_scCombinedMeta <- function(experiment, project_ = getProject()) {
 
 
 
+# _________________________________________________________________________________________________
+# Merging objects and @misc ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+#' @title Copy Specified Elements from One Seurat Object's @misc to Another's
+#'
+#' @description Copies specified elements from the `@misc` slot of one Seurat object to the `@misc` slot
+#' of another. It warns if some specified elements are missing in the source object or if elements are
+#' overwritten in the destination object, depending on the `overwrite` argument.
+#'
+#' @param obj.from The source Seurat object from which elements in the `@misc` slot are to be copied.
+#' @param obj.to The destination Seurat object to which elements in the `@misc` slot are to be copied.
+#' @param elements.needed A vector of strings specifying the names of the elements in the `@misc` slot of
+#' `obj.from` that should be copied to `obj.to`.
+#' @param overwrite Logical indicating whether to overwrite elements in `obj.to` that already exist.
+#' If `TRUE`, existing elements will be overwritten with a warning; if `FALSE`, the function will
+#' stop with an error if it tries to copy an element that already exists in `obj.to`.
+#' @return Returns the modified destination Seurat object (`obj.to`) with the specified elements
+#' added to or updated in its `@misc` slot.
+#' @examples
+#' # Assuming `obj1` and `obj2` are Seurat objects and you wish to copy specific elements
+#' # from obj1 to obj2, possibly overwriting existing elements in obj2
+#' obj2 <- copyMiscElements(obj1, obj2, c("element1", "element2"), overwrite = TRUE)
+#'
+#' @export
+copyMiscElements <- function(obj.from, obj.to, elements.needed, overwrite = TRUE) {
+
+  obj.from <- ww.get.1st.Seur.element(obj.from)
+
+  stopifnot(inherits(obj.from, "Seurat"),
+            inherits(obj.to, "Seurat"))
+
+  # Check for missing elements in obj.to@misc
+  elements.from <- names(obj.from@misc)
+  missing <- setdiff(elements.needed, elements.from)
+  if (length(missing) > 0) {
+    warning("Missing elements in obj.from@misc: ", paste(missing, collapse = ", "))
+  }
+
+  # Check for existing elements in obj.to@misc
+  elements.already.exisiting <- intersect(elements.needed, names(obj.to@misc))
+  if (length(elements.already.exisiting) > 0) {
+    if (!overwrite) {
+      stop("The following elements already exist in obj.to@misc and 'overwrite' is FALSE: ",
+           paste(elements.already.exisiting, collapse = ", "))
+    } else {
+      warning("Overwriting the following elements in obj.to@misc: ",
+              paste(elements.already.exisiting, collapse = ", "))
+    }
+  }
+
+  # Copy specified elements from obj.from to obj.to
+  existingElementsFrom <- intersect(elements.needed, names(obj.from@misc))
+  for (element in existingElementsFrom) {
+    obj.to@misc[[element]] <- obj.from@misc[[element]]
+  }
+  iprint("@misc contains: ", names(obj.to@misc))
+
+  return(obj.to)
+}
+
 
 
 # _________________________________________________________________________________________________
