@@ -2902,9 +2902,9 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
   }
 
   LayersFound <- SeuratObject::Layers(obj@assays[[assay]])
-  iprint("Present: ", LayersFound)
+  iprint("Present: ", sort(LayersFound))
 
-  slots <- intersect(slots, LayersFound)
+  slots <- sort(intersect(slots, LayersFound))
   iprint("Replaced: ", slots)
 
   for (slotX in slots) {
@@ -2915,7 +2915,6 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
     nrN <- nrow(SeuratObject::GetAssayData(object = obj, assay = assay, layer = slotX))
     stopifnot(nrN == nrO)
   }
-
   return(obj)
 }
 
