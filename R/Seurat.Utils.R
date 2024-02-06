@@ -2884,22 +2884,38 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceU
 RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
                               newnames = HGNC.updated[[i]]$Suggested.Symbol,
                               assay = "RNA",
-                              slots = c("data", "counts", "scale.data", "meta.features")) {
+                              slots = c("data", "counts", "meta.features")
+) {
+  message(assay)
   warning("Run this before integration and downstream processing. It only attempts to change
-          @counts, @data, @scale.data and @meta.features in obj@assays$YOUR_ASSAY.", immediate. = TRUE)
+          @counts, @data, and @meta.features in obj@assays$YOUR_ASSAY.", immediate. = TRUE)
 
-  if (nrow(obj) == length(newnames)) {
-    iprint("Present:", SeuratObject::Layers(obj@assays[[assay]]))
-    for (s in slots) {
-      # browser()
-      nrO <- nrow(SeuratObject::GetAssayData(object = obj, assay = assay, layer = s))
-      obj <- .check_and_rename(obj, assay, newnames = newnames, layer.name = s)
-      nrN <- nrow(SeuratObject::GetAssayData(object = obj, assay = assay, layer = s))
-      stopifnot(nrN == nrO)
-    }
-  } else {
-    warning("Unequal gene sets: nrow(assayobj) != nrow(newnames). No renaming performed!", immediate. = TRUE)
+  stopifnot("Unequal gene name sets: nrow(assayobj) != nrow(newnames):" =
+              nrow(obj) == length(newnames) )
+
+  if(obj@version < 5)  warning("obj@version < 5. Old versions are not supported. Update the obj!", immediate. = T)
+
+  if("scale.data" %in% slots) {
+    n_genes_sc_dta <- nrow(obj@assays[[assay]]$"scale.data")
+    stopifnot("scale.data does has different number of genes than newnames!" =
+                n_genes_sc_dta == length(newnames))
   }
+
+  LayersFound <- SeuratObject::Layers(obj@assays[[assay]])
+  iprint("Present: ", LayersFound)
+
+  slots <- intersect(slots, LayersFound)
+  iprint("Replaced: ", slots)
+
+  for (slotX in slots) {
+    print(slotX)
+    if (slotX == "scale.data") browser()
+    nrO <- nrow(SeuratObject::GetAssayData(object = obj, assay = assay, layer = slotX))
+    obj <- .check_and_rename(obj, assay, newnames = newnames, layer.name = slotX)
+    nrN <- nrow(SeuratObject::GetAssayData(object = obj, assay = assay, layer = slotX))
+    stopifnot(nrN == nrO)
+  }
+
   return(obj)
 }
 
