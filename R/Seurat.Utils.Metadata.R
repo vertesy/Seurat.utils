@@ -899,6 +899,61 @@ plotMetadataCategPie <- function(
 
 
 
+
+#' @title Rename Azimuth Columns in Seurat Object
+#'
+#' @description Dynamically renames specified metadata columns in a Seurat object, particularly those
+#' prefixed with "predicted." and the "mapping.score" column, by applying a new prefix
+#' that combines a user-defined prefix and a reference name.
+#'
+#' @param obj A Seurat object containing metadata in `meta.data` that needs column names to be renamed.
+#' @param ref A character string specifying the reference; defaults to "humancortexref".
+#'            The "ref" part of the string will be removed in the new column names.
+#' @param prefix A character string to prefix to the column names, defaulting to "azi".
+#'               This prefix is combined with the modified `ref` to form the new column names.
+#' @param azim_cols Azimuth columns
+#' @return Returns the Seurat object with renamed metadata columns.
+#'
+#' @examples
+#' # Assuming `obj` is a Seurat object with metadata columns following the "predicted." pattern:
+#' obj <- renameAzimuthColumns(obj, ref = "humancortexref", prefix = "azi")
+#' # This will rename columns like "predicted.class" to "azi.humancortex.class"
+#' # and include "mapping.score" as "azi.humancortex.mapping.score"
+#'
+#' @export
+renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1], prefix = "azi",
+                                 azim_cols = CodeAndRoll2::grepv(x = tail(colnames(obj@meta.data), 10), pattern = "predicted.")
+) {
+  stopifnot(
+    "obj must be a Seurat object" = is(obj, "Seurat"),
+    "azim_cols must be non-empty" = length(azim_cols) > 0
+  )
+
+  ref <- sub(pattern = "ref", replacement = '', x = ref)
+  iprint(length(azim_cols), "azim_cols:", azim_cols)
+
+  # Extract the column names of meta.data
+  meta_col_names <- colnames(obj@meta.data)
+
+  # Loop through the azim_cols and replace the prefix if they exist in meta.data
+  for (azim_col in azim_cols) {
+    if (azim_col %in% meta_col_names) {
+      # Create the new column name by replacing "predicted." with the new prefix
+      new_col_name <- sub(pattern = "^predicted\\.", replacement = kpp(prefix, ref, ''), x = azim_col)
+      names(obj@meta.data)[names(obj@meta.data) == azim_col] <- new_col_name
+    }
+  }
+
+  if ("mapping.score" %in% colnames(obj@meta.data)) {
+    names(obj@meta.data)[names(obj@meta.data) == "mapping.score"] <- kpp(prefix, ref, 'mapping.score')
+  }
+
+  print(tail(colnames(obj@meta.data), 10))
+  # return(obj)
+}
+
+
+
 # _________________________________________________________________________________________________
 #' Transfer labels from a reference Seurat object to a query Seurat object
 #'
