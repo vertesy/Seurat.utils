@@ -370,6 +370,339 @@ ww.calc_helper <- function(obj, genes) {
   }
 }
 
+
+
+# _________________________________________________________________________________________________
+# Barplots / Compositional analysis ______________________________ ----
+# _________________________________________________________________________________________________
+
+#' @title get.clustercomposition
+#'
+#' @description Get cluster composition: which datasets contribute to each cluster?
+#' @param obj Seurat object, Default: combined.obj
+#' @param x Bars along the X axis, Default: 'integrated_snn_res.0.3'
+#' @param y Vertical split of each bar, Default: 'project'
+#' @param color Color, Default: y
+#' @param plot  Show plot, Default: TRUE
+#' @param ScaleTo100pc Scale the Y Axis, Default: TRUE
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @examples get.clustercomposition()
+#' get.clustercomposition()
+#' @export
+#' @importFrom dplyr group_by_
+#' @importFrom scales percent_format
+get.clustercomposition <- function(
+    obj = combined.obj, ident = "integrated_snn_res.0.3", splitby = "ShortNames",
+    color = y,
+    plot = TRUE, ScaleTo100pc = TRUE,
+    ...) {
+  setwd(OutDir)
+  clUMAP(obj = obj, ident = x, save.plot = TRUE, suffix = "as.in.barplot")
+
+  (df.meta <- obj@meta.data[, c(ident, splitby)])
+
+  df.meta %>%
+    dplyr::group_by_(splitby) %>%
+    summarise()
+
+  categ.per.cluster <- ggbarplot(obj@meta.data,
+                                 x = x,
+                                 y = y,
+                                 color = y,
+                                 ...
+  )
+  if (ScaleTo100pc) categ.per.cluster <- categ.per.cluster + scale_y_discrete(labels = scales::percent_format())
+  if (plot) categ.per.cluster
+
+  ggExpress::qqSave(categ.per.cluster, ...)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title Generate Barplot of Cell Fractions
+#'
+#' @description This function generates a bar plot of cell fractions per cluster
+#' from a Seurat object. It offers the option to downsample data, which equalizes
+#' the number of cells in each group to the number in the smallest group.
+#' The plot's bars are grouped by one variable and filled by another.
+#'
+#' @param obj A Seurat object. The default is 'combined.obj'.
+#' @param group.by The variable to group by for the bar plot. The default is 'integrated_snn_res.0.5.ordered'.
+#' @param fill.by The variable to fill by for the bar plot. The default is 'age'.
+#' @param downsample Logical indicating whether to downsample data. The default is TRUE.
+#' @param plotname The title of the plot. The default is 'paste(toTitleCase(fill.by), "proportions")'.
+#' @param hlines A numeric vector for the y-intercepts of horizontal lines on the plot. The default is c(0.25, 0.5, 0.75).
+#' @param return_table Logical flag indicating whether to return a contingency table instead of a bar plot. Default: FALSE.
+#' @param save_plot Logical flag indicating whether to save the plot. Default is TRUE.
+#' @param seedNr Seed for random number generation. The default is 1989.
+#' @param w The width of the plot. The default is 10.
+#' @param h The height of the plot. The default is calculated as 'ceiling(0.5 * w)'.
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @param show_numbers Show numbers on bar
+#' @param draw_plot Show plot
+#' @param min_frequency Smallest fraction to show individually. Default: 0.025
+#' @param custom_col_palette Use custom color palette? Default: c("Standard", "glasbey")[1]
+#' @param suffix Plot suffix
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = TRUE)
+#'   scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = FALSE)
+#' }
+#' }
+#' @seealso
+#'  \code{\link[tools]{toTitleCase}}
+#' @importFrom tools toTitleCase
+#' @importFrom dplyr sample_n
+#'
+#' @export
+scBarplot.CellFractions <- function(
+    obj = combined.obj,
+    group.by = "integrated_snn_res.0.5.ordered", fill.by = "age",
+    downsample = TRUE,
+    plotname = paste(tools::toTitleCase(fill.by), "proportions"),
+    suffix = NULL,
+    sub_title = suffix,
+    hlines = c(.25, .5, .75),
+    return_table = FALSE,
+    save_plot = TRUE,
+    seedNr = 1989,
+    w = 10, h = ceiling(0.5 * w),
+    draw_plot = TRUE,
+    show_numbers = TRUE,
+    min_frequency = 0.025,
+    custom_col_palette = c("Standard", "glasbey")[1],
+    ...) {
+  set.seed(seedNr)
+  pname.suffix <- capt.suffix <- NULL
+  if (downsample) {
+    tbl_X <- table(obj@meta.data[[fill.by]])
+    downsample <- min(tbl_X)
+    largest_grp <- max(tbl_X)
+    pname.suffix <- "(downsampled)"
+    capt.suffix <- paste("Downsampled from (max)", largest_grp, "\nto", downsample, "cells in the smallest", fill.by, "group.")
+  }
+  caption_ <- paste("Numbers denote # cells.", capt.suffix)
+  if (min_frequency > 0) caption_ <- paste(caption_, "\nCategories <", percentage_formatter(min_frequency), "are shown together as 'Other'")
+  pname_ <- paste(plotname, pname.suffix)
+
+  contingency.table <- table(obj@meta.data[, group.by], obj@meta.data[, fill.by])
+  print(contingency.table)
+
+  if (draw_plot) {
+    # calculate the proportions and add up small fractions
+    prop_table <- obj@meta.data %>%
+      group_by(!!as.name(fill.by)) %>%
+      summarise(proportion = n() / nrow(obj@meta.data)) %>%
+      mutate("category" = ifelse(proportion < min_frequency, "Other", as.character(!!as.name(fill.by))))
+
+    print(unique(prop_table$category))
+    palette_x <- color_scale[unique(prop_table$category)]
+    print(palette_x)
+
+    # join the proportions back to the original data
+    obj@meta.data <- left_join(obj@meta.data, prop_table, by = fill.by)
+
+    subtt <- FixPlotName(group.by, sub_title)
+    pl <- obj@meta.data %>%
+      {
+        if (downsample) dplyr::sample_n(., downsample) else .
+      } %>%
+      group_by(group_by = !!sym(group.by)) %>%
+      ggplot(aes(fill = category, x = !!sym(group.by))) +
+      geom_hline(yintercept = hlines, lwd = 1.5) +
+      geom_bar(position = "fill") +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      labs(
+        title = pname_, subtitle = subtt,
+        x = "Clusters", y = "Fraction", caption = caption_
+      ) +
+      theme_classic() +
+      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+    if (custom_col_palette != "Standard") {
+      palette_x <- color_scale
+      palette_x <- palette_x[unique(prop_table$category)]
+      pl <- pl + scale_fill_manual(values = palette_x)
+    }
+
+    if (show_numbers) {
+      pl <- pl + geom_text(aes(label = ..count..), stat = "count", position = position_fill(vjust = 0.5))
+    }
+
+    if (save_plot) {
+      sfx <- shorten_clustering_names(group.by)
+      if (!is.null(suffix)) sfx <- sppp(sfx, suffix)
+      if (min_frequency) sfx <- sppp(sfx, min_frequency)
+      qqSave(
+        ggobj = pl, title = plotname, also.pdf = TRUE, w = w, h = h,
+        suffix = sfx, ...
+      )
+    } # save_plot
+  } # draw_plot
+
+  if (return_table) {
+    ls.tables <- list(
+      "values" = contingency.table,
+      "percentages" = CodeAndRoll2::rowDivide(mat = contingency.table, vec = rowSums(contingency.table))
+    )
+    return(ls.tables)
+  } else {
+    return(pl)
+  } # else barplot
+}
+
+
+
+
+
+# _________________________________________________________________________________________________
+#' @title scBarplot.CellsPerCluster
+#'
+#' @description Barplot the Fraction of cells per cluster. (dupl?)
+#' @param obj Seurat object, Default: combined.obj
+#' @param ident identity used, Default: 'cl.names.KnownMarkers.0.5'
+#' @param label True: displays cell count, but you can provide anything in a vector.
+#' @param palette Color palette. Default: glasbey.
+#' @param return_table Should it return the plotting data instead of the plot?
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @param sort Sort by cluster size? Default: FALSE
+#' @param suffix File name suffix
+#'
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   scBarplot.CellsPerCluster()
+#'   scBarplot.CellsPerCluster(sort = TRUE)
+#' }
+#' }
+#' @export scBarplot.CellsPerCluster
+
+scBarplot.CellsPerCluster <- function(
+    ident = GetOrderedClusteringRuns()[1],
+    sort = FALSE,
+    label = list(TRUE, "percent")[[1]],
+    suffix = if (label == "percent") "percent" else NULL,
+    palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
+    obj = combined.obj,
+    return_table = FALSE,
+    ylab_adj = 1.1,
+    ...) {
+  cell.per.cl <- obj[[ident]][, 1]
+  cell.per.cluster <- (table(cell.per.cl))
+  if (sort) cell.per.cluster <- sort(cell.per.cluster)
+  lbl <- if (isFALSE(label)) {
+    NULL
+  } else if (label == "percent") {
+    percentage_formatter(cell.per.cluster / sum(cell.per.cluster))
+  } else if (isTRUE(label)) {
+    cell.per.cluster
+  } else {
+    label
+  }
+
+  n.clusters <- length(cell.per.cluster)
+  pl <- ggExpress::qbarplot(cell.per.cluster,
+                            subtitle = ident,
+                            suffix = kpp(ident, suffix),
+                            col = 1:n.clusters,
+                            xlab.angle = 45,
+                            ylim = c(0, ylab_adj * max(cell.per.cluster)),
+                            label = lbl,
+                            ylab = "Cells"
+                            # , col = getClusterColors(ident = ident, show = TRUE)
+                            , palette_use = DiscretePalette(n = n.clusters, palette = palette),
+                            ...
+  )
+
+  if (return_table) {
+    return(cell.per.cluster)
+  } else {
+    return(pl)
+  }
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title scBarplot.CellsPerObject
+#'
+#' @description Creates a bar plot for the number of cells per object from a list of Seurat objects.
+#' @param ls.Seu A list of Seurat objects. Default: ls.Seurat.
+#' @param plotname A string specifying the title of the plot. Default: 'Nr.Cells.After.Filtering'.
+#' @param xlab.angle The angle at which the x-axis labels should be displayed. Default: 45.
+#' @param names A logical value indicating whether to use the provided names as labels on the x-axis. If FALSE, the names of the Seurat objects will be used. Default: FALSE.
+#' @param ... Additional arguments to be passed to the qbarplot function.
+#' @export
+scBarplot.CellsPerObject <- function(
+    ls.Seu = ls.Seurat,
+    plotname = "Nr.Cells.After.Filtering", xlab.angle = 45,
+    names = FALSE, ...) {
+  cellCounts <- unlapply(ls.Seu, ncol)
+  names(cellCounts) <- if (length(names) == length(ls.Seurat)) names else names(ls.Seurat)
+  qbarplot(cellCounts,
+           plotname = plotname,
+           subtitle = paste(sum(cellCounts), "cells in total"),
+           label = cellCounts,
+           xlab.angle = xlab.angle,
+           ylab = "Cells",
+           ...
+  )
+}
+
+
+# _________________________________________________________________________________________________
+#' @title plot.clust.size.distr
+#'
+#' @description Creates a bar plot or histogram of the cluster size distribution from a given Seurat object.
+#' @param obj The Seurat object to be used for the plot. Default: combined.obj.
+#' @param ident The identity or clustering to be used for the plot. Default: The second result from GetClusteringRuns().
+#' @param plot A logical value indicating whether to plot the data. If FALSE, a vector of the cluster size distribution will be returned. Default: TRUE.
+#' @param thr.hist A threshold for the number of clusters above which a histogram will be plotted instead of a bar plot. Default: 30.
+#' @param ... Additional arguments to be passed to the internally called plotting functions.
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   plot.clust.size.distr()
+#' }
+#' }
+#' @export plot.clust.size.distr
+#' @importFrom Stringendo percentage_formatter
+plot.clust.size.distr <- function(
+    obj = combined.obj, ident = GetClusteringRuns(obj)[2],
+    plot = TRUE, thr.hist = 30, ...) {
+  clust.size.distr <- table(obj@meta.data[, ident])
+  print(clust.size.distr)
+  resX <- gsub(pattern = ".*res\\.", replacement = "", x = ident)
+  ptitle <- ppp("clust.size.distr", ident)
+  psubtitle <- paste(
+    "Nr.clusters:", length(clust.size.distr),
+    "| median:", median(clust.size.distr),
+    "| CV:", Stringendo::percentage_formatter(cv(clust.size.distr))
+  )
+  xlb <- "Clusters"
+  ylb <- "Cluster size (cells)"
+  xlim <- c(0, max(clust.size.distr))
+
+  if (plot) {
+    if (length(clust.size.distr) < thr.hist) {
+      ggExpress::qbarplot(clust.size.distr,
+                          plotname = ptitle, subtitle = psubtitle,
+                          label = clust.size.distr, xlab = xlb, ylab = ylb, ...
+      )
+    } else {
+      ggExpress::qhistogram(
+        vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle,
+        xlab = xlb, ylab = ylb, xlim = xlim, ...
+      )
+    }
+  } else {
+    "return vector"
+    clust.size.distr
+  }
+}
+
+
 # _________________________________________________________________________________________________
 #' @title  Calculate the fraction of cells per cluster above a certain threhold
 #'
