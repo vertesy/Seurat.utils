@@ -949,7 +949,7 @@ renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1], 
   }
 
   print(tail(colnames(obj@meta.data), 10))
-  # return(obj)
+  return(obj)
 }
 
 
