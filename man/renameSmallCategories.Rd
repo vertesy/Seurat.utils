@@ -6,26 +6,26 @@
 \usage{
 renameSmallCategories(
   obj,
-  ident,
-  min.cells = max(round((ncol(combined.obj))/2000), 10),
+  idents = c("predicted.class", "predicted.cluster", "predicted.subclass"),
+  min.cells = max(round((ncol(obj))/2000), 10),
   new.name = "unclear"
 )
 }
 \arguments{
 \item{obj}{A Seurat object containing the metadata with categories to be cleaned.}
 
-\item{ident}{A character string specifying the name of the identity column within
+\item{idents}{A character vector specifying the names of the identity columns within
 \code{obj@meta.data} where categories are to be renamed.}
 
 \item{min.cells}{An integer specifying the minimum number of cells a category must have
 to retain its original name. Categories with fewer cells than this threshold will be
-renamed.}
+renamed. Defaults to the greater of the total number of columns divided by 2000 or 10.}
 
 \item{new.name}{A character string specifying the new name to assign to small categories.
 Defaults to "unclear".}
 }
 \value{
-Returns the Seurat object with renamed categories in the specified metadata column.
+Returns the Seurat object with renamed categories in the specified metadata columns.
 }
 \description{
 This function renames categories within a specified identity column of a
@@ -34,8 +34,8 @@ Categories below this threshold are renamed to a common name, typically "unclear
 to clean up small, potentially noisy categories.
 }
 \examples{
-# Assuming obj is a Seurat object with an identity column "azi.humancortex.subclass":
-min.cells <- max(round((ncol(obj)) / 2000), 5)
-obj <- renameSmallCategories(obj, ident = "azi.humancortex.subclass", min.cells = min.cells)
+# Assuming obj is a Seurat object with identity columns "ident1" and "ident2":
+idents <- c("ident1", "ident2")
+obj <- renameSmallCategories(obj, idents = idents)
 
 }

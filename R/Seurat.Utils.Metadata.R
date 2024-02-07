@@ -960,43 +960,60 @@ renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1], 
 #' Seurat object's metadata that have fewer cells than a specified minimum threshold.
 #' Categories below this threshold are renamed to a common name, typically "unclear",
 #' to clean up small, potentially noisy categories.
-#'
 #' @param obj A Seurat object containing the metadata with categories to be cleaned.
-#' @param ident A character string specifying the name of the identity column within
+#' @param idents A character vector specifying the names of the identity columns within
 #'   `obj@meta.data` where categories are to be renamed.
 #' @param min.cells An integer specifying the minimum number of cells a category must have
 #'   to retain its original name. Categories with fewer cells than this threshold will be
-#'   renamed.
+#'   renamed. Defaults to the greater of the total number of columns divided by 2000 or 10.
 #' @param new.name A character string specifying the new name to assign to small categories.
 #'   Defaults to "unclear".
 #'
-#' @return Returns the Seurat object with renamed categories in the specified metadata column.
+#' @return Returns the Seurat object with renamed categories in the specified metadata columns.
 #'
 #' @examples
-#' # Assuming obj is a Seurat object with an identity column "azi.humancortex.subclass":
-#' min.cells <- max(round((ncol(obj)) / 2000), 5)
-#' obj <- renameSmallCategories(obj, ident = "azi.humancortex.subclass", min.cells = min.cells)
+#' # Assuming obj is a Seurat object with identity columns "ident1" and "ident2":
+#' idents <- c("ident1", "ident2")
+#' obj <- renameSmallCategories(obj, idents = idents)
 #'
 #' @export
-renameSmallCategories <- function(obj, ident, min.cells = max(round((ncol(combined.obj)) / 2000), 10), new.name = "unclear") {
-  # Ensure that obj is a Seurat object and ident exists in meta.data
-  stopifnot(
-    "obj must be a Seurat object" = is(obj, "Seurat"),
-    "ident column must exist in obj@meta.data" = ident %in% colnames(obj@meta.data)
-  )
+renameSmallCategories <- function(obj
+                                  , idents = c("predicted.class", "predicted.cluster", "predicted.subclass")
+                                  , min.cells = max(round((ncol(obj)) / 2000), 10), new.name = "unclear") {
+  stopifnot("obj must be a Seurat object" = is(obj, "Seurat"))
 
-  # Count the number of cells per category in the specified identity column
-  category_counts <- table(obj@meta.data[[ident]])
+  for (ident in idents) {
+    if (ident %in% colnames(obj@meta.data)) {
+      # Count the number of cells per category in the specified identity column
+      category_counts <- table(obj@meta.data[[ident]])
 
-  # Identify categories with fewer cells than min.cells
-  small_categories <- names(category_counts[category_counts < min.cells])
+      # Identify categories with fewer cells than min.cells
+      small_categories <- names(category_counts[category_counts < min.cells])
 
-  # Rename the categories in the ident column that have fewer cells than min.cells to new.name
-  obj@meta.data[[ident]] <- ifelse(obj@meta.data[[ident]] %in% small_categories, new.name, obj@meta.data[[ident]])
+      # Initial number of categories
+      initial_categories <- length(unique(obj@meta.data[[ident]]))
 
-  print(sort(table(obj@meta.data[[ident]])))
+      # Rename the categories in the ident column that have fewer cells than min.cells to new.name
+      obj@meta.data[[ident]] <- ifelse(obj@meta.data[[ident]] %in% small_categories, new.name, obj@meta.data[[ident]])
+
+      # Report to console
+      cells_renamed <- sum(obj@meta.data[[ident]] == new.name)
+      categories_removed <- length(small_categories)
+      remaining_categories <- length(unique(obj@meta.data[[ident]]))
+
+      message("For ident '", ident, "':\n",
+              cells_renamed, " cells were renamed.\n",
+              remaining_categories, " of initial ",initial_categories, " categories remained.\n\n",
+              "Removed categories: ", paste(head(small_categories, 10), collapse = ", "), "\n"
+      )
+    } else {
+      message("Ident column '", ident, "' does not exist in obj@meta.data.")
+    }
+  }
+
   return(obj)
 }
+
 
 
 # _________________________________________________________________________________________________
