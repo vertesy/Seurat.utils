@@ -953,6 +953,51 @@ renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1], 
 }
 
 
+# _________________________________________________________________________________________________
+#' @title Rename Small Categories in Seurat Object Metadata
+#'
+#' @description This function renames categories within a specified identity column of a
+#' Seurat object's metadata that have fewer cells than a specified minimum threshold.
+#' Categories below this threshold are renamed to a common name, typically "unclear",
+#' to clean up small, potentially noisy categories.
+#'
+#' @param obj A Seurat object containing the metadata with categories to be cleaned.
+#' @param ident A character string specifying the name of the identity column within
+#'   `obj@meta.data` where categories are to be renamed.
+#' @param min.cells An integer specifying the minimum number of cells a category must have
+#'   to retain its original name. Categories with fewer cells than this threshold will be
+#'   renamed.
+#' @param new.name A character string specifying the new name to assign to small categories.
+#'   Defaults to "unclear".
+#'
+#' @return Returns the Seurat object with renamed categories in the specified metadata column.
+#'
+#' @examples
+#' # Assuming obj is a Seurat object with an identity column "azi.humancortex.subclass":
+#' min.cells <- max(round((ncol(obj)) / 2000), 5)
+#' obj <- renameSmallCategories(obj, ident = "azi.humancortex.subclass", min.cells = min.cells)
+#'
+#' @export
+renameSmallCategories <- function(obj, ident, min.cells = max(round((ncol(combined.obj)) / 2000), 10), new.name = "unclear") {
+  # Ensure that obj is a Seurat object and ident exists in meta.data
+  stopifnot(
+    "obj must be a Seurat object" = is(obj, "Seurat"),
+    "ident column must exist in obj@meta.data" = ident %in% colnames(obj@meta.data)
+  )
+
+  # Count the number of cells per category in the specified identity column
+  category_counts <- table(obj@meta.data[[ident]])
+
+  # Identify categories with fewer cells than min.cells
+  small_categories <- names(category_counts[category_counts < min.cells])
+
+  # Rename the categories in the ident column that have fewer cells than min.cells to new.name
+  obj@meta.data[[ident]] <- ifelse(obj@meta.data[[ident]] %in% small_categories, new.name, obj@meta.data[[ident]])
+
+  print(sort(table(obj@meta.data[[ident]])))
+  return(obj)
+}
+
 
 # _________________________________________________________________________________________________
 #' Transfer labels from a reference Seurat object to a query Seurat object
