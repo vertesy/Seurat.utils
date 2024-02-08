@@ -1014,6 +1014,70 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = FA
 
 
 # _________________________________________________________________________________________________
+# Metadata Heatmaps ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+#' @title Plot and Save Heatmaps from Metadata Calculation Results
+#'
+#' @description Generates and saves heatmap visualizations for each metric in the results obtained
+#' from metadata calculations, such as mean or median values of specified features
+#' across different categories.
+#'
+#' @param results A list containing data frames with calculated metrics for each specified
+#'   metadata feature, grouped by categories. Typically, this is the output from a
+#'   function like `calculateAverageMetaData`.
+#' @param path The directory path where the heatmap images will be saved.
+#'   Defaults to the current working directory (`getwd()`).
+#' @param file.prefix A prefix for the filenames of the saved heatmap images.
+#'   Defaults to "heatmap_".
+#' @param scale Character indicating if the values should be scaled in the row direction,
+#'   column direction, both ('row', 'column', 'none'). Defaults to "column".
+#' @param cluster_rows Logical indicating whether to cluster rows. Defaults to FALSE.
+#' @param show_rownames Logical indicating whether to show row names. Defaults to TRUE.
+#' @param show_colnames Logical indicating whether to show column names. Defaults to TRUE.
+#' @param ... Additional arguments passed to `pheatmap::pheatmap`.
+#'
+#' @details This function loops through each metric in the `results`, creates a heatmap
+#' for it using `pheatmap`, and saves the heatmap as a PNG file in the specified path.
+#' The file names will start with the provided `file.prefix`, followed by the metric name.
+#'
+#' @examples
+#' # Assuming `results` is the output from `calculateAverageMetaData`:
+#' plotAndSaveHeatmaps(results, path = "path/to/save/heatmaps", file.prefix = "myData_")
+#'
+#' @return Invisible. The function primarily generates and saves files without returning data.
+#'
+#' @export
+plotAndSaveHeatmaps <-function(results, path = getwd(), file.prefix = "heatmap_",
+                               scale = "column", cluster_rows = FALSE,
+                               display_numbers = TRUE,
+                               show_rownames = TRUE, show_colnames = TRUE, ...) {
+  stopifnot(is.list(results), is.character(file.prefix), is.character(path))
+
+  for (mt in names(results)) {
+
+    # Generate heatmap plot
+    pobj <- pheatmap::pheatmap(FirstCol2RowNames.as.df(results[[mt]]),
+                               main = paste("Heatmap of", mt, "values"),
+                               scale = "column",
+                               cluster_rows = cluster_rows,
+                               display_numbers = display_numbers,
+                               show_rownames = show_rownames,
+                               show_colnames = show_colnames)
+
+    # Construct file name
+    file_name <- paste0(file.prefix, mt, ".png")
+    file_path <- file.path(path, file_name)
+
+    # Save plot
+    MarkdownReports::wplot_save_pheatmap(x = pobj, plotname = file_name, png = T, pdf = F,...)
+    cat("Saved heatmap for", mt, "to", file_path, "\n")
+  } # for
+}
+
+
+# _________________________________________________________________________________________________
 # plotting generic, misc ______________________________ ----
 # _________________________________________________________________________________________________
 
