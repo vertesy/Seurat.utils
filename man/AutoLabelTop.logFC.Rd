@@ -11,7 +11,7 @@ AutoLabelTop.logFC(
   plot.top.genes = TRUE,
   suffix = res,
   order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2],
-  exclude = c("^AL*|^AC*|^LINC*"),
+  exclude = c("^AL*|^AC*|^LINC*|^C[0-9]orf*"),
   df_markers = obj@misc$df.markers[[paste0("res.", res)]],
   plotEnrichment = TRUE
 )
