@@ -479,7 +479,7 @@ seu.RemoveMetadata <- function(
 
 
 # _________________________________________________________________________________________________
-# Export metadata  ______________________________ ----
+# Export or Transfer metadata  ______________________________ ----
 # _________________________________________________________________________________________________
 
 
@@ -501,6 +501,65 @@ saveLsSeuratMetadata <- function(ls.obj, suffix) {
   if(length(ncolz) > 1) warning("Different column counts across meta.data!", immediate. = T)
   xsave(ls.meta, suffix = suffix)
   invisible(ls.meta)
+}
+
+
+#' @title Transfer Metadata Between Two Seurat Objects
+#' @description Transfers a specified metadata column from one Seurat object to another, with options for verbose output and overwriting existing columns.
+#'
+#' @param from The source Seurat object from which metadata will be transferred.
+#' @param to The destination Seurat object to which metadata will be added.
+#' @param colname_from The name of the column in the source object's metadata to transfer.
+#' @param colname_to The name for the column in the destination object's metadata. Defaults to the same name as `colname_from`.
+#' @param verbose Logical, indicating whether to print details about the transfer, including the number and percentage of matching cells between objects, and unique cells in each object.
+#' @param overwrite Logical, indicating whether to overwrite the column in the destination object if it already exists. Defaults to FALSE.
+#'
+#' @return Returns the destination Seurat object (`to`) with the new metadata column added.
+#'
+#' @examples
+#' # Assuming `object1` and `object2` are Seurat objects, and you want to transfer
+#' # a metadata column named 'patientID' from `object1` to `object2`:
+#' object2 <- transferMetadata(from = object1, to = object2, colname_from = "patientID")
+#'
+#' @details This function is useful for merging related data from separate Seurat objects,
+#' ensuring that relevant metadata is consistent across datasets. The function checks for
+#' the existence of the specified column in the source object and optionally whether the
+#' column can be overwritten in the destination object.
+#'
+#' @export
+transferMetadata <- function(from, to, colname_from, colname_to = colname_from, verbose = TRUE, overwrite = FALSE) {
+
+  stopifnot(
+    is(from, "Seurat"), is(to, "Seurat"),
+    is.character(colname_from), is.character(colname_to),
+    "Column not found" = colname_from %in% colnames(from@meta.data),
+    "Column already exists" = !(colname_to %in% colnames(to@meta.data)) | overwrite
+  )
+
+  # Extract the metadata column to transfer
+  data.to.transfer <- data.frame(new.metadata = from[[colname_from]])
+
+  # Check cell overlaps
+  cells_in_both <- intersect(colnames(from), colnames(to))
+  cells_only_in_from <- setdiff(colnames(from), colnames(to))
+  cells_only_in_to <- setdiff(colnames(to), colnames(from))
+
+  if (verbose) {
+    cat("Number and % of cells matching between objects:", length(cells_in_both),
+        "(", sprintf("%.2f%%", length(cells_in_both) / length(colnames(from)) * 100), "of from and",
+        sprintf("%.2f%%", length(cells_in_both) / length(colnames(to)) * 100), "of to)\n")
+    cat("Number and % of cells only in obj1 (from):", length(cells_only_in_from),
+        "(", sprintf("%.2f%%", length(cells_only_in_from) / length(colnames(from)) * 100), ")\n")
+    cat("Number and % of cells only in obj2 (to):", length(cells_only_in_to),
+        "(", sprintf("%.2f%%", length(cells_only_in_to) / length(colnames(to)) * 100), ")\n")
+  }
+
+  # Add the metadata to the 2nd obj
+  to <- Seurat::AddMetaData(object = to, metadata = data.to.transfer, col.name = colname_to )
+  # to@meta.data[[colname_to]] <- NA
+  # to@meta.data[cells_in_both, colname_to] <- from@meta.data[cells_in_both, colname_from]
+
+  return(to)
 }
 
 
