@@ -85,9 +85,74 @@ get_levels_seu <- function(obj, ident, max_levels = 100, dput = TRUE) {
 }
 
 
+#' @title Calculate Average Metadata for Seurat Object
+#'
+#' @description Computes specified metrics (e.g., median, mean) for given metadata features across each category
+#' defined by an identity column in a Seurat object's metadata. This function allows for flexible
+#' metric calculation on specified features, providing insights into the data distribution.
+#'
+#' @param obj A Seurat object containing metadata to be analyzed. Defaults to `combined.obj`.
+#' @param meta.features A character vector specifying which metadata features to calculate metrics for.
+#'   Defaults to c("nFeature_RNA", "percent.ribo", "percent.mito").
+#' @param ident The name of the identity column used to group the data before calculating metrics.
+#'   The default is the second entry from `GetNamedClusteringRuns()`.
+#' @param metrics A list of named metrics to calculate for the metadata features, where names are
+#'   the metric names (e.g., 'median', 'mean') and values are the corresponding functions.
+#'   Defaults to list('median' = median, 'mean' = mean).
+#' @param verbose Logical flag indicating whether to print detailed information about the metrics
+#'   calculation process. Defaults to TRUE.
+#' @param max.categ max number of groups in ident.
+#'
+#' @return A list containing data frames with calculated metrics for each specified metadata feature,
+#'   grouped by the identity categories. Each data frame corresponds to one of the specified metrics.
+#'
+#' @examples
+#' # Assuming `obj` is a Seurat object with relevant metadata columns:
+#' results <- calculateAverageMetaData(obj = obj,
+#'                                     meta.features = c("nFeature_RNA", "percent.ribo"),
+#'                                     ident = "ident_column_name",
+#'                                     metrics = list('median' = median, 'mean' = mean),
+#'                                     verbose = TRUE)
+#' # This will return a list with data frames containing the median and mean
+#' # of "nFeature_RNA" and "percent.ribo" for each category in "ident_column_name".
+#'
+#' @export
+calculateAverageMetaData <- function(obj = combined.obj
+                                     , meta.features = c( "nFeature_RNA", "percent.ribo", "percent.mito")
+                                     , ident =  GetNamedClusteringRuns()[2]
+                                     , metrics = list('median' = median, 'mean' = mean)
+                                     , verbose = TRUE, max.categ = 30) {
+  stopifnot(
+    is(obj, "Seurat"),
+    ident %in% colnames(obj@meta.data),
+    all(meta.features %in% colnames(obj@meta.data)),
+    length(unique(obj@meta.data[,ident])) < max.categ
+  )
+
+  # Initialize list to store results
+  results <- list()
+
+  # Calculate metrics for each meta.feature within each ident category
+  for (m in names(metrics)) {
+    results[[m]] <- obj@meta.data %>%
+      group_by(!!sym(ident)) %>%
+      summarise(across(all_of(meta.features), metrics[[m]], na.rm = TRUE), .groups = 'drop')
+  }
+
+  # Verbose output
+  if (verbose) {
+    cat("Calculated metrics:", paste(names(metrics), collapse = ", "), "\n")
+    cat("For features:", paste(meta.features, collapse = ", "), "\n")
+    cat("Based on identifier:", ident, "\n")
+  }
+
+  return(results)
+}
+
+
 
 # _________________________________________________________________________________________________
-#' @title getMedianMetric
+#' @title getMedianMetric.lsObj
 #'
 #' @description Get the median values of different columns in meta.data, can iterate over a list of Seurat objects.
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
@@ -96,14 +161,14 @@ get_levels_seu <- function(obj, ident, max_levels = 100, dput = TRUE) {
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   ls.Seurat <- getMedianMetric(
+#'   ls.Seurat <- getMedianMetric.lsObj(
 #'     ls.obj = ls.Seurat, n.datasets = length(ls.Seurat),
 #'     mColname = "percent.mito"
 #'   )
 #' }
 #' }
 #' @export
-getMedianMetric <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito") {
+getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito") {
   medMetric <- vec.fromNames(names(ls.obj))
   for (i in 1:n.datasets) {
     medMetric[i] <- median(ls.obj[[i]]@meta.data[, mColname])

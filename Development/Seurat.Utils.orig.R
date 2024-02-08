@@ -578,7 +578,7 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Metadata.manipulation.R"))
 # Source: self + web
 
-# - getMedianMetric
+# - getMedianMetric.lsObj
 # - add.meta.tags
 # - addMetaFraction
 # - GetClusteringRuns
@@ -607,15 +607,15 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 # - getClusterColors
 # - get.clustercomposition
 
-# getMedianMetric ------------------------------------------------------------------------------------------------
-getMedianMetric <- function(ls.Obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito") {
+# getMedianMetric.lsObj ------------------------------------------------------------------------------------------------
+getMedianMetric.lsObj <- function(ls.Obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito") {
   medMetric <- vec.fromNames(names(ls.Seurat))
   for(i in 1:n.datasets ) {
     medMetric[i] <- median(ls.Seurat[[i]]@meta.data[,mColname])
   }
   return(medMetric)
 }
-# ls.Seurat <- getMedianMetric(ls.Obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito")
+# ls.Seurat <- getMedianMetric.lsObj(ls.Obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito")
 
 
 # add.meta.tags ------------------------------------------------------------------------------------------------
