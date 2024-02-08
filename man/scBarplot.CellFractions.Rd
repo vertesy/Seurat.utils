@@ -8,7 +8,7 @@ scBarplot.CellFractions(
   obj = combined.obj,
   group.by = "integrated_snn_res.0.5.ordered",
   fill.by = "age",
-  downsample = TRUE,
+  downsample = FALSE,
   plotname = paste(tools::toTitleCase(fill.by), "proportions"),
   suffix = NULL,
   sub_title = suffix,
@@ -22,6 +22,8 @@ scBarplot.CellFractions(
   show_numbers = TRUE,
   min_frequency = 0.025,
   custom_col_palette = c("Standard", "glasbey")[1],
+  color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name =
+    "RdYlBu")))(100),
   ...
 )
 }
