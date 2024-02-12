@@ -1027,6 +1027,73 @@ create_scCombinedMeta <- function(experiment, project_ = getProject()) {
 
 
 
+#' Sample Cells From Identifiers in Seurat Object
+#'
+#' This function samples a specified maximum number of cells from each identity class in a Seurat object.
+#' It ensures that the sampling does not exceed the total number of cells available per identity.
+#' The function is designed to work with Seurat objects and relies on the presence of identity classes within the object's metadata.
+#'
+#' @param obj A Seurat object from which cells are to be sampled.
+#' @param ident A character vector specifying the identity class from which cells are to be sampled.
+#' @param max.cells A positive integer indicating the maximum number of cells to sample from each identity class.
+#' @param verbose Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.
+#'
+#' @return Returns a Seurat object containing only the sampled cells.
+#'
+#' @details This function checks for the presence of the specified identity class within the object's metadata.
+#' If the number of cells within any identity class is less than or equal to the `max.cells` parameter,
+#' all cells from that class are retained. Otherwise, a random sample of `max.cells` is taken from the class.
+#' The function updates the identity of the cells in the returned Seurat object to reflect the sampled cells.
+#' If `verbose` is TRUE, it prints the total number of cells sampled and provides a visual summary of the fraction
+#' of cells retained per identity class.
+#'
+#' @examples
+#' # Assuming `seuratObj` is a Seurat object with identities stored in its metadata
+#' sampledSeuratObj <- sampleCellsFromIdent(obj = seuratObj, ident = "cellType", max.cells = 100)
+#'
+#' @importFrom CodeAndRoll2 as.named.vector.df
+#' @export
+
+sampleCellsFromIdent <- function(obj, ident, max.cells, verbose = TRUE) {
+  stopifnot(
+    "obj must be a Seurat object" = inherits(obj, "Seurat"),
+    "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
+    "max.cells must be a positive integer" = is.numeric(max.cells) && max.cells > 0,
+    max.cells < ncol(obj)
+  )
+
+  data <- CodeAndRoll2::as.named.vector.df(obj[[ident]])
+  uniqueCategories <- unique(data)
+  sampledNames <- lapply(uniqueCategories, function(category) {
+    namesInCategory <- names(data[data == category])
+    if (length(namesInCategory) <= max.cells) {
+      return(namesInCategory)
+    } else {
+      return(sample(namesInCategory, max.cells))
+    }
+  })
+
+  sampledCells <- unlist(sampledNames)
+
+
+  Idents(obj) <- ident
+  obj2 <- subset(x = obj, cells = sampledCells)
+
+  subb <- paste0("From ", ncol(obj)," reduced to " , ncol(obj2), " cells.")
+  message(subb)
+
+  if (verbose) {
+    cat("Total cells sampled:", length(sampledCells), "\n")
+    nr_remaining_cells <- orig_cells <- table(data)
+    nr_remaining_cells[nr_remaining_cells>max.cells] <- max.cells
+    fr_remaining_per_cluster <- iround(nr_remaining_cells/orig_cells)
+    print(fr_remaining_per_cluster)
+    pobj <- qbarplot(vec = fr_remaining_per_cluster, subtitle = subb, label = fr_remaining_per_cluster, ylab = "fr. of cells", save = F); print(pobj)
+  }
+
+  return(obj2)
+}
+
 # _________________________________________________________________________________________________
 # Merging objects and @misc ______________________________ ----
 # _________________________________________________________________________________________________

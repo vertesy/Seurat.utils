@@ -20,7 +20,7 @@ scBarplot.CellFractions(
   h = ceiling(0.5 * w),
   draw_plot = TRUE,
   show_numbers = TRUE,
-  min_frequency = 0.025,
+  min_frequency = 0,
   custom_col_palette = c("Standard", "glasbey")[1],
   color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name =
     "RdYlBu")))(100),
