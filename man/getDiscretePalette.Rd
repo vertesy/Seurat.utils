@@ -2,13 +2,14 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{getDiscretePalette}
 \alias{getDiscretePalette}
-\title{getDiscretePalette}
+\title{Safely generate a discrete color palette (NA).}
 \usage{
 getDiscretePalette(
   ident.used = GetClusteringRuns()[1],
   obj = combined.obj,
   palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1],
-  show.colors = FALSE
+  show.colors = FALSE,
+  seed = 1989
 )
 }
 \arguments{
@@ -16,12 +17,14 @@ getDiscretePalette(
 
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{palette.used}{The name of the palette to use, Default: c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")\link{1}}
+\item{palette.used}{The name of the palette to use, Default: c("alphabet", "alphabet2",
+"glasbey", "polychrome", "stepped")\link{1}}
 
 \item{show.colors}{Whether to display the colors in the palette, Default: FALSE}
 }
 \description{
-Generate a discrete color palette.
+Safe wrapper around Seurat's DiscretePalette(), which returns NA's if too many
+categories are requested
 }
 \examples{
 \dontrun{

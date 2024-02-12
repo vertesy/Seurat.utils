@@ -892,12 +892,14 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 
 
 # _________________________________________________________________________________________________
-#' @title getDiscretePalette
+#' @title Safely generate a discrete color palette (NA).
 #'
-#' @description Generate a discrete color palette.
+#' @description Safe wrapper around Seurat's DiscretePalette(), which returns NA's if too many
+#' categories are requested
 #' @param ident.used The identity column used for determining the number of clusters, Default: GetClusteringRuns()[1]
 #' @param obj Seurat object, Default: combined.obj
-#' @param palette.used The name of the palette to use, Default: c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1]
+#' @param palette.used The name of the palette to use, Default: c("alphabet", "alphabet2",
+#' "glasbey", "polychrome", "stepped")[1]
 #' @param show.colors Whether to display the colors in the palette, Default: FALSE
 #' @examples
 #' \dontrun{
@@ -906,24 +908,42 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 #' }
 #' }
 #' @importFrom MarkdownHelpers color_check
+#' @importFrom gplots rich.colors
 #'
 #' @export getDiscretePalette
 getDiscretePalette <- function(
     ident.used = GetClusteringRuns()[1],
     obj = combined.obj,
     palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1],
-    show.colors = FALSE) {
+    show.colors = FALSE, seed = 1989) {
+
   n.clusters <- nrow(unique(obj[[ident.used]]))
-  colz <- DiscretePalette(n = n.clusters, palette = palette.used)
-  if (anyNA(colz)) {
-    colzOK <- na.omit.strip(colz)
-    repNeeded <- ceiling(length(colz) / length(colzOK))
-    colzFixed <- rep(colzOK, repNeeded)[1:length(colz)]
-    stopif(anyNA(colzFixed))
-    colz <- colzFixed
+
+  colorz <- Seurat::DiscretePalette(n = n.clusters, palette = palette.used)
+
+  if (anyNA(colorz)) {
+
+    colorsOK <- colorz[!is.na(colorz)] # Extract non-NA values
+    n.colz <- length(colorsOK)
+
+    msg <- paste("More categories then present in the palette", n.clusters, "vs."
+                 , n.colz, "in", palette.used)
+    warning(msg, immediate. = TRUE)
+
+    # Resample non-NA values and replace NA values
+    set.seed(seed)
+
+    if (n.clusters > 10 * n.colz) {
+      colorz <- sample(gplots::rich.colors(n.clusters))
+    } else {
+      colorz <- sample(x = colorsOK, size = n.clusters, replace = T)
+    }
+
+    stopif(anyNA(colorz))
+
   }
-  if (show.colors) MarkdownHelpers::color_check(colz)
-  return(colz)
+  if (show.colors) MarkdownHelpers::color_check(colorz)
+  return(colorz)
 }
 
 
@@ -1446,8 +1466,8 @@ qUMAP <- function(
 #'
 #' @export
 clUMAP <- function(
-    ident = "integrated_snn_res.0.5", obj = combined.obj # The quickest way to draw a clustering result  UMAP
-    , reduction = "umap", splitby = NULL,
+    ident = "integrated_snn_res.0.5", obj = combined.obj, # The quickest way to draw a clustering result  UMAP
+    reduction = "umap", splitby = NULL,
     title = ident, sub = NULL,
     prefix = NULL,
     suffix = make.names(sub),

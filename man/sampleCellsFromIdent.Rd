@@ -4,7 +4,7 @@
 \alias{sampleCellsFromIdent}
 \title{Sample Cells From Identifiers in Seurat Object}
 \usage{
-sampleCellsFromIdent(obj, ident, max.cells, verbose = TRUE)
+sampleCellsFromIdent(obj, ident, max.cells, verbose = TRUE, seed = 1989)
 }
 \arguments{
 \item{obj}{A Seurat object from which cells are to be sampled.}
