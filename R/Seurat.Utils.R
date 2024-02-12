@@ -1054,7 +1054,7 @@ create_scCombinedMeta <- function(experiment, project_ = getProject()) {
 #' @importFrom CodeAndRoll2 as.named.vector.df
 #' @export
 
-sampleCellsFromIdent <- function(obj, ident, max.cells, verbose = TRUE) {
+sampleCellsFromIdent <- function(obj, ident, max.cells, verbose = TRUE, seed = 1989) {
   stopifnot(
     "obj must be a Seurat object" = inherits(obj, "Seurat"),
     "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
@@ -1064,6 +1064,7 @@ sampleCellsFromIdent <- function(obj, ident, max.cells, verbose = TRUE) {
 
   data <- CodeAndRoll2::as.named.vector.df(obj[[ident]])
   uniqueCategories <- unique(data)
+  set.seed(seed)
   sampledNames <- lapply(uniqueCategories, function(category) {
     namesInCategory <- names(data[data == category])
     if (length(namesInCategory) <= max.cells) {
