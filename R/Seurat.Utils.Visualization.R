@@ -1981,10 +1981,11 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE, suff
       , `Intermediate progenitor` = "EOMES" # ,  `Intermediate progenitor1` = "TAC3"
       , `S-phase` = "TOP2A", `G2M-phase` = 'H4C3' # formerly: HIST1H4C
       , `oRG` = "HOPX" # , `oRG` = "ID4" # oRG outer radial glia
-      , Astroglia = "GFAP", Astrocyte = "S100B"
-      , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
-      , `Low-Quality` = "POLR2A", `Choroid.Plexus` = "DCN"
-      # , `Choroid.Plexus` = "OTX2", `Choroid.Plexus` = "BMP4"
+      # , Astroglia = "GFAP"
+      , Astrocyte = "S100B", `Hypoxia/Stress` = "DDIT4"
+      , `Choroid.Plexus` = "TTR", `Low-Quality` = "POLR2A"
+      , `Mesenchyme` = "DCN", Glycolytic = "PDK1"
+      # , `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
     )
     print(Signature.Genes.Top16)
   }
