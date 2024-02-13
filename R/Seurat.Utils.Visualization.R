@@ -1915,7 +1915,7 @@ qClusteringUMAPS <- function(
     prefix = "Clustering.UMAP.Res",
     suffix = "",
     title = sppu(prefix,
-                 as.numeric(str_extract(dims, "\\d+\\.\\d+$")),
+                 as.numeric(stringr::str_extract(dims, "\\d+\\.\\d+$")),
                  suffix),
     nrow = 2, ncol = 2,
     ...) {
