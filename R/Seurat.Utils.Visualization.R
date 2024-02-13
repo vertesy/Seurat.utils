@@ -653,7 +653,7 @@ scBarplot.CellsPerObject <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title plot.clust.size.distr
+#' @title plotClustSizeDistr
 #'
 #' @description Creates a bar plot or histogram of the cluster size distribution from a given Seurat object.
 #' @param obj The Seurat object to be used for the plot. Default: combined.obj.
@@ -664,25 +664,29 @@ scBarplot.CellsPerObject <- function(
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   plot.clust.size.distr()
+#'   plotClustSizeDistr()
 #' }
 #' }
-#' @export plot.clust.size.distr
-#' @importFrom Stringendo percentage_formatter
-plot.clust.size.distr <- function(
-    obj = combined.obj, ident = GetClusteringRuns(obj)[2],
+#' @importFrom ggExpress qbarplot qhistogram
+#'
+#' @export plotClustSizeDistr
+plotClustSizeDistr <- function(
+    obj = combined.obj, ident,
     plot = TRUE, thr.hist = 30, ...) {
+
+  stopifnot(ident %in% colnames(obj@meta.data))
+
   clust.size.distr <- table(obj@meta.data[, ident])
   print(clust.size.distr)
   resX <- gsub(pattern = ".*res\\.", replacement = "", x = ident)
-  ptitle <- ppp("clust.size.distr", ident)
+  ptitle <- paste("Cluster sizes at ", ident)
   psubtitle <- paste(
     "Nr.clusters:", length(clust.size.distr),
-    "| median:", median(clust.size.distr),
+    "| median size:", median(clust.size.distr),
     "| CV:", Stringendo::percentage_formatter(cv(clust.size.distr))
   )
-  xlb <- "Clusters"
-  ylb <- "Cluster size (cells)"
+  xlb <- "Cluster size (cells)"
+  ylb <- "Nr of Clusters"
   xlim <- c(0, max(clust.size.distr))
 
   if (plot) {
