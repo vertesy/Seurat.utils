@@ -4,13 +4,7 @@
 \alias{plotClustSizeDistr}
 \title{plotClustSizeDistr}
 \usage{
-plotClustSizeDistr(
-  obj = combined.obj,
-  ident = GetClusteringRuns(obj)[2],
-  plot = TRUE,
-  thr.hist = 30,
-  ...
-)
+plotClustSizeDistr(obj = combined.obj, ident, plot = TRUE, thr.hist = 30, ...)
 }
 \arguments{
 \item{obj}{The Seurat object to be used for the plot. Default: combined.obj.}

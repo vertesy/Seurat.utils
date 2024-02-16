@@ -9,7 +9,8 @@ qClusteringUMAPS(
   dims = na.omit.strip(GetClusteringRuns(obj)[1:4]),
   prefix = "Clustering.UMAP.Res",
   suffix = "",
-  title = sppu(prefix, as.numeric(str_extract(dims, "\\\\d+\\\\.\\\\d+$")), suffix),
+  title = sppu(prefix, as.numeric(stringr::str_extract(dims, "\\\\d+\\\\.\\\\d+$")),
+    suffix),
   nrow = 2,
   ncol = 2,
   ...
