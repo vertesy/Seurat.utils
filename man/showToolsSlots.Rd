@@ -4,13 +4,10 @@
 \alias{showToolsSlots}
 \title{Display Slots in the @tools of an Seurat Object}
 \usage{
-showToolsSlots(obj, indent = 0)
+showToolsSlots(obj)
 }
 \arguments{
 \item{obj}{An object whose \verb{@tools} slot needs to be examined.}
-
-\item{indent}{An integer specifying the level of indentation for the output.
-Default is 0. Currently not used in the function implementation.}
 }
 \description{
 \code{showToolsSlots} prints the names of slots in the \verb{@tools} of a given object.
@@ -23,12 +20,7 @@ is not a list or is a data frame, it skips printing the names. The function curr
 does not use the \code{indent} parameter but it could be incorporated in future enhancements
 to control the formatting of the output.
 }
-\note{
-This function is specifically designed for S4 objects with a 'tools' slot.
-The behavior with other object types or slots may not be as expected.
-}
 \examples{
-# Assuming obj is an S4 object with a 'tools' slot
 showToolsSlots(obj)
 
 }
