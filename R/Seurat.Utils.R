@@ -2382,7 +2382,7 @@ check.genes <- function(
       if (exists("qHGNC", mode = "function")) {
         try(DatabaseLinke.R::qHGNC(missingGenes))
       } else {
-        print("load qHGNC() function, see database.linker")
+        warning("DatabaseLinke.R's qHGNC() function is needed, please install from github.", immediate. = T)
       }
     }
   }

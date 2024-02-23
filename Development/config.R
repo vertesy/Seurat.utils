@@ -11,8 +11,7 @@ DESCRIPTION <- list(
   imports = "cowplot, ReadWriter, dplyr, ggcorrplot, ggpubr, ggrepel, grDevices, HGNChelper,
     htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, princurve, pheatmap,
     R.utils, readr, reshape2, scales, SoupX, sparseMatrixStats, stringr, tibble, tictoc,
-    EnhancedVolcano, plotly, rstudioapi,
-    vroom, job, qs, foreach, tidyverse",
+    plotly, rstudioapi, vroom, job, qs, foreach, tidyverse",
   suggests = "SoupX, princurve, EnhancedVolcano, DatabaseLinke.R",
 
   author.given = "Abel",
