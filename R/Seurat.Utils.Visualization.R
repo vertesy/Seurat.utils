@@ -459,7 +459,7 @@ get.clustercomposition <- function(
 #' @seealso \code{\link[tools]{toTitleCase}}, \code{\link[ggplot2]{ggplot}}, \code{\link[dplyr]{group_by}}, \code{\link[dplyr]{summarise}}
 #' @importFrom tools toTitleCase
 #' @importFrom dplyr group_by summarise sample_n
-#' @importFrom ggplot2 ggplot geom_bar geom_hline labs theme_classic theme axis.text.x element_text scale_fill_manual geom_text
+#' @importFrom ggplot2 ggplot geom_bar geom_hline labs theme_classic theme element_text scale_fill_manual geom_text
 #'
 #' @export
 scBarplot.CellFractions <- function(
@@ -596,8 +596,10 @@ scBarplot.CellFractions <- function(
 #' @param return_table Should it return the plotting data instead of the plot?
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @param sort Sort by cluster size? Default: FALSE
+#' @param min.cells Threshold for too small categories.
 #' @param suffix File name suffix
 #'
+#' @importFrom ggExpress qbarplot
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -608,15 +610,17 @@ scBarplot.CellFractions <- function(
 #' @export scBarplot.CellsPerCluster
 
 scBarplot.CellsPerCluster <- function(
-    ident = GetOrderedClusteringRuns()[1],
+    obj = combined.obj,
+    ident = GetOrderedClusteringRuns(obj = obj)[1],
     sort = FALSE,
     label = list(TRUE, "percent")[[1]],
     suffix = if (label == "percent") "percent" else NULL,
     palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
-    obj = combined.obj,
     return_table = FALSE,
     ylab_adj = 1.1,
+    min.cells = round(ncol(obj)/500),
     ...) {
+
   cell.per.cl <- obj[[ident]][, 1]
   cell.per.cluster <- (table(cell.per.cl))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
@@ -630,17 +634,22 @@ scBarplot.CellsPerCluster <- function(
     label
   }
 
+  imessage('min cell thr:', min.cells)
   n.clusters <- length(cell.per.cluster)
+  nr.cells.per.cl <- table(obj[[ident]][,1])
+  SBT <- pc_TRUE(nr.cells.per.cl < min.cells, NumberAndPC = T,
+                 suffix = paste("of identites are below min.cells:", min.cells))
+
   pl <- ggExpress::qbarplot(cell.per.cluster,
-                            subtitle = ident,
+                            subtitle = paste0(ident, "\n", SBT),
                             suffix = kpp(ident, suffix),
                             col = 1:n.clusters,
                             xlab.angle = 45,
                             ylim = c(0, ylab_adj * max(cell.per.cluster)),
                             label = lbl,
-                            ylab = "Cells"
+                            ylab = "Cells",
                             # , col = getClusterColors(ident = ident, show = TRUE)
-                            , palette_use = DiscretePalette(n = n.clusters, palette = palette),
+                            palette_use = DiscretePaletteSafe(n = n.clusters, palette.used = palette),
                             ...
   )
 
@@ -650,6 +659,7 @@ scBarplot.CellsPerCluster <- function(
     return(pl)
   }
 }
+
 
 
 
@@ -943,41 +953,129 @@ gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
 #' @importFrom gplots rich.colors
 #'
 #' @export getDiscretePalette
-getDiscretePalette <- function(
-    ident.used = GetClusteringRuns()[1],
-    obj = combined.obj,
-    palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1],
-    show.colors = FALSE, seed = 1989) {
+getDiscretePalette <- function() .Deprecated("DiscretePaletteSafe and DiscretePaletteObj")
+# getDiscretePalette <- function(
+#     ident.used = GetClusteringRuns()[1],
+#     obj = combined.obj,
+#     palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1],
+#     show.colors = FALSE, seed = 1989) {
+#
+#   n.clusters <- nrow(unique(obj[[ident.used]]))
+#
+#   colorz <- Seurat::DiscretePalette(n = n.clusters, palette = palette.used)
+#
+#   if (anyNA(colorz)) {
+#
+#     colorsOK <- colorz[!is.na(colorz)] # Extract non-NA values
+#     n.colz <- length(colorsOK)
+#
+#     msg <- paste("More categories then present in the palette", n.clusters, "vs."
+#                  , n.colz, "in", palette.used, "-> recycling.")
+#     warning(msg, immediate. = TRUE)
+#
+#     # Resample non-NA values and replace NA values
+#     set.seed(seed)
+#
+#     if (n.clusters > 10 * n.colz) {
+#       colorz <- sample(gplots::rich.colors(n.clusters))
+#     } else {
+#       colorz <- sample(x = colorsOK, size = n.clusters, replace = T)
+#     }
+#
+#     stopif(anyNA(colorz))
+#
+#   }
+#   if (show.colors) MarkdownHelpers::color_check(colorz)
+#   return(colorz)
+# }
 
-  n.clusters <- nrow(unique(obj[[ident.used]]))
 
-  colorz <- Seurat::DiscretePalette(n = n.clusters, palette = palette.used)
+# _________________________________________________________________________________________________
+#' @title Generate a discrete color palette for a Seurat object.
+#'
+#' @description Wrapper function that utilizes `DiscretePaletteSafe` to generate a color
+#' palette based on the number of unique clusters in a Seurat object.
+#' @param ident.used The identity column used for determining the number of clusters.
+#' @param obj Seurat object.
+#' @param palette.used The name of the palette to use, Default: "alphabet".
+#' @param show.colors Whether to display the colors in the palette, Default: FALSE.
+#' @param seed An integer value to set the seed for reproducibility, Default: 1989.
+#' @return A vector of color values.
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   getDiscretePaletteObj(ident.used = "ident", obj = yourSeuratObj)
+#' }
+#' }
+#' @export getDiscretePaletteObj
+getDiscretePaletteObj <- function(ident.used,
+                                  obj,
+                                  palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
+                                  show.colors = FALSE,
+                                  seed = 1989) {
+  stopifnot(is.character(ident.used), is(obj, "Seurat"),
+            is.character(palette.used), is.logical(show.colors), is.numeric(seed))
 
-  if (anyNA(colorz)) {
+  n.clusters <- CodeAndRoll2::nr.unique(obj[[ident.used]])
+  # browser()
+  colorz <- DiscretePaletteSafe(n = n.clusters,
+                                palette.used = palette.used,
+                                show.colors = show.colors,
+                                seed = seed)
 
-    colorsOK <- colorz[!is.na(colorz)] # Extract non-NA values
-    n.colz <- length(colorsOK)
-
-    msg <- paste("More categories then present in the palette", n.clusters, "vs."
-                 , n.colz, "in", palette.used)
-    warning(msg, immediate. = TRUE)
-
-    # Resample non-NA values and replace NA values
-    set.seed(seed)
-
-    if (n.clusters > 10 * n.colz) {
-      colorz <- sample(gplots::rich.colors(n.clusters))
-    } else {
-      colorz <- sample(x = colorsOK, size = n.clusters, replace = T)
-    }
-
-    stopif(anyNA(colorz))
-
-  }
-  if (show.colors) MarkdownHelpers::color_check(colorz)
   return(colorz)
 }
 
+
+# _________________________________________________________________________________________________
+#' @title Safely generate a discrete color palette.
+#'
+#' @description Generates a discrete color palette safely without NA values.
+#' @param n The number of colors to generate.
+#' @param palette.used The name of the palette to use, Default: "alphabet".
+#' @param show.colors Whether to display the colors in the palette, Default: FALSE.
+#' @param seed An integer value to set the seed for reproducibility, Default: 1989.
+#' @return A vector of color values.
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   DiscretePaletteSafe(n = 10)
+#' }
+#' }
+#' @importFrom gplots rich.colors
+#' @importFrom Seurat DiscretePalette
+#'
+#' @export DiscretePaletteSafe
+DiscretePaletteSafe <- function(n,
+                                palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
+                                show.colors = FALSE,
+                                seed = 1989) {
+  stopifnot(is.numeric(n), n > 0, is.character(palette.used),
+            is.logical(show.colors), is.numeric(seed))
+
+  colorz <- Seurat::DiscretePalette(n = n, palette = palette.used)
+
+  if (anyNA(colorz)) {
+    colorsOK <- colorz[!is.na(colorz)]
+    n.colz <- length(colorsOK)
+
+    msg <- paste("More categories then present in the palette", n, "vs."
+                 , n.colz, "in", palette.used, "-> recycling.")
+    warning(msg, immediate. = TRUE)
+
+    set.seed(seed)
+    if (n > 10 * n.colz) {
+      colorz <- sample(gplots::rich.colors(n))
+    } else {
+      colorz <- sample(x = colorsOK, size = n, replace = TRUE)
+    }
+
+    stopifnot(!anyNA(colorz))
+  }
+
+  if (show.colors) MarkdownHelpers::color_check(colorz)
+  return(colorz)
+}
 
 
 # _________________________________________________________________________________________________
@@ -1543,7 +1641,8 @@ clUMAP <- function(
 
   if (is.null(cols)) {
     # browser()
-    cols <- if (NtCategs > 5) getDiscretePalette(ident.used = ident, palette.used = palette, obj = obj, show.colors = FALSE)
+    cols <- if (NtCategs > 5) getDiscretePaletteObj(ident.used = ident, palette.used = palette,
+                                                    obj = obj, show.colors = FALSE)
   }
   if (!is.null(cells.highlight)) {
     cols <- "lightgrey"

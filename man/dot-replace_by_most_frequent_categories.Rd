@@ -33,7 +33,7 @@ A data frame with categories in 'query_col' replaced by the most frequent match 
 'ref_col'.
 }
 \description{
-Used for mapping identity columns across objects.This function replaces each
+Used for mapping identity columns across objects. This function replaces each
 category in a query column of a data frame with the most frequently corresponding category in a
 reference column. It calculates the assignment quality, reports it, and optionally plots it.
 }

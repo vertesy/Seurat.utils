@@ -6,28 +6,31 @@
 \usage{
 matchBestIdentity(
   obj,
-  ident_from,
-  ident_to = gsub(pattern = "ordered", replacement = "transferred", x = ident_from),
-  to_suffix = FixPlotName(gsub(pattern = "[a-zA-Z_]", replacement = "", x = ident_from)),
-  new_ident_name = kpp(ident_from, "best.match", to_suffix),
+  ident_to_rename,
+  reference_ident = GetOrderedClusteringRuns(obj)[1],
+  to_suffix = "matched",
+  new_ident_name = kpp(ident_to_rename, "best.match", to_suffix),
+  plot_suffix = "R44",
   ...
 )
 }
 \arguments{
 \item{obj}{The object to update. This object must have a \code{meta.data} attribute which is a data frame
-containing columns named as \code{ident_from} and \code{ident_to}.}
+containing columns named as \code{ident_to_rename} and \code{reference_ident}.}
 
-\item{ident_from}{A string. The name of the column in \code{obj@meta.data} that is used as the source of identities.
+\item{ident_to_rename}{A string. The name of the column in \code{obj@meta.data} that is used as the source of identities.
 There is no default value for this parameter.}
 
-\item{ident_to}{A string. The name of the column in \code{obj@meta.data} that is used as the target of identities.
+\item{reference_ident}{A string. The name of the column in \code{obj@meta.data} that is used as the target of identities.
 There is no default value for this parameter.}
 
 \item{to_suffix}{A string. The suffix to add to the new identity name. Default is the output of the \code{FixPlotName}
-function applied to the \code{ident_from} string, with all alphabetical and underscore characters removed.}
+function applied to the \code{ident_to_rename} string, with all alphabetical and underscore characters removed.}
 
 \item{new_ident_name}{A string. The name for the newly created identity column in \code{obj@meta.data}.
-Default is a concatenation of \code{ident_from}, "best.match", and \code{to_suffix} using \code{kpp} function.}
+Default is a concatenation of \code{ident_to_rename}, "best.match", and \code{to_suffix} using \code{kpp} function.}
+
+\item{plot_suffix}{A string. The suffix to add to the final UMAP.}
 
 \item{...}{Additional parameters to be passed to \code{.replace_by_most_frequent_categories} function.}
 }
@@ -36,13 +39,9 @@ An updated version of \code{obj} with an additional column in \code{obj@meta.dat
 representing the new identity. The function also generates a UMAP plot based on this new identity.
 }
 \description{
-This function matches the best identity from \code{ident_from} to \code{ident_to} in an object,
-updates the metadata of the object with this new identity and returns the updated object. Additionally,
-it generates a UMAP plot based on the new identity. The function replaces original categories with
-the most frequent ones, hence helps to filter out less important categories.
-}
-\details{
-Match and Translate Best Identity
+This function matches the best identity from \code{ident_to_rename} to \code{reference_ident} in an object,
+in other words, it replaces original categories with the most frequent ones from the reference,
+hence helps to filter out less important categories.
 }
 \examples{
 \dontrun{

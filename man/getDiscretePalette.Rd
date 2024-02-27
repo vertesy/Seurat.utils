@@ -4,13 +4,7 @@
 \alias{getDiscretePalette}
 \title{Safely generate a discrete color palette (NA).}
 \usage{
-getDiscretePalette(
-  ident.used = GetClusteringRuns()[1],
-  obj = combined.obj,
-  palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1],
-  show.colors = FALSE,
-  seed = 1989
-)
+getDiscretePalette()
 }
 \arguments{
 \item{ident.used}{The identity column used for determining the number of clusters, Default: GetClusteringRuns()\link{1}}

@@ -13,7 +13,8 @@ transferLabelsSeurat(
   new_ident = gsub(pattern = "ordered", replacement = "transferred", x = reference_ident),
   predictions_col = "predicted.id",
   save_anchors = TRUE,
-  suffix = "NEW",
+  reference_suffix = "reference",
+  new_ident_suffix = "R44",
   plot_reference = TRUE,
   ...
 )
@@ -31,11 +32,13 @@ transferLabelsSeurat(
 
 \item{save_anchors}{save anchors as RDS file.}
 
-\item{suffix}{A character string to be used as a suffix in the visualization. Default is 'NEW'.}
+\item{new_ident_suffix}{A string to added to the UMAP with the new identity.}
 
 \item{...}{Additional arguments passed to the Seurat.utils::clUMAP function.}
 
 \item{named_ident}{A character string specifying the name of the identity class to be used from the reference Seurat object. Default is 'RNA_snn_res.0.3.ordered.ManualNames'.}
+
+\item{suffix}{A character string to be used as a suffix in the visualization. Default is 'NEW'.}
 }
 \value{
 The modified query Seurat object with the transferred labels as a new identity class.

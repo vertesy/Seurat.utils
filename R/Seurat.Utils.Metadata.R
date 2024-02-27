@@ -306,11 +306,11 @@ create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.inters
   cells.obj <- colnames(obj)
   cells.in.both <- intersect(cells.vec, cells.obj)
 
-  # iprint("intersect:", l(cells.in.both), head(cells.in.both))
+  # iprint("intersect:", length(cells.in.both), head(cells.in.both))
   iprint(
-    l(cells.in.both), "cells in both;",
-    l(cells.vec), "cells in vec;",
-    l(cells.obj), "cells in obj",
+    length(cells.in.both), "cells in both;",
+    length(cells.vec), "cells in vec;",
+    length(cells.obj), "cells in obj",
     "intersect, e.g.:", head(cells.in.both, 5)
   )
   stopifnot(length(cells.in.both) > min.intersect)
@@ -797,7 +797,7 @@ plotMetadataCorHeatmap <- function(
   meta.data <- obj@meta.data
   columns.found <- intersect(colnames(meta.data), columns)
   columns.not.found <- setdiff(columns, colnames(meta.data))
-  if (l(columns.not.found)) iprint("columns.not.found:", columns.not.found)
+  if (length(columns.not.found)) iprint("columns.not.found:", columns.not.found)
 
   meta.data <- meta.data[, columns.found]
 
@@ -1155,6 +1155,7 @@ renameSmallCategories <- function(obj
 #' @param predictions_col A character string specifying the column in the metadata of the transferred Seurat object containing the transferred labels. Default is 'predicted.id'.
 #' @param save_anchors save anchors as RDS file.
 #' @param suffix A character string to be used as a suffix in the visualization. Default is 'NEW'.
+#' @param new_ident_suffix A string to added to the UMAP with the new identity.
 #' @param ... Additional arguments passed to the Seurat.utils::clUMAP function.
 #'
 #' @return The modified query Seurat object with the transferred labels as a new identity class.
@@ -1181,7 +1182,8 @@ transferLabelsSeurat <- function(
     ),
     predictions_col = "predicted.id",
     save_anchors = TRUE,
-    suffix = "NEW",
+    reference_suffix = "reference",
+    new_ident_suffix = "R44",
     plot_reference = TRUE,
     ...) {
 
@@ -1199,9 +1201,10 @@ transferLabelsSeurat <- function(
   message('reference_ident ', reference_ident, ' has ', nr.cl.ref, ' categories')
 
   # Visualize reference object
-  if (plot_reference) clUMAP(obj = reference_obj, ident = reference_ident, suffix = "REFERENCE", sub = "REFERENCE", ...)
+  if (plot_reference) clUMAP(obj = reference_obj, ident = reference_ident,
+                             suffix = reference_suffix, sub = reference_suffix, ...)
 
-  browser()
+  # browser()
   if (is.null(anchors)) {
     message("Calculating anchors. Provide anchors in 'anchors' to speed up.")
     anchors <- Seurat::FindTransferAnchors(reference = reference_obj, query = query_obj)
@@ -1213,7 +1216,7 @@ transferLabelsSeurat <- function(
   message("Transferring labels")
   transferred_clIDs <- Seurat::TransferData(
     anchorset = anchors,
-    refdata = reference_obj@meta.data[, reference_ident]
+    refdata = reference_obj@meta.data[, reference_ident],
   )
 
   # Add metadata to combined object
@@ -1223,32 +1226,31 @@ transferLabelsSeurat <- function(
   )
 
   # Visualize combined object
-  clUMAP(ident = new_ident, obj = query_obj, suffix, ...)
+  clUMAP(ident = new_ident, obj = query_obj, suffix = new_ident_suffix, ...)
 
   return(query_obj)
 }
 
 
 # _________________________________________________________________________________________________
-#' Match and Translate Best Identity
-#'
+# _________________________________________________________________________________________________
 #' @title Match and Translate Best Identity
 #'
-#' @description This function matches the best identity from `ident_from` to `ident_to` in an object,
-#' updates the metadata of the object with this new identity and returns the updated object. Additionally,
-#' it generates a UMAP plot based on the new identity. The function replaces original categories with
-#' the most frequent ones, hence helps to filter out less important categories.
+#' @description This function matches the best identity from `ident_to_rename` to `reference_ident` in an object,
+#' in other words, it replaces original categories with the most frequent ones from the reference,
+#' hence helps to filter out less important categories.
 #'
 #' @param obj The object to update. This object must have a `meta.data` attribute which is a data frame
-#'   containing columns named as `ident_from` and `ident_to`.
-#' @param ident_from A string. The name of the column in `obj@meta.data` that is used as the source of identities.
+#'   containing columns named as `ident_to_rename` and `reference_ident`.
+#' @param ident_to_rename A string. The name of the column in `obj@meta.data` that is used as the source of identities.
 #'   There is no default value for this parameter.
-#' @param ident_to A string. The name of the column in `obj@meta.data` that is used as the target of identities.
+#' @param reference_ident A string. The name of the column in `obj@meta.data` that is used as the target of identities.
 #'   There is no default value for this parameter.
 #' @param to_suffix A string. The suffix to add to the new identity name. Default is the output of the `FixPlotName`
-#'   function applied to the `ident_from` string, with all alphabetical and underscore characters removed.
+#'   function applied to the `ident_to_rename` string, with all alphabetical and underscore characters removed.
 #' @param new_ident_name A string. The name for the newly created identity column in `obj@meta.data`.
-#'   Default is a concatenation of `ident_from`, "best.match", and `to_suffix` using `kpp` function.
+#'   Default is a concatenation of `ident_to_rename`, "best.match", and `to_suffix` using `kpp` function.
+#' @param plot_suffix A string. The suffix to add to the final UMAP.
 #' @param ... Additional parameters to be passed to `.replace_by_most_frequent_categories` function.
 #'
 #' @return An updated version of `obj` with an additional column in `obj@meta.data` named as `new_ident_name`
@@ -1263,30 +1265,34 @@ transferLabelsSeurat <- function(
 #' }
 #' @export
 matchBestIdentity <- function(
-    obj, ident_from,
-    ident_to = gsub(pattern = "ordered", replacement = "transferred", x = ident_from),
-    to_suffix = FixPlotName(gsub(pattern = "[a-zA-Z_]", replacement = "", x = ident_from)),
-    new_ident_name = kpp(ident_from, "best.match", to_suffix),
+    obj, ident_to_rename,
+    reference_ident = GetOrderedClusteringRuns(obj)[1],
+    to_suffix = "matched",
+    # to_suffix = FixPlotName(gsub(pattern = "[a-zA-Z_]", replacement = "", x = ident_to_rename)),
+    new_ident_name = kpp(ident_to_rename, "best.match", to_suffix),
+    plot_suffix = "R44",
     ...) {
-  dictionary <- obj@meta.data[, c(ident_from, ident_to)]
 
+  dictionary <- obj@meta.data[, c(ident_to_rename, reference_ident)]
 
   translation <- .replace_by_most_frequent_categories(
-    df = dictionary, show_plot = TRUE, suffix_barplot = ident_from, ...
+    df = dictionary, show_plot = TRUE, suffix_barplot = ident_to_rename, ...
   )
 
   obj@meta.data[, new_ident_name] <- translation[, 1]
 
-  px <- clUMAP(ident = new_ident_name, obj = obj)
+  imessage("new ident name:", new_ident_name)
+  px <- clUMAP(ident = new_ident_name, obj = obj, suffix = plot_suffix)
   print(px)
   return(obj)
 }
 
 
+
 # _________________________________________________________________________________________________
 #' @title Find Best Match: Replace Categories by the Most Frequent Match
 #'
-#' @description Used for mapping identity columns across objects.This function replaces each
+#' @description Used for mapping identity columns across objects. This function replaces each
 #'   category in a query column of a data frame with the most frequently corresponding category in a
 #'   reference column. It calculates the assignment quality, reports it, and optionally plots it.
 #' @param df A data frame containing the data.
@@ -1326,15 +1332,17 @@ matchBestIdentity <- function(
     show_plot = TRUE,
     suffix_barplot = NULL,
     ...) {
+
   # Convert to data frame if it is not
   if (!is.data.frame(df)) {
     df <- as.data.frame(df)
   }
 
   cat_query <- unique(df[[query_col]])
-  iprint(l(cat_query), "query categories:", head(cat_query))
+  imessage(length(cat_query), "categories to rename in", query_col, ":", head(cat_query), "...")
+
   cat_ref <- unique(df[[ref_col]])
-  iprint(l(cat_ref), "query categories:", head(cat_ref))
+  imessage(length(cat_ref), "reference categories in", ref_col, ":", head(cat_ref), "...")
 
   # Create a table of the most frequent reference values for each query category
   replacement_table <- df %>%
@@ -1358,11 +1366,15 @@ matchBestIdentity <- function(
   if (show_plot) {
     # barplot(quality, main = "Assignment Quality", xlab = query_col, ylab = "Proportion of Total Matches")
     px <- qbarplot(quality,
-      label = percentage_formatter(quality),
+      label = percentage_formatter(quality, digitz = 1),
       suffix = suffix_barplot,
       plotname = "Assignment Quality",
       filename = make.names(kpp("Assignment Quality", suffix_barplot, "pdf")),
-      subtitle = paste("From", colnames(df)[1], "->", colnames(df)[2]),
+      subtitle = paste("From", colnames(df)[1], "->", colnames(df)[2], "| median",
+                       percentage_formatter(median(quality)),  "\n",
+                       sum(quality>0.5), "clusters above 50% match"
+                       ),
+      hline = 0.5, filtercol = -1,
       xlab = paste("Best query match to reference"),
       ylab = "Proportion of Total Matches",
       ...
