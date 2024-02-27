@@ -1141,15 +1141,11 @@ renameSmallCategories <- function(obj
 
 
 # _________________________________________________________________________________________________
-#' Transfer labels from a reference Seurat object to a query Seurat object
+#' @title Transfer labels from a reference Seurat object to a query Seurat object
 #'
-#' This function takes a query Seurat object and a path to a reference Seurat object,
-#' finds transfer anchors, transfers labels, and visualizes the combined object.
-#'
-#' @title Transfer Labels in Seurat
-#'
-#' @description Function to transfer labels from a reference Seurat object to a query Seurat object using anchoring and transfer data methods from the Seurat package.
-#' It then visualizes the reference and the combined objects using Uniform Manifold Approximation and Projection (UMAP).
+#' @description Function to transfer labels from a reference Seurat object to a query Seurat object
+#' using anchoring and transfer data methods from the Seurat package. It then visualizes the
+#' reference and the combined objects using Uniform Manifold Approximation and Projection (UMAP).
 #'
 #' @param query_obj A Seurat object for which the labels are to be transferred.
 #' @param reference_path A character string indicating the file path to the reference Seurat object. The path must exist.
@@ -1163,29 +1159,33 @@ renameSmallCategories <- function(obj
 #'
 #' @return The modified query Seurat object with the transferred labels as a new identity class.
 #'
-#' @importFrom readr read_rds
-#' @export
-#'
 #' @examples
-#' # combined.objX <- transfer_labels_seurat(named_ident = 'RNA_snn_res.0.3.ordered.ManualNames',
-#' #                                     reference_path = '~/Dropbox (VBC)/Abel.IMBA/Metadata.D/CON.meta/label.transfer/sc6/reference.obj.sc6.DIET.2023.07.19_13.24.Rds.gz',
+#' # combined.objX <- transferLabelsSeurat(named_ident = 'RNA_snn_res.0.3.ordered.ManualNames',
+#' #                                     reference_obj = reference_obj,
 #' #                                     query_obj = combined.obj)
-transfer_labels_seurat <- function(
-    query_obj, reference_path,
-    reference_obj = NULL,
+#'
+#' @importFrom readr read_rds
+#' @importFrom Seurat FindTransferAnchors TransferData AddMetaData
+#'
+#' @export
+transferLabelsSeurat <- function(
+    query_obj,
+    reference_obj,
+    reference_path = NULL,
+    reference_ident,
     anchors = NULL,
-    named_ident = "RNA_snn_res.0.3.ordered.ManualNames",
     new_ident = gsub(
       pattern = "ordered",
       replacement = "transferred",
-      x = named_ident
+      x = reference_ident
     ),
     predictions_col = "predicted.id",
     save_anchors = TRUE,
     suffix = "NEW",
     plot_reference = TRUE,
     ...) {
-  print(named_ident)
+
+  # Assertions
   if (is.null(reference_obj)) {
     iprint("Loading reference object:", basename(reference_path))
     stopifnot(file.exists(reference_path))
@@ -1194,24 +1194,26 @@ transfer_labels_seurat <- function(
     stopifnot(inherits(reference_obj, "Seurat") & min(dim(reference_obj)) > 10)
   }
 
+  # Report
+  nr.cl.ref <- CodeAndRoll2::nr.unique(reference_obj[[reference_ident]])
+  message('reference_ident ', reference_ident, ' has ', nr.cl.ref, ' categories')
+
   # Visualize reference object
-  # Seurat.utils::
-  if (plot_reference) clUMAP(obj = reference_obj, ident = named_ident, suffix = "REFERENCE", sub = "REFERENCE", ...)
+  if (plot_reference) clUMAP(obj = reference_obj, ident = reference_ident, suffix = "REFERENCE", sub = "REFERENCE", ...)
 
-
+  browser()
   if (is.null(anchors)) {
-    print("Find anchors")
+    message("Calculating anchors. Provide anchors in 'anchors' to speed up.")
     anchors <- Seurat::FindTransferAnchors(reference = reference_obj, query = query_obj)
-    if (save_anchors) isave.RDS(obj = anchors, inOutDir = TRUE)
+    if (save_anchors) xsave(obj = anchors)
   } else {
-    print("Anchors provided")
+    message("Anchors provided")
   }
 
-
-  print("Transfer labels")
+  message("Transferring labels")
   transferred_clIDs <- Seurat::TransferData(
     anchorset = anchors,
-    refdata = reference_obj@meta.data[, named_ident]
+    refdata = reference_obj@meta.data[, reference_ident]
   )
 
   # Add metadata to combined object
@@ -1221,8 +1223,7 @@ transfer_labels_seurat <- function(
   )
 
   # Visualize combined object
-  # Seurat.utils::
-  clUMAP(ident = new_ident, obj = query_obj, suffix = , ...)
+  clUMAP(ident = new_ident, obj = query_obj, suffix, ...)
 
   return(query_obj)
 }
@@ -1258,10 +1259,10 @@ transfer_labels_seurat <- function(
 #'
 #' @examples
 #' \dontrun{
-#' updated_obj <- match_best_identity(my_obj, "origin_identity", "target_identity")
+#' updated_obj <- matchBestIdentity(my_obj, "origin_identity", "target_identity")
 #' }
 #' @export
-match_best_identity <- function(
+matchBestIdentity <- function(
     obj, ident_from,
     ident_to = gsub(pattern = "ordered", replacement = "transferred", x = ident_from),
     to_suffix = FixPlotName(gsub(pattern = "[a-zA-Z_]", replacement = "", x = ident_from)),

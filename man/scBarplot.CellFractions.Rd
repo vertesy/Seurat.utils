@@ -6,8 +6,8 @@
 \usage{
 scBarplot.CellFractions(
   obj = combined.obj,
-  group.by = "integrated_snn_res.0.5.ordered",
-  fill.by = "age",
+  group.by = GetNamedClusteringRuns()[1],
+  fill.by,
   downsample = FALSE,
   plotname = paste(tools::toTitleCase(fill.by), "proportions"),
   suffix = NULL,
@@ -28,45 +28,52 @@ scBarplot.CellFractions(
 )
 }
 \arguments{
-\item{obj}{A Seurat object. The default is 'combined.obj'.}
+\item{group.by}{The variable to group by for the bar plot.}
 
-\item{group.by}{The variable to group by for the bar plot. The default is 'integrated_snn_res.0.5.ordered'.}
+\item{fill.by}{The variable to fill by for the bar plot.}
 
-\item{fill.by}{The variable to fill by for the bar plot. The default is 'age'.}
+\item{downsample}{Logical indicating whether to downsample data to equalize group sizes.}
 
-\item{downsample}{Logical indicating whether to downsample data. The default is TRUE.}
+\item{plotname}{The title of the plot.}
 
-\item{plotname}{The title of the plot. The default is 'paste(toTitleCase(fill.by), "proportions")'.}
+\item{suffix}{Optional suffix for the plot title.}
 
-\item{suffix}{Plot suffix}
+\item{sub_title}{Optional subtitle for the plot.}
 
-\item{hlines}{A numeric vector for the y-intercepts of horizontal lines on the plot. The default is c(0.25, 0.5, 0.75).}
+\item{hlines}{Numeric vector specifying y-intercepts of horizontal lines to add to the plot.}
 
-\item{return_table}{Logical flag indicating whether to return a contingency table instead of a bar plot. Default: FALSE.}
+\item{return_table}{Logical; if TRUE, returns a contingency table instead of plotting.}
 
-\item{save_plot}{Logical flag indicating whether to save the plot. Default is TRUE.}
+\item{save_plot}{Logical; if TRUE, saves the generated plot.}
 
-\item{seedNr}{Seed for random number generation. The default is 1989.}
+\item{seedNr}{Seed for random number generation to ensure reproducibility.}
 
-\item{w}{The width of the plot. The default is 10.}
+\item{w}{Width of the plot in inches.}
 
-\item{h}{The height of the plot. The default is calculated as 'ceiling(0.5 * w)'.}
+\item{h}{Height of the plot in inches.}
 
-\item{draw_plot}{Show plot}
+\item{draw_plot}{Logical; if FALSE, suppresses plotting (useful if only the table is desired).}
 
-\item{show_numbers}{Show numbers on bar}
+\item{show_numbers}{Logical; if TRUE, adds count numbers on top of each bar in the plot.}
 
-\item{min_frequency}{Smallest fraction to show individually. Default: 0.025}
+\item{min_frequency}{Minimum fraction to display individually in the plot; smaller fractions
+are aggregated into an "Other" category.}
 
-\item{custom_col_palette}{Use custom color palette? Default: c("Standard", "glasbey")\link{1}}
+\item{custom_col_palette}{Specifies whether to use a standard or custom color palette.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{color_scale}{Defines the color scale to use for the plot if a custom palette is selected.}
+
+\item{...}{Additional parameters passed to internally called functions.}
+}
+\value{
+Depending on the value of \code{return_table}, either returns a ggplot object or a list
+containing values and percentages tables.
 }
 \description{
-This function generates a bar plot of cell fractions per cluster
-from a Seurat object. It offers the option to downsample data, which equalizes
-the number of cells in each group to the number in the smallest group.
-The plot's bars are grouped by one variable and filled by another.
+This function generates a bar plot of cell fractions per cluster from a Seurat object.
+It offers the option to downsample data, equalizing the number of cells in each group
+to the number in the smallest group. The plot's bars are grouped by one variable and filled by another.
+The function supports custom color palettes, drawing numerical values on bars, and saving the plot.
 }
 \examples{
 \dontrun{
@@ -77,5 +84,5 @@ if (interactive()) {
 }
 }
 \seealso{
-\code{\link[tools]{toTitleCase}}
+\code{\link[tools]{toTitleCase}}, \code{\link[ggplot2]{ggplot}}, \code{\link[dplyr]{group_by}}, \code{\link[dplyr]{summarise}}
 }

@@ -4,7 +4,7 @@
 \alias{showToolsSlots}
 \title{Display Slots in the @tools of an Seurat Object}
 \usage{
-showToolsSlots(obj)
+showToolsSlots(obj, max.level = 1, subslot = NULL, ...)
 }
 \arguments{
 \item{obj}{An object whose \verb{@tools} slot needs to be examined.}

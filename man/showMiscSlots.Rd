@@ -4,7 +4,7 @@
 \alias{showMiscSlots}
 \title{Display Slots in the @misc of an Seurat Object}
 \usage{
-showMiscSlots(obj)
+showMiscSlots(obj, max.level = 1, subslot = NULL, ...)
 }
 \arguments{
 \item{obj}{An object whose \verb{@misc} slot needs to be examined.}

@@ -1542,6 +1542,7 @@ clUMAP <- function(
 
 
   if (is.null(cols)) {
+    # browser()
     cols <- if (NtCategs > 5) getDiscretePalette(ident.used = ident, palette.used = palette, obj = obj, show.colors = FALSE)
   }
   if (!is.null(cells.highlight)) {
