@@ -419,30 +419,36 @@ get.clustercomposition <- function(
 
 
 # _________________________________________________________________________________________________
+
 #' @title Generate Barplot of Cell Fractions
 #'
-#' @description This function generates a bar plot of cell fractions per cluster
-#' from a Seurat object. It offers the option to downsample data, which equalizes
-#' the number of cells in each group to the number in the smallest group.
-#' The plot's bars are grouped by one variable and filled by another.
+#' @description This function generates a bar plot of cell fractions per cluster from a Seurat object.
+#' It offers the option to downsample data, equalizing the number of cells in each group
+#' to the number in the smallest group. The plot's bars are grouped by one variable and filled by another.
+#' The function supports custom color palettes, drawing numerical values on bars, and saving the plot.
 #'
-#' @param obj A Seurat object. The default is 'combined.obj'.
-#' @param group.by The variable to group by for the bar plot. The default is 'integrated_snn_res.0.5.ordered'.
-#' @param fill.by The variable to fill by for the bar plot. The default is 'age'.
-#' @param downsample Logical indicating whether to downsample data. The default is TRUE.
-#' @param plotname The title of the plot. The default is 'paste(toTitleCase(fill.by), "proportions")'.
-#' @param hlines A numeric vector for the y-intercepts of horizontal lines on the plot. The default is c(0.25, 0.5, 0.75).
-#' @param return_table Logical flag indicating whether to return a contingency table instead of a bar plot. Default: FALSE.
-#' @param save_plot Logical flag indicating whether to save the plot. Default is TRUE.
-#' @param seedNr Seed for random number generation. The default is 1989.
-#' @param w The width of the plot. The default is 10.
-#' @param h The height of the plot. The default is calculated as 'ceiling(0.5 * w)'.
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @param show_numbers Show numbers on bar
-#' @param draw_plot Show plot
-#' @param min_frequency Smallest fraction to show individually. Default: 0.025
-#' @param custom_col_palette Use custom color palette? Default: c("Standard", "glasbey")[1]
-#' @param suffix Plot suffix
+#' @param group.by The variable to group by for the bar plot.
+#' @param fill.by The variable to fill by for the bar plot.
+#' @param downsample Logical indicating whether to downsample data to equalize group sizes.
+#' @param plotname The title of the plot.
+#' @param suffix Optional suffix for the plot title.
+#' @param sub_title Optional subtitle for the plot.
+#' @param hlines Numeric vector specifying y-intercepts of horizontal lines to add to the plot.
+#' @param return_table Logical; if TRUE, returns a contingency table instead of plotting.
+#' @param save_plot Logical; if TRUE, saves the generated plot.
+#' @param seedNr Seed for random number generation to ensure reproducibility.
+#' @param w Width of the plot in inches.
+#' @param h Height of the plot in inches.
+#' @param draw_plot Logical; if FALSE, suppresses plotting (useful if only the table is desired).
+#' @param show_numbers Logical; if TRUE, adds count numbers on top of each bar in the plot.
+#' @param min_frequency Minimum fraction to display individually in the plot; smaller fractions
+#' are aggregated into an "Other" category.
+#' @param custom_col_palette Specifies whether to use a standard or custom color palette.
+#' @param color_scale Defines the color scale to use for the plot if a custom palette is selected.
+#' @param ... Additional parameters passed to internally called functions.
+#'
+#' @return Depending on the value of `return_table`, either returns a ggplot object or a list
+#' containing values and percentages tables.
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -450,15 +456,16 @@ get.clustercomposition <- function(
 #'   scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = FALSE)
 #' }
 #' }
-#' @seealso
-#'  \code{\link[tools]{toTitleCase}}
+#' @seealso \code{\link[tools]{toTitleCase}}, \code{\link[ggplot2]{ggplot}}, \code{\link[dplyr]{group_by}}, \code{\link[dplyr]{summarise}}
 #' @importFrom tools toTitleCase
-#' @importFrom dplyr sample_n
+#' @importFrom dplyr group_by summarise sample_n
+#' @importFrom ggplot2 ggplot geom_bar geom_hline labs theme_classic theme axis.text.x element_text scale_fill_manual geom_text
 #'
 #' @export
 scBarplot.CellFractions <- function(
     obj = combined.obj,
-    group.by = "integrated_snn_res.0.5.ordered", fill.by = "age",
+    group.by = GetNamedClusteringRuns()[1],
+    fill.by,
     downsample = FALSE,
     plotname = paste(tools::toTitleCase(fill.by), "proportions"),
     suffix = NULL,
@@ -474,19 +481,39 @@ scBarplot.CellFractions <- function(
     custom_col_palette = c("Standard", "glasbey")[1],
     color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name ="RdYlBu")))(100),
     ...) {
+
+  # Input assertions
+  stopifnot(
+    inherits(obj, "Seurat"),  # obj must be a Seurat object
+    is.character(group.by) && length(group.by) == 1 && nzchar(group.by),  # group.by must be a non-empty string
+    is.character(fill.by) && length(fill.by) == 1 && nzchar(fill.by),  # fill.by must be a non-empty string
+    is.logical(downsample) && length(downsample) == 1,  # downsample must be TRUE or FALSE
+    is.logical(return_table) && length(return_table) == 1,  # return_table must be TRUE or FALSE
+    is.logical(save_plot) && length(save_plot) == 1,  # save_plot must be TRUE or FALSE
+    is.logical(draw_plot) && length(draw_plot) == 1,  # draw_plot must be TRUE or FALSE
+    is.numeric(min_frequency) && length(min_frequency) == 1 && min_frequency >= 0 && min_frequency < 1  # min_frequency must be between 0 and 1
+  )
+
   set.seed(seedNr)
   pname.suffix <- capt.suffix <- NULL
+
   if (downsample) {
+    # Calculate the size of the smallest and largest groups for downsampling
     tbl_X <- table(obj@meta.data[[fill.by]])
     downsample <- min(tbl_X)
     largest_grp <- max(tbl_X)
+
+    # Update plot name and caption to reflect downsampling
     pname.suffix <- "(downsampled)"
     capt.suffix <- paste("Downsampled from (max)", largest_grp, "\nto", downsample, "cells in the smallest", fill.by, "group.")
   }
+
+  # Construct the caption based on downsampling and minimum frequency
   caption_ <- paste("Numbers denote # cells.", capt.suffix)
   if (min_frequency > 0) caption_ <- paste(caption_, "\nCategories <", percentage_formatter(min_frequency), "are shown together as 'Other'")
   pname_ <- paste(plotname, pname.suffix)
 
+  # Create a contingency table of the data
   contingency.table <- table(obj@meta.data[, group.by], obj@meta.data[, fill.by])
   print(contingency.table)
 
@@ -497,9 +524,8 @@ scBarplot.CellFractions <- function(
       summarise(proportion = n() / nrow(obj@meta.data)) %>%
       mutate("category" = ifelse(proportion < min_frequency, "Other", as.character(!!as.name(fill.by))))
 
-    print(unique(prop_table$category))
-    palette_x <- color_scale[unique(prop_table$category)]
-    print(palette_x)
+    categories <- unique(prop_table$'category')
+    message("categories present: ", paste(sort(categories)))
 
     # join the proportions back to the original data
     obj@meta.data <- left_join(obj@meta.data, prop_table, by = fill.by)
@@ -516,14 +542,15 @@ scBarplot.CellFractions <- function(
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
       labs(
         title = pname_, subtitle = subtt,
-        x = "Clusters", y = "Fraction", caption = caption_
+        x = "Clusters", y = "Fraction of Cells", caption = caption_
       ) +
       theme_classic() +
       theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
-    if (custom_col_palette != "Standard") {
-      palette_x <- color_scale
-      palette_x <- palette_x[unique(prop_table$category)]
+    # Apply custom color palette if specified
+    if (custom_col_palette) {
+      palette_x <- color_scale[seq(categories)]
+      message('palette: ', paste(palette_x) )
       pl <- pl + scale_fill_manual(values = palette_x)
     }
 
@@ -537,11 +564,12 @@ scBarplot.CellFractions <- function(
       if (min_frequency) sfx <- sppp(sfx, min_frequency)
       qqSave(
         ggobj = pl, title = plotname, also.pdf = TRUE, w = w, h = h,
-        suffix = sfx, ...
+        suffix = sppp(sfx, "fr.barplot"), ...
       )
     } # save_plot
   } # draw_plot
 
+  # Return contingency table or plot based on return_table flag
   if (return_table) {
     ls.tables <- list(
       "values" = contingency.table,
