@@ -1185,6 +1185,7 @@ transferLabelsSeurat <- function(
     reference_suffix = "reference",
     new_ident_suffix = "R44",
     plot_reference = TRUE,
+    w = 12, h = 9,
     ...) {
 
   # Assertions
@@ -1202,7 +1203,8 @@ transferLabelsSeurat <- function(
 
   # Visualize reference object
   if (plot_reference) clUMAP(obj = reference_obj, ident = reference_ident,
-                             suffix = reference_suffix, sub = reference_suffix, ...)
+                             suffix = reference_suffix, sub = reference_suffix
+                             , w = w, h = h, ...)
 
   # browser()
   if (is.null(anchors)) {
@@ -1226,7 +1228,8 @@ transferLabelsSeurat <- function(
   )
 
   # Visualize combined object
-  clUMAP(ident = new_ident, obj = query_obj, suffix = new_ident_suffix, ...)
+  clUMAP(ident = new_ident, obj = query_obj, suffix = new_ident_suffix
+         , w = w, h = h, ...)
 
   return(query_obj)
 }
@@ -1271,6 +1274,7 @@ matchBestIdentity <- function(
     # to_suffix = FixPlotName(gsub(pattern = "[a-zA-Z_]", replacement = "", x = ident_to_rename)),
     new_ident_name = kpp(ident_to_rename, "best.match", to_suffix),
     plot_suffix = "R44",
+    w = 12, h = 9,
     ...) {
 
   dictionary <- obj@meta.data[, c(ident_to_rename, reference_ident)]
@@ -1282,7 +1286,7 @@ matchBestIdentity <- function(
   obj@meta.data[, new_ident_name] <- translation[, 1]
 
   imessage("new ident name:", new_ident_name)
-  px <- clUMAP(ident = new_ident_name, obj = obj, suffix = plot_suffix)
+  px <- clUMAP(ident = new_ident_name, obj = obj, suffix = plot_suffix, w = w, h = h, ...)
   print(px)
   return(obj)
 }
@@ -1364,9 +1368,9 @@ matchBestIdentity <- function(
 
   # Plot assignment quality
   if (show_plot) {
-    # barplot(quality, main = "Assignment Quality", xlab = query_col, ylab = "Proportion of Total Matches")
     px <- qbarplot(quality,
       label = percentage_formatter(quality, digitz = 1),
+      ext = "png",
       suffix = suffix_barplot,
       plotname = "Assignment Quality",
       filename = make.names(kpp("Assignment Quality", suffix_barplot, "pdf")),

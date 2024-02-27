@@ -478,7 +478,7 @@ scBarplot.CellFractions <- function(
     draw_plot = TRUE,
     show_numbers = TRUE,
     min_frequency = 0, # 0.025,
-    custom_col_palette = c("Standard", "glasbey")[1],
+    custom_col_palette = FALSE,
     color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name ="RdYlBu")))(100),
     ...) {
 
@@ -555,7 +555,9 @@ scBarplot.CellFractions <- function(
     }
 
     if (show_numbers) {
-      pl <- pl + geom_text(aes(label = ..count..), stat = "count", position = position_fill(vjust = 0.5))
+      pl <- pl + geom_text(aes(label = ..count..),
+                           stat = "count", position = position_fill(vjust = 0.5))
+
     }
 
     if (save_plot) {
@@ -1366,9 +1368,9 @@ qSeuViolin <- function(
 
 
 # _________________________________________________________________________________________________
-#' plotGeneExpHist
+#' @title plotGeneExpHist
 #'
-#' This function creates a histogram of gene expression for a given set of genes in a Seurat object.
+#' @description This function creates a histogram of gene expression for a given set of genes in a Seurat object.
 #' @param obj A Seurat object.
 #' @param genes A vector of genes to plot.
 #' @param assay The name of the assay to use.
