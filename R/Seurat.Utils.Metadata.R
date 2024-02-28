@@ -1335,6 +1335,7 @@ matchBestIdentity <- function(
     ref_col = colnames(df)[2],
     show_plot = TRUE,
     suffix_barplot = NULL,
+    ext = "png",
     ...) {
 
   # Convert to data frame if it is not
@@ -1368,12 +1369,12 @@ matchBestIdentity <- function(
 
   # Plot assignment quality
   if (show_plot) {
-    px <- qbarplot(quality,
+    px <- ggExpress::qbarplot(quality,
       label = percentage_formatter(quality, digitz = 1),
-      ext = "png",
+      ext = ext,
       suffix = suffix_barplot,
       plotname = "Assignment Quality",
-      filename = make.names(kpp("Assignment Quality", suffix_barplot, "pdf")),
+      filename = make.names(kpp("Assignment Quality", suffix_barplot, ext)),
       subtitle = paste("From", colnames(df)[1], "->", colnames(df)[2], "| median",
                        percentage_formatter(median(quality)),  "\n",
                        sum(quality>0.5), "clusters above 50% match"

@@ -396,7 +396,7 @@ get.clustercomposition <- function(
     color = y,
     plot = TRUE, ScaleTo100pc = TRUE,
     ...) {
-  setwd(OutDir)
+  try(setwd(OutDir), silent = T)
   clUMAP(obj = obj, ident = x, save.plot = TRUE, suffix = "as.in.barplot")
 
   (df.meta <- obj@meta.data[, c(ident, splitby)])
