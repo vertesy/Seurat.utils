@@ -445,6 +445,9 @@ get.clustercomposition <- function(
 #' are aggregated into an "Other" category.
 #' @param custom_col_palette Specifies whether to use a standard or custom color palette.
 #' @param color_scale Defines the color scale to use for the plot if a custom palette is selected.
+#' @param also.pdf Save plot in both png and pdf formats.
+#' @param min.pct Show % Labels above this threshold. Default = 0.05, or above 5 pct.
+#' @param cex.pct Font size of pct labels.
 #' @param ... Additional parameters passed to internally called functions.
 #'
 #' @return Depending on the value of `return_table`, either returns a ggplot object or a list
@@ -473,10 +476,13 @@ scBarplot.CellFractions <- function(
     hlines = c(.25, .5, .75),
     return_table = FALSE,
     save_plot = TRUE,
+    also.pdf = FALSE,
     seedNr = 1989,
     w = 10, h = ceiling(0.5 * w),
     draw_plot = TRUE,
-    show_numbers = TRUE,
+    show_numbers = FALSE,
+    min.pct = 0.05,
+    cex.pct = 2.5,
     min_frequency = 0, # 0.025,
     custom_col_palette = FALSE,
     color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name ="RdYlBu")))(100),
@@ -509,13 +515,30 @@ scBarplot.CellFractions <- function(
   }
 
   # Construct the caption based on downsampling and minimum frequency
-  caption_ <- paste("Numbers denote # cells.", capt.suffix)
+  PFX <- if(show_numbers) "Numbers denote # cells." else percentage_formatter(min.pct, prefix = "Labeled above")
+  caption_ <- paste("Top: Total cells per bar. |", PFX, capt.suffix)
+
   if (min_frequency > 0) caption_ <- paste(caption_, "\nCategories <", percentage_formatter(min_frequency), "are shown together as 'Other'")
   pname_ <- paste(plotname, pname.suffix)
 
   # Create a contingency table of the data
   contingency.table <- table(obj@meta.data[, group.by], obj@meta.data[, fill.by])
   print(contingency.table)
+
+  if (T) {
+    # First, calculate the total counts per group
+    totals <- obj@meta.data %>%
+      group_by(!!sym(group.by)) %>%
+      summarise(Total = n()) %>%
+      ungroup()
+
+    # browser()
+    # Merge totals back with the original data for labeling
+    group_by_column <- group.by
+    obj@meta.data <- obj@meta.data %>%
+      left_join(totals, by = setNames(nm = group_by_column, group_by_column))
+  }
+
 
   if (draw_plot) {
     # calculate the proportions and add up small fractions
@@ -525,13 +548,14 @@ scBarplot.CellFractions <- function(
       mutate("category" = ifelse(proportion < min_frequency, "Other", as.character(!!as.name(fill.by))))
 
     categories <- unique(prop_table$'category')
-    message("categories present: ", paste(sort(categories)))
+    message("categories present: ", kppc(sort(categories)))
 
     # join the proportions back to the original data
     obj@meta.data <- left_join(obj@meta.data, prop_table, by = fill.by)
 
-    subtt <- FixPlotName(group.by, sub_title)
+    subtt <- kppws(group.by, "|", ncol(obj), "cells" , sub_title)
     pl <- obj@meta.data %>%
+    # pl <- data_with_totals %>%
       {
         if (downsample) dplyr::sample_n(., downsample) else .
       } %>%
@@ -557,15 +581,26 @@ scBarplot.CellFractions <- function(
     if (show_numbers) {
       pl <- pl + geom_text(aes(label = ..count..),
                            stat = "count", position = position_fill(vjust = 0.5))
-
+    } else {
+      pl <- pl + geom_text(
+        aes(label = ifelse((..count.. / tapply(..count.., ..x.., sum)[..x..]) >= min.pct,
+                           scales::percent(..count.. / tapply(..count.., ..x.., sum)[..x..], accuracy = 1),
+                           "")),
+        stat = "count", position = position_fill(vjust = 0.5),
+        size = cex.pct
+      )
     }
+
+    pl <- pl +
+      geom_text(data = totals, aes(x = !!sym(group.by), y = 1, label = Total), vjust = -0.5,
+                inherit.aes = FALSE)
 
     if (save_plot) {
       sfx <- shorten_clustering_names(group.by)
       if (!is.null(suffix)) sfx <- sppp(sfx, suffix)
       if (min_frequency) sfx <- sppp(sfx, min_frequency)
       qqSave(
-        ggobj = pl, title = plotname, also.pdf = TRUE, w = w, h = h,
+        ggobj = pl, title = plotname, also.pdf = also.pdf, w = w, h = h,
         suffix = sppp(sfx, "fr.barplot"), ...
       )
     } # save_plot

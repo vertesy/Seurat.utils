@@ -16,6 +16,8 @@ transferLabelsSeurat(
   reference_suffix = "reference",
   new_ident_suffix = "R44",
   plot_reference = TRUE,
+  w = 12,
+  h = 9,
   ...
 )
 }

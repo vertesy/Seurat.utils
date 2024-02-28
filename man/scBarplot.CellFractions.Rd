@@ -15,13 +15,16 @@ scBarplot.CellFractions(
   hlines = c(0.25, 0.5, 0.75),
   return_table = FALSE,
   save_plot = TRUE,
+  also.pdf = FALSE,
   seedNr = 1989,
   w = 10,
   h = ceiling(0.5 * w),
   draw_plot = TRUE,
-  show_numbers = TRUE,
+  show_numbers = FALSE,
+  min.pct = 0.05,
+  cex.pct = 2.5,
   min_frequency = 0,
-  custom_col_palette = c("Standard", "glasbey")[1],
+  custom_col_palette = FALSE,
   color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name =
     "RdYlBu")))(100),
   ...
@@ -46,6 +49,8 @@ scBarplot.CellFractions(
 
 \item{save_plot}{Logical; if TRUE, saves the generated plot.}
 
+\item{also.pdf}{Save plot in both png and pdf formats.}
+
 \item{seedNr}{Seed for random number generation to ensure reproducibility.}
 
 \item{w}{Width of the plot in inches.}
@@ -55,6 +60,10 @@ scBarplot.CellFractions(
 \item{draw_plot}{Logical; if FALSE, suppresses plotting (useful if only the table is desired).}
 
 \item{show_numbers}{Logical; if TRUE, adds count numbers on top of each bar in the plot.}
+
+\item{min.pct}{Show \% Labels above this threshold. Default = 0.05, or above 5 pct.}
+
+\item{cex.pct}{Font size of pct labels.}
 
 \item{min_frequency}{Minimum fraction to display individually in the plot; smaller fractions
 are aggregated into an "Other" category.}

@@ -11,6 +11,8 @@ matchBestIdentity(
   to_suffix = "matched",
   new_ident_name = kpp(ident_to_rename, "best.match", to_suffix),
   plot_suffix = "R44",
+  w = 12,
+  h = 9,
   ...
 )
 }
