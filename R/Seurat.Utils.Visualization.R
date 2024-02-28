@@ -2078,7 +2078,7 @@ PlotTopGenesPerCluster <- function(
 #' @param dims Any numeric metadata columns
 #' @param obj Seurat object, Default: combined.obj
 #'
-#' @examples qQC.plots.BrainOrg.RV()
+#' @examples qClusteringUMAPS()
 #' @export
 qClusteringUMAPS <- function(
     obj = combined.obj,
@@ -2119,7 +2119,7 @@ qClusteringUMAPS <- function(
 #' @param QC.Features Any numeric metadata columns
 #' @param obj Seurat object, Default: combined.obj
 #'
-#' @examples qQC.plots.BrainOrg.RV()
+#' @examples qQC.plots.BrainOrg()
 #' @export
 qQC.plots.BrainOrg <- function(
     obj = combined.obj,
@@ -2134,6 +2134,15 @@ qQC.plots.BrainOrg <- function(
   n.found <- intersect(QC.Features, colnames(obj@meta.data))
   message(kppws(length(n.found), " found of ", QC.Features))
   stopifnot(length(n.found) > 1)
+
+  # Count the number of NAs in specified columns
+  na_counts <- sapply(X = obj@meta.data[ , QC.Features], function(x) sum(is.na(x)))
+
+  # Raise a warning if there are any NAs
+  if (sum(na_counts) > 0) {
+    warning(sprintf("There are %d NA values found\n", na_counts ),
+            immediate. = TRUE)
+  }
 
   px <- list(
     "A" = qUMAP(QC.Features[1], save.plot = FALSE, obj = obj, ...) + NoAxes(),
