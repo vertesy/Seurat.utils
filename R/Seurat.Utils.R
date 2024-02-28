@@ -3463,7 +3463,10 @@ xsave <- function(
     try(obj@misc$all.genes <- all.genes, silent = TRUE)
   }
 
-  fnameBase <- trimws(kppu(prefix, substitute(obj), length(obj), suffix, project, idate(Format = "%Y.%m.%d_%H.%M")), whitespace = "_") # , preset, "compr"
+
+  annot.suffix <- if(inherits(obj, "Seurat")) kppd(ncol(obj), "cells") else if(is.list(combined.obj)) kppd("ls",length(obj)) else NULL
+  fnameBase <- trimws(kppu(prefix, substitute(obj), annot.suffix, suffix, project, idate(Format = "%Y.%m.%d_%H.%M")), whitespace = "_") # , preset, "compr"
+
   FNN <- paste0(out_dir, fnameBase, ".qs")
   print(paste0(substitute(obj), " <- xread('", FNN, "')"))
 
