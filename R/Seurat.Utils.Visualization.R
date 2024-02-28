@@ -448,6 +448,7 @@ get.clustercomposition <- function(
 #' @param also.pdf Save plot in both png and pdf formats.
 #' @param min.pct Show % Labels above this threshold. Default = 0.05, or above 5 pct.
 #' @param cex.pct Font size of pct labels.
+#' @param show.total.cells Show total cells
 #' @param ... Additional parameters passed to internally called functions.
 #'
 #' @return Depending on the value of `return_table`, either returns a ggplot object or a list
@@ -486,6 +487,7 @@ scBarplot.CellFractions <- function(
     min_frequency = 0, # 0.025,
     custom_col_palette = FALSE,
     color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name ="RdYlBu")))(100),
+    show.total.cells = TRUE,
     ...) {
 
   # Input assertions
@@ -525,14 +527,13 @@ scBarplot.CellFractions <- function(
   contingency.table <- table(obj@meta.data[, group.by], obj@meta.data[, fill.by])
   print(contingency.table)
 
-  if (T) {
+  if (show.total.cells) {
     # First, calculate the total counts per group
     totals <- obj@meta.data %>%
       group_by(!!sym(group.by)) %>%
       summarise(Total = n()) %>%
       ungroup()
 
-    # browser()
     # Merge totals back with the original data for labeling
     group_by_column <- group.by
     obj@meta.data <- obj@meta.data %>%
@@ -591,9 +592,10 @@ scBarplot.CellFractions <- function(
       )
     }
 
-    pl <- pl +
-      geom_text(data = totals, aes(x = !!sym(group.by), y = 1, label = Total), vjust = -0.5,
-                inherit.aes = FALSE)
+    if (show.total.cells) {
+      pl <- pl + geom_text(data = totals, aes(x = !!sym(group.by), y = 1, label = Total),
+                           vjust = -0.5, inherit.aes = FALSE)
+    }
 
     if (save_plot) {
       sfx <- shorten_clustering_names(group.by)
