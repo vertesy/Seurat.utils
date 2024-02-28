@@ -1859,13 +1859,15 @@ multiFeaturePlot.A4 <- function(
     w = wA4, h = hA4, scaling = 1,
     format = c("jpg", "pdf", "png")[1],
     ...
-    # , jpeg.res = 225, jpeg.q = 90
     ) {
+
   tictoc::tic()
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- "genes"
   if (subdir) create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
-  list.of.genes.found <- check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay, makeuppercase = FALSE)
+
+  list.of.genes.found <- check.genes(list.of.genes = list.of.genes, obj = obj,
+                                     assay.slot = intersectionAssay, makeuppercase = FALSE)
   DefaultAssay(obj) <- intersectionAssay
 
   if (layout == "tall") {
@@ -1905,7 +1907,7 @@ multiFeaturePlot.A4 <- function(
     cowplot::ggsave2(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
   }
 
-  if (subdir) MarkdownReports::create_set_OutDir(... = ParentDir)
+  if (subdir) MarkdownReports::create_set_OutDir(ParentDir)
   if (saveGeneList) {
     if (is.null(obj@misc$gene.lists)) obj@misc$gene.lists <- list()
     obj@misc$gene.lists[[substitute(list.of.genes)]] <- list.of.genes.found

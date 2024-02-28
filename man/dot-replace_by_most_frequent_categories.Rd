@@ -10,6 +10,7 @@
   ref_col = colnames(df)[2],
   show_plot = TRUE,
   suffix_barplot = NULL,
+  ext = "png",
   ...
 )
 }
