@@ -570,12 +570,14 @@ scBarplot.CellFractions <- function(
         x = "Clusters", y = "Fraction of Cells", caption = caption_
       ) +
       theme_classic() +
-      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+      scale_y_continuous(limits = c(0, 1), expand = expansion(mult = c(0, 0.1)))
+
 
     # Apply custom color palette if specified
     if (custom_col_palette) {
       palette_x <- color_scale[seq(categories)]
-      message('palette: ', paste(palette_x) )
+      message('palette: ', kppc(palette_x) )
       pl <- pl + scale_fill_manual(values = palette_x)
     }
 

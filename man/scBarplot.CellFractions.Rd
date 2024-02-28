@@ -27,6 +27,7 @@ scBarplot.CellFractions(
   custom_col_palette = FALSE,
   color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name =
     "RdYlBu")))(100),
+  show.total.cells = TRUE,
   ...
 )
 }
@@ -71,6 +72,8 @@ are aggregated into an "Other" category.}
 \item{custom_col_palette}{Specifies whether to use a standard or custom color palette.}
 
 \item{color_scale}{Defines the color scale to use for the plot if a custom palette is selected.}
+
+\item{show.total.cells}{Show total cells}
 
 \item{...}{Additional parameters passed to internally called functions.}
 }
