@@ -569,6 +569,7 @@ saveLsSeuratMetadata <- function(ls.obj, suffix) {
 }
 
 
+# _________________________________________________________________________________________________
 #' @title Transfer Multiple Metadata Columns Between Two Seurat Objects
 #'
 #' @description Transfers specified metadata columns from one Seurat object to another,

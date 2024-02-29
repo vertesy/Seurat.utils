@@ -556,7 +556,7 @@ scBarplot.CellFractions <- function(
 
     subtt <- kppws(group.by, "|", ncol(obj), "cells" , sub_title)
     pl <- obj@meta.data %>%
-    # pl <- data_with_totals %>%
+      # pl <- data_with_totals %>%
       {
         if (downsample) dplyr::sample_n(., downsample) else .
       } %>%
@@ -567,7 +567,8 @@ scBarplot.CellFractions <- function(
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
       labs(
         title = pname_, subtitle = subtt,
-        x = "Clusters", y = "Fraction of Cells", caption = caption_
+        x = group.by, y = "Fraction of Cells",
+        fill = fill.by, caption = caption_
       ) +
       theme_classic() +
       theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
