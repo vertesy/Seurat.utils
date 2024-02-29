@@ -28,7 +28,7 @@ clUMAP(
   MaxCategThrHP = 200,
   axes = FALSE,
   aspect.ratio = c(FALSE, 0.6)[2],
-  save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots"),
+  save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = F),
   PNG = TRUE,
   check_for_2D = TRUE,
   caption = FALSE,

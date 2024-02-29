@@ -25,5 +25,5 @@ qClusteringUMAPS(
 Quickly plot 1-4 clustering resolutions on an a4 page
 }
 \examples{
-qQC.plots.BrainOrg.RV()
+qClusteringUMAPS()
 }

@@ -24,5 +24,5 @@ qQC.plots.BrainOrg(
 Quickly plot key QC markers in brain organoids
 }
 \examples{
-qQC.plots.BrainOrg.RV()
+qQC.plots.BrainOrg()
 }

@@ -1544,7 +1544,7 @@ qUMAP <- function(
     reduction = "umap", splitby = NULL,
     prefix = NULL,
     suffix = make.names(sub),
-    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots"),
+    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = F),
     PNG = TRUE,
     h = 7, w = NULL, nr.cols = NULL,
     assay = c("RNA", "integrated")[1],
@@ -1650,7 +1650,7 @@ clUMAP <- function(
     label = TRUE, repel = TRUE, legend = !label, MaxCategThrHP = 200,
     axes = FALSE,
     aspect.ratio = c(FALSE, 0.6)[2],
-    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots"),
+    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = F),
     PNG = TRUE,
     check_for_2D = TRUE,
     caption = FALSE

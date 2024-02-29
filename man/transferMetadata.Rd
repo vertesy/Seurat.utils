@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Metadata.R
 \name{transferMetadata}
 \alias{transferMetadata}
-\title{Transfer Metadata Between Two Seurat Objects}
+\title{Transfer Multiple Metadata Columns Between Two Seurat Objects}
 \usage{
 transferMetadata(
   from,
@@ -18,29 +18,37 @@ transferMetadata(
 
 \item{to}{The destination Seurat object to which metadata will be added.}
 
-\item{colname_from}{The name of the column in the source object's metadata to transfer.}
+\item{colname_from}{Vector of names for the columns in the source object's metadata to transfer.}
 
-\item{colname_to}{The name for the column in the destination object's metadata. Defaults to the same name as \code{colname_from}.}
+\item{colname_to}{Vector of names for the columns in the destination object's metadata.
+Defaults to the same names as \code{colname_from}. Must be the same length as \code{colname_from} unless
+it is the same as \code{colname_from}.}
 
-\item{verbose}{Logical, indicating whether to print details about the transfer, including the number and percentage of matching cells between objects, and unique cells in each object.}
+\item{verbose}{Logical, indicating whether to print details about the transfer, including the
+number and percentage of matching cells between objects, and unique cells in each object.}
 
-\item{overwrite}{Logical, indicating whether to overwrite the column in the destination object if it already exists. Defaults to FALSE.}
+\item{overwrite}{Logical, indicating whether to overwrite the column in the destination object
+if it already exists. Defaults to FALSE.}
 }
 \value{
-Returns the destination Seurat object (\code{to}) with the new metadata column added.
+Returns the destination Seurat object (\code{to}) with the new metadata columns added.
 }
 \description{
-Transfers a specified metadata column from one Seurat object to another, with options for verbose output and overwriting existing columns.
+Transfers specified metadata columns from one Seurat object to another,
+with options for verbose output and overwriting existing columns. Checks for cell overlap and
+reports percentages of matching and unique cells.
 }
 \details{
 This function is useful for merging related data from separate Seurat objects,
 ensuring that relevant metadata is consistent across datasets. The function checks for
-the existence of the specified column in the source object and optionally whether the
-column can be overwritten in the destination object.
+the existence of the specified columns in the source object and whether the columns
+can be overwritten in the destination object. It also reports on cell overlap between
+the two objects, which can be useful for understanding the relationship between datasets.
 }
 \examples{
 # Assuming `object1` and `object2` are Seurat objects, and you want to transfer
-# a metadata column named 'patientID' from `object1` to `object2`:
-object2 <- transferMetadata(from = object1, to = object2, colname_from = "patientID")
+# metadata columns named 'patientID' and 'treatmentGroup' from `object1` to `object2`:
+object2 <- transferMetadata(from = object1, to = object2,
+                           colname_from = c("patientID", "treatmentGroup"))
 
 }
