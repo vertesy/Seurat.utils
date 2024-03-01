@@ -3510,14 +3510,6 @@ xread <- function(file, nthreads = 4, ...) {
   stopifnot(file.exists(file))
   try(tictoc::tic(), silent = TRUE)
 
-  report <- if(is(obj, "Seurat")) {
-    kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "meta colums.")
-  } else if(is.list(combined.obj)) {
-    kppws("is a list of:", length(obj))
-  } else {
-    kppws("of length:", length(obj))
-  }
-  iprint(is(x)[1], report)
 
   # if (background_job & rstudioapi::isAvailable()) {
   #   "This part is not debugged yet!"
@@ -3534,7 +3526,14 @@ xread <- function(file, nthreads = 4, ...) {
   x <- qs::qread(file = file, nthreads = nthreads, ...)
   # }
 
-
+  report <- if(is(x, "Seurat")) {
+    kppws("with", ncol(x), "cells &", ncol(x@meta.data), "meta colums.")
+  } else if(is.list(x)) {
+    kppws("is a list of:", length(x))
+  } else {
+    kppws("of length:", length(x))
+  }
+  iprint(is(x)[1], report)
   try(tictoc::toc(), silent = TRUE)
   invisible(x)
 }
