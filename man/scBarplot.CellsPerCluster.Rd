@@ -5,8 +5,8 @@
 \title{scBarplot.CellsPerCluster}
 \usage{
 scBarplot.CellsPerCluster(
-  obj = combined.obj,
   ident = GetOrderedClusteringRuns(obj = obj)[1],
+  obj = combined.obj,
   sort = FALSE,
   label = list(TRUE, "percent")[[1]],
   suffix = if (label == "percent") "percent" else NULL,
@@ -18,9 +18,9 @@ scBarplot.CellsPerCluster(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
-
 \item{ident}{identity used, Default: 'cl.names.KnownMarkers.0.5'}
+
+\item{obj}{Seurat object, Default: combined.obj}
 
 \item{sort}{Sort by cluster size? Default: FALSE}
 

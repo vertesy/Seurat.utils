@@ -3506,7 +3506,7 @@ xsave <- function(
 #' @importFrom rstudioapi isAvailable
 #'
 #' @export
-xread <- function(file, nthreads = .getCPUsCBE(8),
+xread <- function(file, nthreads = 4,
                   ...) {
   stopifnot(file.exists(file))
 
@@ -3561,7 +3561,7 @@ xread <- function(file, nthreads = .getCPUsCBE(8),
 #'
 #' # Assuming CBE.params exists and has a `cpus` entry of 4
 #' getCPUsCBE() # returns 3
-getCPUsCBE <- function(n.cpus.def = 8) {
+.getCPUsCBE <- function(n.cpus.def = 8) {
   # Check if 'CBE.params' exists and contains 'cpus'
   if (exists("CBE.params", where = .GlobalEnv) && !is.null(CBE.params$"cpus")) {
     max(CBE.params$"cpus" - 1, 1)
