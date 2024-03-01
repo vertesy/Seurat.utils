@@ -652,8 +652,8 @@ scBarplot.CellFractions <- function(
 #' @export scBarplot.CellsPerCluster
 
 scBarplot.CellsPerCluster <- function(
-    obj = combined.obj,
     ident = GetOrderedClusteringRuns(obj = obj)[1],
+    obj = combined.obj,
     sort = FALSE,
     label = list(TRUE, "percent")[[1]],
     suffix = if (label == "percent") "percent" else NULL,
@@ -1673,6 +1673,7 @@ clUMAP <- function(
   if (!missing(highlight.clusters)) {
     idx.ok <- identity[, 1] %in% highlight.clusters
     highlight.these <- rownames(identity)[idx.ok]
+    sub <- paste(length(highlight.these), "cells in cluster:", kppc(highlight.clusters), "\n", sub)
   } else {
     highlight.these <- NULL
   }
@@ -1686,7 +1687,7 @@ clUMAP <- function(
     cols <- if (NtCategs > 5) getDiscretePaletteObj(ident.used = ident, palette.used = palette,
                                                     obj = obj, show.colors = FALSE)
   }
-  if (!is.null(cells.highlight)) {
+  if (!is.null(highlight.these)) {
     cols <- "lightgrey"
   }
 

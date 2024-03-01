@@ -1292,6 +1292,23 @@ transferLabelsSeurat <- function(
 
 
 # _________________________________________________________________________________________________
+#' @title Extract meta.data Column Names Matching a Pattern
+#'
+#' @param obj A dataframe from which to extract column names.
+#' @param pattern A regular expression pattern to match column names against.
+#'
+#' @return A character vector of column names matching the pattern.
+#'
+#' @examples
+#' # Assuming 'df' is a dataframe with column names "azi.one", "azi.two", "other"
+#' extract_matching_columns(df, "^azi\\.")
+.metaColnames <- function(obj = combined.obj, pattern, perl =T, ...) {
+  colz <- grep(pattern, colnames(obj@meta.data), value = TRUE, perl = perl, ...)
+  dput(colz)
+  return(colz)
+}
+
+
 # _________________________________________________________________________________________________
 #' @title Match and Translate Best Identity
 #'

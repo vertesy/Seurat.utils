@@ -3446,7 +3446,7 @@ isave.RDS <- function(
 xsave <- function(
     obj, prefix = NULL,
     suffix = NULL,
-    nthreads = if(exists('CBE.params')) CBE.params$'cpus' else 12,
+    nthreads = .getCPUsCBE(12),
     preset = "high",
     project = getProject(),
     out_dir = if (exists("OutDir")) OutDir else getwd(),
@@ -3506,8 +3506,11 @@ xsave <- function(
 #' @importFrom rstudioapi isAvailable
 #'
 #' @export
-xread <- function(file, nthreads = 4, ...) {
+xread <- function(file, nthreads = .getCPUsCBE(8),
+                  ...) {
   stopifnot(file.exists(file))
+
+  message(nthreads, " threads.")
   try(tictoc::tic(), silent = TRUE)
 
 
@@ -3538,6 +3541,34 @@ xread <- function(file, nthreads = 4, ...) {
   invisible(x)
 }
 
+
+# _________________________________________________________________________________________________
+#' @title Get the number of CPUs to use for CBE processing
+#'
+#' @description This function checks for the presence of a global `CBE.params` list and,
+#' if found and contains a `cpus` entry, returns the number of CPUs specified by `cpus` minus one.
+#' Otherwise, it returns a default number of CPUs.
+#'
+#' @param n.cpus.def The default number of CPUs to return if `CBE.params` does not exist
+#' or does not contain a `cpus` entry. Defaults to 8.
+#'
+#' @return The number of CPUs to use for CBE processing. If `CBE.params$cpus` is set,
+#' returns `CBE.params$cpus - 1`, ensuring at least 1 CPU is returned. Otherwise, returns `n.cpus.def`.
+#'
+#' @examples
+#' # Assuming CBE.params does not exist or does not have a `cpus` entry
+#' getCPUsCBE() # returns 8 by default
+#'
+#' # Assuming CBE.params exists and has a `cpus` entry of 4
+#' getCPUsCBE() # returns 3
+getCPUsCBE <- function(n.cpus.def = 8) {
+  # Check if 'CBE.params' exists and contains 'cpus'
+  if (exists("CBE.params", where = .GlobalEnv) && !is.null(CBE.params$"cpus")) {
+    max(CBE.params$"cpus" - 1, 1)
+  } else {
+    return(n.cpus.def)
+  }
+}
 
 
 # _________________________________________________________________________________________________
