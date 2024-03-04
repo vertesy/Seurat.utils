@@ -27,7 +27,7 @@ PackageTools::document_and_create_package(repository.dir, config_file = 'config.
 source('~/GitHub/Packages/Rocinante/R/Rocinante.R')
 rprofile()
 devtools::install_local(repository.dir, upgrade = F)
-
+PackageTools:::.parse_description(config_path = config_path)
 
 # Test if you can install from github ------------------------------------------------
 remote.path <- file.path(DESCRIPTION$'github.user', package.name)

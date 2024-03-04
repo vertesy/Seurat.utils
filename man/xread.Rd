@@ -4,7 +4,7 @@
 \alias{xread}
 \title{Read an R Object Using 'qs' Package for Fast Decompression}
 \usage{
-xread(file, nthreads = .getCPUsCBE(8), ...)
+xread(file, nthreads = 4, ...)
 }
 \arguments{
 \item{file}{A character string specifying the path to the file where the R object is saved.}

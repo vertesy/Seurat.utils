@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
-Version: 2.6.3
+Version: 2.6.5
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <av@imba.oeaw.ac.at> [aut, cre]
@@ -21,7 +21,6 @@ Depends:
 Imports: 
     cowplot,
     dplyr,
-    EnhancedVolcano,
     foreach,
     ggcorrplot,
     ggpubr,
@@ -51,7 +50,12 @@ Imports:
     tictoc,
     tidyverse,
     vroom
+Suggests: 
+    DatabaseLinke.R,
+    EnhancedVolcano,
+    princurve,
+    SoupX
 Encoding: UTF-8
-Packaged: 2024-02-08 14:28:08.169918
+Packaged: 2024-03-04 10:02:54.888848
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

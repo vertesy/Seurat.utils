@@ -786,6 +786,97 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene = "ACTB", filterZe
 }
 
 
+
+# _________________________________________________________________________________________________
+# 3D umaps ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+
+# _________________________________________________________________________________________________
+#' @title BackupReduction
+#'
+#' @description Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`. #
+#' @param obj Seurat object, Default: combined.obj
+#' @param dim Numer of dimensions used, Default: 2
+#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
+#' }
+#' }
+#' @export
+BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { # Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`.
+  if (is.null(obj@misc$"reductions.backup")) obj@misc$"reductions.backup" <- list()
+  dslot <- paste0(reduction, dim, "d")
+  obj@misc$reductions.backup[[dslot]] <- obj@reductions[[reduction]]
+  return(obj)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title SetupReductionsNtoKdimensions
+#'
+#' @description Function to compute dimensionality reductions for a given Seurat object and backup the computed reductions.
+#' @param obj A Seurat object. Default: combined.obj
+#' @param nPCs A numeric value representing the number of principal components to use. Default: p$n.PC
+#' @param dimensions A numeric vector specifying the dimensions to use for the dimensionality reductions. Default: 3:2
+#' @param reduction A character string specifying the type of dimensionality reduction to perform. Can be "umap", "tsne", or "pca". Default: 'umap'
+#' @return The input Seurat object with computed dimensionality reductions and backups of these reductions.
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction = "umap")
+#' }
+#' }
+#' @export
+SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", dimensions = 3:2, reduction = "umap", ...) { # Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to `obj@misc$reductions.backup` from @reductions$umap
+  red <- reduction
+  for (d in dimensions) {
+    iprint(d, "dimensional", red, "is calculated")
+    obj <- if (reduction == "umap") {
+      RunUMAP(obj, dims = 1:nPCs, n.components = d, ...)
+    } else if (reduction == "tsne") {
+      RunTSNE(obj, dims = 1:nPCs, n.components = d, ...)
+    } else if (reduction == "pca") {
+      RunPCA(obj, dims = 1:nPCs, n.components = d, ...)
+    }
+    obj <- BackupReduction(obj = obj, dim = d, reduction = red)
+  }
+  return(obj)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title RecallReduction
+#'
+#' @description Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`. #
+#' @param obj Seurat object, Default: combined.obj
+#' @param dim Numer of dimensions used, Default: 2
+#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
+#'   qUMAP()
+#'   combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
+#'   qUMAP()
+#' }
+#' }
+#' @export
+RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+  dslot <- paste0(reduction, dim, "d")
+  reduction.backup <- obj@misc$reductions.backup[[dslot]]
+  msg <- paste(dim, "dimensional", reduction, "from obj@misc$reductions.backup")
+  stopif(is.null(reduction.backup), message = paste0(msg, " is NOT FOUND"))
+  iprint(msg, "is set active. ")
+  stopifnot(dim == ncol(reduction.backup))
+  obj@reductions[[reduction]] <- reduction.backup
+  return(obj)
+}
+
+
 # _________________________________________________________________________________________________
 # Interacting with the environment ______________________________ ----
 # _________________________________________________________________________________________________
@@ -1915,123 +2006,6 @@ AutoLabel.KnownMarkers <- function(
   obj[[namedIDslot]] <- named.ident
   return(obj)
 }
-
-
-
-# ________________________________________________________________________
-#' @title scEnhancedVolcano
-#'
-#' @description This function creates an enhanced volcano plot.
-#'
-#' @param toptable A data frame with the results of differential gene expression analysis.
-#' @param lab A vector of gene symbols to label on the plot.
-#' @param suffix A string to append to the title of the plot.
-#' @param title The title of the plot.
-#' @param subtitle The subtitle of the plot.
-#' @param x The x-axis, which is typically the average log2 fold change.
-#' @param y The y-axis, which is typically the adjusted p-value.
-#' @param selectLab A vector of gene symbols to select for labeling.
-#' @param h The height of the plot.
-#' @param w The width of the plot.
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @return A ggplot object.
-#' @importFrom EnhancedVolcano EnhancedVolcano
-#'
-#' @export
-
-scEnhancedVolcano <- function(
-    toptable = df.markers.X, lab = rownames(toptable),
-    suffix = "",
-    title = kppd("DGEA", suffix),
-    subtitle = paste("min FC:", iround(2^abs(min(toptable$"avg_log2FC")))),
-    x = "avg_log2FC", y = "p_val_adj",
-    selectLab = trail(lab, 5),
-    pCutoffCol = "p_val_adj",
-    h = 8, w = h, ...) {
-  # Create an enhanced volcano plot.
-  pobj <- EnhancedVolcano::EnhancedVolcano(
-    toptable = toptable, ,
-    title = title, subtitle = subtitle,
-    lab = lab, selectLab = selectLab,
-    pCutoffCol = pCutoffCol,
-    x = x, y = y,
-    ...
-  )
-
-  # Save the plot.
-  qqSave(ggobj = pobj, title = title, h = h, w = w)
-  return(pobj)
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title BulkGEScatterPlot
-#'
-#' @description Plots scatterplots of bulk gene expression to identify differentially expressed genes across conditions.
-#' @param obj The Seurat object to use for the analysis. Default: combined.obj.
-#' @param clusters A string specifying the identity class in the Seurat object to use for cluster assignment. Default: 'cl.names.KnownMarkers.0.2'.
-#' @param TwoCategIdent A string specifying the binary categorical identity to split the data for comparison. Default: 'age'.
-#' @param genes.from.bulk.DE A character vector specifying the genes obtained from bulk differential expression analysis to be highlighted in the scatterplots. Default: rownames(df.markers.per.AGE).
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   BulkGEScatterPlot(obj = combined.obj, clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = "age", genes.from.bulk.DE = rownames(df.markers.per.AGE))
-#' }
-#' }
-#' @export
-BulkGEScatterPlot <- function(obj = combined.obj # Plot bulk scatterplots to identify differential expressed genes across conditions
-                              , clusters = "cl.names.KnownMarkers.0.2", TwoCategIdent = "age", genes.from.bulk.DE = rownames(df.markers.per.AGE)) {
-  (SplitIdents <- unique(obj[[TwoCategIdent]][, 1]))
-  stopifnot(length(SplitIdents) == 2)
-
-  Idents(obj) <- clusters
-  IdentsUsed <- gtools::mixedsort(as.character(unique(Idents(obj))))
-  NrPlots <- length(IdentsUsed)
-  p.clAv <- p.clAv.AutoLabel <- genes.to.label <- list.fromNames(IdentsUsed)
-
-  # i = 1
-  for (i in 1:NrPlots) {
-    print(IdentsUsed[i])
-    ClX <- subset(obj, idents = IdentsUsed[i])
-    Idents(ClX) <- TwoCategIdent
-    avg.ClX.cells <- log2(AverageExpression(ClX, verbose = FALSE)$RNA + 1)
-    avg.ClX.cells$gene <- rownames(avg.ClX.cells)
-
-    # plot --- --- ---
-    p.clAv[[i]] <- p.clAv.AutoLabel[[i]] <-
-      ggplot(avg.ClX.cells, aes(x = !!as.name(SplitIdents[1]), y = !!as.name(SplitIdents[2]))) +
-      geom_point(data = avg.ClX.cells, color = rgb(0, .5, 0, 0.25), size = 1) +
-      FontSize(x.title = 8, x.text = 8, y.title = 8, y.text = 8) +
-      geom_abline(slope = 1, intercept = 0, color = "grey") +
-      ggtitle(paste("Cluster", IdentsUsed[i])) +
-      # ggtitle(paste0("Cluster ", i) ) +
-      scale_x_log10() +
-      scale_y_log10() +
-      annotation_logticks()
-    # p.clAv[[i]]
-
-    "Auto identify divergent genes"
-    dist.from.axis <- eucl.dist.pairwise(avg.ClX.cells[, 1:2])
-    genes.to.label[[i]] <- names(head(sort(dist.from.axis, decreasing = TRUE), n = 20))
-    p.clAv.AutoLabel[[i]] <- LabelPoints(plot = p.clAv[[i]], points = genes.to.label[[i]], xnudge = 0, ynudge = 0, repel = TRUE, size = 2)
-    p.clAv.AutoLabel[[i]]
-
-    "Pre-identified genes"
-    p.clAv[[i]] <- LabelPoints(plot = p.clAv[[i]], points = genes.from.bulk.DE, repel = TRUE, size = 2)
-  }
-
-  PlotIter <- CodeAndRoll2::split_vec_to_list_by_N(1:NrPlots, by = 4)
-  for (i in 1:length(PlotIter)) {
-    plotLS <- p.clAv.AutoLabel[PlotIter[[i]]]
-    qqSaveGridA4(plotlist = plotLS, plots = 1:4, fname = ppp("BulkGEScatterPlot.AutoGenes", kpp(PlotIter[[i]]), "png"))
-
-    plotLS <- p.clAv[PlotIter[[i]]]
-    qqSaveGridA4(plotlist = plotLS, plots = 1:4, fname = ppp("BulkGEScatterPlot.BulkGenes", kpp(PlotIter[[i]]), "png"))
-  }
-}
-
-
 
 
 
