@@ -1949,12 +1949,14 @@ multiFeaturePlot.A4 <- function(
 #'
 #' @export
 multiFeatureHeatmap.A4 <- function(
-    obj = combined.obj # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
-    , list.of.genes, gene.per.page = 5,
+    obj = combined.obj,
+    list.of.genes, gene.per.page = 5,
     group.cells.by = "batch", plot.reduction = "umap",
     cex = iround(3 / gene.per.page), sep_scale = FALSE,
     gene.min.exp = "q5", gene.max.exp = "q95",
-    jpeg.res = 225, jpeg.q = 90, ...) {
+    jpeg.res = 225, jpeg.q = 90,
+    ...) {
+
   tictoc::tic()
   list.of.genes <- check.genes(list.of.genes, obj = obj)
 
@@ -2013,8 +2015,13 @@ multiFeatureHeatmap.A4 <- function(
 #' @examples
 #' multiSingleClusterHighlightPlots.A4(ident = "cluster_id", obj = yourSeuratObject)
 #'
-#' @importFrom checkmate assertCharacter assertNumeric assertLogical
+#' @importFrom Seurat.utils clUMAP
 #' @importFrom ggplot2 ggplot geom_point
+#' @importFrom cowplot plot_grid ggsave2
+#' @importFrom tictoc tic toc
+#' @importFrom MarkdownReports create_set_OutDir
+#' @importFrom
+#'
 #' @export
 multiSingleClusterHighlightPlots.A4 <- function(
     ident,
@@ -2022,7 +2029,9 @@ multiSingleClusterHighlightPlots.A4 <- function(
     foldername = substitute(ident), plot.reduction = "umap",
     intersectionAssay = c("RNA", "integrated")[1],
     layout = c("tall", "wide", FALSE)[2],
-    colors = c("grey", "red"), nr.Col = 2, nr.Row = 4, cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
+    colors = c("grey", "red"),
+    nr.Col = 2, nr.Row = 4,
+    cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
     subdir = TRUE,
     prefix = NULL, suffix = NULL,
     background_col = "white",
@@ -2031,7 +2040,7 @@ multiSingleClusterHighlightPlots.A4 <- function(
     w = wA4, h = hA4, scaling = 1,
     format = c("jpg", "pdf", "png")[1],
     ...
-) {
+    ) {
 
   tictoc::tic()
   ParentDir <- OutDir
@@ -2042,6 +2051,7 @@ multiSingleClusterHighlightPlots.A4 <- function(
 
   DefaultAssay(obj) <- intersectionAssay
 
+  # Adjust plot dimensions and grid layout based on specified layout
   if (layout == "tall") {
     w <- wA4 * scaling
     h <- hA4 * scaling
@@ -2058,36 +2068,36 @@ multiSingleClusterHighlightPlots.A4 <- function(
   }
 
 
+  # Split clusters into lists for plotting
   ls.Clust <- CodeAndRoll2::split_vec_to_list_by_N(1:length(clusters), by = nr.Row * nr.Col)
   for (i in 1:length(ls.Clust)) {
-    clusterz <- clusters[ls.Clust[[i]]]
-    iprint("page:", i, "| clusters", kppc(clusterz))
+    clusters_on_this_page <- clusters[ls.Clust[[i]]]
+    iprint("page:", i, "| clusters", kppc(clusters_on_this_page))
     (plotname <- kpp(c(prefix, plot.reduction, i, "clusters", ls.Clust[[i]], suffix, format)))
 
-
     plot.list <- list()
-
-    for (i in seq(clusterz)) {
-      cl <- clusterz[i]; message(cl)
-      plot.list[[i]] <- clUMAP(ident = ident, obj = obj,
-                               highlight.clusters = cl, label = FALSE, legend = F, save.plot = F,
-                               plotname = plotname, cols = colors, h = h, w = w, ...)
+    for (i in seq(clusters_on_this_page)) {
+      cl <- clusters_on_this_page[i]; message(cl)
+      plot.list[[i]] <- Seurat.utils::clUMAP(ident = ident, obj = obj,
+                                             highlight.clusters = cl, label = FALSE, legend = F, save.plot = F,
+                                             plotname = plotname, cols = colors, h = h, w = w, ...)
     }
 
+    # Customize plot appearance
     for (i in 1:length(plot.list)) {
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
       if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] +
           ggplot2::coord_fixed(ratio = aspect.ratio)
     }
 
+    # Save plots
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
     cowplot::ggsave2(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
-  }
+  } # for ls.Clust
 
   if (subdir) MarkdownReports::create_set_OutDir(ParentDir)
   tictoc::toc()
 }
-
 
 
 
@@ -2542,7 +2552,9 @@ save2umaps.A4 <- function(
 save4umaps.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 2,
-    h = wA4 * scale, w = hA4 * scale, ...) { # Save 4 umaps on an A4 page.
+    h = wA4 * scale, w = hA4 * scale
+    , ...) {
+
   if (pname == FALSE) pname <- Stringendo::sppp(substitute(plot_list), suffix)
   p1 <- cowplot::plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol,
                            labels = LETTERS[1:length(plot_list)], ...)
