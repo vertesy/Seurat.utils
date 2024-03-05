@@ -14,7 +14,8 @@ xsave(
   out_dir = if (exists("OutDir")) OutDir else getwd(),
   background_job = FALSE,
   showMemObject = TRUE,
-  saveParams = TRUE
+  saveParams = TRUE,
+  saveLocation = TRUE
 )
 }
 \arguments{
@@ -36,7 +37,11 @@ xsave(
 
 \item{showMemObject}{Logical; if TRUE, displays the memory size of the largest objects.}
 
-\item{saveParams}{Logical; if TRUE and if the object is a Seurat object, additional parameters are saved within it.}
+\item{saveParams}{Logical; if TRUE and if the object is a Seurat object, additional parameters
+are saved within it.}
+
+\item{saveLocation}{Logical; if TRUE and if the object is a Seurat object, file location is saved
+into misc slot.}
 }
 \value{
 Invisible; The function is called for its side effects (saving a file) and does not return anything.

@@ -1964,7 +1964,8 @@ multiFeaturePlot.A4 <- function(
 multi_clUMAP.A4 <- function(
     idents = GetClusteringRuns()[1:4],
     obj = combined.obj,
-    foldername = substitute(ident), plot.reduction = "umap",
+    foldername = substitute(idents),
+    plot.reduction = "umap",
     intersectionAssay = c("RNA", "integrated")[1],
     layout = c("tall", "wide", FALSE)[2],
     # colors = c("grey", "red"),

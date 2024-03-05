@@ -3405,7 +3405,10 @@ isave.RDS <- function(
 #' @param out_dir Output Directory
 #' @param background_job Logical; if TRUE save runs as "background job"
 #' @param showMemObject Logical; if TRUE, displays the memory size of the largest objects.
-#' @param saveParams Logical; if TRUE and if the object is a Seurat object, additional parameters are saved within it.
+#' @param saveParams Logical; if TRUE and if the object is a Seurat object, additional parameters
+#' are saved within it.
+#' @param saveLocation Logical; if TRUE and if the object is a Seurat object, file location is saved
+#' into misc slot.
 #'
 #' @return Invisible; The function is called for its side effects (saving a file) and does not return anything.
 #'
@@ -3425,7 +3428,8 @@ xsave <- function(
     project = getProject(),
     out_dir = if (exists("OutDir")) OutDir else getwd(),
     background_job = FALSE,
-    showMemObject = TRUE, saveParams = TRUE) {
+    showMemObject = TRUE, saveParams = TRUE,
+    saveLocation = TRUE) {
 
   message(nthreads, " threads.")
 
@@ -3434,16 +3438,23 @@ xsave <- function(
     try(memory.biggest.objects(), silent = TRUE)
   }
 
-  if ("seurat" %in% is(obj) & saveParams) {
-    try(obj@misc$p <- p, silent = TRUE)
-    try(obj@misc$all.genes <- all.genes, silent = TRUE)
-  }
-
   annot.suffix <- if(inherits(obj, "Seurat")) kpp(ncol(obj), "cells") else if(is.list(combined.obj)) kppd("ls",length(obj)) else NULL
   fnameBase <- trimws(kppu(prefix, substitute(obj), annot.suffix, suffix, project, idate(Format = "%Y.%m.%d_%H.%M")), whitespace = "_") # , preset, "compr"
 
   FNN <- paste0(out_dir, fnameBase, ".qs")
   print(paste0(substitute(obj), " <- xread('", FNN, "')"))
+
+  if ("seurat" %in% is(obj) ) {
+    if (saveParams) {
+      try(obj@misc$'p' <- p, silent = TRUE)
+      try(obj@misc$'all.genes' <- all.genes, silent = TRUE)
+    }
+    if (saveLocation) {
+      loc <- 1
+      try(obj@misc$'file.location' <- loc, silent = TRUE)
+    }
+  }
+
 
   if (background_job & rstudioapi::isAvailable()) {
     "This part is not debugged yet!"
