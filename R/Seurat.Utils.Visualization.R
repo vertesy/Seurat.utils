@@ -2067,12 +2067,10 @@ multi_clUMAP.A4 <- function(
 #' @examples
 #' multiSingleClusterHighlightPlots.A4(ident = "cluster_id", obj = yourSeuratObject)
 #'
-#' @importFrom Seurat.utils clUMAP
 #' @importFrom ggplot2 ggplot geom_point
 #' @importFrom cowplot plot_grid ggsave2
 #' @importFrom tictoc tic toc
 #' @importFrom MarkdownReports create_set_OutDir
-#' @importFrom
 #'
 #' @export
 multiSingleClusterHighlightPlots.A4 <- function(
@@ -2130,7 +2128,7 @@ multiSingleClusterHighlightPlots.A4 <- function(
     plot.list <- list()
     for (i in seq(clusters_on_this_page)) {
       cl <- clusters_on_this_page[i]; message(cl)
-      plot.list[[i]] <- Seurat.utils::clUMAP(ident = ident, obj = obj,
+      plot.list[[i]] <- clUMAP(ident = ident, obj = obj,
                                              highlight.clusters = cl, label = FALSE, legend = F, save.plot = F,
                                              plotname = plotname, cols = colors, h = h, w = w, ...)
     }
