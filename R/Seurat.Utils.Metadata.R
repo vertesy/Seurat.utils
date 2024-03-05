@@ -1237,6 +1237,7 @@ transferLabelsSeurat <- function(
       x = reference_ident
     ),
     predictions_col = "predicted.id",
+    predictions_score = sppp(new_ident, "score"),
     save_anchors = TRUE,
     reference_suffix = "reference",
     new_ident_suffix = "R44",
@@ -1277,14 +1278,23 @@ transferLabelsSeurat <- function(
     refdata = reference_obj@meta.data[, reference_ident],
   )
 
-  # Add metadata to combined object
+  # browser()
+  # Add New Labels to query object
   query_obj <- Seurat::AddMetaData(
     object = query_obj, metadata = transferred_clIDs[, predictions_col],
     col.name = new_ident
   )
 
+  # Add Labels assignment scores to query object
+  query_obj <- Seurat::AddMetaData(
+    object = query_obj, metadata = transferred_clIDs[, "prediction.score.max"],
+    col.name = predictions_score
+  )
+
   # Visualize combined object
   clUMAP(ident = new_ident, obj = query_obj, suffix = new_ident_suffix
+         , w = w, h = h, ...)
+  qUMAP(feature = predictions_score, obj = query_obj, suffix = new_ident_suffix
          , w = w, h = h, ...)
 
   return(query_obj)

@@ -28,6 +28,7 @@ scBarplot.CellFractions(
   color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name =
     "RdYlBu")))(100),
   show.total.cells = TRUE,
+  cex.total = 2,
   ...
 )
 }
@@ -74,6 +75,8 @@ are aggregated into an "Other" category.}
 \item{color_scale}{Defines the color scale to use for the plot if a custom palette is selected.}
 
 \item{show.total.cells}{Show total cells}
+
+\item{cex.total}{Label size for total cells}
 
 \item{...}{Additional parameters passed to internally called functions.}
 }

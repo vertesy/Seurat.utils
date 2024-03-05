@@ -12,6 +12,7 @@ transferLabelsSeurat(
   anchors = NULL,
   new_ident = gsub(pattern = "ordered", replacement = "transferred", x = reference_ident),
   predictions_col = "predicted.id",
+  predictions_score = sppp(new_ident, "score"),
   save_anchors = TRUE,
   reference_suffix = "reference",
   new_ident_suffix = "R44",
