@@ -14,6 +14,42 @@
 # Extract and check metadata columns  ______________________________ ----
 # _________________________________________________________________________________________________
 
+
+
+#' @title Get Metadata Column Names Matching Pattern
+#'
+#' @description Retrieves column names from an object's metadata that match a specified pattern.
+#'
+#' @param pattern A character string containing a regular expression to match against the
+#' column names. Default: "".
+#' @param obj An object containing a `meta.data` slot, typically from combined datasets.
+#' Default: `combined.obj`.
+#'
+#' @return A character vector of column names matching the pattern.
+#'
+#' @examples
+#' # Assuming `combined.obj` is an object with a meta.data slot
+#' getMetaColnames()
+#'
+#' @export
+getMetaColnames <- function(pattern = "RNA", obj = combined.obj) {
+  # Input assertions
+  stopifnot(
+    is.character(pattern), # pattern should be a character string
+    length(pattern) == 1, # pattern should be exactly one element long
+    inherits(obj, "Seurat")
+  )
+
+  # Retrieve column names matching the pattern
+  matchedColnames <- grep(pattern = pattern, x = colnames(obj@meta.data), value = TRUE)
+
+  # Output assertion
+  if(is.null(matchedColnames)) warning("No matching meta data!", immediate. = )
+
+  return(matchedColnames)
+}
+
+
 # _________________________________________________________________________________________________
 #' @title Check if a Column Exists in the Metadata of an S4 Object
 #'
@@ -23,7 +59,7 @@
 #'
 #' @return A logical value indicating whether the column exists (TRUE) or not (FALSE).
 #' @export
-meta_col_exists <- function(col_name, obj) {
+metaColnameExists <- function(col_name, obj = combined.obj) {
   col_name %in% colnames(obj@meta.data)
 }
 

@@ -1516,7 +1516,7 @@ remove.residual.small.clusters <- function(
   small.clusters <- cells.to.remove <- list.fromNames(identitites)
 
   for (i in 1:length(identitites)) {
-    colX <- identitites[i]
+    # colX <- identitites[i]
     tbl <- table(META[[colX]])
 
     small.clusters[[i]] <- which_names(tbl <= max.cells)
