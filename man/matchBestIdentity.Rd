@@ -7,10 +7,11 @@
 matchBestIdentity(
   obj,
   ident_to_rename,
-  prefix = Reference,
   reference_ident = GetOrderedClusteringRuns(obj)[1],
-  new_ident_name = kpp(prefix, ident_to_rename, "match.to", reference_ident),
-  plot_suffix = "R44",
+  prefix = Reference,
+  suffix = gsub(prefix, "", x = reference_ident),
+  new_ident_name = kpp(prefix, ident_to_rename, "match.to", suffix),
+  plot_suffix = prefix,
   w = 12,
   h = 9,
   ...
@@ -23,10 +24,12 @@ containing columns named as \code{ident_to_rename} and \code{reference_ident}.}
 \item{ident_to_rename}{A string. The name of the column in \code{obj@meta.data} that is used as the source of identities.
 There is no default value for this parameter.}
 
-\item{prefix}{A string to add to the new identity column name. Default is prefix = Reference.}
-
 \item{reference_ident}{A string. The name of the column in \code{obj@meta.data} that is used as the target of identities.
 There is no default value for this parameter.}
+
+\item{prefix}{A string to add to the new identity column name. Default is prefix = Reference.}
+
+\item{suffix}{...}
 
 \item{new_ident_name}{A string. The name for the newly created identity column in \code{obj@meta.data}.
 Default is a concatenation: kpp(prefix, ident_to_rename, "match.to", reference_ident) .}

@@ -1374,6 +1374,7 @@ transferLabelsSeurat <- function(
 #' @param reference_ident A string. The name of the column in `obj@meta.data` that is used as the target of identities.
 #'   There is no default value for this parameter.
 #' @param prefix A string to add to the new identity column name. Default is prefix = Reference.
+#' @param suffix ...
 #' @param new_ident_name A string. The name for the newly created identity column in `obj@meta.data`.
 #'   Default is a concatenation: kpp(prefix, ident_to_rename, "match.to", reference_ident) .
 #' @param plot_suffix A string. The suffix to add to the final UMAP.
@@ -1394,12 +1395,13 @@ transferLabelsSeurat <- function(
 #' @export
 matchBestIdentity <- function(
     obj, ident_to_rename,
-    prefix = Reference,
     reference_ident = GetOrderedClusteringRuns(obj)[1],
+    prefix = Reference,
+    suffix = gsub(prefix, "", x = reference_ident),
     # to_suffix = "matched",
     # to_suffix = FixPlotName(gsub(pattern = "[a-zA-Z_]", replacement = "", x = ident_to_rename)),
-    new_ident_name = kpp(prefix, ident_to_rename, "match.to", reference_ident),
-    plot_suffix = "R44",
+    new_ident_name = kpp(prefix, ident_to_rename, "match.to", suffix),
+    plot_suffix = prefix,
     w = 12, h = 9,
     ...) {
 
