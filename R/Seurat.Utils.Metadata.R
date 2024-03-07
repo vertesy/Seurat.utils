@@ -1278,7 +1278,7 @@ transferLabelsSeurat <- function(
     predictions_score = sppp(new_ident, "score"),
     save_anchors = TRUE,
     reference_suffix = "reference",
-    new_ident_suffix = "R44",
+    new_ident_suffix,
     plot_reference = TRUE,
     w = 12, h = 9,
     ...) {
