@@ -4,14 +4,14 @@
 \alias{getMetaColnames}
 \title{Get Metadata Column Names Matching Pattern}
 \usage{
-getMetaColnames(pattern = "RNA", obj = combined.obj)
+getMetaColnames(obj = combined.obj, pattern = "RNA")
 }
 \arguments{
-\item{pattern}{A character string containing a regular expression to match against the
-column names. Default: "".}
-
 \item{obj}{An object containing a \code{meta.data} slot, typically from combined datasets.
 Default: \code{combined.obj}.}
+
+\item{pattern}{A character string containing a regular expression to match against the
+column names. Default: "".}
 }
 \value{
 A character vector of column names matching the pattern.

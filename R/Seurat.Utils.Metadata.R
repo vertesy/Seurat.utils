@@ -32,13 +32,9 @@
 #' getMetaColnames()
 #'
 #' @export
-getMetaColnames <- function(pattern = "RNA", obj = combined.obj) {
-  # Input assertions
-  stopifnot(
-    is.character(pattern), # pattern should be a character string
-    length(pattern) == 1, # pattern should be exactly one element long
-    inherits(obj, "Seurat")
-  )
+getMetaColnames <- function(obj = combined.obj,
+                            pattern = "RNA") {
+  stopifnot(inherits(obj, "Seurat") )
 
   # Retrieve column names matching the pattern
   matchedColnames <- grep(pattern = pattern, x = colnames(obj@meta.data), value = TRUE)
@@ -46,6 +42,7 @@ getMetaColnames <- function(pattern = "RNA", obj = combined.obj) {
   # Output assertion
   if(is.null(matchedColnames)) warning("No matching meta data!", immediate. = )
 
+  dput(matchedColnames)
   return(matchedColnames)
 }
 
