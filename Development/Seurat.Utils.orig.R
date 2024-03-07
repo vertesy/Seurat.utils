@@ -2892,9 +2892,9 @@ isave.RDS <- function(object, prefix =NULL, suffix=NULL, inOutDir = F
 
 
 
-# subsetSeuObj.and.Save ------------------------------------------------------------------------
-subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = OutDir, min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
-  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
+# downsampleSeuObj.and.Save ------------------------------------------------------------------------
+downsampleSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = OutDir, min.features = p$'min.features', suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
+  obj_Xpc <- downsampleSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
   nr.cells.kept <- ncol(obj_Xpc)
   saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
 }
@@ -2936,8 +2936,8 @@ qsave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
 }
 
 
-# subsetSeuObj -----------------------------------------------------------------------
-subsetSeuObj <- function(obj=ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
+# downsampleSeuObj -----------------------------------------------------------------------
+downsampleSeuObj <- function(obj=ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_ = 1989 ) { # Subset a compressed Seurat Obj and save it in wd.
   set.seed(seed_)
   if (isFALSE(nCells)) {
     cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction_)
@@ -2952,9 +2952,9 @@ subsetSeuObj <- function(obj=ls.Seurat[[i]], fraction_ = 0.25, nCells = F, seed_
   return(obj)
 }
 
-# subsetSeuObj.and.Save ------------------------------------------------------------------------
-subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = OutDir, suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
-  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
+# downsampleSeuObj.and.Save ------------------------------------------------------------------------
+downsampleSeuObj.and.Save <- function(obj=ORC, fraction = 0.25, seed = 1989, dir = OutDir, suffix = '') { # Subset a compressed Seurat Obj and save it in wd.
+  obj_Xpc <- downsampleSeuObj(obj = obj, fraction_ =  fraction, seed_ = seed)
   nr.cells.kept <- ncol(obj_Xpc)
   saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),suffix, nr.cells.kept, 'cells.with.min.features', p$min.features,"Rds" ) )
 }
@@ -2969,13 +2969,13 @@ Downsample.Seurat.Objects <- function(ls.obj = ls.Seurat, NrCells = p$"dSample.O
   if (getDoParRegistered() ) {
     ls.obj.downsampled <- foreach(i = 1:n.datasets ) %dopar% {
       iprint(names(ls.obj)[i], percentage_formatter(i/n.datasets, digitz = 2))
-      subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
+      downsampleSeuObj(obj = ls.obj[[i]], nCells = NrCells)
     }; names(ls.obj.downsampled)  <- names.ls
   } else {
     ls.obj.downsampled <- list.fromNames(names.ls)
     for (i in 1:n.datasets ) {
       iprint(names(ls.obj)[i], percentage_formatter(i/n.datasets, digitz = 2))
-      ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
+      ls.obj.downsampled[[i]] <- downsampleSeuObj(obj = ls.obj[[i]], nCells = NrCells)
     };
   } # else
   toc();

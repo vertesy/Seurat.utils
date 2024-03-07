@@ -1134,75 +1134,6 @@ create_scCombinedMeta <- function(experiment, project_ = getProject()) {
 }
 
 
-
-#' Sample Cells From Identifiers in Seurat Object
-#'
-#' This function samples a specified maximum number of cells from each identity class in a Seurat object.
-#' It ensures that the sampling does not exceed the total number of cells available per identity.
-#' The function is designed to work with Seurat objects and relies on the presence of identity classes within the object's metadata.
-#'
-#' @param obj A Seurat object from which cells are to be sampled.
-#' @param ident A character vector specifying the identity class from which cells are to be sampled.
-#' @param max.cells A positive integer indicating the maximum number of cells to sample from each identity class.
-#' @param verbose Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.
-#'
-#' @return Returns a Seurat object containing only the sampled cells.
-#'
-#' @details This function checks for the presence of the specified identity class within the object's metadata.
-#' If the number of cells within any identity class is less than or equal to the `max.cells` parameter,
-#' all cells from that class are retained. Otherwise, a random sample of `max.cells` is taken from the class.
-#' The function updates the identity of the cells in the returned Seurat object to reflect the sampled cells.
-#' If `verbose` is TRUE, it prints the total number of cells sampled and provides a visual summary of the fraction
-#' of cells retained per identity class.
-#'
-#' @examples
-#' # Assuming `seuratObj` is a Seurat object with identities stored in its metadata
-#' sampledSeuratObj <- sampleCellsFromIdent(obj = seuratObj, ident = "cellType", max.cells = 100)
-#'
-#' @importFrom CodeAndRoll2 as.named.vector.df
-#' @export
-
-sampleCellsFromIdent <- function(obj, ident, max.cells, verbose = TRUE, seed = 1989) {
-  stopifnot(
-    "obj must be a Seurat object" = inherits(obj, "Seurat"),
-    "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
-    "max.cells must be a positive integer" = is.numeric(max.cells) && max.cells > 0,
-    max.cells < ncol(obj)
-  )
-
-  data <- CodeAndRoll2::as.named.vector.df(obj[[ident]])
-  uniqueCategories <- unique(data)
-  set.seed(seed)
-  sampledNames <- lapply(uniqueCategories, function(category) {
-    namesInCategory <- names(data[data == category])
-    if (length(namesInCategory) <= max.cells) {
-      return(namesInCategory)
-    } else {
-      return(sample(namesInCategory, max.cells))
-    }
-  })
-
-  sampledCells <- unlist(sampledNames)
-
-
-  Idents(obj) <- ident
-  obj2 <- subset(x = obj, cells = sampledCells)
-
-  subb <- paste0("From ", ncol(obj)," reduced to " , ncol(obj2), " cells.")
-  message(subb)
-
-  if (verbose) {
-    cat("Total cells sampled:", length(sampledCells), "\n")
-    nr_remaining_cells <- orig_cells <- table(data)
-    nr_remaining_cells[nr_remaining_cells>max.cells] <- max.cells
-    fr_remaining_per_cluster <- iround(nr_remaining_cells/orig_cells)
-    print(fr_remaining_per_cluster)
-    pobj <- qbarplot(vec = fr_remaining_per_cluster, subtitle = subb, label = fr_remaining_per_cluster, ylab = "fr. of cells", save = F); print(pobj)
-  }
-
-  return(obj2)
-}
-
 # _________________________________________________________________________________________________
 # Merging objects and @misc ______________________________ ----
 # _________________________________________________________________________________________________
@@ -1298,32 +1229,68 @@ copyCompleteToolsSlots <- function(ls.obj, obj.to, overwrite = TRUE, new.slot = 
 
 
 
-# _________________________________________________________________________________________________
-
-
 
 # _________________________________________________________________________________________________
 # Subsetting the Seurat object ______________________________ ----
 # _________________________________________________________________________________________________
-# Subsetting, downsampling and manipulating the Seurat object
+
+
+#' @title Subset a Seurat Object by Identity
+#'
+#' @description Subsets a Seurat object based on a specified identity column and values. It allows
+#'   for an optional inversion of the selection.
+#'
+#' @param obj A Seurat object. Default: `NULL`.
+#' @param ident The name of the identity column to use for subsetting. It is recommended to
+#'   specify this explicitly. Default: First entry from the result of `GetClusteringRuns()`.
+#' @param clusters A vector of cluster values for which cells should be matched and retained.
+#'   This parameter does not have a default value and must be specified.
+#' @param invert A logical indicating whether to invert the selection, keeping cells that do
+#'   not match the specified clusters. Default: `FALSE`.
+#'
+#' @return A Seurat object subsetted based on the specified identity and clusters.
+#'
+#' @examples
+#' # Assuming `seurat_obj` is your Seurat object and you want to subset based on cluster 1
+#' subsetted_obj <- subsetSeuObjByIdent(obj = seurat_obj, ident = "your_ident_column",
+#'                                      clusters = c(1), invert = FALSE)
+#'
+#' @export
+subsetSeuObjByIdent <- function(
+    obj = combined.obj, ident = GetClusteringRuns()[1],
+    clusters,
+    invert = FALSE) {
+
+  # Input checks
+  stopifnot(
+    "obj must be a Seurat object" = inherits(obj, "Seurat"),
+    "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
+  )
+
+  Idents(obj) <- ident
+  cellz <- WhichCells(obj, idents = clusters, invert = invert)
+  message(length(cellz), "cells are selected from", ncol(obj), "using", clusters, "from", ident, ".")
+  subset(x = obj, cells = cellz)
+}
 
 
 # _________________________________________________________________________________________________
-#' @title subsetSeuObj
+#' @title downsampleSeuObj
 #'
 #' @description Subset a compressed Seurat object and save it in the working directory.
 #' @param obj A Seurat object to subset. Default: the i-th element of the list 'ls.Seurat'.
-#' @param fraction_ The fraction of the object's data to keep. Default: 0.25.
-#' @param nCells If set to a number greater than 1, indicates the absolute number of cells to keep. If FALSE, the function uses 'fraction_' to determine the number of cells. Default: FALSE.
-#' @param seed_ A seed for random number generation to ensure reproducible results. Default: 1989.
+#' @param fractionCells The fraction of the object's data to keep. Default: 0.25.
+#' @param nCells If set to a number greater than 1, indicates the absolute number of cells to keep.
+#' If FALSE, the function uses 'fractionCells' to determine the number of cells. Default: FALSE.
+#' @param seed A seed for random number generation to ensure reproducible results. Default: 1989.
 #' @export
 #' @importFrom Stringendo percentage_formatter
 
-subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = FALSE, seed_ = 1989) { # Subset a compressed Seurat Obj and save it in wd.
-  set.seed(seed_)
+downsampleSeuObj <- function(obj = ls.Seurat[[i]], fractionCells = 0.25, nCells = FALSE, seed = 1989) {
+  set.seed(seed)
   if (isFALSE(nCells)) {
-    cellIDs.keep <- sampleNpc(metaDF = obj@meta.data, pc = fraction_)
-    iprint(length(cellIDs.keep), "or", Stringendo::percentage_formatter(fraction_), "of the cells are kept. Seed:", seed_)
+    cellIDs.keep <- sampleNpc(metaDF = obj@meta.data, pc = fractionCells)
+    iprint(length(cellIDs.keep), "or", Stringendo::percentage_formatter(fractionCells), "of the cells are kept. Seed:", seed)
   } else if (nCells > 1) {
     nKeep <- min(ncol(obj), nCells)
     # print(nKeep)
@@ -1335,7 +1302,7 @@ subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = FALSE,
 }
 
 # _________________________________________________________________________________________________
-#' @title subsetSeuObj.and.Save
+#' @title downsampleSeuObj.and.Save
 #'
 #' @description Subset a compressed Seurat Obj and save it in wd. #
 #' @param obj Seurat object, Default: ORC
@@ -1345,13 +1312,13 @@ subsetSeuObj <- function(obj = ls.Seurat[[i]], fraction_ = 0.25, nCells = FALSE,
 #' @param dir Directory to save to. Default: OutDir
 #' @param suffix A suffix added to the filename, Default: ''
 #' @export
-subsetSeuObj.and.Save <- function(
+downsampleSeuObj.and.Save <- function(
     obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir,
     min.features = p$"min.features", suffix = fraction,
     nthreads = if(exists('CBE.params')) CBE.params$'cpus' else 12
     ) {
 
-  obj_Xpc <- subsetSeuObj(obj = obj, fraction_ = fraction, seed_ = seed)
+  obj_Xpc <- downsampleSeuObj(obj = obj, fractionCells = fraction, seed = seed)
   nr.cells.kept <- ncol(obj_Xpc)
 
   # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),
@@ -1364,148 +1331,90 @@ subsetSeuObj.and.Save <- function(
 }
 
 
-# _________________________________________________________________________________________________
-#' @title subsetSeuObj.ident.class
-#'
-#' @description Subset a Seurat Obj to a given column
-#' @param obj Seurat object, Default: ORC
-#' @param ident identity
-#' @param clusters which value to match
-#' @param invert invert selecion
-#' @export
 
-subsetSeuObj.ident.class <- function(
-    obj = combined.obj, ident = "RNA_snn_res.0.5.ordered.ManualNames",
-    clusters = "Neuron, unclear", invert = FALSE) {
+# _________________________________________________________________________________________________
+#' @title Sample Cells From Identifiers in Seurat Object
+#'
+#' @description This function samples a specified maximum number of cells from each identity class
+#' in a Seurat object, in the meta.data. It ensures that the sampling does not exceed the total
+#' number of cells available per identity.
+#'
+#' @param obj A Seurat object from which cells are to be sampled.
+#' @param ident A character vector specifying the identity class from which cells are to be sampled.
+#' @param max.cells A positive integer indicating the maximum number of cells to sample from each identity class.
+#' @param verbose Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.
+#'
+#' @return Returns a Seurat object containing only the sampled cells.
+#'
+#' @details This function checks for the presence of the specified identity class within the object's metadata.
+#' If the number of cells within any identity class is less than or equal to the `max.cells` parameter,
+#' all cells from that class are retained. Otherwise, a random sample of `max.cells` is taken from the class.
+#' The function updates the identity of the cells in the returned Seurat object to reflect the sampled cells.
+#' If `verbose` is TRUE, it prints the total number of cells sampled and provides a visual summary of the fraction
+#' of cells retained per identity class.
+#'
+#' @examples
+#' # Assuming `seuratObj` is a Seurat object with identities stored in its metadata
+#' sampledSeuratObj <- downsampleSeuObj.by.Ident.and.MaxCells(obj = seuratObj, ident = "cellType", max.cells = 100)
+#'
+#' @importFrom CodeAndRoll2 as.named.vector.df
+#'
+#' @export
+downsampleSeuObj.by.Ident.and.MaxCells <- function(obj, ident,
+                                                 max.cells,
+                                                 verbose = TRUE,
+                                                 seed = 1989) {
+
+  stopifnot(
+    "obj must be a Seurat object" = inherits(obj, "Seurat"),
+    "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
+    "max.cells must be a positive integer" = is.numeric(max.cells) && max.cells > 0,
+    max.cells < ncol(obj)
+  )
+
+  data <- CodeAndRoll2::as.named.vector.df(obj[[ident]])
+  uniqueCategories <- unique(data)
+
+  set.seed(seed)
+  sampledNames <- lapply(uniqueCategories, function(category) {
+    namesInCategory <- names(data[data == category])
+    if (length(namesInCategory) <= max.cells) {
+      return(namesInCategory)
+    } else {
+      return(sample(namesInCategory, max.cells))
+    }
+  })
+
+  sampledCells <- unlist(sampledNames)
+
   Idents(obj) <- ident
-  cellz <- WhichCells(obj, idents = clusters, invert = invert)
-  iprint(length(cellz), "cells are selected from", ncol(obj), "using", ident)
-  subset(x = obj, cells = cellz)
+  obj2 <- subset(x = obj, cells = sampledCells)
+
+  subb <- paste0("From ", ncol(obj)," reduced to " , ncol(obj2), " cells.")
+  message(subb)
+
+  if (verbose) {
+    cat("Total cells sampled:", length(sampledCells), "\n")
+    nr_remaining_cells <- orig_cells <- table(data)
+    nr_remaining_cells[nr_remaining_cells>max.cells] <- max.cells
+    fr_remaining_per_cluster <- iround(nr_remaining_cells/orig_cells)
+    print(fr_remaining_per_cluster)
+    pobj <- qbarplot(vec = fr_remaining_per_cluster, subtitle = subb, label = fr_remaining_per_cluster,
+                     ylab = "fr. of cells", save = F); print(pobj)
+  }
+  return(obj2)
 }
 
 
 # _________________________________________________________________________________________________
-#' @title Downsample.Seurat.Objects
-#'
-#' @description Downsample a list of Seurat objects
-#' @param ls.obj List of Seurat objects. Default: ls.Seurat
-#' @param NrCells Number of cells to downsample to.
-#' @param save_object save object by isaveRDS, otherwise return it. Default: FALSE
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   Downsample.Seurat.Objects(NrCells = 2000)
-#'   Downsample.Seurat.Objects(NrCells = 200)
-#' }
-#' }
-#' @export
-#' @importFrom tictoc tic toc
-#' @importFrom Stringendo percentage_formatter
-#' @importFrom foreach foreach getDoParRegistered
-Downsample.Seurat.Objects <- function(
-    ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids",
-    save_object = FALSE) {
-  # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
-  if (!is.list(ls.obj) & inherits(ls.obj, "Seurat")) ls.obj <- list(ls.obj)
-  stopifnot(is.list(ls.obj) & all(sapply(ls.obj, function(x) inherits(x, "Seurat"))))
-
-  names.ls <- names(ls.obj)
-  n.datasets <- length(ls.obj)
-  iprint(NrCells, "cells")
-  tictoc::tic()
-  if (foreach::getDoParRegistered()) {
-    ls.obj.downsampled <- foreach::foreach(i = 1:n.datasets) %dopar% {
-      iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
-      subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
-    }
-    names(ls.obj.downsampled) <- names.ls
-  } else {
-    ls.obj.downsampled <- list.fromNames(names.ls)
-    for (i in 1:n.datasets) {
-      iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
-      ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], nCells = NrCells)
-    }
-  } # else
-  tictoc::toc()
-
-  print(head(unlapply(ls.obj, ncol)))
-  print(head(unlapply(ls.obj.downsampled, ncol)))
-
-  if (save_object) {
-    isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = TRUE)
-  } else {
-    return(ls.obj.downsampled)
-  }
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title Downsample.Seurat.Objects.PC
-#'
-#' @description Downsample a list of Seurat objects, by fraction
-#' @param ls.obj List of Seurat objects, Default: ls.Seurat
-#' @param NrCells Number of cells to downsample to. Default: p$dSample.Organoids
-#' @param save_object save object by isaveRDS, otherwise return it. Default: FALSE
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   Downsample.Seurat.Objects.PC()
-#' }
-#' }
-#' @importFrom tictoc tic toc
-#' @importFrom Stringendo percentage_formatter
-#' @importFrom foreach getDoParRegistered foreach
-#'
-#' @export
-Downsample.Seurat.Objects.PC <- function(
-    ls.obj = ls.Seurat, fraction = 0.1,
-    save_object = FALSE) {
-  # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
-  if (!is.list(ls.obj) & inherits(ls.obj, "Seurat")) ls.obj <- list(ls.obj)
-  stopifnot(is.list(ls.obj) & all(sapply(ls.obj, function(x) inherits(x, "Seurat"))))
-
-  names.ls <- names(ls.obj)
-  n.datasets <- length(ls.obj)
-  iprint(fraction, "fraction")
-
-  tictoc::tic()
-  if (foreach::getDoParRegistered()) {
-    ls.obj.downsampled <- foreach::foreach(i = 1:n.datasets) %dopar% {
-      subsetSeuObj(obj = ls.obj[[i]], fraction_ = fraction)
-    }
-    names(ls.obj.downsampled) <- names.ls
-  } else {
-    ls.obj.downsampled <- list.fromNames(names.ls)
-    for (i in 1:n.datasets) {
-      cells <- round(ncol(ls.obj[[1]]) * fraction)
-      iprint(names(ls.obj)[i], cells, "cells=", Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
-      ls.obj.downsampled[[i]] <- subsetSeuObj(obj = ls.obj[[i]], fraction_ = fraction)
-    }
-  }
-  tictoc::toc() # else
-
-  NrCells <- sum(unlapply(ls.obj, ncol))
-
-  print(head(unlapply(ls.obj, ncol)))
-  print(head(unlapply(ls.obj.downsampled, ncol)))
-  if (save_object) {
-    isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = TRUE)
-  } else {
-    return(ls.obj.downsampled)
-  }
-}
-
-
-# _________________________________________________________________________________________________
-#' @title remove.residual.small.clusters
+#' @title removeResidualSmallClusters
 #'
 #' @description E.g.: after subsetting often some residual cells remain in clusters originally defined in the full dataset.
 #' @param identitites Identities to scan for residual clusters
 #' @param obj Seurat object, Default: combined.obj
 #' @param max.cells Max number of cells in cluster to be removed. Default: 0.5% of the dataset, or 5 cells.
 #' @export
-remove.residual.small.clusters <- function(
+removeResidualSmallClusters <- function(
     obj = combined.obj,
     identitites = GetClusteringRuns(obj),
     max.cells = max(round((ncol(obj)) / 2000), 5)) {
@@ -1573,26 +1482,26 @@ dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE) {
 #' @param ls_obj A list of Seurat objects.
 #' @param object_names A character vector containing the names of the Seurat objects to process. Default is names of all objects in the `ls_obj`.
 #' @param indices A numeric vector indicating which datasets to process by their position in the `object_names` vector. By default, it processes the second and third datasets.
-#' @param ... Additional parameters passed to the `remove.residual.small.clusters` function.
+#' @param ... Additional parameters passed to the `removeResidualSmallClusters` function.
 #'
-#' @details This function applies `remove.residual.small.clusters` and `dropLevelsSeurat` to the Seurat objects specified by the `indices` in the `object_names`.
+#' @details This function applies `removeResidualSmallClusters` and `dropLevelsSeurat` to the Seurat objects specified by the `indices` in the `object_names`.
 #' It operates in place, modifying the input `ls_obj` list.
 #'
 #' @return The function returns the modified list of Seurat objects.
 #' @examples
 #' \dontrun{
 #' # Process the 2nd and 3rd datasets
-#' remove_clusters_and_drop_levels(ls_obj, indices = c(2, 3))
+#' removeClustersAndDropLevels(ls_obj, indices = c(2, 3))
 #' }
 #'
 #' @export
-remove_clusters_and_drop_levels <- function(
+removeClustersAndDropLevels <- function(
     ls_obj, object_names = names(ls_obj),
     indices = 2:3, ...) {
   for (index in indices) {
     dataset_name <- object_names[index]
     obj <- ls_obj[[dataset_name]]
-    obj <- remove.residual.small.clusters(obj = obj, identitites = GetClusteringRuns(obj), ...)
+    obj <- removeResidualSmallClusters(obj = obj, identitites = GetClusteringRuns(obj), ...)
     obj <- dropLevelsSeurat(obj)
     ls_obj[[dataset_name]] <- obj
   }
@@ -1615,7 +1524,7 @@ remove_clusters_and_drop_levels <- function(
 #' @param ... Any other parameters to be passed to internally called functions.
 #' @return A Seurat object with cells removed according to the specified cutoff.
 #' @export
-remove.cells.by.UMAP <- function(
+removeCellsByUmap <- function(
     reduction = "umap",
     umap_dim = 1,
     obj = combined.obj,
@@ -1660,6 +1569,126 @@ remove.cells.by.UMAP <- function(
   return(obj)
 }
 
+
+
+
+# _________________________________________________________________________________________________
+# Downsampling Lists of Seurat objects ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+#' @title downsampleListSeuObjs
+#'
+#' @description downsample a list of Seurat objects
+#' @param ls.obj List of Seurat objects. Default: ls.Seurat
+#' @param NrCells Number of cells to downsample to.
+#' @param save_object save object by isaveRDS, otherwise return it. Default: FALSE
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   downsampleListSeuObjs(NrCells = 2000)
+#'   downsampleListSeuObjs(NrCells = 200)
+#' }
+#' }
+#' @export
+#' @importFrom tictoc tic toc
+#' @importFrom Stringendo percentage_formatter
+#' @importFrom foreach foreach getDoParRegistered
+#'
+downsampleListSeuObjs <- function(
+    ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids",
+    save_object = FALSE) {
+
+  # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
+  if (!is.list(ls.obj) & inherits(ls.obj, "Seurat")) ls.obj <- list(ls.obj)
+  stopifnot(is.list(ls.obj) & all(sapply(ls.obj, function(x) inherits(x, "Seurat"))))
+
+  names.ls <- names(ls.obj)
+  n.datasets <- length(ls.obj)
+  iprint(NrCells, "cells")
+  tictoc::tic()
+  if (foreach::getDoParRegistered()) {
+    ls.obj.downsampled <- foreach::foreach(i = 1:n.datasets) %dopar% {
+      iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
+      downsampleSeuObj(obj = ls.obj[[i]], nCells = NrCells)
+    }
+    names(ls.obj.downsampled) <- names.ls
+  } else {
+    ls.obj.downsampled <- list.fromNames(names.ls)
+    for (i in 1:n.datasets) {
+      iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
+      ls.obj.downsampled[[i]] <- downsampleSeuObj(obj = ls.obj[[i]], nCells = NrCells)
+    }
+  } # else
+  tictoc::toc()
+
+  print(head(unlapply(ls.obj, ncol)))
+  print(head(unlapply(ls.obj.downsampled, ncol)))
+
+  if (save_object) {
+    isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = TRUE)
+  } else {
+    return(ls.obj.downsampled)
+  }
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title downsampleListSeuObjsPercent
+#'
+#' @description downsample a list of Seurat objects, by fraction
+#' @param ls.obj List of Seurat objects, Default: ls.Seurat
+#' @param NrCells Number of cells to downsample to. Default: p$dSample.Organoids
+#' @param save_object save object by isaveRDS, otherwise return it. Default: FALSE
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   downsampleListSeuObjsPercent()
+#' }
+#' }
+#' @importFrom tictoc tic toc
+#' @importFrom Stringendo percentage_formatter
+#' @importFrom foreach getDoParRegistered foreach
+#'
+#' @export
+downsampleListSeuObjsPercent <- function(
+    ls.obj = ls.Seurat, fraction = 0.1,
+    save_object = FALSE) {
+  # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
+  if (!is.list(ls.obj) & inherits(ls.obj, "Seurat")) ls.obj <- list(ls.obj)
+  stopifnot(is.list(ls.obj) & all(sapply(ls.obj, function(x) inherits(x, "Seurat"))))
+
+  names.ls <- names(ls.obj)
+  n.datasets <- length(ls.obj)
+  iprint(fraction, "fraction")
+
+  tictoc::tic()
+  if (foreach::getDoParRegistered()) {
+    ls.obj.downsampled <- foreach::foreach(i = 1:n.datasets) %dopar% {
+      downsampleSeuObj(obj = ls.obj[[i]], fractionCells = fraction)
+    }
+    names(ls.obj.downsampled) <- names.ls
+  } else {
+    ls.obj.downsampled <- list.fromNames(names.ls)
+    for (i in 1:n.datasets) {
+      cells <- round(ncol(ls.obj[[1]]) * fraction)
+      iprint(names(ls.obj)[i], cells, "cells=", Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
+      ls.obj.downsampled[[i]] <- downsampleSeuObj(obj = ls.obj[[i]], fractionCells = fraction)
+    }
+  }
+  tictoc::toc() # else
+
+  NrCells <- sum(unlapply(ls.obj, ncol))
+
+  print(head(unlapply(ls.obj, ncol)))
+  print(head(unlapply(ls.obj.downsampled, ncol)))
+  if (save_object) {
+    isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = TRUE)
+  } else {
+    return(ls.obj.downsampled)
+  }
+}
 
 
 # _________________________________________________________________________________________________
@@ -4300,23 +4329,6 @@ regress_out_and_recalculate_seurat <- function(
 }
 
 
-# _________________________________________________________________________________________________
-# Temp _____________________________ ------
-
-"THIS SHOULD BE MOVED"
-# _________________________________________________________________________________________________
-#' @title getProject
-#'
-#' @description Try to get the project name you are wokring on in Rstudio.
-#' @returns The final subfolder of your project, or NULL, if you are not running one
-#' @importFrom rstudioapi getActiveProject
-#' @export
-#'
-#' @examples getProject()
-getProject <- function() {
-  tryCatch(basename(rstudioapi::getActiveProject()), error = function(e) {})
-}
-
 
 # _________________________________________________________________________________________________
 # Temp _____________________________ ------
@@ -4333,7 +4345,7 @@ cellID_to_cellType <- function(cellIDs, ident_w_names) {
 }
 
 
-
+# _________________________________________________________________________________________________
 #' @title Remove Scale Data from Seurat Objects
 #'
 #' @param ls.obj A list of Seurat objects.
@@ -4347,6 +4359,7 @@ removeScaleData <- function(ls.obj) {
 }
 
 
+# _________________________________________________________________________________________________
 #' @title Remove Layers from Seurat Object by Pattern
 #'
 #' @description This function removes layers from a Seurat object's RNA assay based on a specified regular expression pattern.

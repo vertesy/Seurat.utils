@@ -230,7 +230,7 @@ $`package:Seurat.utils`
 [13] "jJaccardIndexVec"                      "remove.residual.small.clusters"       
 [15] "RenameGenesSeurat"                     "sampleNpc"                            
 [17] "shorten_clustering_names"              "SmallestNonAboveX"                    
-[19] "sparse.cor"                            "subsetSeuObj"                         
+[19] "sparse.cor"                            "downsampleSeuObj"                         
 [21] "UpdateGenesSeurat"                     "ww.get.1st.Seur.element"              
 [23] "xsave"                                
 
