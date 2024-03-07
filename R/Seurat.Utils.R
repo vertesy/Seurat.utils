@@ -1286,16 +1286,19 @@ subsetSeuObjByIdent <- function(
 #' @export
 #' @importFrom Stringendo percentage_formatter
 
-downsampleSeuObj <- function(obj = ls.Seurat[[i]], fractionCells = 0.25, nCells = FALSE, seed = 1989) {
+downsampleSeuObj <- function(obj = ls.Seurat[[i]], fractionCells = 0.25, nCells = FALSE,
+                             seed = 1989) {
   set.seed(seed)
   if (isFALSE(nCells)) {
     cellIDs.keep <- sampleNpc(metaDF = obj@meta.data, pc = fractionCells)
-    iprint(length(cellIDs.keep), "or", Stringendo::percentage_formatter(fractionCells), "of the cells are kept. Seed:", seed)
+    iprint(length(cellIDs.keep), "or", Stringendo::percentage_formatter(fractionCells),
+           "of the cells are kept. Seed:", seed)
   } else if (nCells > 1) {
     nKeep <- min(ncol(obj), nCells)
     # print(nKeep)
     cellIDs.keep <- sample(colnames(obj), size = nKeep, replace = FALSE)
-    if (nKeep < nCells) iprint("Only", nCells, "cells were found in the object, so downsampling is not possible.")
+    if (nKeep < nCells) iprint("Only", nCells,
+                               "cells were found in the object, so downsampling is not possible.")
   }
   obj <- subset(x = obj, cells = cellIDs.keep) # downsample
   return(obj)
@@ -1323,7 +1326,6 @@ downsampleSeuObj.and.Save <- function(
 
   # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),
   # suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
-
   xsave(obj_Xpc,
     suffix = ppp(suffix, nr.cells.kept, "cells.with.min.features", min.features),
     nthreads = nthreads, project = getProject(), showMemObject = TRUE, saveParams = FALSE
@@ -1355,12 +1357,12 @@ downsampleSeuObj.and.Save <- function(
 #'
 #' @examples
 #' # Assuming `seuratObj` is a Seurat object with identities stored in its metadata
-#' sampledSeuratObj <- downsampleSeuObj.by.Ident.and.MaxCells(obj = seuratObj, ident = "cellType", max.cells = 100)
+#' sampledSeuratObj <- downsampleSeuObjByIdentAndMaxcells(obj = seuratObj, ident = "cellType", max.cells = 100)
 #'
 #' @importFrom CodeAndRoll2 as.named.vector.df
 #'
 #' @export
-downsampleSeuObj.by.Ident.and.MaxCells <- function(obj, ident,
+downsampleSeuObjByIdentAndMaxcells <- function(obj, ident,
                                                  max.cells,
                                                  verbose = TRUE,
                                                  seed = 1989) {
@@ -1577,7 +1579,7 @@ removeCellsByUmap <- function(
 # _________________________________________________________________________________________________
 
 
-#' @title downsampleListSeuObjs
+#' @title downsampleListSeuObjsNCells
 #'
 #' @description downsample a list of Seurat objects
 #' @param ls.obj List of Seurat objects. Default: ls.Seurat
@@ -1586,8 +1588,8 @@ removeCellsByUmap <- function(
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   downsampleListSeuObjs(NrCells = 2000)
-#'   downsampleListSeuObjs(NrCells = 200)
+#'   downsampleListSeuObjsNCells(NrCells = 2000)
+#'   downsampleListSeuObjsNCells(NrCells = 200)
 #' }
 #' }
 #' @export
@@ -1595,7 +1597,7 @@ removeCellsByUmap <- function(
 #' @importFrom Stringendo percentage_formatter
 #' @importFrom foreach foreach getDoParRegistered
 #'
-downsampleListSeuObjs <- function(
+downsampleListSeuObjsNCells <- function(
     ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids",
     save_object = FALSE) {
 
