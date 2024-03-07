@@ -37,6 +37,10 @@ transferLabelsSeurat(
 
 \item{new_ident_suffix}{A string to added to the UMAP with the new identity.}
 
+\item{w}{Width for the saved image. Default: 9}
+
+\item{h}{Height for the saved image. Default: 12}
+
 \item{...}{Additional arguments passed to the Seurat.utils::clUMAP function.}
 
 \item{named_ident}{A character string specifying the name of the identity class to be used from the reference Seurat object. Default is 'RNA_snn_res.0.3.ordered.ManualNames'.}

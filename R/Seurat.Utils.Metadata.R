@@ -1137,8 +1137,10 @@ plotMetadataCategPie <- function(
 #' # and include "mapping.score" as "azi.humancortex.mapping.score"
 #'
 #' @export
-renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1], prefix = "azi",
-                                 azim_cols = CodeAndRoll2::grepv(x = tail(colnames(obj@meta.data), 10), pattern = "predicted.")
+renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1],
+                                 prefix = "azi",
+                                 azim_cols = CodeAndRoll2::grepv(x = tail(colnames(obj@meta.data), 10),
+                                                                 pattern = "predicted.")
 ) {
   stopifnot(
     "obj must be a Seurat object" = is(obj, "Seurat"),
@@ -1195,7 +1197,8 @@ renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1], 
 #' @export
 renameSmallCategories <- function(obj
                                   , idents = c("predicted.class", "predicted.cluster", "predicted.subclass")
-                                  , min.cells = max(round((ncol(obj)) / 2000), 10), new.name = "unclear") {
+                                  , min.cells = max(round((ncol(obj)) / 2000), 10),
+                                  new.name = "unclear") {
   stopifnot("obj must be a Seurat object" = is(obj, "Seurat"))
 
   for (ident in idents) {
@@ -1248,6 +1251,8 @@ renameSmallCategories <- function(obj
 #' @param save_anchors save anchors as RDS file.
 #' @param suffix A character string to be used as a suffix in the visualization. Default is 'NEW'.
 #' @param new_ident_suffix A string to added to the UMAP with the new identity.
+#' @param h Height for the saved image. Default: 12
+#' @param w Width for the saved image. Default: 9
 #' @param ... Additional arguments passed to the Seurat.utils::clUMAP function.
 #'
 #' @return The modified query Seurat object with the transferred labels as a new identity class.
@@ -1368,11 +1373,12 @@ transferLabelsSeurat <- function(
 #'   There is no default value for this parameter.
 #' @param reference_ident A string. The name of the column in `obj@meta.data` that is used as the target of identities.
 #'   There is no default value for this parameter.
-#' @param to_suffix A string. The suffix to add to the new identity name. Default is the output of the `FixPlotName`
-#'   function applied to the `ident_to_rename` string, with all alphabetical and underscore characters removed.
+#' @param prefix A string to add to the new identity column name. Default is prefix = Reference.
 #' @param new_ident_name A string. The name for the newly created identity column in `obj@meta.data`.
-#'   Default is a concatenation of `ident_to_rename`, "best.match", and `to_suffix` using `kpp` function.
+#'   Default is a concatenation: kpp(prefix, ident_to_rename, "match.to", reference_ident) .
 #' @param plot_suffix A string. The suffix to add to the final UMAP.
+#' @param h Height for the saved image. Default: 12
+#' @param w Width for the saved image. Default: 9
 #' @param ... Additional parameters to be passed to `.replace_by_most_frequent_categories` function.
 #'
 #' @return An updated version of `obj` with an additional column in `obj@meta.data` named as `new_ident_name`
@@ -1388,13 +1394,16 @@ transferLabelsSeurat <- function(
 #' @export
 matchBestIdentity <- function(
     obj, ident_to_rename,
+    prefix = Reference,
     reference_ident = GetOrderedClusteringRuns(obj)[1],
-    to_suffix = "matched",
+    # to_suffix = "matched",
     # to_suffix = FixPlotName(gsub(pattern = "[a-zA-Z_]", replacement = "", x = ident_to_rename)),
-    new_ident_name = kpp(ident_to_rename, "best.match", to_suffix),
+    new_ident_name = kpp(prefix, ident_to_rename, "match.to", reference_ident),
     plot_suffix = "R44",
     w = 12, h = 9,
     ...) {
+
+  stopifnot("colname prefix undefined" = !is.null(prefix))
 
   dictionary <- obj@meta.data[, c(ident_to_rename, reference_ident)]
 

@@ -7,9 +7,9 @@
 matchBestIdentity(
   obj,
   ident_to_rename,
+  prefix = Reference,
   reference_ident = GetOrderedClusteringRuns(obj)[1],
-  to_suffix = "matched",
-  new_ident_name = kpp(ident_to_rename, "best.match", to_suffix),
+  new_ident_name = kpp(prefix, ident_to_rename, "match.to", reference_ident),
   plot_suffix = "R44",
   w = 12,
   h = 9,
@@ -23,16 +23,19 @@ containing columns named as \code{ident_to_rename} and \code{reference_ident}.}
 \item{ident_to_rename}{A string. The name of the column in \code{obj@meta.data} that is used as the source of identities.
 There is no default value for this parameter.}
 
+\item{prefix}{A string to add to the new identity column name. Default is prefix = Reference.}
+
 \item{reference_ident}{A string. The name of the column in \code{obj@meta.data} that is used as the target of identities.
 There is no default value for this parameter.}
 
-\item{to_suffix}{A string. The suffix to add to the new identity name. Default is the output of the \code{FixPlotName}
-function applied to the \code{ident_to_rename} string, with all alphabetical and underscore characters removed.}
-
 \item{new_ident_name}{A string. The name for the newly created identity column in \code{obj@meta.data}.
-Default is a concatenation of \code{ident_to_rename}, "best.match", and \code{to_suffix} using \code{kpp} function.}
+Default is a concatenation: kpp(prefix, ident_to_rename, "match.to", reference_ident) .}
 
 \item{plot_suffix}{A string. The suffix to add to the final UMAP.}
+
+\item{w}{Width for the saved image. Default: 9}
+
+\item{h}{Height for the saved image. Default: 12}
 
 \item{...}{Additional parameters to be passed to \code{.replace_by_most_frequent_categories} function.}
 }
