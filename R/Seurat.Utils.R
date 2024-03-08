@@ -1261,10 +1261,11 @@ subsetSeuObjByIdent <- function(
     clusters,
     invert = FALSE) {
 
+  # browser()
   # Input checks
   stopifnot(
     "obj must be a Seurat object" = inherits(obj, "Seurat"),
-    "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
+    "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data)
   )
 
   Idents(obj) <- ident
