@@ -15,7 +15,7 @@ transferLabelsSeurat(
   predictions_score = sppp(new_ident, "score"),
   save_anchors = TRUE,
   reference_suffix = "reference",
-  new_ident_suffix = "R44",
+  plot_suffix = NULL,
   plot_reference = TRUE,
   w = 12,
   h = 9,
@@ -35,7 +35,7 @@ transferLabelsSeurat(
 
 \item{save_anchors}{save anchors as RDS file.}
 
-\item{new_ident_suffix}{A string to added to the UMAP with the new identity.}
+\item{plot_suffix}{A string to added to the UMAP with the new identity.}
 
 \item{w}{Width for the saved image. Default: 9}
 

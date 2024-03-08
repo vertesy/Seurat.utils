@@ -1247,7 +1247,7 @@ renameSmallCategories <- function(obj
 #' @param predictions_col A character string specifying the column in the metadata of the transferred Seurat object containing the transferred labels. Default is 'predicted.id'.
 #' @param save_anchors save anchors as RDS file.
 #' @param suffix A character string to be used as a suffix in the visualization. Default is 'NEW'.
-#' @param new_ident_suffix A string to added to the UMAP with the new identity.
+#' @param plot_suffix A string to added to the UMAP with the new identity.
 #' @param h Height for the saved image. Default: 12
 #' @param w Width for the saved image. Default: 9
 #' @param ... Additional arguments passed to the Seurat.utils::clUMAP function.
@@ -1278,7 +1278,7 @@ transferLabelsSeurat <- function(
     predictions_score = sppp(new_ident, "score"),
     save_anchors = TRUE,
     reference_suffix = "reference",
-    new_ident_suffix,
+    plot_suffix = NULL,
     plot_reference = TRUE,
     w = 12, h = 9,
     ...) {
@@ -1330,9 +1330,9 @@ transferLabelsSeurat <- function(
   )
 
   # Visualize combined object
-  clUMAP(ident = new_ident, obj = query_obj, suffix = new_ident_suffix
+  clUMAP(ident = new_ident, obj = query_obj, suffix = plot_suffix
          , w = w, h = h, ...)
-  qUMAP(feature = predictions_score, obj = query_obj, suffix = new_ident_suffix
+  qUMAP(feature = predictions_score, obj = query_obj, suffix = plot_suffix
          , w = w, h = h, ...)
 
   return(query_obj)
