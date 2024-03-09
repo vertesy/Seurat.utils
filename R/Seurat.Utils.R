@@ -4155,7 +4155,6 @@ jJaccardIndexBinary <- function(x, y) { # Calculate Jaccard Index. Modified from
 
 
 
-
 # _________________________________________________________________________________________________
 #' @title jPairwiseJaccardIndex
 #'
@@ -4186,42 +4185,55 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 }
 
 
+
 # _________________________________________________________________________________________________
 # New additions,  categorized _____________________________ ------
 # _________________________________________________________________________________________________
 
-#' Process Seurat Objects in Parallel
+#' @title Process Seurat Objects in Parallel
 #'
 #' @description Applies a series of Seurat processing steps to each Seurat object in a list.
 #'              The operations include scaling data, running PCA, UMAP, finding neighbors, and finding clusters.
 #'              This is done in parallel using multiple cores.
 #'
 #' @param obj A Seurat object to be processed.
-#' @param p A list of parameters used in the processing steps.
+#' @param param.list A list of parameters used in the processing steps.
 #' @return A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and clustering.
 #' @examples
 #' # Assuming ls.Seurat is a list of Seurat objects and params is a list of parameters
 #' # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
 #' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
 #' @export
-processSeuratObject <- function(obj, p) {
+processSeuratObject <- function(obj, param.list = p, save = T, plot = T) {
+  warning("Make sure you cleaned up the memory!", immediate. = T)
+
   # Assertions to check input types
   stopifnot(
     "Seurat" %in% class(obj),
-    is.list(p),
-    all(c("n.PC", "snn_res") %in% names(p)),
-    is.numeric(p$"n.PC"),
-    is.numeric(p$"snn_res"),
-    is.character(p$"variables.2.regress") | is.null(p$"variables.2.regress")
+    is.list(param.list),
+    all(c("n.PC", "snn_res") %in% names(param.list)),
+    is.numeric(param.list$"n.PC"),
+    is.numeric(param.list$"snn_res"),
+    is.character(param.list$"variables.2.regress") | is.null(param.list$"variables.2.regress")
   )
 
   tictoc::tic()
-  obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = p$"variables.2.regress")
-  obj <- RunPCA(obj, npcs = p$"n.PC", verbose = TRUE)
-  obj <- RunUMAP(obj, reduction = "pca", dims = 1:p$"n.PC")
-  obj <- FindNeighbors(obj, reduction = "pca", dims = 1:p$"n.PC")
-  obj <- FindClusters(obj, resolution = p$"snn_res")
+  gc()
+  obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = param.list$"variables.2.regress")
+  obj <- RunPCA(obj, npcs = param.list$"n.PC", verbose = TRUE)
+  obj <- RunUMAP(obj, reduction = "pca", dims = 1:param.list$"n.PC")
+  obj <- FindNeighbors(obj, reduction = "pca", dims = 1:param.list$"n.PC")
+  obj <- FindClusters(obj, resolution = param.list$"snn_res")
   tictoc::toc()
+  if (save) xsave(obj, suffix = "reprocessed")
+  if (plot) {
+    qQC.plots.BrainOrg(obj = obj)
+    qMarkerCheck.BrainOrg(obj = obj)
+    multi_clUMAP.A4(obj = obj)
+    qClusteringUMAPS(obj = obj)
+  }
+  tictoc::toc()
+
   return(obj)
 }
 
@@ -4229,6 +4241,7 @@ processSeuratObject <- function(obj, p) {
 
 
 
+# _________________________________________________________________________________________________
 #' @title Regress Out and Recalculate Seurat
 #'
 #' @description The function performs a series of calculations and manipulations on a Seurat object,

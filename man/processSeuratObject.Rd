@@ -4,12 +4,12 @@
 \alias{processSeuratObject}
 \title{Process Seurat Objects in Parallel}
 \usage{
-processSeuratObject(obj, p)
+processSeuratObject(obj, param.list = p)
 }
 \arguments{
 \item{obj}{A Seurat object to be processed.}
 
-\item{p}{A list of parameters used in the processing steps.}
+\item{param.list}{A list of parameters used in the processing steps.}
 }
 \value{
 A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and clustering.

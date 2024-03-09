@@ -1924,116 +1924,6 @@ multiFeaturePlot.A4 <- function(
 }
 
 
-# _________________________________________________________________________________________________
-#' @title Plot multiple categorical variables in combined UMAPs
-#'
-#' @description Generates and saves multiple UMAP plots for clustering results, adjusting the
-#' layout and plot dimensions. Supports the generation of plots in different
-#' formats and customization of the visual appearance.
-#'
-#' @param idents A vector of cluster identities to plot. Default: `GetClusteringRuns()[1:4]`.
-#' @param obj The Seurat object containing clustering information. Default: `combined.obj`.
-#' @param foldername The name of the folder to save plots. Default: `substitute(ident)`.
-#' @param plot.reduction The dimensionality reduction technique to use for plotting. Default: "umap".
-#' @param intersectionAssay The assay to use for intersection. Default: "RNA".
-#' @param layout The layout orientation, either "tall", "wide", or `FALSE` to disable. Default: "wide".
-#' @param nr.Col Number of columns in the plot grid. Default: 2.
-#' @param nr.Row Number of rows in the plot grid. Default: 4.
-#' @param cex The character expansion size for plot text, automatically adjusted. Default: `round(0.1 / (nr.Col * nr.Row), digits = 2)`.
-#' @param label Logical indicating if labels should be displayed on the plots. Default: `FALSE`.
-#' @param legend Logical indicating if a legend should be included in the plots. Default: `!label`.
-#' @param subdir Logical indicating if a subdirectory should be created for saving plots. Default: `TRUE`.
-#' @param prefix Optional prefix for plot filenames. Default: `NULL`.
-#' @param suffix Optional suffix for plot filenames. Default: `NULL`.
-#' @param background_col The background color of the plot. Default: "white".
-#' @param aspect.ratio The aspect ratio of the plot, `FALSE` to disable fixed ratio. Default: 0.6.
-#' @param saveGeneList Logical indicating if a list of genes should be saved. Default: `FALSE`.
-#' @param w The width of the plot in inches. Default: `wA4`.
-#' @param h The height of the plot in inches. Default: `hA4`.
-#' @param scaling The scaling factor to apply to plot dimensions. Default: 1.
-#' @param format The file format for saving plots. Default: "jpg".
-#' @param ... Additional arguments passed to plotting functions.
-#'
-#' @return Invisible `NULL`. Plots are saved to files.
-#' @examples
-#' \dontrun{
-#' multi_clUMAP.A4(idents = c("S1", "S2"), obj = YourSeuratObject)
-#' }
-#' @export
-
-multi_clUMAP.A4 <- function(
-    idents = GetClusteringRuns()[1:4],
-    obj = combined.obj,
-    foldername = substitute(idents),
-    plot.reduction = "umap",
-    intersectionAssay = c("RNA", "integrated")[1],
-    layout = c("tall", "wide", FALSE)[2],
-    # colors = c("grey", "red"),
-    nr.Col = 2, nr.Row = 4,
-    cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
-    label = FALSE, # can be a vector of length idents
-    legend = !label,
-    subdir = TRUE,
-    prefix = NULL, suffix = NULL,
-    background_col = "white",
-    aspect.ratio = c(FALSE, 0.6)[2],
-    saveGeneList = FALSE,
-    w = wA4, h = hA4, scaling = 1,
-    format = c("jpg", "pdf", "png")[1],
-    ...
-) {
-
-  tictoc::tic()
-  ParentDir <- OutDir
-  if (is.null(foldername)) foldername <- "clusters"
-  if (subdir) create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
-
-  DefaultAssay(obj) <- intersectionAssay
-
-  # Adjust plot dimensions and grid layout based on specified layout
-  .adjustLayout(layout, scaling, wA4 = wA4, hA4 = hA4, environment())
-
-
-  # Split clusters into lists for plotting
-  ls.idents <- CodeAndRoll2::split_vec_to_list_by_N(1:length(idents), by = nr.Row * nr.Col)
-  for (i in 1:length(ls.idents)) {
-    idents_on_this_page <- idents[ls.idents[[i]]]
-    iprint("page:", i, "| idents", kppc(idents_on_this_page))
-    (plotname <- kpp(c(prefix, plot.reduction, i, "idents", ls.idents[[i]], suffix, format)))
-
-    plot.list <- list()
-    for (i in seq(idents_on_this_page)) {
-      # browser()
-      if(length(label) == 1) {
-        label_X <- label
-        legend_X <- legend
-      } else {
-        label_X <- label[i]
-        legend_X <- legend[i]
-      }
-
-      ident_X <- idents_on_this_page[i]; imessage("plotting:", ident_X)
-      plot.list[[i]] <- clUMAP(ident = ident_X, obj = obj, plotname = label_X,
-                               label = label_X, legend = legend_X, save.plot = F,h = h, w = w, ...)
-    }
-
-    # Customize plot appearance
-    for (i in 1:length(plot.list)) {
-      plot.list[[i]] <- plot.list[[i]] + NoAxes()
-      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]]
-      ggplot2::coord_fixed(ratio = aspect.ratio)
-    }
-
-    # Save plots
-    pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
-    cowplot::ggsave2(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
-  } # for ls.idents
-
-  if (subdir) MarkdownReports::create_set_OutDir(ParentDir)
-  tictoc::toc()
-}
-
-
 
 # ____________________________________________________________________________________
 #' @title Generate Cluster Highlight UMAPs compiled into A4 pages
@@ -2210,68 +2100,162 @@ multiFeatureHeatmap.A4 <- function(
 
 
 
-# ____________________________________________________________________________________
-#' @title plot.UMAP.tSNE.sidebyside
+# _________________________________________________________________________________________________
+#' @title Plot multiple categorical variables in combined UMAPs
 #'
-#' @description Plot a UMAP and tSNE side by side.
-#' @param obj Seurat object. Default: combined.obj
-#' @param grouping Variable to group cells by. Default: 'res.0.6'
-#' @param no_legend Logical, whether to display legend. Default: FALSE
-#' @param do_return Logical, whether to return plot object. Default: TRUE
-#' @param do_label Logical, whether to display labels. Default: TRUE
-#' @param label_size Size of labels. Default: 10
-#' @param vector_friendly Logical, whether to optimize for vector outputs. Default: TRUE
-#' @param cells_use A vector of cell names to use for the plot. Default: NULL
-#' @param no_axes Logical, whether to hide axes. Default: TRUE
-#' @param pt_size Size of points. Default: 0.5
-#' @param name.suffix Suffix to append to the plot's name. Default: NULL
-#' @param width Width of the plot. Default: hA4
-#' @param heigth Height of the plot. Default: 1.75 * wA4
-#' @param filetype Filetype to save plot as. Default: 'pdf'
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @seealso
-#'  \code{\link[cowplot]{save_plot}}
-#' @importFrom cowplot save_plot plot_grid
+#' @description Generates and saves multiple UMAP plots for clustering results, adjusting the
+#' layout and plot dimensions. Supports the generation of plots in different
+#' formats and customization of the visual appearance.
 #'
-#' @export plot.UMAP.tSNE.sidebyside
-plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", # Plot a UMAP and tSNE sidebyside
-                                      no_legend = FALSE,
-                                      do_return = TRUE,
-                                      do_label = TRUE,
-                                      label_size = 10,
-                                      vector_friendly = TRUE,
-                                      cells_use = NULL,
-                                      no_axes = TRUE,
-                                      pt_size = 0.5,
-                                      name.suffix = NULL,
-                                      width = hA4, heigth = 1.75 * wA4, filetype = "pdf", ...) {
-  p1 <- Seurat::DimPlot(
-    object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use,
-    no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size,
-    group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...
-  ) +
-    ggtitle("tSNE") + theme(plot.title = element_text(hjust = 0.5))
+#' @param idents A vector of cluster identities to plot. Default: `GetClusteringRuns()[1:4]`.
+#' @param obj The Seurat object containing clustering information. Default: `combined.obj`.
+#' @param foldername The name of the folder to save plots. Default: `substitute(ident)`.
+#' @param plot.reduction The dimensionality reduction technique to use for plotting. Default: "umap".
+#' @param intersectionAssay The assay to use for intersection. Default: "RNA".
+#' @param layout The layout orientation, either "tall", "wide", or `FALSE` to disable. Default: "wide".
+#' @param nr.Col Number of columns in the plot grid. Default: 2.
+#' @param nr.Row Number of rows in the plot grid. Default: 4.
+#' @param cex The character expansion size for plot text, automatically adjusted. Default: `round(0.1 / (nr.Col * nr.Row), digits = 2)`.
+#' @param label Logical indicating if labels should be displayed on the plots. Default: `FALSE`.
+#' @param legend Logical indicating if a legend should be included in the plots. Default: `!label`.
+#' @param subdir Logical indicating if a subdirectory should be created for saving plots. Default: `TRUE`.
+#' @param prefix Optional prefix for plot filenames. Default: `NULL`.
+#' @param suffix Optional suffix for plot filenames. Default: `NULL`.
+#' @param background_col The background color of the plot. Default: "white".
+#' @param aspect.ratio The aspect ratio of the plot, `FALSE` to disable fixed ratio. Default: 0.6.
+#' @param saveGeneList Logical indicating if a list of genes should be saved. Default: `FALSE`.
+#' @param w The width of the plot in inches. Default: `wA4`.
+#' @param h The height of the plot in inches. Default: `hA4`.
+#' @param scaling The scaling factor to apply to plot dimensions. Default: 1.
+#' @param format The file format for saving plots. Default: "jpg".
+#' @param ... Additional arguments passed to plotting functions.
+#'
+#' @return Invisible `NULL`. Plots are saved to files.
+#' @examples
+#' \dontrun{
+#' multi_clUMAP.A4(idents = c("S1", "S2"), obj = YourSeuratObject)
+#' }
+#' @export
 
-  p2 <- Seurat::DimPlot(
-    object = obj, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use,
-    no.legend = TRUE, do.return = do_return, do.label = do_label, label.size = label_size,
-    group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...
-  ) +
-    ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
+multi_clUMAP.A4 <- function(
+    idents = GetClusteringRuns()[1:4],
+    obj = combined.obj,
+    foldername = substitute(idents),
+    plot.reduction = "umap",
+    intersectionAssay = c("RNA", "integrated")[1],
+    layout = c("tall", "wide", FALSE)[2],
+    # colors = c("grey", "red"),
+    nr.Col = 2, nr.Row = 4,
+    cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
+    label = FALSE, # can be a vector of length idents
+    legend = !label,
+    subdir = TRUE,
+    prefix = NULL, suffix = NULL,
+    background_col = "white",
+    aspect.ratio = c(FALSE, 0.6)[2],
+    saveGeneList = FALSE,
+    w = wA4, h = hA4, scaling = 1,
+    format = c("jpg", "pdf", "png")[1],
+    ...
+) {
 
-  plots <- cowplot::plot_grid(p1, p2, labels = c("A", "B"), ncol = 2)
-  plotname <- kpp("UMAP.tSNE", grouping, name.suffix, filetype)
+  message("Plotting multi_clUMAP.A4")
+  message("Duplicate of prettier qClusteringUMAPS, partially")
+  tictoc::tic()
+  ParentDir <- OutDir
+  if (is.null(foldername)) foldername <- "clusters"
+  if (subdir) create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
 
-  cowplot::save_plot(
-    filename = plotname, plot = plots,
-    ncol = 2 # we're saving a grid plot of 2 columns
-    , nrow = 1 # and 2 rows
-    , base_width = width,
-    base_height = heigth
-    # each individual subplot should have an aspect ratio of 1.3
-    # , base_aspect_ratio = 1.5
+  DefaultAssay(obj) <- intersectionAssay
+
+  # Adjust plot dimensions and grid layout based on specified layout
+  .adjustLayout(layout, scaling, wA4 = wA4, hA4 = hA4, environment())
+
+
+  # Split clusters into lists for plotting
+  ls.idents <- CodeAndRoll2::split_vec_to_list_by_N(1:length(idents), by = nr.Row * nr.Col)
+  for (i in 1:length(ls.idents)) {
+    idents_on_this_page <- idents[ls.idents[[i]]]
+    iprint("page:", i, "| idents", kppc(idents_on_this_page))
+    (plotname <- kpp(c(prefix, plot.reduction, i, "idents", ls.idents[[i]], suffix, format)))
+
+    plot.list <- list()
+    for (i in seq(idents_on_this_page)) {
+      # browser()
+      if(length(label) == 1) {
+        label_X <- label
+        legend_X <- legend
+      } else {
+        label_X <- label[i]
+        legend_X <- legend[i]
+      }
+
+      ident_X <- idents_on_this_page[i]; imessage("plotting:", ident_X)
+      plot.list[[i]] <- clUMAP(ident = ident_X, obj = obj, plotname = label_X,
+                               label = label_X, legend = legend_X, save.plot = F,h = h, w = w, ...)
+    }
+
+    # Customize plot appearance
+    for (i in 1:length(plot.list)) {
+      plot.list[[i]] <- plot.list[[i]] + NoAxes()
+      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]]
+      ggplot2::coord_fixed(ratio = aspect.ratio)
+    }
+
+    # Save plots
+    pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
+    cowplot::ggsave2(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
+  } # for ls.idents
+
+  if (subdir) MarkdownReports::create_set_OutDir(ParentDir)
+  tictoc::toc()
+}
+
+
+
+# _________________________________________________________________________________________________
+#' @title qClusteringUMAPS
+#'
+#' @description Quickly plot 1-4 clustering resolutions on an a4 page
+#' @param dims Any numeric metadata columns
+#' @param obj Seurat object, Default: combined.obj
+#'
+#' @examples qClusteringUMAPS()
+#' @export
+qClusteringUMAPS <- function(
+    obj = combined.obj,
+    dims = na.omit.strip(GetClusteringRuns(obj)[1:4]),
+    prefix = "Clustering.UMAP.Res",
+    suffix = "",
+    title = sppu(prefix,
+                 as.numeric(stringr::str_extract(dims, "\\d+\\.\\d+$")),
+                 suffix),
+    nrow = 2, ncol = 2,
+    ...) {
+
+  message("Plotting qClusteringUMAPS")
+  message("Duplicate of less pretty multi_clUMAP.A4, partially")
+  # Check that the QC markers are in the object
+  n.found <- intersect(dims, colnames(obj@meta.data))
+  message(kppws(length(n.found), " found of ", dims))
+  stopifnot(length(n.found) > 1)
+
+  px <- list(
+    "A" = clUMAP(dims[1], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "B" = clUMAP(dims[2], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "C" = clUMAP(dims[3], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "D" = clUMAP(dims[4], save.plot = FALSE, obj = obj, ...) + NoAxes()
+  )
+
+  ggExpress::qA4_grid_plot(
+    plot_list = px,
+    plotname = title,
+    w = hA4, h = wA4,
+    nrow = nrow, ncol = ncol
   )
 }
+
+
 
 # _________________________________________________________________________________________________
 #' @title PlotTopGenesPerCluster
@@ -2306,47 +2290,6 @@ PlotTopGenesPerCluster <- function(
     )
   }
 }
-
-# _________________________________________________________________________________________________
-#' @title qClusteringUMAPS
-#'
-#' @description Quickly plot 1-4 clustering resolutions on an a4 page
-#' @param dims Any numeric metadata columns
-#' @param obj Seurat object, Default: combined.obj
-#'
-#' @examples qClusteringUMAPS()
-#' @export
-qClusteringUMAPS <- function(
-    obj = combined.obj,
-    dims = na.omit.strip(GetClusteringRuns(obj)[1:4]),
-    prefix = "Clustering.UMAP.Res",
-    suffix = "",
-    title = sppu(prefix,
-                 as.numeric(stringr::str_extract(dims, "\\d+\\.\\d+$")),
-                 suffix),
-    nrow = 2, ncol = 2,
-    ...) {
-
-  # Check that the QC markers are in the object
-  n.found <- intersect(dims, colnames(obj@meta.data))
-  message(kppws(length(n.found), " found of ", dims))
-  stopifnot(length(n.found) > 1)
-
-  px <- list(
-    "A" = clUMAP(dims[1], save.plot = FALSE, obj = obj, ...) + NoAxes(),
-    "B" = clUMAP(dims[2], save.plot = FALSE, obj = obj, ...) + NoAxes(),
-    "C" = clUMAP(dims[3], save.plot = FALSE, obj = obj, ...) + NoAxes(),
-    "D" = clUMAP(dims[4], save.plot = FALSE, obj = obj, ...) + NoAxes()
-  )
-
-  ggExpress::qA4_grid_plot(
-    plot_list = px,
-    plotname = title,
-    w = hA4, h = wA4,
-    nrow = nrow, ncol = ncol
-  )
-}
-
 
 # _________________________________________________________________________________________________
 #' @title qQC.plots.BrainOrg
