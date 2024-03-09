@@ -12,7 +12,8 @@ jJaccardIndexBinary(x, y)
 \item{y}{Set Y}
 }
 \description{
-Calculate Jaccard Index. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
+Calculate Jaccard Index. Modified from:
+https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
 }
 \examples{
 \dontrun{

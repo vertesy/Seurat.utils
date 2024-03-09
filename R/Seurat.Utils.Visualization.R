@@ -2296,6 +2296,7 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj, foldername = NULL,
                                      assay.slot = intersectionAssay, makeuppercase = FALSE)
 
   for (g in list.of.genes.found) {
+    message(g)
     qUMAP(g, reduction = plot.reduction, ...)
   }
 
@@ -2432,19 +2433,36 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE, suff
 
 
 # _________________________________________________________________________________________________
-#' @title PlotTopGenes
+#' @title Plot Top Genes
 #'
-#' @description Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param n Number of genes to plot, Default: 32
+#' @description This function plots the highest expressed genes on UMAPs, saving the plots in a
+#' subfolder. It requires the prior execution of `calc.q99.Expression.and.set.all.genes`.
+#'
+#' @param obj A Seurat object containing the data for plotting. Default: combined.obj.
+#' @param n The number of top genes to plot. Default: 32.
+#' @param exp.slot The slot in the Seurat object where the expression data is stored.
+#' Default: "expr.q99".
+#'
+#' @details This function identifies the top `n` genes based on expression levels stored in
+#' `exp.slot` of the provided Seurat object. It then plots these genes using UMAPs and saves
+#' the results in a subfolder named "Highest.Expressed.Genes".
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   PlotTopGenes()
+#'   if (interactive()) {
+#'     PlotTopGenes()
+#'   }
 #' }
-#' }
+#'
+#' @importFrom checkmate assertClass assertInteger
 #' @export
-PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = "expr.q99") { # Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before.
+
+PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = "expr.q99") {
+  message("Using obj@misc$", exp.slot)
+  stopifnot(inherits(obj, "Seurat"),
+            "Requires calling calc.q99.Expression.and.set.all.genes before. " =
+              exp.slot %in% names(obj@misc))
+
   Highest.Expressed.Genes <- names(head(sort(obj@misc[[exp.slot]], decreasing = TRUE), n = n))
   multiFeaturePlot.A4(list.of.genes = Highest.Expressed.Genes, foldername = "Highest.Expressed.Genes")
 }

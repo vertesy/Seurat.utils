@@ -33,7 +33,7 @@ calc.q99.Expression.and.set.all.genes(
 \item{show}{Show plot? Default: TRUE}
 }
 \description{
-Calculate the gene expression of the e.g.: 90th quantile (expression in the top 10\% cells). #
+Calculate the gene expression of the e.g.: 99th quantile (expression in the top 1\% cells).
 }
 \examples{
 \dontrun{

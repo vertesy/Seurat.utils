@@ -14,7 +14,8 @@
 \item{filterZero}{Remove genes whose quantile-90 expression in 0? Default: TRUE}
 }
 \description{
-Plot gene expression based on the expression at the 90th quantile (so you will not lose genes expressed in few cells).
+Plot gene expression based on the expression at the 90th quantile
+(so you will not lose genes expressed in few cells).
 }
 \examples{
 \dontrun{

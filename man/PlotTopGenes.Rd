@@ -2,22 +2,32 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{PlotTopGenes}
 \alias{PlotTopGenes}
-\title{PlotTopGenes}
+\title{Plot Top Genes}
 \usage{
 PlotTopGenes(obj = combined.obj, n = 32, exp.slot = "expr.q99")
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object containing the data for plotting. Default: combined.obj.}
 
-\item{n}{Number of genes to plot, Default: 32}
+\item{n}{The number of top genes to plot. Default: 32.}
+
+\item{exp.slot}{The slot in the Seurat object where the expression data is stored.
+Default: "expr.q99".}
 }
 \description{
-Plot the highest expressed genes on umaps, in a subfolder. Requires calling calc.q99.Expression.and.set.all.genes before. #
+This function plots the highest expressed genes on UMAPs, saving the plots in a
+subfolder. It requires the prior execution of \code{calc.q99.Expression.and.set.all.genes}.
+}
+\details{
+This function identifies the top \code{n} genes based on expression levels stored in
+\code{exp.slot} of the provided Seurat object. It then plots these genes using UMAPs and saves
+the results in a subfolder named "Highest.Expressed.Genes".
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  PlotTopGenes()
+  if (interactive()) {
+    PlotTopGenes()
+  }
 }
-}
+
 }

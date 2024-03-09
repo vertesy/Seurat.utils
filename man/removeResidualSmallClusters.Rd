@@ -18,5 +18,6 @@ removeResidualSmallClusters(
 \item{max.cells}{Max number of cells in cluster to be removed. Default: 0.5\% of the dataset, or 5 cells.}
 }
 \description{
-E.g.: after subsetting often some residual cells remain in clusters originally defined in the full dataset.
+E.g.: after subsetting often some residual cells remain in clusters originally
+defined in the full dataset.
 }

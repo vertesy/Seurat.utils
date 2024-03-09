@@ -16,7 +16,7 @@ RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
 \item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
 }
 \description{
-Set active UMAP to \code{obj@reductions$umap} from \code{obj@misc$reductions.backup}. #
+Set active UMAP to \code{obj@reductions$umap} from \code{obj@misc$reductions.backup}.
 
 Set active UMAP to \code{obj@reductions$umap} from \code{obj@misc$reductions.backup}. #
 }

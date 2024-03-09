@@ -42,7 +42,9 @@ ConvertDropSeqfolders(
 \item{overwrite}{A logical value indicating whether to overwrite files. Default is FALSE.}
 }
 \description{
-This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.
+This function takes a parent directory with a number of subfolders, each
+containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices,
+(2) converts them to Seurat objects, and (3) saves them as .RDS files.
 }
 \examples{
 \dontrun{

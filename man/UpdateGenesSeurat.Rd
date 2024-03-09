@@ -21,7 +21,8 @@ UpdateGenesSeurat(
 \item{ShowStats}{Logical, if TRUE, displays statistics of gene symbols update. Default: FALSE}
 }
 \description{
-Update genes symbols that are stored in a Seurat object. It returns a data frame. The last column are the updated gene names.
+Update genes symbols that are stored in a Seurat object. It returns a data frame.
+The last column are the updated gene names.
 }
 \seealso{
 \code{\link[HGNChelper]{checkGeneSymbols}}

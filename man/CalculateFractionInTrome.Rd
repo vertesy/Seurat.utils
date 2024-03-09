@@ -13,9 +13,11 @@ CalculateFractionInTrome(
 \arguments{
 \item{obj}{A Seurat object from which the gene data is extracted. Default is 'combined.obj'.}
 
-\item{dataslot}{A character vector specifying the data slot to be used in the calculation. Default is 'data' (second element in the vector c("counts", "data")).}
+\item{dataslot}{A character vector specifying the data slot to be used in the calculation.
+Default is 'data' (second element in the vector c("counts", "data")).}
 
-\item{geneset}{A character vector specifying the set of genes for which the fraction in the transcriptome is to be calculated. Default is c("MALAT1").}
+\item{geneset}{A character vector specifying the set of genes for which the fraction in the
+transcriptome is to be calculated. Default is c("MALAT1").}
 }
 \value{
 A numeric vector containing the fraction of the specified genes in the transcriptome of each cell.

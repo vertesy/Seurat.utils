@@ -10,5 +10,6 @@ gene.name.check(Seu.obj)
 \item{Seu.obj}{A Seurat object.}
 }
 \description{
-Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #
+Check gene names in a seurat object, for naming conventions
+(e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #
 }

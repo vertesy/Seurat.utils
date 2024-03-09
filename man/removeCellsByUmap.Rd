@@ -15,7 +15,8 @@ removeCellsByUmap(
 )
 }
 \arguments{
-\item{reduction}{A string specifying the dimension reduction technique to be used ('umap', 'pca', or 'tsne'). Default is 'umap'.}
+\item{reduction}{A string specifying the dimension reduction technique to be used
+('umap', 'pca', or 'tsne'). Default is 'umap'.}
 
 \item{umap_dim}{An integer specifying which dimension (axis) to apply the cutoff. Default is 1.}
 
@@ -23,7 +24,8 @@ removeCellsByUmap(
 
 \item{cutoff}{A numerical value indicating the cutoff value for the specified dimension. Default is 0.}
 
-\item{cut_below}{A logical value indicating whether to remove cells below (TRUE) or above (FALSE) the cutoff line. Default is TRUE.}
+\item{cut_below}{A logical value indicating whether to remove cells below (TRUE) or
+above (FALSE) the cutoff line. Default is TRUE.}
 
 \item{only_plot_cutoff}{Simulate and plot cutoff only.}
 
@@ -33,5 +35,6 @@ removeCellsByUmap(
 A Seurat object with cells removed according to the specified cutoff.
 }
 \description{
-This function applies a cutoff in the specified dimension of a given dimension reduction (UMAP, PCA, or t-SNE) to remove cells.
+This function applies a cutoff in the specified dimension of a given
+dimension reduction (UMAP, PCA, or t-SNE) to remove cells.
 }

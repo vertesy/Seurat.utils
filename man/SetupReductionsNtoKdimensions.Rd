@@ -35,7 +35,8 @@ The input Seurat object with computed dimensionality reductions and backups of t
 The input Seurat object with computed dimensionality reductions and backups of these reductions.
 }
 \description{
-Function to compute dimensionality reductions for a given Seurat object and backup the computed reductions.
+Function to calculate N-to-K dimensional umaps (default = 2:3); and back them up to
+slots \code{obj@misc$reductions.backup} from @reductions$umap
 
 Function to compute dimensionality reductions for a given Seurat object and backup the computed reductions.
 }

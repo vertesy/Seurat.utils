@@ -12,7 +12,8 @@ RemoveGenesSeurat(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 \item{symbols2remove}{Genes to remove from a Seurat object. Default: c("TOP2A")}
 }
 \description{
-Replace gene names in different slots of a Seurat object. Run this before integration. Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data. #
+Replace gene names in different slots of a Seurat object. Run this before integration.
+Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data. #
 }
 \examples{
 \dontrun{

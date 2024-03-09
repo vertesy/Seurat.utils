@@ -26,17 +26,23 @@ isave.RDS(
 
 \item{suffix}{A string suffix added to the filename. Default is NULL.}
 
-\item{inOutDir}{A boolean flag, if TRUE the OutDir is used as save directory, if FALSE the alternative_path_rdata is used. Default is TRUE}
+\item{inOutDir}{A boolean flag, if TRUE the OutDir is used as save directory, if FALSE the
+alternative_path_rdata is used. Default is TRUE}
 
-\item{project}{A string representing the project code. This is appended to the saved file name. Default is the active project determined by getProject().}
+\item{project}{A string representing the project code. This is appended to the saved file name.
+Default is the active project determined by getProject().}
 
-\item{alternative_path_rdata}{A string that specifies the alternative path for storing the RDS file if inOutDir is FALSE. Default is "~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/" appended with the basename of OutDir.}
+\item{alternative_path_rdata}{A string that specifies the alternative path for storing the
+RDS file if inOutDir is FALSE. Default is "~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/"
+appended with the basename of OutDir.}
 
 \item{homepath}{A string representing the homepath. Will be replaced by '~' in the file path. Default is '~/'.}
 
-\item{showMemObject}{A boolean flag, if TRUE the function will print out the memory size of the largest objects in the workspace. Default is TRUE.}
+\item{showMemObject}{A boolean flag, if TRUE the function will print out the memory size of the
+largest objects in the workspace. Default is TRUE.}
 
-\item{saveParams}{A boolean flag, if TRUE the parameters 'p' and 'all.genes' are added to the 'misc' slot of the Seurat object if the object is of class Seurat. Default is TRUE.}
+\item{saveParams}{A boolean flag, if TRUE the parameters 'p' and 'all.genes' are added to the
+'misc' slot of the Seurat object if the object is of class Seurat. Default is TRUE.}
 
 \item{compress}{Compress .Rds file after writing? Default is TRUE.}
 

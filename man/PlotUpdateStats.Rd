@@ -21,7 +21,9 @@ A scatter plot displaying update statistics.
 Creates a scatter plot of update statistics.
 }
 \details{
-This function takes a matrix containing update statistics and column names to plot the corresponding statistics. It colorizes the genes and plots the percentage of total genes updated against the number of genes updated.
+This function takes a matrix containing update statistics and column names to plot
+the corresponding statistics. It colorizes the genes and plots the percentage of total genes
+updated against the number of genes updated.
 }
 \examples{
 \dontrun{

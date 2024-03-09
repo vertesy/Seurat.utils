@@ -14,7 +14,7 @@ GetClusteringRuns(obj = combined.obj, res = FALSE, pat = "*snn_res.*[0-9]$")
 \item{pat}{Pettern to match, Default: '\emph{snn_res.}\link{0-9}$'}
 }
 \description{
-Get Clustering Runs: metadata column names #
+Get Clustering Runs: metadata column names.
 }
 \examples{
 \dontrun{

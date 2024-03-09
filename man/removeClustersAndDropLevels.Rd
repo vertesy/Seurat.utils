@@ -14,9 +14,11 @@ removeClustersAndDropLevels(
 \arguments{
 \item{ls_obj}{A list of Seurat objects.}
 
-\item{object_names}{A character vector containing the names of the Seurat objects to process. Default is names of all objects in the \code{ls_obj}.}
+\item{object_names}{A character vector containing the names of the Seurat objects to process.
+Default is names of all objects in the \code{ls_obj}.}
 
-\item{indices}{A numeric vector indicating which datasets to process by their position in the \code{object_names} vector. By default, it processes the second and third datasets.}
+\item{indices}{A numeric vector indicating which datasets to process by their position in
+the \code{object_names} vector. By default, it processes the second and third datasets.}
 
 \item{...}{Additional parameters passed to the \code{removeResidualSmallClusters} function.}
 }
@@ -24,10 +26,12 @@ removeClustersAndDropLevels(
 The function returns the modified list of Seurat objects.
 }
 \description{
-This function removes residual small clusters from specified Seurat objects and drops levels in factor-like metadata.
+This function removes residual small clusters from specified Seurat objects and
+drops levels in factor-like metadata.
 }
 \details{
-This function applies \code{removeResidualSmallClusters} and \code{dropLevelsSeurat} to the Seurat objects specified by the \code{indices} in the \code{object_names}.
+This function applies \code{removeResidualSmallClusters} and \code{dropLevelsSeurat} to
+the Seurat objects specified by the \code{indices} in the \code{object_names}.
 It operates in place, modifying the input \code{ls_obj} list.
 }
 \examples{

@@ -12,12 +12,14 @@ seu.Make.Cl.Label.per.cell(TopGenes, clID.per.cell)
 \item{clID.per.cell}{A vector of cell-IDs used to create the output vector.}
 }
 \description{
-Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID".
+Take a named vector (of e.g. values ="gene names", names = clusterID), and a
+vector of cell-IDs and make a vector of "GeneName.ClusterID".
 }
 \examples{
 \dontrun{
 if (interactive()) {
-  seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic, clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname))
+  seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic,
+  clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname))
 }
 }
 }

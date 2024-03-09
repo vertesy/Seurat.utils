@@ -18,10 +18,11 @@ AreTheseCellNamesTheSame(
 
 \item{names}{Names for plotting}
 
-\item{min.overlap}{Threhold below there is no there is no meaninful overlap between the tow vectors. The function aborts with an error.}
+\item{min.overlap}{Threshold below there is no there is no meaningful overlap between the two vectors.}
 }
 \description{
-Compare two character vectors (e.g.: cell IDs) how much they overlap and plot a Venn Diagram.
+Assert and compare two character vectors (e.g.: cell IDs) how much they overlap and
+plot a Venn Diagram. The function aborts with an error if overlap is too small.
 }
 \examples{
 # reTheseCellNamesTheSame()

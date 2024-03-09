@@ -10,7 +10,7 @@ GetUpdateStats(genes = HGNC.updated[[i]])
 \item{genes}{Genes of iinterest, Default: HGNC.updated[\link{i}]}
 }
 \description{
-Plot the Symbol-update statistics. Works on the data frame returned by \code{UpdateGenesSeurat()}. #
+Plot the Symbol-update statistics. Works on the data frame returned by \code{UpdateGenesSeurat()}.
 }
 \examples{
 \dontrun{

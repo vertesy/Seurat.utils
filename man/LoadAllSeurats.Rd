@@ -17,18 +17,22 @@ LoadAllSeurats(
 \arguments{
 \item{InputDir}{A character string specifying the input directory.}
 
-\item{file.pattern}{A character string specifying the pattern of file names to be searched. Default is '^filtered.+Rds$'.}
+\item{file.pattern}{A character string specifying the pattern of file names to be searched.
+Default is '^filtered.+Rds$'.}
 
-\item{string.remove1}{A character string or FALSE. If a string is provided, it is removed from file names. Default is "filtered_feature_bc_matrix.".}
+\item{string.remove1}{A character string or FALSE. If a string is provided, it is removed from
+file names. Default is "filtered_feature_bc_matrix.".}
 
 \item{string.replace1}{A character string of the new text instead of "string.remove1".}
 
-\item{string.remove2}{A character string or FALSE. If a string is provided, it is removed from file names. Default is ".min.cells.10.min.features.200.Rds".}
+\item{string.remove2}{A character string or FALSE. If a string is provided, it is removed from
+file names. Default is ".min.cells.10.min.features.200.Rds".}
 
 \item{sort_alphanumeric}{sort files alphanumeric? Default: TRUE.}
 }
 \description{
-This function loads all Seurat objects found in a directory. It also works with symbolic links (but not with aliases).
+This function loads all Seurat objects found in a directory. It also works with
+symbolic links (but not with aliases).
 }
 \examples{
 \dontrun{

@@ -12,7 +12,8 @@ qsave.image(..., showMemObject = TRUE, options = c("--force", NULL)[1])
 \item{options}{Options passed on to gzip, via CLI. Default: c("--force", NULL)\link{1}}
 }
 \description{
-Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not very efficient compression. #
+Faster saving of workspace, and compression outside R, when it can run in the background.
+Seemingly quite CPU hungry and not very efficient compression. #
 }
 \seealso{
 \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}

@@ -10,7 +10,9 @@ jPairwiseJaccardIndexList(lsG = ls_genes)
 \item{lsG}{List of genes, Default: ls_genes}
 }
 \description{
-Create a pairwise jaccard similarity matrix across all combinations of columns in binary.presence.matrix. Modified from: https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
+Create a pairwise jaccard similarity matrix across all combinations of columns in
+binary.presence.matrix. Modified from:
+https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
 }
 \examples{
 \dontrun{

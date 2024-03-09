@@ -14,7 +14,8 @@ StoreTop25Markers(obj = combined.obj, df_markers = df.markers, res = 0.5)
 \item{res}{Clustering resoluton to use, Default: 0.5}
 }
 \description{
-Save the top 25 makers based on \code{avg_log2FC} output table of \code{FindAllMarkers()} (df_markers) under \verb{@misc$df.markers$res...}. By default, it rounds up insignificant digits up to 3. #
+Save the top 25 makers based on \code{avg_log2FC} output table of \code{FindAllMarkers()}
+(df_markers) under \verb{@misc$df.markers$res...}. By default, it rounds up insignificant digits up to 3.
 }
 \examples{
 \dontrun{

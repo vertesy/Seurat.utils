@@ -11,14 +11,14 @@ GetOrderedClusteringRuns(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object, Default: combined.obj.}
 
 \item{res}{Clustering resoluton to use, Default: FALSE}
 
 \item{pat}{Pettern to match, Default: '\emph{snn_res.}\link{0,1}\.\link{0-9}\.ordered$'}
 }
 \description{
-Get Clustering Runs: metadata column names #
+Get Clustering Runs: metadata column names.
 }
 \examples{
 \dontrun{

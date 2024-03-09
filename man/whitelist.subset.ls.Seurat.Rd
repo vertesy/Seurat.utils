@@ -24,12 +24,15 @@ A list of Seurat objects containing only the cells specified in the whitelist.
 Subsets cells in a list of Seurat objects based on an externally provided list of cell IDs.
 }
 \details{
-The function first validates the presence of all identities from the metadata in the Seurat objects. If all identities are present, the function subsets each Seurat object based on the whitelist of cell IDs.
+The function first validates the presence of all identities from the metadata in the
+Seurat objects. If all identities are present, the function subsets each Seurat object based on
+the whitelist of cell IDs.
 }
 \examples{
 \dontrun{
 if (interactive()) {
-  ls.Seurat.subset <- whitelist.subset.ls.Seurat(ls.obj = ls.Seurat, metadir = p$"cellWhiteList", whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv")
+  ls.Seurat.subset <- whitelist.subset.ls.Seurat(ls.obj = ls.Seurat, metadir = p$"cellWhiteList",
+  whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv")
 }
 }
 }
