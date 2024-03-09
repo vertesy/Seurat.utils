@@ -4,7 +4,7 @@
 \alias{processSeuratObject}
 \title{Process Seurat Objects in Parallel}
 \usage{
-processSeuratObject(obj, param.list = p)
+processSeuratObject(obj, param.list = p, save = T, plot = T)
 }
 \arguments{
 \item{obj}{A Seurat object to be processed.}

@@ -2258,6 +2258,54 @@ qClusteringUMAPS <- function(
 
 
 # _________________________________________________________________________________________________
+#' @title Plot qUMAPs for Genes in a Folder
+#'
+#' @description This function plots qUMAPs for a specified set of genes, storing the results in a
+#' specified folder. If no folder name is provided, it defaults to using the gene set name.
+#'
+#' @param genes A vector of gene names to be plotted.
+#' @param obj An object containing the UMAP and gene data. Default: combined.obj.
+#' @param foldername The name of the folder where the plots will be saved. If NULL, the gene set
+#' name is used. Default: NULL.
+#' @param intersectionAssay The assay slot to use for intersection. Default: 'RNA'.
+#' @param plot.reduction The type of reduction to plot. Default: 'umap'.
+#' @param ... Additional arguments passed to plotting and directory creation functions.
+#'
+#' @return Invisible. The function generates plots and saves them in the specified folder.
+#'
+#' @examples
+#' plotQUMAPsInAFolder(genes = c("Gene1", "Gene2"), obj = combined.obj,
+#'                     foldername = "MyGenePlots", intersectionAssay = 'RNA',
+#'                     plot.reduction = 'umap')
+#'
+#' @importFrom MarkdownReports create_set_SubDir create_set_OutDir
+#' @export
+
+plotQUMAPsInAFolder <- function(genes, obj = combined.obj, foldername = NULL,
+                                intersectionAssay = 'RNA', plot.reduction = 'umap', ...) {
+  # Input checks
+  stopifnot(is.character(genes))
+  stopifnot(is.null(foldername) || is.character(foldername))
+  stopifnot(is.character(intersectionAssay))
+  stopifnot(is.character(plot.reduction))
+
+  ParentDir <- OutDir
+  if (is.null(foldername)) foldername <- deparse(substitute(genes))
+  MarkdownReports::create_set_SubDir(paste0(foldername,'-', plot.reduction), '/')
+  list.of.genes.found <- check.genes(list.of.genes = genes, obj = obj,
+                                     assay.slot = intersectionAssay, makeuppercase = FALSE)
+
+  for (g in list.of.genes.found) {
+    qUMAP(g, reduction = plot.reduction, ...)
+  }
+
+  MarkdownReports::create_set_OutDir(... = ParentDir)
+
+  invisible()
+}
+
+
+# _________________________________________________________________________________________________
 #' @title PlotTopGenesPerCluster
 #'
 #' @description Plot the top N diff. exp. genes in each cluster.
