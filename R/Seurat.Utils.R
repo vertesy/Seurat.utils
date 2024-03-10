@@ -4314,6 +4314,7 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
     qMarkerCheck.BrainOrg(obj = obj)
     multi_clUMAP.A4(obj = obj)
     qClusteringUMAPS(obj = obj)
+    suPlotVariableFeatures(obj = obj)
     if (T) { # TEMP
       Signature.Genes.Top16.x <- c(
         `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron

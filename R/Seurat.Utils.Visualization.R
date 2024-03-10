@@ -3296,7 +3296,7 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
 #' suPlotVariableFeatures(combined.obj)
 #' }
 #' @export
-suPlotVariableFeatures <- function(obj, NrVarGenes = 15,
+suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
                                    repel = TRUE, plotWidth = 7, plotHeight = 5) {
   # Input validation
   stopifnot(is(obj, "Seurat"),
