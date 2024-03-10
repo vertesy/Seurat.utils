@@ -5,7 +5,7 @@
 \title{SuPlotVariableFeatures for Single Seurat Object}
 \usage{
 suPlotVariableFeatures(
-  obj,
+  obj = combined.obj,
   NrVarGenes = 15,
   repel = TRUE,
   plotWidth = 7,

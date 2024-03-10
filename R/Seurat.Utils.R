@@ -4280,6 +4280,8 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) {
 processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot = T,
                                 nfeatures = 10000) {
   warning("Make sure you cleaned up the memory!", immediate. = T)
+  stopifnot(require(tictoc))
+
 
   # Assertions to check input types
   stopifnot(
@@ -4292,21 +4294,20 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
   )
   .checkListElements(param_list = p, elements = c("variables.2.regress.combined", "n.PC", "snn_res"))
 
-  tictoc::tic()
   gc()
   if (compute) {
     message("------------------- FindVariableFeatures -------------------")
-    obj <- FindVariableFeatures(obj, mean.function = 'FastExpMean', dispersion.function = 'FastLogVMR', nfeatures = nfeatures); toc()
+    tic(); obj <- FindVariableFeatures(obj, mean.function = 'FastExpMean', dispersion.function = 'FastLogVMR', nfeatures = nfeatures); toc()
     obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc()
     message("------------------- ScaleData -------------------")
-    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = param.list$"variables.2.regress.combined")
+    tic(); obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = param.list$"variables.2.regress.combined")
     message("------------------- PCA /UMAP -------------------")
-    obj <- RunPCA(obj, npcs = param.list$"n.PC", verbose = TRUE)
-    obj <- RunUMAP(obj, reduction = "pca", dims = 1:param.list$"n.PC")
-    message("------------------- FindNeighbors -------------------")
-    obj <- FindNeighbors(obj, reduction = "pca", dims = 1:param.list$"n.PC")
-    obj <- FindClusters(obj, resolution = param.list$"snn_res")
-    tictoc::toc()
+    tic(); obj <- RunPCA(obj, npcs = param.list$"n.PC", verbose = TRUE); toc()
+    tic(); obj <- RunUMAP(obj, reduction = "pca", dims = 1:param.list$"n.PC"); toc()
+    message("------------------- FindNeighbors & Clusters -------------------")
+    tic(); obj <- FindNeighbors(obj, reduction = "pca", dims = 1:param.list$"n.PC"); toc()
+    tic(); obj <- FindClusters(obj, resolution = param.list$"snn_res"); toc()
+
   }
   if (save) xsave(obj, suffix = "reprocessed")
   if (plot) {
@@ -4336,39 +4337,6 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
   tictoc::toc()
 
   return(obj)
-}
-
-
-# _________________________________________________________________________________________________
-#' @title Check List Elements
-#'
-#' @description Tests if list elements are defined and reports the value or issues a warning.
-#'
-#' @param param_list A list containing variables to be checked. Default: `NULL`.
-#' @param elements A character vector of element names in `param_list` to check.
-#' Default: `character(0)`.
-#' @importFrom rlang is_null
-#'
-#' @return A message for each element that is defined, and a warning for elements that are not.
-#' @examples
-#' param_list <- list(a = 1, b = NULL)
-#' elements <- c("a", "b", "c")
-#' .checkListElements(param_list, elements)
-.checkListElements <- function(param_list = NULL, elements = character(0)) {
-  stopifnot(
-    is.list(param_list),
-    is.character(elements)
-  )
-
-  sapply(elements, function(element) {
-    if (is.null(param_list[[element]])) {
-      warning(sprintf("`%s` is not defined", element), immediate. = TRUE, call. = FALSE)
-    } else {
-      message(sprintf("`%s` is: %s", element, param_list[[element]]))
-    }
-  }, USE.NAMES = FALSE)
-
-  invisible(NULL)
 }
 
 
@@ -4410,6 +4378,9 @@ regress_out_and_recalculate_seurat <- function(
     plot_umaps = TRUE,
     save_obj = TRUE,
     assayX = "RNA") {
+
+  .Deprecated("processSeuratObject")
+
   tictoc::tic()
   print("FindVariableFeatures")
   obj <- FindVariableFeatures(obj, mean.function = "FastExpMean", dispersion.function = "FastLogVMR", nfeatures = 10000)
@@ -4475,6 +4446,64 @@ regress_out_and_recalculate_seurat <- function(
 
   return(obj)
 }
+
+# _________________________________________________________________________________________________
+#' @title Check List Elements
+#'
+#' @description Tests if list elements are defined and reports the value or issues a warning.
+#'
+#' @param param_list A list containing variables to be checked. Default: `NULL`.
+#' @param elements A character vector of element names in `param_list` to check.
+#' Default: `character(0)`.
+#' @importFrom rlang is_null
+#'
+#' @return A message for each element that is defined, and a warning for elements that are not.
+#' @examples
+#' param_list <- list(a = 1, b = NULL)
+#' elements <- c("a", "b", "c")
+#' .checkListElements(param_list, elements)
+.checkListElements <- function(param_list = NULL, elements = character(0)) {
+  stopifnot(
+    is.list(param_list),
+    is.character(elements)
+  )
+
+  sapply(elements, function(element) {
+    if (is.null(param_list[[element]])) {
+      warning(sprintf("`%s` is not defined", element), immediate. = TRUE, call. = FALSE)
+    } else {
+      message(sprintf("`%s` is: %s", element, param_list[[element]]))
+    }
+  }, USE.NAMES = FALSE)
+
+  invisible(NULL)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title Get number of scaled features
+#'
+#' @param obj A Seurat object containing scaled data in `assays$RNA@layers$scale.data` (v5) or
+#' `obj@assays$RNA@scale.data` (v1-4).
+#' @return Integer representing the number of scaled features
+.getNrScaledFeatures <- function(obj) {
+  if(obj@version > 5) {
+    message("Seurat version 5+")
+    nrow(obj@assays$RNA@layers$'scale.data')
+  } else {
+    nrow(obj@assays$RNA@'scale.data')
+  }
+}
+
+# _________________________________________________________________________________________________
+#' @title Get number of principal components
+#'
+#' @param obj A Seurat object containing PCA cell embeddings in `reductions$pca@cell.embeddings`
+#' @return Integer representing the number of principal components
+.getNrPCs <- function(obj) {
+  ncol(obj@reductions$pca@"cell.embeddings")
+}
+
 
 
 

@@ -385,9 +385,14 @@ create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.inters
 #'  \code{\link[Matrix]{colSums}}
 #' @export
 #' @importFrom Matrix colSums
+#' @importFrom CodeAndRoll2 grepv
 addMetaFraction <- function(
     col.name = "percent.mito", gene.symbol.pattern = c("^MT\\.|^MT-", FALSE)[1],
-    gene.set = FALSE, obj = ls.Seurat[[1]], verbose = TRUE) {
+    gene.set = FALSE, obj = ls.Seurat[[1]],
+    verbose = TRUE) {
+
+  message("Should rather use the default `Seurat::PercentageFeatureSet`")
+
   stopif(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
