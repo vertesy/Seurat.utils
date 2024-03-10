@@ -2159,7 +2159,7 @@ multi_clUMAP.A4 <- function(
     ...
 ) {
 
-  message("Plotting multi_clUMAP.A4")
+  message("> > > > > Plotting multi_clUMAP.A4")
   message("Duplicate of prettier qClusteringUMAPS, partially")
   tictoc::tic()
   ParentDir <- OutDir
@@ -2233,7 +2233,7 @@ qClusteringUMAPS <- function(
     nrow = 2, ncol = 2,
     ...) {
 
-  message("Plotting qClusteringUMAPS")
+  message("> > > > > Plotting qClusteringUMAPS")
   message("Duplicate of less pretty multi_clUMAP.A4, partially")
   # Check that the QC markers are in the object
   n.found <- intersect(dims, colnames(obj@meta.data))
@@ -2358,6 +2358,8 @@ qQC.plots.BrainOrg <- function(
     nrow = 2, ncol = 2,
     ...) {
 
+  message("> > > > > Plotting qQC.plots.BrainOrg")
+
   # Check that the QC markers are in the object
   n.found <- intersect(QC.Features, colnames(obj@meta.data))
   message(kppws(length(n.found), " found of ", QC.Features))
@@ -2402,7 +2404,11 @@ qQC.plots.BrainOrg <- function(
 #' }
 #' }
 #' @export
-qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE, suffix = "") {
+qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
+                                  suffix = "") {
+
+  message("> > > > > Plotting qMarkerCheck.BrainOrg")
+
   Signature.Genes.Top16 <- if (!isFALSE(custom.genes)) {
     custom.genes
   } else {
@@ -3191,6 +3197,9 @@ Plot3D.ListOfCategories <- function(
 }
 
 
+# _________________________________________________________________________________________________
+# TEMPORARY ______________________________ ----
+# _________________________________________________________________________________________________
 
 
 # _________________________________________________________________________________________________
@@ -3263,3 +3272,46 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
 #   text(0.5, 0.5, txt, cex = cex * r)
 #   text(.8, .8, Signif, cex = cex,  col = 2)
 # }
+
+
+
+# _________________________________________________________________________________________________
+#' @title SuPlotVariableFeatures for Single Seurat Object
+#'
+#' @description Generates a Variable Feature Plot for a specified Seurat object, labels points with
+#' the top 20 variable genes, and saves the plot to a PDF file.
+#'
+#' @param obj A single Seurat object.
+#' @param NrVarGenes A vector containing the top 20 variable genes for the Seurat object.
+#' @param sampleName A string specifying the sample name, used to generate the filename for saving
+#' the plot.
+#' @param ppp A function for constructing the path and filename for saving the plot. It takes three
+#' arguments: a prefix for the filename, a sample name, and the file extension ('pdf').
+#' @param repel A logical value indicating whether to repel the labels to avoid overlap. Default: TRUE.
+#' @param plotWidth Numeric value specifying the width of the plot when saved. Default: 7.
+#' @param plotHeight Numeric value specifying the height of the plot when saved. Default: 5.
+#'
+#' @examples
+#' \dontrun{
+#' suPlotVariableFeatures(combined.obj)
+#' }
+#' @export
+suPlotVariableFeatures <- function(obj, NrVarGenes = 15,
+                                   repel = TRUE, plotWidth = 7, plotHeight = 5) {
+  # Input validation
+  stopifnot(is(obj, "Seurat"),
+            is.function(ppp), is.logical(repel), is.numeric(plotWidth), is.numeric(plotHeight))
+
+  plot1 <- Seurat::VariableFeaturePlot(obj) + ggtitle(label = "Variable Genes")
+
+  # Assuming LabelPoints is defined elsewhere and available for use.
+  TopVarGenes <- VariableFeatures(combined.obj)[1:NrVarGenes]
+  labeledPlot <- LabelPoints(plot = plot1, points = TopVarGenes, repel = repel,
+                             xnudge = 0, ynudge = 0, max.overlaps=15)
+  print(labeledPlot)
+  filename <- ppp("Var.genes", idate(), 'png')
+
+  ggplot2::ggsave(plot = labeledPlot, filename = filename, width = plotWidth, height = plotHeight)
+}
+
+

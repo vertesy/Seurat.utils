@@ -3648,6 +3648,8 @@ xread <- function(file, nthreads = 4,
 }
 
 
+
+
 # _________________________________________________________________________________________________
 # Save workspace
 # requires MarkdownReports (github) and defining OutDir
@@ -4275,7 +4277,7 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) {
 #' # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
 #' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
 #' @export
-processSeuratObject <- function(obj, param.list = p, save = T, plot = T,
+processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot = T,
                                 nfeatures = 10000) {
   warning("Make sure you cleaned up the memory!", immediate. = T)
 
@@ -4288,27 +4290,47 @@ processSeuratObject <- function(obj, param.list = p, save = T, plot = T,
     is.numeric(param.list$"snn_res"),
     is.character(param.list$"variables.2.regress") | is.null(param.list$"variables.2.regress")
   )
+  .checkListElements(c("variables.2.regress.combined", "n.PC", "snn_res"))
 
   tictoc::tic()
   gc()
-  message("------------------- FindVariableFeatures -------------------")
-  obj <- FindVariableFeatures(obj, mean.function = 'FastExpMean', dispersion.function = 'FastLogVMR', nfeatures = nfeatures); toc()
-  obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc()
-  message("------------------- ScaleData -------------------")
-  obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = param.list$"variables.2.regress")
-  message("------------------- PCA /UMAP -------------------")
-  obj <- RunPCA(obj, npcs = param.list$"n.PC", verbose = TRUE)
-  obj <- RunUMAP(obj, reduction = "pca", dims = 1:param.list$"n.PC")
-  message("------------------- FindNeighbors -------------------")
-  obj <- FindNeighbors(obj, reduction = "pca", dims = 1:param.list$"n.PC")
-  obj <- FindClusters(obj, resolution = param.list$"snn_res")
-  tictoc::toc()
+  if (compute) {
+    message("------------------- FindVariableFeatures -------------------")
+    obj <- FindVariableFeatures(obj, mean.function = 'FastExpMean', dispersion.function = 'FastLogVMR', nfeatures = nfeatures); toc()
+    obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc()
+    message("------------------- ScaleData -------------------")
+    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = param.list$"variables.2.regress.combined")
+    message("------------------- PCA /UMAP -------------------")
+    obj <- RunPCA(obj, npcs = param.list$"n.PC", verbose = TRUE)
+    obj <- RunUMAP(obj, reduction = "pca", dims = 1:param.list$"n.PC")
+    message("------------------- FindNeighbors -------------------")
+    obj <- FindNeighbors(obj, reduction = "pca", dims = 1:param.list$"n.PC")
+    obj <- FindClusters(obj, resolution = param.list$"snn_res")
+    tictoc::toc()
+  }
   if (save) xsave(obj, suffix = "reprocessed")
   if (plot) {
     qQC.plots.BrainOrg(obj = obj)
     qMarkerCheck.BrainOrg(obj = obj)
     multi_clUMAP.A4(obj = obj)
     qClusteringUMAPS(obj = obj)
+    if (T) { # TEMP
+      Signature.Genes.Top16.x <- c(
+        `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
+        , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
+        , Interneurons = "ERBB4", Interneurons = "SCGN"
+        , `Intermediate progenitor` = "EOMES" # ,  `Intermediate progenitor1` = "TAC3"
+        , `S-phase` = "TOP2A", `G2M-phase` = 'H4C3' # formerly: HIST1H4C
+        , `oRG` = "HOPX" , `oRG` = "ID4" # oRG outer radial glia
+        , Astroglia = "GFAP"
+        , Astrocyte = "S100B", `Hypoxia/Stress` = "DDIT4"
+        , `Choroid.Plexus` = "TTR", `Low-Quality` = "POLR2A"
+        , `Mesenchyme` = "DCN", Glycolytic = "PDK1"
+        , `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
+      )
+      plotQumapsInAFolder(genes = Signature.Genes.Top16.x)
+    }
+
   }
   tictoc::toc()
 
@@ -4316,6 +4338,37 @@ processSeuratObject <- function(obj, param.list = p, save = T, plot = T,
 }
 
 
+# _________________________________________________________________________________________________
+#' @title Check List Elements
+#'
+#' @description Tests if list elements are defined and reports the value or issues a warning.
+#'
+#' @param param_list A list containing variables to be checked. Default: `NULL`.
+#' @param elements A character vector of element names in `param_list` to check.
+#' Default: `character(0)`.
+#' @importFrom rlang is_null
+#'
+#' @return A message for each element that is defined, and a warning for elements that are not.
+#' @examples
+#' param_list <- list(a = 1, b = NULL)
+#' elements <- c("a", "b", "c")
+#' .checkListElements(param_list, elements)
+.checkListElements <- function(param_list = NULL, elements = character(0)) {
+  stopifnot(
+    is.list(param_list),
+    is.character(elements)
+  )
+
+  sapply(elements, function(element) {
+    if (is.null(param_list[[element]])) {
+      warning(sprintf("`%s` is not defined", element), immediate. = TRUE, call. = FALSE)
+    } else {
+      message(sprintf("`%s` is: %s", element, param_list[[element]]))
+    }
+  }, USE.NAMES = FALSE)
+
+  invisible(NULL)
+}
 
 
 
