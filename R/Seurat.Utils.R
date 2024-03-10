@@ -4278,7 +4278,7 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) {
 #' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
 #' @export
 processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot = T,
-                                nfeatures = 3000) {
+                                nfeatures = p$'n.var.genes') {
   warning("Make sure you cleaned up the memory!", immediate. = T)
   stopifnot(require(tictoc))
   message("nfeatures: ", nfeatures)
@@ -4312,13 +4312,14 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
   }
   if (save) xsave(obj, suffix = "reprocessed")
   if (plot) {
+    scPlotPCAvarExplained(obj)
     qQC.plots.BrainOrg(obj = obj)
     qMarkerCheck.BrainOrg(obj = obj)
     multi_clUMAP.A4(obj = obj)
     qClusteringUMAPS(obj = obj)
     suPlotVariableFeatures(obj = obj)
     if (T) { # TEMP
-      Signature.Genes.Top16.x <- c(
+      Signature.Genes.Top20 <- c(
         `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
         , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
         , Interneurons = "ERBB4", Interneurons = "SCGN"
@@ -4331,7 +4332,7 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
         , `Mesenchyme` = "DCN", Glycolytic = "PDK1"
         , `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
       )
-      plotQumapsInAFolder(genes = Signature.Genes.Top16.x)
+      plotQUMAPsInAFolder(genes = Signature.Genes.Top16.x)
     }
 
   }
@@ -4520,8 +4521,8 @@ regress_out_and_recalculate_seurat <- function(
   scaledFeatures <- .getNrScaledFeatures(obj)
   pcs <- .getNrPCs(obj)
   regressionInfo <- kppc(regressionVariables)
-
-  paste0(scaledFeatures, " ScaledFeatures | ", pcs, "PCs | regress ", regressionInfo, " ", suffix)
+  reg <- if(!is.null(regressionVariables)) paste0(" regress ", regressionInfo) else NULL
+  paste0(scaledFeatures, " ScaledFeatures | ", pcs, "PCs |", reg, " ", suffix)
 }
 
 
