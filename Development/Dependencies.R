@@ -282,7 +282,7 @@ $`c(".GlobalEnv", "package:Seurat.utils")`
  [8] "qUMAP"                                     
  [9] "RecallReduction"                           
 [10] "SavePlotlyAsHtml"                          
-[11] "seu.PC.var.explained"                      
+[11] "scCalcPCAVarExplained"                      
 [12] "ww.check.if.3D.reduction.exist"            
 [13] "ww.check.quantile.cutoff.and.clip.outliers"
 

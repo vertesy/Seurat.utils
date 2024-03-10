@@ -2201,15 +2201,15 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 # PCA percent of variation associated with each PC ------------------------------------------------------------
-seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of variation associated with each PC.
+scCalcPCAVarExplained <- function(obj =  combined.obj) { # Determine percent of variation associated with each PC.
   pct <- obj@reductions$pca@stdev / sum(obj@reductions$pca@stdev) * 100
   names(pct) =1:length(obj@reductions$pca@stdev)
   return(pct)
 }
 
 # plot percent of variation associated with each PC ------------------------------------------------------------
-seu.plot.PC.var.explained <- function(obj =  combined.obj, use.MDrep = F) { # Plot the percent of variation associated with each PC.
-  pct <- seu.PC.var.explained(obj)
+scPlotPCAvarExplained <- function(obj =  combined.obj, use.MDrep = F) { # Plot the percent of variation associated with each PC.
+  pct <- scCalcPCAVarExplained(obj)
   if (use.MDrep) {
     wbarplot(pct , xlab = "Principal Components", ylab = "% of variation explained")
     barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5 )

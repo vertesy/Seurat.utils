@@ -206,14 +206,14 @@ PlotFilters <- function(
 #' @description Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
 #' @param obj Seurat object, Default: combined.obj
 #' @export
-seu.PC.var.explained <- function(obj = combined.obj) { # Determine percent of variation associated with each PC.
+scCalcPCAVarExplained <- function(obj = combined.obj) { # Determine percent of variation associated with each PC.
   pct <- obj@reductions$pca@stdev / sum(obj@reductions$pca@stdev) * 100
   names(pct) <- 1:length(obj@reductions$pca@stdev)
   return(pct)
 }
 
 # _________________________________________________________________________________________________
-#' @title seu.plot.PC.var.explained
+#' @title scPlotPCAvarExplained
 #'
 #' @description Plot the percent of variation associated with each PC.
 #' @param obj Seurat object, Default: combined.obj
@@ -221,8 +221,8 @@ seu.PC.var.explained <- function(obj = combined.obj) { # Determine percent of va
 #' @importFrom MarkdownReports wbarplot
 #' @importFrom ggExpress qbarplot
 #' @export
-seu.plot.PC.var.explained <- function(obj = combined.obj, use.MarkdownReports = FALSE) { # Plot the percent of variation associated with each PC.
-  pct <- seu.PC.var.explained(obj)
+scPlotPCAvarExplained <- function(obj = combined.obj, use.MarkdownReports = FALSE) { # Plot the percent of variation associated with each PC.
+  pct <- scCalcPCAVarExplained(obj)
   if (use.MarkdownReports) {
     MarkdownReports::wbarplot(pct, xlab = "Principal Components", ylab = "% of variation explained")
     barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5)

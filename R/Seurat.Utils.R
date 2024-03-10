@@ -4517,9 +4517,9 @@ regress_out_and_recalculate_seurat <- function(
 .parseKeyParams <- function(obj, regressionVariables = p$"variables.2.regress.combined") {
   scaledFeatures <- .getNrScaledFeatures(obj)
   pcs <- .getNrPCs(obj)
-  regressionInfo <- kpp(regressionVariables)
+  regressionInfo <- kppc(regressionVariables)
 
-  paste(scaledFeatures, ".ScaledFeatures | ", pcs, "PCs | regress.", regressionInfo, sep = "")
+  paste(scaledFeatures, " ScaledFeatures | ", pcs, "PCs | regress ", regressionInfo, sep = "")
 }
 
 
