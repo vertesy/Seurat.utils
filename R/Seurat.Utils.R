@@ -4278,9 +4278,10 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) {
 #' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
 #' @export
 processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot = T,
-                                nfeatures = 10000) {
+                                nfeatures = 3000) {
   warning("Make sure you cleaned up the memory!", immediate. = T)
   stopifnot(require(tictoc))
+  message("nfeatures: ", nfeatures)
 
 
   # Assertions to check input types
@@ -4503,6 +4504,24 @@ regress_out_and_recalculate_seurat <- function(
 .getNrPCs <- function(obj) {
   ncol(obj@reductions$pca@"cell.embeddings")
 }
+
+
+# _________________________________________________________________________________________________
+#' @title Parse key parameters from an object and format as a string
+#'
+#' @description This function extracts the number of scaled features, the number of principal components,
+#' and formats additional information including regression variables.
+#' @param obj An object to extract information from.
+#' @param regressionVariables A list or vector containing variables for regression.
+#' @return A character string summarizing the key parameters.
+.parseKeyParams <- function(obj, regressionVariables = p$"variables.2.regress.combined") {
+  scaledFeatures <- .getNrScaledFeaturesVCheck(obj)
+  pcs <- .getNrPCsVCheck(obj)
+  regressionInfo <- kpp(regressionVariables)
+
+  paste(scaledFeatures, ".ScaledFeatures | ", pcs, "PCs | regress.", regressionInfo, sep = "")
+}
+
 
 
 

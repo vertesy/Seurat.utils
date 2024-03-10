@@ -10,7 +10,7 @@ processSeuratObject(
   compute = T,
   save = T,
   plot = T,
-  nfeatures = 10000
+  nfeatures = 3000
 )
 }
 \arguments{
