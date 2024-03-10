@@ -221,13 +221,19 @@ scCalcPCAVarExplained <- function(obj = combined.obj) { # Determine percent of v
 #' @importFrom MarkdownReports wbarplot
 #' @importFrom ggExpress qbarplot
 #' @export
-scPlotPCAvarExplained <- function(obj = combined.obj, use.MarkdownReports = FALSE) { # Plot the percent of variation associated with each PC.
+scPlotPCAvarExplained <- function(obj = combined.obj,
+                                  plotname = "Variance Explained by Principal Components",
+                                  sub = paste(ncol(obj), "cells, ", nrow(obj), "features."),
+                                  use.MarkdownReports = FALSE) {
   pct <- scCalcPCAVarExplained(obj)
   if (use.MarkdownReports) {
     MarkdownReports::wbarplot(pct, xlab = "Principal Components", ylab = "% of variation explained")
     barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5)
   } else {
-    ggExpress::qbarplot(vec = pct, xlab = "Principal Components", ylab = "% of variation explained", w = 10, h = 5, hline = 1)
+    CPT <- .parseKeyParams(obj, suffix = "| hline at 1%")
+    ggExpress::qbarplot(vec = pct, plotname = plotname, subtitle = sub,
+                        xlab = "Principal Components", ylab = "% of variation explained",
+                        w = 10, h = 5, hline = 1, caption = CPT)
   }
 }
 

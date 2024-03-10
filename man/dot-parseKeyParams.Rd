@@ -4,12 +4,18 @@
 \alias{.parseKeyParams}
 \title{Parse key parameters from an object and format as a string}
 \usage{
-.parseKeyParams(obj, regressionVariables = p$variables.2.regress.combined)
+.parseKeyParams(
+  obj,
+  regressionVariables = p$variables.2.regress.combined,
+  suffix = NULL
+)
 }
 \arguments{
 \item{obj}{An object to extract information from.}
 
 \item{regressionVariables}{A list or vector containing variables for regression.}
+
+\item{suffix}{A suffix string to add.}
 }
 \value{
 A character string summarizing the key parameters.

@@ -4513,13 +4513,15 @@ regress_out_and_recalculate_seurat <- function(
 #' and formats additional information including regression variables.
 #' @param obj An object to extract information from.
 #' @param regressionVariables A list or vector containing variables for regression.
+#' @param suffix A suffix string to add.
 #' @return A character string summarizing the key parameters.
-.parseKeyParams <- function(obj, regressionVariables = p$"variables.2.regress.combined") {
+.parseKeyParams <- function(obj, regressionVariables = p$"variables.2.regress.combined",
+                            suffix = NULL) {
   scaledFeatures <- .getNrScaledFeatures(obj)
   pcs <- .getNrPCs(obj)
   regressionInfo <- kppc(regressionVariables)
 
-  paste(scaledFeatures, " ScaledFeatures | ", pcs, "PCs | regress ", regressionInfo, sep = "")
+  paste0(scaledFeatures, " ScaledFeatures | ", pcs, "PCs | regress ", regressionInfo, " ", suffix)
 }
 
 
