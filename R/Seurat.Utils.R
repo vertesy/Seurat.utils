@@ -4290,7 +4290,7 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
     is.numeric(param.list$"snn_res"),
     is.character(param.list$"variables.2.regress") | is.null(param.list$"variables.2.regress")
   )
-  .checkListElements(c("variables.2.regress.combined", "n.PC", "snn_res"))
+  .checkListElements(param_list = p, elements = c("variables.2.regress.combined", "n.PC", "snn_res"))
 
   tictoc::tic()
   gc()
