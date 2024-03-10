@@ -4521,7 +4521,7 @@ regress_out_and_recalculate_seurat <- function(
   scaledFeatures <- .getNrScaledFeatures(obj)
   pcs <- .getNrPCs(obj)
   regressionInfo <- kppc(regressionVariables)
-  reg <- if(!is.null(regressionVariables)) paste0(" regress ", regressionInfo) else NULL
+  reg <- if(!is.null(regressionVariables)) paste0(" regress ", regressionInfo) else "no regression"
   paste0(scaledFeatures, " ScaledFeatures | ", pcs, "PCs |", reg, " ", suffix)
 }
 
