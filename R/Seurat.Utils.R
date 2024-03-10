@@ -4515,8 +4515,8 @@ regress_out_and_recalculate_seurat <- function(
 #' @param regressionVariables A list or vector containing variables for regression.
 #' @return A character string summarizing the key parameters.
 .parseKeyParams <- function(obj, regressionVariables = p$"variables.2.regress.combined") {
-  scaledFeatures <- .getNrScaledFeaturesVCheck(obj)
-  pcs <- .getNrPCsVCheck(obj)
+  scaledFeatures <- .getNrScaledFeatures(obj)
+  pcs <- .getNrPCs(obj)
   regressionInfo <- kpp(regressionVariables)
 
   paste(scaledFeatures, ".ScaledFeatures | ", pcs, "PCs | regress.", regressionInfo, sep = "")
