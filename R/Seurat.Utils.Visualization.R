@@ -2303,10 +2303,10 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj, foldername = NULL,
 
   for (g in list.of.genes.found) {
     message(g)
-    qUMAP(g, reduction = plot.reduction, ...)
+    qUMAP(g, reduction = plot.reduction, obj = obj, ...)
   }
 
-  MarkdownReports::create_set_OutDir(... = ParentDir)
+  MarkdownReports::create_set_OutDir(ParentDir)
 
   invisible()
 }

@@ -41,7 +41,7 @@ getMetaColnames <- function(obj = combined.obj,
 
   # Output assertion
   if(is.null(matchedColnames)) warning("No matching meta data!", immediate. = TRUE) else
-    message(length(matchedColnames), " columns matching ", pattern, ".")
+    message(length(matchedColnames), " columns matching pattern '", pattern, "'.")
 
   dput(matchedColnames)
   return(matchedColnames)
