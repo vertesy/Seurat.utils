@@ -281,14 +281,22 @@ showToolsSlots <- function(obj, max.level = 1, subslot = NULL, ...) {
 #' It specifically targets list elements, skipping over data frames and other non-list objects.
 #'
 #' @param obj An object whose `@misc` slot needs to be examined.
+#' @param max.level Max depth to dive into sub-elements.
+#' @param subslot A subslot within `@misc`.
+#' @param ... ...
+#'
 #' @examples showToolsSlots(obj)
 #'
 #' @export
-showMiscSlots <- function(obj, max.level = 1, subslot =  NULL, ...) {
-
+showMiscSlots <- function(obj, max.level = 1, subslot = NULL,
+                          ...) {
   slotX <- if (is.null(subslot)) obj@misc else obj@misc[[subslot]]
   str(slotX, max.level = max.level, ...)
 
+  # Path to slot
+  msg <- paste0(substitute(obj), "@misc")
+  if (!is.null(subslot)) msg <- paste0(msg, "$", substitute(subslot))
+  message(msg)
 }
 
 

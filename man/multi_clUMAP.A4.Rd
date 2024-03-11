@@ -7,7 +7,7 @@
 multi_clUMAP.A4(
   idents = GetClusteringRuns()[1:4],
   obj = combined.obj,
-  foldername = substitute(idents),
+  foldername = "clUMAPs_multi",
   plot.reduction = "umap",
   intersectionAssay = c("RNA", "integrated")[1],
   layout = c("tall", "wide", FALSE)[2],

@@ -4,7 +4,12 @@
 \alias{scPlotPCAvarExplained}
 \title{scPlotPCAvarExplained}
 \usage{
-scPlotPCAvarExplained(obj = combined.obj, use.MarkdownReports = FALSE)
+scPlotPCAvarExplained(
+  obj = combined.obj,
+  plotname = "Variance Explained by Principal Components",
+  sub = paste(ncol(obj), "cells, ", nrow(obj), "features."),
+  use.MarkdownReports = FALSE
+)
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}

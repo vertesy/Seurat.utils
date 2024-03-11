@@ -8,6 +8,12 @@ showMiscSlots(obj, max.level = 1, subslot = NULL, ...)
 }
 \arguments{
 \item{obj}{An object whose \verb{@misc} slot needs to be examined.}
+
+\item{max.level}{Max depth to dive into sub-elements.}
+
+\item{subslot}{A subslot within \verb{@misc}.}
+
+\item{...}{...}
 }
 \description{
 See \code{showToolsSlots} for details. Prints the names of slots in the \verb{@misc} of a given object.
