@@ -21,7 +21,7 @@
 #' @description Retrieves column names from an object's metadata that match a specified pattern.
 #'
 #' @param pattern A character string containing a regular expression to match against the
-#' column names. Default: "".
+#' column names. Default: "RNA".
 #' @param obj An object containing a `meta.data` slot, typically from combined datasets.
 #' Default: `combined.obj`.
 #'
@@ -40,7 +40,8 @@ getMetaColnames <- function(obj = combined.obj,
   matchedColnames <- grep(pattern = pattern, x = colnames(obj@meta.data), value = TRUE)
 
   # Output assertion
-  if(is.null(matchedColnames)) warning("No matching meta data!", immediate. = )
+  if(is.null(matchedColnames)) warning("No matching meta data!", immediate. = TRUE) else
+    message(length(matchedColnames), " columns matching ", pattern, ".")
 
   dput(matchedColnames)
   return(matchedColnames)
