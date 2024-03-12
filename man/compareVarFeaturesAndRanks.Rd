@@ -4,24 +4,35 @@
 \alias{compareVarFeaturesAndRanks}
 \title{Compare variable features and their ranks in two Seurat objects.}
 \usage{
-compareVarFeaturesAndRanks(obj1 = NULL, obj2 = NULL)
+compareVarFeaturesAndRanks(
+  obj1 = NULL,
+  obj2 = NULL,
+  cor.plot = T,
+  save.plot = T,
+  ...
+)
 }
 \arguments{
 \item{obj1}{The first Seurat object for comparison. Default: NULL.}
 
 \item{obj2}{The second Seurat object for comparison. Default: NULL.}
+
+\item{cor.plot}{An optional boolean indicating whether to generate a scatterplot of the ranks
+of common genes. Default: FALSE.}
 }
 \value{
 A list containing the common genes and Spearman's rank correlation coefficient.
+If cor.plot is TRUE, a scatterplot is also generated.
 }
 \description{
 This function compares variable features (genes) between two Seurat objects,
 reporting the number of genes in each, the percentage of common genes, the percentage
 of unique genes in each object, and the similarity in the ranking of overlapping genes
-using Spearman's rank correlation coefficient. The function returns the common genes
+using Spearman's rank correlation coefficient. Optionally, it can also generate a scatterplot
+of the ranks of common genes using ggpubr's ggscatter. The function returns the common genes
 and the Spearman's rank correlation coefficient.
 }
 \examples{
 # Assuming obj1 and obj2 are Seurat objects
-result <- compareVarFeaturesAndRanks(obj1, obj2)
+result <- compareVarFeaturesAndRanks(obj1, obj2, cor.plot = TRUE)
 }

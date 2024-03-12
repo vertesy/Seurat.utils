@@ -4270,52 +4270,49 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) {
 # Variable Features _____________________________ ------
 # _________________________________________________________________________________________________
 
-
 #' @title Compare variable features and their ranks in two Seurat objects.
 #'
 #' @description This function compares variable features (genes) between two Seurat objects,
 #'   reporting the number of genes in each, the percentage of common genes, the percentage
 #'   of unique genes in each object, and the similarity in the ranking of overlapping genes
-#'   using Spearman's rank correlation coefficient. The function returns the common genes
+#'   using Spearman's rank correlation coefficient. Optionally, it can also generate a scatterplot
+#'   of the ranks of common genes using ggpubr's ggscatter. The function returns the common genes
 #'   and the Spearman's rank correlation coefficient.
 #'
 #' @param obj1 The first Seurat object for comparison. Default: NULL.
 #' @param obj2 The second Seurat object for comparison. Default: NULL.
+#' @param cor.plot An optional boolean indicating whether to generate a scatterplot of the ranks
+#'   of common genes. Default: FALSE.
 #' @return A list containing the common genes and Spearman's rank correlation coefficient.
+#'   If cor.plot is TRUE, a scatterplot is also generated.
 #' @importFrom Seurat VariableFeatures
 #' @importFrom stats cor
+#' @importFrom ggpubr ggscatter
 #' @examples
 #' # Assuming obj1 and obj2 are Seurat objects
-#' result <- compareVarFeaturesAndRanks(obj1, obj2)
+#' result <- compareVarFeaturesAndRanks(obj1, obj2, cor.plot = TRUE)
 #' @export
-compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL) {
-  # Input assertions
+compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL, cor.plot = T, save.plot =T, ...) {
   stopifnot(!is.null(obj1), !is.null(obj2))
   stopifnot(is(obj1, "Seurat"), is(obj2, "Seurat"))
 
-  # Extract variable genes from each Seurat object
   var.genes1 <- Seurat::VariableFeatures(obj1)
   var.genes2 <- Seurat::VariableFeatures(obj2)
 
-  # Calculate statistics for variable features
   nr_genes1 <- length(var.genes1)
   nr_genes2 <- length(var.genes2)
-  (common_genes <- intersect(var.genes1, var.genes2))
+  common_genes <- intersect(var.genes1, var.genes2)
   percent_common <- length(common_genes) / max(nr_genes1, nr_genes2) * 100
   percent_uniq1 <- (nr_genes1 - length(common_genes)) / nr_genes1 * 100
   percent_uniq2 <- (nr_genes2 - length(common_genes)) / nr_genes2 * 100
 
-  # Calculate ranks for overlapping genes
   ranks1 <- match(common_genes, var.genes1)
   ranks2 <- match(common_genes, var.genes2)
 
-  # Calculate Spearman's rank correlation for overlapping genes
-  spearman_correlation <- stats::cor(ranks1, ranks2, method = "spearman")
+  spearman_correlation <- cor(ranks1, ranks2, method = "spearman")
 
-  # Output assertion
   stopifnot(is.numeric(spearman_correlation))
 
-  # Report statistics
   cat(sprintf("Nr of genes in obj1: %d\n", nr_genes1))
   cat(sprintf("Nr of genes in obj2: %d\n", nr_genes2))
   cat(sprintf("%% Common genes: %.2f%%\n", percent_common))
@@ -4323,7 +4320,33 @@ compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL) {
   cat(sprintf("%% Unique genes in obj2: %.2f%%\n", percent_uniq2))
   cat(sprintf("Spearman's rank correlation: %.2f\n", spearman_correlation))
 
-  # Return common genes and Spearman's rank correlation
+  if (cor.plot) {
+    name1 <- deparse(substitute(obj1))
+    name2 <- deparse(substitute(obj2))
+    plot_data <- data.frame(ranks1, ranks2)
+    colnames(plot_data) <- paste("Rank in", c(name1, name2))
+    TTL <- paste("Spearman Rank Correlation of", length(common_genes), "of" , max(nr_genes1, nr_genes2)
+                 ,"Shared Variable Genes")
+    SUB <- paste("between objects:", name1, "&", name2, "\n",
+                 percent_common, "% overlap from objects:", nr_genes1, "&", nr_genes2, "genes.")
+    CPT <- paste("median ranks:", median(ranks1), "/", median(ranks2))
+    file_name <- paste0("Spearman_Rank_Correlation_of_",
+                        name1, "_and_", name2,
+                        "_", sprintf("%.2f", spearman_correlation), ".png")
+    print(plot_data)
+    plt <- ggExpress::qscatter(df_XYcol = plot_data,
+                               plotname = TTL,
+                               subtitle = SUB,
+                               caption = CPT,
+                               # abline = c(0,1),
+                               save = save.plot,
+                               filename = file_name,
+                               correlation_r2=T,
+                               cor.coef = TRUE, cor.method = "spearman",
+                               ...)
+    print(plt)
+  }
+
   return(list(common_genes = common_genes, spearman_correlation = spearman_correlation))
 }
 
