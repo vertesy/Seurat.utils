@@ -4325,15 +4325,16 @@ compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL, cor.plot = T, s
     name2 <- deparse(substitute(obj2))
     plot_data <- data.frame(ranks1, ranks2)
     colnames(plot_data) <- paste("Rank in", c(name1, name2))
-    TTL <- paste("Spearman Rank Correlation of", length(common_genes), "of" , max(nr_genes1, nr_genes2)
-                 ,"Shared Variable Genes")
+    TTL <- paste("Spearman Rank Correlation of Shared Variable Genes")
+
     SUB <- paste("between objects:", name1, "&", name2, "\n",
-                 percent_common, "% overlap from objects:", nr_genes1, "&", nr_genes2, "genes.")
+                 length(common_genes), "or", percent_common, "% overlap from objects:",
+                 nr_genes1, "&", nr_genes2, "genes.")
     CPT <- paste("median ranks:", median(ranks1), "/", median(ranks2))
     file_name <- paste0("Spearman_Rank_Correlation_of_",
                         name1, "_and_", name2,
                         "_", sprintf("%.2f", spearman_correlation), ".png")
-    print(plot_data)
+    print(head(plot_data))
     plt <- ggExpress::qscatter(df_XYcol = plot_data,
                                plotname = TTL,
                                subtitle = SUB,
@@ -4342,6 +4343,7 @@ compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL, cor.plot = T, s
                                save = save.plot,
                                filename = file_name,
                                correlation_r2=T,
+                               also.pdf = F,
                                cor.coef = TRUE, cor.method = "spearman",
                                ...)
     print(plt)
