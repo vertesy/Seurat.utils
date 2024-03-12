@@ -5,8 +5,8 @@
 \title{Parse regression variables for name tagging}
 \usage{
 .parseRegressionVariablesForScaleData(
-  p,
-  element = "variables.2.regress.combined"
+  element = "variables.2.regress.combined",
+  par.list = p
 )
 }
 \arguments{

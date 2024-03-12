@@ -7,6 +7,8 @@
 .parseKeyParams(
   obj,
   regressionVariables = p$variables.2.regress.combined,
+  nrVarFeatures = NULL,
+  return.as.name = F,
   suffix = NULL
 )
 }
@@ -14,6 +16,8 @@
 \item{obj}{An object to extract information from.}
 
 \item{regressionVariables}{A list or vector containing variables for regression.}
+
+\item{nrVarFeatures}{You can provide manually}
 
 \item{suffix}{A suffix string to add.}
 }
