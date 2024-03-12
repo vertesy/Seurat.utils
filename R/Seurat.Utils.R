@@ -4408,11 +4408,10 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
   if (plot) {
     scPlotPCAvarExplained(obj)
     qQC.plots.BrainOrg(obj = obj)
-    qMarkerCheck.BrainOrg(obj = obj)
     multi_clUMAP.A4(obj = obj)
     qClusteringUMAPS(obj = obj)
     suPlotVariableFeatures(obj = obj)
-    if (T) { # TEMP
+    if (ncol(obj) > 50000) { # TEMP
       Signature.Genes.Top20 <- c(
         `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
         , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
@@ -4426,8 +4425,11 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
         , `Mesenchyme` = "DCN", Glycolytic = "PDK1"
         , `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
       )
-      plotQUMAPsInAFolder(genes = Signature.Genes.Top16.x)
+      plotQUMAPsInAFolder(genes = Signature.Genes.Top20)
+    } else {
+      qMarkerCheck.BrainOrg(obj = obj)
     }
+
 
   }
   tictoc::toc()
@@ -4605,8 +4607,8 @@ regress_out_and_recalculate_seurat <- function(
 #'
 #' @param p list of parameters
 #' @return Integer representing the number of principal components
-.parseRegressionVariablesForScaleData <- function(p, element = "variables.2.regress.combined") {
-  (regV <- p[[element]])
+.parseRegressionVariablesForScaleData <- function(element = "variables.2.regress.combined", par.list = p) {
+  (regV <- par.list[[element]])
   txt <- if(is.null(regV)) "No.Regr" else kpp("Regr",regV)
   return(txt)
 }
@@ -4622,12 +4624,19 @@ regress_out_and_recalculate_seurat <- function(
 #' @param suffix A suffix string to add.
 #' @return A character string summarizing the key parameters.
 .parseKeyParams <- function(obj, regressionVariables = p$"variables.2.regress.combined",
-                            suffix = NULL) {
+                            return.as.name = F, suffix = NULL) {
   scaledFeatures <- .getNrScaledFeatures(obj)
   pcs <- .getNrPCs(obj)
   regressionInfo <- kppc(regressionVariables)
   reg <- if(!is.null(regressionVariables)) paste0(" regress ", regressionInfo) else "no regression"
-  paste0(scaledFeatures, " ScaledFeatures | ", pcs, "PCs |", reg, " ", suffix)
+  if(return.as.name) {
+    reg <- ReplaceSpecialCharacters(RemoveWhitespaces(reg, replacement = "."))
+    tag <- kpp(scaledFeatures, "ScaledFeatures", pcs, "PCs", reg, suffix)
+  } else {
+    tag <- paste0(scaledFeatures, " ScaledFeatures |", pcs, " PCs |", reg, " ", suffix)
+  }
+
+  return(tag)
 }
 
 
