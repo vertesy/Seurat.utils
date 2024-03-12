@@ -4266,6 +4266,67 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) {
 }
 
 
+# _________________________________________________________________________________________________
+# Variable Features _____________________________ ------
+# _________________________________________________________________________________________________
+
+
+#' @title Compare variable features and their ranks in two Seurat objects.
+#'
+#' @description This function compares variable features (genes) between two Seurat objects,
+#'   reporting the number of genes in each, the percentage of common genes, the percentage
+#'   of unique genes in each object, and the similarity in the ranking of overlapping genes
+#'   using Spearman's rank correlation coefficient. The function returns the common genes
+#'   and the Spearman's rank correlation coefficient.
+#'
+#' @param obj1 The first Seurat object for comparison. Default: NULL.
+#' @param obj2 The second Seurat object for comparison. Default: NULL.
+#' @return A list containing the common genes and Spearman's rank correlation coefficient.
+#' @importFrom Seurat VariableFeatures
+#' @importFrom stats cor
+#' @examples
+#' # Assuming obj1 and obj2 are Seurat objects
+#' result <- compareVarFeaturesAndRanks(obj1, obj2)
+#' @export
+compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL) {
+  # Input assertions
+  stopifnot(!is.null(obj1), !is.null(obj2))
+  stopifnot(is(obj1, "Seurat"), is(obj2, "Seurat"))
+
+  # Extract variable genes from each Seurat object
+  var.genes1 <- Seurat::VariableFeatures(obj1)
+  var.genes2 <- Seurat::VariableFeatures(obj2)
+
+  # Calculate statistics for variable features
+  nr_genes1 <- length(var.genes1)
+  nr_genes2 <- length(var.genes2)
+  (common_genes <- intersect(var.genes1, var.genes2))
+  percent_common <- length(common_genes) / max(nr_genes1, nr_genes2) * 100
+  percent_uniq1 <- (nr_genes1 - length(common_genes)) / nr_genes1 * 100
+  percent_uniq2 <- (nr_genes2 - length(common_genes)) / nr_genes2 * 100
+
+  # Calculate ranks for overlapping genes
+  ranks1 <- match(common_genes, var.genes1)
+  ranks2 <- match(common_genes, var.genes2)
+
+  # Calculate Spearman's rank correlation for overlapping genes
+  spearman_correlation <- stats::cor(ranks1, ranks2, method = "spearman")
+
+  # Output assertion
+  stopifnot(is.numeric(spearman_correlation))
+
+  # Report statistics
+  cat(sprintf("Nr of genes in obj1: %d\n", nr_genes1))
+  cat(sprintf("Nr of genes in obj2: %d\n", nr_genes2))
+  cat(sprintf("%% Common genes: %.2f%%\n", percent_common))
+  cat(sprintf("%% Unique genes in obj1: %.2f%%\n", percent_uniq1))
+  cat(sprintf("%% Unique genes in obj2: %.2f%%\n", percent_uniq2))
+  cat(sprintf("Spearman's rank correlation: %.2f\n", spearman_correlation))
+
+  # Return common genes and Spearman's rank correlation
+  return(list(common_genes = common_genes, spearman_correlation = spearman_correlation))
+}
+
 
 # _________________________________________________________________________________________________
 # New additions,  categorized _____________________________ ------

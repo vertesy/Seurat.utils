@@ -11,7 +11,7 @@ getMetaColnames(obj = combined.obj, pattern = "RNA")
 Default: \code{combined.obj}.}
 
 \item{pattern}{A character string containing a regular expression to match against the
-column names. Default: "".}
+column names. Default: "RNA".}
 }
 \value{
 A character vector of column names matching the pattern.
