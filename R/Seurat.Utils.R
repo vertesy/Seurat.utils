@@ -4621,7 +4621,7 @@ regress_out_and_recalculate_seurat <- function(
 #' and formats additional information including regression variables.
 #' @param obj An object to extract information from.
 #' @param regressionVariables A list or vector containing variables for regression.
-#' @param nrVarFeatures You can provide manually
+#' @param nrVarFeatures You can provide this number manually. Default: NULL.
 #' @param suffix A suffix string to add.
 #' @return A character string summarizing the key parameters.
 .parseKeyParams <- function(obj, regressionVariables = p$"variables.2.regress.combined",
