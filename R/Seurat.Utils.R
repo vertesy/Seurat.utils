@@ -4600,6 +4600,17 @@ regress_out_and_recalculate_seurat <- function(
   ncol(obj@reductions$pca@"cell.embeddings")
 }
 
+# _________________________________________________________________________________________________
+#' @title Parse regression variables for name tagging
+#'
+#' @param p list of parameters
+#' @return Integer representing the number of principal components
+.parseRegressionVariablesForScaleData <- function(p, element = "variables.2.regress.combined") {
+  (regV <- p[[element]])
+  txt <- if(is.null(regV)) "No.Regr" else kpp("Regr",regV)
+  return(txt)
+}
+
 
 # _________________________________________________________________________________________________
 #' @title Parse key parameters from an object and format as a string
