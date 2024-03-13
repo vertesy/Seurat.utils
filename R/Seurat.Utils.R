@@ -2048,6 +2048,13 @@ AutoLabel.KnownMarkers <- function(
   print("Best matches:")
   print(unique.matches)
 
+  "Error Here"
+  "Error Here"
+  "Error Here"
+  "Error Here"
+  "Error Here"
+  "Error Here"
+
   top.markers.df <- GetTopMarkersDF(dfDE = df_markers, order.by = lfcCOL, n = 1)
   top.markers <- top.markers.df %>% col2named.vec.tbl()
 
@@ -2058,7 +2065,7 @@ AutoLabel.KnownMarkers <- function(
   named.annotations <-
     rbind(unique.matches, missing.annotations) %>% # merge the 2 df's
     arrange(cluster) %>%
-    col2named.vec.tbl() # requires github.com/vertesy/CodeAndRoll
+    CodeAndRoll2::col2named.vec.tbl()
 
   (top.markers.ID <- ppp(names(named.annotations), named.annotations))
   names(top.markers.ID) <- names(top.markers)
