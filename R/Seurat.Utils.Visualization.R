@@ -1367,7 +1367,7 @@ qSeuViolin <- function(
     ...) {
   stopifnot(
     "Seurat" %in% class(object), # object must be a Seurat object
-    is.character(split.by), # split.by must be a character
+    # is.character(split.by), # split.by must be a character
     is.character(idents), # idents must be a character vector
     is.character(features), # features must be a character
     is.logical(logY), # logY must be logical (TRUE or FALSE)
@@ -1378,7 +1378,7 @@ qSeuViolin <- function(
     is.numeric(h) && h > 0, # h must be a positive number
     is.logical(show_plot), # show_plot must be logical
     c(split.by, idents) %in% names(object@meta.data),
-    features %in% names(object@meta.data) || features %in% rownames(objects)
+    features %in% names(object@meta.data) || features %in% rownames(object)
   )
 
   print(unique(idents))
