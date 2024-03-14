@@ -4418,26 +4418,24 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
     multi_clUMAP.A4(obj = obj)
     qClusteringUMAPS(obj = obj)
     suPlotVariableFeatures(obj = obj)
-    if (ncol(obj) > 50000) { # TEMP
-      Signature.Genes.Top20 <- c(
-        `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
-        , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
-        , Interneurons = "ERBB4", Interneurons = "SCGN"
-        , `Intermediate progenitor` = "EOMES" # ,  `Intermediate progenitor1` = "TAC3"
-        , `S-phase` = "TOP2A", `G2M-phase` = 'H4C3' # formerly: HIST1H4C
-        , `oRG` = "HOPX" , `oRG` = "ID4" # oRG outer radial glia
-        , Astroglia = "GFAP"
-        , Astrocyte = "S100B", `Hypoxia/Stress` = "DDIT4"
-        , `Choroid.Plexus` = "TTR", `Low-Quality` = "POLR2A"
-        , `Mesenchyme` = "DCN", Glycolytic = "PDK1"
-        , `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
-      )
-      plotQUMAPsInAFolder(genes = Signature.Genes.Top20)
-    } else {
+    if (ncol(obj) < 50000) { # TEMP
       qMarkerCheck.BrainOrg(obj = obj)
     }
 
-
+    Signature.Genes.Top20 <- c(
+      `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
+      , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
+      , Interneurons = "ERBB4", Interneurons = "SCGN"
+      , `Intermediate progenitor` = "EOMES" # ,  `Intermediate progenitor1` = "TAC3"
+      , `S-phase` = "TOP2A", `G2M-phase` = 'H4C3' # formerly: HIST1H4C
+      , `oRG` = "HOPX" , `oRG` = "ID4" # oRG outer radial glia
+      , Astroglia = "GFAP"
+      , Astrocyte = "S100B", `Hypoxia/Stress` = "DDIT4"
+      , `Choroid.Plexus` = "TTR", `Low-Quality` = "POLR2A"
+      , `Mesenchyme` = "DCN", Glycolytic = "PDK1"
+      , `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
+    )
+    plotQUMAPsInAFolder(genes = Signature.Genes.Top20)
   }
   tictoc::toc()
 
@@ -4656,6 +4654,17 @@ regress_out_and_recalculate_seurat <- function(
   return(tag)
 }
 
+
+# _________________________________________________________________________________________________
+#' @title Parse basic obj stats
+#'
+#' @description Parse cell and feature count to a string.
+#' @param obj An object to extract information from.
+#' @return A character string summarizing the key parameters.
+#'
+.parseBasicObjStats <- function(obj) {
+  paste(ncol(obj), "cells,", nrow(obj), "features.")
+}
 
 
 

@@ -17,7 +17,7 @@
 
 \item{regressionVariables}{A list or vector containing variables for regression.}
 
-\item{nrVarFeatures}{You can provide manually}
+\item{nrVarFeatures}{You can provide this number manually. Default: NULL.}
 
 \item{suffix}{A suffix string to add.}
 }

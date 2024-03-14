@@ -1662,7 +1662,7 @@ clUMAP <- function(
     save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = F),
     PNG = TRUE,
     check_for_2D = TRUE,
-    caption = FALSE
+    caption = .parseKeyParams(combined.obj)
     # , save.object = FALSE
     , ...) {
   if (check_for_2D) {
@@ -2144,8 +2144,8 @@ multiFeatureHeatmap.A4 <- function(
 #' @export
 
 multi_clUMAP.A4 <- function(
-    idents = GetClusteringRuns()[1:4],
     obj = combined.obj,
+    idents = GetClusteringRuns(obj)[1:4],
     foldername = "clUMAPs_multi",
     plot.reduction = "umap",
     intersectionAssay = c("RNA", "integrated")[1],
@@ -3311,7 +3311,7 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
   plot1 <- Seurat::VariableFeaturePlot(obj) + ggtitle(label = "Variable Genes")
 
   # Assuming LabelPoints is defined elsewhere and available for use.
-  TopVarGenes <- VariableFeatures(combined.obj)[1:NrVarGenes]
+  TopVarGenes <- VariableFeatures(obj)[1:NrVarGenes]
   labeledPlot <- LabelPoints(plot = plot1, points = TopVarGenes, repel = repel,
                              xnudge = 0, ynudge = 0, max.overlaps=15)
   print(labeledPlot)

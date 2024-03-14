@@ -31,7 +31,7 @@ clUMAP(
   save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = F),
   PNG = TRUE,
   check_for_2D = TRUE,
-  caption = FALSE,
+  caption = .parseKeyParams(combined.obj),
   ...
 )
 }

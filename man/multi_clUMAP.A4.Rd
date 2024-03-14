@@ -5,8 +5,8 @@
 \title{Plot multiple categorical variables in combined UMAPs}
 \usage{
 multi_clUMAP.A4(
-  idents = GetClusteringRuns()[1:4],
   obj = combined.obj,
+  idents = GetClusteringRuns(obj)[1:4],
   foldername = "clUMAPs_multi",
   plot.reduction = "umap",
   intersectionAssay = c("RNA", "integrated")[1],
@@ -30,9 +30,9 @@ multi_clUMAP.A4(
 )
 }
 \arguments{
-\item{idents}{A vector of cluster identities to plot. Default: \code{GetClusteringRuns()[1:4]}.}
-
 \item{obj}{The Seurat object containing clustering information. Default: \code{combined.obj}.}
+
+\item{idents}{A vector of cluster identities to plot. Default: \code{GetClusteringRuns()[1:4]}.}
 
 \item{foldername}{The name of the folder to save plots. Default: \code{substitute(ident)}.}
 
