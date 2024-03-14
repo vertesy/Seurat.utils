@@ -3544,7 +3544,7 @@ xsave <- function(
     try(memory.biggest.objects(), silent = TRUE)
   }
 
-  annot.suffix <- if(inherits(obj, "Seurat")) kpp(ncol(obj), "cells") else if(is.list(combined.obj)) kppd("ls",length(obj)) else NULL
+  annot.suffix <- if(inherits(obj, "Seurat")) kpp(ncol(obj), "cells") else if(is.list(obj)) kppd("ls",length(obj)) else NULL
   fnameBase <- trimws(kppu(prefix, substitute(obj), annot.suffix, suffix, project,
                            idate(Format = "%Y.%m.%d_%H.%M")), whitespace = "_")
 
@@ -4413,12 +4413,22 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
   }
   if (save) xsave(obj, suffix = "reprocessed")
   if (plot) {
+    message("scPlotPCAvarExplained")
     scPlotPCAvarExplained(obj)
+
+    message("qQC.plots.BrainOrg")
     qQC.plots.BrainOrg(obj = obj)
+
+    message("multi_clUMAP.A4")
     multi_clUMAP.A4(obj = obj)
+
+    message("qClusteringUMAPS")
     qClusteringUMAPS(obj = obj)
+
+    message("suPlotVariableFeatures")
     suPlotVariableFeatures(obj = obj)
     if (ncol(obj) < 50000) { # TEMP
+      message("qMarkerCheck.BrainOrg")
       qMarkerCheck.BrainOrg(obj = obj)
     }
 
@@ -4662,8 +4672,10 @@ regress_out_and_recalculate_seurat <- function(
 #' @param obj An object to extract information from.
 #' @return A character string summarizing the key parameters.
 #'
-.parseBasicObjStats <- function(obj) {
-  paste(ncol(obj), "cells,", nrow(obj), "features.")
+.parseBasicObjStats <- function(obj, sep = ' ') {
+  n.cells <- format(ncol(obj), big.mark = sep, scientific = FALSE)
+  n.feat <- format(nrow(obj), big.mark = sep, scientific = FALSE)
+  paste(n.cells, "cells,", n.feat, "features.")
 }
 
 

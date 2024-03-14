@@ -253,7 +253,8 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
 Percent.in.Trome <- function(
     obj = combined.obj, n.genes.barplot = 25,
     width.barplot = round(n.genes.barplot / 4)) {
-  m.expr <- combined.obj@assays$RNA@counts
+
+  m.expr <- obj@assays$RNA@counts
   total.Expr <- sort(rowSums(m.expr), decreasing = TRUE)
   relative.total.Expr <- total.Expr / sum(total.Expr)
   print(head(iround(100 * relative.total.Expr), n = n.genes.barplot))
@@ -279,8 +280,8 @@ Percent.in.Trome <- function(
   print("!!!")
   print("TotalReadFraction is stored under combined.obj@misc$'TotalReadFraction'  ")
   print("!!!")
-  combined.obj@misc$"TotalReadFraction" <- relative.total.Expr
-  return(combined.obj)
+  obj@misc$"TotalReadFraction" <- relative.total.Expr
+  return(obj)
 }
 
 
@@ -1563,7 +1564,7 @@ qUMAP <- function(
     make.uppercase = FALSE,
     check_for_2D = TRUE,
     qlow = "q10", qhigh = "q90",
-    caption = FALSE,
+    caption = .parseBasicObjStats(obj),
     ...) {
   if (check_for_2D) {
     umap_dims <- ncol(obj@reductions[[reduction]]@cell.embeddings)
@@ -1662,7 +1663,7 @@ clUMAP <- function(
     save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = F),
     PNG = TRUE,
     check_for_2D = TRUE,
-    caption = .parseKeyParams(combined.obj)
+    caption = .parseKeyParams(obj)
     # , save.object = FALSE
     , ...) {
   if (check_for_2D) {
