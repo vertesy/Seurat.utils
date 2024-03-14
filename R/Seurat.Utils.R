@@ -4445,7 +4445,8 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
       , `Mesenchyme` = "DCN", Glycolytic = "PDK1"
       , `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
     )
-    plotQUMAPsInAFolder(genes = Signature.Genes.Top20)
+    message("plotQUMAPsInAFolder")
+    plotQUMAPsInAFolder(genes = Signature.Genes.Top20, obj = obj)
   }
   tictoc::toc()
 
