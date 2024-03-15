@@ -14,7 +14,7 @@ multiFeaturePlot.A4(
   colors = c("grey", "red"),
   nr.Col = 2,
   nr.Row = 4,
-  cex = round(0.1/(nr.Col * nr.Row), digits = 2),
+  cex = max(1, round(0.1/(nr.Col * nr.Row), digits = 2)),
   gene.min.exp = "q01",
   gene.max.exp = "q99",
   subdir = TRUE,

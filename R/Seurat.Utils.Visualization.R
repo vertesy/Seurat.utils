@@ -1863,7 +1863,9 @@ multiFeaturePlot.A4 <- function(
     foldername = substitute(list.of.genes), plot.reduction = "umap",
     intersectionAssay = c("RNA", "integrated")[1],
     layout = c("tall", "wide", FALSE)[2],
-    colors = c("grey", "red"), nr.Col = 2, nr.Row = 4, cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
+    colors = c("grey", "red"),
+    nr.Col = 2, nr.Row = 4,
+    cex = max(1, round(0.1 / (nr.Col * nr.Row), digits = 2)),
     gene.min.exp = "q01", gene.max.exp = "q99", subdir = TRUE,
     prefix = NULL, suffix = NULL,
     background_col = "white",
@@ -1877,7 +1879,7 @@ multiFeaturePlot.A4 <- function(
   tictoc::tic()
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- "genes"
-  if (subdir) create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
+  if (subdir) create_set_SubDir(FixPlotName(foldername, "-", plot.reduction, suffix), "/")
 
   list.of.genes.found <- check.genes(list.of.genes = list.of.genes, obj = obj,
                                      assay.slot = intersectionAssay, makeuppercase = FALSE)
@@ -1917,7 +1919,10 @@ multiFeaturePlot.A4 <- function(
     }
 
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
-    cowplot::ggsave2(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
+    # cowplot::ggsave2(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
+    cowplot::save_plot(plot = pltGrid, filename = plotname,
+                       base_width = w, base_height = h,
+                       bg = background_col)
   }
 
   if (subdir) MarkdownReports::create_set_OutDir(ParentDir)
