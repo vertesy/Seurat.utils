@@ -96,8 +96,12 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
     message("running HGNChelper::checkGeneSymbols() to update symbols")
 
     HGNC.updated <- HGNChelper::checkGeneSymbols(genes, unmapped.as.na = FALSE, map = NULL, species = species_)
+    if (ShowStats) {
+      HGNC.updated
+      print(GetUpdateStats(HGNC.updated))
+    }
+
     if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
-    if (ShowStats) print(GetUpdateStats(HGNC.updated))
     genes <- HGNC.updated$Suggested.Symbol
 
     # UpdateSymbolList(symbols.missing) # Does not catch CTIP2 !!!
@@ -159,10 +163,10 @@ SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
   genes.expr.high <- q99.expression[genes.expr]
   if(sort) genes.expr.high <- sort.decreasing(genes.expr.high)
   print(genes.expr.high)
-  genes.filt <- names(genes.expr.high)[genes.expr.high>above]
+  genes.filt <- names(genes.expr.high)[genes.expr.high > above]
 
   SFX <- kppws("of the genes are above min. q99 expression of:", above)
-  pc_TRUE(genes.expr %in% genes.filt, suffix = SFX)
+  print(pc_TRUE(genes.expr %in% genes.filt, suffix = SFX))
 
   return(genes.filt)
 }
