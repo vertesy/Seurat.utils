@@ -151,11 +151,11 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
 #' # Assuming `genes` is a vector of gene names and `
 
 SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
-                                          above = 0, sort = F) {
+                                          above = 0, sort = F, strict = FALSE) {
   message('Running SelectHighlyExpressedGenesq99()...')
   stopifnot(is.character(genes), is(obj, "Seurat"), is.numeric(above))
 
-  genes.expr <- IntersectGeneLsWithObject(genes = genes, obj = obj, verbose = F)
+  genes.expr <- IntersectGeneLsWithObject(genes = genes, obj = obj, verbose = F, strict = strict)
   if(length(genes.expr) < length(genes)) message("Some genes not expressed. Recommend to IntersectGeneLsWithObject() first.")
 
   q99.expression <- obj@misc$expr.q99
