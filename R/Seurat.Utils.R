@@ -4290,21 +4290,37 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) {
 #' @param obj2 The second Seurat object for comparison. Default: NULL.
 #' @param cor.plot An optional boolean indicating whether to generate a scatterplot of the ranks
 #'   of common genes. Default: FALSE.
+#' @param plot_venn plot_venn
+#' @param suffix suffix
+#' @param save.plot save.plot
 #' @return A list containing the common genes and Spearman's rank correlation coefficient.
 #'   If cor.plot is TRUE, a scatterplot is also generated.
 #' @importFrom Seurat VariableFeatures
 #' @importFrom stats cor
-#' @importFrom ggpubr ggscatter
+#' @importFrom ggExpress qvenn qscatter
 #' @examples
 #' # Assuming obj1 and obj2 are Seurat objects
 #' result <- compareVarFeaturesAndRanks(obj1, obj2, cor.plot = TRUE)
 #' @export
-compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL, cor.plot = T, save.plot =T, ...) {
+compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL, cor.plot = T, save.plot = T
+                                       , plot_venn = T
+                                       , suffix = NULL
+                                       , ...) {
+
   stopifnot(!is.null(obj1), !is.null(obj2))
   stopifnot(is(obj1, "Seurat"), is(obj2, "Seurat"))
 
+  name1 <- deparse(substitute(obj1))
+  name2 <- deparse(substitute(obj2))
+
   var.genes1 <- Seurat::VariableFeatures(obj1)
   var.genes2 <- Seurat::VariableFeatures(obj2)
+
+  if (plot_venn) {
+    variable.genes.overlap <- list(var.genes1, var.genes2)
+    names(variable.genes.overlap) <- c(name1, name2)
+    ggExpress::qvenn(list = variable.genes.overlap, suffix = sppp(suffix, c(name1, name2)))
+  }
 
   nr_genes1 <- length(var.genes1)
   nr_genes2 <- length(var.genes2)
@@ -4328,8 +4344,6 @@ compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL, cor.plot = T, s
   cat(sprintf("Spearman's rank correlation: %.2f\n", spearman_correlation))
 
   if (cor.plot) {
-    name1 <- deparse(substitute(obj1))
-    name2 <- deparse(substitute(obj2))
     plot_data <- data.frame(ranks1, ranks2)
     colnames(plot_data) <- paste("Rank in", c(name1, name2))
     TTL <- paste("Spearman Rank Correlation of Shared Variable Genes")
@@ -4356,7 +4370,11 @@ compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL, cor.plot = T, s
     print(plt)
   }
 
-  return(list(common_genes = common_genes, spearman_correlation = spearman_correlation))
+  unique.genes <- symdiff(var.genes1, var.genes2)
+  names(unique.genes) <- paste0("Unique.", c(name1, name2))
+  return(list('common_genes' = common_genes,
+              'unique.genes' = unique.genes,
+              'spearman_correlation' = spearman_correlation))
 }
 
 

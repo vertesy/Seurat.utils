@@ -3314,7 +3314,9 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
   obj.name <- deparse(substitute(obj))
 
   plot1 <- Seurat::VariableFeaturePlot(obj) +
+    theme(panel.background = element_rect(fill = "white")) +
     ggtitle(label = "Variable Genes", subtitle = kppws(obj.name, suffix))
+
 
   # Assuming LabelPoints is defined elsewhere and available for use.
   TopVarGenes <- VariableFeatures(obj)[1:NrVarGenes]
