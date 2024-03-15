@@ -958,19 +958,29 @@ ww.get.1st.Seur.element <- function(obj) {
 #' @importFrom MarkdownHelpers ww.assign_to_global
 #'
 #' @export
-recallAllGenes <- function(obj = combined.obj) { # all.genes set by calc.q99.Expression.and.set.all.genes()
+recallAllGenes <- function(obj = combined.obj, overwrite = F) { # all.genes set by calc.q99.Expression.and.set.all.genes()
   obj <- ww.get.1st.Seur.element(obj)
 
   if ("all.genes" %in% names(obj@misc)) {
-    if (!exists("all.genes")) {
+
+    if (!exists("all.genes") | overwrite) {
       all.genes <- obj@misc$all.genes
       print(head(unlist(all.genes)))
       MarkdownHelpers::ww.assign_to_global(name = "all.genes", value = all.genes, verbose = FALSE)
     } else {
-      print("  ->   Variable 'all.genes' exits in the global namespace.")
+      print("  ->   Variable 'all.genes' exits in the global namespace, and overwrite is: FALSE")
     }
+
   } else {
     print("  ->   Slot 'all.genes' does not exist in obj@misc.")
+    hits <- grepv(pattern = "expr.", names(obj@misc))
+    if (!is.null(hits)) {
+      iprint("Found instead (", hits, "). Returning 1st element:", hits[1])
+      all.genes <- obj@misc[[hits[1]]]
+      MarkdownHelpers::ww.assign_to_global(name = "all.genes", value = as.list(all.genes), verbose = FALSE)
+    }
+
+
   }
 }
 
@@ -4728,7 +4738,7 @@ removeScaleData <- function(ls.obj) {
   lapply(ls.obj, function(x) { x@assays$RNA@layers$scale.data <- NULL; x })
 }
 
-recallAllGenes
+
 # _________________________________________________________________________________________________
 #' @title Remove Layers from Seurat Object by Pattern
 #'
