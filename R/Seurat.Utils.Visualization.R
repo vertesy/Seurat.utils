@@ -1865,9 +1865,11 @@ multiFeaturePlot.A4 <- function(
     layout = c("tall", "wide", FALSE)[2],
     colors = c("grey", "red"),
     nr.Col = 2, nr.Row = 4,
-    cex = max(1, round(0.1 / (nr.Col * nr.Row), digits = 2)),
+    cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
+    cex.min = NULL,
     gene.min.exp = "q01", gene.max.exp = "q99", subdir = TRUE,
     prefix = NULL, suffix = NULL,
+    raster = if(ncol(obj) > 1e5) TRUE else NULL,
     background_col = "white",
     aspect.ratio = c(FALSE, 0.6)[2],
     saveGeneList = FALSE,
@@ -1884,6 +1886,8 @@ multiFeaturePlot.A4 <- function(
   list.of.genes.found <- check.genes(list.of.genes = list.of.genes, obj = obj,
                                      assay.slot = intersectionAssay, makeuppercase = FALSE)
   DefaultAssay(obj) <- intersectionAssay
+
+  if(!is.null(cex.min)) cex <- max(cex.min, cex)
 
   if (layout == "tall") {
     w <- wA4 * scaling
@@ -1908,7 +1912,7 @@ multiFeaturePlot.A4 <- function(
 
     plot.list <- Seurat::FeaturePlot(
       object = obj, features = genes, reduction = plot.reduction, combine = FALSE,
-      ncol = nr.Col, cols = colors,
+      ncol = nr.Col, cols = colors, raster = raster,
       min.cutoff = gene.min.exp, max.cutoff = gene.max.exp,
       pt.size = cex, ...
     )

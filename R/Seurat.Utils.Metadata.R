@@ -9,7 +9,6 @@
 
 
 
-
 # _________________________________________________________________________________________________
 # Extract and check metadata columns  ______________________________ ----
 # _________________________________________________________________________________________________
@@ -753,21 +752,6 @@ sampleNpc <- function(metaDF = MetaData[which(Pass), ], pc = 0.1) {
   return(cellIDs.keep)
 }
 
-
-# _________________________________________________________________________________________________
-#' @title set.all.genes
-#'
-#' @description It is just a reminder to use calc.q99.Expression.and.set.all.genes to create the all.genes variable
-#' @param obj Seurat object, Default: combined.obj
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   set.all.genes()
-#'   all.genes
-#' }
-#' }
-#' @export
-set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.and.set.all.genes()")
 
 
 # _________________________________________________________________________________________________

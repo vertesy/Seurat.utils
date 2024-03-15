@@ -53,7 +53,7 @@ OutDirOrig = OutDir
 combined.obj <- readRDS("path/to/combined.obj.RDS.gz")
 
 # 4. create list of genes (all.genes -----------------------------------------------------------------
-recall.all.genes()
+recallAllGenes()
 
 # 5. search for genes -----------------------------------------------------------------
 "Start typing after $ and hit TAB for autocomplete"

@@ -596,7 +596,7 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) { # Crea
 # - PlotTopGenes
 # - fix.orig.ident
 # - set.all.genes
-# - recall.all.genes
+# - recallAllGenes
 # - recall.meta.tags.n.datasets
 # - recall.parameters
 # - recall.genes.l
@@ -968,15 +968,15 @@ fix.orig.ident <- function(obj = merged.obj) {
 set.all.genes <- function(obj = combined.obj) iprint("Use calc.q90.Expression.and.set.all.genes()")
 # set.all.genes(); all.genes
 
-# recall.all.genes ------------------------------------------------------------------------
-recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q90.Expression.and.set.all.genes()
+# recallAllGenes ------------------------------------------------------------------------
+recallAllGenes <- function(obj = combined.obj) { # all.genes set by calc.q90.Expression.and.set.all.genes()
   if (!exists('all.genes')) {
     all.genes <- obj@misc$all.genes
     print(head(unlist(all.genes)))
     ww.assign_to_global(name = "all.genes", value = all.genes)
   } else {print("variable 'all.genes' exits in the global namespace")}
 }
-# recall.all.genes(); all.genes
+# recallAllGenes(); all.genes
 
 # recall.meta.tags.n.datasets ------------------------------------------------------------------------
 recall.meta.tags.n.datasets <- function(obj = combined.obj) {

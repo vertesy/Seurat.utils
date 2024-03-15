@@ -336,8 +336,8 @@ showMiscSlots <- function(obj, max.level = 1, subslot = NULL,
 #' @export
 
 calc.q99.Expression.and.set.all.genes <- function(
-    obj = combined.obj
-    , quantileX = 0.99, max.cells = 1e5,
+    obj = combined.obj,
+    quantileX = 0.99, max.cells = 1e5,
     slot = "data",
     assay = c("RNA", "integrated")[1],
     set.misc = TRUE,
@@ -944,21 +944,21 @@ ww.get.1st.Seur.element <- function(obj) {
 
 
 # _________________________________________________________________________________________________
-#' @title recall.all.genes
+#' @title recallAllGenes
 #'
 #' @description all.genes set by calc.q99.Expression.and.set.all.genes() #
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   recall.all.genes()
+#'   recallAllGenes()
 #'   all.genes
 #' }
 #' }
 #' @importFrom MarkdownHelpers ww.assign_to_global
 #'
 #' @export
-recall.all.genes <- function(obj = combined.obj) { # all.genes set by calc.q99.Expression.and.set.all.genes()
+recallAllGenes <- function(obj = combined.obj) { # all.genes set by calc.q99.Expression.and.set.all.genes()
   obj <- ww.get.1st.Seur.element(obj)
 
   if ("all.genes" %in% names(obj@misc)) {
@@ -4728,7 +4728,7 @@ removeScaleData <- function(ls.obj) {
   lapply(ls.obj, function(x) { x@assays$RNA@layers$scale.data <- NULL; x })
 }
 
-
+recallAllGenes
 # _________________________________________________________________________________________________
 #' @title Remove Layers from Seurat Object by Pattern
 #'
