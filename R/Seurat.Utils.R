@@ -69,12 +69,14 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
 #' @param obj A Seurat object containing gene expression data.
 #' @param n_genes_shown Number of missing genes to be printed. Default: 10.
 #' @param strict All genes to be present in the Seurat object?  Default: TRUE.
+#' @param verbose verbose
 #' @return A vector of gene names that are found both in the input 'genes' vector and the
 #'         Seurat object.
 #'
 #' @export
-IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown = 10, strict = TRUE) {
-  message(">>> Running IntersectGeneLsWithObject(), formerly IntersectWithExpressed()")
+IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown = 10,
+                                      strict = TRUE, verbose = T) {
+  if(verbose) message(">>> Running IntersectGeneLsWithObject(), formerly IntersectWithExpressed(), which still exist in gruffi.")
 
   stopifnot(
     is.character(genes),
@@ -89,11 +91,13 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
 
   # Finding genes that are missing in the Seurat object
   missing_in_obj <- setdiff(genes, rownames(obj))
-  Stringendo::iprint(
-    length(missing_in_obj), " (of ", length(genes),
-    ") genes are MISSING from the Seurat object with (", length(rownames(obj)),
-    ") genes. E.g.:", head(missing_in_obj, n_genes_shown)
-  )
+  if(verbose) {
+    Stringendo::iprint(
+      length(missing_in_obj), " (of ", length(genes),
+      ") genes are MISSING from the Seurat object with (", length(rownames(obj)),
+      ") genes. E.g.:", head(missing_in_obj, n_genes_shown)
+    )
+  }
 
   # Finding genes that are found in both the input list and the Seurat object
   g_found <- intersect(rownames(obj), genes)
@@ -103,6 +107,47 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
 
   return(g_found)
 }
+
+# _________________________________________________________________________________________________
+
+#' @title Intersect Genes with the List of Noticeably Expressed Genes
+#'
+#' @description Intersects a vector of gene names with a Seurat object to find genes that are both
+#' in the input list and have expression levels in the top quantiles as defined by the object's
+#' q99 expression data. It aims to filter genes based on their expression levels being above a
+#' specified threshold. Additionally, it offers an option to sort the genes by their expression
+#' levels in decreasing order.
+#'
+#' @param genes A vector of gene names to be intersected with the Seurat object.
+#' @param obj A Seurat object containing gene expression data. Default: `combined.obj`.
+#' @param above The expression level threshold above which genes are considered noticeably
+#' expressed. Default: 0.
+#' @param sort A logical flag indicating whether to sort the filtered genes by their expression
+#' levels in decreasing order. Default: FALSE.
+#' @return A vector of gene names that are found both in the input 'genes' vector and the Seurat
+#' object, and have expression levels above the specified 'above' threshold. If `sort` is TRUE,
+#' these genes are returned in decreasing order of their expression levels.
+#'
+#' @examples
+#' # Assuming `genes` is a vector of gene names and `
+
+SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
+                                          above = 0, sort = F) {
+  stopifnot(is.character(genes), is(obj, "Seurat"), is.numeric(above))
+
+  genes.expr <- IntersectGeneLsWithObject(genes = genes, obj = obj, verbose = F)
+  if(l(genes.expr) < l(genes)) message("Some genes not expressed. Recommend to IntersectGeneLsWithObject() first.")
+
+  q99.expression <- obj@misc$expr.q99
+  print(pc_TRUE(q99.expression==0, suffix ="of genes at q99.expression are zero" ))
+  genes.expr.high <- q99.expression[genes.expr]
+  if(sort) genes.expr.high <- sort.decreasing(genes.expr.high)
+  print(genes.expr.high)
+  genes.filt <- names(genes.expr.high)[genes.expr.high>above]
+  return(genes.filt)
+}
+
+
 
 
 # _________________________________________________________________________________________________
@@ -979,8 +1024,6 @@ recallAllGenes <- function(obj = combined.obj, overwrite = F) { # all.genes set 
       all.genes <- obj@misc[[hits[1]]]
       MarkdownHelpers::ww.assign_to_global(name = "all.genes", value = as.list(all.genes), verbose = FALSE)
     }
-
-
   }
 }
 
