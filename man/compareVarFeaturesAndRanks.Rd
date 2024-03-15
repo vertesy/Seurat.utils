@@ -9,6 +9,8 @@ compareVarFeaturesAndRanks(
   obj2 = NULL,
   cor.plot = T,
   save.plot = T,
+  plot_venn = T,
+  suffix = NULL,
   ...
 )
 }
@@ -19,6 +21,12 @@ compareVarFeaturesAndRanks(
 
 \item{cor.plot}{An optional boolean indicating whether to generate a scatterplot of the ranks
 of common genes. Default: FALSE.}
+
+\item{save.plot}{save.plot}
+
+\item{plot_venn}{plot_venn}
+
+\item{suffix}{suffix}
 }
 \value{
 A list containing the common genes and Spearman's rank correlation coefficient.
