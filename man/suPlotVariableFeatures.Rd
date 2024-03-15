@@ -9,7 +9,10 @@ suPlotVariableFeatures(
   NrVarGenes = 15,
   repel = TRUE,
   plotWidth = 7,
-  plotHeight = 5
+  plotHeight = 5,
+  save = T,
+  suffix = kpp("nVF", .getNrScaledFeatures(obj)),
+  ...
 )
 }
 \arguments{

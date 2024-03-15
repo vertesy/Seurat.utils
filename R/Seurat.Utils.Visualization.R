@@ -3304,21 +3304,32 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
 #' }
 #' @export
 suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
-                                   repel = TRUE, plotWidth = 7, plotHeight = 5) {
+                                   repel = TRUE, plotWidth = 7, plotHeight = 5, save = T,
+                                   suffix = kpp("nVF", .getNrScaledFeatures(obj)),
+                                   ...) {
   # Input validation
-  stopifnot(is(obj, "Seurat"),
-            is.function(ppp), is.logical(repel), is.numeric(plotWidth), is.numeric(plotHeight))
+  stopifnot(is(obj, "Seurat"), is.function(ppp), is.logical(repel),
+            is.numeric(plotWidth), is.numeric(plotHeight))
 
-  plot1 <- Seurat::VariableFeaturePlot(obj) + ggtitle(label = "Variable Genes")
+  obj.name <- deparse(substitute(obj))
+
+  plot1 <- Seurat::VariableFeaturePlot(obj) +
+    ggtitle(label = "Variable Genes", subtitle = kppws(obj.name, suffix))
 
   # Assuming LabelPoints is defined elsewhere and available for use.
   TopVarGenes <- VariableFeatures(obj)[1:NrVarGenes]
   labeledPlot <- LabelPoints(plot = plot1, points = TopVarGenes, repel = repel,
                              xnudge = 0, ynudge = 0, max.overlaps=15)
   print(labeledPlot)
-  filename <- ppp("Var.genes", idate(), 'png')
+  filename <- ppp("Var.genes", obj.name, suffix, idate(), 'png')
 
-  ggplot2::ggsave(plot = labeledPlot, filename = filename, width = plotWidth, height = plotHeight)
+
+  # if (save) ggplot2::ggsave(plot = labeledPlot, filename = filename, width = plotWidth, height = plotHeight)
+  if (save) qqSave(ggobj = labeledPlot,
+                   # title = plotname,
+                   fname = filename, ext = ext,
+                   w = plotWidth, h = plotHeight, also.pdf = F)
+
 }
 
 
