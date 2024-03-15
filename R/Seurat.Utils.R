@@ -75,8 +75,10 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
 #'
 #' @export
 IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown = 10,
+                                      species_ = "human", EnforceUnique = T, ShowStats = T,
                                       strict = TRUE, verbose = T) {
-  if(verbose) message(">>> Running IntersectGeneLsWithObject(), formerly IntersectWithExpressed(), which still exist in gruffi.")
+  message(">>> Running IntersectGeneLsWithObject()")
+  # "formerly IntersectWithExpressed(), which still exist in gruffi."
 
   stopifnot(
     is.character(genes),
@@ -87,7 +89,20 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
   stopifnot(length(genes) > 0, length(rownames(obj)) > 0)
 
   # Strict mode: Ensure all genes are present in the Seurat object
-  if (strict) stopifnot(all(genes %in% rownames(obj)))
+  all.genes.found <- all(genes %in% rownames(obj))
+  if (!all.genes.found) {
+    symbols.missing <- setdiff(genes, rownames(obj))
+    iprint(length(symbols.missing), "symbols.missing:", symbols.missing)
+    message("running HGNChelper::checkGeneSymbols() to update symbols")
+
+    HGNC.updated <- HGNChelper::checkGeneSymbols(genes, unmapped.as.na = FALSE, map = NULL, species = species_)
+    if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
+    if (ShowStats) print(GetUpdateStats(HGNC.updated))
+    genes <- HGNC.updated$Suggested.Symbol
+
+    # UpdateSymbolList(symbols.missing) # Does not catch CTIP2 !!!
+    if (strict) stopifnot(all(genes %in% rownames(obj)))
+  }
 
   # Finding genes that are missing in the Seurat object
   missing_in_obj <- setdiff(genes, rownames(obj))
@@ -133,10 +148,11 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
 
 SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
                                           above = 0, sort = F) {
+  message('Running SelectHighlyExpressedGenesq99()...')
   stopifnot(is.character(genes), is(obj, "Seurat"), is.numeric(above))
 
   genes.expr <- IntersectGeneLsWithObject(genes = genes, obj = obj, verbose = F)
-  if(l(genes.expr) < l(genes)) message("Some genes not expressed. Recommend to IntersectGeneLsWithObject() first.")
+  if(length(genes.expr) < length(genes)) message("Some genes not expressed. Recommend to IntersectGeneLsWithObject() first.")
 
   q99.expression <- obj@misc$expr.q99
   print(pc_TRUE(q99.expression==0, suffix ="of genes at q99.expression are zero" ))
@@ -144,6 +160,10 @@ SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
   if(sort) genes.expr.high <- sort.decreasing(genes.expr.high)
   print(genes.expr.high)
   genes.filt <- names(genes.expr.high)[genes.expr.high>above]
+
+  SFX <- kppws("of the genes are above min. q99 expression of:", above)
+  pc_TRUE(genes.expr %in% genes.filt, suffix = SFX)
+
   return(genes.filt)
 }
 
@@ -2725,7 +2745,10 @@ FindCorrelatedGenes <- function(
 UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceUnique = TRUE, ShowStats = FALSE) {
   HGNC.updated <- HGNChelper::checkGeneSymbols(rownames(obj), unmapped.as.na = FALSE, map = NULL, species = species_)
   if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
-  if (ShowStats) print(GetUpdateStats(HGNC.updated))
+  if (ShowStats) {
+    print(HGNC.updated)
+    print(GetUpdateStats(HGNC.updated))
+  }
   obj <- RenameGenesSeurat(obj, newnames = HGNC.updated$"Suggested.Symbol")
   return(obj)
 }

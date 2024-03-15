@@ -8,6 +8,9 @@ IntersectGeneLsWithObject(
   genes,
   obj = combined.obj,
   n_genes_shown = 10,
+  species_ = "human",
+  EnforceUnique = T,
+  ShowStats = T,
   strict = TRUE,
   verbose = T
 )
