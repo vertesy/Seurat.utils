@@ -1566,11 +1566,14 @@ qUMAP <- function(
     qlow = "q10", qhigh = "q90",
     caption = .parseBasicObjStats(obj),
     ...) {
+
+  # Checks
   if (check_for_2D) {
     umap_dims <- ncol(obj@reductions[[reduction]]@cell.embeddings)
     if (umap_dims != 2) warning(">>> UMAP is not 2 dimensional! \n Check obj@reductions[[reduction]]@cell.embeddings")
   }
 
+  stopifnot(is.numeric(obj@meta.data[ ,feature]))
 
   if (!(feature %in% colnames(obj@meta.data) | feature %in% rownames(obj))) {
     feature <- check.genes(
@@ -1678,6 +1681,8 @@ clUMAP <- function(
   }
   identity <- obj[[ident]]
   NtCategs <- length(unique(identity[, 1]))
+  if(NtCategs > 1000) warning("More than 1000 levels! qUMAP?", immediate. = T)
+
 
   if (!missing(highlight.clusters)) {
     idx.ok <- identity[, 1] %in% highlight.clusters
@@ -1881,7 +1886,8 @@ multiFeaturePlot.A4 <- function(
   tictoc::tic()
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- "genes"
-  if (subdir) create_set_SubDir(FixPlotName(foldername, "-", plot.reduction, suffix), "/")
+  final.foldername <- FixPlotName(paste0(foldername, "-", plot.reduction, suffix))
+  if (subdir) create_set_SubDir(final.foldername, "/")
 
   list.of.genes.found <- check.genes(list.of.genes = list.of.genes, obj = obj,
                                      assay.slot = intersectionAssay, makeuppercase = FALSE)
