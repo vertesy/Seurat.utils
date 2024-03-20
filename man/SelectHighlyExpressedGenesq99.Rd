@@ -4,7 +4,13 @@
 \alias{SelectHighlyExpressedGenesq99}
 \title{Intersect Genes with the List of Noticeably Expressed Genes}
 \usage{
-SelectHighlyExpressedGenesq99(genes, obj = combined.obj, above = 0, sort = F)
+SelectHighlyExpressedGenesq99(
+  genes,
+  obj = combined.obj,
+  above = 0,
+  sort = F,
+  strict = FALSE
+)
 }
 \arguments{
 \item{genes}{A vector of gene names to be intersected with the Seurat object.}

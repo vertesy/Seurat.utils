@@ -1549,8 +1549,8 @@ plotGeneExpHist <- function(
 #'
 #' @export
 qUMAP <- function(
-    feature = "TOP2A", obj = combined.obj # The quickest way to draw a gene expression UMAP
-    , title = feature, sub = NULL,
+    feature = "TOP2A", obj = combined.obj,
+    title = feature, sub = NULL,
     reduction = "umap", splitby = NULL,
     prefix = NULL,
     suffix = make.names(sub),
@@ -1573,7 +1573,10 @@ qUMAP <- function(
     if (umap_dims != 2) warning(">>> UMAP is not 2 dimensional! \n Check obj@reductions[[reduction]]@cell.embeddings")
   }
 
-  stopifnot(is.numeric(obj@meta.data[ ,feature]))
+  if (feature %in% colnames(obj@meta.data)) {
+    message("feature found in meta.data")
+    stopifnot(is.numeric(obj@meta.data[ ,feature]))
+  }
 
   if (!(feature %in% colnames(obj@meta.data) | feature %in% rownames(obj))) {
     feature <- check.genes(
