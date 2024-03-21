@@ -1875,7 +1875,7 @@ multiFeaturePlot.A4 <- function(
     nr.Col = 2, nr.Row = 4,
     raster = if(ncol(obj) > 1e5) TRUE else NULL,
     cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
-    cex.min = if(raster) 0.5 else NULL,
+    cex.min = if(raster) 1 else NULL,
     gene.min.exp = "q01", gene.max.exp = "q99", subdir = TRUE,
     prefix = NULL, suffix = NULL,
     background_col = "white",
