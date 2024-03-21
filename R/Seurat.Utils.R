@@ -119,7 +119,7 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
   }
 
   # Finding genes that are found in both the input list and the Seurat object
-  g_found <- intersect(rownames(obj), genes)
+  g_found <- intersect(genes, rownames(obj))
 
   # Output argument assertion
   stopifnot(length(g_found) > 0)
