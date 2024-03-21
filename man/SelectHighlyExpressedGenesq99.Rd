@@ -37,4 +37,5 @@ levels in decreasing order.
 }
 \examples{
 # Assuming `genes` is a vector of gene names and `
+
 }

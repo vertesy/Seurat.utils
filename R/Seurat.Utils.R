@@ -149,7 +149,8 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
 #'
 #' @examples
 #' # Assuming `genes` is a vector of gene names and `
-
+#'
+#' @export
 SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
                                           above = 0, sort = F, strict = FALSE) {
   message('Running SelectHighlyExpressedGenesq99()...')
