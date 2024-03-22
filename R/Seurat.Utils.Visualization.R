@@ -1246,20 +1246,27 @@ DiscretePaletteSafe <- function(n,
 
 
 # _________________________________________________________________________________________________
-#' @title getClusterColors
+#' @title Regenerate Cluster Colors from a Seurat Object
 #'
-#' @description get Seurat's cluster colors.
-#' @param obj Seurat object, Default: combined.obj
-#' @param ident identity used, Default: GetClusteringRuns()[1]
-#' @param show Show plot of colors? Default: TRUE
+#' @description Regenerate and optionally displays the color scheme associated with the clusters
+#' in a Seurat object as defined by a specified identity column.
+#'
+#' @param obj Seurat object containing clustering information.
+#' @param use_new_palettes Logical indicating whether to use custom palettes defined in
+#' `DiscretePalette` function. Default: TRUE.
+#' @param palette Name of the color palette to use if `use_new_palettes` is TRUE.
+#' Options: "alphabet", "alphabet2", "glasbey", "polychrome", "stepped". Default: "glasbey".
+#' @param ident Clustering identity to use for coloring. Retrieved from the first entry
+#' of `GetClusteringRuns()` by default.
+#' @param show If TRUE, displays a plot showing the color mapping for each cluster. Default: TRUE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[2])
+#'   if (interactive()) {
+#'     getClusterColors(obj = combined.obj, ident = GetClusteringRuns(combined.obj)[1])
+#'   }
 #' }
-#' }
-#' @seealso
-#'  \code{\link[scales]{hue_pal}}
+#'
 #' @export
 #' @importFrom scales hue_pal
 getClusterColors <- function(
