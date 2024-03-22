@@ -1189,24 +1189,30 @@ getDiscretePaletteObj <- function(ident.used,
 
 
 # _________________________________________________________________________________________________
-#' @title Safely generate a discrete color palette.
+#' @title Safely generate a Discrete color palette.
 #'
-#' @description Generates a discrete color palette safely without NA values.
-#' @param n The number of colors to generate.
-#' @param palette.used The name of the palette to use, Default: "alphabet".
-#' @param show.colors Whether to display the colors in the palette, Default: FALSE.
-#' @param seed An integer value to set the seed for reproducibility, Default: 1989.
-#' @return A vector of color values.
+#' @description Generates a discrete color palette, ensuring no NA values are included, suitable
+#' for visualizations where a specific number of distinct, reproducible colors is needed.
+#'
+#' @param n Number of colors to generate.
+#' @param palette.used Palette name to use for generating colors. Options include "alphabet",
+#' "alphabet2", "glasbey", "polychrome", "stepped". Default: "alphabet2".
+#' @param show.colors If TRUE, displays the generated color palette. Default: FALSE.
+#' @param seed Seed value for reproducibility, especially when random color generation is involved.
+#' Default: 1989.
+#'
+#' @return Character vector of HEX color values.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   DiscretePaletteSafe(n = 10)
+#'   colors <- DiscretePaletteSafe(n = 10)
+#'   print(colors)
 #' }
-#' }
+#'
 #' @importFrom gplots rich.colors
 #' @importFrom Seurat DiscretePalette
 #'
-#' @export DiscretePaletteSafe
+#' @export
 DiscretePaletteSafe <- function(n,
                                 palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
                                 show.colors = FALSE,
