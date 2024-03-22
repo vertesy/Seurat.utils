@@ -203,8 +203,25 @@ PlotFilters <- function(
 # _________________________________________________________________________________________________
 #' @title PCA percent of variation associated with each PC
 #'
-#' @description Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
-#' @param obj Seurat object, Default: combined.obj
+#' @description This function calculates the percentage of variation each principal component (PC)
+#' accounts for in a Seurat object. It's specifically tailored for Seurat objects and provides a
+#' convenient way to understand the variance distribution across PCs. For similar calculations on
+#' standard PCA objects, refer to github.com/vertesy/Rocinante `PCA.percent.var.explained()`.
+#'
+#' @param obj A Seurat object from which to calculate the percentage of variation explained by each
+#' PC. Default: `combined.obj`.
+#'
+#' @return A named vector with the percentage of variation explained by each principal component.
+#'
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   data("combined.obj") # Example Seurat object
+#'   var_explained <- scCalcPCAVarExplained(combined.obj)
+#'   print(var_explained)
+#' }
+#' }
+#'
 #' @export
 scCalcPCAVarExplained <- function(obj = combined.obj) { # Determine percent of variation associated with each PC.
   pct <- obj@reductions$pca@stdev / sum(obj@reductions$pca@stdev) * 100
@@ -213,13 +230,37 @@ scCalcPCAVarExplained <- function(obj = combined.obj) { # Determine percent of v
 }
 
 # _________________________________________________________________________________________________
-#' @title scPlotPCAvarExplained
+#' @title Plot the percent of variation associated with each PC
 #'
-#' @description Plot the percent of variation associated with each PC.
-#' @param obj Seurat object, Default: combined.obj
-#' @param use.MarkdownReports Use MarkdownReports for plotting, Default: FALSE
+#' @description This function plots the percentage of variation explained by each principal
+#' component (PC) in a Seurat object. It allows for a visual assessment of how much variance is
+#' captured by each PC, which is crucial for dimensionality reduction analyses. Users can choose
+#' between two plotting methods: one using `MarkdownReports` and the other using `ggExpress`.
+#'
+#' @param obj A Seurat object from which to plot the percentage of variation explained by each PC.
+#' Default: `combined.obj`.
+#' @param plotname The title of the plot to be generated. Default: "Variance Explained by Principal
+#' Components".
+#' @param sub Subtitle for the plot, typically including information about the number of cells and
+#' features analyzed. Default: A string generated from `obj` stating the number of cells and
+#' features.
+#' @param use.MarkdownReports Boolean indicating whether to use `MarkdownReports` for plotting.
+#' If `FALSE`, `ggExpress` is used. Default: `FALSE`.
+#'
+#' @return Generates a plot showing the percent of variation each PC accounts for. This function
+#' does not return a value but instead generates a plot directly.
+#'
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   data("combined.obj") # Example Seurat object
+#'   scPlotPCAvarExplained(combined.obj, use.MarkdownReports = TRUE)
+#' }
+#' }
+#'
 #' @importFrom MarkdownReports wbarplot
 #' @importFrom ggExpress qbarplot
+#'
 #' @export
 scPlotPCAvarExplained <- function(obj = combined.obj,
                                   plotname = "Variance Explained by Principal Components",
@@ -240,7 +281,7 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
 
 
 # _________________________________________________________________________________________________
-#' @title Percent.in.Trome
+#' @title Percent.in. transcriptome
 #'
 #' @description Gene expression as fraction of all UMI's
 #' @param obj Seurat object
