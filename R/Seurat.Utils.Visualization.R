@@ -1910,9 +1910,7 @@ clUMAP <- function(
 #' @title Highlight Selected Clusters on UMAP
 #'
 #' @description Generates a UMAP plot from a Seurat object with specified clusters highlighted.
-#' The function specifically targets visualization needs by allowing users to emphasize certain
-#' clusters identified by their IDs within a given resolution. It saves the resulting UMAP plot
-#' directly to the current working directory.
+#' It saves the resulting UMAP plot directly to the current working directory.
 #'
 #' @param obj Seurat object to be visualized; Default: `combined.obj`.
 #' @param COI Vector of cluster IDs to highlight on the UMAP plot;
@@ -1935,7 +1933,7 @@ clUMAP <- function(
 #' @export
 #' @importFrom Seurat DimPlot
 #' @importFrom ggplot2 ggsave
-umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based on clusterIDs provided.
+umapHiLightSel <- function(obj = combined.obj,
                            COI = c("0", "2", "4", "5", "11"), res.cl = "integrated_snn_res.0.3") {
   cellsSel <- getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
   Seurat::DimPlot(obj,
@@ -1964,8 +1962,10 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' }
 #' @export
 DimPlot.ClusterNames <- function(obj = combined.obj
-                                 , ident = "cl.names.top.gene.res.0.5", reduction = "umap", title = ident, ...) {
-  Seurat::DimPlot(object = obj, reduction = reduction, group.by = ident, label = TRUE, repel = TRUE, ...) + NoLegend() + ggtitle(title)
+                                 , ident = "cl.names.top.gene.res.0.5",
+                                 reduction = "umap", title = ident, ...) {
+  Seurat::DimPlot(object = obj, reduction = reduction, group.by = ident,
+                  label = TRUE, repel = TRUE, ...) + NoLegend() + ggtitle(title)
 }
 
 
@@ -2384,14 +2384,25 @@ multi_clUMAP.A4 <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title qClusteringUMAPS
+#' @title Plot UMAP with Cluster Names
 #'
-#' @description Quickly plot 1-4 clustering resolutions on an a4 page
-#' @param dims Any numeric metadata columns
-#' @param obj Seurat object, Default: combined.obj
+#' @description Generates a dimensionality reduction plot (UMAP, tSNE, PCA) from a Seurat object,
+#' labeling clusters with their names.
 #'
-#' @examples qClusteringUMAPS()
+#' @param obj Seurat object for visualization; Default: `combined.obj`.
+#' @param ident Cluster identity to use for labeling; Default: 'cl.names.top.gene.res.0.5'.
+#' @param reduction Dimension reduction technique ('umap', 'tsne', 'pca'); Default: 'umap'.
+#' @param title Plot title; Default: `ident`.
+#' @param ... Additional parameters passed to Seurat's `DimPlot`.
+#'
+#' @examples
+#' \dontrun{
+#'   DimPlot.ClusterNames()
+#'   DimPlot.ClusterNames(obj = yourSeuratObj, ident = "resolution_1")
+#' }
+#'
 #' @export
+#' @importFrom ggExpress::qA4_grid_plot
 qClusteringUMAPS <- function(
     obj = combined.obj,
     dims = na.omit.strip(GetClusteringRuns(obj)[1:4]),
