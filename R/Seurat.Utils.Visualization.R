@@ -1266,8 +1266,8 @@ DiscretePaletteSafe <- function(n,
 #'     getClusterColors(obj = combined.obj, ident = GetClusteringRuns(combined.obj)[1])
 #'   }
 #' }
-#'
 #' @export
+#'
 #' @importFrom scales hue_pal
 getClusterColors <- function(
     obj = combined.obj,
@@ -1282,23 +1282,23 @@ getClusterColors <- function(
   } else {
     scales::hue_pal()(length(identities))
   }
-  # color_check(color_palette)
-  # names(color_palette) <- sort(as.factor(identities))
+
   names(color_palette) <- (identities)
   identvec <- obj[[ident]][, 1]
   colz <- color_palette[identvec]
   names(colz) <- identvec
-  if (show) color_check(unique(colz)) # MarkdownReports
+  if (show) MarkdownHelpers::color_check(unique(colz))
   colz
 }
 
 
 
 # _________________________________________________________________________________________________
-#' @title Regenerate Color Scheme for Clusters in Seurat Object
+#' @title Regenerate Color Scheme for Clusters in Seurat Object as a vector
 #'
 #' @description Extracts and optionally displays the color scheme assigned to cluster identities
-#' within a Seurat object, facilitating consistent color usage across visualizations.
+#' within a Seurat object, facilitating consistent color usage across visualizations. You can
+#' check results in a barplot with `MarkdownHelpers::color_check()`.
 #'
 #' @param ident Specific clustering identity to use for color extraction.
 #' If NULL, the active identity in `obj` is used. Default: NULL.
@@ -1415,28 +1415,35 @@ plotAndSaveHeatmaps <-function(results, path = getwd(), file.prefix = "heatmap_"
 
 
 # _________________________________________________________________________________________________
-#' @title qFeatureScatter
+#' @title Scatter Plot of Two Features in Seurat Object
 #'
-#' @description Generates and optionally saves a scatter plot of two features from a Seurat object.
-#' @param feature1 Name of the first feature to plot. Default: 'TOP2A'.
-#' @param feature2 Name of the second feature to plot. Default: 'ID2'.
-#' @param obj Seurat object from which to extract feature data. Default: combined.obj.
-#' @param ext File extension for the saved plot. Default: 'png'.
-#' @param logX Logical indicating whether to apply a logarithmic transformation to the x-axis. Default: FALSE.
-#' @param logY Logical indicating whether to apply a logarithmic transformation to the y-axis. Default: FALSE.
-#' @param plot Logical indicating whether to display the plot. Default: TRUE.
-#' @param ... Additional arguments to pass to the FeatureScatter function.
-#' @return If `plot` is TRUE, a ggplot object containing the feature scatter plot is returned.
+#' @description Generates a scatter plot comparing two features (genes or metrics) from a Seurat
+#' object and optionally saves it. The function wraps around Seurat's `FeatureScatter` for
+#' enhanced usability, including optional logarithmic transformations and saving capabilities.
+#'
+#' @param feature1 The first feature for the scatter plot's x-axis.
+#' @param feature2 The second feature for the scatter plot's y-axis.
+#' @param obj Seurat object containing the data for features.
+#' @param ext File extension for saving the plot, if enabled.
+#' @param plot Flag to display the plot within the R session.
+#' @param logX Apply logarithmic transformation to x-axis values.
+#' @param logY Apply logarithmic transformation to y-axis values.
+#' @param ... Additional parameters passed to Seurat's `FeatureScatter`.
+#'
+#' @return A `ggplot` object of the feature scatter plot if `plot` is TRUE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   qFeatureScatter(feature1 = "Gene1", feature2 = "Gene2", obj = seuratObject)
+#'   # Generate and display a scatter plot for features TOP2A and ID2
+#'   qFeatureScatter(feature1 = "TOP2A", feature2 = "ID2", obj = yourSeuratObject)
 #' }
-#' }
-#' @seealso
-#' \code{\link[Seurat]{FeatureScatter}}, \code{\link[ggplot2]{ggplot}}
+#'
+#' @seealso \code{\link[Seurat]{FeatureScatter}}, \code{\link[ggplot2]{ggplot}}
+#'
 #' @export
-
+#' @importFrom ggExpress qqSave
+#' @importFrom Seurat FeatureScatter
+#' @importFrom ggplot2 ggtitle theme_linedraw scale_x_log10 scale_y_log10
 qFeatureScatter <- function(
     feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj,
     ext = "png", plot = TRUE,
@@ -1582,11 +1589,6 @@ plotGeneExpHist <- function(
   # Check arguments
   stopifnot(length(genes) > 0)
   stopifnot(slot_ %in% c("data", "counts"))
-
-  # if (l(thr_expr)>1) {
-  #   thr1 <- thr_expr[1]
-  #   thr2 <- thr_expr[-1]
-  # }
 
   # Aggregate genes if necessary
   aggregate <- length(genes) > 1
