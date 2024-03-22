@@ -1,103 +1,161 @@
-Dependency file generated on Mon Nov 27 17:45:02 2023 
+Dependency file generated on Fri Mar 22 15:39:38 2024 
 
 #################################################################################################### 
 Seurat.utils.less.used.R
 #################################################################################################### 
-$`c("package:Seurat", "package:SeuratObject")`
-[1] "CreateSeuratObject"
-
-$`package:base`
-[1] "basename"  "c"         "is.list"   "length"    "list.dirs" "paste0"    "print"    
-[8] "saveRDS"  
-
-$`package:CodeAndRoll2`
+$`c("package:Seurat.utils", "package:CodeAndRoll2")`
 [1] "grepv"
 
-$`package:Seurat`
-[1] "Read10X"
+$`c("package:Seurat.utils", "package:ggplot2")`
+[1] "element_text" "ggtitle"      "theme"       
+
+$`c("package:Seurat.utils", "package:Seurat", "package:SeuratObject")`
+[1] "CreateSeuratObject" "FetchData"         
+
+$`c("package:Seurat.utils", "package:Seurat")`
+[1] "DimPlot"  "NoLegend" "Read10X" 
+
+$`c("package:Seurat.utils", "package:Stringendo")`
+[1] "iprint"
+
+$`c("package:sp", "package:base")`
+[1] "split"
+
+$`c("package:sp", "package:graphics", "package:base")`
+[1] "plot"
+
+$`package:base`
+ [1] ".Deprecated"  "all"          "any"          "as.character" "as.matrix"    "basename"     "c"           
+ [8] "colnames"     "data.frame"   "do.call"      "file.exists"  "file.path"    "grep"         "grepl"       
+[15] "gsub"         "ifelse"       "is.list"      "is.null"      "length"       "list"         "list.dirs"   
+[22] "list.files"   "match"        "message"      "names"        "paste0"       "print"        "range"       
+[29] "return"       "rownames"     "saveRDS"      "sort"         "sprintf"      "stop"         "toupper"     
+[36] "warning"     
+
+$`package:CodeAndRoll2`
+[1] "list.fromNames" "translate"      "unlapply"      
+
+$`package:graphics`
+[1] "points"
 
 $`package:Seurat.utils`
-[1] "UpdateGenesSeurat"
+[1] "plot_grid"         "principal_curve"   "save_plot"         "SoupChannel"       "UpdateGenesSeurat"
+[6] "whiskers"          "wplot_save_this"  
 
 $`package:Stringendo`
-[1] "ppp"
+[1] "kpp" "ppp" "ppu"
 
-c("Seurat", "SeuratObject")
+$`package:utils`
+[1] "read.csv"
+
+c("Seurat.utils", "CodeAndRoll2")
+c("Seurat.utils", "ggplot2")
+c("Seurat.utils", "Seurat", "SeuratObject")
+c("Seurat.utils", "Seurat")
+c("Seurat.utils", "Stringendo")
+c("sp", "base")
+c("sp", "graphics", "base")
 base
 CodeAndRoll2
-Seurat
+graphics
 Seurat.utils
 Stringendo
+utils
 #################################################################################################### 
 Seurat.Utils.Metadata.R
 #################################################################################################### 
-$`c(".GlobalEnv", "package:Seurat.utils")`
-[1] "clUMAP"
+$`c("package:Seurat.utils", "package:CodeAndRoll2")`
+[1] "as.named.vector.df" "grepv"             
 
-$`c("package:Seurat", "package:SeuratObject")`
+$`c("package:Seurat.utils", "package:ggExpress")`
+[1] "qbarplot" "qqSave"  
+
+$`c("package:Seurat.utils", "package:ggpubr")`
+[1] "group_by"
+
+$`c("package:Seurat.utils", "package:Seurat", "package:SeuratObject")`
 [1] "AddMetaData"  "GetAssayData" "Idents"      
 
+$`c("package:Seurat.utils", "package:Seurat")`
+[1] "FindTransferAnchors" "TransferData"       
+
+$`c("package:Seurat.utils", "package:SeuratObject", "package:base")`
+[1] "colSums"
+
+$`c("package:Seurat.utils", "package:stats")`
+[1] "cor"    "filter"
+
+$`c("package:Seurat.utils", "package:Stringendo")`
+[1] "iprint"               "kollapse"             "percentage_formatter"
+
 $`c("package:SeuratObject", "package:base")`
-[1] "colSums"   "intersect"
+[1] "intersect"
 
 $`character(0)`
- [1] "arrange"                             "as.numeric.wNames"                  
- [3] "deframe"                             "desc"                               
- [5] "FirstCol2RowNames"                   "ggcorrplot"                         
- [7] "group_by_at"                         "l"                                  
- [9] "melt"                                "n"                                  
-[11] "pheatmap"                            "read_rds"                           
-[13] "replace_by_most_frequent_categories" "gtools::mixedsort"                       
-[15] "stopif"                             "summarise"                          
-[17] "summarize_all"                       "summarize_at"                       
-[19] "wplot_save_pheatmap"                
+ [1] "across"            "all_of"            "as.numeric.wNames" "desc"              "group_by_at"      
+ [6] "imessage"          "mixedsort"         "n"                 "nr.unique"         "write.simple.tsv" 
 
 $`package:base`
- [1] "all"           "as.character"  "as.data.frame" "basename"      "c"            
- [6] "cat"           "cbind"         "ceiling"       "colnames"      "dim"          
-[11] "dput"          "duplicated"    "file.exists"   "floor"         "gsub"         
-[16] "inherits"      "is.data.frame" "is.null"       "isFALSE"       "length"       
-[21] "levels"        "make.names"    "make.unique"   "match"         "message"      
-[26] "min"           "names"         "nrow"          "paste"         "paste0"       
-[31] "print"         "rep"           "return"        "rownames"      "sample"       
-[36] "scale"         "setdiff"       "stopifnot"     "sub"           "substitute"   
-[41] "table"         "unique"        "which"        
+ [1] "all"           "any"           "as.character"  "as.data.frame" "basename"      "c"            
+ [7] "cat"           "cbind"         "ceiling"       "character"     "colnames"      "dim"          
+[13] "do.call"       "dput"          "duplicated"    "file.exists"   "floor"         "grep"         
+[19] "gsub"          "ifelse"        "inherits"      "invisible"     "is.character"  "is.data.frame"
+[25] "is.list"       "is.logical"    "is.na"         "is.nan"        "is.null"       "is.vector"    
+[31] "isFALSE"       "lapply"        "length"        "levels"        "list"          "make.names"   
+[37] "make.unique"   "match"         "max"           "message"       "min"           "names"        
+[43] "ncol"          "nrow"          "paste"         "paste0"        "print"         "rep"          
+[49] "return"        "round"         "rownames"      "sample"        "sapply"        "scale"        
+[55] "seq_along"     "setdiff"       "sprintf"       "stopifnot"     "sub"           "substitute"   
+[61] "sum"           "table"         "unique"        "warning"       "which"        
 
 $`package:CodeAndRoll2`
-[1] "as.named.vector.df" "colMax"             "grepv"              "trail"             
-[5] "translate"          "vec.fromNames"      "which_names"       
+[1] "colMax"        "intersect.ls"  "trail"         "translate"     "unlapply"      "vec.fromNames"
+[7] "which_names"  
 
 $`package:ggExpress`
-[1] "qbarplot" "qpie"     "qqSave"  
+[1] "qpie"
 
 $`package:ggplot2`
 [1] "position_stack" "sym"            "vars"          
 
 $`package:ggpubr`
-[1] "ggbarplot" "group_by" 
+[1] "ggbarplot"
 
 $`package:MarkdownHelpers`
 [1] "stopif"
 
-$`package:Seurat`
-[1] "FindTransferAnchors" "TransferData"       
+$`package:methods`
+[1] "is"        "slotNames"
 
 $`package:Seurat.utils`
-[1] "check.genes"       "GetClusteringRuns" "isave.RDS"        
+ [1] ".replace_by_most_frequent_categories" "arrange"                             
+ [3] "check.genes"                          "clUMAP"                              
+ [5] "deframe"                              "FirstCol2RowNames"                   
+ [7] "GetClusteringRuns"                    "GetNamedClusteringRuns"              
+ [9] "GetOrderedClusteringRuns"             "ggcorrplot"                          
+[11] "melt"                                 "pheatmap"                            
+[13] "qUMAP"                                "read_rds"                            
+[15] "summarise"                            "summarize_all"                       
+[17] "summarize_at"                         "wplot_save_pheatmap"                 
+[19] "xsave"                               
 
 $`package:stats`
-[1] "cor"    "filter" "median"
+[1] "median"   "setNames"
 
 $`package:Stringendo`
-[1] "FixPlotName"          "iprint"               "kollapse"            
-[4] "kpp"                  "kpps"                 "percentage_formatter"
-[7] "ppp"                 
+[1] "FixPlotName" "kpp"         "kpps"        "ppp"         "sppp"       
 
 $`package:utils`
-[1] "head"
+[1] "head" "tail"
 
-c(".GlobalEnv", "Seurat.utils")
-c("Seurat", "SeuratObject")
+c("Seurat.utils", "CodeAndRoll2")
+c("Seurat.utils", "ggExpress")
+c("Seurat.utils", "ggpubr")
+c("Seurat.utils", "Seurat", "SeuratObject")
+c("Seurat.utils", "Seurat")
+c("Seurat.utils", "SeuratObject", "base")
+c("Seurat.utils", "stats")
+c("Seurat.utils", "Stringendo")
 c("SeuratObject", "base")
 character(0)
 base
@@ -106,7 +164,7 @@ ggExpress
 ggplot2
 ggpubr
 MarkdownHelpers
-Seurat
+methods
 Seurat.utils
 stats
 Stringendo
@@ -114,155 +172,179 @@ utils
 #################################################################################################### 
 Seurat.Utils.R
 #################################################################################################### 
-$`c(".GlobalEnv", "package:Seurat.utils")`
-[1] "clUMAP"                        "multiFeaturePlot.A4"          
-[3] "qqSaveGridA4"                  "qUMAP"                        
-[5] "SetupReductionsNtoKdimensions"
+$.GlobalEnv
+[1] "list.dirs.depth.n"      "memory.biggest.objects" "say"                   
 
-$`c("package:Seurat", "package:SeuratObject")`
-[1] "AddMetaData"        "CreateSeuratObject" "GetAssayData"       "Idents"            
-[5] "RenameCells"        "WhichCells"        
+$`c("package:Seurat.utils", "package:base")`
+[1] "crossprod"  "tcrossprod"
+
+$`c("package:Seurat.utils", "package:CodeAndRoll2")`
+[1] "as.named.vector.df" "grepv"             
+
+$`c("package:Seurat.utils", "package:DatabaseLinke.R")`
+[1] "qHGNC"
+
+$`c("package:Seurat.utils", "package:ggExpress")`
+[1] "qbarplot"   "qhistogram" "qqSave"     "qscatter"   "qvenn"     
+
+$`c("package:Seurat.utils", "package:ggplot2")`
+[1] "geom_hline" "geom_point" "geom_vline" "ggplot"     "ggsave"     "ggtitle"    "theme"     
+
+$`c("package:Seurat.utils", "package:ggpubr")`
+[1] "group_by"
+
+$`c("package:Seurat.utils", "package:MarkdownHelpers")`
+[1] "llogit"              "llprint"             "ww.assign_to_global"
+
+$`c("package:Seurat.utils", "package:PackageTools")`
+[1] "isAvailable"
+
+$`c("package:Seurat.utils", "package:Seurat", "package:SeuratObject")`
+[1] "AddMetaData"        "CreateSeuratObject" "GetAssayData"       "Idents"             "RenameCells"       
+[6] "VariableFeatures"   "WhichCells"        
+
+$`c("package:Seurat.utils", "package:Seurat")`
+[1] "FindClusters"         "FindNeighbors"        "FindVariableFeatures" "Read10X"             
+[5] "RunPCA"               "RunTSNE"              "RunUMAP"              "ScaleData"           
+
+$`c("package:Seurat.utils", "package:SeuratObject", "package:base")`
+[1] "colMeans" "colSums"  "rowSums" 
+
+$`c("package:Seurat.utils", "package:stats")`
+[1] "cor"    "filter"
+
+$`c("package:Seurat.utils", "package:Stringendo")`
+[1] "iprint"               "kollapse"             "percentage_formatter"
 
 $`c("package:SeuratObject", "package:base")`
-[1] "colMeans"  "colSums"   "intersect" "rowSums"  
+[1] "intersect"
 
 $`character(0)`
- [1] ".saveRDS.compress.in.BG" "AddTrailingSlash"        "arrange"                
- [4] "as_tibble"               "barplot_label"           "check_and_rename"       
- [7] "checkGeneSymbols"        "count"                   "create_set_OutDir"      
-[10] "deframe"                 "desc"                    "distinct"               
-[13] "enframe"                 "EnhancedVolcano"         "eucl.dist.pairwise"     
-[16] "FirstCol2RowNames"       "foreach"                 "geom_text_repel"        
-[19] "getActiveProject"        "getDoParRegistered"      "group_by_"              
-[22] "group_by_at"             "gunzip"                  "gzip"                   
-[25] "isAvailable"             "CodeAndRoll2::split_vec_to_list_by_N"             "job"                    
-[28] "left_join"               "list.dirs.depth.n"       "lst"                    
-[31] "memory.biggest.objects"  "n"                       "percent_format"         
-[34] "percent_rank"            "pheatmap"                "qHGNC"                  
-[37] "qread"                   "qsave"                   "read_tsv"               
-[40] "read.simple.tsv"         "rownames_to_column"      "rowQuantiles"           
-[43] "rowSums2"                "sample_n"                "say"                    
-[46] "select"                  "select_at"               "slice"                  
-[49] "gtools::mixedsort"            "SoupChannel"             "spread"                 
-[52] "str_extract"             "str_split_fixed"         "summarise"              
-[55] "summarize"               "tic"                     "toc"                    
-[58] "top_n"                   "toTitleCase"             "unnest"                 
-[61] "vroom"                   "wbarplot"                "whist"                  
-[64] "wlegend"                 "wplot"                   "wplot_save_pheatmap"    
-[67] "write.simple.tsv"       
+ [1] "barplot_label"     "count"             "desc"              "distinct"          "enframe"          
+ [6] "getProject"        "group_by_at"       "kppc"              "kppws"             "lst"              
+[11] "mixedsort"         "n"                 "percent_rank"      "printProgress"     "RemoveWhitespaces"
+[16] "select_at"         "spread"            "str_extract"       "unnest"            "write.simple.tsv" 
 
 $`package:base`
-  [1] "abs"              "all"              "any"              "apply"           
-  [5] "as.character"     "as.data.frame"    "as.environment"   "as.list"         
-  [9] "as.matrix"        "as.name"          "as.numeric"       "assign"          
- [13] "basename"         "c"                "cat"              "cbind"           
- [17] "ceiling"          "character"        "class"            "colnames"        
- [21] "crossprod"        "data.frame"       "diag"             "dim"             
- [25] "dir.create"       "dir.exists"       "dirname"          "do.call"         
- [29] "dput"             "droplevels"       "exists"           "file.copy"       
- [33] "file.exists"      "file.path"        "file.remove"      "floor"           
- [37] "gc"               "getwd"            "grep"             "grepl"           
- [41] "gsub"             "identical"        "ifelse"           "inherits"        
- [45] "is.character"     "is.list"          "is.null"          "isFALSE"         
- [49] "lapply"           "length"           "library"          "list"            
- [53] "list.dirs"        "list.files"       "log10"            "log2"            
- [57] "make.names"       "make.unique"      "match"            "max"             
- [61] "mean"             "message"          "min"              "names"           
- [65] "nchar"            "ncol"             "nrow"             "options"         
- [69] "paste"            "paste0"           "print"            "rbind"           
- [73] "readline"         "readRDS"          "rep"              "return"          
- [77] "round"            "rownames"         "sample"           "sapply"          
- [81] "save.image"       "saveRDS"          "scale"            "seq_along"       
- [85] "set.seed"         "setdiff"          "setwd"            "signif"          
- [89] "sort"             "sprintf"          "sqrt"             "stop"            
- [93] "stopifnot"        "strsplit"         "subset"           "substitute"      
- [97] "substr"           "sum"              "suppressWarnings" "Sys.Date"        
-[101] "Sys.info"         "Sys.setenv"       "system"           "t"               
-[105] "table"            "tcrossprod"       "toupper"          "trimws"          
-[109] "try"              "tryCatch"         "union"            "unique"          
-[113] "unlist"           "warning"          "which"           
+  [1] ".Deprecated"      "all"              "any"              "apply"            "as.character"    
+  [6] "as.data.frame"    "as.environment"   "as.list"          "as.matrix"        "as.name"         
+ [11] "as.numeric"       "assign"           "basename"         "browser"          "c"               
+ [16] "cat"              "cbind"            "character"        "class"            "colnames"        
+ [21] "data.frame"       "deparse"          "diag"             "dim"              "dir.create"      
+ [26] "dir.exists"       "dirname"          "dput"             "droplevels"       "exists"          
+ [31] "file.copy"        "file.exists"      "file.path"        "file.remove"      "floor"           
+ [36] "format"           "gc"               "getwd"            "grep"             "grepl"           
+ [41] "gsub"             "identical"        "ifelse"           "inherits"         "invisible"       
+ [46] "is.character"     "is.list"          "is.logical"       "is.null"          "is.numeric"      
+ [51] "isFALSE"          "lapply"           "length"           "library"          "list"            
+ [56] "list.dirs"        "list.files"       "log10"            "log2"             "make.names"      
+ [61] "make.unique"      "match"            "max"              "mean"             "message"         
+ [66] "min"              "names"            "nchar"            "ncol"             "nrow"            
+ [71] "options"          "paste"            "paste0"           "print"            "rbind"           
+ [76] "readline"         "readRDS"          "rep"              "require"          "return"          
+ [81] "round"            "rownames"         "sample"           "sapply"           "save.image"      
+ [86] "saveRDS"          "scale"            "seq_along"        "set.seed"         "setdiff"         
+ [91] "signif"           "sort"             "sprintf"          "sqrt"             "stop"            
+ [96] "stopifnot"        "subset"           "substitute"       "substr"           "sum"             
+[101] "suppressWarnings" "Sys.info"         "Sys.setenv"       "Sys.time"         "system"          
+[106] "t"                "table"            "toupper"          "trimws"           "try"             
+[111] "union"            "unique"           "unlist"           "warning"          "which"           
 
 $`package:CodeAndRoll2`
- [1] "any.duplicated"     "as.named.vector.df" "col2named.vec.tbl"  "cv"                
- [5] "grepv"              "idim"               "intersect.ls"       "iround"            
- [9] "list.fromNames"     "matrix.fromNames"   "pc_TRUE"            "rowDivide"         
-[13] "rowMax"             "rowMin"             "sem"                "sortbyitsnames"    
-[17] "splitbyitsnames"    "trail"              "translate"          "unlapply"          
-[21] "which_names"       
+ [1] "any.duplicated"    "col2named.vec.tbl" "idim"              "iround"            "list.fromNames"   
+ [6] "matrix.fromNames"  "pc_TRUE"           "rowMax"            "rowMin"            "sem"              
+[11] "sort.decreasing"   "sortbyitsnames"    "splitbyitsnames"   "symdiff"           "trail"            
+[16] "translate"         "unlapply"          "which_names"      
 
 $`package:ggExpress`
-[1] "qbarplot"   "qhistogram" "qpie"       "qqSave"     "qvenn"     
+[1] "qpie"
 
 $`package:ggplot2`
- [1] "aes"                 "annotation_logticks" "element_text"        "geom_abline"        
- [5] "geom_bar"            "geom_hline"          "geom_point"          "geom_text"          
- [9] "geom_vline"          "ggplot"              "ggsave"              "ggtitle"            
-[13] "labs"                "position_fill"       "scale_alpha_manual"  "scale_fill_manual"  
-[17] "scale_x_log10"       "scale_y_discrete"    "scale_y_log10"       "sym"                
-[21] "theme"               "theme_classic"       "xlab"                "ylab"               
-
-$`package:ggpubr`
-[1] "ggbarplot" "group_by"  "mutate"   
-
-$`package:grDevices`
-[1] "rgb"
+[1] "aes"                "geom_abline"        "scale_alpha_manual" "sym"                "xlab"              
+[6] "ylab"              
 
 $`package:MarkdownHelpers`
-[1] "filter_HP"           "filter_LP"           "llogit"              "llprint"            
-[5] "stopif"              "wcolorize"           "ww.assign_to_global"
+[1] "filter_HP" "filter_LP" "stopif"    "wcolorize"
 
 $`package:methods`
-[1] "is"        "slot"      "slotNames"
-
-$`package:Seurat`
- [1] "AverageExpression"    "DiscretePalette"      "FindClusters"        
- [4] "FindNeighbors"        "FindVariableFeatures" "FontSize"            
- [7] "LabelPoints"          "Read10X"              "RunPCA"              
-[10] "RunTSNE"              "ScaleData"           
+[1] "is"   "slot"
 
 $`package:Seurat.utils`
- [1] "calc.q99.Expression.and.set.all.genes" "check.genes"                          
- [3] "dropLevelsSeurat"                      "GetClusteringRuns"                    
- [5] "GetNamedClusteringRuns"                "GetOrderedClusteringRuns"             
- [7] "getProject"                            "GetTopMarkersDF"                      
- [9] "GetUpdateStats"                        "HGNC.EnforceUnique"                   
-[11] "isave.RDS"                             "jJaccardIndexBinary"                  
-[13] "jJaccardIndexVec"                      "remove.residual.small.clusters"       
-[15] "RenameGenesSeurat"                     "sampleNpc"                            
-[17] "shorten_clustering_names"              "SmallestNonAboveX"                    
-[19] "sparse.cor"                            "downsampleSeuObj"                         
-[21] "UpdateGenesSeurat"                     "ww.get.1st.Seur.element"              
-[23] "xsave"                                
+ [1] ".check_and_rename"                     ".checkListElements"                   
+ [3] ".getCPUsCBE"                           ".getNrPCs"                            
+ [5] ".getNrScaledFeatures"                  ".saveRDS.compress.in.BG"              
+ [7] "addMetaDataSafe"                       "arrange"                              
+ [9] "as_tibble"                             "BackupReduction"                      
+[11] "calc.q99.Expression.and.set.all.genes" "check.genes"                          
+[13] "checkGeneSymbols"                      "clUMAP"                               
+[15] "create_set_OutDir"                     "deframe"                              
+[17] "dir_ls"                                "downsampleSeuObj"                     
+[19] "dropLevelsSeurat"                      "FirstCol2RowNames"                    
+[21] "foreach"                               "geom_text_repel"                      
+[23] "GetClusteringRuns"                     "getDoParRegistered"                   
+[25] "GetNamedClusteringRuns"                "GetTopMarkersDF"                      
+[27] "GetUpdateStats"                        "gunzip"                               
+[29] "gzip"                                  "HGNC.EnforceUnique"                   
+[31] "IntersectGeneLsWithObject"             "isave.RDS"                            
+[33] "jJaccardIndexBinary"                   "jJaccardIndexVec"                     
+[35] "job"                                   "multi_clUMAP.A4"                      
+[37] "multiFeaturePlot.A4"                   "pheatmap"                             
+[39] "plotQUMAPsInAFolder"                   "qClusteringUMAPS"                     
+[41] "qMarkerCheck.BrainOrg"                 "qQC.plots.BrainOrg"                   
+[43] "qread"                                 "qsave"                                
+[45] "qUMAP"                                 "read_tsv"                             
+[47] "read.simple.tsv"                       "removeResidualSmallClusters"          
+[49] "RenameGenesSeurat"                     "rownames_to_column"                   
+[51] "rowQuantiles"                          "rowSums2"                             
+[53] "sampleNpc"                             "scPlotPCAvarExplained"                
+[55] "select"                                "SetupReductionsNtoKdimensions"        
+[57] "slice"                                 "SmallestNonAboveX"                    
+[59] "sparse.cor"                            "str_split_fixed"                      
+[61] "summarize"                             "suPlotVariableFeatures"               
+[63] "tic"                                   "toc"                                  
+[65] "top_n"                                 "UpdateGenesSeurat"                    
+[67] "vroom"                                 "wbarplot"                             
+[69] "whist"                                 "wlegend"                              
+[71] "wplot"                                 "wplot_save_pheatmap"                  
+[73] "ww.get.1st.Seur.element"               "xsave"                                
 
 $`package:SeuratObject`
-[1] "plan"
+[1] "LayerData" "Layers"    "plan"     
 
 $`package:stats`
-[1] "ecdf"     "filter"   "median"   "quantile"
+[1] "ecdf"     "median"   "quantile"
 
 $`package:Stringendo`
- [1] "FixPath"              "FixPlotName"          "flag.nameiftrue"     
- [4] "idate"                "iprint"               "kollapse"            
- [7] "kpp"                  "kppd"                 "kpps"                
-[10] "kppu"                 "percentage_formatter" "ppp"                 
-[13] "sppp"                
+ [1] "FixPath"                  "flag.nameiftrue"          "idate"                   
+ [4] "kpp"                      "kppd"                     "kpps"                    
+ [7] "kppu"                     "ParseFullFilePath"        "ppp"                     
+[10] "ReplaceRepeatedSlashes"   "ReplaceSpecialCharacters" "sppp"                    
 
 $`package:utils`
-[1] "head"     "read.csv"
+[1] "head" "str" 
 
-c(".GlobalEnv", "Seurat.utils")
-c("Seurat", "SeuratObject")
+.GlobalEnv
+c("Seurat.utils", "base")
+c("Seurat.utils", "CodeAndRoll2")
+c("Seurat.utils", "DatabaseLinke.R")
+c("Seurat.utils", "ggExpress")
+c("Seurat.utils", "ggplot2")
+c("Seurat.utils", "ggpubr")
+c("Seurat.utils", "MarkdownHelpers")
+c("Seurat.utils", "PackageTools")
+c("Seurat.utils", "Seurat", "SeuratObject")
+c("Seurat.utils", "Seurat")
+c("Seurat.utils", "SeuratObject", "base")
+c("Seurat.utils", "stats")
+c("Seurat.utils", "Stringendo")
 c("SeuratObject", "base")
 character(0)
 base
 CodeAndRoll2
 ggExpress
 ggplot2
-ggpubr
-grDevices
 MarkdownHelpers
 methods
-Seurat
 Seurat.utils
 SeuratObject
 stats
@@ -271,124 +353,164 @@ utils
 #################################################################################################### 
 Seurat.Utils.Visualization.R
 #################################################################################################### 
-$`c(".GlobalEnv", "package:Seurat.utils")`
- [1] "Annotate4Plotly3D"                         
- [2] "BackupReduction"                           
- [3] "getDiscretePalette"                        
- [4] "gg_color_hue"                              
- [5] "multiFeaturePlot.A4"                       
- [6] "plot3D.umap"                               
- [7] "plot3D.umap.gene"                          
- [8] "qUMAP"                                     
- [9] "RecallReduction"                           
-[10] "SavePlotlyAsHtml"                          
-[11] "scCalcPCAVarExplained"                      
-[12] "ww.check.if.3D.reduction.exist"            
-[13] "ww.check.quantile.cutoff.and.clip.outliers"
+$.GlobalEnv
+[1] "oo"
 
-$`c("package:Seurat", "package:SeuratObject")`
-[1] "DefaultAssay" "Embeddings"   "FetchData"    "GetAssayData"
+$`c("package:Seurat.utils", "package:CodeAndRoll2")`
+[1] "as_tibble_from_namedVec"     "as.named.vector.df"          "clip.outliers.at.percentile"
+
+$`c("package:Seurat.utils", "package:ggExpress")`
+[1] "qA4_grid_plot" "qbarplot"      "qbarplot.df"   "qhistogram"    "qqSave"       
+
+$`c("package:Seurat.utils", "package:ggplot2")`
+ [1] "coord_fixed"       "element_text"      "geom_bar"          "geom_hline"        "geom_point"       
+ [6] "geom_text"         "geom_vline"        "ggplot"            "ggsave"            "ggtitle"          
+[11] "labs"              "scale_fill_manual" "scale_x_log10"     "scale_y_log10"     "theme"            
+[16] "theme_classic"     "theme_linedraw"   
+
+$`c("package:Seurat.utils", "package:ggpubr")`
+[1] "group_by"
+
+$`c("package:Seurat.utils", "package:graphics")`
+[1] "layout" "par"    "text"  
+
+$`c("package:Seurat.utils", "package:MarkdownHelpers")`
+[1] "color_check" "llprint"    
+
+$`c("package:Seurat.utils", "package:Seurat", "package:SeuratObject")`
+[1] "DefaultAssay"     "Embeddings"       "FetchData"        "GetAssayData"     "VariableFeatures"
+
+$`c("package:Seurat.utils", "package:Seurat")`
+ [1] "DimPlot"             "DiscretePalette"     "FeaturePlot"         "FeatureScatter"     
+ [5] "LabelPoints"         "NoAxes"              "NoLegend"            "RunPCA"             
+ [9] "RunTSNE"             "RunUMAP"             "SplitObject"         "VariableFeaturePlot"
+[13] "VlnPlot"            
+
+$`c("package:Seurat.utils", "package:SeuratObject", "package:base")`
+[1] "colSums" "rowSums"
+
+$`c("package:Seurat.utils", "package:stats")`
+[1] "cor"      "cor.test"
+
+$`c("package:Seurat.utils", "package:Stringendo")`
+[1] "iprint"               "kollapse"             "percentage_formatter"
 
 $`c("package:SeuratObject", "package:base")`
-[1] "colSums"   "intersect" "rowSums"  
+[1] "intersect"
 
 $`c("package:sp", "package:base")`
 [1] "split"
 
-$`c("package:sp", "package:graphics", "package:base")`
-[1] "plot"
-
 $`character(0)`
- [1] "barplot_label"              "MarkdownHelpers::color_check"                "create_set_Original_OutDir"
- [4] "create_set_OutDir"          "create_set_SubDir"          "deframe"                   
- [7] "FeatureHeatmap"             "FirstCol2RowNames"          "group_by_"                 
-[10] "hue_pal"                    "CodeAndRoll2::split_vec_to_list_by_N"                "n"                         
-[13] "oo"                         "plot_grid"                  "plot_ly"                   
-[16] "principal_curve"            "save_plot"                  "saveWidget"                
-[19] "select"                     "stopif"                    "summarise"                 
-[22] "summarize"                  "tic"                        "toc"                       
-[25] "wbarplot"                   "whiskers"                   "wplot_save_this"           
+ [1] "barplot_label"              "create_set_Original_OutDir" "FeatureHeatmap"            
+ [4] "FirstCol2RowNames.as.df"    "imessage"                   "kppc"                      
+ [7] "kppws"                      "left_join"                  "n"                         
+[10] "na.replace"                 "nr.unique"                  "percent"                   
+[13] "sppu"                       "str_extract"                "ungroup"                   
 
 $`package:base`
- [1] "all"            "anyNA"          "apply"          "as.character"   "as.environment"
- [6] "as.factor"      "as.matrix"      "as.name"        "c"              "cbind"         
-[11] "ceiling"        "colnames"       "cut"            "data.frame"     "do.call"       
-[16] "environment"    "exists"         "floor"          "getwd"          "is.null"       
-[21] "isFALSE"        "lapply"         "length"         "levels"         "list"          
-[26] "list2env"       "make.names"     "mean"           "missing"        "names"         
-[31] "ncol"           "nrow"           "paste"          "paste0"         "print"         
-[36] "range"          "rep"            "return"         "rm"             "round"         
-[41] "row.names"      "rownames"       "seq"            "setdiff"        "sort"          
-[46] "stop"           "stopifnot"      "substitute"     "sum"            "table"         
-[51] "toupper"        "try"            "unique"         "unlist"         "warning"       
+ [1] ".Deprecated"    "abs"            "all"            "anyNA"          "apply"          "as.character"  
+ [7] "as.environment" "as.factor"      "as.name"        "as.numeric"     "assign"         "c"             
+[13] "cat"            "cbind"          "ceiling"        "class"          "colnames"       "cut"           
+[19] "data.frame"     "deparse"        "do.call"        "environment"    "exists"         "file.exists"   
+[25] "file.path"      "floor"          "format"         "getwd"          "gsub"           "ifelse"        
+[31] "inherits"       "invisible"      "is.character"   "is.environment" "is.function"    "is.list"       
+[37] "is.logical"     "is.na"          "is.null"        "is.numeric"     "isFALSE"        "isTRUE"        
+[43] "lapply"         "length"         "levels"         "list"           "list2env"       "make.names"    
+[49] "max"            "mean"           "message"        "min"            "missing"        "names"         
+[55] "ncol"           "nrow"           "nzchar"         "on.exit"        "paste"          "paste0"        
+[61] "print"          "return"         "rev"            "rm"             "round"          "row.names"     
+[67] "rownames"       "sample"         "sapply"         "seq"            "seq_along"      "set.seed"      
+[73] "setdiff"        "setwd"          "sort"           "sprintf"        "stop"           "stopifnot"     
+[79] "substitute"     "sum"            "table"          "tapply"         "toupper"        "try"           
+[85] "unique"         "unlist"         "warning"       
 
 $`package:CodeAndRoll2`
- [1] "as_tibble_from_namedVec"     "as.named.vector.df"         
- [3] "clip.at.fixed.value"         "clip.outliers.at.percentile"
- [5] "iround"                      "na.omit.strip"              
- [7] "pc_TRUE"                     "splitbyitsnames"            
- [9] "translate"                   "unlapply"                   
-
-$`package:ggExpress`
-[1] "qA4_grid_plot" "qbarplot"      "qhistogram"    "qqSave"       
+ [1] "clip.at.fixed.value"    "cv"                     "iround"                 "na.omit.strip"         
+ [5] "pc_TRUE"                "rowDivide"              "split_vec_to_list_by_N" "splitbyitsnames"       
+ [9] "translate"              "unlapply"              
 
 $`package:ggplot2`
- [1] "aes"                 "annotation_logticks" "coord_fixed"         "element_blank"      
- [5] "element_text"        "geom_histogram"      "geom_hline"          "geom_point"         
- [9] "geom_vline"          "ggplot"              "ggsave"              "ggtitle"            
-[13] "labs"                "scale_x_log10"       "scale_y_log10"       "theme"              
-[17] "theme_bw"            "theme_linedraw"      "theme_set"          
+ [1] "aes"                 "annotation_logticks" "element_blank"       "element_rect"       
+ [5] "expansion"           "geom_histogram"      "position_fill"       "scale_y_continuous" 
+ [9] "scale_y_discrete"    "sym"                 "theme_bw"            "theme_set"          
 
 $`package:ggpubr`
-[1] "group_by"
+[1] "ggbarplot" "mutate"   
 
 $`package:graphics`
-[1] "layout" "points"
+[1] "strwidth"
 
 $`package:grDevices`
-[1] "hcl"
+[1] "colorRampPalette" "hcl"             
 
 $`package:MarkdownHelpers`
-[1] "color_check"   "filter_HP"     "jjpegA4"       "llprint"       "stopif"       
-[6] "TRUE.unless"   "try.dev.off"   "ww.FnP_parser"
+[1] "filter_HP"     "jjpegA4"       "stopif"        "TRUE.unless"   "try.dev.off"   "ww.FnP_parser"
 
-$`package:Seurat`
- [1] "DimPlot"         "DiscretePalette" "FeaturePlot"     "FeatureScatter" 
- [5] "NoAxes"          "NoLegend"        "RunPCA"          "RunTSNE"        
- [9] "RunUMAP"         "SplitObject"     "VlnPlot"        
+$`package:methods`
+[1] "is"
 
 $`package:Seurat.utils`
-[1] "check.genes"            "getCellIDs.from.meta"   "GetClusteringRuns"     
-[4] "GetNamedClusteringRuns" "GetTopMarkers"         
+ [1] ".adjustLayout"                              ".getNrScaledFeatures"                      
+ [3] ".parseBasicObjStats"                        ".parseKeyParams"                           
+ [5] "Annotate4Plotly3D"                          "BackupReduction"                           
+ [7] "brewer.pal"                                 "check.genes"                               
+ [9] "clUMAP"                                     "create_set_OutDir"                         
+[11] "create_set_SubDir"                          "deframe"                                   
+[13] "DiscretePaletteSafe"                        "FirstCol2RowNames"                         
+[15] "getCellIDs.from.meta"                       "GetClusteringRuns"                         
+[17] "getDiscretePaletteObj"                      "GetNamedClusteringRuns"                    
+[19] "GetOrderedClusteringRuns"                   "GetTopMarkers"                             
+[21] "gg_color_hue"                               "ggdraw"                                    
+[23] "ggsave2"                                    "group_by_"                                 
+[25] "hue_pal"                                    "multiFeaturePlot.A4"                       
+[27] "percent_format"                             "pheatmap"                                  
+[29] "plot_grid"                                  "plot_ly"                                   
+[31] "plot3D.umap"                                "plot3D.umap.gene"                          
+[33] "qUMAP"                                      "RecallReduction"                           
+[35] "rich.colors"                                "sample_n"                                  
+[37] "save_plot"                                  "SavePlotlyAsHtml"                          
+[39] "saveWidget"                                 "scCalcPCAVarExplained"                     
+[41] "select"                                     "shorten_clustering_names"                  
+[43] "summarise"                                  "summarize"                                 
+[45] "tic"                                        "toc"                                       
+[47] "toTitleCase"                                "wbarplot"                                  
+[49] "wplot_save_pheatmap"                        "ww.check.if.3D.reduction.exist"            
+[51] "ww.check.quantile.cutoff.and.clip.outliers"
 
 $`package:stats`
-[1] "quantile"
+[1] "median"   "quantile" "setNames" "symnum"  
 
 $`package:Stringendo`
- [1] "extPNG"               "FixPlotName"          "flag.nameiftrue"     
- [4] "idate"                "iprint"               "kollapse"            
- [7] "kpp"                  "kpps"                 "kppu"                
-[10] "percentage_formatter" "ppp"                  "ppu"                 
-[13] "sppp"                
+ [1] "extPNG"          "FixPath"         "FixPlotName"     "flag.nameiftrue" "idate"          
+ [6] "kpp"             "kpps"            "kppu"            "ppp"             "sppp"           
 
 $`package:utils`
 [1] "head"
 
-c(".GlobalEnv", "Seurat.utils")
-c("Seurat", "SeuratObject")
+.GlobalEnv
+c("Seurat.utils", "CodeAndRoll2")
+c("Seurat.utils", "ggExpress")
+c("Seurat.utils", "ggplot2")
+c("Seurat.utils", "ggpubr")
+c("Seurat.utils", "graphics")
+c("Seurat.utils", "MarkdownHelpers")
+c("Seurat.utils", "Seurat", "SeuratObject")
+c("Seurat.utils", "Seurat")
+c("Seurat.utils", "SeuratObject", "base")
+c("Seurat.utils", "stats")
+c("Seurat.utils", "Stringendo")
 c("SeuratObject", "base")
 c("sp", "base")
-c("sp", "graphics", "base")
 character(0)
 base
 CodeAndRoll2
-ggExpress
 ggplot2
 ggpubr
 graphics
 grDevices
 MarkdownHelpers
-Seurat
+methods
 Seurat.utils
 stats
 Stringendo
