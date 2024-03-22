@@ -246,3 +246,17 @@ Convert10Xfolders.old <- function(
 #' @export
 set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.and.set.all.genes()")
 
+
+
+
+# _________________________________________________________________________________________________
+# Deprecated ----
+# _________________________________________________________________________________________________
+save2umaps.A4 <- function(...) .Deprecated("save2plots.A4()")
+
+save4umaps.A4 <- function(...) .Deprecated("save4plots.A4()")
+
+
+
+
+

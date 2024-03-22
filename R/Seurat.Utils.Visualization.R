@@ -3491,7 +3491,7 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
 
 
 # _________________________________________________________________________________________________
-#' @title SuPlotVariableFeatures for Single Seurat Object
+#' @title suPlotVariableFeatures for Single Seurat Object
 #'
 #' @description Generates a Variable Feature Plot for a specified Seurat object, labels points with
 #' the top 20 variable genes, and saves the plot to a PDF file.
@@ -3532,7 +3532,6 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
                              xnudge = 0, ynudge = 0, max.overlaps=15)
   print(labeledPlot)
   filename <- ppp("Var.genes", obj.name, suffix, idate(), 'png')
-
 
   # if (save) ggplot2::ggsave(plot = labeledPlot, filename = filename, width = plotWidth, height = plotHeight)
   if (save) qqSave(ggobj = labeledPlot,

@@ -9,16 +9,17 @@ BackupReduction(obj = combined.obj, dim = 2, reduction = "umap")
 BackupReduction(obj = combined.obj, dim = 2, reduction = "umap")
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object containing dimensionality reduction data; Default: \code{combined.obj}.}
 
-\item{dim}{Numer of dimensions used, Default: 2}
+\item{dim}{Number of dimensions to include in the backup; Default: 2.}
 
-\item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
+\item{reduction}{Type of dimensionality reduction to backup ('umap', 'tsne', 'pca'); Default: 'umap'.}
 }
 \description{
 Backup UMAP to \code{obj@misc$reductions.backup} from \code{obj@reductions$umap}. #
 
-Backup UMAP to \code{obj@misc$reductions.backup} from \code{obj@reductions$umap}. #
+Stores a backup of specified dimensionality reduction data (e.g., UMAP, tSNE, PCA)
+within the Seurat object, from \code{obj@reductions$umap} to the \verb{@misc$reductions.backup} slot.
 }
 \examples{
 \dontrun{
@@ -27,8 +28,9 @@ if (interactive()) {
 }
 }
 \dontrun{
-if (interactive()) {
-  obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
+  if (interactive()) {
+    obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
+  }
 }
-}
+
 }

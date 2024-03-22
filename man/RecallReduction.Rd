@@ -9,16 +9,17 @@ RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
 RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object from which the backup will be restored; Default: \code{combined.obj}.}
 
-\item{dim}{Numer of dimensions used, Default: 2}
+\item{dim}{Number of dimensions of the reduction data to restore; Default: 2.}
 
-\item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
+\item{reduction}{Type of dimensionality reduction to be restored ('umap', 'tsne', 'pca'); Default: 'umap'.}
 }
 \description{
 Set active UMAP to \code{obj@reductions$umap} from \code{obj@misc$reductions.backup}.
 
-Set active UMAP to \code{obj@reductions$umap} from \code{obj@misc$reductions.backup}. #
+Restores dimensionality reduction data (e.g., UMAP, tSNE, PCA) from a backup
+stored within \code{obj@misc$reductions.backup} to the active \code{obj@reductions} slot.
 }
 \examples{
 \dontrun{
@@ -30,11 +31,12 @@ if (interactive()) {
 }
 }
 \dontrun{
-if (interactive()) {
-  combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
-  qUMAP()
-  combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
-  qUMAP()
+  if (interactive()) {
+    combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
+    qUMAP()
+    combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
+    qUMAP()
+  }
 }
-}
+
 }

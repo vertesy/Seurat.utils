@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{suPlotVariableFeatures}
 \alias{suPlotVariableFeatures}
-\title{SuPlotVariableFeatures for Single Seurat Object}
+\title{suPlotVariableFeatures for Single Seurat Object}
 \usage{
 suPlotVariableFeatures(
   obj = combined.obj,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{AutoNumber.by.UMAP}
 \alias{AutoNumber.by.UMAP}
-\title{AutoNumber.by.UMAP}
+\title{Relabel Cluster Numbers Along a UMAP (or tSNE) Axis}
 \usage{
 AutoNumber.by.UMAP(
   obj = combined.obj,
@@ -13,24 +13,29 @@ AutoNumber.by.UMAP(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object containing clustering and UMAP (or other dimensional reduction) data;
+Default: \code{combined.obj}.}
 
-\item{dim}{Which dimension? Default: 1}
+\item{dim}{Dimension along which to order clusters (1 for the first dimension, typically horizontal);
+Default: 1.}
 
-\item{swap}{Swap direction? Default: FALSE}
+\item{swap}{If TRUE, reverses the ordering direction; Default: FALSE.}
 
-\item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
+\item{reduction}{Dimension reduction technique used for cluster positioning ('umap', 'tsne', or 'pca');
+Default: 'umap'.}
 
-\item{res}{Clustering resoluton to use, Default: 'integrated_snn_res.0.5'}
+\item{res}{Clustering resolution identifier used to fetch cluster labels from \code{obj} metadata;
+Default: 'integrated_snn_res.0.5'.}
 }
 \description{
-Relabel cluster numbers along a UMAP (or tSNE) axis #
+Automatically renumbers clusters based on their position along a specified dimension
+in a UMAP (or tSNE or PCA) plot, potentially enhancing interpretability by ordering clusters.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction = "umap", res = "integrated_snn_res.0.5")
-  DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.ordered")
+  combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction = "umap",
+                                     res = "integrated_snn_res.0.5")
+  DimPlot.ClusterNames(combined.obj, ident = "integrated_snn_res.0.5.ordered")
 }
-}
+
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{FlipReductionCoordinates}
 \alias{FlipReductionCoordinates}
-\title{FlipReductionCoordinates}
+\title{Flip Reduction Coordinates}
 \usage{
 FlipReductionCoordinates(
   obj = combined.obj,
@@ -13,25 +13,27 @@ FlipReductionCoordinates(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object to modify; Default: \code{combined.obj}.}
 
-\item{dim}{Numer of dimensions used, Default: 2}
+\item{dim}{Number of dimensions in the reduction to consider; Default: 2.}
 
-\item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
+\item{reduction}{Dimension reduction technique to modify ('umap', 'tsne', or 'pca'); Default: 'umap'.}
 
-\item{flip}{The axis (axes) to flip around. Default: c("x", "y", "xy", NULL)\link{1}}
+\item{flip}{Axis (or axes) to flip; can be 'x', 'y', or 'xy' to flip both; Default: "x".}
 
-\item{FlipReductionBackupToo}{Flip coordinates in backup slot too? Default: TRUE}
+\item{FlipReductionBackupToo}{Boolean indicating whether to also flip coordinates in the backup slot; Default: TRUE.}
 }
 \description{
-Flip reduction coordinates (like UMAP upside down).
+Flips dimensionality reduction coordinates (such as UMAP or tSNE) vertically or
+horizontally to change the visualization perspective.
 }
 \examples{
 \dontrun{
-if (interactive()) {
+  # Before flipping UMAP coordinates
   clUMAP()
+  # Flip UMAP coordinates and visualize again
   combined.obj <- FlipReductionCoordinates(combined.obj)
   clUMAP()
 }
-}
+
 }
