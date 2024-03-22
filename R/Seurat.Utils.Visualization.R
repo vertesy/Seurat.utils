@@ -1327,6 +1327,7 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = FA
     print(ident)
     ident.vec <- obj[[ident]][, 1]
   } else {
+    print(obj@active.ident)
     ident.vec <- obj@active.ident
   }
   ident.vec <- as.factor(ident.vec)
