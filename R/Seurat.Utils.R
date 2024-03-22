@@ -1169,17 +1169,22 @@ recall.genes.ls <- function(obj = combined.obj, overwrite = FALSE) { # genes.ls
 
 
 # _________________________________________________________________________________________________
-#' @title save.parameters
+#' @title Save Parameters to Seurat Object
 #'
-#' @description Save parameters to obj@misc$p
-#' @param obj Seurat object, Default: combined.obj
-#' @param params List of parameters, Default: p
+#' @description Stores a list of parameters within the `@misc$p` slot of a Seurat object,
+#' allowing for easy reference and tracking of analysis parameters used.
+#'
+#' @param obj Seurat object to update; Default: `combined.obj`.
+#' @param params List of parameters to save; Default: `p`.
+#' @param overwrite Logical indicating if existing parameters should be overwritten; Default: TRUE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   save.parameters(obj = combined.obj, params = p)
+#'   if (interactive()) {
+#'     save.parameters(obj = combined.obj, params = p)
+#'   }
 #' }
-#' }
+#'
 #' @export
 save.parameters <- function(obj = combined.obj, params = p, overwrite = TRUE) {
   obj <- ww.get.1st.Seur.element(obj)
@@ -1503,13 +1508,25 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj, ident,
 
 
 # _________________________________________________________________________________________________
-#' @title removeResidualSmallClusters
+#' @title Remove Residual Small Clusters from Seurat Object
 #'
-#' @description E.g.: after subsetting often some residual cells remain in clusters originally
-#' defined in the full dataset.
-#' @param identitites Identities to scan for residual clusters
-#' @param obj Seurat object, Default: combined.obj
-#' @param max.cells Max number of cells in cluster to be removed. Default: 0.5% of the dataset, or 5 cells.
+#' @description Removes clusters containing fewer cells than specified by `max.cells`
+#' from a Seurat object. This function is particularly useful after subsetting a dataset,
+#' where small, possibly unrepresentative clusters may remain.
+#'
+#' @param obj Seurat object from which small clusters will be removed; Default: `combined.obj`.
+#' @param identitites Vector of clustering identities to examine for small clusters;
+#' Default: `GetClusteringRuns(obj)`.
+#' @param max.cells Maximum number of cells a cluster can contain to still be considered for removal.
+#' Default: The lesser of 0.5% of the dataset or 5 cells.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     combined.obj <- removeResidualSmallClusters(obj = combined.obj)
+#'   }
+#' }
+#'
 #' @export
 removeResidualSmallClusters <- function(
     obj = combined.obj,
@@ -1682,24 +1699,31 @@ removeCellsByUmap <- function(
 # _________________________________________________________________________________________________
 
 
-#' @title downsampleListSeuObjsNCells
+#' @title Downsample a List of Seurat Objects to a Specific Number of Cells
 #'
-#' @description downsample a list of Seurat objects
-#' @param ls.obj List of Seurat objects. Default: ls.Seurat
-#' @param NrCells Number of cells to downsample to.
-#' @param save_object save object by isaveRDS, otherwise return it. Default: FALSE
+#' @description Downsampling each Seurat object in a list to a specified number of cells. This function is
+#' particularly useful for creating smaller, more manageable subsets of large single-cell datasets for
+#' preliminary analyses or testing.
+#'
+#' @param ls.obj List of Seurat objects to be downsampled; Default: `ls.Seurat`.
+#' @param NrCells Target number of cells to downsample each Seurat object to.
+#' @param save_object Logical indicating whether to save the downsampled Seurat objects using `isaveRDS`
+#' or to return them; Default: FALSE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   downsampleListSeuObjsNCells(NrCells = 2000)
-#'   downsampleListSeuObjsNCells(NrCells = 200)
+#'   if (interactive()) {
+#'     downsampledSeuratList <- downsampleListSeuObjsNCells(ls.obj =
+#'                                       list(yourSeuratObj1, yourSeuratObj2), NrCells = 2000)
+#'     downsampledSeuratList <- downsampleListSeuObjsNCells(NrCells = 200)
+#'   }
 #' }
-#' }
+#'
 #' @export
 #' @importFrom tictoc tic toc
 #' @importFrom Stringendo percentage_formatter
-#' @importFrom foreach foreach getDoParRegistered
-#'
+#' @importFrom foreach foreach %dopar% getDoParRegistered
+
 downsampleListSeuObjsNCells <- function(
     ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids",
     save_object = FALSE) {
@@ -1740,23 +1764,28 @@ downsampleListSeuObjsNCells <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title downsampleListSeuObjsPercent
+#' @title Downsample a List of Seurat Objects to a Fraction
 #'
-#' @description downsample a list of Seurat objects, by fraction
-#' @param ls.obj List of Seurat objects, Default: ls.Seurat
-#' @param NrCells Number of cells to downsample to. Default: p$dSample.Organoids
-#' @param save_object save object by isaveRDS, otherwise return it. Default: FALSE
+#' @description Downsampling a list of Seurat objects to a specified fraction of their original size.
+#' This is useful for reducing dataset size for quicker processing or testing workflows.
+#'
+#' @param ls.obj List of Seurat objects to be downsampled; Default: `ls.Seurat`.
+#' @param fraction Fraction of cells to retain in each Seurat object; Default: 0.1.
+#' @param save_object Logical indicating whether to save the downsampled Seurat objects using
+#' `isaveRDS` or return them; Default: FALSE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   downsampleListSeuObjsPercent()
+#'   if (interactive()) {
+#'     downsampled_objs <- downsampleListSeuObjsPercent(ls.obj = yourListOfSeuratObjects, fraction = 0.1)
+#'   }
 #' }
-#' }
-#' @importFrom tictoc tic toc
-#' @importFrom Stringendo percentage_formatter
-#' @importFrom foreach getDoParRegistered foreach
 #'
 #' @export
+#' @importFrom tictoc tic toc
+#' @importFrom Stringendo percentage_formatter
+#' @importFrom foreach foreach %dopar% getDoParRegistered
+#'
 downsampleListSeuObjsPercent <- function(
     ls.obj = ls.Seurat, fraction = 0.1,
     save_object = FALSE) {
@@ -1836,23 +1865,31 @@ Add.DE.combined.score <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title StoreTop25Markers
+#' @title Save Top 25 Markers per Cluster
 #'
-#' @description Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()`
-#' (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
-#' @param obj Seurat object, Default: combined.obj
-#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param res Clustering resoluton to use, Default: 0.5
+#' @description Stores the top 25 markers for each cluster identified in a Seurat object, based on
+#' the `avg_log2FC` from the output table of `FindAllMarkers()`. The result is saved under `@misc$df.markers$res...`,
+#' rounding insignificant digits to three decimal places.
+#'
+#' @param obj Seurat object to update with top 25 markers information; Default: `combined.obj`.
+#' @param df_markers Data frame containing results from differential gene expression analysis
+#' via `FindAllMarkers()`, specifying significant markers across clusters; Default: `df.markers`.
+#' @param res Clustering resolution at which the markers were identified; Default: 0.5.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   combined.obj <- StoreTop25Markers(df_markers = df.markers, res = 0.)
+#'   if (interactive()) {
+#'     combined.obj <- StoreTop25Markers(obj = combined.obj, df_markers = df.markers, res = 0.5)
+#'   }
 #' }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{select}}
+#'
+#' @seealso \code{\link[Seurat]{FindAllMarkers}}, \code{\link[dplyr]{top_n}}
+#'
 #' @export
-#' @importFrom dplyr select
+#' @importFrom Seurat FindAllMarkers
+#' @importFrom dplyr group_by top_n select arrange
+#' @importFrom magrittr `%>%`
+
 StoreTop25Markers <- function(obj = combined.obj
                               , df_markers = df.markers, res = 0.5) {
   top25.markers <-
@@ -1869,20 +1906,25 @@ StoreTop25Markers <- function(obj = combined.obj
 
 
 # _________________________________________________________________________________________________
-#' @title StoreAllMarkers
+#' @title Store All Differential Expression Markers
 #'
-#' @description Save the output table of `FindAllMarkers()` (df_markers) under
-#' `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
-#' @param obj Seurat object, Default: combined.obj
-#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param res Clustering resoluton to use, Default: 0.5
-#' @param digit Number of digits to keep, Default: c(0, 3)[2]
+#' @description Saves the complete output table from `FindAllMarkers()` to a Seurat object, facilitating
+#' easy access to differential expression analysis results. This function rounds numerical values to a
+#' specified number of digits to maintain readability and manage file sizes.
+#'
+#' @param obj Seurat object to update with differential expression markers; Default: `combined.obj`.
+#' @param df_markers Data frame containing the results from differential gene expression analysis
+#' (`FindAllMarkers()` output); Default: `df.markers`.
+#' @param res Clustering resolution identifier for storing and referencing the markers; Default: 0.5.
+#' @param digit Number of significant digits to retain in numerical values; Default: 3.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   combined.obj <- StoreAllMarkers(df_markers = df.markers, res = 0.5)
+#'   if (interactive()) {
+#'     combined.obj <- StoreAllMarkers(obj = combined.obj, df_markers = df.markers, res = 0.5)
+#'   }
 #' }
-#' }
+#'
 #' @export
 StoreAllMarkers <- function(
     obj = combined.obj,
@@ -1953,16 +1995,25 @@ GetTopMarkersDF <- function(
 #' @seealso
 #'  \code{\link[dplyr]{slice}}, \code{\link[dplyr]{select}}
 #' @export
-#' @importFrom dplyr slice select
-GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp. genes.
-                          , n = p$"n.markers", order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]) {
-  "Works on active Idents() -> thus we call cluster"
-  TopMarkers <- dfDE %>%
-    arrange(desc(!!as.name(order.by))) %>%
-    group_by(cluster) %>%
-    dplyr::slice(1:n) %>%
-    dplyr::select(gene) %>%
+#' @importFrom dplyr slice select select
+GetTopMarkers <- function(dfDE = df.markers,
+                          n = p$"n.markers",
+                          order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]) {
+
+  message("Works on active Idents()") # thus we call cluster
+  TopMarkers <- dfDE |>
+    arrange(desc(!!as.name(order.by))) |>
+    group_by(cluster) |>
+    dplyr::slice(1:n) |>
+    dplyr::select(gene) |>
     col2named.vec.tbl()
+
+  # TopMarkers <- dfDE %>%
+  #   arrange(desc(!!as.name(order.by))) %>%
+  #   group_by(cluster) %>%
+  #   dplyr::slice(1:n) %>%
+  #   dplyr::select(gene) %>%
+  #   col2named.vec.tbl()
 
   return(TopMarkers)
 }
