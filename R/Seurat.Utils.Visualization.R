@@ -7,32 +7,38 @@
 
 
 # _________________________________________________________________________________________________
-#' @title PlotFilters
+#' @title Plot filtering thresholds and distributions
 #'
-#' @description Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.
-#' @param ls.obj A list of Seurat objects to be analyzed. Default is ls.Seurat.
-#' @param parentdir A string representing the parent directory where the plots will be stored. Default is OutDirOrig.
-#' @param suffices A vector of strings that will be used as suffixes in the output plot file names. Default is the names of the Seurat objects in ls.obj.
-#' @param filetype A string indicating the file type of the output plot images. Default is '.png'.
-#' @param below.mito Numeric threshold for the lower bound of mitochondrial content. Default is p$thr.lp.mito.
-#' @param above.mito Numeric threshold for the upper bound of mitochondrial content. Default is p$thr.hp.mito.
-#' @param below.ribo Numeric threshold for the lower bound of ribosomal content. Default is p$thr.lp.ribo.
-#' @param above.ribo Numeric threshold for the upper bound of ribosomal content. Default is p$thr.hp.ribo.
-#' @param below.nFeature_RNA Numeric threshold for the lower bound of RNA features. Default is p$thr.lp.nFeature_RNA.
-#' @param above.nFeature_RNA Numeric threshold for the upper bound of RNA features. Default is p$thr.hp.nFeature_RNA.
-#' @param subdir A string specifying the subdirectory within the parent directory where the plots will be stored. Default is generated using a call to kpp().
-#' @param transparency Numeric value controlling the transparency of points on the scatter plots. Default is 0.25.
-#' @param cex Numeric value controlling the size of points on the scatter plots. Default is 0.75.
-#' @param theme.used A ggplot2 theme to be used for all plots. Default is theme_bw(base_size = 18).
-#' @param LabelDistFromTop Numeric value specifying the distance from the top of the plot for the label placement. Default is 200.
+#' @description This function plots the filtering thresholds and distributions for Seurat objects,
+#' using four panels to highlight the relationship between gene- and UMI-counts, and the
+#' ribosomal- and mitochondrial-content.
+#'
+#' @param ls.obj A list of Seurat objects to be analyzed. Default: `ls.Seurat`.
+#' @param parentdir The parent directory where the plots will be stored. Default: `OutDirOrig`.
+#' @param suffices Suffixes used in the output plot file names. Default: Names of the Seurat objects in `ls.obj`.
+#' @param filetype The file type of the output plot images. Default: `'.png'`.
+#' @param below.mito Lower bound of mitochondrial content. Default: `p$thr.lp.mito`.
+#' @param above.mito Upper bound of mitochondrial content. Default: `p$thr.hp.mito`.
+#' @param below.ribo Lower bound of ribosomal content. Default: `p$thr.lp.ribo`.
+#' @param above.ribo Upper bound of ribosomal content. Default: `p$thr.hp.ribo`.
+#' @param below.nFeature_RNA Lower bound of RNA features. Default: `p$thr.lp.nFeature_RNA`.
+#' @param above.nFeature_RNA Upper bound of RNA features. Default: `p$thr.hp.nFeature_RNA`.
+#' @param subdir Subdirectory within `parentdir` where plots will be stored. Default is generated using a call to `kpp()`.
+#' @param transparency Point transparency on scatter plots. Default: 0.25.
+#' @param cex Size of points on scatter plots. Default: 0.75.
+#' @param theme.used A `ggplot2` theme for all plots. Default: `theme_bw(base_size = 18)`.
+#' @param LabelDistFromTop Distance from top for label placement. Default: 200.
+#'
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
 #'   PlotFilters(ls.Seurat)
 #' }
 #' }
-#' @seealso
-#'  \code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{labs}}, \code{\link[ggplot2]{geom_point}}
+#'
+#' @seealso \code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{labs}},
+#' \code{\link[ggplot2]{geom_point}}
+#'
 #' @importFrom ggplot2 ggplot ggtitle geom_point
 #' @importFrom Stringendo percentage_formatter
 #' @importFrom MarkdownHelpers llprint
