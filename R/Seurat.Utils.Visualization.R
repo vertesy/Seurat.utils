@@ -798,15 +798,20 @@ scBarplot.CellsPerCluster <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title scBarplot.CellsPerObject
+#' @title Bar Plot of Cells Per Seurat Object
 #'
-#' @description Creates a bar plot for the number of cells per object from a list of Seurat objects.
-#' @param ls.Seu A list of Seurat objects. Default: ls.Seurat.
-#' @param plotname A string specifying the title of the plot. Default: 'Nr.Cells.After.Filtering'.
-#' @param xlab.angle The angle at which the x-axis labels should be displayed. Default: 45.
-#' @param names A logical value indicating whether to use the provided names as labels on the x-axis. If FALSE, the names of the Seurat objects will be used. Default: FALSE.
-#' @param ... Additional arguments to be passed to the qbarplot function.
-#' @export
+#' @description Visualizes the number of cells in each Seurat object within a list, showing the
+#' distribution of cell counts across different datasets or experimental conditions.
+#'
+#' @param ls.Seu List of Seurat objects to analyze. Default: `ls.Seurat`.
+#' @param plotname Title for the plot. Default: 'Nr.Cells.After.Filtering'.
+#' @param xlab.angle Angle for x-axis labels, enhancing readability. Default: 45.
+#' @param names Optionally provide custom names for x-axis labels. If FALSE, uses object names
+#' from `ls.Seu`. Default: FALSE.
+#' @param ... Extra parameters passed to `qbarplot`.
+#'
+#' @export scBarplot.CellsPerObject
+
 scBarplot.CellsPerObject <- function(
     ls.Seu = ls.Seurat,
     plotname = "Nr.Cells.After.Filtering", xlab.angle = 45,
@@ -825,23 +830,27 @@ scBarplot.CellsPerObject <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title plotClustSizeDistr
+#' @title Cluster Size Distribution Plot
 #'
-#' @description Creates a bar plot or histogram of the cluster size distribution from a given Seurat object.
-#' @param obj The Seurat object to be used for the plot. Default: combined.obj.
-#' @param ident The identity or clustering to be used for the plot. Default: The second result from GetClusteringRuns().
-#' @param plot A logical value indicating whether to plot the data. If FALSE, a vector of the cluster size distribution will be returned. Default: TRUE.
-#' @param thr.hist A threshold for the number of clusters above which a histogram will be plotted instead of a bar plot. Default: 30.
-#' @param ... Additional arguments to be passed to the internally called plotting functions.
+#' @description Generates a bar plot or histogram to visualize the size distribution of clusters
+#' within a Seurat object, based on the specified clustering identity.
+#'
+#' @param obj Seurat object for analysis. Default: `combined.obj`.
+#' @param ident Clustering identity to base the plot on.
+#' Default: The second entry from `GetClusteringRuns()`.
+#' @param plot Whether to display the plot (TRUE) or return cluster sizes (FALSE). Default: TRUE.
+#' @param thr.hist Threshold for switching from a bar plot to a histogram based on the number of
+#' clusters. Default: 30.
+#' @param ... Extra parameters for the plot.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
 #'   plotClustSizeDistr()
 #' }
-#' }
+#'
 #' @importFrom ggExpress qbarplot qhistogram
 #'
-#' @export plotClustSizeDistr
+#' @export
 plotClustSizeDistr <- function(
     obj = combined.obj, ident,
     plot = TRUE, thr.hist = 30, ...) {
