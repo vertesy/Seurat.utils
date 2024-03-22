@@ -2384,25 +2384,29 @@ multi_clUMAP.A4 <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title Plot UMAP with Cluster Names
+#' @title Quick Clustering UMAPs on A4 Page
 #'
-#' @description Generates a dimensionality reduction plot (UMAP, tSNE, PCA) from a Seurat object,
-#' labeling clusters with their names.
+#' @description Generates and arranges UMAP plots for up to four specified clustering resolutions
+#' from a Seurat object onto an A4 page, facilitating comparative visualization.
 #'
-#' @param obj Seurat object for visualization; Default: `combined.obj`.
-#' @param ident Cluster identity to use for labeling; Default: 'cl.names.top.gene.res.0.5'.
-#' @param reduction Dimension reduction technique ('umap', 'tsne', 'pca'); Default: 'umap'.
-#' @param title Plot title; Default: `ident`.
-#' @param ... Additional parameters passed to Seurat's `DimPlot`.
+#' @param obj Seurat object to visualize; Default: `combined.obj`.
+#' @param dims Vector of clustering resolution identifiers to plot;
+#' dynamically defaults to the first 4 found by `GetClusteringRuns`.
+#' @param prefix Prefix for plot titles; Default: "Clustering.UMAP.Res".
+#' @param suffix Suffix for plot titles; Default: "".
+#' @param title Custom title for the composite plot; dynamically generated from `prefix`, `dims`, and `suffix`.
+#' @param nrow Number of rows in the plot grid; Default: 2.
+#' @param ncol Number of columns in the plot grid; Default: 2.
+#' @param ... Additional parameters for individual UMAP plots.
 #'
 #' @examples
 #' \dontrun{
-#'   DimPlot.ClusterNames()
-#'   DimPlot.ClusterNames(obj = yourSeuratObj, ident = "resolution_1")
+#'   qClusteringUMAPS()
 #' }
 #'
 #' @export
-#' @importFrom ggExpress::qA4_grid_plot
+#' @importFrom Seurat Noaxes
+#' @importFrom ggExpress qA4_grid_plot
 qClusteringUMAPS <- function(
     obj = combined.obj,
     dims = na.omit.strip(GetClusteringRuns(obj)[1:4]),
@@ -2416,6 +2420,7 @@ qClusteringUMAPS <- function(
 
   message("> > > > > Plotting qClusteringUMAPS")
   message("Duplicate of less pretty multi_clUMAP.A4, partially")
+
   # Check that the QC markers are in the object
   n.found <- intersect(dims, colnames(obj@meta.data))
   message(kppws(length(n.found), " found of ", dims))
@@ -2488,22 +2493,29 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj, foldername = NULL,
 
 
 # _________________________________________________________________________________________________
-#' @title PlotTopGenesPerCluster
+#' @title Plot Top N Differentially Expressed Genes Per Cluster
 #'
-#' @description Plot the top N diff. exp. genes in each cluster.
-#' @param obj Seurat object. Default: combined.obj
-#' @param cl_res Resolution value to use for determining clusters. Default: res
-#' @param nrGenes Number of top differentially expressed genes to plot per cluster. Default: p$'n.markers'
-#' @param order.by Column name to sort output tibble by. Default: c("combined.score","avg_log2FC", "p_val_adj")[1]
-#' @param df_markers Data frame containing marker gene data. Default: combined.obj@misc$df.markers[[paste0("res.", cl_res)]]
+#' @description Visualizes the top N differentially expressed (DE) genes for each cluster within a
+#' specified clustering resolution of a Seurat object, facilitating the exploration of gene
+#' expression patterns across clusters.
+#'
+#' @param obj Seurat object containing single-cell RNA-seq data and clustering information;
+#' Default: `combined.obj`.
+#' @param cl_res Cluster resolution used to identify distinct clusters for analysis; Default: `res`.
+#' @param nrGenes Number of top DE genes to display for each cluster; Default: `p$'n.markers'`.
+#' @param order.by Criteria for ranking DE genes within clusters; Default: `"combined.score"`.
+#' @param df_markers Data frame or list of DE genes across clusters. If not provided,
+#' attempts to retrieve from `obj@misc$df.markers[[paste0("res.", cl_res)]]`;
+#' Default: calculated based on `cl_res`.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = p$"n.markers")
+#'   if (interactive()) {
+#'     PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = 10)
+#'   }
 #' }
-#' }
+#'
 #' @export
-
 PlotTopGenesPerCluster <- function(
     obj = combined.obj, cl_res = res, nrGenes = p$"n.markers",
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1],
@@ -2522,14 +2534,29 @@ PlotTopGenesPerCluster <- function(
 }
 
 # _________________________________________________________________________________________________
-#' @title qQC.plots.BrainOrg
+#' @title Quickly Plot Key QC Markers in Brain Organoids
 #'
-#' @description Quickly plot key QC markers in brain organoids
-#' @param QC.Features Any numeric metadata columns
-#' @param obj Seurat object, Default: combined.obj
+#' @description Generates and arranges UMAP plots for specified QC features
+#' from a Seurat object on an A4 page, facilitating a quick quality control (QC) overview.
 #'
-#' @examples qQC.plots.BrainOrg()
+#' @param obj Seurat object to visualize; Default: `combined.obj`.
+#' @param QC.Features Vector of QC feature names to plot; Default:
+#' `c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction")`.
+#' @param prefix Prefix for plot titles; Default: "QC.markers.4.UMAP".
+#' @param suffix Suffix for plot titles; Default: "".
+#' @param title Custom title for the composite plot; dynamically generated from `prefix`,
+#' `QC.Features`, and `suffix`.
+#' @param nrow Number of rows in the plot grid; Default: 2.
+#' @param ncol Number of columns in the plot grid; Default: 2.
+#' @param ... Additional parameters for individual UMAP plots.
+#'
+#' @examples
+#' \dontrun{
+#'   qQC.plots.BrainOrg()
+#' }
+#'
 #' @export
+#' @importFrom ggExpress qA4_grid_plot
 qQC.plots.BrainOrg <- function(
     obj = combined.obj,
     QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction"),
