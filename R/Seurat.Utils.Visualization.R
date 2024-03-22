@@ -201,7 +201,7 @@ PlotFilters <- function(
 # require('MarkdownReports') # require("devtools")
 
 # _________________________________________________________________________________________________
-#' @title PCA percent of variation associated with each PC
+#' @title Calculate the percent of variation explained by individual PC's
 #'
 #' @description This function calculates the percentage of variation each principal component (PC)
 #' accounts for in a Seurat object. It's specifically tailored for Seurat objects and provides a
@@ -230,7 +230,7 @@ scCalcPCAVarExplained <- function(obj = combined.obj) { # Determine percent of v
 }
 
 # _________________________________________________________________________________________________
-#' @title Plot the percent of variation associated with each PC
+#' @title Plot the percent of variation explained by individual PC's
 #'
 #' @description This function plots the percentage of variation explained by each principal
 #' component (PC) in a Seurat object. It allows for a visual assessment of how much variance is
@@ -281,15 +281,27 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
 
 
 # _________________________________________________________________________________________________
-#' @title Percent.in. transcriptome
+#' @title Gene Expression as Fraction of Total UMI Counts
 #'
-#' @description Gene expression as fraction of all UMI's
-#' @param obj Seurat object
-#' @param n.genes.barplot number of top genes shows
-#' @param width.barplot barplot width
-#' @return Seurat object
-#' @examples # combined.obj <- Percent.in.Trome()
-
+#' @description This function computes and visualizes gene expression levels as a fraction of total
+#' UMI (Unique Molecular Identifier) counts across all genes in a Seurat object. It aims to highlight
+#' the relative contribution of the most highly expressed genes to the overall transcriptome.
+#'
+#' @param obj A Seurat object containing gene expression data.
+#' @param n.genes.barplot The number of top genes to be displayed in the final barplot, showing
+#' their expression as a percentage of the total UMIs. Default is 25.
+#' @param width.barplot The width of the barplot that visualizes the highest expressed genes.
+#' Default is a quarter of `n.genes.barplot`.
+#'
+#' @return The same Seurat object passed as input, but with an additional list in the `@misc` slot
+#' named `'TotalReadFraction'` that contains the relative total expression of each gene as a
+#' fraction of total UMIs.
+#'
+#' @examples
+#' \dontrun{
+#' combined.obj <- Percent.in.Trome(combined.obj)
+#' }
+#'
 #' @export
 Percent.in.Trome <- function(
     obj = combined.obj, n.genes.barplot = 25,
