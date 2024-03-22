@@ -1555,25 +1555,42 @@ qSeuViolin <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title plotGeneExpHist
+#' @title Histogram of Gene Expression in Seurat Object
 #'
-#' @description This function creates a histogram of gene expression for a given set of genes in a Seurat object.
-#' @param obj A Seurat object.
-#' @param genes A vector of genes to plot.
-#' @param assay The name of the assay to use.
-#' @param slot_ The slot to use.
-#' @param thr_expr The expression threshold to use for filtering.
-#' @param suffix A string to append to the title of the plot.
-#' @param xlab The x-axis label.
-#' @param return_cells_passing Whether to return the number of cells passing the filter.
-#' @param quantile_thr The quantile to use for clipping the counts slot.
-#' @param return_quantile Whether to return the number of cells passing the quantile filter.
-#' @param ... Additional arguments passed to `qhistogram()`.
+#' @description Creates and optionally saves a histogram showing expression levels of specified genes
+#' within a Seurat object. Provides options for aggregate gene expression, expression threshold filtering,
+#' and quantile clipping for count data.
 #'
-#' @return A ggplot object.
-#' @importFrom MarkdownHelpers filter_HP
+#' @param obj Seurat object to analyze.
+#' @param genes Vector of gene names to include in the analysis.
+#' @param assay Assay to use from the Seurat object.
+#' @param slot_ Data slot to use ('data' or 'counts').
+#' @param thr_expr Expression threshold for highlighting in the plot.
+#' @param suffix Additional text to append to the plot title.
+#' @param xlab Label for the x-axis.
+#' @param return_cells_passing If TRUE, returns count of cells exceeding the expression threshold.
+#' @param quantile_thr Quantile threshold for clipping count data.
+#' @param return_quantile If TRUE, returns cell count exceeding the quantile threshold.
+#' @param w Width of the plot.
+#' @param h Height of the plot.
+#' @param show_plot If TRUE, displays the generated plot.
+#' @param ... Additional arguments for customization.
+#'
+#' @return Depending on the parameters, can return a ggplot object, the number of cells passing
+#' the expression threshold, or the number of cells exceeding the quantile threshold.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     plotGeneExpHist(obj = yourSeuratObject, genes = c("GeneA", "GeneB"))
+#'   }
+#' }
 #'
 #' @export
+#' @importFrom scales hue_pal
+#' @importFrom Seurat GetAssayData
+#' @importFrom ggplot2 geom_vline labs
+#' @importFrom ggExpress qhistogram
 plotGeneExpHist <- function(
     obj = cobj.H9.L92, genes = c("MALAT1", "MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN"),
     assay = "RNA", slot_ = "data",
@@ -1608,7 +1625,7 @@ plotGeneExpHist <- function(
 
   # Create the plot
   title_ <- paste("Gene Expression", Stringendo::flag.nameiftrue(aggregate, prefix = "- "), suffix, slot_)
-  pobj <- qhistogram(G_expression,
+  pobj <- ggExpress::qhistogram(G_expression,
     plotname = title_,
     suffix = suffix,
     vline = thr_expr[1], filtercol = -1,
