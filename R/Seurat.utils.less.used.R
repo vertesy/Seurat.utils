@@ -108,6 +108,66 @@ umapNamedClusters <- function(obj = combined.obj,
 
 
 # _________________________________________________________________________________________________
+#' @title AutoNumber.by.PrinCurve
+#'
+#' @description Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
+#' @param obj Seurat object, Default: combined.obj
+#' @param dim Dimensions to use, Default: 1:2
+#' @param plotit Plot results (& show it), Default: TRUE
+#' @param swap Swap Lambda paramter (multiplied with this) , Default: -1
+#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5")
+#'   combined.obj <- AutoNumber.by.PrinCurve(
+#'     obj = combined.obj, dim = 1:2, reduction = "umap", plotit = TRUE,
+#'     swap = -1, res = "integrated_snn_res.0.5"
+#'   )
+#'   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.prin.curve")
+#' }
+#' }
+#' @seealso
+#'  \code{\link[princurve]{principal_curve}}
+#' @importFrom princurve principal_curve whiskers
+#' @importFrom MarkdownReports wplot_save_this
+#' @importFrom Seurat FetchData
+#'
+#' @export
+AutoNumber.by.PrinCurve <- function(
+    obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
+    , dim = 1:2, plotit = TRUE, swap = -1,
+    reduction = "umap", res = "integrated_snn_res.0.5") {
+  # require(princurve)
+  dim_name <- ppu(toupper(reduction), dim)
+  coord.umap <- FetchData(object = obj, vars = dim_name)
+  fit <- princurve::principal_curve(x = as.matrix(coord.umap))
+  if (plotit) {
+    plot(fit,
+         xlim = range(coord.umap[, 1]), ylim = range(coord.umap[, 2]),
+         main = "principal_curve"
+    )
+    # points(fit)
+    points(coord.umap, pch = 18, cex = .25)
+    princurve::whiskers(coord.umap, fit$s, lwd = .1)
+    MarkdownReports::wplot_save_this(plotname = "principal_curve")
+  }
+
+  ls.perCl <- split(swap * fit$lambda, f = obj[[res]])
+  MedianClusterCoordinate <- unlapply(ls.perCl, median)
+  OldLabel <- names(sort(MedianClusterCoordinate))
+  NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
+  NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
+  NewMetaCol <- kpp(res, "prin.curve")
+  iprint("NewMetaCol:", NewMetaCol)
+  obj[[NewMetaCol]] <- NewMeta
+  return(obj)
+}
+
+
+
+# _________________________________________________________________________________________________
 #' @title Convert10Xfolders.old
 #'
 #' @description This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.
