@@ -1662,42 +1662,47 @@ plotGeneExpHist <- function(
 # _________________________________________________________________________________________________
 
 # _________________________________________________________________________________________________
-#' @title qUMAP
+#' @title Quick UMAP Visualization of Gene Expression and automatically save the plot
 #'
-#' @description The quickest way to draw a gene expression UMAP.
-#' @param feature Feature to be visualized on the UMAP, Default: 'TOP2A'.
-#' @param obj Seurat object containing single-cell RNA seq data, Default: combined.obj.
-#' @param title Title of the plot, Default: feature.
-#' @param sub Subtitle of the plot, Default: NULL.
-#' @param reduction Dimension reduction technique to be used. Choose from 'umap', 'tsne', or 'pca'. Default: 'umap'.
-#' @param splitby Column in the metadata to split the cells by, Default: NULL.
-#' @param prefix A prefix added before the filename, Default: NULL.
-#' @param suffix A suffix added to the end of the filename, Default: subtitle.
-#' @param save.plot If TRUE, the plot is saved into a file, Default: TRUE.
-#' @param PNG If TRUE, the file is saved as a .png, Default: TRUE.
-#' @param h Height of the plot in inches, Default: 7.
-#' @param w Width of the plot in inches, Default: NULL.
-#' @param nr.cols Number of columns to combine multiple feature plots, ignored if split.by is not NULL, Default: NULL.
-#' @param assay Which assay to use, 'RNA' or 'integrated', Default: 'RNA'.
-#' @param axes If TRUE, the axes are shown on the plot. Default: FALSE.
-#' @param aspect.ratio Ratio of height to width. If TRUE, the ratio is fixed at 0.6. Default: FALSE.
-#' @param HGNC.lookup If TRUE, the HGNC gene symbol lookup is performed. Default: TRUE.
-#' @param make.uppercase If TRUE, feature names are converted to uppercase. Default: FALSE.
-#' @param qlow Lower quantile for the color scale, Default: 'q10'.
-#' @param qhigh Upper quantile for the color scale, Default: 'q90'.
-#' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.
-#' @param caption Add caption to the ggplot object (e.g. a description in bottom right).
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description Generates a UMAP visualization for a specific feature from a Seurat object, and
+#' automatically saves it. Offers options for custom titles, subtitles, saving, and more. Assumes
+#' default options for custom titles, subtitles, saving, and more.
+#'
+#' @param feature Feature to visualize on the UMAP; Default: 'TOP2A'.
+#' @param obj Seurat object containing single-cell RNA-seq data; Default: `combined.obj`.
+#' @param title Title of the plot; Default: `feature`.
+#' @param sub Subtitle of the plot; Default: NULL.
+#' @param reduction Dimension reduction technique to be used ('umap', 'tsne', or 'pca'); Default: 'umap'.
+#' @param splitby Column in the metadata to split the cells by; Default: NULL.
+#' @param prefix Prefix added before the filename; Default: NULL.
+#' @param suffix Suffix added to the end of the filename; Default: `sub`.
+#' @param save.plot If TRUE, the plot is saved into a file; Default: TRUE.
+#' @param PNG If TRUE, the file is saved as a .png; Default: TRUE.
+#' @param h Height of the plot in inches; Default: 7.
+#' @param w Width of the plot in inches; Default: NULL.
+#' @param nr.cols Number of columns to combine multiple feature plots, ignored if `split.by` is not NULL; Default: NULL.
+#' @param assay Which assay to use ('RNA' or 'integrated'); Default: 'RNA'.
+#' @param axes If TRUE, axes are shown on the plot; Default: FALSE.
+#' @param aspect.ratio Ratio of height to width. If TRUE, the ratio is fixed at 0.6; Default: FALSE.
+#' @param HGNC.lookup If TRUE, HGNC gene symbol lookup is performed; Default: TRUE.
+#' @param make.uppercase If TRUE, feature names are converted to uppercase; Default: FALSE.
+#' @param qlow Lower quantile for the color scale; Default: 'q10'.
+#' @param qhigh Upper quantile for the color scale; Default: 'q90'.
+#' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional; Default: TRUE.
+#' @param caption Adds a caption to the ggplot object; Default: dynamically generated from `obj`.
+#' @param ... Additional parameters to pass to the internally called functions.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   qUMAP("nFeature_RNA")
-#'   qUMAP("TOP2A")
+#'   if (interactive()) {
+#'     qUMAP(feature = "nFeature_RNA", obj = yourSeuratObject)
+#'     qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
+#'   }
 #' }
-#' }
-#' @importFrom MarkdownHelpers TRUE.unless
 #'
 #' @export
+#' @importFrom Seurat FeaturePlot NoLegend NoAxes
+#' @importFrom ggplot2 ggtitle coord_fixed labs
 qUMAP <- function(
     feature = "TOP2A", obj = combined.obj,
     title = feature, sub = NULL,
@@ -1739,9 +1744,8 @@ qUMAP <- function(
   ggplot.obj <- Seurat::FeaturePlot(obj,
     features = feature,
     reduction = reduction,
-    min.cutoff = qlow, max.cutoff = qhigh
-    # , plotname = ppp(toupper(reduction), feature)
-    , ncol = nr.cols,
+    min.cutoff = qlow, max.cutoff = qhigh,
+    ncol = nr.cols,
     split.by = splitby,
     ...
   ) +
@@ -1761,45 +1765,50 @@ qUMAP <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title clUMAP
+#' @title Quick Visualization of Clustering Results with UMAP and automatically save the plot
 #'
-#' @description The quickest way to draw a clustering result UMAP.
-#' @param ident Identity to be used for clustering, Default: 'integrated_snn_res.0.5'.
-#' @param obj Seurat object containing single-cell RNA seq data, Default: combined.obj.
-#' @param reduction Dimension reduction technique to be used. Choose from 'umap', 'tsne', or 'pca'. Default: 'umap'.
-#' @param splitby Column in the metadata to split the cells by, Default: NULL.
-#' @param title Title of the plot, Default: ident.
-#' @param sub Subtitle of the plot, Default: NULL.
-#' @param prefix A prefix added before the filename, Default: NULL.
-#' @param suffix A suffix added to the end of the filename, Default: sub.
-#' @param label.cex Scaling factor for label sizes, Default: 7.
-#' @param h Height of the plot in inches, Default: 7.
-#' @param w Width of the plot in inches, Default: NULL.
-#' @param nr.cols Number of columns to combine multiple feature plots, ignored if split.by is not NULL, Default: NULL.
-#' @param plotname Title of the plot, Default: ppp(toupper(reduction), ident).
-#' @param cols Colors to be used for the plot, Default: NULL.
-#' @param palette Color palette to be used, Default: 'glasbey'.
-#' @param highlight.clusters Specific clusters to be highlighted, Default: NULL.
-#' @param cells.highlight Specific cells to be highlighted, Default: NULL.
-#' @param label If TRUE, clusters are labeled, Default: TRUE.
-#' @param repel If TRUE, labels are repelled to avoid overlap, Default: TRUE.
-#' @param legend If TRUE, a legend is added to the plot, Default: !label.
-#' @param axes If TRUE, the axes are shown on the plot. Default: FALSE.
-#' @param aspect.ratio Ratio of height to width. If TRUE, the ratio is fixed at 0.6. Default: TRUE.
-#' @param MaxCategThrHP Maximum threshold for the number of categories, Default: 200.
-#' @param save.plot If TRUE, the plot is saved into a file, Default: TRUE.
-#' @param PNG If TRUE, the file is saved as a .png, Default: TRUE.
-#' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.
-#' @param caption Add caption to the ggplot object (e.g. a description in bottom right).
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description Generates a UMAP visualization based on clustering results from a Seurat object,
+#' and automatically saves it. Offers options for custom titles, subtitles, saving, and more. Assumes
+#' default options for custom titles, subtitles, saving, and more.
+#'
+#' @param ident Cluster identity for visualization; Default: 'integrated_snn_res.0.5'.
+#' @param obj Seurat object containing single-cell data; Default: `combined.obj`.
+#' @param reduction Dimension reduction method ('umap', 'tsne', 'pca'); Default: 'umap'.
+#' @param splitby Metadata column to split cells by; optional; Default: NULL.
+#' @param title Main title of the plot; Default: `ident`.
+#' @param sub Subtitle of the plot; optional; Default: NULL.
+#' @param prefix Prefix for saved filename; optional; Default: NULL.
+#' @param suffix Suffix for saved filename; defaults to plot subtitle; Default: NULL.
+#' @param label.cex Size of cluster labels; Default: 7.
+#' @param h Height of plot in inches; Default: 7.
+#' @param w Width of plot in inches; optional; Default: NULL.
+#' @param nr.cols Number of columns for facet wrap if `splitby` is not NULL; Default: NULL.
+#' @param plotname Custom plot name for saving; Default: dynamically generated from `reduction` and `ident`.
+#' @param cols Custom color vector for clusters; optional; Default: NULL.
+#' @param palette Color palette for generating cluster colors; Default: 'glasbey'.
+#' @param highlight.clusters Specific clusters to be highlighted; optional; Default: NULL.
+#' @param cells.highlight Specific cells to be highlighted; optional; Default: NULL.
+#' @param label Show cluster labels; Default: TRUE.
+#' @param repel Repel labels to avoid overlap; Default: TRUE.
+#' @param legend Show legend; Default: opposite of `label`.
+#' @param axes Show axes; Default: FALSE.
+#' @param aspect.ratio Fixed aspect ratio for the plot; Default: TRUE.
+#' @param MaxCategThrHP Maximum number of categories before simplification; Default: 200.
+#' @param save.plot Save plot to file; Default: TRUE.
+#' @param PNG Save as PNG (TRUE) or PDF (FALSE); Default: TRUE.
+#' @param check_for_2D Ensure UMAP is 2D; Default: TRUE.
+#' @param caption Plot caption; optional; Default: dynamically generated from `obj`.
+#' @param ... Additional parameters for `DimPlot`.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   clUMAP("cl.names.KnownMarkers.0.5")
-#'   clUMAP("cl.names.KnownMarkers.0.5", cols = NULL)
+#'   clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj)
+#'   clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj, cols = RColorBrewer::brewer.pal(8, "Dark2"))
 #' }
-#' }
-#' @importFrom MarkdownHelpers TRUE.unless
+#'
+#' @importFrom ggplot2 ggtitle labs coord_fixed ggsave
+#' @importFrom Seurat DimPlot NoLegend NoAxes
+#' @importFrom RColorBrewer brewer.pal
 #'
 #' @export
 clUMAP <- function(
@@ -1909,6 +1918,9 @@ clUMAP <- function(
 #' }
 #' }
 #' @export
+#' @importFrom Seurat DimPlot NoLegend
+#' @importFrom ggplot2 ggtitle
+#' @importFrom cowplot save_plot
 umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, ext = "png", ...) { # Plot and save umap based on a metadata column.
   fname <- ppp("Named.clusters", metaD.colname, ext)
   p.named <-
@@ -1918,6 +1930,7 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
   save_plot(p.named, filename = fname)
   p.named
 }
+?ggtitle
 
 
 
@@ -1939,6 +1952,8 @@ umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.
 #' @seealso
 #' \code{\link[Seurat]{DimPlot}}
 #' @export
+#' @importFrom Seurat DimPlot
+#' @importFrom ggplot2 ggsave
 
 umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based on clusterIDs provided.
                            COI = c("0", "2", "4", "5", "11"), res.cl = "integrated_snn_res.0.3") {
@@ -2714,6 +2729,7 @@ FlipReductionCoordinates <- function(
 #' }
 #' }
 #' @export
+#' @importFrom Seurat FetchData
 AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers along a UMAP (or tSNE) axis
                                , dim = 1, swap = FALSE, reduction = "umap", res = "RNA_snn_res.0.5") {
   dim_name <- kppu(toupper(reduction), dim)
@@ -2760,6 +2776,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 #'  \code{\link[princurve]{principal_curve}}
 #' @importFrom princurve principal_curve whiskers
 #' @importFrom MarkdownReports wplot_save_this
+#' @importFrom Seurat FetchData
 #'
 #' @export
 AutoNumber.by.PrinCurve <- function(
@@ -3039,6 +3056,7 @@ ww.check.quantile.cutoff.and.clip.outliers <-
 #' }
 #' }
 #' @importFrom plotly plot_ly layout
+#' @importFrom Seurat FetchData
 #'
 #' @export
 
@@ -3106,6 +3124,7 @@ plot3D.umap.gene <- function(
 #' }
 #' }
 #' @importFrom plotly plot_ly layout
+#' @importFrom Seurat FetchData
 #'
 #' @export
 
@@ -3260,6 +3279,8 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { #
 #' @param plotting.data. The data frame containing plotting data. Default: plotting.data
 #' @param AnnotCateg The category for which the annotation is generated. Default: AutoAnnotBy
 #' @export
+#' @importFrom dplyr group_by summarise
+#' @importFrom Seurat FetchData
 
 Annotate4Plotly3D <- function(
     obj = combined.obj # Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations
