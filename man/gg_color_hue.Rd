@@ -2,21 +2,26 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{gg_color_hue}
 \alias{gg_color_hue}
-\title{gg_color_hue}
+\title{Reproduce the ggplot2 default color palette}
 \usage{
 gg_color_hue(n)
 }
 \arguments{
-\item{n}{The number of colors to generate.}
+\item{n}{Integer specifying the number of distinct colors to generate.}
 }
 \value{
-A vector of colors emulating the default color palette of ggplot2.
+A character vector of color values in hexadecimal format, replicating the default hue
+color scale of ggplot2.
 }
 \description{
-Emulates the default color palette of ggplot2. Source:  https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
+Generates a vector of colors that emulates the default color palette used by ggplot2.
+This function is useful for creating color sets for custom plotting functions or for applications
+outside of ggplot2 where a similar aesthetic is desired.
 }
 \examples{
 \dontrun{
-gg_color_hue(5)
+# Generate a palette of 5 colors
+print(gg_color_hue(5))
 }
+
 }

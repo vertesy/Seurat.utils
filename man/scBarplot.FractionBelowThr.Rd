@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{scBarplot.FractionBelowThr}
 \alias{scBarplot.FractionBelowThr}
-\title{scBarplot.FractionBelowThr}
+\title{Fraction of Cells Below Threshold per Cluster}
 \usage{
 scBarplot.FractionBelowThr(
   thrX = 0.01,
@@ -13,26 +13,26 @@ scBarplot.FractionBelowThr(
 )
 }
 \arguments{
-\item{thrX}{The threshold value to determine the fraction of cells. Default: 0.01}
+\item{thrX}{Threshold value for assessing cell counts. Default: 0.01.}
 
-\item{value.col}{Column name from metadata which holds the values for calculating the fraction of cells. Default: 'percent.ribo'}
+\item{value.col}{Metadata column with values for threshold comparison. Default: 'percent.ribo'.}
 
-\item{id.col}{Column name from metadata to be used for identifying clusters. Default: 'cl.names.top.gene.res.0.3'}
+\item{id.col}{Cluster identifier in metadata. Default: 'cl.names.top.gene.res.0.3'.}
 
-\item{obj}{A Seurat object holding single cell data. Default: combined.obj}
+\item{obj}{Seurat object with cell data. Default: \code{combined.obj}.}
 
-\item{return.df}{A logical indicating if the function should return the data frame used to create the plot. Default: FALSE}
+\item{return.df}{If TRUE, returns the data frame instead of the plot. Default: FALSE.}
 }
 \description{
-Create a bar plot showing the fraction of cells, within each cluster, that are below a certain threshold based on a metadata column.
+Generates a bar plot to visualize the percentage of cells within each cluster that
+fall below a specified threshold, according to a metadata column value.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01, return.df = TRUE)
+  scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01)
 }
-}
+
 }
 \seealso{
-\code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
+\code{\link[dplyr]{select}}, \code{\link[dplyr]{group_by}}
 }

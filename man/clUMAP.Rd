@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{clUMAP}
 \alias{clUMAP}
-\title{clUMAP}
+\title{Quick Visualization of Clustering Results with UMAP and automatically save the plot}
 \usage{
 clUMAP(
   ident = "integrated_snn_res.0.5",
@@ -36,70 +36,71 @@ clUMAP(
 )
 }
 \arguments{
-\item{ident}{Identity to be used for clustering, Default: 'integrated_snn_res.0.5'.}
+\item{ident}{Cluster identity for visualization; Default: 'integrated_snn_res.0.5'.}
 
-\item{obj}{Seurat object containing single-cell RNA seq data, Default: combined.obj.}
+\item{obj}{Seurat object containing single-cell data; Default: \code{combined.obj}.}
 
-\item{reduction}{Dimension reduction technique to be used. Choose from 'umap', 'tsne', or 'pca'. Default: 'umap'.}
+\item{reduction}{Dimension reduction method ('umap', 'tsne', 'pca'); Default: 'umap'.}
 
-\item{splitby}{Column in the metadata to split the cells by, Default: NULL.}
+\item{splitby}{Metadata column to split cells by; optional; Default: NULL.}
 
-\item{title}{Title of the plot, Default: ident.}
+\item{title}{Main title of the plot; Default: \code{ident}.}
 
-\item{sub}{Subtitle of the plot, Default: NULL.}
+\item{sub}{Subtitle of the plot; optional; Default: NULL.}
 
-\item{prefix}{A prefix added before the filename, Default: NULL.}
+\item{prefix}{Prefix for saved filename; optional; Default: NULL.}
 
-\item{suffix}{A suffix added to the end of the filename, Default: sub.}
+\item{suffix}{Suffix for saved filename; defaults to plot subtitle; Default: NULL.}
 
-\item{label.cex}{Scaling factor for label sizes, Default: 7.}
+\item{label.cex}{Size of cluster labels; Default: 7.}
 
-\item{h}{Height of the plot in inches, Default: 7.}
+\item{h}{Height of plot in inches; Default: 7.}
 
-\item{w}{Width of the plot in inches, Default: NULL.}
+\item{w}{Width of plot in inches; optional; Default: NULL.}
 
-\item{nr.cols}{Number of columns to combine multiple feature plots, ignored if split.by is not NULL, Default: NULL.}
+\item{nr.cols}{Number of columns for facet wrap if \code{splitby} is not NULL; Default: NULL.}
 
-\item{plotname}{Title of the plot, Default: ppp(toupper(reduction), ident).}
+\item{plotname}{Custom plot name for saving; Default: dynamically generated from \code{reduction} and \code{ident}.}
 
-\item{cols}{Colors to be used for the plot, Default: NULL.}
+\item{cols}{Custom color vector for clusters; optional; Default: NULL.}
 
-\item{palette}{Color palette to be used, Default: 'glasbey'.}
+\item{palette}{Color palette for generating cluster colors; Default: 'glasbey'.}
 
-\item{highlight.clusters}{Specific clusters to be highlighted, Default: NULL.}
+\item{highlight.clusters}{Specific clusters to be highlighted; optional; Default: NULL.}
 
-\item{cells.highlight}{Specific cells to be highlighted, Default: NULL.}
+\item{cells.highlight}{Specific cells to be highlighted; optional; Default: NULL.}
 
-\item{label}{If TRUE, clusters are labeled, Default: TRUE.}
+\item{label}{Show cluster labels; Default: TRUE.}
 
-\item{repel}{If TRUE, labels are repelled to avoid overlap, Default: TRUE.}
+\item{repel}{Repel labels to avoid overlap; Default: TRUE.}
 
-\item{legend}{If TRUE, a legend is added to the plot, Default: !label.}
+\item{legend}{Show legend; Default: opposite of \code{label}.}
 
-\item{MaxCategThrHP}{Maximum threshold for the number of categories, Default: 200.}
+\item{MaxCategThrHP}{Maximum number of categories before simplification; Default: 200.}
 
-\item{axes}{If TRUE, the axes are shown on the plot. Default: FALSE.}
+\item{axes}{Show axes; Default: FALSE.}
 
-\item{aspect.ratio}{Ratio of height to width. If TRUE, the ratio is fixed at 0.6. Default: TRUE.}
+\item{aspect.ratio}{Fixed aspect ratio for the plot; Default: TRUE.}
 
-\item{save.plot}{If TRUE, the plot is saved into a file, Default: TRUE.}
+\item{save.plot}{Save plot to file; Default: TRUE.}
 
-\item{PNG}{If TRUE, the file is saved as a .png, Default: TRUE.}
+\item{PNG}{Save as PNG (TRUE) or PDF (FALSE); Default: TRUE.}
 
-\item{check_for_2D}{If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.}
+\item{check_for_2D}{Ensure UMAP is 2D; Default: TRUE.}
 
-\item{caption}{Add caption to the ggplot object (e.g. a description in bottom right).}
+\item{caption}{Plot caption; optional; Default: dynamically generated from \code{obj}.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{...}{Additional parameters for \code{DimPlot}.}
 }
 \description{
-The quickest way to draw a clustering result UMAP.
+Generates a UMAP visualization based on clustering results from a Seurat object,
+and automatically saves it. Offers options for custom titles, subtitles, saving, and more. Assumes
+default options for custom titles, subtitles, saving, and more.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  clUMAP("cl.names.KnownMarkers.0.5")
-  clUMAP("cl.names.KnownMarkers.0.5", cols = NULL)
+  clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj)
+  clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj, cols = RColorBrewer::brewer.pal(8, "Dark2"))
 }
-}
+
 }

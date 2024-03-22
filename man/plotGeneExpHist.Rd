@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{plotGeneExpHist}
 \alias{plotGeneExpHist}
-\title{plotGeneExpHist}
+\title{Histogram of Gene Expression in Seurat Object}
 \usage{
 plotGeneExpHist(
   obj = cobj.H9.L92,
@@ -22,31 +22,49 @@ plotGeneExpHist(
 )
 }
 \arguments{
-\item{obj}{A Seurat object.}
+\item{obj}{Seurat object to analyze; Default: \code{combined.obj}.}
 
-\item{genes}{A vector of genes to plot.}
+\item{genes}{Vector of gene names to include in the analysis; Default: c("MALAT1", "MT-CO1").}
 
-\item{assay}{The name of the assay to use.}
+\item{assay}{Assay to use from the Seurat object; Default: "RNA".}
 
-\item{slot_}{The slot to use.}
+\item{slot_}{Data slot to use ('data' or 'counts'); Default: "data".}
 
-\item{thr_expr}{The expression threshold to use for filtering.}
+\item{thr_expr}{Expression threshold for highlighting in the plot; Default: 10.}
 
-\item{suffix}{A string to append to the title of the plot.}
+\item{suffix}{Additional text to append to the plot title; Default: NULL.}
 
-\item{xlab}{The x-axis label.}
+\item{xlab}{Label for the x-axis; Default: "log10(Summed UMI count @data)".}
 
-\item{return_cells_passing}{Whether to return the number of cells passing the filter.}
+\item{return_cells_passing}{If TRUE, returns count of cells exceeding the expression threshold; Default: TRUE.}
 
-\item{quantile_thr}{The quantile to use for clipping the counts slot.}
+\item{quantile_thr}{Quantile threshold for clipping count data; Default: 0.95.}
 
-\item{return_quantile}{Whether to return the number of cells passing the quantile filter.}
+\item{return_quantile}{If TRUE, returns cell count exceeding the quantile threshold; Default: FALSE.}
 
-\item{...}{Additional arguments passed to \code{qhistogram()}.}
+\item{w}{Width of the plot in inches; Default: 9.}
+
+\item{h}{Height of the plot in inches; Default: 5.}
+
+\item{show_plot}{If TRUE, displays the generated plot; Default: TRUE.}
+
+\item{...}{Additional arguments for customization.}
 }
 \value{
-A ggplot object.
+Depending on the parameters, can return a ggplot object, the number of cells passing
+the expression threshold, or the number of cells exceeding the quantile threshold.
+
+Depending on the parameters, can return a ggplot object, the number of cells passing
+the expression threshold, or the number of cells exceeding the quantile threshold.
 }
 \description{
-This function creates a histogram of gene expression for a given set of genes in a Seurat object.
+Creates and optionally saves a histogram showing expression levels of specified genes
+within a Seurat object. Provides options for aggregate gene expression, expression threshold filtering,
+and quantile clipping for count data.
+}
+\examples{
+\dontrun{
+  plotGeneExpHist(obj = yourSeuratObject, genes = c("GeneA", "GeneB"))
+}
+
 }

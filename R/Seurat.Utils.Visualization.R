@@ -207,10 +207,27 @@ PlotFilters <- function(
 # require('MarkdownReports') # require("devtools")
 
 # _________________________________________________________________________________________________
-#' @title PCA percent of variation associated with each PC
+#' @title Calculate the percent of variation explained by individual PC's
 #'
-#' @description Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
-#' @param obj Seurat object, Default: combined.obj
+#' @description This function calculates the percentage of variation each principal component (PC)
+#' accounts for in a Seurat object. It's specifically tailored for Seurat objects and provides a
+#' convenient way to understand the variance distribution across PCs. For similar calculations on
+#' standard PCA objects, refer to github.com/vertesy/Rocinante `PCA.percent.var.explained()`.
+#'
+#' @param obj A Seurat object from which to calculate the percentage of variation explained by each
+#' PC. Default: `combined.obj`.
+#'
+#' @return A named vector with the percentage of variation explained by each principal component.
+#'
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   data("combined.obj") # Example Seurat object
+#'   var_explained <- scCalcPCAVarExplained(combined.obj)
+#'   print(var_explained)
+#' }
+#' }
+#'
 #' @export
 scCalcPCAVarExplained <- function(obj = combined.obj) { # Determine percent of variation associated with each PC.
   pct <- obj@reductions$pca@stdev / sum(obj@reductions$pca@stdev) * 100
@@ -219,13 +236,37 @@ scCalcPCAVarExplained <- function(obj = combined.obj) { # Determine percent of v
 }
 
 # _________________________________________________________________________________________________
-#' @title scPlotPCAvarExplained
+#' @title Plot the percent of variation explained by individual PC's
 #'
-#' @description Plot the percent of variation associated with each PC.
-#' @param obj Seurat object, Default: combined.obj
-#' @param use.MarkdownReports Use MarkdownReports for plotting, Default: FALSE
+#' @description This function plots the percentage of variation explained by each principal
+#' component (PC) in a Seurat object. It allows for a visual assessment of how much variance is
+#' captured by each PC, which is crucial for dimensionality reduction analyses. Users can choose
+#' between two plotting methods: one using `MarkdownReports` and the other using `ggExpress`.
+#'
+#' @param obj A Seurat object from which to plot the percentage of variation explained by each PC.
+#' Default: `combined.obj`.
+#' @param plotname The title of the plot to be generated. Default: "Variance Explained by Principal
+#' Components".
+#' @param sub Subtitle for the plot, typically including information about the number of cells and
+#' features analyzed. Default: A string generated from `obj` stating the number of cells and
+#' features.
+#' @param use.MarkdownReports Boolean indicating whether to use `MarkdownReports` for plotting.
+#' If `FALSE`, `ggExpress` is used. Default: `FALSE`.
+#'
+#' @return Generates a plot showing the percent of variation each PC accounts for. This function
+#' does not return a value but instead generates a plot directly.
+#'
+#' @examples
+#' \dontrun{
+#' if (interactive()) {
+#'   data("combined.obj") # Example Seurat object
+#'   scPlotPCAvarExplained(combined.obj, use.MarkdownReports = TRUE)
+#' }
+#' }
+#'
 #' @importFrom MarkdownReports wbarplot
 #' @importFrom ggExpress qbarplot
+#'
 #' @export
 scPlotPCAvarExplained <- function(obj = combined.obj,
                                   plotname = "Variance Explained by Principal Components",
@@ -246,15 +287,27 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
 
 
 # _________________________________________________________________________________________________
-#' @title Percent.in.Trome
+#' @title Gene Expression as Fraction of Total UMI Counts
 #'
-#' @description Gene expression as fraction of all UMI's
-#' @param obj Seurat object
-#' @param n.genes.barplot number of top genes shows
-#' @param width.barplot barplot width
-#' @return Seurat object
-#' @examples # combined.obj <- Percent.in.Trome()
-
+#' @description This function computes and visualizes gene expression levels as a fraction of total
+#' UMI (Unique Molecular Identifier) counts across all genes in a Seurat object. It aims to highlight
+#' the relative contribution of the most highly expressed genes to the overall transcriptome.
+#'
+#' @param obj A Seurat object containing gene expression data.
+#' @param n.genes.barplot The number of top genes to be displayed in the final barplot, showing
+#' their expression as a percentage of the total UMIs. Default is 25.
+#' @param width.barplot The width of the barplot that visualizes the highest expressed genes.
+#' Default is a quarter of `n.genes.barplot`.
+#'
+#' @return The same Seurat object passed as input, but with an additional list in the `@misc` slot
+#' named `'TotalReadFraction'` that contains the relative total expression of each gene as a
+#' fraction of total UMIs.
+#'
+#' @examples
+#' \dontrun{
+#' combined.obj <- Percent.in.Trome(combined.obj)
+#' }
+#'
 #' @export
 Percent.in.Trome <- function(
     obj = combined.obj, n.genes.barplot = 25,
@@ -293,13 +346,23 @@ Percent.in.Trome <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title geneExpressionLevelPlots
+#' @title Histogram of Gene Expression Levels
 #'
-#' @description Histogram of gene expression levels.
-#' @param gene gene of interest, Default: 'TOP2A'
-#' @param obj Seurat object, Default: ls.Seurat[[1]]
-#' @param slot slot in the Seurat object. Default: c("counts", "data")[2]
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description This function generates a histogram to visualize the expression level distribution
+#' of a specified gene across all cells in a Seurat object. It highlights the position of the gene
+#' of interest within the overall distribution.
+#'
+#' @param gene The gene of interest for which the expression level distribution is to be plotted.
+#' Default: 'TOP2A'.
+#' @param obj A Seurat object containing the expression data. Default: The first Seurat object in
+#' `ls.Seurat`.
+#' @param slot The slot in the Seurat object from which to retrieve the expression data. Options
+#' include "counts" for raw counts and "data" for normalized (and possibly log-transformed) data.
+#' Default: "data".
+#' @param w The width of the plot. Default: 7.
+#' @param h The height of the plot. Default: 4.
+#' @param ... Any other parameter that can be passed to the internally called functions.
+#'
 #' @export
 geneExpressionLevelPlots <- function(
     gene = "TOP2A", obj = ls.Seurat[[1]],
@@ -329,20 +392,25 @@ geneExpressionLevelPlots <- function(
 }
 
 # _________________________________________________________________________________________________
-#' @title PrctCellExpringGene
+#' @title Proportion of Cells Expressing Given Genes
 #'
-#' @description Function to calculate the proportion of cells expressing a given set of genes.
-#' @param genes A character vector of genes of interest.
-#' @param group.by Grouping variable, Default: 'all'.
-#' @param obj A Seurat object containing cell data. Default: combined.obj.
-#' @return A data frame with the proportion of cells expressing each gene, grouped by the group.by variable.
+#' @description Calculates the proportion of cells expressing one or more specified genes.
+#'
+#' @param genes Character vector of gene names of interest.
+#' @param group.by Optional grouping variable for analysis (e.g., cell type). Default: 'all'.
+#' @param obj Seurat object to analyze. Default: `combined.obj`.
+#'
+#' @return Data frame with genes and their cell expression proportion, optionally grouped.
+#'
 #' @examples
 #' \dontrun{
 #' PrctCellExpringGene(genes = c("Gene1", "Gene2"), obj = seurat_object)
 #' }
-#' @source Adapted from code by Ryan-Zhu on Github (https://github.com/satijalab/seurat/issues/371)
+#'
+#' @source Adapted from Ryan-Zhu on GitHub.
+#'
 #' @export
-PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj) { # From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371
+PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj) {
   if (group.by == "all") {
     prct <- unlist(lapply(genes, ww.calc_helper, object = obj))
     result <- data.frame(Markers = genes, Cell_proportion = prct)
@@ -361,17 +429,22 @@ PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj) { #
 
 
 # _________________________________________________________________________________________________
-#' @title ww.calc_helper
+#' @title Helper to calculate Cell Expression Proportion for Gene
 #'
-#' @description Helper function for PrctCellExpringGene() to calculate the proportion of cells in a Seurat object that express a given gene.
-#' @param obj A Seurat object containing cell data.
-#' @param genes A character vector of genes of interest.
-#' @return The proportion of cells in obj that express the specified gene.
+#' @description Computes the proportion of cells expressing a specific gene within a Seurat object.
+#'
+#' @param obj Seurat object with cell data.
+#' @param genes Single gene name as a character string.
+#'
+#' @return Proportion of cells expressing the gene. Returns `NA` if the gene is not found.
+#'
 #' @examples
 #' \dontrun{
 #' ww.calc_helper(obj = seurat_object, genes = "Gene1")
 #' }
-#' @source Adapted from code by Ryan-Zhu on Github (https://github.com/satijalab/seurat/issues/371)
+#'
+#' @source Adapted from Ryan-Zhu on GitHub.
+#'
 #' @export
 ww.calc_helper <- function(obj, genes) {
   counts <- obj[["RNA"]]@counts
@@ -389,20 +462,28 @@ ww.calc_helper <- function(obj, genes) {
 # Barplots / Compositional analysis ______________________________ ----
 # _________________________________________________________________________________________________
 
-#' @title get.clustercomposition
+#' @title Cluster Composition Analysis
 #'
-#' @description Get cluster composition: which datasets contribute to each cluster?
-#' @param obj Seurat object, Default: combined.obj
-#' @param x Bars along the X axis, Default: 'integrated_snn_res.0.3'
-#' @param y Vertical split of each bar, Default: 'project'
-#' @param color Color, Default: y
-#' @param plot  Show plot, Default: TRUE
-#' @param ScaleTo100pc Scale the Y Axis, Default: TRUE
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples get.clustercomposition()
+#' @description Analyzes and visualizes the composition of clusters in a Seurat object, indicating
+#' the contribution of different datasets to each cluster.
+#'
+#' @param obj Seurat object to analyze. Default: `combined.obj`.
+#' @param ident Cluster identity resolution to use. Default: 'integrated_snn_res.0.3'.
+#' @param splitby Variable to split the data by, typically a project or dataset identifier.
+#' Default: 'ShortNames'.
+#' @param color Bar color. Default: as defined by `splitby`.
+#' @param plot Whether to display the plot. Default: TRUE.
+#' @param ScaleTo100pc Whether to scale Y axis to 100%. Default: TRUE.
+#' @param ... Additional parameters for plotting functions.
+#'
+#' @return If `plot` is TRUE, displays a bar plot showing the composition of each cluster. Otherwise,
+#' performs the analysis without plotting.
+#'
+#' @examples
 #' get.clustercomposition()
+#'
 #' @export
-#' @importFrom dplyr group_by_
+#' @importFrom dplyr group_by_ summarise
 #' @importFrom scales percent_format
 get.clustercomposition <- function(
     obj = combined.obj, ident = "integrated_snn_res.0.3", splitby = "ShortNames",
@@ -643,28 +724,30 @@ scBarplot.CellFractions <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title scBarplot.CellsPerCluster
+#' @title Barplot of Fraction of Cells per Cluster
 #'
-#' @description Barplot the Fraction of cells per cluster. (dupl?)
-#' @param obj Seurat object, Default: combined.obj
-#' @param ident identity used, Default: 'cl.names.KnownMarkers.0.5'
-#' @param label True: displays cell count, but you can provide anything in a vector.
-#' @param palette Color palette. Default: glasbey.
-#' @param return_table Should it return the plotting data instead of the plot?
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @param sort Sort by cluster size? Default: FALSE
-#' @param min.cells Threshold for too small categories.
-#' @param suffix File name suffix
+#' @description Visualizes the fraction of cells within each cluster through a barplot.
 #'
-#' @importFrom ggExpress qbarplot
+#' @param obj Seurat object for analysis. Default: `combined.obj`.
+#' @param ident Cluster identity. Used to specify which clustering results to visualize.
+#' Default: First entry from ordered clustering runs.
+#' @param sort If TRUE, sorts clusters by size. Default: FALSE.
+#' @param label If TRUE, shows cell count or percentage based on the label vector. Default: TRUE.
+#' @param palette Color palette for the barplot. Default: 'glasbey'.
+#' @param return_table If TRUE, returns the data used for plotting instead of the plot itself. Default: FALSE.
+#' @param min.cells Minimum cell count threshold for categories. Adjusted by data size.
+#' @param suffix Optional suffix for file naming. Used in conjunction with `kpp`.
+#' @param ylab_adj Adjustment factor for y-axis label positioning. Default: 1.1.
+#' @param ... Additional parameters for internal function calls.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
 #'   scBarplot.CellsPerCluster()
 #'   scBarplot.CellsPerCluster(sort = TRUE)
 #' }
-#' }
 #' @export scBarplot.CellsPerCluster
+#'
+#' @importFrom ggExpress qbarplot
 
 scBarplot.CellsPerCluster <- function(
     ident = GetOrderedClusteringRuns(obj = obj)[1],
@@ -721,15 +804,20 @@ scBarplot.CellsPerCluster <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title scBarplot.CellsPerObject
+#' @title Barplot of Cells Per Seurat Object
 #'
-#' @description Creates a bar plot for the number of cells per object from a list of Seurat objects.
-#' @param ls.Seu A list of Seurat objects. Default: ls.Seurat.
-#' @param plotname A string specifying the title of the plot. Default: 'Nr.Cells.After.Filtering'.
-#' @param xlab.angle The angle at which the x-axis labels should be displayed. Default: 45.
-#' @param names A logical value indicating whether to use the provided names as labels on the x-axis. If FALSE, the names of the Seurat objects will be used. Default: FALSE.
-#' @param ... Additional arguments to be passed to the qbarplot function.
-#' @export
+#' @description Visualizes the number of cells in each Seurat object within a list, showing the
+#' distribution of cell counts across different datasets or experimental conditions.
+#'
+#' @param ls.Seu List of Seurat objects to analyze. Default: `ls.Seurat`.
+#' @param plotname Title for the plot. Default: 'Nr.Cells.After.Filtering'.
+#' @param xlab.angle Angle for x-axis labels, enhancing readability. Default: 45.
+#' @param names Optionally provide custom names for x-axis labels. If FALSE, uses object names
+#' from `ls.Seu`. Default: FALSE.
+#' @param ... Extra parameters passed to `qbarplot`.
+#'
+#' @export scBarplot.CellsPerObject
+
 scBarplot.CellsPerObject <- function(
     ls.Seu = ls.Seurat,
     plotname = "Nr.Cells.After.Filtering", xlab.angle = 45,
@@ -748,23 +836,27 @@ scBarplot.CellsPerObject <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title plotClustSizeDistr
+#' @title Cluster Size Distribution Plot (Barplot or Histogram)
 #'
-#' @description Creates a bar plot or histogram of the cluster size distribution from a given Seurat object.
-#' @param obj The Seurat object to be used for the plot. Default: combined.obj.
-#' @param ident The identity or clustering to be used for the plot. Default: The second result from GetClusteringRuns().
-#' @param plot A logical value indicating whether to plot the data. If FALSE, a vector of the cluster size distribution will be returned. Default: TRUE.
-#' @param thr.hist A threshold for the number of clusters above which a histogram will be plotted instead of a bar plot. Default: 30.
-#' @param ... Additional arguments to be passed to the internally called plotting functions.
+#' @description Generates a bar plot or histogram to visualize the size distribution of clusters
+#' within a Seurat object, based on the specified clustering identity.
+#'
+#' @param obj Seurat object for analysis. Default: `combined.obj`.
+#' @param ident Clustering identity to base the plot on.
+#' Default: The second entry from `GetClusteringRuns()`.
+#' @param plot Whether to display the plot (TRUE) or return cluster sizes (FALSE). Default: TRUE.
+#' @param thr.hist Threshold for switching from a bar plot to a histogram based on the number of
+#' clusters. Default: 30.
+#' @param ... Extra parameters for the plot.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
 #'   plotClustSizeDistr()
 #' }
-#' }
+#'
 #' @importFrom ggExpress qbarplot qhistogram
 #'
-#' @export plotClustSizeDistr
+#' @export
 plotClustSizeDistr <- function(
     obj = combined.obj, ident,
     plot = TRUE, thr.hist = 30, ...) {
@@ -804,28 +896,29 @@ plotClustSizeDistr <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title  Calculate the fraction of cells per cluster above a certain threhold
+#' @title Barplot the Fraction of Cells Above Threshold per Cluster
 #'
-#' @description Create a bar plot showing the fraction of cells, within each cluster, that exceed a certain threshold based on a metadata column.
-#' @param thrX The threshold value to determine the fraction of cells. Default: 0.3
-#' @param value.col Column name from metadata which holds the values for calculating the fraction of cells. Default: 'percent.ribo'
-#' @param id.col Column name from metadata to be used for identifying clusters. Default: 'cl.names.top.gene.res.0.3'
-#' @param obj A Seurat object holding single cell data. Default: combined.obj
-#' @param suffix An optional suffix for the filename.
-#' @param return.df A logical indicating if the function should return the data frame used to create the plot. Default: FALSE
-#' @param label A logical indicating if labels should be added to the bar plot. Default: FALSE
-#' @param subtitle Subtitle
-#' @param ... Additional parameters to pass to internally called functions.
+#' @description Generates a bar plot depicting the percentage of cells within each cluster that
+#' exceed a specified threshold, based on a selected metadata column.
+#'
+#' @param thrX Threshold for calculating the fraction of cells. Default: 0.3.
+#' @param value.col Column in metadata with values to assess against `thrX`. Default: 'percent.ribo'.
+#' @param id.col Cluster identity column in metadata. Default: 'cl.names.top.gene.res.0.3'.
+#' @param obj Seurat object with single-cell data. Default: `combined.obj`.
+#' @param return.df Whether to return the underlying data frame instead of the plot. Default: FALSE.
+#' @param label Whether to add labels to the bar plot. Default: FALSE.
+#' @param subtitle Optional subtitle for the plot.
+#' @param suffix Suffix for the output file name.
+#' @param ... Additional parameters for plotting functions.
 #'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   scBarplot.FractionAboveThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0)
+#'   scBarplot.FractionAboveThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.3)
 #' }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
-#' @importFrom dplyr select group_by_
+#'
+#' @seealso \code{\link[dplyr]{select}}, \code{\link[dplyr]{group_by}}
+#'
+#' @importFrom dplyr select group_by summarize
 #'
 #' @export
 scBarplot.FractionAboveThr <- function(
@@ -878,23 +971,25 @@ scBarplot.FractionAboveThr <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title scBarplot.FractionBelowThr
+#' @title Fraction of Cells Below Threshold per Cluster
 #'
-#' @description Create a bar plot showing the fraction of cells, within each cluster, that are below a certain threshold based on a metadata column.
-#' @param thrX The threshold value to determine the fraction of cells. Default: 0.01
-#' @param value.col Column name from metadata which holds the values for calculating the fraction of cells. Default: 'percent.ribo'
-#' @param id.col Column name from metadata to be used for identifying clusters. Default: 'cl.names.top.gene.res.0.3'
-#' @param obj A Seurat object holding single cell data. Default: combined.obj
-#' @param return.df A logical indicating if the function should return the data frame used to create the plot. Default: FALSE
+#' @description Generates a bar plot to visualize the percentage of cells within each cluster that
+#' fall below a specified threshold, according to a metadata column value.
+#'
+#' @param thrX Threshold value for assessing cell counts. Default: 0.01.
+#' @param value.col Metadata column with values for threshold comparison. Default: 'percent.ribo'.
+#' @param id.col Cluster identifier in metadata. Default: 'cl.names.top.gene.res.0.3'.
+#' @param obj Seurat object with cell data. Default: `combined.obj`.
+#' @param return.df If TRUE, returns the data frame instead of the plot. Default: FALSE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01, return.df = TRUE)
+#'   scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01)
 #' }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
-#' @importFrom dplyr select group_by_
+#'
+#' @seealso \code{\link[dplyr]{select}}, \code{\link[dplyr]{group_by}}
+#'
+#' @importFrom dplyr select group_by summarize
 #'
 #' @export
 scBarplot.FractionBelowThr <- function(
@@ -972,18 +1067,25 @@ scBarplotStackedMetaCateg_List <- function(ls.obj, meta.col
 # _________________________________________________________________________________________________
 # Colors ______________________________ ----
 # _________________________________________________________________________________________________
-#' @title gg_color_hue
+#' @title Reproduce the ggplot2 default color palette
 #'
-#' @description Emulates the default color palette of ggplot2. Source:  https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
-#' @param n The number of colors to generate.
-#' @return A vector of colors emulating the default color palette of ggplot2.
+#' @description Generates a vector of colors that emulates the default color palette used by ggplot2.
+#' This function is useful for creating color sets for custom plotting functions or for applications
+#' outside of ggplot2 where a similar aesthetic is desired.
+#'
+#' @param n Integer specifying the number of distinct colors to generate.
+#'
+#' @return A character vector of color values in hexadecimal format, replicating the default hue
+#' color scale of ggplot2.
+#'
 #' @examples
 #' \dontrun{
-#' gg_color_hue(5)
+#' # Generate a palette of 5 colors
+#' print(gg_color_hue(5))
 #' }
-#' @export gg_color_hue
-
-gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
+#'
+#' @export
+gg_color_hue <- function(n) {
   hues <- seq(15, 375, length = n + 1)
   hcl(h = hues, l = 65, c = 100)[1:n]
 }
@@ -1048,23 +1150,31 @@ getDiscretePalette <- function() .Deprecated("DiscretePaletteSafe and DiscretePa
 
 
 # _________________________________________________________________________________________________
-#' @title Generate a discrete color palette for a Seurat object.
+#' @title Generate a Discrete Color Palette for Seurat Clusters
 #'
-#' @description Wrapper function that utilizes `DiscretePaletteSafe` to generate a color
-#' palette based on the number of unique clusters in a Seurat object.
-#' @param ident.used The identity column used for determining the number of clusters.
-#' @param obj Seurat object.
-#' @param palette.used The name of the palette to use, Default: "alphabet".
-#' @param show.colors Whether to display the colors in the palette, Default: FALSE.
-#' @param seed An integer value to set the seed for reproducibility, Default: 1989.
-#' @return A vector of color values.
+#' @description Generates a discrete color palette for visualizing clusters in a Seurat object,
+#' using a specified identity column to determine the number of unique clusters.
+#'
+#' @param ident.used Identity column in the Seurat object to base the color palette on.
+#' @param obj Seurat object containing clustering information.
+#' @param palette.used The palette name to use for color generation. Options include "alphabet",
+#' "alphabet2", "glasbey", "polychrome", and "stepped". Default: "alphabet2".
+#' @param show.colors If TRUE, displays the generated colors. Default: FALSE.
+#' @param seed Seed for random color generation, ensuring reproducibility. Default: 1989.
+#'
+#' @return A character vector of color values corresponding to the number of clusters.
+#'
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   getDiscretePaletteObj(ident.used = "ident", obj = yourSeuratObj)
+#'   ident.used <- "resolution_1"
+#'   obj <- YourSeuratObject
+#'   colors <- getDiscretePaletteObj(ident.used = ident.used, obj = obj)
+#'   print(colors)
 #' }
 #' }
-#' @export getDiscretePaletteObj
+#'
+#' @export
 getDiscretePaletteObj <- function(ident.used,
                                   obj,
                                   palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
@@ -1085,24 +1195,30 @@ getDiscretePaletteObj <- function(ident.used,
 
 
 # _________________________________________________________________________________________________
-#' @title Safely generate a discrete color palette.
+#' @title Safely generate a Discrete color palette.
 #'
-#' @description Generates a discrete color palette safely without NA values.
-#' @param n The number of colors to generate.
-#' @param palette.used The name of the palette to use, Default: "alphabet".
-#' @param show.colors Whether to display the colors in the palette, Default: FALSE.
-#' @param seed An integer value to set the seed for reproducibility, Default: 1989.
-#' @return A vector of color values.
+#' @description Generates a discrete color palette, ensuring no NA values are included, suitable
+#' for visualizations where a specific number of distinct, reproducible colors is needed.
+#'
+#' @param n Number of colors to generate.
+#' @param palette.used Palette name to use for generating colors. Options include "alphabet",
+#' "alphabet2", "glasbey", "polychrome", "stepped". Default: "alphabet2".
+#' @param show.colors If TRUE, displays the generated color palette. Default: FALSE.
+#' @param seed Seed value for reproducibility, especially when random color generation is involved.
+#' Default: 1989.
+#'
+#' @return Character vector of HEX color values.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   DiscretePaletteSafe(n = 10)
+#'   colors <- DiscretePaletteSafe(n = 10)
+#'   print(colors)
 #' }
-#' }
+#'
 #' @importFrom gplots rich.colors
 #' @importFrom Seurat DiscretePalette
 #'
-#' @export DiscretePaletteSafe
+#' @export
 DiscretePaletteSafe <- function(n,
                                 palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
                                 show.colors = FALSE,
@@ -1136,21 +1252,28 @@ DiscretePaletteSafe <- function(n,
 
 
 # _________________________________________________________________________________________________
-#' @title getClusterColors
+#' @title Regenerate Cluster Colors from a Seurat Object
 #'
-#' @description get Seurat's cluster colors.
-#' @param obj Seurat object, Default: combined.obj
-#' @param ident identity used, Default: GetClusteringRuns()[1]
-#' @param show Show plot of colors? Default: TRUE
+#' @description Regenerate and optionally displays the color scheme associated with the clusters
+#' in a Seurat object as defined by a specified identity column.
+#'
+#' @param obj Seurat object containing clustering information.
+#' @param use_new_palettes Logical indicating whether to use custom palettes defined in
+#' `DiscretePalette` function. Default: TRUE.
+#' @param palette Name of the color palette to use if `use_new_palettes` is TRUE.
+#' Options: "alphabet", "alphabet2", "glasbey", "polychrome", "stepped". Default: "glasbey".
+#' @param ident Clustering identity to use for coloring. Retrieved from the first entry
+#' of `GetClusteringRuns()` by default.
+#' @param show If TRUE, displays a plot showing the color mapping for each cluster. Default: TRUE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[2])
+#'   if (interactive()) {
+#'     getClusterColors(obj = combined.obj, ident = GetClusteringRuns(combined.obj)[1])
+#'   }
 #' }
-#' }
-#' @seealso
-#'  \code{\link[scales]{hue_pal}}
 #' @export
+#'
 #' @importFrom scales hue_pal
 getClusterColors <- function(
     obj = combined.obj,
@@ -1165,43 +1288,52 @@ getClusterColors <- function(
   } else {
     scales::hue_pal()(length(identities))
   }
-  # color_check(color_palette)
-  # names(color_palette) <- sort(as.factor(identities))
+
   names(color_palette) <- (identities)
   identvec <- obj[[ident]][, 1]
   colz <- color_palette[identvec]
   names(colz) <- identvec
-  if (show) color_check(unique(colz)) # MarkdownReports
+  if (show) MarkdownHelpers::color_check(unique(colz))
   colz
 }
 
 
 
 # _________________________________________________________________________________________________
-#' @title SeuratColorVector
+#' @title Regenerate Color Scheme for Clusters in Seurat Object as a vector
 #'
-#' @description Recall a Seurat color vector.
-#' @param ident identity used, Default: NULL
-#' @param obj Seurat object, Default: combined.obj
-#' @param plot.colors Show colors? Default: FALSE
-#' @param simple Return simply the unique colors, in order? Default: FALSE
+#' @description Extracts and optionally displays the color scheme assigned to cluster identities
+#' within a Seurat object, facilitating consistent color usage across visualizations. You can
+#' check results in a barplot with `MarkdownHelpers::color_check()`.
+#'
+#' @param ident Specific clustering identity to use for color extraction.
+#' If NULL, the active identity in `obj` is used. Default: NULL.
+#' @param obj Seurat object from which to extract cluster colors.
+#' Default: `combined.obj`.
+#' @param plot.colors If TRUE, visually displays the color scheme.
+#' Default: FALSE.
+#' @param simple If TRUE, returns only the unique set of colors used.
+#' If FALSE, returns a named vector mapping cluster identities to colors.
+#' Default: FALSE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
+#'   # Display colors for the active identity
 #'   SeuratColorVector()
-#'   SeuratColorVector(ident = GetNamedClusteringRuns()[2], plot.colors = TRUE)
+#'   # Retrieve and plot colors for a specified clustering identity
+#'   SeuratColorVector(ident = "RNA_snn_res.1", plot.colors = TRUE)
 #' }
-#' }
-#' @seealso
-#'  \code{\link[scales]{hue_pal}}
+#'
+#' @seealso \code{\link[scales]{hue_pal}}
+#'
 #' @export
 #' @importFrom scales hue_pal
-
 SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = FALSE, simple = FALSE) {
   if (!is.null(ident)) {
     print(ident)
     ident.vec <- obj[[ident]][, 1]
   } else {
+    print(obj@active.ident)
     ident.vec <- obj@active.ident
   }
   ident.vec <- as.factor(ident.vec)
@@ -1290,28 +1422,35 @@ plotAndSaveHeatmaps <-function(results, path = getwd(), file.prefix = "heatmap_"
 
 
 # _________________________________________________________________________________________________
-#' @title qFeatureScatter
+#' @title Scatter Plot of Two Features in Seurat Object
 #'
-#' @description Generates and optionally saves a scatter plot of two features from a Seurat object.
-#' @param feature1 Name of the first feature to plot. Default: 'TOP2A'.
-#' @param feature2 Name of the second feature to plot. Default: 'ID2'.
-#' @param obj Seurat object from which to extract feature data. Default: combined.obj.
-#' @param ext File extension for the saved plot. Default: 'png'.
-#' @param logX Logical indicating whether to apply a logarithmic transformation to the x-axis. Default: FALSE.
-#' @param logY Logical indicating whether to apply a logarithmic transformation to the y-axis. Default: FALSE.
-#' @param plot Logical indicating whether to display the plot. Default: TRUE.
-#' @param ... Additional arguments to pass to the FeatureScatter function.
-#' @return If `plot` is TRUE, a ggplot object containing the feature scatter plot is returned.
+#' @description Generates a scatter plot comparing two features (genes or metrics) from a Seurat
+#' object and optionally saves it. The function wraps around Seurat's `FeatureScatter` for
+#' enhanced usability, including optional logarithmic transformations and saving capabilities.
+#'
+#' @param feature1 The first feature for the scatter plot's x-axis.
+#' @param feature2 The second feature for the scatter plot's y-axis.
+#' @param obj Seurat object containing the data for features.
+#' @param ext File extension for saving the plot, if enabled.
+#' @param plot Flag to display the plot within the R session.
+#' @param logX Apply logarithmic transformation to x-axis values.
+#' @param logY Apply logarithmic transformation to y-axis values.
+#' @param ... Additional parameters passed to Seurat's `FeatureScatter`.
+#'
+#' @return A `ggplot` object of the feature scatter plot if `plot` is TRUE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   qFeatureScatter(feature1 = "Gene1", feature2 = "Gene2", obj = seuratObject)
+#'   # Generate and display a scatter plot for features TOP2A and ID2
+#'   qFeatureScatter(feature1 = "TOP2A", feature2 = "ID2", obj = yourSeuratObject)
 #' }
-#' }
-#' @seealso
-#' \code{\link[Seurat]{FeatureScatter}}, \code{\link[ggplot2]{ggplot}}
+#'
+#' @seealso \code{\link[Seurat]{FeatureScatter}}, \code{\link[ggplot2]{ggplot}}
+#'
 #' @export
-
+#' @importFrom ggExpress qqSave
+#' @importFrom Seurat FeatureScatter
+#' @importFrom ggplot2 ggtitle theme_linedraw scale_x_log10 scale_y_log10
 qFeatureScatter <- function(
     feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj,
     ext = "png", plot = TRUE,
@@ -1423,25 +1562,43 @@ qSeuViolin <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title plotGeneExpHist
+#' @title Histogram of Gene Expression in Seurat Object
 #'
-#' @description This function creates a histogram of gene expression for a given set of genes in a Seurat object.
-#' @param obj A Seurat object.
-#' @param genes A vector of genes to plot.
-#' @param assay The name of the assay to use.
-#' @param slot_ The slot to use.
-#' @param thr_expr The expression threshold to use for filtering.
-#' @param suffix A string to append to the title of the plot.
-#' @param xlab The x-axis label.
-#' @param return_cells_passing Whether to return the number of cells passing the filter.
-#' @param quantile_thr The quantile to use for clipping the counts slot.
-#' @param return_quantile Whether to return the number of cells passing the quantile filter.
-#' @param ... Additional arguments passed to `qhistogram()`.
+#' @description Creates and optionally saves a histogram showing expression levels of specified genes
+#' within a Seurat object. Provides options for aggregate gene expression, expression threshold filtering,
+#' and quantile clipping for count data.
 #'
-#' @return A ggplot object.
-#' @importFrom MarkdownHelpers filter_HP
+#' @param obj Seurat object to analyze; Default: `combined.obj`.
+#' @param genes Vector of gene names to include in the analysis; Default: c("MALAT1", "MT-CO1").
+#' @param assay Assay to use from the Seurat object; Default: "RNA".
+#' @param slot_ Data slot to use ('data' or 'counts'); Default: "data".
+#' @param thr_expr Expression threshold for highlighting in the plot; Default: 10.
+#' @param suffix Additional text to append to the plot title; Default: NULL.
+#' @param xlab Label for the x-axis; Default: "log10(Summed UMI count @data)".
+#' @param return_cells_passing If TRUE, returns count of cells exceeding the expression threshold; Default: TRUE.
+#' @param quantile_thr Quantile threshold for clipping count data; Default: 0.95.
+#' @param return_quantile If TRUE, returns cell count exceeding the quantile threshold; Default: FALSE.
+#' @param w Width of the plot in inches; Default: 9.
+#' @param h Height of the plot in inches; Default: 5.
+#' @param show_plot If TRUE, displays the generated plot; Default: TRUE.
+#' @param ... Additional arguments for customization.
+#'
+#' @return Depending on the parameters, can return a ggplot object, the number of cells passing
+#' the expression threshold, or the number of cells exceeding the quantile threshold.
+#'
+#' @examples
+#' \dontrun{
+#'   plotGeneExpHist(obj = yourSeuratObject, genes = c("GeneA", "GeneB"))
+#' }
+#'
+#' @return Depending on the parameters, can return a ggplot object, the number of cells passing
+#' the expression threshold, or the number of cells exceeding the quantile threshold.
 #'
 #' @export
+#' @importFrom scales hue_pal
+#' @importFrom Seurat GetAssayData
+#' @importFrom ggplot2 geom_vline labs
+#' @importFrom ggExpress qhistogram
 plotGeneExpHist <- function(
     obj = cobj.H9.L92, genes = c("MALAT1", "MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN"),
     assay = "RNA", slot_ = "data",
@@ -1457,11 +1614,6 @@ plotGeneExpHist <- function(
   # Check arguments
   stopifnot(length(genes) > 0)
   stopifnot(slot_ %in% c("data", "counts"))
-
-  # if (l(thr_expr)>1) {
-  #   thr1 <- thr_expr[1]
-  #   thr2 <- thr_expr[-1]
-  # }
 
   # Aggregate genes if necessary
   aggregate <- length(genes) > 1
@@ -1481,7 +1633,7 @@ plotGeneExpHist <- function(
 
   # Create the plot
   title_ <- paste("Gene Expression", Stringendo::flag.nameiftrue(aggregate, prefix = "- "), suffix, slot_)
-  pobj <- qhistogram(G_expression,
+  pobj <- ggExpress::qhistogram(G_expression,
     plotname = title_,
     suffix = suffix,
     vline = thr_expr[1], filtercol = -1,
@@ -1518,42 +1670,47 @@ plotGeneExpHist <- function(
 # _________________________________________________________________________________________________
 
 # _________________________________________________________________________________________________
-#' @title qUMAP
+#' @title Quick UMAP Visualization of Gene Expression and automatically save the plot
 #'
-#' @description The quickest way to draw a gene expression UMAP.
-#' @param feature Feature to be visualized on the UMAP, Default: 'TOP2A'.
-#' @param obj Seurat object containing single-cell RNA seq data, Default: combined.obj.
-#' @param title Title of the plot, Default: feature.
-#' @param sub Subtitle of the plot, Default: NULL.
-#' @param reduction Dimension reduction technique to be used. Choose from 'umap', 'tsne', or 'pca'. Default: 'umap'.
-#' @param splitby Column in the metadata to split the cells by, Default: NULL.
-#' @param prefix A prefix added before the filename, Default: NULL.
-#' @param suffix A suffix added to the end of the filename, Default: subtitle.
-#' @param save.plot If TRUE, the plot is saved into a file, Default: TRUE.
-#' @param PNG If TRUE, the file is saved as a .png, Default: TRUE.
-#' @param h Height of the plot in inches, Default: 7.
-#' @param w Width of the plot in inches, Default: NULL.
-#' @param nr.cols Number of columns to combine multiple feature plots, ignored if split.by is not NULL, Default: NULL.
-#' @param assay Which assay to use, 'RNA' or 'integrated', Default: 'RNA'.
-#' @param axes If TRUE, the axes are shown on the plot. Default: FALSE.
-#' @param aspect.ratio Ratio of height to width. If TRUE, the ratio is fixed at 0.6. Default: FALSE.
-#' @param HGNC.lookup If TRUE, the HGNC gene symbol lookup is performed. Default: TRUE.
-#' @param make.uppercase If TRUE, feature names are converted to uppercase. Default: FALSE.
-#' @param qlow Lower quantile for the color scale, Default: 'q10'.
-#' @param qhigh Upper quantile for the color scale, Default: 'q90'.
-#' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.
-#' @param caption Add caption to the ggplot object (e.g. a description in bottom right).
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description Generates a UMAP visualization for a specific feature from a Seurat object, and
+#' automatically saves it. Offers options for custom titles, subtitles, saving, and more. Assumes
+#' default options for custom titles, subtitles, saving, and more.
+#'
+#' @param feature Feature to visualize on the UMAP; Default: 'TOP2A'.
+#' @param obj Seurat object containing single-cell RNA-seq data; Default: `combined.obj`.
+#' @param title Title of the plot; Default: `feature`.
+#' @param sub Subtitle of the plot; Default: NULL.
+#' @param reduction Dimension reduction technique to be used ('umap', 'tsne', or 'pca'); Default: 'umap'.
+#' @param splitby Column in the metadata to split the cells by; Default: NULL.
+#' @param prefix Prefix added before the filename; Default: NULL.
+#' @param suffix Suffix added to the end of the filename; Default: `sub`.
+#' @param save.plot If TRUE, the plot is saved into a file; Default: TRUE.
+#' @param PNG If TRUE, the file is saved as a .png; Default: TRUE.
+#' @param h Height of the plot in inches; Default: 7.
+#' @param w Width of the plot in inches; Default: NULL.
+#' @param nr.cols Number of columns to combine multiple feature plots, ignored if `split.by` is not NULL; Default: NULL.
+#' @param assay Which assay to use ('RNA' or 'integrated'); Default: 'RNA'.
+#' @param axes If TRUE, axes are shown on the plot; Default: FALSE.
+#' @param aspect.ratio Ratio of height to width. If TRUE, the ratio is fixed at 0.6; Default: FALSE.
+#' @param HGNC.lookup If TRUE, HGNC gene symbol lookup is performed; Default: TRUE.
+#' @param make.uppercase If TRUE, feature names are converted to uppercase; Default: FALSE.
+#' @param qlow Lower quantile for the color scale; Default: 'q10'.
+#' @param qhigh Upper quantile for the color scale; Default: 'q90'.
+#' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional; Default: TRUE.
+#' @param caption Adds a caption to the ggplot object; Default: dynamically generated from `obj`.
+#' @param ... Additional parameters to pass to the internally called functions.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   qUMAP("nFeature_RNA")
-#'   qUMAP("TOP2A")
+#'   if (interactive()) {
+#'     qUMAP(feature = "nFeature_RNA", obj = yourSeuratObject)
+#'     qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
+#'   }
 #' }
-#' }
-#' @importFrom MarkdownHelpers TRUE.unless
 #'
 #' @export
+#' @importFrom Seurat FeaturePlot NoLegend NoAxes
+#' @importFrom ggplot2 ggtitle coord_fixed labs
 qUMAP <- function(
     feature = "TOP2A", obj = combined.obj,
     title = feature, sub = NULL,
@@ -1595,9 +1752,8 @@ qUMAP <- function(
   ggplot.obj <- Seurat::FeaturePlot(obj,
     features = feature,
     reduction = reduction,
-    min.cutoff = qlow, max.cutoff = qhigh
-    # , plotname = ppp(toupper(reduction), feature)
-    , ncol = nr.cols,
+    min.cutoff = qlow, max.cutoff = qhigh,
+    ncol = nr.cols,
     split.by = splitby,
     ...
   ) +
@@ -1617,45 +1773,50 @@ qUMAP <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title clUMAP
+#' @title Quick Visualization of Clustering Results with UMAP and automatically save the plot
 #'
-#' @description The quickest way to draw a clustering result UMAP.
-#' @param ident Identity to be used for clustering, Default: 'integrated_snn_res.0.5'.
-#' @param obj Seurat object containing single-cell RNA seq data, Default: combined.obj.
-#' @param reduction Dimension reduction technique to be used. Choose from 'umap', 'tsne', or 'pca'. Default: 'umap'.
-#' @param splitby Column in the metadata to split the cells by, Default: NULL.
-#' @param title Title of the plot, Default: ident.
-#' @param sub Subtitle of the plot, Default: NULL.
-#' @param prefix A prefix added before the filename, Default: NULL.
-#' @param suffix A suffix added to the end of the filename, Default: sub.
-#' @param label.cex Scaling factor for label sizes, Default: 7.
-#' @param h Height of the plot in inches, Default: 7.
-#' @param w Width of the plot in inches, Default: NULL.
-#' @param nr.cols Number of columns to combine multiple feature plots, ignored if split.by is not NULL, Default: NULL.
-#' @param plotname Title of the plot, Default: ppp(toupper(reduction), ident).
-#' @param cols Colors to be used for the plot, Default: NULL.
-#' @param palette Color palette to be used, Default: 'glasbey'.
-#' @param highlight.clusters Specific clusters to be highlighted, Default: NULL.
-#' @param cells.highlight Specific cells to be highlighted, Default: NULL.
-#' @param label If TRUE, clusters are labeled, Default: TRUE.
-#' @param repel If TRUE, labels are repelled to avoid overlap, Default: TRUE.
-#' @param legend If TRUE, a legend is added to the plot, Default: !label.
-#' @param axes If TRUE, the axes are shown on the plot. Default: FALSE.
-#' @param aspect.ratio Ratio of height to width. If TRUE, the ratio is fixed at 0.6. Default: TRUE.
-#' @param MaxCategThrHP Maximum threshold for the number of categories, Default: 200.
-#' @param save.plot If TRUE, the plot is saved into a file, Default: TRUE.
-#' @param PNG If TRUE, the file is saved as a .png, Default: TRUE.
-#' @param check_for_2D If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.
-#' @param caption Add caption to the ggplot object (e.g. a description in bottom right).
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description Generates a UMAP visualization based on clustering results from a Seurat object,
+#' and automatically saves it. Offers options for custom titles, subtitles, saving, and more. Assumes
+#' default options for custom titles, subtitles, saving, and more.
+#'
+#' @param ident Cluster identity for visualization; Default: 'integrated_snn_res.0.5'.
+#' @param obj Seurat object containing single-cell data; Default: `combined.obj`.
+#' @param reduction Dimension reduction method ('umap', 'tsne', 'pca'); Default: 'umap'.
+#' @param splitby Metadata column to split cells by; optional; Default: NULL.
+#' @param title Main title of the plot; Default: `ident`.
+#' @param sub Subtitle of the plot; optional; Default: NULL.
+#' @param prefix Prefix for saved filename; optional; Default: NULL.
+#' @param suffix Suffix for saved filename; defaults to plot subtitle; Default: NULL.
+#' @param label.cex Size of cluster labels; Default: 7.
+#' @param h Height of plot in inches; Default: 7.
+#' @param w Width of plot in inches; optional; Default: NULL.
+#' @param nr.cols Number of columns for facet wrap if `splitby` is not NULL; Default: NULL.
+#' @param plotname Custom plot name for saving; Default: dynamically generated from `reduction` and `ident`.
+#' @param cols Custom color vector for clusters; optional; Default: NULL.
+#' @param palette Color palette for generating cluster colors; Default: 'glasbey'.
+#' @param highlight.clusters Specific clusters to be highlighted; optional; Default: NULL.
+#' @param cells.highlight Specific cells to be highlighted; optional; Default: NULL.
+#' @param label Show cluster labels; Default: TRUE.
+#' @param repel Repel labels to avoid overlap; Default: TRUE.
+#' @param legend Show legend; Default: opposite of `label`.
+#' @param axes Show axes; Default: FALSE.
+#' @param aspect.ratio Fixed aspect ratio for the plot; Default: TRUE.
+#' @param MaxCategThrHP Maximum number of categories before simplification; Default: 200.
+#' @param save.plot Save plot to file; Default: TRUE.
+#' @param PNG Save as PNG (TRUE) or PDF (FALSE); Default: TRUE.
+#' @param check_for_2D Ensure UMAP is 2D; Default: TRUE.
+#' @param caption Plot caption; optional; Default: dynamically generated from `obj`.
+#' @param ... Additional parameters for `DimPlot`.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   clUMAP("cl.names.KnownMarkers.0.5")
-#'   clUMAP("cl.names.KnownMarkers.0.5", cols = NULL)
+#'   clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj)
+#'   clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj, cols = RColorBrewer::brewer.pal(8, "Dark2"))
 #' }
-#' }
-#' @importFrom MarkdownHelpers TRUE.unless
+#'
+#' @importFrom ggplot2 ggtitle labs coord_fixed ggsave
+#' @importFrom Seurat DimPlot NoLegend NoAxes
+#' @importFrom RColorBrewer brewer.pal
 #'
 #' @export
 clUMAP <- function(
@@ -1716,7 +1877,6 @@ clUMAP <- function(
     cols <- "lightgrey"
   }
 
-
   if (NtCategs > MaxCategThrHP) {
     iprint("Too many categories (", NtCategs, ") in ", ident, "- use qUMAP for continous variables.")
   } else {
@@ -1750,53 +1910,36 @@ clUMAP <- function(
 
 
 
-# _________________________________________________________________________________________________
-#' @title umapNamedClusters
-#'
-#' @description Plot and save umap based on a metadata column. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param metaD.colname Metadata column name. Default: metaD.colname.labeled
-#' @param ext File extension for saving, Default: 'png'
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   umapNamedClusters(obj = combined.obj, metaD.colname = metaD.colname.labeled)
-#' }
-#' }
-#' @export
-umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, ext = "png", ...) { # Plot and save umap based on a metadata column.
-  fname <- ppp("Named.clusters", metaD.colname, ext)
-  p.named <-
-    Seurat::DimPlot(obj, reduction = "umap", group.by = metaD.colname, label = TRUE, ...) +
-    NoLegend() +
-    ggtitle(metaD.colname)
-  save_plot(p.named, filename = fname)
-  p.named
-}
-
-
 
 
 # _________________________________________________________________________________________________
-#' @title umapHiLightSel
+#' @title Highlight Selected Clusters on UMAP
 #'
-#' @description Generates a UMAP plot from a Seurat object with a subset of cells highlighted.
-#' @param obj A Seurat object. Default: combined.obj.
-#' @param COI A vector of cluster IDs to highlight in the UMAP plot. Default: c("0", "2", "4", "5",  "11").
-#' @param res.cl Name of the column in the Seurat object metadata that contains the cluster IDs. Default: 'integrated_snn_res.0.3'.
-#' @return This function does not return a value. It saves a UMAP plot to the current working directory.
+#' @description Generates a UMAP plot from a Seurat object with specified clusters highlighted.
+#' It saves the resulting UMAP plot directly to the current working directory.
+#'
+#' @param obj Seurat object to be visualized; Default: `combined.obj`.
+#' @param COI Vector of cluster IDs to highlight on the UMAP plot;
+#' Default: `c("0", "2", "4", "5", "11")`.
+#' @param res.cl Name of the metadata column containing cluster IDs;
+#' Default: 'integrated_snn_res.0.3'.
+#'
+#' @return Saves a UMAP plot highlighting specified clusters to the current working directory.
+#' The function itself does not return an object within R.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   umapHiLightSel(obj = seuratObject, COI = c("0", "1"), res.cl = "resolution_0.8")
+#'   if (interactive()) {
+#'     umapHiLightSel(obj = combined.obj, COI = c("0", "1"), res.cl = "resolution_0.8")
+#'   }
 #' }
-#' }
-#' @seealso
-#' \code{\link[Seurat]{DimPlot}}
+#'
+#' @seealso \code{\link[Seurat]{DimPlot}}
+#'
 #' @export
-
-umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based on clusterIDs provided.
+#' @importFrom Seurat DimPlot
+#' @importFrom ggplot2 ggsave
+umapHiLightSel <- function(obj = combined.obj,
                            COI = c("0", "2", "4", "5", "11"), res.cl = "integrated_snn_res.0.3") {
   cellsSel <- getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
   Seurat::DimPlot(obj,
@@ -1825,8 +1968,10 @@ umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based 
 #' }
 #' @export
 DimPlot.ClusterNames <- function(obj = combined.obj
-                                 , ident = "cl.names.top.gene.res.0.5", reduction = "umap", title = ident, ...) {
-  Seurat::DimPlot(object = obj, reduction = reduction, group.by = ident, label = TRUE, repel = TRUE, ...) + NoLegend() + ggtitle(title)
+                                 , ident = "cl.names.top.gene.res.0.5",
+                                 reduction = "umap", title = ident, ...) {
+  Seurat::DimPlot(object = obj, reduction = reduction, group.by = ident,
+                  label = TRUE, repel = TRUE, ...) + NoLegend() + ggtitle(title)
 }
 
 
@@ -2245,14 +2390,29 @@ multi_clUMAP.A4 <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title qClusteringUMAPS
+#' @title Quick Clustering UMAPs on A4 Page
 #'
-#' @description Quickly plot 1-4 clustering resolutions on an a4 page
-#' @param dims Any numeric metadata columns
-#' @param obj Seurat object, Default: combined.obj
+#' @description Generates and arranges UMAP plots for up to four specified clustering resolutions
+#' from a Seurat object onto an A4 page, facilitating comparative visualization.
 #'
-#' @examples qClusteringUMAPS()
+#' @param obj Seurat object to visualize; Default: `combined.obj`.
+#' @param dims Vector of clustering resolution identifiers to plot;
+#' dynamically defaults to the first 4 found by `GetClusteringRuns`.
+#' @param prefix Prefix for plot titles; Default: "Clustering.UMAP.Res".
+#' @param suffix Suffix for plot titles; Default: "".
+#' @param title Custom title for the composite plot; dynamically generated from `prefix`, `dims`, and `suffix`.
+#' @param nrow Number of rows in the plot grid; Default: 2.
+#' @param ncol Number of columns in the plot grid; Default: 2.
+#' @param ... Additional parameters for individual UMAP plots.
+#'
+#' @examples
+#' \dontrun{
+#'   qClusteringUMAPS()
+#' }
+#'
 #' @export
+#' @importFrom Seurat NoAxes
+#' @importFrom ggExpress qA4_grid_plot
 qClusteringUMAPS <- function(
     obj = combined.obj,
     dims = na.omit.strip(GetClusteringRuns(obj)[1:4]),
@@ -2266,6 +2426,7 @@ qClusteringUMAPS <- function(
 
   message("> > > > > Plotting qClusteringUMAPS")
   message("Duplicate of less pretty multi_clUMAP.A4, partially")
+
   # Check that the QC markers are in the object
   n.found <- intersect(dims, colnames(obj@meta.data))
   message(kppws(length(n.found), " found of ", dims))
@@ -2338,22 +2499,29 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj, foldername = NULL,
 
 
 # _________________________________________________________________________________________________
-#' @title PlotTopGenesPerCluster
+#' @title Plot Top N Differentially Expressed Genes Per Cluster
 #'
-#' @description Plot the top N diff. exp. genes in each cluster.
-#' @param obj Seurat object. Default: combined.obj
-#' @param cl_res Resolution value to use for determining clusters. Default: res
-#' @param nrGenes Number of top differentially expressed genes to plot per cluster. Default: p$'n.markers'
-#' @param order.by Column name to sort output tibble by. Default: c("combined.score","avg_log2FC", "p_val_adj")[1]
-#' @param df_markers Data frame containing marker gene data. Default: combined.obj@misc$df.markers[[paste0("res.", cl_res)]]
+#' @description Visualizes the top N differentially expressed (DE) genes for each cluster within a
+#' specified clustering resolution of a Seurat object, facilitating the exploration of gene
+#' expression patterns across clusters.
+#'
+#' @param obj Seurat object containing single-cell RNA-seq data and clustering information;
+#' Default: `combined.obj`.
+#' @param cl_res Cluster resolution used to identify distinct clusters for analysis; Default: `res`.
+#' @param nrGenes Number of top DE genes to display for each cluster; Default: `p$'n.markers'`.
+#' @param order.by Criteria for ranking DE genes within clusters; Default: `"combined.score"`.
+#' @param df_markers Data frame or list of DE genes across clusters. If not provided,
+#' attempts to retrieve from `obj@misc$df.markers[[paste0("res.", cl_res)]]`;
+#' Default: calculated based on `cl_res`.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = p$"n.markers")
+#'   if (interactive()) {
+#'     PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = 10)
+#'   }
 #' }
-#' }
+#'
 #' @export
-
 PlotTopGenesPerCluster <- function(
     obj = combined.obj, cl_res = res, nrGenes = p$"n.markers",
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1],
@@ -2372,14 +2540,29 @@ PlotTopGenesPerCluster <- function(
 }
 
 # _________________________________________________________________________________________________
-#' @title qQC.plots.BrainOrg
+#' @title Quickly Plot Key QC Markers in Brain Organoids
 #'
-#' @description Quickly plot key QC markers in brain organoids
-#' @param QC.Features Any numeric metadata columns
-#' @param obj Seurat object, Default: combined.obj
+#' @description Generates and arranges UMAP plots for specified QC features
+#' from a Seurat object on an A4 page, facilitating a quick quality control (QC) overview.
 #'
-#' @examples qQC.plots.BrainOrg()
+#' @param obj Seurat object to visualize; Default: `combined.obj`.
+#' @param QC.Features Vector of QC feature names to plot; Default:
+#' `c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction")`.
+#' @param prefix Prefix for plot titles; Default: "QC.markers.4.UMAP".
+#' @param suffix Suffix for plot titles; Default: "".
+#' @param title Custom title for the composite plot; dynamically generated from `prefix`,
+#' `QC.Features`, and `suffix`.
+#' @param nrow Number of rows in the plot grid; Default: 2.
+#' @param ncol Number of columns in the plot grid; Default: 2.
+#' @param ... Additional parameters for individual UMAP plots.
+#'
+#' @examples
+#' \dontrun{
+#'   qQC.plots.BrainOrg()
+#' }
+#'
 #' @export
+#' @importFrom ggExpress qA4_grid_plot
 qQC.plots.BrainOrg <- function(
     obj = combined.obj,
     QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction"),
@@ -2422,19 +2605,25 @@ qQC.plots.BrainOrg <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title qMarkerCheck.BrainOrg
+#' @title Quickly Plot Key Markers in Brain Organoids
 #'
-#' @description Quickly plot key markers in brain organoids
-#' @param obj Seurat object, Default: combined.obj
-#' @param custom.genes Use custom gene set? Default: FALSE
-#' @param suffix Folder name suffix, Default: ""
+#' @description Generates plots for a predefined or custom set of gene markers within brain organoids,
+#' aiding in the quick assessment of their expression across different cells or clusters.
+#'
+#' @param obj Seurat object for visualization; Default: `combined.obj`.
+#' @param custom.genes Logical indicating whether to use a custom set of genes.
+#' If FALSE, a predefined list of key brain organoid markers is used; Default: FALSE.
+#' @param suffix Suffix for the folder name where the plots are saved; Default: "".
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
 #'   qMarkerCheck.BrainOrg(combined.obj)
+#'   qMarkerCheck.BrainOrg(combined.obj, custom.genes = c("Gene1", "Gene2"))
 #' }
-#' }
+#'
 #' @export
+#' @importFrom CodeAndRoll2 as_tibble_from_namedVec
+
 qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
                                   suffix = "") {
 
@@ -2458,7 +2647,7 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
     )
     print(Signature.Genes.Top16)
   }
-  print(as_tibble_from_namedVec(Signature.Genes.Top16))
+  print(CodeAndRoll2::as_tibble_from_namedVec(Signature.Genes.Top16))
   multiFeaturePlot.A4(
     obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall",
     foldername = sppp("Signature.Genes.Top16", suffix)
@@ -2513,24 +2702,28 @@ PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = "expr.q99") {
 # Manipulating UMAP and PCA  ______________________________ ----
 # _________________________________________________________________________________________________
 
-
-#' @title FlipReductionCoordinates
+#' @title Flip Reduction Coordinates
 #'
-#' @description Flip reduction coordinates (like UMAP upside down).
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Numer of dimensions used, Default: 2
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param flip The axis (axes) to flip around. Default: c("x", "y", "xy", NULL)[1]
-#' @param FlipReductionBackupToo Flip coordinates in backup slot too? Default: TRUE
+#' @description Flips dimensionality reduction coordinates (such as UMAP or tSNE) vertically or
+#' horizontally to change the visualization perspective.
+#'
+#' @param obj Seurat object to modify; Default: `combined.obj`.
+#' @param dim Number of dimensions in the reduction to consider; Default: 2.
+#' @param reduction Dimension reduction technique to modify ('umap', 'tsne', or 'pca'); Default: 'umap'.
+#' @param flip Axis (or axes) to flip; can be 'x', 'y', or 'xy' to flip both; Default: "x".
+#' @param FlipReductionBackupToo Boolean indicating whether to also flip coordinates in the backup slot; Default: TRUE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
+#'   # Before flipping UMAP coordinates
 #'   clUMAP()
+#'   # Flip UMAP coordinates and visualize again
 #'   combined.obj <- FlipReductionCoordinates(combined.obj)
 #'   clUMAP()
 #' }
-#' }
+#'
 #' @export
+#' @importFrom Seurat Embeddings
 FlipReductionCoordinates <- function(
     obj = combined.obj, dim = 2, reduction = "umap",
     flip = c("x", "y", "xy", NULL)[1], FlipReductionBackupToo = TRUE) {
@@ -2554,22 +2747,30 @@ FlipReductionCoordinates <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title AutoNumber.by.UMAP
+#' @title Relabel Cluster Numbers Along a UMAP (or tSNE) Axis
 #'
-#' @description Relabel cluster numbers along a UMAP (or tSNE) axis #
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Which dimension? Default: 1
-#' @param swap Swap direction? Default: FALSE
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
+#' @description Automatically renumbers clusters based on their position along a specified dimension
+#' in a UMAP (or tSNE or PCA) plot, potentially enhancing interpretability by ordering clusters.
+#'
+#' @param obj Seurat object containing clustering and UMAP (or other dimensional reduction) data;
+#' Default: `combined.obj`.
+#' @param dim Dimension along which to order clusters (1 for the first dimension, typically horizontal);
+#' Default: 1.
+#' @param swap If TRUE, reverses the ordering direction; Default: FALSE.
+#' @param reduction Dimension reduction technique used for cluster positioning ('umap', 'tsne', or 'pca');
+#' Default: 'umap'.
+#' @param res Clustering resolution identifier used to fetch cluster labels from `obj` metadata;
+#' Default: 'integrated_snn_res.0.5'.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction = "umap", res = "integrated_snn_res.0.5")
-#'   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.ordered")
+#'   combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction = "umap",
+#'                                      res = "integrated_snn_res.0.5")
+#'   DimPlot.ClusterNames(combined.obj, ident = "integrated_snn_res.0.5.ordered")
 #' }
-#' }
+#'
 #' @export
+#' @importFrom Seurat FetchData
 AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers along a UMAP (or tSNE) axis
                                , dim = 1, swap = FALSE, reduction = "umap", res = "RNA_snn_res.0.5") {
   dim_name <- kppu(toupper(reduction), dim)
@@ -2589,64 +2790,6 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
   return(obj)
 }
 
-
-
-# _________________________________________________________________________________________________
-#' @title AutoNumber.by.PrinCurve
-#'
-#' @description Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Dimensions to use, Default: 1:2
-#' @param plotit Plot results (& show it), Default: TRUE
-#' @param swap Swap Lambda paramter (multiplied with this) , Default: -1
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5")
-#'   combined.obj <- AutoNumber.by.PrinCurve(
-#'     obj = combined.obj, dim = 1:2, reduction = "umap", plotit = TRUE,
-#'     swap = -1, res = "integrated_snn_res.0.5"
-#'   )
-#'   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.prin.curve")
-#' }
-#' }
-#' @seealso
-#'  \code{\link[princurve]{principal_curve}}
-#' @importFrom princurve principal_curve whiskers
-#' @importFrom MarkdownReports wplot_save_this
-#'
-#' @export
-AutoNumber.by.PrinCurve <- function(
-    obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
-    , dim = 1:2, plotit = TRUE, swap = -1,
-    reduction = "umap", res = "integrated_snn_res.0.5") {
-  # require(princurve)
-  dim_name <- ppu(toupper(reduction), dim)
-  coord.umap <- FetchData(object = obj, vars = dim_name)
-  fit <- princurve::principal_curve(x = as.matrix(coord.umap))
-  if (plotit) {
-    plot(fit,
-      xlim = range(coord.umap[, 1]), ylim = range(coord.umap[, 2]),
-      main = "principal_curve"
-    )
-    # points(fit)
-    points(coord.umap, pch = 18, cex = .25)
-    princurve::whiskers(coord.umap, fit$s, lwd = .1)
-    MarkdownReports::wplot_save_this(plotname = "principal_curve")
-  }
-
-  ls.perCl <- split(swap * fit$lambda, f = obj[[res]])
-  MedianClusterCoordinate <- unlapply(ls.perCl, median)
-  OldLabel <- names(sort(MedianClusterCoordinate))
-  NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
-  NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
-  NewMetaCol <- kpp(res, "prin.curve")
-  iprint("NewMetaCol:", NewMetaCol)
-  obj[[NewMetaCol]] <- NewMeta
-  return(obj)
-}
 
 
 # _________________________________________________________________________________________________
@@ -2703,25 +2846,38 @@ AutoNumber.by.PrinCurve <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title save2umaps.A4
+#' @title Save Two Plots on One A4 Page
 #'
-#' @description Save 2 umaps on 1 A4
-#' @param plot_list A list of plots to be saved on an A4 page.
-#' @param pname Boolean to determine if name is generated automatically. If FALSE, name is generated based on plot_list and suffix. Default: FALSE
-#' @param suffix A suffix added to the filename. Default: NULL
-#' @param scale Scaling factor for the size of the plot. Default: 1
-#' @param nrow Number of rows to arrange the plots in. Default: 2
-#' @param ncol Number of columns to arrange the plots in. Default: 1
-#' @param h Height of the plot, calculated as height of A4 page times the scale. Default: hA4 * scale
-#' @param w Width of the plot, calculated as width of A4 page times the scale. Default: wA4 * scale
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @importFrom cowplot plot_grid
+#' @description Arranges and saves two UMAP plots (or any plots) side-by-side or one above
+#' the other on a single A4 page.
+#'
+#' @param plot_list A list containing ggplot objects to be arranged and saved.
+#' @param pname Boolean indicating if the plot name should be automatically generated;
+#' if FALSE, the name is based on `plot_list` and `suffix`; Default: FALSE.
+#' @param suffix Suffix to be added to the generated filename if `pname` is FALSE; Default: NULL.
+#' @param scale Scaling factor for adjusting the plot size; Default: 1.
+#' @param nrow Number of rows in the plot arrangement; Default: 2.
+#' @param ncol Number of columns in the plot arrangement; Default: 1.
+#' @param h Height of the plot, calculated as A4 height times `scale`;
+#' calculated dynamically based on `scale`.
+#' @param w Width of the plot, calculated as A4 width times `scale`;
+#' calculated dynamically based on `scale`.
+#' @param ... Additional parameters passed to `plot_grid`.
+#'
+#' @examples
+#' \dontrun{
+#'   p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) + geom_point()
+#'   p2 <- ggplot(iris, aes(Petal.Length, Petal.Width, color = Species)) + geom_point()
+#'   save2plots.A4(plot_list = list(p1, p2))
+#' }
 #'
 #' @export
-save2umaps.A4 <- function(
+#' @importFrom cowplot plot_grid save_plot ggdraw
+#' @importFrom ggplot2 theme
+save2plots.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 1,
-    h = hA4 * scale, w = wA4 * scale, ...) { # Save 2 umaps on an A4 page.
+    h = hA4 * scale, w = wA4 * scale, ...) {
   if (pname == FALSE) pname <- Stringendo::sppp(substitute(plot_list), suffix)
   p1 <- cowplot::plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol,
                            labels = LETTERS[1:length(plot_list)], ...)
@@ -2734,22 +2890,34 @@ save2umaps.A4 <- function(
 }
 
 # _________________________________________________________________________________________________
-#' @title save4umaps.A4
+#' @title Save Four Plots on One A4 Page
 #'
-#' @description Save 4 umaps on 1 A4
-#' @param plot_list A list of ggplot objects, each of which is one panel.
-#' @param pname Plotname, Default: FALSE
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param scale Scaling factor of the canvas, Default: 1
-#' @param nrow number of rows for panelson the page, Default: 2
-#' @param ncol number of columns for panelson the page, Default: 2
-#' @param h height of the plot, Default: wA4 * scale
-#' @param w width of the plot, Default: hA4 * scale
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @importFrom cowplot plot_grid
+#' @description Arranges and saves four plots (e.g. UMAPs) onto a single A4 page, allowing for a
+#' compact comparison of different visualizations or clustering results.
+#'
+#' @param plot_list A list containing ggplot objects to be arranged and saved; each object represents one panel.
+#' @param pname Plot name; if FALSE, a name is generated automatically based on `plot_list` and `suffix`; Default: FALSE.
+#' @param suffix Suffix to be added to the filename; Default: NULL.
+#' @param scale Scaling factor for adjusting the size of the overall plot canvas; Default: 1.
+#' @param nrow Number of rows to arrange the plots in; Default: 2.
+#' @param ncol Number of columns to arrange the plots in; Default: 2.
+#' @param h Height of the plot canvas, calculated as the height of an A4 page times `scale`; Default: `wA4 * scale`.
+#' @param w Width of the plot canvas, calculated as the width of an A4 page times `scale`; Default: `hA4 * scale`.
+#' @param ... Additional parameters passed to `plot_grid`.
+#'
+#' @examples
+#' \dontrun{
+#'   p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) + geom_point()
+#'   p2 <- ggplot(mtcars, aes(mpg, disp, color = as.factor(cyl))) + geom_point()
+#'   p3 <- ggplot(mpg, aes(displ, hwy, color = class)) + geom_point()
+#'   p4 <- ggplot(diamonds, aes(carat, price, color = cut)) + geom_point()
+#'   save4plots.A4(plot_list = list(p1, p2, p3, p4))
+#' }
 #'
 #' @export
-save4umaps.A4 <- function(
+#' @importFrom cowplot plot_grid save_plot ggdraw
+#' @importFrom ggplot2 theme
+save4plots.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 2,
     h = wA4 * scale, w = hA4 * scale
@@ -2895,6 +3063,7 @@ ww.check.quantile.cutoff.and.clip.outliers <-
 #' }
 #' }
 #' @importFrom plotly plot_ly layout
+#' @importFrom Seurat FetchData
 #'
 #' @export
 
@@ -2962,6 +3131,7 @@ plot3D.umap.gene <- function(
 #' }
 #' }
 #' @importFrom plotly plot_ly layout
+#' @importFrom Seurat FetchData
 #'
 #' @export
 
@@ -3024,18 +3194,22 @@ SavePlotlyAsHtml <- function(plotly_obj, category. = category, suffix. = NULL) {
 
 
 # _________________________________________________________________________________________________
-#' @title BackupReduction
+#' @title Backup Dimensionality Reduction Data
 #'
-#' @description Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Numer of dimensions used, Default: 2
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @description Stores a backup of specified dimensionality reduction data (e.g., UMAP, tSNE, PCA)
+#' within the Seurat object, from `obj@reductions$umap` to the `@misc$reductions.backup` slot.
+#'
+#' @param obj Seurat object containing dimensionality reduction data; Default: `combined.obj`.
+#' @param dim Number of dimensions to include in the backup; Default: 2.
+#' @param reduction Type of dimensionality reduction to backup ('umap', 'tsne', 'pca'); Default: 'umap'.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
+#'   if (interactive()) {
+#'     obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
+#'   }
 #' }
-#' }
+#'
 #' @export
 BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { # Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`.
   if (is.null(obj@misc$"reductions.backup")) obj@misc$"reductions.backup" <- list()
@@ -3046,22 +3220,32 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { #
 
 
 # _________________________________________________________________________________________________
-#' @title SetupReductionsNtoKdimensions
+#' @title Compute and Backup Dimensionality Reductions
 #'
-#' @description Function to compute dimensionality reductions for a given Seurat object and backup the computed reductions.
-#' @param obj A Seurat object. Default: combined.obj
-#' @param nPCs A numeric value representing the number of principal components to use. Default: p$n.PC
-#' @param dimensions A numeric vector specifying the dimensions to use for the dimensionality reductions. Default: 3:2
-#' @param reduction A character string specifying the type of dimensionality reduction to perform. Can be "umap", "tsne", or "pca". Default: 'umap'
-#' @return The input Seurat object with computed dimensionality reductions and backups of these reductions.
+#' @description Executes specified dimensionality reduction (UMAP, tSNE, or PCA) over a range of dimensions
+#' and backs up the results within a Seurat object. This function allows for exploration of data structure
+#' at varying levels of granularity and ensures that reduction results are preserved for future reference.
+#'
+#' @param obj Seurat object to process; Default: `combined.obj`.
+#' @param nPCs Number of principal components to consider in the reduction; Default: `p$n.PC`.
+#' @param dimensions Numeric vector specifying target dimensions for the reductions; Default: `3:2`.
+#' @param reduction Type of dimensionality reduction to apply ('umap', 'tsne', or 'pca'); Default: 'umap'.
+#' @param ... Additional parameters to pass to the dimensionality reduction functions.
+#'
+#' @return Modified Seurat object with added dimensionality reduction data and backups.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction = "umap")
+#'   if (interactive()) {
+#'     combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10,
+#'     dimensions = 2:3, reduction = "umap")
+#'   }
 #' }
-#' }
+#'
 #' @export
-SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", dimensions = 3:2, reduction = "umap", ...) { # Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to `obj@misc$reductions.backup` from @reductions$umap
+#' @importFrom Seurat RunUMAP RunTSNE RunPCA
+SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", dimensions = 3:2,
+                                          reduction = "umap", ...) {
   red <- reduction
   for (d in dimensions) {
     iprint(d, "dimensional", red, "is calculated")
@@ -3079,23 +3263,27 @@ SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", d
 
 
 # _________________________________________________________________________________________________
-#' @title RecallReduction
+#' @title Recall Dimensionality Reduction from backup slot
 #'
-#' @description Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Numer of dimensions used, Default: 2
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @description Restores dimensionality reduction data (e.g., UMAP, tSNE, PCA) from a backup
+#' stored within `obj@misc$reductions.backup` to the active `obj@reductions` slot.
+#'
+#' @param obj Seurat object from which the backup will be restored; Default: `combined.obj`.
+#' @param dim Number of dimensions of the reduction data to restore; Default: 2.
+#' @param reduction Type of dimensionality reduction to be restored ('umap', 'tsne', 'pca'); Default: 'umap'.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
-#'   qUMAP()
-#'   combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
-#'   qUMAP()
+#'   if (interactive()) {
+#'     combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
+#'     qUMAP()
+#'     combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
+#'     qUMAP()
+#'   }
 #' }
-#' }
+#'
 #' @export
-RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
   dslot <- paste0(reduction, dim, "d")
   reduction.backup <- obj@misc$reductions.backup[[dslot]]
   msg <- paste(dim, "dimensional", reduction, "from obj@misc$reductions.backup")
@@ -3116,6 +3304,8 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { #
 #' @param plotting.data. The data frame containing plotting data. Default: plotting.data
 #' @param AnnotCateg The category for which the annotation is generated. Default: AutoAnnotBy
 #' @export
+#' @importFrom dplyr group_by summarise
+#' @importFrom Seurat FetchData
 
 Annotate4Plotly3D <- function(
     obj = combined.obj # Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations
@@ -3307,7 +3497,7 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
 
 
 # _________________________________________________________________________________________________
-#' @title SuPlotVariableFeatures for Single Seurat Object
+#' @title suPlotVariableFeatures for Single Seurat Object
 #'
 #' @description Generates a Variable Feature Plot for a specified Seurat object, labels points with
 #' the top 20 variable genes, and saves the plot to a PDF file.
@@ -3348,7 +3538,6 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
                              xnudge = 0, ynudge = 0, max.overlaps=15)
   print(labeledPlot)
   filename <- ppp("Var.genes", obj.name, suffix, idate(), 'png')
-
 
   # if (save) ggplot2::ggsave(plot = labeledPlot, filename = filename, width = plotWidth, height = plotHeight)
   if (save) qqSave(ggobj = labeledPlot,

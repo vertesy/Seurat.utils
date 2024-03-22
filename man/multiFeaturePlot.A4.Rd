@@ -16,7 +16,7 @@ multiFeaturePlot.A4(
   nr.Row = 4,
   raster = if (ncol(obj) > 1e+05) TRUE else NULL,
   cex = round(0.1/(nr.Col * nr.Row), digits = 2),
-  cex.min = if (raster) 0.5 else NULL,
+  cex.min = if (raster) 1 else NULL,
   gene.min.exp = "q01",
   gene.max.exp = "q99",
   subdir = TRUE,

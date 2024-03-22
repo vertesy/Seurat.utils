@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{qFeatureScatter}
 \alias{qFeatureScatter}
-\title{qFeatureScatter}
+\title{Scatter Plot of Two Features in Seurat Object}
 \usage{
 qFeatureScatter(
   feature1 = "TOP2A",
@@ -16,34 +16,36 @@ qFeatureScatter(
 )
 }
 \arguments{
-\item{feature1}{Name of the first feature to plot. Default: 'TOP2A'.}
+\item{feature1}{The first feature for the scatter plot's x-axis.}
 
-\item{feature2}{Name of the second feature to plot. Default: 'ID2'.}
+\item{feature2}{The second feature for the scatter plot's y-axis.}
 
-\item{obj}{Seurat object from which to extract feature data. Default: combined.obj.}
+\item{obj}{Seurat object containing the data for features.}
 
-\item{ext}{File extension for the saved plot. Default: 'png'.}
+\item{ext}{File extension for saving the plot, if enabled.}
 
-\item{plot}{Logical indicating whether to display the plot. Default: TRUE.}
+\item{plot}{Flag to display the plot within the R session.}
 
-\item{logX}{Logical indicating whether to apply a logarithmic transformation to the x-axis. Default: FALSE.}
+\item{logX}{Apply logarithmic transformation to x-axis values.}
 
-\item{logY}{Logical indicating whether to apply a logarithmic transformation to the y-axis. Default: FALSE.}
+\item{logY}{Apply logarithmic transformation to y-axis values.}
 
-\item{...}{Additional arguments to pass to the FeatureScatter function.}
+\item{...}{Additional parameters passed to Seurat's \code{FeatureScatter}.}
 }
 \value{
-If \code{plot} is TRUE, a ggplot object containing the feature scatter plot is returned.
+A \code{ggplot} object of the feature scatter plot if \code{plot} is TRUE.
 }
 \description{
-Generates and optionally saves a scatter plot of two features from a Seurat object.
+Generates a scatter plot comparing two features (genes or metrics) from a Seurat
+object and optionally saves it. The function wraps around Seurat's \code{FeatureScatter} for
+enhanced usability, including optional logarithmic transformations and saving capabilities.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  qFeatureScatter(feature1 = "Gene1", feature2 = "Gene2", obj = seuratObject)
+  # Generate and display a scatter plot for features TOP2A and ID2
+  qFeatureScatter(feature1 = "TOP2A", feature2 = "ID2", obj = yourSeuratObject)
 }
-}
+
 }
 \seealso{
 \code{\link[Seurat]{FeatureScatter}}, \code{\link[ggplot2]{ggplot}}

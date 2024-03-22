@@ -2,13 +2,30 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{scCalcPCAVarExplained}
 \alias{scCalcPCAVarExplained}
-\title{PCA percent of variation associated with each PC}
+\title{Calculate the percent of variation explained by individual PC's}
 \usage{
 scCalcPCAVarExplained(obj = combined.obj)
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object from which to calculate the percentage of variation explained by each
+PC. Default: \code{combined.obj}.}
+}
+\value{
+A named vector with the percentage of variation explained by each principal component.
 }
 \description{
-Determine percent of variation associated with each PC. For normal prcomp objects, see: PCA.percent.var.explained().
+This function calculates the percentage of variation each principal component (PC)
+accounts for in a Seurat object. It's specifically tailored for Seurat objects and provides a
+convenient way to understand the variance distribution across PCs. For similar calculations on
+standard PCA objects, refer to github.com/vertesy/Rocinante \code{PCA.percent.var.explained()}.
+}
+\examples{
+\dontrun{
+if (interactive()) {
+  data("combined.obj") # Example Seurat object
+  var_explained <- scCalcPCAVarExplained(combined.obj)
+  print(var_explained)
+}
+}
+
 }

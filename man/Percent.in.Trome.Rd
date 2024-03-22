@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{Percent.in.Trome}
 \alias{Percent.in.Trome}
-\title{Percent.in.Trome}
+\title{Gene Expression as Fraction of Total UMI Counts}
 \usage{
 Percent.in.Trome(
   obj = combined.obj,
@@ -11,18 +11,27 @@ Percent.in.Trome(
 )
 }
 \arguments{
-\item{obj}{Seurat object}
+\item{obj}{A Seurat object containing gene expression data.}
 
-\item{n.genes.barplot}{number of top genes shows}
+\item{n.genes.barplot}{The number of top genes to be displayed in the final barplot, showing
+their expression as a percentage of the total UMIs. Default is 25.}
 
-\item{width.barplot}{barplot width}
+\item{width.barplot}{The width of the barplot that visualizes the highest expressed genes.
+Default is a quarter of \code{n.genes.barplot}.}
 }
 \value{
-Seurat object
+The same Seurat object passed as input, but with an additional list in the \verb{@misc} slot
+named \code{'TotalReadFraction'} that contains the relative total expression of each gene as a
+fraction of total UMIs.
 }
 \description{
-Gene expression as fraction of all UMI's
+This function computes and visualizes gene expression levels as a fraction of total
+UMI (Unique Molecular Identifier) counts across all genes in a Seurat object. It aims to highlight
+the relative contribution of the most highly expressed genes to the overall transcriptome.
 }
 \examples{
-# combined.obj <- Percent.in.Trome()
+\dontrun{
+combined.obj <- Percent.in.Trome(combined.obj)
+}
+
 }

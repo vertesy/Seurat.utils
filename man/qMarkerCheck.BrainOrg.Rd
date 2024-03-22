@@ -2,24 +2,26 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{qMarkerCheck.BrainOrg}
 \alias{qMarkerCheck.BrainOrg}
-\title{qMarkerCheck.BrainOrg}
+\title{Quickly Plot Key Markers in Brain Organoids}
 \usage{
 qMarkerCheck.BrainOrg(obj = combined.obj, custom.genes = FALSE, suffix = "")
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object for visualization; Default: \code{combined.obj}.}
 
-\item{custom.genes}{Use custom gene set? Default: FALSE}
+\item{custom.genes}{Logical indicating whether to use a custom set of genes.
+If FALSE, a predefined list of key brain organoid markers is used; Default: FALSE.}
 
-\item{suffix}{Folder name suffix, Default: ""}
+\item{suffix}{Suffix for the folder name where the plots are saved; Default: "".}
 }
 \description{
-Quickly plot key markers in brain organoids
+Generates plots for a predefined or custom set of gene markers within brain organoids,
+aiding in the quick assessment of their expression across different cells or clusters.
 }
 \examples{
 \dontrun{
-if (interactive()) {
   qMarkerCheck.BrainOrg(combined.obj)
+  qMarkerCheck.BrainOrg(combined.obj, custom.genes = c("Gene1", "Gene2"))
 }
-}
+
 }

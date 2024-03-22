@@ -2,28 +2,29 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{PrctCellExpringGene}
 \alias{PrctCellExpringGene}
-\title{PrctCellExpringGene}
+\title{Proportion of Cells Expressing Given Genes}
 \source{
-Adapted from code by Ryan-Zhu on Github (https://github.com/satijalab/seurat/issues/371)
+Adapted from Ryan-Zhu on GitHub.
 }
 \usage{
 PrctCellExpringGene(genes, group.by = "all", obj = combined.obj)
 }
 \arguments{
-\item{genes}{A character vector of genes of interest.}
+\item{genes}{Character vector of gene names of interest.}
 
-\item{group.by}{Grouping variable, Default: 'all'.}
+\item{group.by}{Optional grouping variable for analysis (e.g., cell type). Default: 'all'.}
 
-\item{obj}{A Seurat object containing cell data. Default: combined.obj.}
+\item{obj}{Seurat object to analyze. Default: \code{combined.obj}.}
 }
 \value{
-A data frame with the proportion of cells expressing each gene, grouped by the group.by variable.
+Data frame with genes and their cell expression proportion, optionally grouped.
 }
 \description{
-Function to calculate the proportion of cells expressing a given set of genes.
+Calculates the proportion of cells expressing one or more specified genes.
 }
 \examples{
 \dontrun{
 PrctCellExpringGene(genes = c("Gene1", "Gene2"), obj = seurat_object)
 }
+
 }

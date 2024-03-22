@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{umapHiLightSel}
 \alias{umapHiLightSel}
-\title{umapHiLightSel}
+\title{Highlight Selected Clusters on UMAP}
 \usage{
 umapHiLightSel(
   obj = combined.obj,
@@ -11,24 +11,29 @@ umapHiLightSel(
 )
 }
 \arguments{
-\item{obj}{A Seurat object. Default: combined.obj.}
+\item{obj}{Seurat object to be visualized; Default: \code{combined.obj}.}
 
-\item{COI}{A vector of cluster IDs to highlight in the UMAP plot. Default: c("0", "2", "4", "5",  "11").}
+\item{COI}{Vector of cluster IDs to highlight on the UMAP plot;
+Default: \code{c("0", "2", "4", "5", "11")}.}
 
-\item{res.cl}{Name of the column in the Seurat object metadata that contains the cluster IDs. Default: 'integrated_snn_res.0.3'.}
+\item{res.cl}{Name of the metadata column containing cluster IDs;
+Default: 'integrated_snn_res.0.3'.}
 }
 \value{
-This function does not return a value. It saves a UMAP plot to the current working directory.
+Saves a UMAP plot highlighting specified clusters to the current working directory.
+The function itself does not return an object within R.
 }
 \description{
-Generates a UMAP plot from a Seurat object with a subset of cells highlighted.
+Generates a UMAP plot from a Seurat object with specified clusters highlighted.
+It saves the resulting UMAP plot directly to the current working directory.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  umapHiLightSel(obj = seuratObject, COI = c("0", "1"), res.cl = "resolution_0.8")
+  if (interactive()) {
+    umapHiLightSel(obj = combined.obj, COI = c("0", "1"), res.cl = "resolution_0.8")
+  }
 }
-}
+
 }
 \seealso{
 \code{\link[Seurat]{DimPlot}}

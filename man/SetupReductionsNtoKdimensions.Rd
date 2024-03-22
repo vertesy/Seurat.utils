@@ -21,24 +21,28 @@ SetupReductionsNtoKdimensions(
 )
 }
 \arguments{
-\item{obj}{A Seurat object. Default: combined.obj}
+\item{obj}{Seurat object to process; Default: \code{combined.obj}.}
 
-\item{nPCs}{A numeric value representing the number of principal components to use. Default: p$n.PC}
+\item{nPCs}{Number of principal components to consider in the reduction; Default: \code{p$n.PC}.}
 
-\item{dimensions}{A numeric vector specifying the dimensions to use for the dimensionality reductions. Default: 3:2}
+\item{dimensions}{Numeric vector specifying target dimensions for the reductions; Default: \code{3:2}.}
 
-\item{reduction}{A character string specifying the type of dimensionality reduction to perform. Can be "umap", "tsne", or "pca". Default: 'umap'}
+\item{reduction}{Type of dimensionality reduction to apply ('umap', 'tsne', or 'pca'); Default: 'umap'.}
+
+\item{...}{Additional parameters to pass to the dimensionality reduction functions.}
 }
 \value{
 The input Seurat object with computed dimensionality reductions and backups of these reductions.
 
-The input Seurat object with computed dimensionality reductions and backups of these reductions.
+Modified Seurat object with added dimensionality reduction data and backups.
 }
 \description{
 Function to calculate N-to-K dimensional umaps (default = 2:3); and back them up to
 slots \code{obj@misc$reductions.backup} from @reductions$umap
 
-Function to compute dimensionality reductions for a given Seurat object and backup the computed reductions.
+Executes specified dimensionality reduction (UMAP, tSNE, or PCA) over a range of dimensions
+and backs up the results within a Seurat object. This function allows for exploration of data structure
+at varying levels of granularity and ensures that reduction results are preserved for future reference.
 }
 \examples{
 \dontrun{
@@ -47,8 +51,10 @@ if (interactive()) {
 }
 }
 \dontrun{
-if (interactive()) {
-  combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction = "umap")
+  if (interactive()) {
+    combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10,
+    dimensions = 2:3, reduction = "umap")
+  }
 }
-}
+
 }

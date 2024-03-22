@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{getDiscretePaletteObj}
 \alias{getDiscretePaletteObj}
-\title{Generate a discrete color palette for a Seurat object.}
+\title{Generate a Discrete Color Palette for Seurat Clusters}
 \usage{
 getDiscretePaletteObj(
   ident.used,
@@ -13,27 +13,32 @@ getDiscretePaletteObj(
 )
 }
 \arguments{
-\item{ident.used}{The identity column used for determining the number of clusters.}
+\item{ident.used}{Identity column in the Seurat object to base the color palette on.}
 
-\item{obj}{Seurat object.}
+\item{obj}{Seurat object containing clustering information.}
 
-\item{palette.used}{The name of the palette to use, Default: "alphabet".}
+\item{palette.used}{The palette name to use for color generation. Options include "alphabet",
+"alphabet2", "glasbey", "polychrome", and "stepped". Default: "alphabet2".}
 
-\item{show.colors}{Whether to display the colors in the palette, Default: FALSE.}
+\item{show.colors}{If TRUE, displays the generated colors. Default: FALSE.}
 
-\item{seed}{An integer value to set the seed for reproducibility, Default: 1989.}
+\item{seed}{Seed for random color generation, ensuring reproducibility. Default: 1989.}
 }
 \value{
-A vector of color values.
+A character vector of color values corresponding to the number of clusters.
 }
 \description{
-Wrapper function that utilizes \code{DiscretePaletteSafe} to generate a color
-palette based on the number of unique clusters in a Seurat object.
+Generates a discrete color palette for visualizing clusters in a Seurat object,
+using a specified identity column to determine the number of unique clusters.
 }
 \examples{
 \dontrun{
 if (interactive()) {
-  getDiscretePaletteObj(ident.used = "ident", obj = yourSeuratObj)
+  ident.used <- "resolution_1"
+  obj <- YourSeuratObject
+  colors <- getDiscretePaletteObj(ident.used = ident.used, obj = obj)
+  print(colors)
 }
 }
+
 }
