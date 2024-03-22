@@ -2,22 +2,43 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{HGNC.EnforceUnique}
 \alias{HGNC.EnforceUnique}
-\title{HGNC.EnforceUnique}
+\title{Enforce Unique HGNC Gene Symbols}
 \usage{
 HGNC.EnforceUnique(updatedSymbols)
 }
 \arguments{
-\item{updatedSymbols}{Gene symbols, it is the output of HGNChelper's checkGeneSymbols)_.}
+\item{updatedSymbols}{A data frame or matrix containing gene symbols updated via \code{HGNChelper::checkGeneSymbols()}.
+The third column should contain the updated gene symbols that are to be made unique.}
+}
+\value{
+A modified version of the input data frame or matrix with unique gene symbols in the third column.
+If duplicates were found, they are made unique by appending \code{.1}, \code{.2}, etc., to the repeated symbols.
 }
 \description{
-Enforce Unique names after HGNC symbol update. While "make.unique" is not the ideal
-solution, because it generates mismatches, in my integration example it does reduce the
-mismatching genes from ~800 to 4
+Ensures that gene symbols are unique after being updated with HGNC symbols. This function
+applies a suffix to duplicate gene symbols to enforce uniqueness. While using \code{make.unique} might not
+be the ideal solution due to potential mismatches, it significantly reduces the number of mismatching
+genes in certain scenarios, making it a practical approach for data integration tasks.
+}
+\details{
+The function specifically targets the issue of duplicate gene symbols which can occur after
+updating gene symbols to their latest HGNC-approved versions. Duplicate symbols can introduce
+ambiguity in gene expression datasets, affecting downstream analyses like differential expression or
+data integration. By ensuring each gene symbol is unique, this function helps maintain the integrity
+of the dataset.
+}
+\note{
+This function is a workaround for ensuring unique gene symbols and might not be suitable
+for all datasets or analyses. It's important to review the results and ensure that the gene
+symbols accurately represent your data.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  x <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
+  if (interactive()) {
+    # Assuming `SymUpd` is your data frame of updated symbols from HGNChelper::checkGeneSymbols()
+    uniqueSymbols <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
+    # `uniqueSymbols` now contains unique gene symbols in its third column
+  }
 }
-}
+
 }

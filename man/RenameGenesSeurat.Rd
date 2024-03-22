@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{RenameGenesSeurat}
 \alias{RenameGenesSeurat}
-\title{RenameGenesSeurat}
+\title{Rename Gene Symbols in a Seurat Object}
 \usage{
 RenameGenesSeurat(
   obj = ls.Seurat[[i]],
@@ -12,22 +12,45 @@ RenameGenesSeurat(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: ls.Seurat[\link{i}]}
+\item{obj}{A Seurat object containing the assay and slots to be updated; Default: \code{ls.Seurat[[i]]}
+(replace \code{i} with the appropriate index).}
 
-\item{newnames}{A vector of new gene names. Default: HGNC.updated[\link{i}]$Suggested.Symbol}
+\item{newnames}{A character vector containing the new gene names intended to replace the
+existing ones; Default: \code{HGNC.updated[[i]]$Suggested.Symbol}. Ensure this matches the order
+and length of the genes in the specified assay.}
 
-\item{assay}{Which Seurat assay to replace. Default: RNA. Disclaimer: Intended use on simple
-objects that ONLY contain an RNA object. I highly advise against selectively replacing name in
-other assays that may have slots that cannot be updated by this function.}
+\item{assay}{The name of the assay within the Seurat object where gene names will be updated;
+Default: \code{"RNA"}. This function assumes simple objects containing only an RNA assay.}
+
+\item{slots}{A character vector specifying which slots within the assay to update. Possible
+values include \code{"data"}, \code{"counts"}, and \code{"meta.features"}; other layers can be specified if present.}
 }
 \description{
-Replace gene names in different slots of a Seurat object. Run this before
-integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
+This function replaces gene names across various slots within a specified assay
+of a Seurat object. It is designed to be run prior to any data integration or downstream analysis
+processes. The function targets the \verb{@counts}, \verb{@data}, and \verb{@meta.features} slots within
+the specified assay, ensuring consistency in gene nomenclature across the object.
+}
+\details{
+It is crucial to run this function before any data integration or further analysis
+to ensure gene symbol consistency. The function does not support complex objects with multiple
+assays where dependencies between assays might lead to inconsistencies. Use with caution and
+verify the results.
+}
+\note{
+This function modifies the Seurat object in place, changing gene symbols directly within
+the specified slots. Be sure to have a backup of your Seurat object if needed before applying
+this function.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  RenameGenesSeurat(obj = SeuratObj, newnames = HGNC.updated.genes$Suggested.Symbol)
+  if (interactive()) {
+    # Assuming `SeuratObj` is your Seurat object
+    # and `HGNC.updated.genes` contains the updated gene symbols
+    SeuratObj <- RenameGenesSeurat(obj = SeuratObj,
+                                   newnames = HGNC.updated.genes$Suggested.Symbol)
+    # `SeuratObj` now has updated gene symbols in the specified assay and slots
+  }
 }
-}
+
 }
