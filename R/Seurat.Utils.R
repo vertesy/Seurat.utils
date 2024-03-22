@@ -1937,22 +1937,33 @@ StoreAllMarkers <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title GetTopMarkersDF
+#' @title Get Top Differential Expression Genes Data Frame
 #'
-#' @description Get the vector of N most diff. exp. genes. #
-#' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param n Number of markers to return, Default: p$n.markers
-#' @param order.by Sort output tibble by which column, Default: c("avg_log2FC", "p_val_adj")[1]
+#' @description Retrieves a data frame of the top N differentially expressed genes from
+#' differential gene expression analysis results, offering an option to exclude certain genes
+#' based on patterns.
+#'
+#' @param dfDE Data frame containing the results of differential gene expression analysis
+#' (e.g., output from `FindAllMarkers()`); Default: `df.markers`.
+#' @param n Number of top markers to retrieve per cluster; Default: `p$n.markers`.
+#' @param order.by Priority column for sorting markers before selection, such as `"avg_log2FC"`;
+#' Default: `"avg_log2FC"`.
+#' @param exclude Vector of regex patterns to exclude genes from the top markers list;
+#' Default: `c("^AL*|^AC*|^LINC*")`.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   GetTopMarkers(df = df.markers, n = 3)
+#'   if (interactive()) {
+#'     topMarkersDF <- GetTopMarkersDF(dfDE = df.markers, n = 3)
+#'   }
 #' }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{slice}}, \code{\link[dplyr]{select}}
+#'
+#' @seealso \code{\link[Seurat]{FindAllMarkers}}, \code{\link[dplyr]{arrange}},
+#'  \code{\link[dplyr]{filter}}, \code{\link[dplyr]{group_by}}
+#'
 #' @export
-#' @importFrom dplyr slice select
+#' @importFrom dplyr arrange group_by slice select filter
+# #' @importFrom magrittr `%>%`
 GetTopMarkersDF <- function(
     dfDE = df.markers # Get the vector of N most diff. exp. genes.
     , n = p$"n.markers", order.by = c("avg_log2FC", "p_val_adj")[1],
@@ -1980,22 +1991,28 @@ GetTopMarkersDF <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title GetTopMarkers
+#' @title Get Top Differential Expression Markers from DGEA Results
 #'
-#' @description Get the vector of N most diff. exp. genes. #
-#' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param n Number of markers to return, Default: p$n.markers
-#' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")[2]
+#' @description Retrieves the top N differentially expressed genes from the results of a differential
+#' gene expression analysis, such as that provided by `FindAllMarkers()`.
+#'
+#' @param dfDE Data frame containing differential expression analysis results; Default: `df.markers`.
+#' @param n Number of top markers to retrieve for each cluster; Default: `p$n.markers`.
+#' @param order.by Column by which to sort the markers before selection, typically prioritizing
+#' markers by significance or effect size; Default: `"avg_log2FC"`.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   GetTopMarkers(df = df.markers, n = 3)
+#'   if (interactive()) {
+#'     topMarkers <- GetTopMarkers(df = df.markers, n = 3)
+#'   }
 #' }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{slice}}, \code{\link[dplyr]{select}}
+#'
+#' @seealso \code{\link[Seurat]{FindAllMarkers}}, \code{\link[dplyr]{arrange}}, \code{\link[dplyr]{group_by}}
+#'
 #' @export
-#' @importFrom dplyr slice select select
+#' @importFrom dplyr arrange group_by slice select
+# #' @importFrom magrittr `%>%`
 GetTopMarkers <- function(dfDE = df.markers,
                           n = p$"n.markers",
                           order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]) {
@@ -2211,16 +2228,28 @@ AutoLabel.KnownMarkers <- function(
 # Correlations _________________________ ----
 # _________________________________________________________________________________________________
 
-#' @title sparse.cor
+#' @title Calculate Sparse Correlation Matrix
 #'
-#' @description Calculate a sparse correlation matrix.
-#' @param smat A sparse matrix.
+#' @description Computes a sparse correlation matrix from a given sparse matrix input. This function is
+#' useful for efficiently handling large datasets where most values are zero, facilitating the calculation
+#' of both covariance and correlation matrices without converting to a dense format.
+#'
+#' @param smat A sparse matrix object, typically of class Matrix from the Matrix package.
 #' @return A list with two elements:
-#'   * `cov`: The covariance matrix.
-#'   * `cor`: The correlation matrix.
+#'   * `cov`: The covariance matrix derived from the input sparse matrix.
+#'   * `cor`: The correlation matrix derived from the covariance matrix.
+#'
+#' @examples
+#' \dontrun{
+#'   library(Matrix)
+#'   smat <- Matrix(rnorm(1000), nrow = 100, sparse = TRUE)
+#'   cor_res <- sparse.cor(smat)
+#'   print(cor_res$cor)
+#' }
 #'
 #' @export
-
+#' @importFrom Matrix colMeans crossprod tcrossprod
+#' @importFrom stats sd
 sparse.cor <- function(smat) {
   n <- nrow(smat)
   cMeans <- colMeans(smat)
@@ -2294,25 +2323,40 @@ Calc.Cor.Seurat <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title plot.Gene.Cor.Heatmap
+#' @title Plot Gene Correlation Heatmap
 #'
-#' @description Plot a gene correlation heatmap.
-#' @param genes The list of genes of interest. Default: WU.2017.139.IEGsf
-#' @param assay.use The assay to use from the Seurat object. Default: 'RNA'
-#' @param slot.use The slot to use from the assay in the Seurat object. Default: First item in the vector c("data", "scale.data", "data.imputed")
-#' @param quantileX The quantile level for the calculation. Default: 0.95
-#' @param min.g.cor The minimum gene correlation. Genes with correlation above this value or below its negative will be included. Default: 0.3
-#' @param calc.COR A logical flag, if TRUE, the correlation will be calculated if not found. Default: FALSE
-#' @param cutRows A number, the dendrogram will be cut at this height into clusters. Default: NULL
-#' @param cutCols A number, the dendrogram will be cut at this height into clusters. If NULL, cutCols will be the same as cutRows. Default: cutRows
-#' @param obj The Seurat object to perform calculations on. Default: combined.obj
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description Generates a heatmap visualization of gene correlations based on expression data.
+#' Useful for identifying groups of genes that exhibit similar expression patterns across different conditions
+#' or cell types in a Seurat object.
+#'
+#' @param genes Vector of gene symbols to include in the correlation analysi.
+#' @param assay.use Assay from which to retrieve expression data within the Seurat object; Default: 'RNA'.
+#' @param slot.use Specifies which slot of the assay to use for expression data ('data', 'scale.data', 'data.imputed');
+#' Default: first item ('data').
+#' @param quantileX Quantile level for calculating expression thresholds; Default: 0.95.
+#' @param min.g.cor Minimum absolute gene correlation value for inclusion in the heatmap; Default: 0.3.
+#' @param calc.COR Logical flag to calculate correlation matrix if not found in `@misc`; Default: FALSE.
+#' @param cutRows Height at which to cut the dendrogram for rows, determining cluster formation; Default: NULL.
+#' @param cutCols Height at which to cut the dendrogram for columns, determining cluster formation;
+#' Default: same as `cutRows`.
+#' @param obj Seurat object containing the data; Default: `combined.obj`.
+#' @param ... Additional parameters passed to the internally called functions.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     plot.Gene.Cor.Heatmap(genes = c("Gene1", "Gene2", "Gene3"), obj = combined.obj)
+#'   }
+#' }
+#'
+#' @importFrom Seurat GetAssayData
 #' @importFrom pheatmap pheatmap
 #' @importFrom MarkdownReports wplot_save_pheatmap
 #'
 #' @export plot.Gene.Cor.Heatmap
+#'
 plot.Gene.Cor.Heatmap <- function(
-    genes = WU.2017.139.IEGsf,
+    genes,
     assay.use = "RNA", slot.use = c("data", "scale.data", "data.imputed")[1], quantileX = 0.95,
     min.g.cor = 0.3, calc.COR = FALSE,
     cutRows = NULL, cutCols = cutRows,
@@ -2381,18 +2425,29 @@ plot.Gene.Cor.Heatmap <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title prefix_cells_seurat
+#' @title Add Prefixes to Cell Names in Seurat Objects
 #'
-#' @description This function adds prefixes from 'obj_IDs' to cell names in Seurat S4 objects from 'ls_obj'
+#' @description Adds prefixes derived from a vector of identifiers to cell names in a list of Seurat objects.
+#' This is useful for ensuring unique cell names across multiple samples or conditions when combining or comparing datasets.
 #'
-#' @param ls_obj List. A list of Seurat S4 objects
-#' @param obj_IDs Character vector. A vector of sample IDs corresponding to each Seurat S4 object
+#' @param ls_obj List of Seurat S4 objects to which prefixes will be added. Each object should correspond
+#' to a different sample or condition.
+#' @param obj_IDs Character vector of identifiers that will be used as prefixes. Each identifier in the vector
+#' corresponds to a Seurat object in `ls_obj`. The length of `obj_IDs` must match the length of `ls_obj`.
 #'
 #' @examples
-#' # ls_obj <- list(seurat_obj1, seurat_obj2)
-#' # obj_IDs <- c("sample1", "sample2")
-#' # ls_obj_prefixed <- prefix_cells_seurat(ls_obj = ls_obj, obj_IDs = obj_IDs)
+#' \dontrun{
+#'   # Assuming seurat_obj1 and seurat_obj2 are Seurat objects
+#'   ls_obj <- list(seurat_obj1, seurat_obj2)
+#'   obj_IDs <- c("sample1", "sample2")
+#'   ls_obj_prefixed <- prefix_cells_seurat(ls_obj = ls_obj, obj_IDs = obj_IDs)
+#'   # Now each cell name in seurat_obj1 and seurat_obj2 will be prefixed with 'sample1_' and 'sample2_', respectively.
+#' }
+#'
+#' @return A list of Seurat objects with updated cell names, incorporating the specified prefixes.
+#'
 #' @export
+#' @importFrom Seurat RenameCells
 prefix_cells_seurat <- function(ls_obj, obj_IDs) {
   # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
   if (!is.list(ls_obj) & inherits(ls_obj, "Seurat")) ls_obj <- list(ls_obj)
@@ -2421,12 +2476,14 @@ prefix_cells_seurat <- function(ls_obj, obj_IDs) {
   return(ls_obj_prefixed)
 }
 
+
 # _________________________________________________________________________________________________
 #' @title Check Prefix in Seurat Object Cell IDs
 #'
-#' @description This function checks if a prefix has been added to the standard cell-IDs (16 characters of A,TRUE,C,G)
-#' in a Seurat object. If so, it prints the number of unique prefixes found,
+#' @description This function checks if a prefix has been added to the standard
+#' cell-IDs (16 characters of A,TRUE,C,G) in a Seurat object. If so, it prints the number of unique prefixes found,
 #' issues a warning if more than one unique prefix is found, and returns the identified prefix(es).
+#'
 #' @param obj A Seurat object with cell IDs possibly prefixed.
 #' @param cell_ID_pattern Pattern to match cellIDs (with any suffix).
 #' @return A character vector of the identified prefix(es).
@@ -2436,7 +2493,6 @@ prefix_cells_seurat <- function(ls_obj, obj_IDs) {
 #' # prefix <- find_prefix_in_cell_IDs(obj)
 #'
 #' @export
-
 find_prefix_in_cell_IDs <- function(obj, cell_ID_pattern = "[ATCG]{16}.*$") {
   stopifnot(inherits(obj, "Seurat"))
 
@@ -2471,21 +2527,33 @@ find_prefix_in_cell_IDs <- function(obj, cell_ID_pattern = "[ATCG]{16}.*$") {
 
 
 # _________________________________________________________________________________________________
-#' @title seu.Make.Cl.Label.per.cell
+#' @title Create Cluster Labels for Each Cell
 #'
-#' @description Take a named vector (of e.g. values ="gene names", names = clusterID), and a
-#' vector of cell-IDs and make a vector of "GeneName.ClusterID".
-#' @param TopGenes A named vector, where values are gene names and names are cluster IDs.
-#' @param clID.per.cell A vector of cell-IDs used to create the output vector.
+#' @description Generates labels for each cell by combining gene names and cluster IDs. This function
+#' takes a named vector, typically representing top genes for clusters (values) and their corresponding
+#' cluster IDs (names), along with a vector of cell IDs. It then creates a new vector where each cell
+#' is labeled with its top gene and cluster ID in the format "GeneName.ClusterID".
+#'
+#' @param TopGenes A named vector with gene names as values and cluster IDs as names,
+#' representing the top or defining gene for each cluster.
+#' @param clID.per.cell A vector of cluster IDs for each cell, used to match each cell with its
+#' corresponding top gene from `TopGenes`.
+#'
+#' @return A vector where each element corresponds to a cell labeled with both its defining gene
+#' name and cluster ID, in the format "GeneName.ClusterID".
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic,
-#'   clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname))
+#'   if (interactive()) {
+#'     # Assuming `TopGenes.Classic` is a named vector of top genes and cluster IDs,
+#'     # and `metaD.CL.colname` is a column in metadata with cluster IDs per cell
+#'     cellLabels <- seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic,
+#'       clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname))
+#'     # `cellLabels` now contains labels for each cell in the format "GeneName.ClusterID"
+#'   }
 #' }
-#' }
+#'
 #' @export
-
 seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) {
   Cl.names_class <- TopGenes[clID.per.cell]
   Cl.names_wNr <- paste0(Cl.names_class, " (", names(Cl.names_class), ")")
@@ -2494,22 +2562,59 @@ seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) {
 
 
 # _________________________________________________________________________________________________
-#' @title GetMostVarGenes
+#' @title Retrieve the Top Variable Genes from a Seurat Object
 #'
-#' @description Get the N most variable Genes
-#' @param obj A Seurat object.
-#' @param nGenes Number of genes, Default: p$nVarGenes
+#' @description Retrieves the names of the most variable genes from a Seurat object,
+#' typically used to focus subsequent analyses on genes with the greatest variation across cells.
+#'
+#' @param obj A Seurat object containing gene expression data and,
+#' pre-computed highly variable gene information.
+#' @param nGenes The number of most variable genes to retrieve; Default: `p$nVarGenes`.
+#'
+#' @return A vector containing the names of the most variable genes.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     # Assuming `combined.obj` is a Seurat object with computed variable genes
+#'     varGenes <- GetMostVarGenes(obj = combined.obj, nGenes = 100)
+#'   }
+#' }
+#'
 #' @export
-GetMostVarGenes <- function(obj, nGenes = p$nVarGenes) { # Get the most variable rGenes
+#' @importFrom Seurat FindVariableFeatures
+#'
+GetMostVarGenes <- function(obj, nGenes = p$nVarGenes) {
   head(rownames(slot(object = obj, name = "hvg.info")), n = nGenes)
 }
 
 # _________________________________________________________________________________________________
-#' @title gene.name.check
+#' @title Check Gene Names in Seurat Object
 #'
-#' @description Check gene names in a seurat object, for naming conventions
-#' (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #
-#' @param Seu.obj A Seurat object.
+#' @description Examines gene names in a Seurat object for specific naming conventions,
+#' such as the presence of hyphens (-) or dots (.) often found in mitochondrial gene names.
+#' This function is useful for ensuring gene names conform to expected patterns,
+#' especially when preparing data for compatibility with other tools or databases.
+#'
+#' @param Seu.obj A Seurat object containing gene expression data.
+#'
+#' @details This function prints out examples of gene names that contain specific characters
+#' of interest (e.g., '-', '_', '.', '.AS[1-9]'). It is primarily used for data inspection
+#' and cleaning before further analysis or data export.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     # Assuming `combined.obj` is your Seurat object
+#'     gene.name.check(Seu.obj = combined.obj)
+#'     # This will print examples of gene names containing '-', '_', '.', and '.AS[1-9]'
+#'   }
+#' }
+#'
+#' @seealso \code{\link[Seurat]{GetAssayData}}
+#'
+#' @importFrom Seurat GetAssayData
+#' @importFrom CodeAndRoll2 grepv
 #' @importFrom MarkdownHelpers llprint llogit
 #'
 #' @export
@@ -2537,27 +2642,39 @@ gene.name.check <- function(Seu.obj) {
 
 
 # _________________________________________________________________________________________________
-#' @title check.genes
+#' @title Check if Gene Names exist in Seurat Object or HGNC Database
 #'
-#' @description Check if a gene name exists in a Seurat object, or in HGNC?
-#' @param list.of.genes A vector of gene names to check for existence in the Seurat object or HGNC. Default: ClassicMarkers
-#' @param makeuppercase Logical, if TRUE, transforms all gene names to uppercase. Default: FALSE
-#' @param verbose Logical, if TRUE, prints out information about missing genes. Default: TRUE
-#' @param HGNC.lookup Logical, if TRUE, looks up missing genes in HGNC database. Default: FALSE
-#' @param obj Seurat object that the function uses to check the gene names. Default: combined.obj
-#' @param assay.slot The assay slot of the Seurat object to consider. Default: 'RNA'
-#' @param dataslot The data slot of the Seurat object to consider. Default: 'data'
+#' @description Verifies the presence of specified gene names within a Seurat object or
+#' queries them against the HGNC database. This function is useful for ensuring gene names are
+#' correctly formatted and exist within the dataset or are recognized gene symbols.
+#'
+#' @param list.of.genes A vector of gene names to be checked; Default: `ClassicMarkers`.
+#' @param makeuppercase If `TRUE`, converts all gene names to uppercase before checking; Default: `FALSE`.
+#' @param verbose If `TRUE`, prints information about any missing genes; Default: `TRUE`.
+#' @param HGNC.lookup If `TRUE`, attempts to look up any missing genes in the HGNC database to
+#' verify their existence; Default: `FALSE`.
+#' @param obj The Seurat object against which the gene names will be checked; Default: `combined.obj`.
+#' @param assay.slot Assay slot of the Seurat object to check for gene names; Default: `'RNA'`.
+#' @param dataslot Data slot of the assay to check for gene names; Default: `'data'`.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   check.genes("top2a", makeuppercase = TRUE)
-#'   check.genes("VGLUT2", verbose = FALSE, HGNC.lookup = TRUE)
+#'   if (interactive()) {
+#'     # Check for the presence of a gene name in uppercase
+#'     check.genes(list.of.genes = "top2a", makeuppercase = TRUE, obj = combined.obj)
+#'
+#'     # Check for a gene name with verbose output and HGNC lookup
+#'     check.genes(list.of.genes = "VGLUT2", verbose = TRUE, HGNC.lookup = TRUE, obj = combined.obj)
+#'   }
 #' }
-#' }
-#' @importFrom DatabaseLinke.R qHGNC
-#' @importFrom Stringendo percentage_formatter
+#'
+#' @seealso \code{\link[Seurat]{GetAssayData}}, \code{\link[DatabaseLinke.R]{qHGNC}}
 #'
 #' @export
+#' @importFrom DatabaseLinke.R qHGNC
+#' @importFrom Seurat GetAssayData
+#' @importFrom Stringendo percentage_formatter
+#'
 check.genes <- function(
     list.of.genes = ClassicMarkers, makeuppercase = FALSE, verbose = TRUE, HGNC.lookup = FALSE,
     obj = combined.obj,
@@ -4088,8 +4205,8 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   fname <- kpp("Soup.VS.Cells.Av.Exp.GeneClasses", SeqRun, "pdf")
   pgg <-
     ggplot(
-      Soup.VS.Cells.Av.Exp.gg %>% arrange(-nchar(Class)),
-      aes(x = Soup, y = Cells, label = gene, col = Class)
+      Soup.VS.Cells.Av.Exp.gg |>
+        arrange(-nchar(Class)), aes(x = Soup, y = Cells, label = gene, col = Class)
     ) +
     geom_abline(slope = 1, col = "darkgrey") +
     geom_point() +
