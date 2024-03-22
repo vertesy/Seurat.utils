@@ -1561,19 +1561,19 @@ qSeuViolin <- function(
 #' within a Seurat object. Provides options for aggregate gene expression, expression threshold filtering,
 #' and quantile clipping for count data.
 #'
-#' @param obj Seurat object to analyze.
-#' @param genes Vector of gene names to include in the analysis.
-#' @param assay Assay to use from the Seurat object.
-#' @param slot_ Data slot to use ('data' or 'counts').
-#' @param thr_expr Expression threshold for highlighting in the plot.
-#' @param suffix Additional text to append to the plot title.
-#' @param xlab Label for the x-axis.
-#' @param return_cells_passing If TRUE, returns count of cells exceeding the expression threshold.
-#' @param quantile_thr Quantile threshold for clipping count data.
-#' @param return_quantile If TRUE, returns cell count exceeding the quantile threshold.
-#' @param w Width of the plot.
-#' @param h Height of the plot.
-#' @param show_plot If TRUE, displays the generated plot.
+#' @param obj Seurat object to analyze; Default: `combined.obj`.
+#' @param genes Vector of gene names to include in the analysis; Default: c("MALAT1", "MT-CO1").
+#' @param assay Assay to use from the Seurat object; Default: "RNA".
+#' @param slot_ Data slot to use ('data' or 'counts'); Default: "data".
+#' @param thr_expr Expression threshold for highlighting in the plot; Default: 10.
+#' @param suffix Additional text to append to the plot title; Default: NULL.
+#' @param xlab Label for the x-axis; Default: "log10(Summed UMI count @data)".
+#' @param return_cells_passing If TRUE, returns count of cells exceeding the expression threshold; Default: TRUE.
+#' @param quantile_thr Quantile threshold for clipping count data; Default: 0.95.
+#' @param return_quantile If TRUE, returns cell count exceeding the quantile threshold; Default: FALSE.
+#' @param w Width of the plot in inches; Default: 9.
+#' @param h Height of the plot in inches; Default: 5.
+#' @param show_plot If TRUE, displays the generated plot; Default: TRUE.
 #' @param ... Additional arguments for customization.
 #'
 #' @return Depending on the parameters, can return a ggplot object, the number of cells passing
@@ -1581,10 +1581,11 @@ qSeuViolin <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     plotGeneExpHist(obj = yourSeuratObject, genes = c("GeneA", "GeneB"))
-#'   }
+#'   plotGeneExpHist(obj = yourSeuratObject, genes = c("GeneA", "GeneB"))
 #' }
+#'
+#' @return Depending on the parameters, can return a ggplot object, the number of cells passing
+#' the expression threshold, or the number of cells exceeding the quantile threshold.
 #'
 #' @export
 #' @importFrom scales hue_pal
