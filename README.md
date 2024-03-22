@@ -44,6 +44,10 @@ devtools::install_github(repo = "vertesy/DatabaseLinke.R", upgrade = F)
 # Install Seurat.utils
 devtools::install_github(repo = "vertesy/Seurat.utils", upgrade = F)
 
+# You may need to install
+# install.packages("pheatmap")
+# install.packages("checkmate")
+
 ```
 
 ...then simply load the package:
