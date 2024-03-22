@@ -1144,23 +1144,31 @@ getDiscretePalette <- function() .Deprecated("DiscretePaletteSafe and DiscretePa
 
 
 # _________________________________________________________________________________________________
-#' @title Generate a discrete color palette for a Seurat object.
+#' @title Generate a Discrete Color Palette for Seurat Clusters
 #'
-#' @description Wrapper function that utilizes `DiscretePaletteSafe` to generate a color
-#' palette based on the number of unique clusters in a Seurat object.
-#' @param ident.used The identity column used for determining the number of clusters.
-#' @param obj Seurat object.
-#' @param palette.used The name of the palette to use, Default: "alphabet".
-#' @param show.colors Whether to display the colors in the palette, Default: FALSE.
-#' @param seed An integer value to set the seed for reproducibility, Default: 1989.
-#' @return A vector of color values.
+#' @description Generates a discrete color palette for visualizing clusters in a Seurat object,
+#' using a specified identity column to determine the number of unique clusters.
+#'
+#' @param ident.used Identity column in the Seurat object to base the color palette on.
+#' @param obj Seurat object containing clustering information.
+#' @param palette.used The palette name to use for color generation. Options include "alphabet",
+#' "alphabet2", "glasbey", "polychrome", and "stepped". Default: "alphabet2".
+#' @param show.colors If TRUE, displays the generated colors. Default: FALSE.
+#' @param seed Seed for random color generation, ensuring reproducibility. Default: 1989.
+#'
+#' @return A character vector of color values corresponding to the number of clusters.
+#'
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   getDiscretePaletteObj(ident.used = "ident", obj = yourSeuratObj)
+#'   ident.used <- "resolution_1"
+#'   obj <- YourSeuratObject
+#'   colors <- getDiscretePaletteObj(ident.used = ident.used, obj = obj)
+#'   print(colors)
 #' }
 #' }
-#' @export getDiscretePaletteObj
+#'
+#' @export
 getDiscretePaletteObj <- function(ident.used,
                                   obj,
                                   palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
