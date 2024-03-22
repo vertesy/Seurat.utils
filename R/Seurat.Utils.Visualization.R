@@ -2405,7 +2405,7 @@ multi_clUMAP.A4 <- function(
 #' }
 #'
 #' @export
-#' @importFrom Seurat Noaxes
+#' @importFrom Seurat NoAxes
 #' @importFrom ggExpress qA4_grid_plot
 qClusteringUMAPS <- function(
     obj = combined.obj,
@@ -2599,19 +2599,25 @@ qQC.plots.BrainOrg <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title qMarkerCheck.BrainOrg
+#' @title Quickly Plot Key Markers in Brain Organoids
 #'
-#' @description Quickly plot key markers in brain organoids
-#' @param obj Seurat object, Default: combined.obj
-#' @param custom.genes Use custom gene set? Default: FALSE
-#' @param suffix Folder name suffix, Default: ""
+#' @description Generates plots for a predefined or custom set of gene markers within brain organoids,
+#' aiding in the quick assessment of their expression across different cells or clusters.
+#'
+#' @param obj Seurat object for visualization; Default: `combined.obj`.
+#' @param custom.genes Logical indicating whether to use a custom set of genes.
+#' If FALSE, a predefined list of key brain organoid markers is used; Default: FALSE.
+#' @param suffix Suffix for the folder name where the plots are saved; Default: "".
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
 #'   qMarkerCheck.BrainOrg(combined.obj)
+#'   qMarkerCheck.BrainOrg(combined.obj, custom.genes = c("Gene1", "Gene2"))
 #' }
-#' }
+#'
 #' @export
+#' @importFrom CodeAndRoll2 as_tibble_from_namedVec
+
 qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
                                   suffix = "") {
 
@@ -2635,7 +2641,7 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
     )
     print(Signature.Genes.Top16)
   }
-  print(as_tibble_from_namedVec(Signature.Genes.Top16))
+  print(CodeAndRoll2::as_tibble_from_namedVec(Signature.Genes.Top16))
   multiFeaturePlot.A4(
     obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall",
     foldername = sppp("Signature.Genes.Top16", suffix)
@@ -2690,24 +2696,28 @@ PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = "expr.q99") {
 # Manipulating UMAP and PCA  ______________________________ ----
 # _________________________________________________________________________________________________
 
-
-#' @title FlipReductionCoordinates
+#' @title Flip Reduction Coordinates
 #'
-#' @description Flip reduction coordinates (like UMAP upside down).
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Numer of dimensions used, Default: 2
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param flip The axis (axes) to flip around. Default: c("x", "y", "xy", NULL)[1]
-#' @param FlipReductionBackupToo Flip coordinates in backup slot too? Default: TRUE
+#' @description Flips dimensionality reduction coordinates (such as UMAP or tSNE) vertically or
+#' horizontally to change the visualization perspective.
+#'
+#' @param obj Seurat object to modify; Default: `combined.obj`.
+#' @param dim Number of dimensions in the reduction to consider; Default: 2.
+#' @param reduction Dimension reduction technique to modify ('umap', 'tsne', or 'pca'); Default: 'umap'.
+#' @param flip Axis (or axes) to flip; can be 'x', 'y', or 'xy' to flip both; Default: "x".
+#' @param FlipReductionBackupToo Boolean indicating whether to also flip coordinates in the backup slot; Default: TRUE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
+#'   # Before flipping UMAP coordinates
 #'   clUMAP()
+#'   # Flip UMAP coordinates and visualize again
 #'   combined.obj <- FlipReductionCoordinates(combined.obj)
 #'   clUMAP()
 #' }
-#' }
+#'
 #' @export
+#' @importFrom Seurat Embeddings
 FlipReductionCoordinates <- function(
     obj = combined.obj, dim = 2, reduction = "umap",
     flip = c("x", "y", "xy", NULL)[1], FlipReductionBackupToo = TRUE) {
@@ -2731,21 +2741,28 @@ FlipReductionCoordinates <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title AutoNumber.by.UMAP
+#' @title Relabel Cluster Numbers Along a UMAP (or tSNE) Axis
 #'
-#' @description Relabel cluster numbers along a UMAP (or tSNE) axis #
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Which dimension? Default: 1
-#' @param swap Swap direction? Default: FALSE
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
+#' @description Automatically renumbers clusters based on their position along a specified dimension
+#' in a UMAP (or tSNE or PCA) plot, potentially enhancing interpretability by ordering clusters.
+#'
+#' @param obj Seurat object containing clustering and UMAP (or other dimensional reduction) data;
+#' Default: `combined.obj`.
+#' @param dim Dimension along which to order clusters (1 for the first dimension, typically horizontal);
+#' Default: 1.
+#' @param swap If TRUE, reverses the ordering direction; Default: FALSE.
+#' @param reduction Dimension reduction technique used for cluster positioning ('umap', 'tsne', or 'pca');
+#' Default: 'umap'.
+#' @param res Clustering resolution identifier used to fetch cluster labels from `obj` metadata;
+#' Default: 'integrated_snn_res.0.5'.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction = "umap", res = "integrated_snn_res.0.5")
-#'   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.ordered")
+#'   combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction = "umap",
+#'                                      res = "integrated_snn_res.0.5")
+#'   DimPlot.ClusterNames(combined.obj, ident = "integrated_snn_res.0.5.ordered")
 #' }
-#' }
+#'
 #' @export
 #' @importFrom Seurat FetchData
 AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers along a UMAP (or tSNE) axis
@@ -2767,65 +2784,6 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
   return(obj)
 }
 
-
-
-# _________________________________________________________________________________________________
-#' @title AutoNumber.by.PrinCurve
-#'
-#' @description Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Dimensions to use, Default: 1:2
-#' @param plotit Plot results (& show it), Default: TRUE
-#' @param swap Swap Lambda paramter (multiplied with this) , Default: -1
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5")
-#'   combined.obj <- AutoNumber.by.PrinCurve(
-#'     obj = combined.obj, dim = 1:2, reduction = "umap", plotit = TRUE,
-#'     swap = -1, res = "integrated_snn_res.0.5"
-#'   )
-#'   DimPlot.ClusterNames(ident = "integrated_snn_res.0.5.prin.curve")
-#' }
-#' }
-#' @seealso
-#'  \code{\link[princurve]{principal_curve}}
-#' @importFrom princurve principal_curve whiskers
-#' @importFrom MarkdownReports wplot_save_this
-#' @importFrom Seurat FetchData
-#'
-#' @export
-AutoNumber.by.PrinCurve <- function(
-    obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
-    , dim = 1:2, plotit = TRUE, swap = -1,
-    reduction = "umap", res = "integrated_snn_res.0.5") {
-  # require(princurve)
-  dim_name <- ppu(toupper(reduction), dim)
-  coord.umap <- FetchData(object = obj, vars = dim_name)
-  fit <- princurve::principal_curve(x = as.matrix(coord.umap))
-  if (plotit) {
-    plot(fit,
-      xlim = range(coord.umap[, 1]), ylim = range(coord.umap[, 2]),
-      main = "principal_curve"
-    )
-    # points(fit)
-    points(coord.umap, pch = 18, cex = .25)
-    princurve::whiskers(coord.umap, fit$s, lwd = .1)
-    MarkdownReports::wplot_save_this(plotname = "principal_curve")
-  }
-
-  ls.perCl <- split(swap * fit$lambda, f = obj[[res]])
-  MedianClusterCoordinate <- unlapply(ls.perCl, median)
-  OldLabel <- names(sort(MedianClusterCoordinate))
-  NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
-  NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
-  NewMetaCol <- kpp(res, "prin.curve")
-  iprint("NewMetaCol:", NewMetaCol)
-  obj[[NewMetaCol]] <- NewMeta
-  return(obj)
-}
 
 
 # _________________________________________________________________________________________________
@@ -2882,25 +2840,38 @@ AutoNumber.by.PrinCurve <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title save2umaps.A4
+#' @title Save Two Plots on One A4 Page
 #'
-#' @description Save 2 umaps on 1 A4
-#' @param plot_list A list of plots to be saved on an A4 page.
-#' @param pname Boolean to determine if name is generated automatically. If FALSE, name is generated based on plot_list and suffix. Default: FALSE
-#' @param suffix A suffix added to the filename. Default: NULL
-#' @param scale Scaling factor for the size of the plot. Default: 1
-#' @param nrow Number of rows to arrange the plots in. Default: 2
-#' @param ncol Number of columns to arrange the plots in. Default: 1
-#' @param h Height of the plot, calculated as height of A4 page times the scale. Default: hA4 * scale
-#' @param w Width of the plot, calculated as width of A4 page times the scale. Default: wA4 * scale
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @importFrom cowplot plot_grid
+#' @description Arranges and saves two UMAP plots (or any plots) side-by-side or one above
+#' the other on a single A4 page.
+#'
+#' @param plot_list A list containing ggplot objects to be arranged and saved.
+#' @param pname Boolean indicating if the plot name should be automatically generated;
+#' if FALSE, the name is based on `plot_list` and `suffix`; Default: FALSE.
+#' @param suffix Suffix to be added to the generated filename if `pname` is FALSE; Default: NULL.
+#' @param scale Scaling factor for adjusting the plot size; Default: 1.
+#' @param nrow Number of rows in the plot arrangement; Default: 2.
+#' @param ncol Number of columns in the plot arrangement; Default: 1.
+#' @param h Height of the plot, calculated as A4 height times `scale`;
+#' calculated dynamically based on `scale`.
+#' @param w Width of the plot, calculated as A4 width times `scale`;
+#' calculated dynamically based on `scale`.
+#' @param ... Additional parameters passed to `plot_grid`.
+#'
+#' @examples
+#' \dontrun{
+#'   p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) + geom_point()
+#'   p2 <- ggplot(iris, aes(Petal.Length, Petal.Width, color = Species)) + geom_point()
+#'   save2plots.A4(plot_list = list(p1, p2))
+#' }
 #'
 #' @export
-save2umaps.A4 <- function(
+#' @importFrom cowplot plot_grid save_plot ggdraw
+#' @importFrom ggplot2 theme
+save2plots.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 1,
-    h = hA4 * scale, w = wA4 * scale, ...) { # Save 2 umaps on an A4 page.
+    h = hA4 * scale, w = wA4 * scale, ...) {
   if (pname == FALSE) pname <- Stringendo::sppp(substitute(plot_list), suffix)
   p1 <- cowplot::plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol,
                            labels = LETTERS[1:length(plot_list)], ...)
@@ -2913,22 +2884,34 @@ save2umaps.A4 <- function(
 }
 
 # _________________________________________________________________________________________________
-#' @title save4umaps.A4
+#' @title Save Four Plots on One A4 Page
 #'
-#' @description Save 4 umaps on 1 A4
-#' @param plot_list A list of ggplot objects, each of which is one panel.
-#' @param pname Plotname, Default: FALSE
-#' @param suffix A suffix added to the filename, Default: NULL
-#' @param scale Scaling factor of the canvas, Default: 1
-#' @param nrow number of rows for panelson the page, Default: 2
-#' @param ncol number of columns for panelson the page, Default: 2
-#' @param h height of the plot, Default: wA4 * scale
-#' @param w width of the plot, Default: hA4 * scale
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @importFrom cowplot plot_grid
+#' @description Arranges and saves four plots (e.g. UMAPs) onto a single A4 page, allowing for a
+#' compact comparison of different visualizations or clustering results.
+#'
+#' @param plot_list A list containing ggplot objects to be arranged and saved; each object represents one panel.
+#' @param pname Plot name; if FALSE, a name is generated automatically based on `plot_list` and `suffix`; Default: FALSE.
+#' @param suffix Suffix to be added to the filename; Default: NULL.
+#' @param scale Scaling factor for adjusting the size of the overall plot canvas; Default: 1.
+#' @param nrow Number of rows to arrange the plots in; Default: 2.
+#' @param ncol Number of columns to arrange the plots in; Default: 2.
+#' @param h Height of the plot canvas, calculated as the height of an A4 page times `scale`; Default: `wA4 * scale`.
+#' @param w Width of the plot canvas, calculated as the width of an A4 page times `scale`; Default: `hA4 * scale`.
+#' @param ... Additional parameters passed to `plot_grid`.
+#'
+#' @examples
+#' \dontrun{
+#'   p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) + geom_point()
+#'   p2 <- ggplot(mtcars, aes(mpg, disp, color = as.factor(cyl))) + geom_point()
+#'   p3 <- ggplot(mpg, aes(displ, hwy, color = class)) + geom_point()
+#'   p4 <- ggplot(diamonds, aes(carat, price, color = cut)) + geom_point()
+#'   save4plots.A4(plot_list = list(p1, p2, p3, p4))
+#' }
 #'
 #' @export
-save4umaps.A4 <- function(
+#' @importFrom cowplot plot_grid save_plot ggdraw
+#' @importFrom ggplot2 theme
+save4plots.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 2,
     h = wA4 * scale, w = hA4 * scale
@@ -3205,18 +3188,22 @@ SavePlotlyAsHtml <- function(plotly_obj, category. = category, suffix. = NULL) {
 
 
 # _________________________________________________________________________________________________
-#' @title BackupReduction
+#' @title Backup Dimensionality Reduction Data
 #'
-#' @description Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Numer of dimensions used, Default: 2
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @description Stores a backup of specified dimensionality reduction data (e.g., UMAP, tSNE, PCA)
+#' within the Seurat object, from `obj@reductions$umap` to the `@misc$reductions.backup` slot.
+#'
+#' @param obj Seurat object containing dimensionality reduction data; Default: `combined.obj`.
+#' @param dim Number of dimensions to include in the backup; Default: 2.
+#' @param reduction Type of dimensionality reduction to backup ('umap', 'tsne', 'pca'); Default: 'umap'.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
+#'   if (interactive()) {
+#'     obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
+#'   }
 #' }
-#' }
+#'
 #' @export
 BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { # Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`.
   if (is.null(obj@misc$"reductions.backup")) obj@misc$"reductions.backup" <- list()
@@ -3227,22 +3214,32 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { #
 
 
 # _________________________________________________________________________________________________
-#' @title SetupReductionsNtoKdimensions
+#' @title Compute and Backup Dimensionality Reductions
 #'
-#' @description Function to compute dimensionality reductions for a given Seurat object and backup the computed reductions.
-#' @param obj A Seurat object. Default: combined.obj
-#' @param nPCs A numeric value representing the number of principal components to use. Default: p$n.PC
-#' @param dimensions A numeric vector specifying the dimensions to use for the dimensionality reductions. Default: 3:2
-#' @param reduction A character string specifying the type of dimensionality reduction to perform. Can be "umap", "tsne", or "pca". Default: 'umap'
-#' @return The input Seurat object with computed dimensionality reductions and backups of these reductions.
+#' @description Executes specified dimensionality reduction (UMAP, tSNE, or PCA) over a range of dimensions
+#' and backs up the results within a Seurat object. This function allows for exploration of data structure
+#' at varying levels of granularity and ensures that reduction results are preserved for future reference.
+#'
+#' @param obj Seurat object to process; Default: `combined.obj`.
+#' @param nPCs Number of principal components to consider in the reduction; Default: `p$n.PC`.
+#' @param dimensions Numeric vector specifying target dimensions for the reductions; Default: `3:2`.
+#' @param reduction Type of dimensionality reduction to apply ('umap', 'tsne', or 'pca'); Default: 'umap'.
+#' @param ... Additional parameters to pass to the dimensionality reduction functions.
+#'
+#' @return Modified Seurat object with added dimensionality reduction data and backups.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction = "umap")
+#'   if (interactive()) {
+#'     combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10,
+#'     dimensions = 2:3, reduction = "umap")
+#'   }
 #' }
-#' }
+#'
 #' @export
-SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", dimensions = 3:2, reduction = "umap", ...) { # Calculate N-to-K dimensional umaps (default = 2:3); and back them up UMAP to `obj@misc$reductions.backup` from @reductions$umap
+#' @importFrom Seurat RunUMAP RunTSNE RunPCA
+SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", dimensions = 3:2,
+                                          reduction = "umap", ...) {
   red <- reduction
   for (d in dimensions) {
     iprint(d, "dimensional", red, "is calculated")
@@ -3260,23 +3257,27 @@ SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", d
 
 
 # _________________________________________________________________________________________________
-#' @title RecallReduction
+#' @title Recall Dimensionality Reduction from backup slot
 #'
-#' @description Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param dim Numer of dimensions used, Default: 2
-#' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
+#' @description Restores dimensionality reduction data (e.g., UMAP, tSNE, PCA) from a backup
+#' stored within `obj@misc$reductions.backup` to the active `obj@reductions` slot.
+#'
+#' @param obj Seurat object from which the backup will be restored; Default: `combined.obj`.
+#' @param dim Number of dimensions of the reduction data to restore; Default: 2.
+#' @param reduction Type of dimensionality reduction to be restored ('umap', 'tsne', 'pca'); Default: 'umap'.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
-#'   qUMAP()
-#'   combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
-#'   qUMAP()
+#'   if (interactive()) {
+#'     combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
+#'     qUMAP()
+#'     combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
+#'     qUMAP()
+#'   }
 #' }
-#' }
+#'
 #' @export
-RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { # Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
   dslot <- paste0(reduction, dim, "d")
   reduction.backup <- obj@misc$reductions.backup[[dslot]]
   msg <- paste(dim, "dimensional", reduction, "from obj@misc$reductions.backup")
