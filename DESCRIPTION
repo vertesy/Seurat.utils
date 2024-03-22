@@ -53,9 +53,12 @@ Imports:
 Suggests: 
     DatabaseLinke.R,
     EnhancedVolcano,
+    fs,
+    gplots,
     princurve,
+    RColorBrewer,
     SoupX
 Encoding: UTF-8
-Packaged: 2024-03-22 15:20:33.688044
+Packaged: 2024-03-22 15:31:26.347975
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1

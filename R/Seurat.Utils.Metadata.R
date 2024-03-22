@@ -33,14 +33,17 @@
 #' @export
 getMetaColnames <- function(obj = combined.obj,
                             pattern = "RNA") {
-  stopifnot(inherits(obj, "Seurat") )
+  stopifnot(inherits(obj, "Seurat"))
 
   # Retrieve column names matching the pattern
   matchedColnames <- grep(pattern = pattern, x = colnames(obj@meta.data), value = TRUE)
 
   # Output assertion
-  if(is.null(matchedColnames)) warning("No matching meta data!", immediate. = TRUE) else
+  if (is.null(matchedColnames)) {
+    warning("No matching meta data!", immediate. = TRUE)
+  } else {
     message(length(matchedColnames), " columns matching pattern '", pattern, "'.")
+  }
 
   dput(matchedColnames)
   return(matchedColnames)
@@ -141,25 +144,28 @@ get_levels_seu <- function(obj, ident, max_levels = 100, dput = TRUE) {
 #'
 #' @examples
 #' # Assuming `obj` is a Seurat object with relevant metadata columns:
-#' results <- calculateAverageMetaData(obj = obj,
-#'                                     meta.features = c("nFeature_RNA", "percent.ribo"),
-#'                                     ident = "ident_column_name",
-#'                                     metrics = list('median' = median, 'mean' = mean),
-#'                                     verbose = TRUE)
+#' results <- calculateAverageMetaData(
+#'   obj = obj,
+#'   meta.features = c("nFeature_RNA", "percent.ribo"),
+#'   ident = "ident_column_name",
+#'   metrics = list("median" = median, "mean" = mean),
+#'   verbose = TRUE
+#' )
 #' # This will return a list with data frames containing the median and mean
 #' # of "nFeature_RNA" and "percent.ribo" for each category in "ident_column_name".
 #'
 #' @export
-calculateAverageMetaData <- function(obj = combined.obj
-                                     , meta.features = c( "nFeature_RNA", "percent.ribo", "percent.mito")
-                                     , ident =  GetNamedClusteringRuns()[2]
-                                     , metrics = list('median' = median, 'mean' = mean)
-                                     , verbose = TRUE, max.categ = 30) {
+calculateAverageMetaData <- function(
+    obj = combined.obj,
+    meta.features = c("nFeature_RNA", "percent.ribo", "percent.mito"),
+    ident = GetNamedClusteringRuns()[2],
+    metrics = list("median" = median, "mean" = mean),
+    verbose = TRUE, max.categ = 30) {
   stopifnot(
     is(obj, "Seurat"),
     ident %in% colnames(obj@meta.data),
     all(meta.features %in% colnames(obj@meta.data)),
-    length(unique(obj@meta.data[,ident])) < max.categ
+    length(unique(obj@meta.data[, ident])) < max.categ
   )
 
   # Initialize list to store results
@@ -169,7 +175,7 @@ calculateAverageMetaData <- function(obj = combined.obj
   for (m in names(metrics)) {
     results[[m]] <- obj@meta.data %>%
       group_by(!!sym(ident)) %>%
-      summarise(across(all_of(meta.features), metrics[[m]], na.rm = TRUE), .groups = 'drop')
+      summarise(across(all_of(meta.features), metrics[[m]], na.rm = TRUE), .groups = "drop")
   }
 
   # Verbose output
@@ -390,7 +396,6 @@ addMetaFraction <- function(
     col.name = "percent.mito", gene.symbol.pattern = c("^MT\\.|^MT-", FALSE)[1],
     gene.set = FALSE, obj = ls.Seurat[[1]],
     verbose = TRUE) {
-
   message("Should rather use the default `Seurat::PercentageFeatureSet`")
 
   stopif(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
@@ -595,13 +600,13 @@ seu.RemoveMetadata <- function(
 #' @return Invisible list of metadata frames
 #' @export
 saveLsSeuratMetadata <- function(ls.obj, suffix) {
-  stopifnot(is.list(ls.obj))  # Check if input is a list
+  stopifnot(is.list(ls.obj)) # Check if input is a list
   message(length(ls.obj), " objects")
   ls.meta <- setNames(lapply(ls.obj, function(x) x@meta.data), names(ls.obj))
 
   ncolz <- unique(unlapply(ls.meta, ncol))
   message(ncolz, " columns in meta.data")
-  if(length(ncolz) > 1) warning("Different column counts across meta.data!", immediate. = T)
+  if (length(ncolz) > 1) warning("Different column counts across meta.data!", immediate. = T)
   xsave(ls.meta, suffix = suffix)
   invisible(ls.meta)
 }
@@ -630,8 +635,10 @@ saveLsSeuratMetadata <- function(ls.obj, suffix) {
 #' @examples
 #' # Assuming `object1` and `object2` are Seurat objects, and you want to transfer
 #' # metadata columns named 'patientID' and 'treatmentGroup' from `object1` to `object2`:
-#' object2 <- transferMetadata(from = object1, to = object2,
-#'                            colname_from = c("patientID", "treatmentGroup"))
+#' object2 <- transferMetadata(
+#'   from = object1, to = object2,
+#'   colname_from = c("patientID", "treatmentGroup")
+#' )
 #'
 #' @details This function is useful for merging related data from separate Seurat objects,
 #' ensuring that relevant metadata is consistent across datasets. The function checks for
@@ -657,32 +664,38 @@ transferMetadata <- function(from, to, colname_from, colname_to = colname_from, 
   nr.cells.from <- length(cells_only_in_from)
   nr.cells.to <- length(cells_only_in_to)
 
-  if(verbose) {
+  if (verbose) {
     if (verbose) {
-      cat("Cells matching between objects:", nr.cells.both,
-          "(", sprintf("%.2f%%", nr.cells.both / length(colnames(from)) * 100), "of from and",
-          sprintf("%.2f%%", nr.cells.both / length(colnames(to)) * 100), "of to)\n")
-      cat("Cells only in obj1 (from):", length(cells_only_in_from),
-          "(", sprintf("%.2f%%", nr.cells.from/ length(colnames(from)) * 100), ")\n")
-      cat("Cells only in obj2 (to):", nr.cells.to,
-          "(", sprintf("%.2f%%", nr.cells.to / length(colnames(to)) * 100), ")\n")
+      cat(
+        "Cells matching between objects:", nr.cells.both,
+        "(", sprintf("%.2f%%", nr.cells.both / length(colnames(from)) * 100), "of from and",
+        sprintf("%.2f%%", nr.cells.both / length(colnames(to)) * 100), "of to)\n"
+      )
+      cat(
+        "Cells only in obj1 (from):", length(cells_only_in_from),
+        "(", sprintf("%.2f%%", nr.cells.from / length(colnames(from)) * 100), ")\n"
+      )
+      cat(
+        "Cells only in obj2 (to):", nr.cells.to,
+        "(", sprintf("%.2f%%", nr.cells.to / length(colnames(to)) * 100), ")\n"
+      )
     }
   }
 
-  for(i in seq_along(colname_from)) {
-    if(!(colname_to[i] %in% colnames(to@meta.data)) || overwrite) {
-      if(colname_from[i] %in% colnames(from@meta.data)) {
-
+  for (i in seq_along(colname_from)) {
+    if (!(colname_to[i] %in% colnames(to@meta.data)) || overwrite) {
+      if (colname_from[i] %in% colnames(from@meta.data)) {
         # Transfer the metadata column
         to[[colname_to[i]]] <- from[[colname_from[i]]]
         message(sprintf("Transferred '%s' to '%s'.", colname_from[i], colname_to[i]))
-
       } else {
         warning(sprintf("Column '%s' not found in source object.", colname_from[i]), immediate. = T)
       }
     } else {
-      warning(sprintf("Column '%s' already exists in destination object. Set 'overwrite = TRUE' to overwrite.",
-                      colname_to[i]), immediate. = T)
+      warning(sprintf(
+        "Column '%s' already exists in destination object. Set 'overwrite = TRUE' to overwrite.",
+        colname_to[i]
+      ), immediate. = T)
     }
   }
   return(to)
@@ -808,8 +821,8 @@ writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(
   metadata.cells.per.obj <- sapply(metadataList, nrow)
   print(metadata.cells.per.obj)
   pobj <- ggExpress::qbarplot(metadata.cells.per.obj,
-                              label = metadata.cells.per.obj, ylab = "cells",
-                              save = FALSE
+    label = metadata.cells.per.obj, ylab = "cells",
+    save = FALSE
   )
   print(pobj)
 
@@ -1126,15 +1139,16 @@ plotMetadataCategPie <- function(
 #' @export
 renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1],
                                  prefix = "azi",
-                                 azim_cols = CodeAndRoll2::grepv(x = tail(colnames(obj@meta.data), 10),
-                                                                 pattern = "predicted.")
-) {
+                                 azim_cols = CodeAndRoll2::grepv(
+                                   x = tail(colnames(obj@meta.data), 10),
+                                   pattern = "predicted."
+                                 )) {
   stopifnot(
     "obj must be a Seurat object" = is(obj, "Seurat"),
     "azim_cols must be non-empty" = length(azim_cols) > 0
   )
 
-  ref <- sub(pattern = "ref", replacement = '', x = ref)
+  ref <- sub(pattern = "ref", replacement = "", x = ref)
   iprint(length(azim_cols), "azim_cols:", azim_cols)
 
   # Extract the column names of meta.data
@@ -1144,13 +1158,13 @@ renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1],
   for (azim_col in azim_cols) {
     if (azim_col %in% meta_col_names) {
       # Create the new column name by replacing "predicted." with the new prefix
-      new_col_name <- sub(pattern = "^predicted\\.", replacement = kpp(prefix, ref, ''), x = azim_col)
+      new_col_name <- sub(pattern = "^predicted\\.", replacement = kpp(prefix, ref, ""), x = azim_col)
       names(obj@meta.data)[names(obj@meta.data) == azim_col] <- new_col_name
     }
   }
 
   if ("mapping.score" %in% colnames(obj@meta.data)) {
-    names(obj@meta.data)[names(obj@meta.data) == "mapping.score"] <- kpp(prefix, ref, 'mapping.score')
+    names(obj@meta.data)[names(obj@meta.data) == "mapping.score"] <- kpp(prefix, ref, "mapping.score")
   }
 
   print(tail(colnames(obj@meta.data), 10))
@@ -1182,10 +1196,11 @@ renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1],
 #' obj <- renameSmallCategories(obj, idents = idents)
 #'
 #' @export
-renameSmallCategories <- function(obj
-                                  , idents = c("predicted.class", "predicted.cluster", "predicted.subclass")
-                                  , min.cells = max(round((ncol(obj)) / 2000), 10),
-                                  new.name = "unclear") {
+renameSmallCategories <- function(
+    obj,
+    idents = c("predicted.class", "predicted.cluster", "predicted.subclass"),
+    min.cells = max(round((ncol(obj)) / 2000), 10),
+    new.name = "unclear") {
   stopifnot("obj must be a Seurat object" = is(obj, "Seurat"))
 
   for (ident in idents) {
@@ -1207,10 +1222,11 @@ renameSmallCategories <- function(obj
       categories_removed <- length(small_categories)
       remaining_categories <- length(unique(obj@meta.data[[ident]]))
 
-      message("For ident '", ident, "':\n",
-              cells_renamed, " cells were renamed.\n",
-              remaining_categories, " of initial ",initial_categories, " categories remained.\n\n",
-              "Removed categories: ", paste(head(small_categories, 10), collapse = ", "), "\n"
+      message(
+        "For ident '", ident, "':\n",
+        cells_renamed, " cells were renamed.\n",
+        remaining_categories, " of initial ", initial_categories, " categories remained.\n\n",
+        "Removed categories: ", paste(head(small_categories, 10), collapse = ", "), "\n"
       )
     } else {
       message("Ident column '", ident, "' does not exist in obj@meta.data.")
@@ -1272,7 +1288,6 @@ transferLabelsSeurat <- function(
     plot_reference = TRUE,
     w = 12, h = 9,
     ...) {
-
   # Assertions
   if (is.null(reference_obj)) {
     iprint("Loading reference object:", basename(reference_path))
@@ -1284,12 +1299,16 @@ transferLabelsSeurat <- function(
 
   # Report
   nr.cl.ref <- CodeAndRoll2::nr.unique(reference_obj[[reference_ident]])
-  message('reference_ident ', reference_ident, ' has ', nr.cl.ref, ' categories')
+  message("reference_ident ", reference_ident, " has ", nr.cl.ref, " categories")
 
   # Visualize reference object
-  if (plot_reference) clUMAP(obj = reference_obj, ident = reference_ident,
-                             suffix = reference_suffix, sub = reference_suffix
-                             , w = w, h = h, ...)
+  if (plot_reference) {
+    clUMAP(
+      obj = reference_obj, ident = reference_ident,
+      suffix = reference_suffix, sub = reference_suffix,
+      w = w, h = h, ...
+    )
+  }
 
   # browser()
   if (is.null(anchors)) {
@@ -1320,10 +1339,14 @@ transferLabelsSeurat <- function(
   )
 
   # Visualize combined object
-  clUMAP(ident = new_ident, obj = query_obj, suffix = plot_suffix
-         , w = w, h = h, ...)
-  qUMAP(feature = predictions_score, obj = query_obj, suffix = plot_suffix
-         , w = w, h = h, ...)
+  clUMAP(
+    ident = new_ident, obj = query_obj, suffix = plot_suffix,
+    w = w, h = h, ...
+  )
+  qUMAP(
+    feature = predictions_score, obj = query_obj, suffix = plot_suffix,
+    w = w, h = h, ...
+  )
 
   return(query_obj)
 }
@@ -1340,7 +1363,7 @@ transferLabelsSeurat <- function(
 #' @examples
 #' # Assuming 'df' is a dataframe with column names "azi.one", "azi.two", "other"
 #' extract_matching_columns(df, "^azi\\.")
-.metaColnames <- function(obj = combined.obj, pattern, perl =T, ...) {
+.metaColnames <- function(obj = combined.obj, pattern, perl = T, ...) {
   colz <- grep(pattern, colnames(obj@meta.data), value = TRUE, perl = perl, ...)
   dput(colz)
   return(colz)
@@ -1391,7 +1414,6 @@ matchBestIdentity <- function(
     plot_suffix = prefix,
     w = 12, h = 9,
     ...) {
-
   stopifnot("colname prefix undefined" = !is.null(prefix))
 
   dictionary <- obj@meta.data[, c(ident_to_rename, reference_ident)]
@@ -1454,7 +1476,6 @@ matchBestIdentity <- function(
     suffix_barplot = NULL,
     ext = "png",
     ...) {
-
   # Convert to data frame if it is not
   if (!is.data.frame(df)) {
     df <- as.data.frame(df)
@@ -1492,10 +1513,11 @@ matchBestIdentity <- function(
       suffix = suffix_barplot,
       plotname = "Assignment Quality",
       filename = make.names(kpp("Assignment Quality", suffix_barplot, ext)),
-      subtitle = paste("From", colnames(df)[1], "->", colnames(df)[2], "| median",
-                       percentage_formatter(median(quality)),  "\n",
-                       sum(quality>0.5), "clusters above 50% match"
-                       ),
+      subtitle = paste(
+        "From", colnames(df)[1], "->", colnames(df)[2], "| median",
+        percentage_formatter(median(quality)), "\n",
+        sum(quality > 0.5), "clusters above 50% match"
+      ),
       hline = 0.5, filtercol = -1,
       xlab = paste("Best query match to reference"),
       ylab = "Proportion of Total Matches",
