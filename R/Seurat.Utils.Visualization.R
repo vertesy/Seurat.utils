@@ -1871,7 +1871,6 @@ clUMAP <- function(
     cols <- "lightgrey"
   }
 
-
   if (NtCategs > MaxCategThrHP) {
     iprint("Too many categories (", NtCategs, ") in ", ident, "- use qUMAP for continous variables.")
   } else {
@@ -1908,25 +1907,34 @@ clUMAP <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title umapHiLightSel
+#' @title Highlight Selected Clusters on UMAP
 #'
-#' @description Generates a UMAP plot from a Seurat object with a subset of cells highlighted.
-#' @param obj A Seurat object. Default: combined.obj.
-#' @param COI A vector of cluster IDs to highlight in the UMAP plot. Default: c("0", "2", "4", "5",  "11").
-#' @param res.cl Name of the column in the Seurat object metadata that contains the cluster IDs. Default: 'integrated_snn_res.0.3'.
-#' @return This function does not return a value. It saves a UMAP plot to the current working directory.
+#' @description Generates a UMAP plot from a Seurat object with specified clusters highlighted.
+#' The function specifically targets visualization needs by allowing users to emphasize certain
+#' clusters identified by their IDs within a given resolution. It saves the resulting UMAP plot
+#' directly to the current working directory.
+#'
+#' @param obj Seurat object to be visualized; Default: `combined.obj`.
+#' @param COI Vector of cluster IDs to highlight on the UMAP plot;
+#' Default: `c("0", "2", "4", "5", "11")`.
+#' @param res.cl Name of the metadata column containing cluster IDs;
+#' Default: 'integrated_snn_res.0.3'.
+#'
+#' @return Saves a UMAP plot highlighting specified clusters to the current working directory.
+#' The function itself does not return an object within R.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   umapHiLightSel(obj = seuratObject, COI = c("0", "1"), res.cl = "resolution_0.8")
+#'   if (interactive()) {
+#'     umapHiLightSel(obj = combined.obj, COI = c("0", "1"), res.cl = "resolution_0.8")
+#'   }
 #' }
-#' }
-#' @seealso
-#' \code{\link[Seurat]{DimPlot}}
+#'
+#' @seealso \code{\link[Seurat]{DimPlot}}
+#'
 #' @export
 #' @importFrom Seurat DimPlot
 #' @importFrom ggplot2 ggsave
-
 umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based on clusterIDs provided.
                            COI = c("0", "2", "4", "5", "11"), res.cl = "integrated_snn_res.0.3") {
   cellsSel <- getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
