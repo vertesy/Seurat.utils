@@ -718,28 +718,30 @@ scBarplot.CellFractions <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title scBarplot.CellsPerCluster
+#' @title Barplot of Fraction of Cells per Cluster
 #'
-#' @description Barplot the Fraction of cells per cluster. (dupl?)
-#' @param obj Seurat object, Default: combined.obj
-#' @param ident identity used, Default: 'cl.names.KnownMarkers.0.5'
-#' @param label True: displays cell count, but you can provide anything in a vector.
-#' @param palette Color palette. Default: glasbey.
-#' @param return_table Should it return the plotting data instead of the plot?
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @param sort Sort by cluster size? Default: FALSE
-#' @param min.cells Threshold for too small categories.
-#' @param suffix File name suffix
+#' @description Visualizes the fraction of cells within each cluster through a barplot.
 #'
-#' @importFrom ggExpress qbarplot
+#' @param obj Seurat object for analysis. Default: `combined.obj`.
+#' @param ident Cluster identity. Used to specify which clustering results to visualize.
+#' Default: First entry from ordered clustering runs.
+#' @param sort If TRUE, sorts clusters by size. Default: FALSE.
+#' @param label If TRUE, shows cell count or percentage based on the label vector. Default: TRUE.
+#' @param palette Color palette for the barplot. Default: 'glasbey'.
+#' @param return_table If TRUE, returns the data used for plotting instead of the plot itself. Default: FALSE.
+#' @param min.cells Minimum cell count threshold for categories. Adjusted by data size.
+#' @param suffix Optional suffix for file naming. Used in conjunction with `kpp`.
+#' @param ylab_adj Adjustment factor for y-axis label positioning. Default: 1.1.
+#' @param ... Additional parameters for internal function calls.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
 #'   scBarplot.CellsPerCluster()
 #'   scBarplot.CellsPerCluster(sort = TRUE)
 #' }
-#' }
 #' @export scBarplot.CellsPerCluster
+#'
+#' @importFrom ggExpress qbarplot
 
 scBarplot.CellsPerCluster <- function(
     ident = GetOrderedClusteringRuns(obj = obj)[1],
