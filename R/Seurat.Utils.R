@@ -4087,10 +4087,15 @@ find10XoutputFolders <- function(root_dir, subdir, recursive = TRUE) {
 
 
 # _________________________________________________________________________________________________
-#' @title clip10Xcellname
+#' @title Clip Suffixes from 10X Cell Names
 #'
-#' @description Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration). #
-#' @param cellnames Character vector containing the cellIDs (with numeric suffixes).
+#' @description Removes suffixes from cell names that are added by 10X technology and Seurat during data processing.
+#'
+#' @param cellnames A vector of cell names with potential suffixes.
+#' @return A vector of cell names with suffixes removed.
+#' @examples
+#' cellnames <- c("cell1_1", "cell2_2")
+#' clip10Xcellname(cellnames)
 #' @export
 #' @importFrom stringr str_split_fixed
 clip10Xcellname <- function(cellnames) {
@@ -4098,16 +4103,20 @@ clip10Xcellname <- function(cellnames) {
 }
 
 # _________________________________________________________________________________________________
-#' @title make10Xcellname
+#' @title Add Suffix to Cell Names (e.g. lane suffix: _1)
 #'
-#' @description Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1". #
-#' @param cellnames Character vector containing the cellIDs (WITHOUT numeric suffixes).
-#' @param suffix A suffix added to the filename, Default: '_1'
+#' @description Appends a specified suffix to cell names to mimic lane suffixes used in 10X datasets.
+#'
+#' @param cellnames A vector of cell names without numeric suffixes.
+#' @param suffix The suffix to add to each cell name. Default is '_1'.
+#' @return A vector of cell names with the specified suffix appended.
+#' @examples
+#' cellnames <- c("cell1", "cell2")
+#' make10Xcellname(cellnames)
 #' @export
 make10Xcellname <- function(cellnames, suffix = "_1") {
   paste0(cellnames, suffix)
 }
-
 
 
 
