@@ -965,23 +965,25 @@ scBarplot.FractionAboveThr <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title scBarplot.FractionBelowThr
+#' @title Fraction of Cells Below Threshold per Cluster
 #'
-#' @description Create a bar plot showing the fraction of cells, within each cluster, that are below a certain threshold based on a metadata column.
-#' @param thrX The threshold value to determine the fraction of cells. Default: 0.01
-#' @param value.col Column name from metadata which holds the values for calculating the fraction of cells. Default: 'percent.ribo'
-#' @param id.col Column name from metadata to be used for identifying clusters. Default: 'cl.names.top.gene.res.0.3'
-#' @param obj A Seurat object holding single cell data. Default: combined.obj
-#' @param return.df A logical indicating if the function should return the data frame used to create the plot. Default: FALSE
+#' @description Generates a bar plot to visualize the percentage of cells within each cluster that
+#' fall below a specified threshold, according to a metadata column value.
+#'
+#' @param thrX Threshold value for assessing cell counts. Default: 0.01.
+#' @param value.col Metadata column with values for threshold comparison. Default: 'percent.ribo'.
+#' @param id.col Cluster identifier in metadata. Default: 'cl.names.top.gene.res.0.3'.
+#' @param obj Seurat object with cell data. Default: `combined.obj`.
+#' @param return.df If TRUE, returns the data frame instead of the plot. Default: FALSE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01, return.df = TRUE)
+#'   scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01)
 #' }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
-#' @importFrom dplyr select group_by_
+#'
+#' @seealso \code{\link[dplyr]{select}}, \code{\link[dplyr]{group_by}}
+#'
+#' @importFrom dplyr select group_by summarize
 #'
 #' @export
 scBarplot.FractionBelowThr <- function(
@@ -1059,18 +1061,25 @@ scBarplotStackedMetaCateg_List <- function(ls.obj, meta.col
 # _________________________________________________________________________________________________
 # Colors ______________________________ ----
 # _________________________________________________________________________________________________
-#' @title gg_color_hue
+#' @title Reproduce the ggplot2 default color palette
 #'
-#' @description Emulates the default color palette of ggplot2. Source:  https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
-#' @param n The number of colors to generate.
-#' @return A vector of colors emulating the default color palette of ggplot2.
+#' @description Generates a vector of colors that emulates the default color palette used by ggplot2.
+#' This function is useful for creating color sets for custom plotting functions or for applications
+#' outside of ggplot2 where a similar aesthetic is desired.
+#'
+#' @param n Integer specifying the number of distinct colors to generate.
+#'
+#' @return A character vector of color values in hexadecimal format, replicating the default hue
+#' color scale of ggplot2.
+#'
 #' @examples
 #' \dontrun{
-#' gg_color_hue(5)
+#' # Generate a palette of 5 colors
+#' print(gg_color_hue(5))
 #' }
-#' @export gg_color_hue
-
-gg_color_hue <- function(n) { # reproduce the ggplot2 default color palette
+#'
+#' @export
+gg_color_hue <- function(n) {
   hues <- seq(15, 375, length = n + 1)
   hcl(h = hues, l = 65, c = 100)[1:n]
 }
