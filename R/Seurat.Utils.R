@@ -2731,16 +2731,39 @@ fixZeroIndexing.seurat <- function(ColName.metadata = "res.0.6", obj = org) {
 
 
 # _________________________________________________________________________________________________
-#' @title CalculateFractionInTranscriptome
+#' @title Calculate Fraction of Genes in Transcriptome
 #'
-#' @description This function calculates the fraction of a set of genes within the full transcriptome of each cell.
-#' @param geneset A character vector specifying the set of genes for which the fraction in the
-#' transcriptome is to be calculated. Default is c("MALAT1").
-#' @param obj A Seurat object from which the gene data is extracted. Default is 'combined.obj'.
-#' @param dataslot A character vector specifying the data slot to be used in the calculation.
-#' Default is 'data' (second element in the vector c("counts", "data")).
-#' @return A numeric vector containing the fraction of the specified genes in the transcriptome of each cell.
+#' @description Calculates the fraction of specified genes within the entire transcriptome of
+#' each cell in a Seurat object.
+#' This function is useful for assessing the relative abundance of a set of genes across cells,
+#' such as identifying cells with high expression of marker genes.
+#'
+#' @param geneset A character vector of gene symbols for which the fraction in the transcriptome will be calculated.
+#' Default: `c("MALAT1")`. The function will check for the existence of these genes in the Seurat object.
+#' @param obj A Seurat object containing gene expression data; Default: `combined.obj`.
+#' The function extracts gene expression data from this object to calculate fractions.
+#' @param dataslot The data slot from which to extract expression data. This can be `"counts"`
+#' for raw counts or `"data"` for normalized data; Default: second element (`"data"`).
+#'
+#' @return A numeric vector where each element represents the fraction of the specified geneset's expression
+#' relative to the total transcriptome of a cell, expressed as a percentage. The names of the vector correspond to cell IDs.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     # Assuming `combined.obj` is your Seurat object
+#'     fractionInTranscriptome <- CalculateFractionInTranscriptome(geneset = c("MALAT1", "GAPDH"), obj = combined.obj)
+#'     # This will return the fraction of MALAT1 and GAPDH in the transcriptome of each cell
+#'   }
+#' }
+#'
+#' @note This function calls `check.genes` to verify the existence of the specified genes within the Seurat object.
+#' If genes are not found, it will return a warning.
+#'
+#' @seealso \code{\link[Seurat]{GetAssayData}} for retrieving expression data from a Seurat object.
+#'
 #' @export
+#'
 CalculateFractionInTrome <- function(
     genesCalc.Cor.Seuratet = c("MALAT1")
     , obj = combined.obj,
@@ -2914,21 +2937,46 @@ FindCorrelatedGenes <- function(
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Seurat.update.gene.symbols.HGNC.R"))
 # require(HGNChelper)
 
-# _________________________________________________________________________________________________
-#' @title UpdateGenesSeurat
+
+
+#' @title Update Gene Symbols in a Seurat Object
 #'
-#' @description Update genes symbols that are stored in a Seurat object. It returns a data frame.
-#' The last column are the updated gene names.
-#' @param obj Seurat object to update gene symbols in. Default: ls.Seurat[[i]]
-#' @param species_ Species to which the gene symbols correspond, used to check gene symbols. Default: 'human'
-#' @param EnforceUnique Logical, if TRUE, enforces unique gene symbols. Default: TRUE
-#' @param ShowStats Logical, if TRUE, displays statistics of gene symbols update. Default: FALSE
+#' @description This function updates gene symbols in a Seurat object based on current gene
+#' nomenclature guidelines, using HGNChelper(). It checks and updates gene symbols to their
+#' latest approved versions,ensuring that gene annotations are current and consistent.
+#' The function optionally enforces unique gene symbols and provides statistics on the update process.
+#'
+#' @param obj A Seurat object containing gene expression data; Default: `ls.Seurat[[i]]`
+#' (ensure to replace `i` with the actual index or variable referencing your Seurat object).
+#' @param species_ The species for which the gene symbols are checked and updated,
+#' used to ensure the correct gene nomenclature is applied; Default: `'human'`.
+#' Supports `'human'`, `'mouse'`, etc., as specified in the `HGNChelper` package.
+#' @param EnforceUnique Logical flag indicating whether to enforce unique gene symbols
+#' within the Seurat object. When set to `TRUE`, it resolves issues with duplicated gene symbols
+#' by appending unique identifiers; Default: `TRUE`.
+#' @param ShowStats Logical flag indicating whether to display statistics about the gene
+#' symbol update process. When set to `TRUE`, it prints detailed information on the console
+#' about the changes made; Default: `FALSE`.
+#'
+#' @return A modified Seurat object with updated gene symbols. The function directly modifies
+#' the input Seurat object, ensuring that gene symbols adhere to the latest nomenclature.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     # Assuming `mySeuratObject` is your Seurat object
+#'     updatedSeuratObject <- UpdateGenesSeurat(obj = mySeuratObject, species_ = "human",
+#'                                               EnforceUnique = TRUE, ShowStats = TRUE)
+#'     # `updatedSeuratObject` now has updated gene symbols
+#'   }
+#' }
+#'
 #' @seealso
-#'  \code{\link[HGNChelper]{checkGeneSymbols}}
+#' \code{\link[HGNChelper]{checkGeneSymbols}} for details on checking and updating gene symbols.
 #'
 #' @export
 #' @importFrom HGNChelper checkGeneSymbols
-
+#'
 UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceUnique = TRUE, ShowStats = FALSE) {
   HGNC.updated <- HGNChelper::checkGeneSymbols(rownames(obj), unmapped.as.na = FALSE, map = NULL, species = species_)
   if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
@@ -2942,28 +2990,48 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceU
 
 
 # _________________________________________________________________________________________________
-#' @title RenameGenesSeurat
+#' @title Rename Gene Symbols in a Seurat Object
 #'
-#' @description Replace gene names in different slots of a Seurat object. Run this before
-#' integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
-#' @param obj Seurat object, Default: ls.Seurat[[i]]
-#' @param assay Which Seurat assay to replace. Default: RNA. Disclaimer: Intended use on simple
-#' objects that ONLY contain an RNA object. I highly advise against selectively replacing name in
-#' other assays that may have slots that cannot be updated by this function.
-#' @param newnames A vector of new gene names. Default: HGNC.updated[[i]]$Suggested.Symbol
+#' @description This function replaces gene names across various slots within a specified assay
+#' of a Seurat object. It is designed to be run prior to any data integration or downstream analysis
+#' processes. The function targets the `@counts`, `@data`, and `@meta.features` slots within
+#' the specified assay, ensuring consistency in gene nomenclature across the object.
+#'
+#' @param obj A Seurat object containing the assay and slots to be updated; Default: `ls.Seurat[[i]]`
+#' (replace `i` with the appropriate index).
+#' @param newnames A character vector containing the new gene names intended to replace the
+#' existing ones; Default: `HGNC.updated[[i]]$Suggested.Symbol`. Ensure this matches the order
+#' and length of the genes in the specified assay.
+#' @param assay The name of the assay within the Seurat object where gene names will be updated;
+#' Default: `"RNA"`. This function assumes simple objects containing only an RNA assay.
+#' @param slots A character vector specifying which slots within the assay to update. Possible
+#' values include `"data"`, `"counts"`, and `"meta.features"`; other layers can be specified if present.
+#'
+#' @details It is crucial to run this function before any data integration or further analysis
+#' to ensure gene symbol consistency. The function does not support complex objects with multiple
+#' assays where dependencies between assays might lead to inconsistencies. Use with caution and
+#' verify the results.
+#'
+#' @note This function modifies the Seurat object in place, changing gene symbols directly within
+#' the specified slots. Be sure to have a backup of your Seurat object if needed before applying
+#' this function.
 #'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   RenameGenesSeurat(obj = SeuratObj, newnames = HGNC.updated.genes$Suggested.Symbol)
+#'   if (interactive()) {
+#'     # Assuming `SeuratObj` is your Seurat object
+#'     # and `HGNC.updated.genes` contains the updated gene symbols
+#'     SeuratObj <- RenameGenesSeurat(obj = SeuratObj,
+#'                                    newnames = HGNC.updated.genes$Suggested.Symbol)
+#'     # `SeuratObj` now has updated gene symbols in the specified assay and slots
+#'   }
 #' }
-#' }
+#'
 #' @export
 RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
                               newnames = HGNC.updated[[i]]$Suggested.Symbol,
                               assay = "RNA",
-                              slots = c("data", "counts", "meta.features")
-) {
+                              slots = c("data", "counts", "meta.features") ) {
   message(assay)
   warning("Run this before integration and downstream processing. It only attempts to change
           @counts, @data, and @meta.features in obj@assays$YOUR_ASSAY.", immediate. = TRUE)
@@ -3079,18 +3147,32 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 }
 
 # _________________________________________________________________________________________________
-#' @title RemoveGenesSeurat
+#' @title Remove Specific Genes from a Seurat Object
 #'
-#' @description Replace gene names in different slots of a Seurat object. Run this before integration.
-#' Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data. #
-#' @param obj Seurat object, Default: ls.Seurat[[i]]
-#' @param symbols2remove Genes to remove from a Seurat object. Default: c("TOP2A")
+#' @description Removes specified genes from the metadata, counts, data, and scale.data slots of a Seurat object.
+#' This operation is typically performed prior to data integration to ensure that gene sets are consistent
+#' across multiple datasets. The function modifies the Seurat object in place.
+#'
+#' @param obj A Seurat object; Default: `ls.Seurat[[i]]` (please ensure to replace `i` with the actual index or variable).
+#' @param symbols2remove A character vector specifying the genes to be removed from the Seurat object;
+#' Default: `c("TOP2A")`.
+#'
+#' @details This function directly modifies the `@counts`, `@data`, and `@scale.data` slots within
+#' the RNA assay of the provided Seurat object, as well as the `@meta.data` slot. It's important to run
+#' this function as one of the initial steps after creating the Seurat object and before proceeding
+#' with downstream analyses or integration processes.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
+#'   if (interactive()) {
+#'     # Assuming `SeuratObj` is your Seurat object and you want to remove the gene "TOP2A"
+#'     updatedSeuratObj <- RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
+#'     # Now `updatedSeuratObj` does not contain "TOP2A" in the specified slots
+#'   }
 #' }
-#' }
+#'
+#' @return A Seurat object with the specified genes removed from the mentioned slots.
+#'
 #' @export
 RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A")) {
   print("Run this as the first thing after creating the Seurat object.
@@ -3138,18 +3220,38 @@ RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 
 
 # _________________________________________________________________________________________________
-#' @title HGNC.EnforceUnique
+#' @title Enforce Unique HGNC Gene Symbols
 #'
-#' @description Enforce Unique names after HGNC symbol update. While "make.unique" is not the ideal
-#' solution, because it generates mismatches, in my integration example it does reduce the
-#' mismatching genes from ~800 to 4
-#' @param updatedSymbols Gene symbols, it is the output of HGNChelper's checkGeneSymbols)_.
+#' @description Ensures that gene symbols are unique after being updated with HGNC symbols. This function
+#' applies a suffix to duplicate gene symbols to enforce uniqueness. While using `make.unique` might not
+#' be the ideal solution due to potential mismatches, it significantly reduces the number of mismatching
+#' genes in certain scenarios, making it a practical approach for data integration tasks.
+#'
+#' @param updatedSymbols A data frame or matrix containing gene symbols updated via `HGNChelper::checkGeneSymbols()`.
+#' The third column should contain the updated gene symbols that are to be made unique.
+#'
+#' @return A modified version of the input data frame or matrix with unique gene symbols in the third column.
+#' If duplicates were found, they are made unique by appending `.1`, `.2`, etc., to the repeated symbols.
+#'
+#' @details The function specifically targets the issue of duplicate gene symbols which can occur after
+#' updating gene symbols to their latest HGNC-approved versions. Duplicate symbols can introduce
+#' ambiguity in gene expression datasets, affecting downstream analyses like differential expression or
+#' data integration. By ensuring each gene symbol is unique, this function helps maintain the integrity
+#' of the dataset.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   x <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
+#'   if (interactive()) {
+#'     # Assuming `SymUpd` is your data frame of updated symbols from HGNChelper::checkGeneSymbols()
+#'     uniqueSymbols <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
+#'     # `uniqueSymbols` now contains unique gene symbols in its third column
+#'   }
 #' }
-#' }
+#'
+#' @note This function is a workaround for ensuring unique gene symbols and might not be suitable
+#' for all datasets or analyses. It's important to review the results and ensure that the gene
+#' symbols accurately represent your data.
+#'
 #' @export
 HGNC.EnforceUnique <- function(updatedSymbols) {
   NGL <- updatedSymbols[, 3]
