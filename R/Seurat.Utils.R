@@ -3266,17 +3266,43 @@ HGNC.EnforceUnique <- function(updatedSymbols) {
 
 
 # _________________________________________________________________________________________________
-#' @title GetUpdateStats
+#' @title Gene Symbol Update Statistics
 #'
-#' @description Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`.
-#' @param genes Genes of iinterest, Default: HGNC.updated[[i]]
+#' @description Generates statistics on the gene symbol updates performed by `UpdateGenesSeurat()`.
+#' This function analyzes the data frame of gene symbols before and after the update process,
+#' providing insights into the proportion and total number of genes that were updated.
+#'
+#' @param genes A data frame of gene symbols before and after update, typically the output of
+#' `UpdateGenesSeurat()`. Default: `HGNC.updated[[i]]` (where `i` is the index of the desired
+#' Seurat object in a list).
+#'
+#' @return A named vector with statistics on gene updates, including the percentage of updated genes,
+#' the absolute number of updated genes, and the total number of genes processed.
+#'
+#' @details The function examines the `Approved` column of the input data frame to identify
+#' gene symbols marked for update and compares the original and suggested symbols to determine
+#' actual updates. The statistics highlight the efficiency and impact of the gene symbol
+#' updating process, aiding in the assessment of data preprocessing steps.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   GetUpdateStats(genes = HGNC.updated.genes)
+#'   if (interactive()) {
+#'     # Assuming `HGNC.updated.genes` is your data frame containing the original and
+#'     # suggested gene symbols, as returned by `UpdateGenesSeurat()`
+#'     updateStats <- GetUpdateStats(genes = HGNC.updated.genes)
+#'     # `updateStats` now contains the update statistics, including percentage and count of updated genes
+#'   }
 #' }
-#' }
+#'
+#' @note The function requires the input data frame to have specific columns as produced by
+#' `HGNChelper::checkGeneSymbols()` and subsequently processed by `UpdateGenesSeurat()`.
+#' Ensure that the input adheres to this format for accurate statistics.
+#'
+#' @seealso \code{\link{UpdateGenesSeurat}}, for the function that updates gene symbols and produces
+#' the input data frame for this function.
+#'
 #' @importFrom Stringendo percentage_formatter
+#'
 #' @export
 GetUpdateStats <- function(genes = HGNC.updated[[i]]) {
   MarkedAsUpdated <- genes[genes$Approved == FALSE, ]
@@ -3609,26 +3635,44 @@ LoadAllSeurats <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title read10x
+#' @title Load 10X Genomics Data as Seurat Object
 #'
-#' @description This function reads a 10X dataset from gzipped matrix.mtx, features.tsv and barcodes.tsv files.
-#' @param dir A character string specifying the directory where the gzipped files are located.
-#' @return A Seurat object constructed from the 10X dataset.
+#' @description Reads 10X Genomics dataset files (gzipped) including matrix, features, and barcodes,
+#' to a single expression matrix. This function handles the unzipping of these files, reads the data,
+#' and re-compresses the files back to their original gzipped format.
+#'
+#' @param dir A character string specifying the path to the directory containing the 10X dataset files.
+#' This directory should contain `matrix.mtx.gz`, `features.tsv.gz`, and `barcodes.tsv.gz` files.
+#'
+#' @return A Seurat object containing the single-cell RNA-seq data extracted from the provided 10X
+#' Genomics dataset.
+#'
+#' @details This function facilitates the loading of 10X Genomics datasets into R for analysis with
+#' the Seurat package. It specifically caters to gzipped versions of the `matrix.mtx`, `features.tsv`,
+#' and `barcodes.tsv` files, automating their decompression, reading, and subsequent recompression.
+#' The function relies on Seurat's `Read10X` function for data reading and object construction.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   seuratObject <- read10x(dir = dir)
+#'   if (interactive()) {
+#'     # Replace `path_to_10x_data` with the path to your 10X data directory
+#'     seuratObject <- read10x(dir = "path_to_10x_data")
+#'     # `seuratObject` is now a Seurat object containing the loaded 10X data
+#'   }
 #' }
-#' }
-#' @export
-#' @seealso
-#'  \code{\link[tictoc]{tic}}
-#'  \code{\link[R.utils]{compressFile}}
-#'  \code{\link[Seurat]{Read10X}}
+#'
+#' @note Ensure that the specified directory contains the required gzipped files.
+#' If the `features.tsv.gz` file is named differently (e.g., `genes.tsv.gz`), please rename it
+#' accordingly before running this function.
+#'
+#' @seealso \code{\link[Seurat]{Read10X}} for the underlying function used to read the 10X data.
+#'
 #' @importFrom tictoc tic toc
 #' @importFrom R.utils gunzip gzip
 #' @importFrom Seurat Read10X
-read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv
+#'
+#' @export
+read10x <- function(dir) {
   tictoc::tic()
   names <- c("barcodes.tsv", "features.tsv", "matrix.mtx")
   for (i in 1:length(names)) {
@@ -3647,28 +3691,49 @@ read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and b
 
 
 # _________________________________________________________________________________________________
-#' @title load10Xv3
+#' @title Load 10X Genomics Version 3 Data
 #'
-#' @description Load 10X output folders.
-#' @param dataDir A character string specifying the directory containing the 10X output folders.
-#' @param cellIDs A vector specifying the cell IDs. Default: NULL.
-#' @param channelName A character string specifying the channel name. Default: NULL.
-#' @param readArgs A list of arguments to pass to the internal Read10X function. Default: list().
-#' @param includeFeatures A character vector specifying which features to include. Default: c("Gene Expression").
-#' @param verbose A logical flag indicating whether to print status messages. Default: TRUE.
-#' @param ... Additional arguments to pass to the internally called functions.
-#' @return An object of class "SoupChannel" representing the loaded 10X data.
+#' @description Loads 10X Genomics data from a specified directory containing output folders for raw and filtered data.
+#' This function is designed to handle data from 10X Genomics Chromium Single Cell technologies (version 3).
+#'
+#' @param dataDir A string specifying the directory that contains the 10X Genomics output folders.
+#' This directory should include subdirectories for raw and filtered data, typically named starting with
+#' `raw_` and `filt_`, respectively.
+#' @param cellIDs An optional vector of cell IDs to include in the loaded data. Default is `NULL`,
+#' indicating that all available cells will be included. This is useful for subsetting the data based
+#' on specific cell IDs.
+#' @param channelName An optional string specifying the channel name for the data being loaded.
+#' This can be used to label the data according to the experimental condition or sample name. Default is `NULL`.
+#' @param readArgs A list of additional arguments to pass to the internal `Read10X` function used for
+#' loading the data. Default is an empty list.
+#' @param includeFeatures A character vector specifying which features to include in the loaded data.
+#' Common values include "Gene Expression", "Antibody Capture", and "CRISPR Guide Capture".
+#' Default is `c("Gene Expression")`.
+#' @param verbose A logical flag indicating whether to print progress messages and status updates as the
+#' data is loaded. Default is `TRUE`.
+#' @param ... Additional arguments passed to other internally called functions, if applicable.
+#' @return An object of class `SoupChannel`, representing the loaded 10X data. This object includes
+#' raw counts, filtered counts, and optionally, additional metadata and dimensionality reduction coordinates
+#' (e.g., t-SNE).
+#'
+#' @details This function provides a comprehensive approach to loading and organizing 10X Genomics data
+#' for further analysis. It accommodates the data structure commonly found in 10X Genomics version 3 outputs
+#' and allows for the inclusion of various types of molecular data as well as optional cell and channel
+#' specifications.
+#'
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   channel <- load10Xv3(dataDir = dataDir)
+#'   # Assuming `dataDir` is the path to your 10X data directory
+#'   channel <- load10Xv3(dataDir = "path/to/10X/data")
+#'   # Now `channel` contains the loaded 10X data as a `SoupChannel` object
 #' }
 #' }
-#' @seealso
-#'  \code{\link[SoupX]{SoupChannel}}
+#'
+#' @seealso \code{\link[SoupX]{SoupChannel}} for the structure and utilities of the `SoupChannel` class.
+#'
 #' @export
 #' @importFrom SoupX SoupChannel
-
 load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
                       includeFeatures = c("Gene Expression"), verbose = TRUE,
                       ...) {
