@@ -2,20 +2,47 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{GetUpdateStats}
 \alias{GetUpdateStats}
-\title{GetUpdateStats}
+\title{Gene Symbol Update Statistics}
 \usage{
 GetUpdateStats(genes = HGNC.updated[[i]])
 }
 \arguments{
-\item{genes}{Genes of iinterest, Default: HGNC.updated[\link{i}]}
+\item{genes}{A data frame of gene symbols before and after update, typically the output of
+\code{UpdateGenesSeurat()}. Default: \code{HGNC.updated[[i]]} (where \code{i} is the index of the desired
+Seurat object in a list).}
+}
+\value{
+A named vector with statistics on gene updates, including the percentage of updated genes,
+the absolute number of updated genes, and the total number of genes processed.
 }
 \description{
-Plot the Symbol-update statistics. Works on the data frame returned by \code{UpdateGenesSeurat()}.
+Generates statistics on the gene symbol updates performed by \code{UpdateGenesSeurat()}.
+This function analyzes the data frame of gene symbols before and after the update process,
+providing insights into the proportion and total number of genes that were updated.
+}
+\details{
+The function examines the \code{Approved} column of the input data frame to identify
+gene symbols marked for update and compares the original and suggested symbols to determine
+actual updates. The statistics highlight the efficiency and impact of the gene symbol
+updating process, aiding in the assessment of data preprocessing steps.
+}
+\note{
+The function requires the input data frame to have specific columns as produced by
+\code{HGNChelper::checkGeneSymbols()} and subsequently processed by \code{UpdateGenesSeurat()}.
+Ensure that the input adheres to this format for accurate statistics.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  GetUpdateStats(genes = HGNC.updated.genes)
+  if (interactive()) {
+    # Assuming `HGNC.updated.genes` is your data frame containing the original and
+    # suggested gene symbols, as returned by `UpdateGenesSeurat()`
+    updateStats <- GetUpdateStats(genes = HGNC.updated.genes)
+    # `updateStats` now contains the update statistics, including percentage and count of updated genes
+  }
 }
+
 }
+\seealso{
+\code{\link{UpdateGenesSeurat}}, for the function that updates gene symbols and produces
+the input data frame for this function.
 }

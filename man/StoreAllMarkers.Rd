@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{StoreAllMarkers}
 \alias{StoreAllMarkers}
-\title{StoreAllMarkers}
+\title{Store All Differential Expression Markers}
 \usage{
 StoreAllMarkers(
   obj = combined.obj,
@@ -12,22 +12,25 @@ StoreAllMarkers(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object to update with differential expression markers; Default: \code{combined.obj}.}
 
-\item{df_markers}{Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers}
+\item{df_markers}{Data frame containing the results from differential gene expression analysis
+(\code{FindAllMarkers()} output); Default: \code{df.markers}.}
 
-\item{res}{Clustering resoluton to use, Default: 0.5}
+\item{res}{Clustering resolution identifier for storing and referencing the markers; Default: 0.5.}
 
-\item{digit}{Number of digits to keep, Default: c(0, 3)\link{2}}
+\item{digit}{Number of significant digits to retain in numerical values; Default: 3.}
 }
 \description{
-Save the output table of \code{FindAllMarkers()} (df_markers) under
-\verb{@misc$df.markers$res...}. By default, it rounds up insignificant digits up to 3.
+Saves the complete output table from \code{FindAllMarkers()} to a Seurat object, facilitating
+easy access to differential expression analysis results. This function rounds numerical values to a
+specified number of digits to maintain readability and manage file sizes.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  combined.obj <- StoreAllMarkers(df_markers = df.markers, res = 0.5)
+  if (interactive()) {
+    combined.obj <- StoreAllMarkers(obj = combined.obj, df_markers = df.markers, res = 0.5)
+  }
 }
-}
+
 }

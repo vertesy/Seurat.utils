@@ -2,20 +2,31 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{prefix_cells_seurat}
 \alias{prefix_cells_seurat}
-\title{prefix_cells_seurat}
+\title{Add Prefixes to Cell Names in Seurat Objects}
 \usage{
 prefix_cells_seurat(ls_obj, obj_IDs)
 }
 \arguments{
-\item{ls_obj}{List. A list of Seurat S4 objects}
+\item{ls_obj}{List of Seurat S4 objects to which prefixes will be added. Each object should correspond
+to a different sample or condition.}
 
-\item{obj_IDs}{Character vector. A vector of sample IDs corresponding to each Seurat S4 object}
+\item{obj_IDs}{Character vector of identifiers that will be used as prefixes. Each identifier in the vector
+corresponds to a Seurat object in \code{ls_obj}. The length of \code{obj_IDs} must match the length of \code{ls_obj}.}
+}
+\value{
+A list of Seurat objects with updated cell names, incorporating the specified prefixes.
 }
 \description{
-This function adds prefixes from 'obj_IDs' to cell names in Seurat S4 objects from 'ls_obj'
+Adds prefixes derived from a vector of identifiers to cell names in a list of Seurat objects.
+This is useful for ensuring unique cell names across multiple samples or conditions when combining or comparing datasets.
 }
 \examples{
-# ls_obj <- list(seurat_obj1, seurat_obj2)
-# obj_IDs <- c("sample1", "sample2")
-# ls_obj_prefixed <- prefix_cells_seurat(ls_obj = ls_obj, obj_IDs = obj_IDs)
+\dontrun{
+  # Assuming seurat_obj1 and seurat_obj2 are Seurat objects
+  ls_obj <- list(seurat_obj1, seurat_obj2)
+  obj_IDs <- c("sample1", "sample2")
+  ls_obj_prefixed <- prefix_cells_seurat(ls_obj = ls_obj, obj_IDs = obj_IDs)
+  # Now each cell name in seurat_obj1 and seurat_obj2 will be prefixed with 'sample1_' and 'sample2_', respectively.
+}
+
 }

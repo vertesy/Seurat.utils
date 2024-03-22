@@ -2,28 +2,31 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{StoreTop25Markers}
 \alias{StoreTop25Markers}
-\title{StoreTop25Markers}
+\title{Save Top 25 Markers per Cluster}
 \usage{
 StoreTop25Markers(obj = combined.obj, df_markers = df.markers, res = 0.5)
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object to update with top 25 markers information; Default: \code{combined.obj}.}
 
-\item{df_markers}{Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers}
+\item{df_markers}{Data frame containing results from differential gene expression analysis
+via \code{FindAllMarkers()}, specifying significant markers across clusters; Default: \code{df.markers}.}
 
-\item{res}{Clustering resoluton to use, Default: 0.5}
+\item{res}{Clustering resolution at which the markers were identified; Default: 0.5.}
 }
 \description{
-Save the top 25 makers based on \code{avg_log2FC} output table of \code{FindAllMarkers()}
-(df_markers) under \verb{@misc$df.markers$res...}. By default, it rounds up insignificant digits up to 3.
+Stores the top 25 markers for each cluster identified in a Seurat object, based on
+the \code{avg_log2FC} from the output table of \code{FindAllMarkers()}. The result is saved under \verb{@misc$df.markers$res...},
+rounding insignificant digits to three decimal places.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  combined.obj <- StoreTop25Markers(df_markers = df.markers, res = 0.)
+  if (interactive()) {
+    combined.obj <- StoreTop25Markers(obj = combined.obj, df_markers = df.markers, res = 0.5)
+  }
 }
-}
+
 }
 \seealso{
-\code{\link[dplyr]{select}}
+\code{\link[Seurat]{FindAllMarkers}}, \code{\link[dplyr]{top_n}}
 }

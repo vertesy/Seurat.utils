@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{UpdateGenesSeurat}
 \alias{UpdateGenesSeurat}
-\title{UpdateGenesSeurat}
+\title{Update Gene Symbols in a Seurat Object}
 \usage{
 UpdateGenesSeurat(
   obj = ls.Seurat[[i]],
@@ -12,18 +12,42 @@ UpdateGenesSeurat(
 )
 }
 \arguments{
-\item{obj}{Seurat object to update gene symbols in. Default: ls.Seurat[\link{i}]}
+\item{obj}{A Seurat object containing gene expression data; Default: \code{ls.Seurat[[i]]}
+(ensure to replace \code{i} with the actual index or variable referencing your Seurat object).}
 
-\item{species_}{Species to which the gene symbols correspond, used to check gene symbols. Default: 'human'}
+\item{species_}{The species for which the gene symbols are checked and updated,
+used to ensure the correct gene nomenclature is applied; Default: \code{'human'}.
+Supports \code{'human'}, \code{'mouse'}, etc., as specified in the \code{HGNChelper} package.}
 
-\item{EnforceUnique}{Logical, if TRUE, enforces unique gene symbols. Default: TRUE}
+\item{EnforceUnique}{Logical flag indicating whether to enforce unique gene symbols
+within the Seurat object. When set to \code{TRUE}, it resolves issues with duplicated gene symbols
+by appending unique identifiers; Default: \code{TRUE}.}
 
-\item{ShowStats}{Logical, if TRUE, displays statistics of gene symbols update. Default: FALSE}
+\item{ShowStats}{Logical flag indicating whether to display statistics about the gene
+symbol update process. When set to \code{TRUE}, it prints detailed information on the console
+about the changes made; Default: \code{FALSE}.}
+}
+\value{
+A modified Seurat object with updated gene symbols. The function directly modifies
+the input Seurat object, ensuring that gene symbols adhere to the latest nomenclature.
 }
 \description{
-Update genes symbols that are stored in a Seurat object. It returns a data frame.
-The last column are the updated gene names.
+This function updates gene symbols in a Seurat object based on current gene
+nomenclature guidelines, using HGNChelper(). It checks and updates gene symbols to their
+latest approved versions,ensuring that gene annotations are current and consistent.
+The function optionally enforces unique gene symbols and provides statistics on the update process.
+}
+\examples{
+\dontrun{
+  if (interactive()) {
+    # Assuming `mySeuratObject` is your Seurat object
+    updatedSeuratObject <- UpdateGenesSeurat(obj = mySeuratObject, species_ = "human",
+                                              EnforceUnique = TRUE, ShowStats = TRUE)
+    # `updatedSeuratObject` now has updated gene symbols
+  }
+}
+
 }
 \seealso{
-\code{\link[HGNChelper]{checkGeneSymbols}}
+\code{\link[HGNChelper]{checkGeneSymbols}} for details on checking and updating gene symbols.
 }

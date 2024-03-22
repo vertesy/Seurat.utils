@@ -1169,17 +1169,22 @@ recall.genes.ls <- function(obj = combined.obj, overwrite = FALSE) { # genes.ls
 
 
 # _________________________________________________________________________________________________
-#' @title save.parameters
+#' @title Save Parameters to Seurat Object
 #'
-#' @description Save parameters to obj@misc$p
-#' @param obj Seurat object, Default: combined.obj
-#' @param params List of parameters, Default: p
+#' @description Stores a list of parameters within the `@misc$p` slot of a Seurat object,
+#' allowing for easy reference and tracking of analysis parameters used.
+#'
+#' @param obj Seurat object to update; Default: `combined.obj`.
+#' @param params List of parameters to save; Default: `p`.
+#' @param overwrite Logical indicating if existing parameters should be overwritten; Default: TRUE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   save.parameters(obj = combined.obj, params = p)
+#'   if (interactive()) {
+#'     save.parameters(obj = combined.obj, params = p)
+#'   }
 #' }
-#' }
+#'
 #' @export
 save.parameters <- function(obj = combined.obj, params = p, overwrite = TRUE) {
   obj <- ww.get.1st.Seur.element(obj)
@@ -1503,13 +1508,25 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj, ident,
 
 
 # _________________________________________________________________________________________________
-#' @title removeResidualSmallClusters
+#' @title Remove Residual Small Clusters from Seurat Object
 #'
-#' @description E.g.: after subsetting often some residual cells remain in clusters originally
-#' defined in the full dataset.
-#' @param identitites Identities to scan for residual clusters
-#' @param obj Seurat object, Default: combined.obj
-#' @param max.cells Max number of cells in cluster to be removed. Default: 0.5% of the dataset, or 5 cells.
+#' @description Removes clusters containing fewer cells than specified by `max.cells`
+#' from a Seurat object. This function is particularly useful after subsetting a dataset,
+#' where small, possibly unrepresentative clusters may remain.
+#'
+#' @param obj Seurat object from which small clusters will be removed; Default: `combined.obj`.
+#' @param identitites Vector of clustering identities to examine for small clusters;
+#' Default: `GetClusteringRuns(obj)`.
+#' @param max.cells Maximum number of cells a cluster can contain to still be considered for removal.
+#' Default: The lesser of 0.5% of the dataset or 5 cells.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     combined.obj <- removeResidualSmallClusters(obj = combined.obj)
+#'   }
+#' }
+#'
 #' @export
 removeResidualSmallClusters <- function(
     obj = combined.obj,
@@ -1682,24 +1699,31 @@ removeCellsByUmap <- function(
 # _________________________________________________________________________________________________
 
 
-#' @title downsampleListSeuObjsNCells
+#' @title Downsample a List of Seurat Objects to a Specific Number of Cells
 #'
-#' @description downsample a list of Seurat objects
-#' @param ls.obj List of Seurat objects. Default: ls.Seurat
-#' @param NrCells Number of cells to downsample to.
-#' @param save_object save object by isaveRDS, otherwise return it. Default: FALSE
+#' @description Downsampling each Seurat object in a list to a specified number of cells. This function is
+#' particularly useful for creating smaller, more manageable subsets of large single-cell datasets for
+#' preliminary analyses or testing.
+#'
+#' @param ls.obj List of Seurat objects to be downsampled; Default: `ls.Seurat`.
+#' @param NrCells Target number of cells to downsample each Seurat object to.
+#' @param save_object Logical indicating whether to save the downsampled Seurat objects using `isaveRDS`
+#' or to return them; Default: FALSE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   downsampleListSeuObjsNCells(NrCells = 2000)
-#'   downsampleListSeuObjsNCells(NrCells = 200)
+#'   if (interactive()) {
+#'     downsampledSeuratList <- downsampleListSeuObjsNCells(ls.obj =
+#'                                       list(yourSeuratObj1, yourSeuratObj2), NrCells = 2000)
+#'     downsampledSeuratList <- downsampleListSeuObjsNCells(NrCells = 200)
+#'   }
 #' }
-#' }
+#'
 #' @export
 #' @importFrom tictoc tic toc
 #' @importFrom Stringendo percentage_formatter
-#' @importFrom foreach foreach getDoParRegistered
-#'
+#' @importFrom foreach foreach %dopar% getDoParRegistered
+
 downsampleListSeuObjsNCells <- function(
     ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids",
     save_object = FALSE) {
@@ -1740,23 +1764,28 @@ downsampleListSeuObjsNCells <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title downsampleListSeuObjsPercent
+#' @title Downsample a List of Seurat Objects to a Fraction
 #'
-#' @description downsample a list of Seurat objects, by fraction
-#' @param ls.obj List of Seurat objects, Default: ls.Seurat
-#' @param NrCells Number of cells to downsample to. Default: p$dSample.Organoids
-#' @param save_object save object by isaveRDS, otherwise return it. Default: FALSE
+#' @description Downsampling a list of Seurat objects to a specified fraction of their original size.
+#' This is useful for reducing dataset size for quicker processing or testing workflows.
+#'
+#' @param ls.obj List of Seurat objects to be downsampled; Default: `ls.Seurat`.
+#' @param fraction Fraction of cells to retain in each Seurat object; Default: 0.1.
+#' @param save_object Logical indicating whether to save the downsampled Seurat objects using
+#' `isaveRDS` or return them; Default: FALSE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   downsampleListSeuObjsPercent()
+#'   if (interactive()) {
+#'     downsampled_objs <- downsampleListSeuObjsPercent(ls.obj = yourListOfSeuratObjects, fraction = 0.1)
+#'   }
 #' }
-#' }
-#' @importFrom tictoc tic toc
-#' @importFrom Stringendo percentage_formatter
-#' @importFrom foreach getDoParRegistered foreach
 #'
 #' @export
+#' @importFrom tictoc tic toc
+#' @importFrom Stringendo percentage_formatter
+#' @importFrom foreach foreach %dopar% getDoParRegistered
+#'
 downsampleListSeuObjsPercent <- function(
     ls.obj = ls.Seurat, fraction = 0.1,
     save_object = FALSE) {
@@ -1836,23 +1865,31 @@ Add.DE.combined.score <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title StoreTop25Markers
+#' @title Save Top 25 Markers per Cluster
 #'
-#' @description Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()`
-#' (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
-#' @param obj Seurat object, Default: combined.obj
-#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param res Clustering resoluton to use, Default: 0.5
+#' @description Stores the top 25 markers for each cluster identified in a Seurat object, based on
+#' the `avg_log2FC` from the output table of `FindAllMarkers()`. The result is saved under `@misc$df.markers$res...`,
+#' rounding insignificant digits to three decimal places.
+#'
+#' @param obj Seurat object to update with top 25 markers information; Default: `combined.obj`.
+#' @param df_markers Data frame containing results from differential gene expression analysis
+#' via `FindAllMarkers()`, specifying significant markers across clusters; Default: `df.markers`.
+#' @param res Clustering resolution at which the markers were identified; Default: 0.5.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   combined.obj <- StoreTop25Markers(df_markers = df.markers, res = 0.)
+#'   if (interactive()) {
+#'     combined.obj <- StoreTop25Markers(obj = combined.obj, df_markers = df.markers, res = 0.5)
+#'   }
 #' }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{select}}
+#'
+#' @seealso \code{\link[Seurat]{FindAllMarkers}}, \code{\link[dplyr]{top_n}}
+#'
 #' @export
-#' @importFrom dplyr select
+#' @importFrom Seurat FindAllMarkers
+#' @importFrom dplyr group_by top_n select arrange
+#' @importFrom magrittr `%>%`
+
 StoreTop25Markers <- function(obj = combined.obj
                               , df_markers = df.markers, res = 0.5) {
   top25.markers <-
@@ -1869,20 +1906,25 @@ StoreTop25Markers <- function(obj = combined.obj
 
 
 # _________________________________________________________________________________________________
-#' @title StoreAllMarkers
+#' @title Store All Differential Expression Markers
 #'
-#' @description Save the output table of `FindAllMarkers()` (df_markers) under
-#' `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
-#' @param obj Seurat object, Default: combined.obj
-#' @param df_markers Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param res Clustering resoluton to use, Default: 0.5
-#' @param digit Number of digits to keep, Default: c(0, 3)[2]
+#' @description Saves the complete output table from `FindAllMarkers()` to a Seurat object, facilitating
+#' easy access to differential expression analysis results. This function rounds numerical values to a
+#' specified number of digits to maintain readability and manage file sizes.
+#'
+#' @param obj Seurat object to update with differential expression markers; Default: `combined.obj`.
+#' @param df_markers Data frame containing the results from differential gene expression analysis
+#' (`FindAllMarkers()` output); Default: `df.markers`.
+#' @param res Clustering resolution identifier for storing and referencing the markers; Default: 0.5.
+#' @param digit Number of significant digits to retain in numerical values; Default: 3.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   combined.obj <- StoreAllMarkers(df_markers = df.markers, res = 0.5)
+#'   if (interactive()) {
+#'     combined.obj <- StoreAllMarkers(obj = combined.obj, df_markers = df.markers, res = 0.5)
+#'   }
 #' }
-#' }
+#'
 #' @export
 StoreAllMarkers <- function(
     obj = combined.obj,
@@ -1895,22 +1937,33 @@ StoreAllMarkers <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title GetTopMarkersDF
+#' @title Get Top Differential Expression Genes Data Frame
 #'
-#' @description Get the vector of N most diff. exp. genes. #
-#' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param n Number of markers to return, Default: p$n.markers
-#' @param order.by Sort output tibble by which column, Default: c("avg_log2FC", "p_val_adj")[1]
+#' @description Retrieves a data frame of the top N differentially expressed genes from
+#' differential gene expression analysis results, offering an option to exclude certain genes
+#' based on patterns.
+#'
+#' @param dfDE Data frame containing the results of differential gene expression analysis
+#' (e.g., output from `FindAllMarkers()`); Default: `df.markers`.
+#' @param n Number of top markers to retrieve per cluster; Default: `p$n.markers`.
+#' @param order.by Priority column for sorting markers before selection, such as `"avg_log2FC"`;
+#' Default: `"avg_log2FC"`.
+#' @param exclude Vector of regex patterns to exclude genes from the top markers list;
+#' Default: `c("^AL*|^AC*|^LINC*")`.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   GetTopMarkers(df = df.markers, n = 3)
+#'   if (interactive()) {
+#'     topMarkersDF <- GetTopMarkersDF(dfDE = df.markers, n = 3)
+#'   }
 #' }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{slice}}, \code{\link[dplyr]{select}}
+#'
+#' @seealso \code{\link[Seurat]{FindAllMarkers}}, \code{\link[dplyr]{arrange}},
+#'  \code{\link[dplyr]{filter}}, \code{\link[dplyr]{group_by}}
+#'
 #' @export
-#' @importFrom dplyr slice select
+#' @importFrom dplyr arrange group_by slice select filter
+# #' @importFrom magrittr `%>%`
 GetTopMarkersDF <- function(
     dfDE = df.markers # Get the vector of N most diff. exp. genes.
     , n = p$"n.markers", order.by = c("avg_log2FC", "p_val_adj")[1],
@@ -1938,31 +1991,46 @@ GetTopMarkersDF <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title GetTopMarkers
+#' @title Get Top Differential Expression Markers from DGEA Results
 #'
-#' @description Get the vector of N most diff. exp. genes. #
-#' @param dfDE Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers
-#' @param n Number of markers to return, Default: p$n.markers
-#' @param order.by Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")[2]
+#' @description Retrieves the top N differentially expressed genes from the results of a differential
+#' gene expression analysis, such as that provided by `FindAllMarkers()`.
+#'
+#' @param dfDE Data frame containing differential expression analysis results; Default: `df.markers`.
+#' @param n Number of top markers to retrieve for each cluster; Default: `p$n.markers`.
+#' @param order.by Column by which to sort the markers before selection, typically prioritizing
+#' markers by significance or effect size; Default: `"avg_log2FC"`.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   GetTopMarkers(df = df.markers, n = 3)
+#'   if (interactive()) {
+#'     topMarkers <- GetTopMarkers(df = df.markers, n = 3)
+#'   }
 #' }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{slice}}, \code{\link[dplyr]{select}}
+#'
+#' @seealso \code{\link[Seurat]{FindAllMarkers}}, \code{\link[dplyr]{arrange}}, \code{\link[dplyr]{group_by}}
+#'
 #' @export
-#' @importFrom dplyr slice select
-GetTopMarkers <- function(dfDE = df.markers # Get the vector of N most diff. exp. genes.
-                          , n = p$"n.markers", order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]) {
-  "Works on active Idents() -> thus we call cluster"
-  TopMarkers <- dfDE %>%
-    arrange(desc(!!as.name(order.by))) %>%
-    group_by(cluster) %>%
-    dplyr::slice(1:n) %>%
-    dplyr::select(gene) %>%
+#' @importFrom dplyr arrange group_by slice select
+# #' @importFrom magrittr `%>%`
+GetTopMarkers <- function(dfDE = df.markers,
+                          n = p$"n.markers",
+                          order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]) {
+
+  message("Works on active Idents()") # thus we call cluster
+  TopMarkers <- dfDE |>
+    arrange(desc(!!as.name(order.by))) |>
+    group_by(cluster) |>
+    dplyr::slice(1:n) |>
+    dplyr::select(gene) |>
     col2named.vec.tbl()
+
+  # TopMarkers <- dfDE %>%
+  #   arrange(desc(!!as.name(order.by))) %>%
+  #   group_by(cluster) %>%
+  #   dplyr::slice(1:n) %>%
+  #   dplyr::select(gene) %>%
+  #   col2named.vec.tbl()
 
   return(TopMarkers)
 }
@@ -2160,16 +2228,28 @@ AutoLabel.KnownMarkers <- function(
 # Correlations _________________________ ----
 # _________________________________________________________________________________________________
 
-#' @title sparse.cor
+#' @title Calculate Sparse Correlation Matrix
 #'
-#' @description Calculate a sparse correlation matrix.
-#' @param smat A sparse matrix.
+#' @description Computes a sparse correlation matrix from a given sparse matrix input. This function is
+#' useful for efficiently handling large datasets where most values are zero, facilitating the calculation
+#' of both covariance and correlation matrices without converting to a dense format.
+#'
+#' @param smat A sparse matrix object, typically of class Matrix from the Matrix package.
 #' @return A list with two elements:
-#'   * `cov`: The covariance matrix.
-#'   * `cor`: The correlation matrix.
+#'   * `cov`: The covariance matrix derived from the input sparse matrix.
+#'   * `cor`: The correlation matrix derived from the covariance matrix.
+#'
+#' @examples
+#' \dontrun{
+#'   library(Matrix)
+#'   smat <- Matrix(rnorm(1000), nrow = 100, sparse = TRUE)
+#'   cor_res <- sparse.cor(smat)
+#'   print(cor_res$cor)
+#' }
 #'
 #' @export
-
+#' @importFrom Matrix colMeans crossprod tcrossprod
+#' @importFrom stats sd
 sparse.cor <- function(smat) {
   n <- nrow(smat)
   cMeans <- colMeans(smat)
@@ -2243,25 +2323,40 @@ Calc.Cor.Seurat <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title plot.Gene.Cor.Heatmap
+#' @title Plot Gene Correlation Heatmap
 #'
-#' @description Plot a gene correlation heatmap.
-#' @param genes The list of genes of interest. Default: WU.2017.139.IEGsf
-#' @param assay.use The assay to use from the Seurat object. Default: 'RNA'
-#' @param slot.use The slot to use from the assay in the Seurat object. Default: First item in the vector c("data", "scale.data", "data.imputed")
-#' @param quantileX The quantile level for the calculation. Default: 0.95
-#' @param min.g.cor The minimum gene correlation. Genes with correlation above this value or below its negative will be included. Default: 0.3
-#' @param calc.COR A logical flag, if TRUE, the correlation will be calculated if not found. Default: FALSE
-#' @param cutRows A number, the dendrogram will be cut at this height into clusters. Default: NULL
-#' @param cutCols A number, the dendrogram will be cut at this height into clusters. If NULL, cutCols will be the same as cutRows. Default: cutRows
-#' @param obj The Seurat object to perform calculations on. Default: combined.obj
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description Generates a heatmap visualization of gene correlations based on expression data.
+#' Useful for identifying groups of genes that exhibit similar expression patterns across different conditions
+#' or cell types in a Seurat object.
+#'
+#' @param genes Vector of gene symbols to include in the correlation analysi.
+#' @param assay.use Assay from which to retrieve expression data within the Seurat object; Default: 'RNA'.
+#' @param slot.use Specifies which slot of the assay to use for expression data ('data', 'scale.data', 'data.imputed');
+#' Default: first item ('data').
+#' @param quantileX Quantile level for calculating expression thresholds; Default: 0.95.
+#' @param min.g.cor Minimum absolute gene correlation value for inclusion in the heatmap; Default: 0.3.
+#' @param calc.COR Logical flag to calculate correlation matrix if not found in `@misc`; Default: FALSE.
+#' @param cutRows Height at which to cut the dendrogram for rows, determining cluster formation; Default: NULL.
+#' @param cutCols Height at which to cut the dendrogram for columns, determining cluster formation;
+#' Default: same as `cutRows`.
+#' @param obj Seurat object containing the data; Default: `combined.obj`.
+#' @param ... Additional parameters passed to the internally called functions.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     plot.Gene.Cor.Heatmap(genes = c("Gene1", "Gene2", "Gene3"), obj = combined.obj)
+#'   }
+#' }
+#'
+#' @importFrom Seurat GetAssayData
 #' @importFrom pheatmap pheatmap
 #' @importFrom MarkdownReports wplot_save_pheatmap
 #'
 #' @export plot.Gene.Cor.Heatmap
+#'
 plot.Gene.Cor.Heatmap <- function(
-    genes = WU.2017.139.IEGsf,
+    genes,
     assay.use = "RNA", slot.use = c("data", "scale.data", "data.imputed")[1], quantileX = 0.95,
     min.g.cor = 0.3, calc.COR = FALSE,
     cutRows = NULL, cutCols = cutRows,
@@ -2330,18 +2425,29 @@ plot.Gene.Cor.Heatmap <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title prefix_cells_seurat
+#' @title Add Prefixes to Cell Names in Seurat Objects
 #'
-#' @description This function adds prefixes from 'obj_IDs' to cell names in Seurat S4 objects from 'ls_obj'
+#' @description Adds prefixes derived from a vector of identifiers to cell names in a list of Seurat objects.
+#' This is useful for ensuring unique cell names across multiple samples or conditions when combining or comparing datasets.
 #'
-#' @param ls_obj List. A list of Seurat S4 objects
-#' @param obj_IDs Character vector. A vector of sample IDs corresponding to each Seurat S4 object
+#' @param ls_obj List of Seurat S4 objects to which prefixes will be added. Each object should correspond
+#' to a different sample or condition.
+#' @param obj_IDs Character vector of identifiers that will be used as prefixes. Each identifier in the vector
+#' corresponds to a Seurat object in `ls_obj`. The length of `obj_IDs` must match the length of `ls_obj`.
 #'
 #' @examples
-#' # ls_obj <- list(seurat_obj1, seurat_obj2)
-#' # obj_IDs <- c("sample1", "sample2")
-#' # ls_obj_prefixed <- prefix_cells_seurat(ls_obj = ls_obj, obj_IDs = obj_IDs)
+#' \dontrun{
+#'   # Assuming seurat_obj1 and seurat_obj2 are Seurat objects
+#'   ls_obj <- list(seurat_obj1, seurat_obj2)
+#'   obj_IDs <- c("sample1", "sample2")
+#'   ls_obj_prefixed <- prefix_cells_seurat(ls_obj = ls_obj, obj_IDs = obj_IDs)
+#'   # Now each cell name in seurat_obj1 and seurat_obj2 will be prefixed with 'sample1_' and 'sample2_', respectively.
+#' }
+#'
+#' @return A list of Seurat objects with updated cell names, incorporating the specified prefixes.
+#'
 #' @export
+#' @importFrom Seurat RenameCells
 prefix_cells_seurat <- function(ls_obj, obj_IDs) {
   # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
   if (!is.list(ls_obj) & inherits(ls_obj, "Seurat")) ls_obj <- list(ls_obj)
@@ -2370,12 +2476,14 @@ prefix_cells_seurat <- function(ls_obj, obj_IDs) {
   return(ls_obj_prefixed)
 }
 
+
 # _________________________________________________________________________________________________
 #' @title Check Prefix in Seurat Object Cell IDs
 #'
-#' @description This function checks if a prefix has been added to the standard cell-IDs (16 characters of A,TRUE,C,G)
-#' in a Seurat object. If so, it prints the number of unique prefixes found,
+#' @description This function checks if a prefix has been added to the standard
+#' cell-IDs (16 characters of A,TRUE,C,G) in a Seurat object. If so, it prints the number of unique prefixes found,
 #' issues a warning if more than one unique prefix is found, and returns the identified prefix(es).
+#'
 #' @param obj A Seurat object with cell IDs possibly prefixed.
 #' @param cell_ID_pattern Pattern to match cellIDs (with any suffix).
 #' @return A character vector of the identified prefix(es).
@@ -2385,7 +2493,6 @@ prefix_cells_seurat <- function(ls_obj, obj_IDs) {
 #' # prefix <- find_prefix_in_cell_IDs(obj)
 #'
 #' @export
-
 find_prefix_in_cell_IDs <- function(obj, cell_ID_pattern = "[ATCG]{16}.*$") {
   stopifnot(inherits(obj, "Seurat"))
 
@@ -2420,21 +2527,33 @@ find_prefix_in_cell_IDs <- function(obj, cell_ID_pattern = "[ATCG]{16}.*$") {
 
 
 # _________________________________________________________________________________________________
-#' @title seu.Make.Cl.Label.per.cell
+#' @title Create Cluster Labels for Each Cell
 #'
-#' @description Take a named vector (of e.g. values ="gene names", names = clusterID), and a
-#' vector of cell-IDs and make a vector of "GeneName.ClusterID".
-#' @param TopGenes A named vector, where values are gene names and names are cluster IDs.
-#' @param clID.per.cell A vector of cell-IDs used to create the output vector.
+#' @description Generates labels for each cell by combining gene names and cluster IDs. This function
+#' takes a named vector, typically representing top genes for clusters (values) and their corresponding
+#' cluster IDs (names), along with a vector of cell IDs. It then creates a new vector where each cell
+#' is labeled with its top gene and cluster ID in the format "GeneName.ClusterID".
+#'
+#' @param TopGenes A named vector with gene names as values and cluster IDs as names,
+#' representing the top or defining gene for each cluster.
+#' @param clID.per.cell A vector of cluster IDs for each cell, used to match each cell with its
+#' corresponding top gene from `TopGenes`.
+#'
+#' @return A vector where each element corresponds to a cell labeled with both its defining gene
+#' name and cluster ID, in the format "GeneName.ClusterID".
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic,
-#'   clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname))
+#'   if (interactive()) {
+#'     # Assuming `TopGenes.Classic` is a named vector of top genes and cluster IDs,
+#'     # and `metaD.CL.colname` is a column in metadata with cluster IDs per cell
+#'     cellLabels <- seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic,
+#'       clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname))
+#'     # `cellLabels` now contains labels for each cell in the format "GeneName.ClusterID"
+#'   }
 #' }
-#' }
+#'
 #' @export
-
 seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) {
   Cl.names_class <- TopGenes[clID.per.cell]
   Cl.names_wNr <- paste0(Cl.names_class, " (", names(Cl.names_class), ")")
@@ -2443,22 +2562,59 @@ seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) {
 
 
 # _________________________________________________________________________________________________
-#' @title GetMostVarGenes
+#' @title Retrieve the Top Variable Genes from a Seurat Object
 #'
-#' @description Get the N most variable Genes
-#' @param obj A Seurat object.
-#' @param nGenes Number of genes, Default: p$nVarGenes
+#' @description Retrieves the names of the most variable genes from a Seurat object,
+#' typically used to focus subsequent analyses on genes with the greatest variation across cells.
+#'
+#' @param obj A Seurat object containing gene expression data and,
+#' pre-computed highly variable gene information.
+#' @param nGenes The number of most variable genes to retrieve; Default: `p$nVarGenes`.
+#'
+#' @return A vector containing the names of the most variable genes.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     # Assuming `combined.obj` is a Seurat object with computed variable genes
+#'     varGenes <- GetMostVarGenes(obj = combined.obj, nGenes = 100)
+#'   }
+#' }
+#'
 #' @export
-GetMostVarGenes <- function(obj, nGenes = p$nVarGenes) { # Get the most variable rGenes
+#' @importFrom Seurat FindVariableFeatures
+#'
+GetMostVarGenes <- function(obj, nGenes = p$nVarGenes) {
   head(rownames(slot(object = obj, name = "hvg.info")), n = nGenes)
 }
 
 # _________________________________________________________________________________________________
-#' @title gene.name.check
+#' @title Check Gene Names in Seurat Object
 #'
-#' @description Check gene names in a seurat object, for naming conventions
-#' (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #
-#' @param Seu.obj A Seurat object.
+#' @description Examines gene names in a Seurat object for specific naming conventions,
+#' such as the presence of hyphens (-) or dots (.) often found in mitochondrial gene names.
+#' This function is useful for ensuring gene names conform to expected patterns,
+#' especially when preparing data for compatibility with other tools or databases.
+#'
+#' @param Seu.obj A Seurat object containing gene expression data.
+#'
+#' @details This function prints out examples of gene names that contain specific characters
+#' of interest (e.g., '-', '_', '.', '.AS[1-9]'). It is primarily used for data inspection
+#' and cleaning before further analysis or data export.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     # Assuming `combined.obj` is your Seurat object
+#'     gene.name.check(Seu.obj = combined.obj)
+#'     # This will print examples of gene names containing '-', '_', '.', and '.AS[1-9]'
+#'   }
+#' }
+#'
+#' @seealso \code{\link[Seurat]{GetAssayData}}
+#'
+#' @importFrom Seurat GetAssayData
+#' @importFrom CodeAndRoll2 grepv
 #' @importFrom MarkdownHelpers llprint llogit
 #'
 #' @export
@@ -2486,27 +2642,39 @@ gene.name.check <- function(Seu.obj) {
 
 
 # _________________________________________________________________________________________________
-#' @title check.genes
+#' @title Check if Gene Names exist in Seurat Object or HGNC Database
 #'
-#' @description Check if a gene name exists in a Seurat object, or in HGNC?
-#' @param list.of.genes A vector of gene names to check for existence in the Seurat object or HGNC. Default: ClassicMarkers
-#' @param makeuppercase Logical, if TRUE, transforms all gene names to uppercase. Default: FALSE
-#' @param verbose Logical, if TRUE, prints out information about missing genes. Default: TRUE
-#' @param HGNC.lookup Logical, if TRUE, looks up missing genes in HGNC database. Default: FALSE
-#' @param obj Seurat object that the function uses to check the gene names. Default: combined.obj
-#' @param assay.slot The assay slot of the Seurat object to consider. Default: 'RNA'
-#' @param dataslot The data slot of the Seurat object to consider. Default: 'data'
+#' @description Verifies the presence of specified gene names within a Seurat object or
+#' queries them against the HGNC database. This function is useful for ensuring gene names are
+#' correctly formatted and exist within the dataset or are recognized gene symbols.
+#'
+#' @param list.of.genes A vector of gene names to be checked; Default: `ClassicMarkers`.
+#' @param makeuppercase If `TRUE`, converts all gene names to uppercase before checking; Default: `FALSE`.
+#' @param verbose If `TRUE`, prints information about any missing genes; Default: `TRUE`.
+#' @param HGNC.lookup If `TRUE`, attempts to look up any missing genes in the HGNC database to
+#' verify their existence; Default: `FALSE`.
+#' @param obj The Seurat object against which the gene names will be checked; Default: `combined.obj`.
+#' @param assay.slot Assay slot of the Seurat object to check for gene names; Default: `'RNA'`.
+#' @param dataslot Data slot of the assay to check for gene names; Default: `'data'`.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   check.genes("top2a", makeuppercase = TRUE)
-#'   check.genes("VGLUT2", verbose = FALSE, HGNC.lookup = TRUE)
+#'   if (interactive()) {
+#'     # Check for the presence of a gene name in uppercase
+#'     check.genes(list.of.genes = "top2a", makeuppercase = TRUE, obj = combined.obj)
+#'
+#'     # Check for a gene name with verbose output and HGNC lookup
+#'     check.genes(list.of.genes = "VGLUT2", verbose = TRUE, HGNC.lookup = TRUE, obj = combined.obj)
+#'   }
 #' }
-#' }
-#' @importFrom DatabaseLinke.R qHGNC
-#' @importFrom Stringendo percentage_formatter
+#'
+#' @seealso \code{\link[Seurat]{GetAssayData}}, \code{\link[DatabaseLinke.R]{qHGNC}}
 #'
 #' @export
+#' @importFrom DatabaseLinke.R qHGNC
+#' @importFrom Seurat GetAssayData
+#' @importFrom Stringendo percentage_formatter
+#'
 check.genes <- function(
     list.of.genes = ClassicMarkers, makeuppercase = FALSE, verbose = TRUE, HGNC.lookup = FALSE,
     obj = combined.obj,
@@ -2535,11 +2703,25 @@ check.genes <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title fixZeroIndexing.seurat
+#' @title Fix Zero Indexing in Seurat Clustering
 #'
-#' @description Fix zero indexing in seurat clustering, to 1-based indexing. replace zero indexed clusternames.
-#' @param ColName.metadata Metadata column name to use, Default: 'res.0.6'
-#' @param obj Seurat object, Default: org
+#' @description Adjusts Seurat object metadata to fix zero-based cluster indexing, converting it to one-based indexing.
+#' This function modifies a specified metadata column in the Seurat object to replace zero-indexed cluster names with one-based indexing.
+#'
+#' @param ColName.metadata The name of the metadata column containing zero-based cluster indices; Default: `'res.0.6'`.
+#' @param obj The Seurat object to be modified; Default: `org`.
+#'
+#' @return The Seurat object with the specified metadata column's cluster indices adjusted to one-based indexing.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     # Assuming `org` is a Seurat object with zero-based cluster indexing
+#'     org <- fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
+#'     # Now, `org` has its cluster indices in the 'res.0.6' metadata column adjusted to one-based indexing
+#'   }
+#' }
+#'
 #' @export
 fixZeroIndexing.seurat <- function(ColName.metadata = "res.0.6", obj = org) {
   obj@meta.data[, ColName.metadata] <- as.numeric(obj@meta.data[, ColName.metadata]) + 1
@@ -2549,16 +2731,39 @@ fixZeroIndexing.seurat <- function(ColName.metadata = "res.0.6", obj = org) {
 
 
 # _________________________________________________________________________________________________
-#' @title CalculateFractionInTranscriptome
+#' @title Calculate Fraction of Genes in Transcriptome
 #'
-#' @description This function calculates the fraction of a set of genes within the full transcriptome of each cell.
-#' @param geneset A character vector specifying the set of genes for which the fraction in the
-#' transcriptome is to be calculated. Default is c("MALAT1").
-#' @param obj A Seurat object from which the gene data is extracted. Default is 'combined.obj'.
-#' @param dataslot A character vector specifying the data slot to be used in the calculation.
-#' Default is 'data' (second element in the vector c("counts", "data")).
-#' @return A numeric vector containing the fraction of the specified genes in the transcriptome of each cell.
+#' @description Calculates the fraction of specified genes within the entire transcriptome of
+#' each cell in a Seurat object.
+#' This function is useful for assessing the relative abundance of a set of genes across cells,
+#' such as identifying cells with high expression of marker genes.
+#'
+#' @param geneset A character vector of gene symbols for which the fraction in the transcriptome will be calculated.
+#' Default: `c("MALAT1")`. The function will check for the existence of these genes in the Seurat object.
+#' @param obj A Seurat object containing gene expression data; Default: `combined.obj`.
+#' The function extracts gene expression data from this object to calculate fractions.
+#' @param dataslot The data slot from which to extract expression data. This can be `"counts"`
+#' for raw counts or `"data"` for normalized data; Default: second element (`"data"`).
+#'
+#' @return A numeric vector where each element represents the fraction of the specified geneset's expression
+#' relative to the total transcriptome of a cell, expressed as a percentage. The names of the vector correspond to cell IDs.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     # Assuming `combined.obj` is your Seurat object
+#'     fractionInTranscriptome <- CalculateFractionInTranscriptome(geneset = c("MALAT1", "GAPDH"), obj = combined.obj)
+#'     # This will return the fraction of MALAT1 and GAPDH in the transcriptome of each cell
+#'   }
+#' }
+#'
+#' @note This function calls `check.genes` to verify the existence of the specified genes within the Seurat object.
+#' If genes are not found, it will return a warning.
+#'
+#' @seealso \code{\link[Seurat]{GetAssayData}} for retrieving expression data from a Seurat object.
+#'
 #' @export
+#'
 CalculateFractionInTrome <- function(
     genesCalc.Cor.Seuratet = c("MALAT1")
     , obj = combined.obj,
@@ -2732,21 +2937,46 @@ FindCorrelatedGenes <- function(
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Seurat.update.gene.symbols.HGNC.R"))
 # require(HGNChelper)
 
-# _________________________________________________________________________________________________
-#' @title UpdateGenesSeurat
+
+
+#' @title Update Gene Symbols in a Seurat Object
 #'
-#' @description Update genes symbols that are stored in a Seurat object. It returns a data frame.
-#' The last column are the updated gene names.
-#' @param obj Seurat object to update gene symbols in. Default: ls.Seurat[[i]]
-#' @param species_ Species to which the gene symbols correspond, used to check gene symbols. Default: 'human'
-#' @param EnforceUnique Logical, if TRUE, enforces unique gene symbols. Default: TRUE
-#' @param ShowStats Logical, if TRUE, displays statistics of gene symbols update. Default: FALSE
+#' @description This function updates gene symbols in a Seurat object based on current gene
+#' nomenclature guidelines, using HGNChelper(). It checks and updates gene symbols to their
+#' latest approved versions,ensuring that gene annotations are current and consistent.
+#' The function optionally enforces unique gene symbols and provides statistics on the update process.
+#'
+#' @param obj A Seurat object containing gene expression data; Default: `ls.Seurat[[i]]`
+#' (ensure to replace `i` with the actual index or variable referencing your Seurat object).
+#' @param species_ The species for which the gene symbols are checked and updated,
+#' used to ensure the correct gene nomenclature is applied; Default: `'human'`.
+#' Supports `'human'`, `'mouse'`, etc., as specified in the `HGNChelper` package.
+#' @param EnforceUnique Logical flag indicating whether to enforce unique gene symbols
+#' within the Seurat object. When set to `TRUE`, it resolves issues with duplicated gene symbols
+#' by appending unique identifiers; Default: `TRUE`.
+#' @param ShowStats Logical flag indicating whether to display statistics about the gene
+#' symbol update process. When set to `TRUE`, it prints detailed information on the console
+#' about the changes made; Default: `FALSE`.
+#'
+#' @return A modified Seurat object with updated gene symbols. The function directly modifies
+#' the input Seurat object, ensuring that gene symbols adhere to the latest nomenclature.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     # Assuming `mySeuratObject` is your Seurat object
+#'     updatedSeuratObject <- UpdateGenesSeurat(obj = mySeuratObject, species_ = "human",
+#'                                               EnforceUnique = TRUE, ShowStats = TRUE)
+#'     # `updatedSeuratObject` now has updated gene symbols
+#'   }
+#' }
+#'
 #' @seealso
-#'  \code{\link[HGNChelper]{checkGeneSymbols}}
+#' \code{\link[HGNChelper]{checkGeneSymbols}} for details on checking and updating gene symbols.
 #'
 #' @export
 #' @importFrom HGNChelper checkGeneSymbols
-
+#'
 UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceUnique = TRUE, ShowStats = FALSE) {
   HGNC.updated <- HGNChelper::checkGeneSymbols(rownames(obj), unmapped.as.na = FALSE, map = NULL, species = species_)
   if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
@@ -2760,28 +2990,48 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceU
 
 
 # _________________________________________________________________________________________________
-#' @title RenameGenesSeurat
+#' @title Rename Gene Symbols in a Seurat Object
 #'
-#' @description Replace gene names in different slots of a Seurat object. Run this before
-#' integration. Run this before integration. It only changes obj@assays$RNA@counts, @data and @scale.data.
-#' @param obj Seurat object, Default: ls.Seurat[[i]]
-#' @param assay Which Seurat assay to replace. Default: RNA. Disclaimer: Intended use on simple
-#' objects that ONLY contain an RNA object. I highly advise against selectively replacing name in
-#' other assays that may have slots that cannot be updated by this function.
-#' @param newnames A vector of new gene names. Default: HGNC.updated[[i]]$Suggested.Symbol
+#' @description This function replaces gene names across various slots within a specified assay
+#' of a Seurat object. It is designed to be run prior to any data integration or downstream analysis
+#' processes. The function targets the `@counts`, `@data`, and `@meta.features` slots within
+#' the specified assay, ensuring consistency in gene nomenclature across the object.
+#'
+#' @param obj A Seurat object containing the assay and slots to be updated; Default: `ls.Seurat[[i]]`
+#' (replace `i` with the appropriate index).
+#' @param newnames A character vector containing the new gene names intended to replace the
+#' existing ones; Default: `HGNC.updated[[i]]$Suggested.Symbol`. Ensure this matches the order
+#' and length of the genes in the specified assay.
+#' @param assay The name of the assay within the Seurat object where gene names will be updated;
+#' Default: `"RNA"`. This function assumes simple objects containing only an RNA assay.
+#' @param slots A character vector specifying which slots within the assay to update. Possible
+#' values include `"data"`, `"counts"`, and `"meta.features"`; other layers can be specified if present.
+#'
+#' @details It is crucial to run this function before any data integration or further analysis
+#' to ensure gene symbol consistency. The function does not support complex objects with multiple
+#' assays where dependencies between assays might lead to inconsistencies. Use with caution and
+#' verify the results.
+#'
+#' @note This function modifies the Seurat object in place, changing gene symbols directly within
+#' the specified slots. Be sure to have a backup of your Seurat object if needed before applying
+#' this function.
 #'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   RenameGenesSeurat(obj = SeuratObj, newnames = HGNC.updated.genes$Suggested.Symbol)
+#'   if (interactive()) {
+#'     # Assuming `SeuratObj` is your Seurat object
+#'     # and `HGNC.updated.genes` contains the updated gene symbols
+#'     SeuratObj <- RenameGenesSeurat(obj = SeuratObj,
+#'                                    newnames = HGNC.updated.genes$Suggested.Symbol)
+#'     # `SeuratObj` now has updated gene symbols in the specified assay and slots
+#'   }
 #' }
-#' }
+#'
 #' @export
 RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
                               newnames = HGNC.updated[[i]]$Suggested.Symbol,
                               assay = "RNA",
-                              slots = c("data", "counts", "meta.features")
-) {
+                              slots = c("data", "counts", "meta.features") ) {
   message(assay)
   warning("Run this before integration and downstream processing. It only attempts to change
           @counts, @data, and @meta.features in obj@assays$YOUR_ASSAY.", immediate. = TRUE)
@@ -2897,18 +3147,32 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 }
 
 # _________________________________________________________________________________________________
-#' @title RemoveGenesSeurat
+#' @title Remove Specific Genes from a Seurat Object
 #'
-#' @description Replace gene names in different slots of a Seurat object. Run this before integration.
-#' Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data. #
-#' @param obj Seurat object, Default: ls.Seurat[[i]]
-#' @param symbols2remove Genes to remove from a Seurat object. Default: c("TOP2A")
+#' @description Removes specified genes from the metadata, counts, data, and scale.data slots of a Seurat object.
+#' This operation is typically performed prior to data integration to ensure that gene sets are consistent
+#' across multiple datasets. The function modifies the Seurat object in place.
+#'
+#' @param obj A Seurat object; Default: `ls.Seurat[[i]]` (please ensure to replace `i` with the actual index or variable).
+#' @param symbols2remove A character vector specifying the genes to be removed from the Seurat object;
+#' Default: `c("TOP2A")`.
+#'
+#' @details This function directly modifies the `@counts`, `@data`, and `@scale.data` slots within
+#' the RNA assay of the provided Seurat object, as well as the `@meta.data` slot. It's important to run
+#' this function as one of the initial steps after creating the Seurat object and before proceeding
+#' with downstream analyses or integration processes.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
+#'   if (interactive()) {
+#'     # Assuming `SeuratObj` is your Seurat object and you want to remove the gene "TOP2A"
+#'     updatedSeuratObj <- RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
+#'     # Now `updatedSeuratObj` does not contain "TOP2A" in the specified slots
+#'   }
 #' }
-#' }
+#'
+#' @return A Seurat object with the specified genes removed from the mentioned slots.
+#'
 #' @export
 RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A")) {
   print("Run this as the first thing after creating the Seurat object.
@@ -2956,18 +3220,38 @@ RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 
 
 # _________________________________________________________________________________________________
-#' @title HGNC.EnforceUnique
+#' @title Enforce Unique HGNC Gene Symbols
 #'
-#' @description Enforce Unique names after HGNC symbol update. While "make.unique" is not the ideal
-#' solution, because it generates mismatches, in my integration example it does reduce the
-#' mismatching genes from ~800 to 4
-#' @param updatedSymbols Gene symbols, it is the output of HGNChelper's checkGeneSymbols)_.
+#' @description Ensures that gene symbols are unique after being updated with HGNC symbols. This function
+#' applies a suffix to duplicate gene symbols to enforce uniqueness. While using `make.unique` might not
+#' be the ideal solution due to potential mismatches, it significantly reduces the number of mismatching
+#' genes in certain scenarios, making it a practical approach for data integration tasks.
+#'
+#' @param updatedSymbols A data frame or matrix containing gene symbols updated via `HGNChelper::checkGeneSymbols()`.
+#' The third column should contain the updated gene symbols that are to be made unique.
+#'
+#' @return A modified version of the input data frame or matrix with unique gene symbols in the third column.
+#' If duplicates were found, they are made unique by appending `.1`, `.2`, etc., to the repeated symbols.
+#'
+#' @details The function specifically targets the issue of duplicate gene symbols which can occur after
+#' updating gene symbols to their latest HGNC-approved versions. Duplicate symbols can introduce
+#' ambiguity in gene expression datasets, affecting downstream analyses like differential expression or
+#' data integration. By ensuring each gene symbol is unique, this function helps maintain the integrity
+#' of the dataset.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   x <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
+#'   if (interactive()) {
+#'     # Assuming `SymUpd` is your data frame of updated symbols from HGNChelper::checkGeneSymbols()
+#'     uniqueSymbols <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
+#'     # `uniqueSymbols` now contains unique gene symbols in its third column
+#'   }
 #' }
-#' }
+#'
+#' @note This function is a workaround for ensuring unique gene symbols and might not be suitable
+#' for all datasets or analyses. It's important to review the results and ensure that the gene
+#' symbols accurately represent your data.
+#'
 #' @export
 HGNC.EnforceUnique <- function(updatedSymbols) {
   NGL <- updatedSymbols[, 3]
@@ -2982,17 +3266,43 @@ HGNC.EnforceUnique <- function(updatedSymbols) {
 
 
 # _________________________________________________________________________________________________
-#' @title GetUpdateStats
+#' @title Gene Symbol Update Statistics
 #'
-#' @description Plot the Symbol-update statistics. Works on the data frame returned by `UpdateGenesSeurat()`.
-#' @param genes Genes of iinterest, Default: HGNC.updated[[i]]
+#' @description Generates statistics on the gene symbol updates performed by `UpdateGenesSeurat()`.
+#' This function analyzes the data frame of gene symbols before and after the update process,
+#' providing insights into the proportion and total number of genes that were updated.
+#'
+#' @param genes A data frame of gene symbols before and after update, typically the output of
+#' `UpdateGenesSeurat()`. Default: `HGNC.updated[[i]]` (where `i` is the index of the desired
+#' Seurat object in a list).
+#'
+#' @return A named vector with statistics on gene updates, including the percentage of updated genes,
+#' the absolute number of updated genes, and the total number of genes processed.
+#'
+#' @details The function examines the `Approved` column of the input data frame to identify
+#' gene symbols marked for update and compares the original and suggested symbols to determine
+#' actual updates. The statistics highlight the efficiency and impact of the gene symbol
+#' updating process, aiding in the assessment of data preprocessing steps.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   GetUpdateStats(genes = HGNC.updated.genes)
+#'   if (interactive()) {
+#'     # Assuming `HGNC.updated.genes` is your data frame containing the original and
+#'     # suggested gene symbols, as returned by `UpdateGenesSeurat()`
+#'     updateStats <- GetUpdateStats(genes = HGNC.updated.genes)
+#'     # `updateStats` now contains the update statistics, including percentage and count of updated genes
+#'   }
 #' }
-#' }
+#'
+#' @note The function requires the input data frame to have specific columns as produced by
+#' `HGNChelper::checkGeneSymbols()` and subsequently processed by `UpdateGenesSeurat()`.
+#' Ensure that the input adheres to this format for accurate statistics.
+#'
+#' @seealso \code{\link{UpdateGenesSeurat}}, for the function that updates gene symbols and produces
+#' the input data frame for this function.
+#'
 #' @importFrom Stringendo percentage_formatter
+#'
 #' @export
 GetUpdateStats <- function(genes = HGNC.updated[[i]]) {
   MarkedAsUpdated <- genes[genes$Approved == FALSE, ]
@@ -3325,26 +3635,44 @@ LoadAllSeurats <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title read10x
+#' @title Load 10X Genomics Data as Seurat Object
 #'
-#' @description This function reads a 10X dataset from gzipped matrix.mtx, features.tsv and barcodes.tsv files.
-#' @param dir A character string specifying the directory where the gzipped files are located.
-#' @return A Seurat object constructed from the 10X dataset.
+#' @description Reads 10X Genomics dataset files (gzipped) including matrix, features, and barcodes,
+#' to a single expression matrix. This function handles the unzipping of these files, reads the data,
+#' and re-compresses the files back to their original gzipped format.
+#'
+#' @param dir A character string specifying the path to the directory containing the 10X dataset files.
+#' This directory should contain `matrix.mtx.gz`, `features.tsv.gz`, and `barcodes.tsv.gz` files.
+#'
+#' @return A Seurat object containing the single-cell RNA-seq data extracted from the provided 10X
+#' Genomics dataset.
+#'
+#' @details This function facilitates the loading of 10X Genomics datasets into R for analysis with
+#' the Seurat package. It specifically caters to gzipped versions of the `matrix.mtx`, `features.tsv`,
+#' and `barcodes.tsv` files, automating their decompression, reading, and subsequent recompression.
+#' The function relies on Seurat's `Read10X` function for data reading and object construction.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   seuratObject <- read10x(dir = dir)
+#'   if (interactive()) {
+#'     # Replace `path_to_10x_data` with the path to your 10X data directory
+#'     seuratObject <- read10x(dir = "path_to_10x_data")
+#'     # `seuratObject` is now a Seurat object containing the loaded 10X data
+#'   }
 #' }
-#' }
-#' @export
-#' @seealso
-#'  \code{\link[tictoc]{tic}}
-#'  \code{\link[R.utils]{compressFile}}
-#'  \code{\link[Seurat]{Read10X}}
+#'
+#' @note Ensure that the specified directory contains the required gzipped files.
+#' If the `features.tsv.gz` file is named differently (e.g., `genes.tsv.gz`), please rename it
+#' accordingly before running this function.
+#'
+#' @seealso \code{\link[Seurat]{Read10X}} for the underlying function used to read the 10X data.
+#'
 #' @importFrom tictoc tic toc
 #' @importFrom R.utils gunzip gzip
 #' @importFrom Seurat Read10X
-read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and barcodes.tsv
+#'
+#' @export
+read10x <- function(dir) {
   tictoc::tic()
   names <- c("barcodes.tsv", "features.tsv", "matrix.mtx")
   for (i in 1:length(names)) {
@@ -3358,136 +3686,6 @@ read10x <- function(dir) { # read10x from gzipped matrix.mtx, features.tsv and b
   }
   tictoc::toc()
   mat
-}
-
-
-
-# _________________________________________________________________________________________________
-#' @title load10Xv3
-#'
-#' @description Load 10X output folders.
-#' @param dataDir A character string specifying the directory containing the 10X output folders.
-#' @param cellIDs A vector specifying the cell IDs. Default: NULL.
-#' @param channelName A character string specifying the channel name. Default: NULL.
-#' @param readArgs A list of arguments to pass to the internal Read10X function. Default: list().
-#' @param includeFeatures A character vector specifying which features to include. Default: c("Gene Expression").
-#' @param verbose A logical flag indicating whether to print status messages. Default: TRUE.
-#' @param ... Additional arguments to pass to the internally called functions.
-#' @return An object of class "SoupChannel" representing the loaded 10X data.
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   channel <- load10Xv3(dataDir = dataDir)
-#' }
-#' }
-#' @seealso
-#'  \code{\link[SoupX]{SoupChannel}}
-#' @export
-#' @importFrom SoupX SoupChannel
-
-load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
-                      includeFeatures = c("Gene Expression"), verbose = TRUE,
-                      ...) {
-  # include
-  dirz <- list.dirs(dataDir, full.names = FALSE, recursive = FALSE)
-  path.raw <- file.path(dataDir, grep(x = dirz, pattern = "^raw_*", value = TRUE))
-  path.filt <- file.path(dataDir, grep(x = dirz, pattern = "^filt_*", value = TRUE))
-  CR.matrices <- list.fromNames(c("raw", "filt"))
-
-
-  (isV3 <- any(grepl(x = dirz, pattern = "^raw_feature_bc*")))
-  tgt <- path.raw
-
-  if (!isV3) {
-    tgt <- file.path(tgt, list.files(tgt))
-  }
-  if (verbose) {
-    message(sprintf("Loading raw count data"))
-  }
-  dat <- do.call(Read10X, c(list(data.dir = tgt), readArgs))
-  if (verbose) {
-    message(sprintf("Loading cell-only count data"))
-  }
-  if (!is.null(cellIDs)) {
-    if (all(grepl("\\-1$", cellIDs))) {
-      cellIDs <- gsub("\\-1$", "", cellIDs)
-    }
-    if (!all(cellIDs %in% colnames(dat))) {
-      stop("Not all supplied cellIDs found in raw data.")
-    }
-    datCells <- dat[, match(cellIDs, colnames(dat))]
-  } else {
-    tgt <- path.filt
-    if (!isV3) {
-      tgt <- file.path(tgt, list.files(tgt))
-    }
-    datCells <- do.call(Read10X, c(
-      list(data.dir = tgt),
-      readArgs
-    ))
-    if (is.list(dat)) {
-      dat <- do.call(rbind, dat[includeFeatures])
-      datCells <- do.call(rbind, datCells[includeFeatures])
-    }
-  }
-  if (verbose) {
-    message(sprintf("Loading extra analysis data where available"))
-  }
-  mDat <- NULL
-  tgt <- file.path(
-    dataDir, "analysis", "clustering", "graphclust",
-    "clusters.csv"
-  )
-  if (file.exists(tgt)) {
-    clusters <- read.csv(tgt)
-    mDat <- data.frame(clusters = clusters$Cluster, row.names = clusters$Barcode)
-  }
-  tgt <- file.path(
-    dataDir, "analysis", "clustering", "kmeans_10_clusters",
-    "clusters.csv"
-  )
-  if (file.exists(tgt)) {
-    clusters <- read.csv(tgt)
-    mDat$clustersFine <- clusters$Cluster
-  }
-  tgt <- file.path(
-    dataDir, "analysis", "tsne", "2_components",
-    "projection.csv"
-  )
-  if (file.exists(tgt)) {
-    tsne <- read.csv(tgt)
-    if (is.null(mDat)) {
-      mDat <- data.frame(
-        tSNE1 = tsne$TSNE.1, tSNE2 = tsne$TSNE.2,
-        row.names = tsne$Barcode
-      )
-    } else {
-      mDat$tSNE1 <- tsne$TSNE.1[match(rownames(mDat), tsne$Barcode)]
-      mDat$tSNE2 <- tsne$TSNE.2[match(rownames(mDat), tsne$Barcode)]
-    }
-    DR <- c("tSNE1", "tSNE2")
-  } else {
-    DR <- NULL
-  }
-  if (!is.null(mDat) && any(rownames(mDat) != colnames(datCells))) {
-    rownames(mDat) <- gsub("-1$", "", rownames(mDat))
-    if (any(rownames(mDat) != colnames(datCells))) {
-      stop("Error matching meta-data to cell names.")
-    }
-  }
-  if (is.null(channelName)) {
-    channelName <- ifelse(is.null(names(dataDir)), dataDir,
-      names(dataDir)
-    )
-  }
-
-  "Maybe the one below should be within the above if statement?"
-  channel <- SoupX::SoupChannel(
-    tod = dat, toc = datCells, metaData = mDat,
-    channelName = channelName, dataDir = dataDir, dataType = "10X",
-    isV3 = isV3, DR = DR, ...
-  )
-  return(channel)
 }
 
 
@@ -3889,10 +4087,15 @@ find10XoutputFolders <- function(root_dir, subdir, recursive = TRUE) {
 
 
 # _________________________________________________________________________________________________
-#' @title clip10Xcellname
+#' @title Clip Suffixes from 10X Cell Names
 #'
-#' @description Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration). #
-#' @param cellnames Character vector containing the cellIDs (with numeric suffixes).
+#' @description Removes suffixes from cell names that are added by 10X technology and Seurat during data processing.
+#'
+#' @param cellnames A vector of cell names with potential suffixes.
+#' @return A vector of cell names with suffixes removed.
+#' @examples
+#' cellnames <- c("cell1_1", "cell2_2")
+#' clip10Xcellname(cellnames)
 #' @export
 #' @importFrom stringr str_split_fixed
 clip10Xcellname <- function(cellnames) {
@@ -3900,16 +4103,20 @@ clip10Xcellname <- function(cellnames) {
 }
 
 # _________________________________________________________________________________________________
-#' @title make10Xcellname
+#' @title Add Suffix to Cell Names (e.g. lane suffix: _1)
 #'
-#' @description Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1". #
-#' @param cellnames Character vector containing the cellIDs (WITHOUT numeric suffixes).
-#' @param suffix A suffix added to the filename, Default: '_1'
+#' @description Appends a specified suffix to cell names to mimic lane suffixes used in 10X datasets.
+#'
+#' @param cellnames A vector of cell names without numeric suffixes.
+#' @param suffix The suffix to add to each cell name. Default is '_1'.
+#' @return A vector of cell names with the specified suffix appended.
+#' @examples
+#' cellnames <- c("cell1", "cell2")
+#' make10Xcellname(cellnames)
 #' @export
 make10Xcellname <- function(cellnames, suffix = "_1") {
   paste0(cellnames, suffix)
 }
-
 
 
 
@@ -4037,8 +4244,8 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   fname <- kpp("Soup.VS.Cells.Av.Exp.GeneClasses", SeqRun, "pdf")
   pgg <-
     ggplot(
-      Soup.VS.Cells.Av.Exp.gg %>% arrange(-nchar(Class)),
-      aes(x = Soup, y = Cells, label = gene, col = Class)
+      Soup.VS.Cells.Av.Exp.gg |>
+        arrange(-nchar(Class)), aes(x = Soup, y = Cells, label = gene, col = Class)
     ) +
     geom_abline(slope = 1, col = "darkgrey") +
     geom_point() +

@@ -2,15 +2,22 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{make10Xcellname}
 \alias{make10Xcellname}
-\title{make10Xcellname}
+\title{Add Suffix to Cell Names (e.g. lane suffix: _1)}
 \usage{
 make10Xcellname(cellnames, suffix = "_1")
 }
 \arguments{
-\item{cellnames}{Character vector containing the cellIDs (WITHOUT numeric suffixes).}
+\item{cellnames}{A vector of cell names without numeric suffixes.}
 
-\item{suffix}{A suffix added to the filename, Default: '_1'}
+\item{suffix}{The suffix to add to each cell name. Default is '_1'.}
+}
+\value{
+A vector of cell names with the specified suffix appended.
 }
 \description{
-Add a suffix to cell names, so that it mimics the lane-suffix, e.g.: "_1". #
+Appends a specified suffix to cell names to mimic lane suffixes used in 10X datasets.
+}
+\examples{
+cellnames <- c("cell1", "cell2")
+make10Xcellname(cellnames)
 }

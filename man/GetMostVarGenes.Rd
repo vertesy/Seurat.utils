@@ -2,15 +2,29 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{GetMostVarGenes}
 \alias{GetMostVarGenes}
-\title{GetMostVarGenes}
+\title{Retrieve the Top Variable Genes from a Seurat Object}
 \usage{
 GetMostVarGenes(obj, nGenes = p$nVarGenes)
 }
 \arguments{
-\item{obj}{A Seurat object.}
+\item{obj}{A Seurat object containing gene expression data and,
+pre-computed highly variable gene information.}
 
-\item{nGenes}{Number of genes, Default: p$nVarGenes}
+\item{nGenes}{The number of most variable genes to retrieve; Default: \code{p$nVarGenes}.}
+}
+\value{
+A vector containing the names of the most variable genes.
 }
 \description{
-Get the N most variable Genes
+Retrieves the names of the most variable genes from a Seurat object,
+typically used to focus subsequent analyses on genes with the greatest variation across cells.
+}
+\examples{
+\dontrun{
+  if (interactive()) {
+    # Assuming `combined.obj` is a Seurat object with computed variable genes
+    varGenes <- GetMostVarGenes(obj = combined.obj, nGenes = 100)
+  }
+}
+
 }

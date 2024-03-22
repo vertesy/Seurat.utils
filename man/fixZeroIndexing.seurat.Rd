@@ -2,15 +2,29 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{fixZeroIndexing.seurat}
 \alias{fixZeroIndexing.seurat}
-\title{fixZeroIndexing.seurat}
+\title{Fix Zero Indexing in Seurat Clustering}
 \usage{
 fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
 }
 \arguments{
-\item{ColName.metadata}{Metadata column name to use, Default: 'res.0.6'}
+\item{ColName.metadata}{The name of the metadata column containing zero-based cluster indices; Default: \code{'res.0.6'}.}
 
-\item{obj}{Seurat object, Default: org}
+\item{obj}{The Seurat object to be modified; Default: \code{org}.}
+}
+\value{
+The Seurat object with the specified metadata column's cluster indices adjusted to one-based indexing.
 }
 \description{
-Fix zero indexing in seurat clustering, to 1-based indexing. replace zero indexed clusternames.
+Adjusts Seurat object metadata to fix zero-based cluster indexing, converting it to one-based indexing.
+This function modifies a specified metadata column in the Seurat object to replace zero-indexed cluster names with one-based indexing.
+}
+\examples{
+\dontrun{
+  if (interactive()) {
+    # Assuming `org` is a Seurat object with zero-based cluster indexing
+    org <- fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
+    # Now, `org` has its cluster indices in the 'res.0.6' metadata column adjusted to one-based indexing
+  }
+}
+
 }

@@ -15,8 +15,8 @@ find_prefix_in_cell_IDs(obj, cell_ID_pattern = "[ATCG]{16}.*$")
 A character vector of the identified prefix(es).
 }
 \description{
-This function checks if a prefix has been added to the standard cell-IDs (16 characters of A,TRUE,C,G)
-in a Seurat object. If so, it prints the number of unique prefixes found,
+This function checks if a prefix has been added to the standard
+cell-IDs (16 characters of A,TRUE,C,G) in a Seurat object. If so, it prints the number of unique prefixes found,
 issues a warning if more than one unique prefix is found, and returns the identified prefix(es).
 }
 \examples{

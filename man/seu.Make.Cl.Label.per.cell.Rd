@@ -2,24 +2,36 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{seu.Make.Cl.Label.per.cell}
 \alias{seu.Make.Cl.Label.per.cell}
-\title{seu.Make.Cl.Label.per.cell}
+\title{Create Cluster Labels for Each Cell}
 \usage{
 seu.Make.Cl.Label.per.cell(TopGenes, clID.per.cell)
 }
 \arguments{
-\item{TopGenes}{A named vector, where values are gene names and names are cluster IDs.}
+\item{TopGenes}{A named vector with gene names as values and cluster IDs as names,
+representing the top or defining gene for each cluster.}
 
-\item{clID.per.cell}{A vector of cell-IDs used to create the output vector.}
+\item{clID.per.cell}{A vector of cluster IDs for each cell, used to match each cell with its
+corresponding top gene from \code{TopGenes}.}
+}
+\value{
+A vector where each element corresponds to a cell labeled with both its defining gene
+name and cluster ID, in the format "GeneName.ClusterID".
 }
 \description{
-Take a named vector (of e.g. values ="gene names", names = clusterID), and a
-vector of cell-IDs and make a vector of "GeneName.ClusterID".
+Generates labels for each cell by combining gene names and cluster IDs. This function
+takes a named vector, typically representing top genes for clusters (values) and their corresponding
+cluster IDs (names), along with a vector of cell IDs. It then creates a new vector where each cell
+is labeled with its top gene and cluster ID in the format "GeneName.ClusterID".
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic,
-  clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname))
+  if (interactive()) {
+    # Assuming `TopGenes.Classic` is a named vector of top genes and cluster IDs,
+    # and `metaD.CL.colname` is a column in metadata with cluster IDs per cell
+    cellLabels <- seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic,
+      clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname))
+    # `cellLabels` now contains labels for each cell in the format "GeneName.ClusterID"
+  }
 }
-}
+
 }

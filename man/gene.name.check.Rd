@@ -2,14 +2,34 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{gene.name.check}
 \alias{gene.name.check}
-\title{gene.name.check}
+\title{Check Gene Names in Seurat Object}
 \usage{
 gene.name.check(Seu.obj)
 }
 \arguments{
-\item{Seu.obj}{A Seurat object.}
+\item{Seu.obj}{A Seurat object containing gene expression data.}
 }
 \description{
-Check gene names in a seurat object, for naming conventions
-(e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files. #
+Examines gene names in a Seurat object for specific naming conventions,
+such as the presence of hyphens (-) or dots (.) often found in mitochondrial gene names.
+This function is useful for ensuring gene names conform to expected patterns,
+especially when preparing data for compatibility with other tools or databases.
+}
+\details{
+This function prints out examples of gene names that contain specific characters
+of interest (e.g., '-', '_', '.', '.AS\link{1-9}'). It is primarily used for data inspection
+and cleaning before further analysis or data export.
+}
+\examples{
+\dontrun{
+  if (interactive()) {
+    # Assuming `combined.obj` is your Seurat object
+    gene.name.check(Seu.obj = combined.obj)
+    # This will print examples of gene names containing '-', '_', '.', and '.AS[1-9]'
+  }
+}
+
+}
+\seealso{
+\code{\link[Seurat]{GetAssayData}}
 }

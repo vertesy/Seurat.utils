@@ -2,23 +2,37 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{RemoveGenesSeurat}
 \alias{RemoveGenesSeurat}
-\title{RemoveGenesSeurat}
+\title{Remove Specific Genes from a Seurat Object}
 \usage{
 RemoveGenesSeurat(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 }
 \arguments{
-\item{obj}{Seurat object, Default: ls.Seurat[\link{i}]}
+\item{obj}{A Seurat object; Default: \code{ls.Seurat[[i]]} (please ensure to replace \code{i} with the actual index or variable).}
 
-\item{symbols2remove}{Genes to remove from a Seurat object. Default: c("TOP2A")}
+\item{symbols2remove}{A character vector specifying the genes to be removed from the Seurat object;
+Default: \code{c("TOP2A")}.}
+}
+\value{
+A Seurat object with the specified genes removed from the mentioned slots.
 }
 \description{
-Replace gene names in different slots of a Seurat object. Run this before integration.
-Run this before integration. It only changes metadata; obj@assays$RNA@counts, @data and @scale.data. #
+Removes specified genes from the metadata, counts, data, and scale.data slots of a Seurat object.
+This operation is typically performed prior to data integration to ensure that gene sets are consistent
+across multiple datasets. The function modifies the Seurat object in place.
+}
+\details{
+This function directly modifies the \verb{@counts}, \verb{@data}, and \verb{@scale.data} slots within
+the RNA assay of the provided Seurat object, as well as the \verb{@meta.data} slot. It's important to run
+this function as one of the initial steps after creating the Seurat object and before proceeding
+with downstream analyses or integration processes.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
+  if (interactive()) {
+    # Assuming `SeuratObj` is your Seurat object and you want to remove the gene "TOP2A"
+    updatedSeuratObj <- RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
+    # Now `updatedSeuratObj` does not contain "TOP2A" in the specified slots
+  }
 }
-}
+
 }

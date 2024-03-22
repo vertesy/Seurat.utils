@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{check.genes}
 \alias{check.genes}
-\title{check.genes}
+\title{Check if Gene Names exist in Seurat Object or HGNC Database}
 \usage{
 check.genes(
   list.of.genes = ClassicMarkers,
@@ -15,28 +15,38 @@ check.genes(
 )
 }
 \arguments{
-\item{list.of.genes}{A vector of gene names to check for existence in the Seurat object or HGNC. Default: ClassicMarkers}
+\item{list.of.genes}{A vector of gene names to be checked; Default: \code{ClassicMarkers}.}
 
-\item{makeuppercase}{Logical, if TRUE, transforms all gene names to uppercase. Default: FALSE}
+\item{makeuppercase}{If \code{TRUE}, converts all gene names to uppercase before checking; Default: \code{FALSE}.}
 
-\item{verbose}{Logical, if TRUE, prints out information about missing genes. Default: TRUE}
+\item{verbose}{If \code{TRUE}, prints information about any missing genes; Default: \code{TRUE}.}
 
-\item{HGNC.lookup}{Logical, if TRUE, looks up missing genes in HGNC database. Default: FALSE}
+\item{HGNC.lookup}{If \code{TRUE}, attempts to look up any missing genes in the HGNC database to
+verify their existence; Default: \code{FALSE}.}
 
-\item{obj}{Seurat object that the function uses to check the gene names. Default: combined.obj}
+\item{obj}{The Seurat object against which the gene names will be checked; Default: \code{combined.obj}.}
 
-\item{assay.slot}{The assay slot of the Seurat object to consider. Default: 'RNA'}
+\item{assay.slot}{Assay slot of the Seurat object to check for gene names; Default: \code{'RNA'}.}
 
-\item{dataslot}{The data slot of the Seurat object to consider. Default: 'data'}
+\item{dataslot}{Data slot of the assay to check for gene names; Default: \code{'data'}.}
 }
 \description{
-Check if a gene name exists in a Seurat object, or in HGNC?
+Verifies the presence of specified gene names within a Seurat object or
+queries them against the HGNC database. This function is useful for ensuring gene names are
+correctly formatted and exist within the dataset or are recognized gene symbols.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  check.genes("top2a", makeuppercase = TRUE)
-  check.genes("VGLUT2", verbose = FALSE, HGNC.lookup = TRUE)
+  if (interactive()) {
+    # Check for the presence of a gene name in uppercase
+    check.genes(list.of.genes = "top2a", makeuppercase = TRUE, obj = combined.obj)
+
+    # Check for a gene name with verbose output and HGNC lookup
+    check.genes(list.of.genes = "VGLUT2", verbose = TRUE, HGNC.lookup = TRUE, obj = combined.obj)
+  }
 }
+
 }
+\seealso{
+\code{\link[Seurat]{GetAssayData}}, \code{\link[DatabaseLinke.R]{qHGNC}}
 }

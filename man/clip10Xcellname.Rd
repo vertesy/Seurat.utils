@@ -2,13 +2,20 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{clip10Xcellname}
 \alias{clip10Xcellname}
-\title{clip10Xcellname}
+\title{Clip Suffixes from 10X Cell Names}
 \usage{
 clip10Xcellname(cellnames)
 }
 \arguments{
-\item{cellnames}{Character vector containing the cellIDs (with numeric suffixes).}
+\item{cellnames}{A vector of cell names with potential suffixes.}
+}
+\value{
+A vector of cell names with suffixes removed.
 }
 \description{
-Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration). #
+Removes suffixes from cell names that are added by 10X technology and Seurat during data processing.
+}
+\examples{
+cellnames <- c("cell1_1", "cell2_2")
+clip10Xcellname(cellnames)
 }
