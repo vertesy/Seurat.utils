@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{get.clustercomposition}
 \alias{get.clustercomposition}
-\title{get.clustercomposition}
+\title{Cluster Composition Analysis}
 \usage{
 get.clustercomposition(
   obj = combined.obj,
@@ -15,24 +15,30 @@ get.clustercomposition(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object to analyze. Default: \code{combined.obj}.}
 
-\item{color}{Color, Default: y}
+\item{ident}{Cluster identity resolution to use. Default: 'integrated_snn_res.0.3'.}
 
-\item{plot}{Show plot, Default: TRUE}
+\item{splitby}{Variable to split the data by, typically a project or dataset identifier.
+Default: 'ShortNames'.}
 
-\item{ScaleTo100pc}{Scale the Y Axis, Default: TRUE}
+\item{color}{Bar color. Default: as defined by \code{splitby}.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{plot}{Whether to display the plot. Default: TRUE.}
 
-\item{x}{Bars along the X axis, Default: 'integrated_snn_res.0.3'}
+\item{ScaleTo100pc}{Whether to scale Y axis to 100\%. Default: TRUE.}
 
-\item{y}{Vertical split of each bar, Default: 'project'}
+\item{...}{Additional parameters for plotting functions.}
+}
+\value{
+If \code{plot} is TRUE, displays a bar plot showing the composition of each cluster. Otherwise,
+performs the analysis without plotting.
 }
 \description{
-Get cluster composition: which datasets contribute to each cluster?
+Analyzes and visualizes the composition of clusters in a Seurat object, indicating
+the contribution of different datasets to each cluster.
 }
 \examples{
 get.clustercomposition()
-get.clustercomposition()
+
 }

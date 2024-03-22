@@ -2,28 +2,30 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{plotClustSizeDistr}
 \alias{plotClustSizeDistr}
-\title{plotClustSizeDistr}
+\title{Cluster Size Distribution Plot (Barplot or Histogram)}
 \usage{
 plotClustSizeDistr(obj = combined.obj, ident, plot = TRUE, thr.hist = 30, ...)
 }
 \arguments{
-\item{obj}{The Seurat object to be used for the plot. Default: combined.obj.}
+\item{obj}{Seurat object for analysis. Default: \code{combined.obj}.}
 
-\item{ident}{The identity or clustering to be used for the plot. Default: The second result from GetClusteringRuns().}
+\item{ident}{Clustering identity to base the plot on.
+Default: The second entry from \code{GetClusteringRuns()}.}
 
-\item{plot}{A logical value indicating whether to plot the data. If FALSE, a vector of the cluster size distribution will be returned. Default: TRUE.}
+\item{plot}{Whether to display the plot (TRUE) or return cluster sizes (FALSE). Default: TRUE.}
 
-\item{thr.hist}{A threshold for the number of clusters above which a histogram will be plotted instead of a bar plot. Default: 30.}
+\item{thr.hist}{Threshold for switching from a bar plot to a histogram based on the number of
+clusters. Default: 30.}
 
-\item{...}{Additional arguments to be passed to the internally called plotting functions.}
+\item{...}{Extra parameters for the plot.}
 }
 \description{
-Creates a bar plot or histogram of the cluster size distribution from a given Seurat object.
+Generates a bar plot or histogram to visualize the size distribution of clusters
+within a Seurat object, based on the specified clustering identity.
 }
 \examples{
 \dontrun{
-if (interactive()) {
   plotClustSizeDistr()
 }
-}
+
 }

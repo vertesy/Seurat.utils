@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{scBarplot.CellsPerObject}
 \alias{scBarplot.CellsPerObject}
-\title{scBarplot.CellsPerObject}
+\title{Barplot of Cells Per Seurat Object}
 \usage{
 scBarplot.CellsPerObject(
   ls.Seu = ls.Seurat,
@@ -13,16 +13,18 @@ scBarplot.CellsPerObject(
 )
 }
 \arguments{
-\item{ls.Seu}{A list of Seurat objects. Default: ls.Seurat.}
+\item{ls.Seu}{List of Seurat objects to analyze. Default: \code{ls.Seurat}.}
 
-\item{plotname}{A string specifying the title of the plot. Default: 'Nr.Cells.After.Filtering'.}
+\item{plotname}{Title for the plot. Default: 'Nr.Cells.After.Filtering'.}
 
-\item{xlab.angle}{The angle at which the x-axis labels should be displayed. Default: 45.}
+\item{xlab.angle}{Angle for x-axis labels, enhancing readability. Default: 45.}
 
-\item{names}{A logical value indicating whether to use the provided names as labels on the x-axis. If FALSE, the names of the Seurat objects will be used. Default: FALSE.}
+\item{names}{Optionally provide custom names for x-axis labels. If FALSE, uses object names
+from \code{ls.Seu}. Default: FALSE.}
 
-\item{...}{Additional arguments to be passed to the qbarplot function.}
+\item{...}{Extra parameters passed to \code{qbarplot}.}
 }
 \description{
-Creates a bar plot for the number of cells per object from a list of Seurat objects.
+Visualizes the number of cells in each Seurat object within a list, showing the
+distribution of cell counts across different datasets or experimental conditions.
 }

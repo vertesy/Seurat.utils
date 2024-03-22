@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{scBarplot.CellsPerCluster}
 \alias{scBarplot.CellsPerCluster}
-\title{scBarplot.CellsPerCluster}
+\title{Barplot of Fraction of Cells per Cluster}
 \usage{
 scBarplot.CellsPerCluster(
   ident = GetOrderedClusteringRuns(obj = obj)[1],
@@ -18,32 +18,33 @@ scBarplot.CellsPerCluster(
 )
 }
 \arguments{
-\item{ident}{identity used, Default: 'cl.names.KnownMarkers.0.5'}
+\item{ident}{Cluster identity. Used to specify which clustering results to visualize.
+Default: First entry from ordered clustering runs.}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object for analysis. Default: \code{combined.obj}.}
 
-\item{sort}{Sort by cluster size? Default: FALSE}
+\item{sort}{If TRUE, sorts clusters by size. Default: FALSE.}
 
-\item{label}{True: displays cell count, but you can provide anything in a vector.}
+\item{label}{If TRUE, shows cell count or percentage based on the label vector. Default: TRUE.}
 
-\item{suffix}{File name suffix}
+\item{suffix}{Optional suffix for file naming. Used in conjunction with \code{kpp}.}
 
-\item{palette}{Color palette. Default: glasbey.}
+\item{palette}{Color palette for the barplot. Default: 'glasbey'.}
 
-\item{return_table}{Should it return the plotting data instead of the plot?}
+\item{return_table}{If TRUE, returns the data used for plotting instead of the plot itself. Default: FALSE.}
 
-\item{min.cells}{Threshold for too small categories.}
+\item{ylab_adj}{Adjustment factor for y-axis label positioning. Default: 1.1.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{min.cells}{Minimum cell count threshold for categories. Adjusted by data size.}
+
+\item{...}{Additional parameters for internal function calls.}
 }
 \description{
-Barplot the Fraction of cells per cluster. (dupl?)
+Visualizes the fraction of cells within each cluster through a barplot.
 }
 \examples{
 \dontrun{
-if (interactive()) {
   scBarplot.CellsPerCluster()
   scBarplot.CellsPerCluster(sort = TRUE)
-}
 }
 }

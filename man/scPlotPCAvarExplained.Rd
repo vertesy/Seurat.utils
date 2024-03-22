@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{scPlotPCAvarExplained}
 \alias{scPlotPCAvarExplained}
-\title{scPlotPCAvarExplained}
+\title{Plot the percent of variation explained by individual PC's}
 \usage{
 scPlotPCAvarExplained(
   obj = combined.obj,
@@ -12,10 +12,35 @@ scPlotPCAvarExplained(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{A Seurat object from which to plot the percentage of variation explained by each PC.
+Default: \code{combined.obj}.}
 
-\item{use.MarkdownReports}{Use MarkdownReports for plotting, Default: FALSE}
+\item{plotname}{The title of the plot to be generated. Default: "Variance Explained by Principal
+Components".}
+
+\item{sub}{Subtitle for the plot, typically including information about the number of cells and
+features analyzed. Default: A string generated from \code{obj} stating the number of cells and
+features.}
+
+\item{use.MarkdownReports}{Boolean indicating whether to use \code{MarkdownReports} for plotting.
+If \code{FALSE}, \code{ggExpress} is used. Default: \code{FALSE}.}
+}
+\value{
+Generates a plot showing the percent of variation each PC accounts for. This function
+does not return a value but instead generates a plot directly.
 }
 \description{
-Plot the percent of variation associated with each PC.
+This function plots the percentage of variation explained by each principal
+component (PC) in a Seurat object. It allows for a visual assessment of how much variance is
+captured by each PC, which is crucial for dimensionality reduction analyses. Users can choose
+between two plotting methods: one using \code{MarkdownReports} and the other using \code{ggExpress}.
+}
+\examples{
+\dontrun{
+if (interactive()) {
+  data("combined.obj") # Example Seurat object
+  scPlotPCAvarExplained(combined.obj, use.MarkdownReports = TRUE)
+}
+}
+
 }

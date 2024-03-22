@@ -2,26 +2,27 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{ww.calc_helper}
 \alias{ww.calc_helper}
-\title{ww.calc_helper}
+\title{Helper to calculate Cell Expression Proportion for Gene}
 \source{
-Adapted from code by Ryan-Zhu on Github (https://github.com/satijalab/seurat/issues/371)
+Adapted from Ryan-Zhu on GitHub.
 }
 \usage{
 ww.calc_helper(obj, genes)
 }
 \arguments{
-\item{obj}{A Seurat object containing cell data.}
+\item{obj}{Seurat object with cell data.}
 
-\item{genes}{A character vector of genes of interest.}
+\item{genes}{Single gene name as a character string.}
 }
 \value{
-The proportion of cells in obj that express the specified gene.
+Proportion of cells expressing the gene. Returns \code{NA} if the gene is not found.
 }
 \description{
-Helper function for PrctCellExpringGene() to calculate the proportion of cells in a Seurat object that express a given gene.
+Computes the proportion of cells expressing a specific gene within a Seurat object.
 }
 \examples{
 \dontrun{
 ww.calc_helper(obj = seurat_object, genes = "Gene1")
 }
+
 }

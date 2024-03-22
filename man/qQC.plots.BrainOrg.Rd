@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{qQC.plots.BrainOrg}
 \alias{qQC.plots.BrainOrg}
-\title{qQC.plots.BrainOrg}
+\title{Quickly Plot Key QC Markers in Brain Organoids}
 \usage{
 qQC.plots.BrainOrg(
   obj = combined.obj,
@@ -16,13 +16,31 @@ qQC.plots.BrainOrg(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object to visualize; Default: \code{combined.obj}.}
 
-\item{QC.Features}{Any numeric metadata columns}
+\item{QC.Features}{Vector of QC feature names to plot; Default:
+\code{c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction")}.}
+
+\item{prefix}{Prefix for plot titles; Default: "QC.markers.4.UMAP".}
+
+\item{suffix}{Suffix for plot titles; Default: "".}
+
+\item{title}{Custom title for the composite plot; dynamically generated from \code{prefix},
+\code{QC.Features}, and \code{suffix}.}
+
+\item{nrow}{Number of rows in the plot grid; Default: 2.}
+
+\item{ncol}{Number of columns in the plot grid; Default: 2.}
+
+\item{...}{Additional parameters for individual UMAP plots.}
 }
 \description{
-Quickly plot key QC markers in brain organoids
+Generates and arranges UMAP plots for specified QC features
+from a Seurat object on an A4 page, facilitating a quick quality control (QC) overview.
 }
 \examples{
-qQC.plots.BrainOrg()
+\dontrun{
+  qQC.plots.BrainOrg()
+}
+
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{qUMAP}
 \alias{qUMAP}
-\title{qUMAP}
+\title{Quick UMAP Visualization of Gene Expression and automatically save the plot}
 \usage{
 qUMAP(
   feature = "TOP2A",
@@ -31,60 +31,63 @@ qUMAP(
 )
 }
 \arguments{
-\item{feature}{Feature to be visualized on the UMAP, Default: 'TOP2A'.}
+\item{feature}{Feature to visualize on the UMAP; Default: 'TOP2A'.}
 
-\item{obj}{Seurat object containing single-cell RNA seq data, Default: combined.obj.}
+\item{obj}{Seurat object containing single-cell RNA-seq data; Default: \code{combined.obj}.}
 
-\item{title}{Title of the plot, Default: feature.}
+\item{title}{Title of the plot; Default: \code{feature}.}
 
-\item{sub}{Subtitle of the plot, Default: NULL.}
+\item{sub}{Subtitle of the plot; Default: NULL.}
 
-\item{reduction}{Dimension reduction technique to be used. Choose from 'umap', 'tsne', or 'pca'. Default: 'umap'.}
+\item{reduction}{Dimension reduction technique to be used ('umap', 'tsne', or 'pca'); Default: 'umap'.}
 
-\item{splitby}{Column in the metadata to split the cells by, Default: NULL.}
+\item{splitby}{Column in the metadata to split the cells by; Default: NULL.}
 
-\item{prefix}{A prefix added before the filename, Default: NULL.}
+\item{prefix}{Prefix added before the filename; Default: NULL.}
 
-\item{suffix}{A suffix added to the end of the filename, Default: subtitle.}
+\item{suffix}{Suffix added to the end of the filename; Default: \code{sub}.}
 
-\item{save.plot}{If TRUE, the plot is saved into a file, Default: TRUE.}
+\item{save.plot}{If TRUE, the plot is saved into a file; Default: TRUE.}
 
-\item{PNG}{If TRUE, the file is saved as a .png, Default: TRUE.}
+\item{PNG}{If TRUE, the file is saved as a .png; Default: TRUE.}
 
-\item{h}{Height of the plot in inches, Default: 7.}
+\item{h}{Height of the plot in inches; Default: 7.}
 
-\item{w}{Width of the plot in inches, Default: NULL.}
+\item{w}{Width of the plot in inches; Default: NULL.}
 
-\item{nr.cols}{Number of columns to combine multiple feature plots, ignored if split.by is not NULL, Default: NULL.}
+\item{nr.cols}{Number of columns to combine multiple feature plots, ignored if \code{split.by} is not NULL; Default: NULL.}
 
-\item{assay}{Which assay to use, 'RNA' or 'integrated', Default: 'RNA'.}
+\item{assay}{Which assay to use ('RNA' or 'integrated'); Default: 'RNA'.}
 
-\item{axes}{If TRUE, the axes are shown on the plot. Default: FALSE.}
+\item{axes}{If TRUE, axes are shown on the plot; Default: FALSE.}
 
-\item{aspect.ratio}{Ratio of height to width. If TRUE, the ratio is fixed at 0.6. Default: FALSE.}
+\item{aspect.ratio}{Ratio of height to width. If TRUE, the ratio is fixed at 0.6; Default: FALSE.}
 
-\item{HGNC.lookup}{If TRUE, the HGNC gene symbol lookup is performed. Default: TRUE.}
+\item{HGNC.lookup}{If TRUE, HGNC gene symbol lookup is performed; Default: TRUE.}
 
-\item{make.uppercase}{If TRUE, feature names are converted to uppercase. Default: FALSE.}
+\item{make.uppercase}{If TRUE, feature names are converted to uppercase; Default: FALSE.}
 
-\item{check_for_2D}{If TRUE, checks if UMAP is 2 dimensional. Default: TRUE.}
+\item{check_for_2D}{If TRUE, checks if UMAP is 2 dimensional; Default: TRUE.}
 
-\item{qlow}{Lower quantile for the color scale, Default: 'q10'.}
+\item{qlow}{Lower quantile for the color scale; Default: 'q10'.}
 
-\item{qhigh}{Upper quantile for the color scale, Default: 'q90'.}
+\item{qhigh}{Upper quantile for the color scale; Default: 'q90'.}
 
-\item{caption}{Add caption to the ggplot object (e.g. a description in bottom right).}
+\item{caption}{Adds a caption to the ggplot object; Default: dynamically generated from \code{obj}.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{...}{Additional parameters to pass to the internally called functions.}
 }
 \description{
-The quickest way to draw a gene expression UMAP.
+Generates a UMAP visualization for a specific feature from a Seurat object, and
+automatically saves it. Offers options for custom titles, subtitles, saving, and more. Assumes
+default options for custom titles, subtitles, saving, and more.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  qUMAP("nFeature_RNA")
-  qUMAP("TOP2A")
+  if (interactive()) {
+    qUMAP(feature = "nFeature_RNA", obj = yourSeuratObject)
+    qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
+  }
 }
-}
+
 }

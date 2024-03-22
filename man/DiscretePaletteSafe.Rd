@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{DiscretePaletteSafe}
 \alias{DiscretePaletteSafe}
-\title{Safely generate a discrete color palette.}
+\title{Safely generate a Discrete color palette.}
 \usage{
 DiscretePaletteSafe(
   n,
@@ -12,24 +12,27 @@ DiscretePaletteSafe(
 )
 }
 \arguments{
-\item{n}{The number of colors to generate.}
+\item{n}{Number of colors to generate.}
 
-\item{palette.used}{The name of the palette to use, Default: "alphabet".}
+\item{palette.used}{Palette name to use for generating colors. Options include "alphabet",
+"alphabet2", "glasbey", "polychrome", "stepped". Default: "alphabet2".}
 
-\item{show.colors}{Whether to display the colors in the palette, Default: FALSE.}
+\item{show.colors}{If TRUE, displays the generated color palette. Default: FALSE.}
 
-\item{seed}{An integer value to set the seed for reproducibility, Default: 1989.}
+\item{seed}{Seed value for reproducibility, especially when random color generation is involved.
+Default: 1989.}
 }
 \value{
-A vector of color values.
+Character vector of HEX color values.
 }
 \description{
-Generates a discrete color palette safely without NA values.
+Generates a discrete color palette, ensuring no NA values are included, suitable
+for visualizations where a specific number of distinct, reproducible colors is needed.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  DiscretePaletteSafe(n = 10)
+  colors <- DiscretePaletteSafe(n = 10)
+  print(colors)
 }
-}
+
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{geneExpressionLevelPlots}
 \alias{geneExpressionLevelPlots}
-\title{geneExpressionLevelPlots}
+\title{Histogram of Gene Expression Levels}
 \usage{
 geneExpressionLevelPlots(
   gene = "TOP2A",
@@ -14,14 +14,24 @@ geneExpressionLevelPlots(
 )
 }
 \arguments{
-\item{gene}{gene of interest, Default: 'TOP2A'}
+\item{gene}{The gene of interest for which the expression level distribution is to be plotted.
+Default: 'TOP2A'.}
 
-\item{obj}{Seurat object, Default: ls.Seurat[\link{1}]}
+\item{obj}{A Seurat object containing the expression data. Default: The first Seurat object in
+\code{ls.Seurat}.}
 
-\item{slot}{slot in the Seurat object. Default: c("counts", "data")\link{2}}
+\item{slot}{The slot in the Seurat object from which to retrieve the expression data. Options
+include "counts" for raw counts and "data" for normalized (and possibly log-transformed) data.
+Default: "data".}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{w}{The width of the plot. Default: 7.}
+
+\item{h}{The height of the plot. Default: 4.}
+
+\item{...}{Any other parameter that can be passed to the internally called functions.}
 }
 \description{
-Histogram of gene expression levels.
+This function generates a histogram to visualize the expression level distribution
+of a specified gene across all cells in a Seurat object. It highlights the position of the gene
+of interest within the overall distribution.
 }

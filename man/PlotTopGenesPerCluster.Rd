@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{PlotTopGenesPerCluster}
 \alias{PlotTopGenesPerCluster}
-\title{PlotTopGenesPerCluster}
+\title{Plot Top N Differentially Expressed Genes Per Cluster}
 \usage{
 PlotTopGenesPerCluster(
   obj = combined.obj,
@@ -13,23 +13,29 @@ PlotTopGenesPerCluster(
 )
 }
 \arguments{
-\item{obj}{Seurat object. Default: combined.obj}
+\item{obj}{Seurat object containing single-cell RNA-seq data and clustering information;
+Default: \code{combined.obj}.}
 
-\item{cl_res}{Resolution value to use for determining clusters. Default: res}
+\item{cl_res}{Cluster resolution used to identify distinct clusters for analysis; Default: \code{res}.}
 
-\item{nrGenes}{Number of top differentially expressed genes to plot per cluster. Default: p$'n.markers'}
+\item{nrGenes}{Number of top DE genes to display for each cluster; Default: \code{p$'n.markers'}.}
 
-\item{order.by}{Column name to sort output tibble by. Default: c("combined.score","avg_log2FC", "p_val_adj")\link{1}}
+\item{order.by}{Criteria for ranking DE genes within clusters; Default: \code{"combined.score"}.}
 
-\item{df_markers}{Data frame containing marker gene data. Default: combined.obj@misc$df.markers[\link{paste0("res.", cl_res)}]}
+\item{df_markers}{Data frame or list of DE genes across clusters. If not provided,
+attempts to retrieve from \code{obj@misc$df.markers[[paste0("res.", cl_res)]]};
+Default: calculated based on \code{cl_res}.}
 }
 \description{
-Plot the top N diff. exp. genes in each cluster.
+Visualizes the top N differentially expressed (DE) genes for each cluster within a
+specified clustering resolution of a Seurat object, facilitating the exploration of gene
+expression patterns across clusters.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = p$"n.markers")
+  if (interactive()) {
+    PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = 10)
+  }
 }
-}
+
 }

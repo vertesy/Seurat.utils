@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{getClusterColors}
 \alias{getClusterColors}
-\title{getClusterColors}
+\title{Regenerate Cluster Colors from a Seurat Object}
 \usage{
 getClusterColors(
   obj = combined.obj,
@@ -13,22 +13,27 @@ getClusterColors(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object containing clustering information.}
 
-\item{ident}{identity used, Default: GetClusteringRuns()\link{1}}
+\item{use_new_palettes}{Logical indicating whether to use custom palettes defined in
+\code{DiscretePalette} function. Default: TRUE.}
 
-\item{show}{Show plot of colors? Default: TRUE}
+\item{palette}{Name of the color palette to use if \code{use_new_palettes} is TRUE.
+Options: "alphabet", "alphabet2", "glasbey", "polychrome", "stepped". Default: "glasbey".}
+
+\item{ident}{Clustering identity to use for coloring. Retrieved from the first entry
+of \code{GetClusteringRuns()} by default.}
+
+\item{show}{If TRUE, displays a plot showing the color mapping for each cluster. Default: TRUE.}
 }
 \description{
-get Seurat's cluster colors.
+Regenerate and optionally displays the color scheme associated with the clusters
+in a Seurat object as defined by a specified identity column.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  getClusterColors(obj = combined.obj, ident = GetClusteringRuns()[2])
+  if (interactive()) {
+    getClusterColors(obj = combined.obj, ident = GetClusteringRuns(combined.obj)[1])
+  }
 }
-}
-}
-\seealso{
-\code{\link[scales]{hue_pal}}
 }

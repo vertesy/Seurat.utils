@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{qClusteringUMAPS}
 \alias{qClusteringUMAPS}
-\title{qClusteringUMAPS}
+\title{Quick Clustering UMAPs on A4 Page}
 \usage{
 qClusteringUMAPS(
   obj = combined.obj,
@@ -17,13 +17,30 @@ qClusteringUMAPS(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object to visualize; Default: \code{combined.obj}.}
 
-\item{dims}{Any numeric metadata columns}
+\item{dims}{Vector of clustering resolution identifiers to plot;
+dynamically defaults to the first 4 found by \code{GetClusteringRuns}.}
+
+\item{prefix}{Prefix for plot titles; Default: "Clustering.UMAP.Res".}
+
+\item{suffix}{Suffix for plot titles; Default: "".}
+
+\item{title}{Custom title for the composite plot; dynamically generated from \code{prefix}, \code{dims}, and \code{suffix}.}
+
+\item{nrow}{Number of rows in the plot grid; Default: 2.}
+
+\item{ncol}{Number of columns in the plot grid; Default: 2.}
+
+\item{...}{Additional parameters for individual UMAP plots.}
 }
 \description{
-Quickly plot 1-4 clustering resolutions on an a4 page
+Generates and arranges UMAP plots for up to four specified clustering resolutions
+from a Seurat object onto an A4 page, facilitating comparative visualization.
 }
 \examples{
-qClusteringUMAPS()
+\dontrun{
+  qClusteringUMAPS()
+}
+
 }
