@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{downsampleListSeuObjsNCells}
 \alias{downsampleListSeuObjsNCells}
-\title{downsampleListSeuObjsNCells}
+\title{Downsample a List of Seurat Objects to a Specific Number of Cells}
 \usage{
 downsampleListSeuObjsNCells(
   ls.obj = ls.Seurat,
@@ -11,20 +11,25 @@ downsampleListSeuObjsNCells(
 )
 }
 \arguments{
-\item{ls.obj}{List of Seurat objects. Default: ls.Seurat}
+\item{ls.obj}{List of Seurat objects to be downsampled; Default: \code{ls.Seurat}.}
 
-\item{NrCells}{Number of cells to downsample to.}
+\item{NrCells}{Target number of cells to downsample each Seurat object to.}
 
-\item{save_object}{save object by isaveRDS, otherwise return it. Default: FALSE}
+\item{save_object}{Logical indicating whether to save the downsampled Seurat objects using \code{isaveRDS}
+or to return them; Default: FALSE.}
 }
 \description{
-downsample a list of Seurat objects
+Downsampling each Seurat object in a list to a specified number of cells. This function is
+particularly useful for creating smaller, more manageable subsets of large single-cell datasets for
+preliminary analyses or testing.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  downsampleListSeuObjsNCells(NrCells = 2000)
-  downsampleListSeuObjsNCells(NrCells = 200)
+  if (interactive()) {
+    downsampledSeuratList <- downsampleListSeuObjsNCells(ls.obj =
+                                      list(yourSeuratObj1, yourSeuratObj2), NrCells = 2000)
+    downsampledSeuratList <- downsampleListSeuObjsNCells(NrCells = 200)
+  }
 }
-}
+
 }

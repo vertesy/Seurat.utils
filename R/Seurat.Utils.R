@@ -2703,11 +2703,25 @@ check.genes <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title fixZeroIndexing.seurat
+#' @title Fix Zero Indexing in Seurat Clustering
 #'
-#' @description Fix zero indexing in seurat clustering, to 1-based indexing. replace zero indexed clusternames.
-#' @param ColName.metadata Metadata column name to use, Default: 'res.0.6'
-#' @param obj Seurat object, Default: org
+#' @description Adjusts Seurat object metadata to fix zero-based cluster indexing, converting it to one-based indexing.
+#' This function modifies a specified metadata column in the Seurat object to replace zero-indexed cluster names with one-based indexing.
+#'
+#' @param ColName.metadata The name of the metadata column containing zero-based cluster indices; Default: `'res.0.6'`.
+#' @param obj The Seurat object to be modified; Default: `org`.
+#'
+#' @return The Seurat object with the specified metadata column's cluster indices adjusted to one-based indexing.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     # Assuming `org` is a Seurat object with zero-based cluster indexing
+#'     org <- fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
+#'     # Now, `org` has its cluster indices in the 'res.0.6' metadata column adjusted to one-based indexing
+#'   }
+#' }
+#'
 #' @export
 fixZeroIndexing.seurat <- function(ColName.metadata = "res.0.6", obj = org) {
   obj@meta.data[, ColName.metadata] <- as.numeric(obj@meta.data[, ColName.metadata]) + 1

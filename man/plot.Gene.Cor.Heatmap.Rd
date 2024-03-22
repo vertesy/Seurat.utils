@@ -2,10 +2,10 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{plot.Gene.Cor.Heatmap}
 \alias{plot.Gene.Cor.Heatmap}
-\title{plot.Gene.Cor.Heatmap}
+\title{Plot Gene Correlation Heatmap}
 \usage{
 \method{plot}{Gene.Cor.Heatmap}(
-  genes = WU.2017.139.IEGsf,
+  genes,
   assay.use = "RNA",
   slot.use = c("data", "scale.data", "data.imputed")[1],
   quantileX = 0.95,
@@ -18,26 +18,38 @@
 )
 }
 \arguments{
-\item{genes}{The list of genes of interest. Default: WU.2017.139.IEGsf}
+\item{genes}{Vector of gene symbols to include in the correlation analysi.}
 
-\item{assay.use}{The assay to use from the Seurat object. Default: 'RNA'}
+\item{assay.use}{Assay from which to retrieve expression data within the Seurat object; Default: 'RNA'.}
 
-\item{slot.use}{The slot to use from the assay in the Seurat object. Default: First item in the vector c("data", "scale.data", "data.imputed")}
+\item{slot.use}{Specifies which slot of the assay to use for expression data ('data', 'scale.data', 'data.imputed');
+Default: first item ('data').}
 
-\item{quantileX}{The quantile level for the calculation. Default: 0.95}
+\item{quantileX}{Quantile level for calculating expression thresholds; Default: 0.95.}
 
-\item{min.g.cor}{The minimum gene correlation. Genes with correlation above this value or below its negative will be included. Default: 0.3}
+\item{min.g.cor}{Minimum absolute gene correlation value for inclusion in the heatmap; Default: 0.3.}
 
-\item{calc.COR}{A logical flag, if TRUE, the correlation will be calculated if not found. Default: FALSE}
+\item{calc.COR}{Logical flag to calculate correlation matrix if not found in \verb{@misc}; Default: FALSE.}
 
-\item{cutRows}{A number, the dendrogram will be cut at this height into clusters. Default: NULL}
+\item{cutRows}{Height at which to cut the dendrogram for rows, determining cluster formation; Default: NULL.}
 
-\item{cutCols}{A number, the dendrogram will be cut at this height into clusters. If NULL, cutCols will be the same as cutRows. Default: cutRows}
+\item{cutCols}{Height at which to cut the dendrogram for columns, determining cluster formation;
+Default: same as \code{cutRows}.}
 
-\item{obj}{The Seurat object to perform calculations on. Default: combined.obj}
+\item{obj}{Seurat object containing the data; Default: \code{combined.obj}.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{...}{Additional parameters passed to the internally called functions.}
 }
 \description{
-Plot a gene correlation heatmap.
+Generates a heatmap visualization of gene correlations based on expression data.
+Useful for identifying groups of genes that exhibit similar expression patterns across different conditions
+or cell types in a Seurat object.
+}
+\examples{
+\dontrun{
+  if (interactive()) {
+    plot.Gene.Cor.Heatmap(genes = c("Gene1", "Gene2", "Gene3"), obj = combined.obj)
+  }
+}
+
 }

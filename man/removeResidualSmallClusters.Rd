@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{removeResidualSmallClusters}
 \alias{removeResidualSmallClusters}
-\title{removeResidualSmallClusters}
+\title{Remove Residual Small Clusters from Seurat Object}
 \usage{
 removeResidualSmallClusters(
   obj = combined.obj,
@@ -11,13 +11,24 @@ removeResidualSmallClusters(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object from which small clusters will be removed; Default: \code{combined.obj}.}
 
-\item{identitites}{Identities to scan for residual clusters}
+\item{identitites}{Vector of clustering identities to examine for small clusters;
+Default: \code{GetClusteringRuns(obj)}.}
 
-\item{max.cells}{Max number of cells in cluster to be removed. Default: 0.5\% of the dataset, or 5 cells.}
+\item{max.cells}{Maximum number of cells a cluster can contain to still be considered for removal.
+Default: The lesser of 0.5\% of the dataset or 5 cells.}
 }
 \description{
-E.g.: after subsetting often some residual cells remain in clusters originally
-defined in the full dataset.
+Removes clusters containing fewer cells than specified by \code{max.cells}
+from a Seurat object. This function is particularly useful after subsetting a dataset,
+where small, possibly unrepresentative clusters may remain.
+}
+\examples{
+\dontrun{
+  if (interactive()) {
+    combined.obj <- removeResidualSmallClusters(obj = combined.obj)
+  }
+}
+
 }

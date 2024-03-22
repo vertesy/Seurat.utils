@@ -2,20 +2,31 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{sparse.cor}
 \alias{sparse.cor}
-\title{sparse.cor}
+\title{Calculate Sparse Correlation Matrix}
 \usage{
 sparse.cor(smat)
 }
 \arguments{
-\item{smat}{A sparse matrix.}
+\item{smat}{A sparse matrix object, typically of class Matrix from the Matrix package.}
 }
 \value{
 A list with two elements:
 \itemize{
-\item \code{cov}: The covariance matrix.
-\item \code{cor}: The correlation matrix.
+\item \code{cov}: The covariance matrix derived from the input sparse matrix.
+\item \code{cor}: The correlation matrix derived from the covariance matrix.
 }
 }
 \description{
-Calculate a sparse correlation matrix.
+Computes a sparse correlation matrix from a given sparse matrix input. This function is
+useful for efficiently handling large datasets where most values are zero, facilitating the calculation
+of both covariance and correlation matrices without converting to a dense format.
+}
+\examples{
+\dontrun{
+  library(Matrix)
+  smat <- Matrix(rnorm(1000), nrow = 100, sparse = TRUE)
+  cor_res <- sparse.cor(smat)
+  print(cor_res$cor)
+}
+
 }

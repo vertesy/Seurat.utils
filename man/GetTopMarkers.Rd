@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{GetTopMarkers}
 \alias{GetTopMarkers}
-\title{GetTopMarkers}
+\title{Get Top Differential Expression Markers from DGEA Results}
 \usage{
 GetTopMarkers(
   dfDE = df.markers,
@@ -11,22 +11,25 @@ GetTopMarkers(
 )
 }
 \arguments{
-\item{dfDE}{Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers}
+\item{dfDE}{Data frame containing differential expression analysis results; Default: \code{df.markers}.}
 
-\item{n}{Number of markers to return, Default: p$n.markers}
+\item{n}{Number of top markers to retrieve for each cluster; Default: \code{p$n.markers}.}
 
-\item{order.by}{Sort output tibble by which column, Default: c("combined.score", "avg_log2FC", "p_val_adj")\link{2}}
+\item{order.by}{Column by which to sort the markers before selection, typically prioritizing
+markers by significance or effect size; Default: \code{"avg_log2FC"}.}
 }
 \description{
-Get the vector of N most diff. exp. genes. #
+Retrieves the top N differentially expressed genes from the results of a differential
+gene expression analysis, such as that provided by \code{FindAllMarkers()}.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  GetTopMarkers(df = df.markers, n = 3)
+  if (interactive()) {
+    topMarkers <- GetTopMarkers(df = df.markers, n = 3)
+  }
 }
-}
+
 }
 \seealso{
-\code{\link[dplyr]{slice}}, \code{\link[dplyr]{select}}
+\code{\link[Seurat]{FindAllMarkers}}, \code{\link[dplyr]{arrange}}, \code{\link[dplyr]{group_by}}
 }

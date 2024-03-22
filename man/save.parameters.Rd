@@ -2,22 +2,26 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{save.parameters}
 \alias{save.parameters}
-\title{save.parameters}
+\title{Save Parameters to Seurat Object}
 \usage{
 save.parameters(obj = combined.obj, params = p, overwrite = TRUE)
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object to update; Default: \code{combined.obj}.}
 
-\item{params}{List of parameters, Default: p}
+\item{params}{List of parameters to save; Default: \code{p}.}
+
+\item{overwrite}{Logical indicating if existing parameters should be overwritten; Default: TRUE.}
 }
 \description{
-Save parameters to obj@misc$p
+Stores a list of parameters within the \verb{@misc$p} slot of a Seurat object,
+allowing for easy reference and tracking of analysis parameters used.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  save.parameters(obj = combined.obj, params = p)
+  if (interactive()) {
+    save.parameters(obj = combined.obj, params = p)
+  }
 }
-}
+
 }

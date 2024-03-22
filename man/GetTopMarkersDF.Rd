@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{GetTopMarkersDF}
 \alias{GetTopMarkersDF}
-\title{GetTopMarkersDF}
+\title{Get Top Differential Expression Genes Data Frame}
 \usage{
 GetTopMarkersDF(
   dfDE = df.markers,
@@ -12,22 +12,31 @@ GetTopMarkersDF(
 )
 }
 \arguments{
-\item{dfDE}{Data frame, result of DGEA analysis (FindAllMarkers), Default: df.markers}
+\item{dfDE}{Data frame containing the results of differential gene expression analysis
+(e.g., output from \code{FindAllMarkers()}); Default: \code{df.markers}.}
 
-\item{n}{Number of markers to return, Default: p$n.markers}
+\item{n}{Number of top markers to retrieve per cluster; Default: \code{p$n.markers}.}
 
-\item{order.by}{Sort output tibble by which column, Default: c("avg_log2FC", "p_val_adj")\link{1}}
+\item{order.by}{Priority column for sorting markers before selection, such as \code{"avg_log2FC"};
+Default: \code{"avg_log2FC"}.}
+
+\item{exclude}{Vector of regex patterns to exclude genes from the top markers list;
+Default: \code{c("^AL*|^AC*|^LINC*")}.}
 }
 \description{
-Get the vector of N most diff. exp. genes. #
+Retrieves a data frame of the top N differentially expressed genes from
+differential gene expression analysis results, offering an option to exclude certain genes
+based on patterns.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  GetTopMarkers(df = df.markers, n = 3)
+  if (interactive()) {
+    topMarkersDF <- GetTopMarkersDF(dfDE = df.markers, n = 3)
+  }
 }
-}
+
 }
 \seealso{
-\code{\link[dplyr]{slice}}, \code{\link[dplyr]{select}}
+\code{\link[Seurat]{FindAllMarkers}}, \code{\link[dplyr]{arrange}},
+\code{\link[dplyr]{filter}}, \code{\link[dplyr]{group_by}}
 }
