@@ -798,7 +798,7 @@ scBarplot.CellsPerCluster <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title Bar Plot of Cells Per Seurat Object
+#' @title Barplot of Cells Per Seurat Object
 #'
 #' @description Visualizes the number of cells in each Seurat object within a list, showing the
 #' distribution of cell counts across different datasets or experimental conditions.
@@ -830,7 +830,7 @@ scBarplot.CellsPerObject <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title Cluster Size Distribution Plot
+#' @title Cluster Size Distribution Plot (Barplot or Histogram)
 #'
 #' @description Generates a bar plot or histogram to visualize the size distribution of clusters
 #' within a Seurat object, based on the specified clustering identity.
@@ -890,28 +890,29 @@ plotClustSizeDistr <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title  Calculate the fraction of cells per cluster above a certain threhold
+#' @title Barplot the Fraction of Cells Above Threshold per Cluster
 #'
-#' @description Create a bar plot showing the fraction of cells, within each cluster, that exceed a certain threshold based on a metadata column.
-#' @param thrX The threshold value to determine the fraction of cells. Default: 0.3
-#' @param value.col Column name from metadata which holds the values for calculating the fraction of cells. Default: 'percent.ribo'
-#' @param id.col Column name from metadata to be used for identifying clusters. Default: 'cl.names.top.gene.res.0.3'
-#' @param obj A Seurat object holding single cell data. Default: combined.obj
-#' @param suffix An optional suffix for the filename.
-#' @param return.df A logical indicating if the function should return the data frame used to create the plot. Default: FALSE
-#' @param label A logical indicating if labels should be added to the bar plot. Default: FALSE
-#' @param subtitle Subtitle
-#' @param ... Additional parameters to pass to internally called functions.
+#' @description Generates a bar plot depicting the percentage of cells within each cluster that
+#' exceed a specified threshold, based on a selected metadata column.
+#'
+#' @param thrX Threshold for calculating the fraction of cells. Default: 0.3.
+#' @param value.col Column in metadata with values to assess against `thrX`. Default: 'percent.ribo'.
+#' @param id.col Cluster identity column in metadata. Default: 'cl.names.top.gene.res.0.3'.
+#' @param obj Seurat object with single-cell data. Default: `combined.obj`.
+#' @param return.df Whether to return the underlying data frame instead of the plot. Default: FALSE.
+#' @param label Whether to add labels to the bar plot. Default: FALSE.
+#' @param subtitle Optional subtitle for the plot.
+#' @param suffix Suffix for the output file name.
+#' @param ... Additional parameters for plotting functions.
 #'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
-#'   scBarplot.FractionAboveThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0)
+#'   scBarplot.FractionAboveThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.3)
 #' }
-#' }
-#' @seealso
-#'  \code{\link[dplyr]{select}}, \code{\link[dplyr]{se-deprecated}}
-#' @importFrom dplyr select group_by_
+#'
+#' @seealso \code{\link[dplyr]{select}}, \code{\link[dplyr]{group_by}}
+#'
+#' @importFrom dplyr select group_by summarize
 #'
 #' @export
 scBarplot.FractionAboveThr <- function(
