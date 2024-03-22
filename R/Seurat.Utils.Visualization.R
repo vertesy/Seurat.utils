@@ -1905,36 +1905,6 @@ clUMAP <- function(
 
 
 
-# _________________________________________________________________________________________________
-#' @title umapNamedClusters
-#'
-#' @description Plot and save umap based on a metadata column. #
-#' @param obj Seurat object, Default: combined.obj
-#' @param metaD.colname Metadata column name. Default: metaD.colname.labeled
-#' @param ext File extension for saving, Default: 'png'
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   umapNamedClusters(obj = combined.obj, metaD.colname = metaD.colname.labeled)
-#' }
-#' }
-#' @export
-#' @importFrom Seurat DimPlot NoLegend
-#' @importFrom ggplot2 ggtitle
-#' @importFrom cowplot save_plot
-umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, ext = "png", ...) { # Plot and save umap based on a metadata column.
-  fname <- ppp("Named.clusters", metaD.colname, ext)
-  p.named <-
-    Seurat::DimPlot(obj, reduction = "umap", group.by = metaD.colname, label = TRUE, ...) +
-    NoLegend() +
-    ggtitle(metaD.colname)
-  save_plot(p.named, filename = fname)
-  p.named
-}
-?ggtitle
-
-
 
 
 # _________________________________________________________________________________________________

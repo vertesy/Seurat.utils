@@ -68,6 +68,44 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", 
   )
 }
 
+# _________________________________________________________________________________________________
+#' @title Plot and Save UMAP without legend
+#'
+#' @description Generates a UMAP plot colored by a specified metadata column and saves the plot to a file.
+#'
+#' @param obj Seurat object to be visualized; Default: `combined.obj`.
+#' @param metaD.colname Metadata column name to color the UMAP by; Default: 'metaD.colname.labeled'.
+#' @param ext File extension for the saved plot, supports 'png', 'pdf', etc.; Default: 'png'.
+#' @param ... Additional arguments passed to Seurat's `DimPlot`.
+#'
+#' @return Displays a UMAP plot and saves it to the current working directory.
+#'
+#' @examples
+#' \dontrun{
+#'   if (interactive()) {
+#'     umapNamedClusters(obj = combined.obj, metaD.colname = "metaD.colname.labeled")
+#'   }
+#' }
+#'
+#' @export
+#' @importFrom Seurat DimPlot
+#' @importFrom ggplot2 ggtitle
+#' @importFrom cowplot save_plot
+
+umapNamedClusters <- function(obj = combined.obj,
+                              metaD.colname = metaD.colname.labeled,
+                              ext = "png", ...) {
+  warning("This function is deprecated. No support.")
+  fname <- ppp("Named.clusters", metaD.colname, ext)
+  p.named <-
+    Seurat::DimPlot(obj, reduction = "umap", group.by = metaD.colname, label = TRUE, ...) +
+    NoLegend() +
+    ggtitle(metaD.colname)
+  save_plot(p.named, filename = fname)
+  p.named
+}
+
+
 
 # _________________________________________________________________________________________________
 #' @title Convert10Xfolders.old
