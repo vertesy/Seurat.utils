@@ -1295,25 +1295,33 @@ getClusterColors <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title SeuratColorVector
+#' @title Regenerate Color Scheme for Clusters in Seurat Object
 #'
-#' @description Recall a Seurat color vector.
-#' @param ident identity used, Default: NULL
-#' @param obj Seurat object, Default: combined.obj
-#' @param plot.colors Show colors? Default: FALSE
-#' @param simple Return simply the unique colors, in order? Default: FALSE
+#' @description Extracts and optionally displays the color scheme assigned to cluster identities
+#' within a Seurat object, facilitating consistent color usage across visualizations.
+#'
+#' @param ident Specific clustering identity to use for color extraction.
+#' If NULL, the active identity in `obj` is used. Default: NULL.
+#' @param obj Seurat object from which to extract cluster colors.
+#' Default: `combined.obj`.
+#' @param plot.colors If TRUE, visually displays the color scheme.
+#' Default: FALSE.
+#' @param simple If TRUE, returns only the unique set of colors used.
+#' If FALSE, returns a named vector mapping cluster identities to colors.
+#' Default: FALSE.
+#'
 #' @examples
 #' \dontrun{
-#' if (interactive()) {
+#'   # Display colors for the active identity
 #'   SeuratColorVector()
-#'   SeuratColorVector(ident = GetNamedClusteringRuns()[2], plot.colors = TRUE)
+#'   # Retrieve and plot colors for a specified clustering identity
+#'   SeuratColorVector(ident = "RNA_snn_res.1", plot.colors = TRUE)
 #' }
-#' }
-#' @seealso
-#'  \code{\link[scales]{hue_pal}}
+#'
+#' @seealso \code{\link[scales]{hue_pal}}
+#'
 #' @export
 #' @importFrom scales hue_pal
-
 SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = FALSE, simple = FALSE) {
   if (!is.null(ident)) {
     print(ident)
