@@ -485,7 +485,7 @@ get.clustercomposition <- function(
     color = y,
     plot = TRUE, ScaleTo100pc = TRUE,
     ...) {
-  try(setwd(OutDir), silent = T)
+  try(setwd(OutDir), silent = TRUE)
   clUMAP(obj = obj, ident = x, save.plot = TRUE, suffix = "as.in.barplot")
 
   (df.meta <- obj@meta.data[, c(ident, splitby)])
@@ -775,7 +775,7 @@ scBarplot.CellsPerCluster <- function(
   n.clusters <- length(cell.per.cluster)
   nr.cells.per.cl <- table(obj[[ident]][, 1])
   SBT <- pc_TRUE(nr.cells.per.cl < min.cells,
-    NumberAndPC = T,
+    NumberAndPC = TRUE,
     suffix = paste("of identites are below min.cells:", min.cells)
   )
 
@@ -1057,7 +1057,7 @@ scBarplotStackedMetaCateg_List <- function(
   TTL <- paste(meta.col, "per object")
   p <- ggExpress::qbarplot.df(df,
     plotname = TTL,
-    scale = TRUE, hide.legend = F,
+    scale = TRUE, hide.legend = FALSE,
     ...
   )
   print(p)
@@ -1139,7 +1139,7 @@ getDiscretePalette <- function() .Deprecated("DiscretePaletteSafe and DiscretePa
 #     if (n.clusters > 10 * n.colz) {
 #       colorz <- sample(gplots::rich.colors(n.clusters))
 #     } else {
-#       colorz <- sample(x = colorsOK, size = n.clusters, replace = T)
+#       colorz <- sample(x = colorsOK, size = n.clusters, replace = TRUE)
 #     }
 #
 #     stopif(anyNA(colorz))
@@ -1419,7 +1419,7 @@ plotAndSaveHeatmaps <- function(results, path = getwd(), file.prefix = "heatmap_
     file_path <- file.path(path, file_name)
 
     # Save plot
-    MarkdownReports::wplot_save_pheatmap(x = pobj, plotname = file_name, png = T, pdf = F, ...)
+    MarkdownReports::wplot_save_pheatmap(x = pobj, plotname = file_name, png = TRUE, pdf = FALSE, ...)
     cat("Saved heatmap for", mt, "to", file_path, "\n")
   } # for
 }
@@ -1726,7 +1726,7 @@ qUMAP <- function(
     reduction = "umap", splitby = NULL,
     prefix = NULL,
     suffix = make.names(sub),
-    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = F),
+    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     h = 7, w = NULL, nr.cols = NULL,
     assay = c("RNA", "integrated")[1],
@@ -1841,7 +1841,7 @@ clUMAP <- function(
     label = TRUE, repel = TRUE, legend = !label, MaxCategThrHP = 200,
     axes = FALSE,
     aspect.ratio = c(FALSE, 0.6)[2],
-    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = F),
+    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     check_for_2D = TRUE,
     caption = .parseKeyParams(obj)
@@ -1859,7 +1859,7 @@ clUMAP <- function(
   }
   identity <- obj[[ident]]
   NtCategs <- length(unique(identity[, 1]))
-  if (NtCategs > 1000) warning("More than 1000 levels! qUMAP?", immediate. = T)
+  if (NtCategs > 1000) warning("More than 1000 levels! qUMAP?", immediate. = TRUE)
 
 
   if (!missing(highlight.clusters)) {
@@ -2213,7 +2213,7 @@ multiSingleClusterHighlightPlots.A4 <- function(
       message(cl)
       plot.list[[i]] <- clUMAP(
         ident = ident, obj = obj,
-        highlight.clusters = cl, label = FALSE, legend = F, save.plot = F,
+        highlight.clusters = cl, label = FALSE, legend = FALSE, save.plot = FALSE,
         plotname = plotname, cols = colors, h = h, w = w, ...
       )
     }
@@ -2387,7 +2387,7 @@ multi_clUMAP.A4 <- function(
       imessage("plotting:", ident_X)
       plot.list[[i]] <- clUMAP(
         ident = ident_X, obj = obj, plotname = label_X,
-        label = label_X, legend = legend_X, save.plot = F, h = h, w = w, ...
+        label = label_X, legend = legend_X, save.plot = FALSE, h = h, w = w, ...
       )
     }
 
@@ -3559,7 +3559,7 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
 #' }
 #' @export
 suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
-                                   repel = TRUE, plotWidth = 7, plotHeight = 5, save = T,
+                                   repel = TRUE, plotWidth = 7, plotHeight = 5, save = TRUE,
                                    suffix = kpp("nVF", .getNrScaledFeatures(obj)),
                                    ...) {
   # Input validation
@@ -3590,7 +3590,7 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
       ggobj = labeledPlot,
       # title = plotname,
       fname = filename, ext = ext,
-      w = plotWidth, h = plotHeight, also.pdf = F
+      w = plotWidth, h = plotHeight, also.pdf = FALSE
     )
   }
 }

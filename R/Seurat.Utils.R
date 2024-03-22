@@ -75,8 +75,8 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
 #'
 #' @export
 IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown = 10,
-                                      species_ = "human", EnforceUnique = T, ShowStats = T,
-                                      strict = TRUE, verbose = T) {
+                                      species_ = "human", EnforceUnique = TRUE, ShowStats = TRUE,
+                                      strict = TRUE, verbose = TRUE) {
   message(">>> Running IntersectGeneLsWithObject()")
   # "formerly IntersectWithExpressed(), which still exist in gruffi."
 
@@ -152,11 +152,11 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
 #'
 #' @export
 SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
-                                          above = 0, sort = F, strict = FALSE) {
+                                          above = 0, sort = FALSE, strict = FALSE) {
   message("Running SelectHighlyExpressedGenesq99()...")
   stopifnot(is.character(genes), is(obj, "Seurat"), is.numeric(above))
 
-  genes.expr <- IntersectGeneLsWithObject(genes = genes, obj = obj, verbose = F, strict = strict)
+  genes.expr <- IntersectGeneLsWithObject(genes = genes, obj = obj, verbose = FALSE, strict = strict)
   if (length(genes.expr) < length(genes)) message("Some genes not expressed. Recommend to IntersectGeneLsWithObject() first.")
 
   q99.expression <- obj@misc$expr.q99
@@ -1031,7 +1031,7 @@ ww.get.1st.Seur.element <- function(obj) {
 #' @importFrom MarkdownHelpers ww.assign_to_global
 #'
 #' @export
-recallAllGenes <- function(obj = combined.obj, overwrite = F) { # all.genes set by calc.q99.Expression.and.set.all.genes()
+recallAllGenes <- function(obj = combined.obj, overwrite = FALSE) { # all.genes set by calc.q99.Expression.and.set.all.genes()
   obj <- ww.get.1st.Seur.element(obj)
 
   if ("all.genes" %in% names(obj@misc)) {
@@ -1271,7 +1271,7 @@ copyMiscElements <- function(obj.from, obj.to, elements.needed, overwrite = TRUE
   elements.from <- names(obj.from@misc)
   missing <- setdiff(elements.needed, elements.from)
   if (length(missing) > 0) {
-    warning("Missing elements in obj.from@misc: ", paste(missing, collapse = ", "), immediate. = T)
+    warning("Missing elements in obj.from@misc: ", paste(missing, collapse = ", "), immediate. = TRUE)
   }
 
   # Check for existing elements in obj.to@misc
@@ -1285,7 +1285,7 @@ copyMiscElements <- function(obj.from, obj.to, elements.needed, overwrite = TRUE
     } else {
       warning("Overwriting the following elements in obj.to@misc: ",
         paste(elements.already.exisiting, collapse = ", "),
-        immediate. = T
+        immediate. = TRUE
       )
     }
   }
@@ -1514,7 +1514,7 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj, ident,
     print(fr_remaining_per_cluster)
     pobj <- qbarplot(
       vec = fr_remaining_per_cluster, subtitle = subb, label = fr_remaining_per_cluster,
-      ylab = "fr. of cells", save = F
+      ylab = "fr. of cells", save = FALSE
     )
     print(pobj)
   }
@@ -2719,7 +2719,7 @@ check.genes <- function(
       if (exists("qHGNC", mode = "function")) {
         try(DatabaseLinke.R::qHGNC(missingGenes))
       } else {
-        warning("DatabaseLinke.R's qHGNC() function is needed, please install from github.", immediate. = T)
+        warning("DatabaseLinke.R's qHGNC() function is needed, please install from github.", immediate. = TRUE)
       }
     }
   }
@@ -3074,7 +3074,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
       nrow(obj) == length(newnames)
   )
 
-  if (obj@version < 5) warning("obj@version < 5. Old versions are not supported. Update the obj!", immediate. = T)
+  if (obj@version < 5) warning("obj@version < 5. Old versions are not supported. Update the obj!", immediate. = TRUE)
 
   if ("scale.data" %in% slots) {
     n_genes_sc_dta <- nrow(obj@assays[[assay]]$"scale.data")
@@ -4632,8 +4632,8 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) {
 #' result <- compareVarFeaturesAndRanks(obj1, obj2, cor.plot = TRUE)
 #' @export
 compareVarFeaturesAndRanks <- function(
-    obj1 = NULL, obj2 = NULL, cor.plot = T, save.plot = T,
-    plot_venn = T,
+    obj1 = NULL, obj2 = NULL, cor.plot = TRUE, save.plot = TRUE,
+    plot_venn = TRUE,
     suffix = NULL,
     ...) {
   stopifnot(!is.null(obj1), !is.null(obj2))
@@ -4697,8 +4697,8 @@ compareVarFeaturesAndRanks <- function(
       # abline = c(0,1),
       save = save.plot,
       filename = file_name,
-      correlation_r2 = T,
-      also.pdf = F,
+      correlation_r2 = TRUE,
+      also.pdf = FALSE,
       cor.coef = TRUE, cor.method = "spearman",
       ...
     )
@@ -4733,9 +4733,9 @@ compareVarFeaturesAndRanks <- function(
 #' # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
 #' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
 #' @export
-processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot = T,
+processSeuratObject <- function(obj, param.list = p, compute = TRUE, save = TRUE, plot = TRUE,
                                 nfeatures = p$"n.var.genes") {
-  warning("Make sure you cleaned up the memory!", immediate. = T)
+  warning("Make sure you cleaned up the memory!", immediate. = TRUE)
   stopifnot(require(tictoc))
   message("nfeatures: ", nfeatures)
 
@@ -5006,12 +5006,12 @@ regress_out_and_recalculate_seurat <- function(
 #' @return A character string summarizing the key parameters.
 .parseKeyParams <- function(obj, regressionVariables = p$"variables.2.regress.combined",
                             nrVarFeatures = NULL,
-                            return.as.name = F, suffix = NULL) {
+                            return.as.name = FALSE, suffix = NULL) {
   scaledFeatures <- .getNrScaledFeatures(obj)
 
   if (!is.null(nrVarFeatures)) {
     if (nrVarFeatures != scaledFeatures) {
-      warning("nrVarFeatures !=  scaledFeatures. Reporting nrVarFeatures: ", nrVarFeatures, immediate. = T)
+      warning("nrVarFeatures !=  scaledFeatures. Reporting nrVarFeatures: ", nrVarFeatures, immediate. = TRUE)
     }
     scaledFeatures <- nrVarFeatures
   } # else use scaledFeatures

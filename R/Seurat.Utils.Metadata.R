@@ -606,7 +606,7 @@ saveLsSeuratMetadata <- function(ls.obj, suffix) {
 
   ncolz <- unique(unlapply(ls.meta, ncol))
   message(ncolz, " columns in meta.data")
-  if (length(ncolz) > 1) warning("Different column counts across meta.data!", immediate. = T)
+  if (length(ncolz) > 1) warning("Different column counts across meta.data!", immediate. = TRUE)
   xsave(ls.meta, suffix = suffix)
   invisible(ls.meta)
 }
@@ -689,13 +689,13 @@ transferMetadata <- function(from, to, colname_from, colname_to = colname_from, 
         to[[colname_to[i]]] <- from[[colname_from[i]]]
         message(sprintf("Transferred '%s' to '%s'.", colname_from[i], colname_to[i]))
       } else {
-        warning(sprintf("Column '%s' not found in source object.", colname_from[i]), immediate. = T)
+        warning(sprintf("Column '%s' not found in source object.", colname_from[i]), immediate. = TRUE)
       }
     } else {
       warning(sprintf(
         "Column '%s' already exists in destination object. Set 'overwrite = TRUE' to overwrite.",
         colname_to[i]
-      ), immediate. = T)
+      ), immediate. = TRUE)
     }
   }
   return(to)
@@ -1363,7 +1363,7 @@ transferLabelsSeurat <- function(
 #' @examples
 #' # Assuming 'df' is a dataframe with column names "azi.one", "azi.two", "other"
 #' extract_matching_columns(df, "^azi\\.")
-.metaColnames <- function(obj = combined.obj, pattern, perl = T, ...) {
+.metaColnames <- function(obj = combined.obj, pattern, perl = TRUE, ...) {
   colz <- grep(pattern, colnames(obj@meta.data), value = TRUE, perl = perl, ...)
   dput(colz)
   return(colz)
