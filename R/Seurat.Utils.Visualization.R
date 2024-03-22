@@ -340,13 +340,23 @@ Percent.in.Trome <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title geneExpressionLevelPlots
+#' @title Histogram of Gene Expression Levels
 #'
-#' @description Histogram of gene expression levels.
-#' @param gene gene of interest, Default: 'TOP2A'
-#' @param obj Seurat object, Default: ls.Seurat[[1]]
-#' @param slot slot in the Seurat object. Default: c("counts", "data")[2]
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description This function generates a histogram to visualize the expression level distribution
+#' of a specified gene across all cells in a Seurat object. It highlights the position of the gene
+#' of interest within the overall distribution.
+#'
+#' @param gene The gene of interest for which the expression level distribution is to be plotted.
+#' Default: 'TOP2A'.
+#' @param obj A Seurat object containing the expression data. Default: The first Seurat object in
+#' `ls.Seurat`.
+#' @param slot The slot in the Seurat object from which to retrieve the expression data. Options
+#' include "counts" for raw counts and "data" for normalized (and possibly log-transformed) data.
+#' Default: "data".
+#' @param w The width of the plot. Default: 7.
+#' @param h The height of the plot. Default: 4.
+#' @param ... Any other parameter that can be passed to the internally called functions.
+#'
 #' @export
 geneExpressionLevelPlots <- function(
     gene = "TOP2A", obj = ls.Seurat[[1]],
@@ -376,20 +386,25 @@ geneExpressionLevelPlots <- function(
 }
 
 # _________________________________________________________________________________________________
-#' @title PrctCellExpringGene
+#' @title Proportion of Cells Expressing Given Genes
 #'
-#' @description Function to calculate the proportion of cells expressing a given set of genes.
-#' @param genes A character vector of genes of interest.
-#' @param group.by Grouping variable, Default: 'all'.
-#' @param obj A Seurat object containing cell data. Default: combined.obj.
-#' @return A data frame with the proportion of cells expressing each gene, grouped by the group.by variable.
+#' @description Calculates the proportion of cells expressing one or more specified genes.
+#'
+#' @param genes Character vector of gene names of interest.
+#' @param group.by Optional grouping variable for analysis (e.g., cell type). Default: 'all'.
+#' @param obj Seurat object to analyze. Default: `combined.obj`.
+#'
+#' @return Data frame with genes and their cell expression proportion, optionally grouped.
+#'
 #' @examples
 #' \dontrun{
 #' PrctCellExpringGene(genes = c("Gene1", "Gene2"), obj = seurat_object)
 #' }
-#' @source Adapted from code by Ryan-Zhu on Github (https://github.com/satijalab/seurat/issues/371)
+#'
+#' @source Adapted from Ryan-Zhu on GitHub.
+#'
 #' @export
-PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj) { # From Github/Ryan-Zhu https://github.com/satijalab/seurat/issues/371
+PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj) {
   if (group.by == "all") {
     prct <- unlist(lapply(genes, ww.calc_helper, object = obj))
     result <- data.frame(Markers = genes, Cell_proportion = prct)
