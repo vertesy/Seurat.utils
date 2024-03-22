@@ -278,9 +278,11 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
     barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5)
   } else {
     CPT <- .parseKeyParams(obj, suffix = "| hline at 1%")
-    ggExpress::qbarplot(vec = pct, plotname = plotname, subtitle = sub,
-                        xlab = "Principal Components", ylab = "% of variation explained",
-                        w = 10, h = 5, hline = 1, caption = CPT)
+    ggExpress::qbarplot(
+      vec = pct, plotname = plotname, subtitle = sub,
+      xlab = "Principal Components", ylab = "% of variation explained",
+      w = 10, h = 5, hline = 1, caption = CPT
+    )
   }
 }
 
@@ -312,7 +314,6 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
 Percent.in.Trome <- function(
     obj = combined.obj, n.genes.barplot = 25,
     width.barplot = round(n.genes.barplot / 4)) {
-
   m.expr <- obj@assays$RNA@counts
   total.Expr <- sort(rowSums(m.expr), decreasing = TRUE)
   relative.total.Expr <- total.Expr / sum(total.Expr)
@@ -490,7 +491,7 @@ get.clustercomposition <- function(
     color = y,
     plot = TRUE, ScaleTo100pc = TRUE,
     ...) {
-  try(setwd(OutDir), silent = T)
+  try(setwd(OutDir), silent = TRUE)
   clUMAP(obj = obj, ident = x, save.plot = TRUE, suffix = "as.in.barplot")
 
   (df.meta <- obj@meta.data[, c(ident, splitby)])
@@ -500,10 +501,10 @@ get.clustercomposition <- function(
     summarise()
 
   categ.per.cluster <- ggbarplot(obj@meta.data,
-                                 x = x,
-                                 y = y,
-                                 color = y,
-                                 ...
+    x = x,
+    y = y,
+    color = y,
+    ...
   )
   if (ScaleTo100pc) categ.per.cluster <- categ.per.cluster + scale_y_discrete(labels = scales::percent_format())
   if (plot) categ.per.cluster
@@ -581,21 +582,20 @@ scBarplot.CellFractions <- function(
     cex.pct = 2.5,
     min_frequency = 0, # 0.025,
     custom_col_palette = FALSE,
-    color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name ="RdYlBu")))(100),
+    color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
     show.total.cells = TRUE,
     cex.total = 2,
     ...) {
-
   # Input assertions
   stopifnot(
-    inherits(obj, "Seurat"),  # obj must be a Seurat object
-    is.character(group.by) && length(group.by) == 1 && nzchar(group.by),  # group.by must be a non-empty string
-    is.character(fill.by) && length(fill.by) == 1 && nzchar(fill.by),  # fill.by must be a non-empty string
-    is.logical(downsample) && length(downsample) == 1,  # downsample must be TRUE or FALSE
-    is.logical(return_table) && length(return_table) == 1,  # return_table must be TRUE or FALSE
-    is.logical(save_plot) && length(save_plot) == 1,  # save_plot must be TRUE or FALSE
-    is.logical(draw_plot) && length(draw_plot) == 1,  # draw_plot must be TRUE or FALSE
-    is.numeric(min_frequency) && length(min_frequency) == 1 && min_frequency >= 0 && min_frequency < 1  # min_frequency must be between 0 and 1
+    inherits(obj, "Seurat"), # obj must be a Seurat object
+    is.character(group.by) && length(group.by) == 1 && nzchar(group.by), # group.by must be a non-empty string
+    is.character(fill.by) && length(fill.by) == 1 && nzchar(fill.by), # fill.by must be a non-empty string
+    is.logical(downsample) && length(downsample) == 1, # downsample must be TRUE or FALSE
+    is.logical(return_table) && length(return_table) == 1, # return_table must be TRUE or FALSE
+    is.logical(save_plot) && length(save_plot) == 1, # save_plot must be TRUE or FALSE
+    is.logical(draw_plot) && length(draw_plot) == 1, # draw_plot must be TRUE or FALSE
+    is.numeric(min_frequency) && length(min_frequency) == 1 && min_frequency >= 0 && min_frequency < 1 # min_frequency must be between 0 and 1
   )
 
   set.seed(seedNr)
@@ -613,7 +613,7 @@ scBarplot.CellFractions <- function(
   }
 
   # Construct the caption based on downsampling and minimum frequency
-  PFX <- if(show_numbers) "Numbers denote # cells." else percentage_formatter(min.pct, prefix = "Labeled above")
+  PFX <- if (show_numbers) "Numbers denote # cells." else percentage_formatter(min.pct, prefix = "Labeled above")
   caption_ <- paste("Top: Total cells per bar. |", PFX, capt.suffix)
 
   if (min_frequency > 0) caption_ <- paste(caption_, "\nCategories <", percentage_formatter(min_frequency), "are shown together as 'Other'")
@@ -644,13 +644,13 @@ scBarplot.CellFractions <- function(
       summarise(proportion = n() / nrow(obj@meta.data)) %>%
       mutate("category" = ifelse(proportion < min_frequency, "Other", as.character(!!as.name(fill.by))))
 
-    categories <- unique(prop_table$'category')
+    categories <- unique(prop_table$"category")
     message("categories present: ", kppc(sort(categories)))
 
     # join the proportions back to the original data
     obj@meta.data <- left_join(obj@meta.data, prop_table, by = fill.by)
 
-    subtt <- kppws(group.by, "|", ncol(obj), "cells" , sub_title)
+    subtt <- kppws(group.by, "|", ncol(obj), "cells", sub_title)
     pl <- obj@meta.data %>%
       # pl <- data_with_totals %>%
       {
@@ -674,26 +674,30 @@ scBarplot.CellFractions <- function(
     # Apply custom color palette if specified
     if (custom_col_palette) {
       palette_x <- color_scale[seq(categories)]
-      message('palette: ', kppc(palette_x) )
+      message("palette: ", kppc(palette_x))
       pl <- pl + scale_fill_manual(values = palette_x)
     }
 
     if (show_numbers) {
       pl <- pl + geom_text(aes(label = ..count..),
-                           stat = "count", position = position_fill(vjust = 0.5))
+        stat = "count", position = position_fill(vjust = 0.5)
+      )
     } else {
       pl <- pl + geom_text(
         aes(label = ifelse((..count.. / tapply(..count.., ..x.., sum)[..x..]) >= min.pct,
-                           scales::percent(..count.. / tapply(..count.., ..x.., sum)[..x..], accuracy = 1),
-                           "")),
+          scales::percent(..count.. / tapply(..count.., ..x.., sum)[..x..], accuracy = 1),
+          ""
+        )),
         stat = "count", position = position_fill(vjust = 0.5),
         size = cex.pct
       )
     }
 
     if (show.total.cells) {
-      pl <- pl + geom_text(data = totals, aes(x = !!sym(group.by), y = 1, label = Total),
-                           vjust = -0.5, size = cex.total, inherit.aes = FALSE)
+      pl <- pl + geom_text(
+        data = totals, aes(x = !!sym(group.by), y = 1, label = Total),
+        vjust = -0.5, size = cex.total, inherit.aes = FALSE
+      )
     }
 
     if (save_plot) {
@@ -742,8 +746,8 @@ scBarplot.CellFractions <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   scBarplot.CellsPerCluster()
-#'   scBarplot.CellsPerCluster(sort = TRUE)
+#' scBarplot.CellsPerCluster()
+#' scBarplot.CellsPerCluster(sort = TRUE)
 #' }
 #' @export scBarplot.CellsPerCluster
 #'
@@ -758,9 +762,8 @@ scBarplot.CellsPerCluster <- function(
     palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
     return_table = FALSE,
     ylab_adj = 1.1,
-    min.cells = round(ncol(obj)/500),
+    min.cells = round(ncol(obj) / 500),
     ...) {
-
   cell.per.cl <- obj[[ident]][, 1]
   cell.per.cluster <- (table(cell.per.cl))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
@@ -774,23 +777,25 @@ scBarplot.CellsPerCluster <- function(
     label
   }
 
-  imessage('min cell thr:', min.cells)
+  imessage("min cell thr:", min.cells)
   n.clusters <- length(cell.per.cluster)
-  nr.cells.per.cl <- table(obj[[ident]][,1])
-  SBT <- pc_TRUE(nr.cells.per.cl < min.cells, NumberAndPC = T,
-                 suffix = paste("of identites are below min.cells:", min.cells))
+  nr.cells.per.cl <- table(obj[[ident]][, 1])
+  SBT <- pc_TRUE(nr.cells.per.cl < min.cells,
+    NumberAndPC = TRUE,
+    suffix = paste("of identites are below min.cells:", min.cells)
+  )
 
   pl <- ggExpress::qbarplot(cell.per.cluster,
-                            subtitle = paste0(ident, "\n", SBT),
-                            suffix = kpp(ident, suffix),
-                            col = 1:n.clusters,
-                            xlab.angle = 45,
-                            ylim = c(0, ylab_adj * max(cell.per.cluster)),
-                            label = lbl,
-                            ylab = "Cells",
-                            # , col = getClusterColors(ident = ident, show = TRUE)
-                            palette_use = DiscretePaletteSafe(n = n.clusters, palette.used = palette),
-                            ...
+    subtitle = paste0(ident, "\n", SBT),
+    suffix = kpp(ident, suffix),
+    col = 1:n.clusters,
+    xlab.angle = 45,
+    ylim = c(0, ylab_adj * max(cell.per.cluster)),
+    label = lbl,
+    ylab = "Cells",
+    # , col = getClusterColors(ident = ident, show = TRUE)
+    palette_use = DiscretePaletteSafe(n = n.clusters, palette.used = palette),
+    ...
   )
 
   if (return_table) {
@@ -825,12 +830,12 @@ scBarplot.CellsPerObject <- function(
   cellCounts <- unlapply(ls.Seu, ncol)
   names(cellCounts) <- if (length(names) == length(ls.Seurat)) names else names(ls.Seurat)
   qbarplot(cellCounts,
-           plotname = plotname,
-           subtitle = paste(sum(cellCounts), "cells in total"),
-           label = cellCounts,
-           xlab.angle = xlab.angle,
-           ylab = "Cells",
-           ...
+    plotname = plotname,
+    subtitle = paste(sum(cellCounts), "cells in total"),
+    label = cellCounts,
+    xlab.angle = xlab.angle,
+    ylab = "Cells",
+    ...
   )
 }
 
@@ -851,7 +856,7 @@ scBarplot.CellsPerObject <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   plotClustSizeDistr()
+#' plotClustSizeDistr()
 #' }
 #'
 #' @importFrom ggExpress qbarplot qhistogram
@@ -860,7 +865,6 @@ scBarplot.CellsPerObject <- function(
 plotClustSizeDistr <- function(
     obj = combined.obj, ident,
     plot = TRUE, thr.hist = 30, ...) {
-
   stopifnot(ident %in% colnames(obj@meta.data))
 
   clust.size.distr <- table(obj@meta.data[, ident])
@@ -879,8 +883,8 @@ plotClustSizeDistr <- function(
   if (plot) {
     if (length(clust.size.distr) < thr.hist) {
       ggExpress::qbarplot(clust.size.distr,
-                          plotname = ptitle, subtitle = psubtitle,
-                          label = clust.size.distr, xlab = xlb, ylab = ylb, ...
+        plotname = ptitle, subtitle = psubtitle,
+        label = clust.size.distr, xlab = xlb, ylab = ylb, ...
       )
     } else {
       ggExpress::qhistogram(
@@ -913,7 +917,7 @@ plotClustSizeDistr <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   scBarplot.FractionAboveThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.3)
+#' scBarplot.FractionAboveThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.3)
 #' }
 #'
 #' @seealso \code{\link[dplyr]{select}}, \code{\link[dplyr]{group_by}}
@@ -984,7 +988,7 @@ scBarplot.FractionAboveThr <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01)
+#' scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01)
 #' }
 #'
 #' @seealso \code{\link[dplyr]{select}}, \code{\link[dplyr]{group_by}}
@@ -1035,8 +1039,9 @@ scBarplot.FractionBelowThr <- function(
 #' @importFrom dplyr group_by summarise select
 #'
 #' @export
-scBarplotStackedMetaCateg_List <- function(ls.obj, meta.col
-                                           , ...) {
+scBarplotStackedMetaCateg_List <- function(
+    ls.obj, meta.col,
+    ...) {
   stopifnot(is.list(ls.obj), all(sapply(ls.obj, inherits, "Seurat")))
   stopifnot(is.character(meta.col), length(meta.col) == 1)
 
@@ -1052,13 +1057,15 @@ scBarplotStackedMetaCateg_List <- function(ls.obj, meta.col
   # Summarizing to get counts of cells per category for each sample
   df <- df %>%
     dplyr::group_by(Sample, Category) %>%
-    dplyr::summarise(Cells = n(), .groups = 'drop') %>%
+    dplyr::summarise(Cells = n(), .groups = "drop") %>%
     dplyr::select(Sample, Cells, Category)
 
   TTL <- paste(meta.col, "per object")
-  p <- ggExpress::qbarplot.df(df, plotname = TTL
-                              , scale = TRUE, hide.legend = F
-                              , ...)
+  p <- ggExpress::qbarplot.df(df,
+    plotname = TTL,
+    scale = TRUE, hide.legend = FALSE,
+    ...
+  )
   print(p)
   return(df)
 }
@@ -1138,7 +1145,7 @@ getDiscretePalette <- function() .Deprecated("DiscretePaletteSafe and DiscretePa
 #     if (n.clusters > 10 * n.colz) {
 #       colorz <- sample(gplots::rich.colors(n.clusters))
 #     } else {
-#       colorz <- sample(x = colorsOK, size = n.clusters, replace = T)
+#       colorz <- sample(x = colorsOK, size = n.clusters, replace = TRUE)
 #     }
 #
 #     stopif(anyNA(colorz))
@@ -1180,15 +1187,19 @@ getDiscretePaletteObj <- function(ident.used,
                                   palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
                                   show.colors = FALSE,
                                   seed = 1989) {
-  stopifnot(is.character(ident.used), is(obj, "Seurat"),
-            is.character(palette.used), is.logical(show.colors), is.numeric(seed))
+  stopifnot(
+    is.character(ident.used), is(obj, "Seurat"),
+    is.character(palette.used), is.logical(show.colors), is.numeric(seed)
+  )
 
   n.clusters <- CodeAndRoll2::nr.unique(obj[[ident.used]])
   # browser()
-  colorz <- DiscretePaletteSafe(n = n.clusters,
-                                palette.used = palette.used,
-                                show.colors = show.colors,
-                                seed = seed)
+  colorz <- DiscretePaletteSafe(
+    n = n.clusters,
+    palette.used = palette.used,
+    show.colors = show.colors,
+    seed = seed
+  )
 
   return(colorz)
 }
@@ -1211,8 +1222,8 @@ getDiscretePaletteObj <- function(ident.used,
 #'
 #' @examples
 #' \dontrun{
-#'   colors <- DiscretePaletteSafe(n = 10)
-#'   print(colors)
+#' colors <- DiscretePaletteSafe(n = 10)
+#' print(colors)
 #' }
 #'
 #' @importFrom gplots rich.colors
@@ -1223,8 +1234,10 @@ DiscretePaletteSafe <- function(n,
                                 palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
                                 show.colors = FALSE,
                                 seed = 1989) {
-  stopifnot(is.numeric(n), n > 0, is.character(palette.used),
-            is.logical(show.colors), is.numeric(seed))
+  stopifnot(
+    is.numeric(n), n > 0, is.character(palette.used),
+    is.logical(show.colors), is.numeric(seed)
+  )
 
   colorz <- Seurat::DiscretePalette(n = n, palette = palette.used)
 
@@ -1232,8 +1245,10 @@ DiscretePaletteSafe <- function(n,
     colorsOK <- colorz[!is.na(colorz)]
     n.colz <- length(colorsOK)
 
-    msg <- paste("More categories then present in the palette", n, "vs."
-                 , n.colz, "in", palette.used, "-> recycling.")
+    msg <- paste(
+      "More categories then present in the palette", n, "vs.",
+      n.colz, "in", palette.used, "-> recycling."
+    )
     warning(msg, immediate. = TRUE)
 
     set.seed(seed)
@@ -1268,9 +1283,9 @@ DiscretePaletteSafe <- function(n,
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     getClusterColors(obj = combined.obj, ident = GetClusteringRuns(combined.obj)[1])
-#'   }
+#' if (interactive()) {
+#'   getClusterColors(obj = combined.obj, ident = GetClusteringRuns(combined.obj)[1])
+#' }
 #' }
 #' @export
 #'
@@ -1318,10 +1333,10 @@ getClusterColors <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   # Display colors for the active identity
-#'   SeuratColorVector()
-#'   # Retrieve and plot colors for a specified clustering identity
-#'   SeuratColorVector(ident = "RNA_snn_res.1", plot.colors = TRUE)
+#' # Display colors for the active identity
+#' SeuratColorVector()
+#' # Retrieve and plot colors for a specified clustering identity
+#' SeuratColorVector(ident = "RNA_snn_res.1", plot.colors = TRUE)
 #' }
 #'
 #' @seealso \code{\link[scales]{hue_pal}}
@@ -1388,29 +1403,29 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = FA
 #' @return Invisible. The function primarily generates and saves files without returning data.
 #'
 #' @export
-plotAndSaveHeatmaps <-function(results, path = getwd(), file.prefix = "heatmap_",
-                               scale = "column", cluster_rows = FALSE,
-                               display_numbers = TRUE,
-                               show_rownames = TRUE, show_colnames = TRUE, ...) {
+plotAndSaveHeatmaps <- function(results, path = getwd(), file.prefix = "heatmap_",
+                                scale = "column", cluster_rows = FALSE,
+                                display_numbers = TRUE,
+                                show_rownames = TRUE, show_colnames = TRUE, ...) {
   stopifnot(is.list(results), is.character(file.prefix), is.character(path))
 
   for (mt in names(results)) {
-
     # Generate heatmap plot
     pobj <- pheatmap::pheatmap(FirstCol2RowNames.as.df(results[[mt]]),
-                               main = paste("Heatmap of", mt, "values"),
-                               scale = "column",
-                               cluster_rows = cluster_rows,
-                               display_numbers = display_numbers,
-                               show_rownames = show_rownames,
-                               show_colnames = show_colnames)
+      main = paste("Heatmap of", mt, "values"),
+      scale = "column",
+      cluster_rows = cluster_rows,
+      display_numbers = display_numbers,
+      show_rownames = show_rownames,
+      show_colnames = show_colnames
+    )
 
     # Construct file name
     file_name <- paste0(file.prefix, mt, ".png")
     file_path <- file.path(path, file_name)
 
     # Save plot
-    MarkdownReports::wplot_save_pheatmap(x = pobj, plotname = file_name, png = T, pdf = F,...)
+    MarkdownReports::wplot_save_pheatmap(x = pobj, plotname = file_name, png = TRUE, pdf = FALSE, ...)
     cat("Saved heatmap for", mt, "to", file_path, "\n")
   } # for
 }
@@ -1441,8 +1456,8 @@ plotAndSaveHeatmaps <-function(results, path = getwd(), file.prefix = "heatmap_"
 #'
 #' @examples
 #' \dontrun{
-#'   # Generate and display a scatter plot for features TOP2A and ID2
-#'   qFeatureScatter(feature1 = "TOP2A", feature2 = "ID2", obj = yourSeuratObject)
+#' # Generate and display a scatter plot for features TOP2A and ID2
+#' qFeatureScatter(feature1 = "TOP2A", feature2 = "ID2", obj = yourSeuratObject)
 #' }
 #'
 #' @seealso \code{\link[Seurat]{FeatureScatter}}, \code{\link[ggplot2]{ggplot}}
@@ -1588,7 +1603,7 @@ qSeuViolin <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   plotGeneExpHist(obj = yourSeuratObject, genes = c("GeneA", "GeneB"))
+#' plotGeneExpHist(obj = yourSeuratObject, genes = c("GeneA", "GeneB"))
 #' }
 #'
 #' @return Depending on the parameters, can return a ggplot object, the number of cells passing
@@ -1702,10 +1717,10 @@ plotGeneExpHist <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     qUMAP(feature = "nFeature_RNA", obj = yourSeuratObject)
-#'     qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
-#'   }
+#' if (interactive()) {
+#'   qUMAP(feature = "nFeature_RNA", obj = yourSeuratObject)
+#'   qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
+#' }
 #' }
 #'
 #' @export
@@ -1717,7 +1732,7 @@ qUMAP <- function(
     reduction = "umap", splitby = NULL,
     prefix = NULL,
     suffix = make.names(sub),
-    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = F),
+    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     h = 7, w = NULL, nr.cols = NULL,
     assay = c("RNA", "integrated")[1],
@@ -1729,7 +1744,6 @@ qUMAP <- function(
     qlow = "q10", qhigh = "q90",
     caption = .parseBasicObjStats(obj),
     ...) {
-
   # Checks
   if (check_for_2D) {
     umap_dims <- ncol(obj@reductions[[reduction]]@cell.embeddings)
@@ -1738,7 +1752,7 @@ qUMAP <- function(
 
   if (feature %in% colnames(obj@meta.data)) {
     message("feature found in meta.data")
-    stopifnot(is.numeric(obj@meta.data[ ,feature]))
+    stopifnot(is.numeric(obj@meta.data[, feature]))
   }
 
   if (!(feature %in% colnames(obj@meta.data) | feature %in% rownames(obj))) {
@@ -1810,8 +1824,8 @@ qUMAP <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj)
-#'   clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj, cols = RColorBrewer::brewer.pal(8, "Dark2"))
+#' clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj)
+#' clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj, cols = RColorBrewer::brewer.pal(8, "Dark2"))
 #' }
 #'
 #' @importFrom ggplot2 ggtitle labs coord_fixed ggsave
@@ -1833,7 +1847,7 @@ clUMAP <- function(
     label = TRUE, repel = TRUE, legend = !label, MaxCategThrHP = 200,
     axes = FALSE,
     aspect.ratio = c(FALSE, 0.6)[2],
-    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = F),
+    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     check_for_2D = TRUE,
     caption = .parseKeyParams(obj)
@@ -1851,13 +1865,13 @@ clUMAP <- function(
   }
   identity <- obj[[ident]]
   NtCategs <- length(unique(identity[, 1]))
-  if(NtCategs > 1000) warning("More than 1000 levels! qUMAP?", immediate. = T)
+  if (NtCategs > 1000) warning("More than 1000 levels! qUMAP?", immediate. = TRUE)
 
 
   if (!missing(highlight.clusters)) {
     idx.ok <- identity[, 1] %in% highlight.clusters
     highlight.these <- rownames(identity)[idx.ok]
-    PCT <- percentage_formatter(length(highlight.these)/ncol(obj), suffix = "or")
+    PCT <- percentage_formatter(length(highlight.these) / ncol(obj), suffix = "or")
     sub <- paste(PCT, length(highlight.these), "cells in cluster. |", ident, "\n", sub)
     title <- kppc(highlight.clusters)
   } else {
@@ -1870,8 +1884,12 @@ clUMAP <- function(
 
   if (is.null(cols)) {
     # browser()
-    cols <- if (NtCategs > 5) getDiscretePaletteObj(ident.used = ident, palette.used = palette,
-                                                    obj = obj, show.colors = FALSE)
+    cols <- if (NtCategs > 5) {
+      getDiscretePaletteObj(
+        ident.used = ident, palette.used = palette,
+        obj = obj, show.colors = FALSE
+      )
+    }
   }
   if (!is.null(highlight.these)) {
     cols <- "lightgrey"
@@ -1929,9 +1947,9 @@ clUMAP <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     umapHiLightSel(obj = combined.obj, COI = c("0", "1"), res.cl = "resolution_0.8")
-#'   }
+#' if (interactive()) {
+#'   umapHiLightSel(obj = combined.obj, COI = c("0", "1"), res.cl = "resolution_0.8")
+#' }
 #' }
 #'
 #' @seealso \code{\link[Seurat]{DimPlot}}
@@ -1967,11 +1985,14 @@ umapHiLightSel <- function(obj = combined.obj,
 #' }
 #' }
 #' @export
-DimPlot.ClusterNames <- function(obj = combined.obj
-                                 , ident = "cl.names.top.gene.res.0.5",
-                                 reduction = "umap", title = ident, ...) {
-  Seurat::DimPlot(object = obj, reduction = reduction, group.by = ident,
-                  label = TRUE, repel = TRUE, ...) + NoLegend() + ggtitle(title)
+DimPlot.ClusterNames <- function(
+    obj = combined.obj,
+    ident = "cl.names.top.gene.res.0.5",
+    reduction = "umap", title = ident, ...) {
+  Seurat::DimPlot(
+    object = obj, reduction = reduction, group.by = ident,
+    label = TRUE, repel = TRUE, ...
+  ) + NoLegend() + ggtitle(title)
 }
 
 
@@ -2024,9 +2045,9 @@ multiFeaturePlot.A4 <- function(
     layout = c("tall", "wide", FALSE)[2],
     colors = c("grey", "red"),
     nr.Col = 2, nr.Row = 4,
-    raster = if(ncol(obj) > 1e5) TRUE else NULL,
+    raster = if (ncol(obj) > 1e5) TRUE else NULL,
     cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
-    cex.min = if(raster) 1 else NULL,
+    cex.min = if (raster) 1 else NULL,
     gene.min.exp = "q01", gene.max.exp = "q99", subdir = TRUE,
     prefix = NULL, suffix = NULL,
     background_col = "white",
@@ -2034,20 +2055,20 @@ multiFeaturePlot.A4 <- function(
     saveGeneList = FALSE,
     w = wA4, h = hA4, scaling = 1,
     format = c("jpg", "pdf", "png")[1],
-    ...
-    ) {
-
+    ...) {
   tictoc::tic()
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- "genes"
   final.foldername <- FixPlotName(paste0(foldername, "-", plot.reduction, suffix))
   if (subdir) create_set_SubDir(final.foldername, "/")
 
-  list.of.genes.found <- check.genes(list.of.genes = list.of.genes, obj = obj,
-                                     assay.slot = intersectionAssay, makeuppercase = FALSE)
+  list.of.genes.found <- check.genes(
+    list.of.genes = list.of.genes, obj = obj,
+    assay.slot = intersectionAssay, makeuppercase = FALSE
+  )
   DefaultAssay(obj) <- intersectionAssay
 
-  if(!is.null(cex.min)) cex <- max(cex.min, cex)
+  if (!is.null(cex.min)) cex <- max(cex.min, cex)
 
   if (layout == "tall") {
     w <- wA4 * scaling
@@ -2084,9 +2105,11 @@ multiFeaturePlot.A4 <- function(
 
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
     # cowplot::ggsave2(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
-    cowplot::save_plot(plot = pltGrid, filename = plotname,
-                       base_width = w, base_height = h,
-                       bg = background_col)
+    cowplot::save_plot(
+      plot = pltGrid, filename = plotname,
+      base_width = w, base_height = h,
+      bg = background_col
+    )
   }
 
   if (subdir) MarkdownReports::create_set_OutDir(ParentDir)
@@ -2156,9 +2179,7 @@ multiSingleClusterHighlightPlots.A4 <- function(
     saveGeneList = FALSE,
     w = wA4, h = hA4, scaling = 1,
     format = c("jpg", "pdf", "png")[1],
-    ...
-    ) {
-
+    ...) {
   tictoc::tic()
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- "clusters"
@@ -2194,17 +2215,22 @@ multiSingleClusterHighlightPlots.A4 <- function(
 
     plot.list <- list()
     for (i in seq(clusters_on_this_page)) {
-      cl <- clusters_on_this_page[i]; message(cl)
-      plot.list[[i]] <- clUMAP(ident = ident, obj = obj,
-                                             highlight.clusters = cl, label = FALSE, legend = F, save.plot = F,
-                                             plotname = plotname, cols = colors, h = h, w = w, ...)
+      cl <- clusters_on_this_page[i]
+      message(cl)
+      plot.list[[i]] <- clUMAP(
+        ident = ident, obj = obj,
+        highlight.clusters = cl, label = FALSE, legend = FALSE, save.plot = FALSE,
+        plotname = plotname, cols = colors, h = h, w = w, ...
+      )
     }
 
     # Customize plot appearance
     for (i in 1:length(plot.list)) {
       plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
-      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] +
+      if (aspect.ratio) {
+        plot.list[[i]] <- plot.list[[i]] +
           ggplot2::coord_fixed(ratio = aspect.ratio)
+      }
     }
 
     # Save plots
@@ -2249,7 +2275,6 @@ multiFeatureHeatmap.A4 <- function(
     gene.min.exp = "q5", gene.max.exp = "q95",
     jpeg.res = 225, jpeg.q = 90,
     ...) {
-
   tictoc::tic()
   list.of.genes <- check.genes(list.of.genes, obj = obj)
 
@@ -2262,10 +2287,10 @@ multiFeatureHeatmap.A4 <- function(
     jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
     try(
       FeatureHeatmap(obj,
-                     features.plot = genes, group.by = group.cells.by,
-                     reduction.use = plot.reduction, do.return = FALSE,
-                     sep.scale = sep_scale, min.exp = gene.min.exp, max.exp = gene.max.exp,
-                     pt.size = cex, key.position = "top", ...
+        features.plot = genes, group.by = group.cells.by,
+        reduction.use = plot.reduction, do.return = FALSE,
+        sep.scale = sep_scale, min.exp = gene.min.exp, max.exp = gene.max.exp,
+        pt.size = cex, key.position = "top", ...
       ),
       silent = FALSE
     )
@@ -2332,9 +2357,7 @@ multi_clUMAP.A4 <- function(
     saveGeneList = FALSE,
     w = wA4, h = hA4, scaling = 1,
     format = c("jpg", "pdf", "png")[1],
-    ...
-) {
-
+    ...) {
   message("> > > > > Plotting multi_clUMAP.A4")
   message("Duplicate of prettier qClusteringUMAPS, partially")
   tictoc::tic()
@@ -2358,7 +2381,7 @@ multi_clUMAP.A4 <- function(
     plot.list <- list()
     for (i in seq(idents_on_this_page)) {
       # browser()
-      if(length(label) == 1) {
+      if (length(label) == 1) {
         label_X <- label
         legend_X <- legend
       } else {
@@ -2366,9 +2389,12 @@ multi_clUMAP.A4 <- function(
         legend_X <- legend[i]
       }
 
-      ident_X <- idents_on_this_page[i]; imessage("plotting:", ident_X)
-      plot.list[[i]] <- clUMAP(ident = ident_X, obj = obj, plotname = label_X,
-                               label = label_X, legend = legend_X, save.plot = F,h = h, w = w, ...)
+      ident_X <- idents_on_this_page[i]
+      imessage("plotting:", ident_X)
+      plot.list[[i]] <- clUMAP(
+        ident = ident_X, obj = obj, plotname = label_X,
+        label = label_X, legend = legend_X, save.plot = FALSE, h = h, w = w, ...
+      )
     }
 
     # Customize plot appearance
@@ -2407,7 +2433,7 @@ multi_clUMAP.A4 <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   qClusteringUMAPS()
+#' qClusteringUMAPS()
 #' }
 #'
 #' @export
@@ -2418,12 +2444,13 @@ qClusteringUMAPS <- function(
     dims = na.omit.strip(GetClusteringRuns(obj)[1:4]),
     prefix = "Clustering.UMAP.Res",
     suffix = "",
-    title = sppu(prefix,
-                 as.numeric(stringr::str_extract(dims, "\\d+\\.\\d+$")),
-                 suffix),
+    title = sppu(
+      prefix,
+      as.numeric(stringr::str_extract(dims, "\\d+\\.\\d+$")),
+      suffix
+    ),
     nrow = 2, ncol = 2,
     ...) {
-
   message("> > > > > Plotting qClusteringUMAPS")
   message("Duplicate of less pretty multi_clUMAP.A4, partially")
 
@@ -2466,15 +2493,17 @@ qClusteringUMAPS <- function(
 #' @return Invisible. The function generates plots and saves them in the specified folder.
 #'
 #' @examples
-#' plotQUMAPsInAFolder(genes = c("Gene1", "Gene2"), obj = combined.obj,
-#'                     foldername = "MyGenePlots", intersectionAssay = 'RNA',
-#'                     plot.reduction = 'umap')
+#' plotQUMAPsInAFolder(
+#'   genes = c("Gene1", "Gene2"), obj = combined.obj,
+#'   foldername = "MyGenePlots", intersectionAssay = "RNA",
+#'   plot.reduction = "umap"
+#' )
 #'
 #' @importFrom MarkdownReports create_set_SubDir create_set_OutDir
 #' @export
 
 plotQUMAPsInAFolder <- function(genes, obj = combined.obj, foldername = NULL,
-                                intersectionAssay = 'RNA', plot.reduction = 'umap', ...) {
+                                intersectionAssay = "RNA", plot.reduction = "umap", ...) {
   # Input checks
   stopifnot(is.character(genes))
   stopifnot(is.null(foldername) || is.character(foldername))
@@ -2483,9 +2512,11 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj, foldername = NULL,
 
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- deparse(substitute(genes))
-  MarkdownReports::create_set_SubDir(paste0(foldername,'-', plot.reduction), '/')
-  list.of.genes.found <- check.genes(list.of.genes = genes, obj = obj,
-                                     assay.slot = intersectionAssay, makeuppercase = FALSE)
+  MarkdownReports::create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
+  list.of.genes.found <- check.genes(
+    list.of.genes = genes, obj = obj,
+    assay.slot = intersectionAssay, makeuppercase = FALSE
+  )
 
   for (g in list.of.genes.found) {
     message(g)
@@ -2516,9 +2547,9 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj, foldername = NULL,
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = 10)
-#'   }
+#' if (interactive()) {
+#'   PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = 10)
+#' }
 #' }
 #'
 #' @export
@@ -2558,7 +2589,7 @@ PlotTopGenesPerCluster <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   qQC.plots.BrainOrg()
+#' qQC.plots.BrainOrg()
 #' }
 #'
 #' @export
@@ -2571,7 +2602,6 @@ qQC.plots.BrainOrg <- function(
     title = sppu(prefix, QC.Features, suffix),
     nrow = 2, ncol = 2,
     ...) {
-
   message("> > > > > Plotting qQC.plots.BrainOrg")
 
   # Check that the QC markers are in the object
@@ -2580,12 +2610,13 @@ qQC.plots.BrainOrg <- function(
   stopifnot(length(n.found) > 1)
 
   # Count the number of NAs in specified columns
-  na_counts <- sapply(X = obj@meta.data[ , QC.Features], function(x) sum(is.na(x)))
+  na_counts <- sapply(X = obj@meta.data[, QC.Features], function(x) sum(is.na(x)))
 
   # Raise a warning if there are any NAs
   if (sum(na_counts) > 0) {
-    warning(sprintf("There are %d NA values found\n", na_counts ),
-            immediate. = TRUE)
+    warning(sprintf("There are %d NA values found\n", na_counts),
+      immediate. = TRUE
+    )
   }
 
   px <- list(
@@ -2617,8 +2648,8 @@ qQC.plots.BrainOrg <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   qMarkerCheck.BrainOrg(combined.obj)
-#'   qMarkerCheck.BrainOrg(combined.obj, custom.genes = c("Gene1", "Gene2"))
+#' qMarkerCheck.BrainOrg(combined.obj)
+#' qMarkerCheck.BrainOrg(combined.obj, custom.genes = c("Gene1", "Gene2"))
 #' }
 #'
 #' @export
@@ -2626,7 +2657,6 @@ qQC.plots.BrainOrg <- function(
 
 qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
                                   suffix = "") {
-
   message("> > > > > Plotting qMarkerCheck.BrainOrg")
 
   Signature.Genes.Top16 <- if (!isFALSE(custom.genes)) {
@@ -2634,15 +2664,15 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
   } else {
     Signature.Genes.Top16 <- c(
       `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
-      , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
-      , Interneurons = "ERBB4", Interneurons = "SCGN"
-      , `Intermediate progenitor` = "EOMES" # ,  `Intermediate progenitor1` = "TAC3"
-      , `S-phase` = "TOP2A", `G2M-phase` = 'H4C3' # formerly: HIST1H4C
+      , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1",
+      Interneurons = "ERBB4", Interneurons = "SCGN",
+      `Intermediate progenitor` = "EOMES" # ,  `Intermediate progenitor1` = "TAC3"
+      , `S-phase` = "TOP2A", `G2M-phase` = "H4C3" # formerly: HIST1H4C
       , `oRG` = "HOPX" # , `oRG` = "ID4" # oRG outer radial glia
       # , Astroglia = "GFAP"
-      , Astrocyte = "S100B", `Hypoxia/Stress` = "DDIT4"
-      , `Choroid.Plexus` = "TTR", `Low-Quality` = "POLR2A"
-      , `Mesenchyme` = "DCN", Glycolytic = "PDK1"
+      , Astrocyte = "S100B", `Hypoxia/Stress` = "DDIT4",
+      `Choroid.Plexus` = "TTR", `Low-Quality` = "POLR2A",
+      `Mesenchyme` = "DCN", Glycolytic = "PDK1"
       # , `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
     )
     print(Signature.Genes.Top16)
@@ -2675,19 +2705,19 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     PlotTopGenes()
-#'   }
+#' if (interactive()) {
+#'   PlotTopGenes()
+#' }
 #' }
 #'
-#' @importFrom checkmate assertClass assertInteger
 #' @export
 
 PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = "expr.q99") {
   message("Using obj@misc$", exp.slot)
   stopifnot(inherits(obj, "Seurat"),
-            "Requires calling calc.q99.Expression.and.set.all.genes before. " =
-              exp.slot %in% names(obj@misc))
+    "Requires calling calc.q99.Expression.and.set.all.genes before. " =
+      exp.slot %in% names(obj@misc)
+  )
 
   Highest.Expressed.Genes <- names(head(sort(obj@misc[[exp.slot]], decreasing = TRUE), n = n))
   multiFeaturePlot.A4(list.of.genes = Highest.Expressed.Genes, foldername = "Highest.Expressed.Genes")
@@ -2715,11 +2745,11 @@ PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = "expr.q99") {
 #'
 #' @examples
 #' \dontrun{
-#'   # Before flipping UMAP coordinates
-#'   clUMAP()
-#'   # Flip UMAP coordinates and visualize again
-#'   combined.obj <- FlipReductionCoordinates(combined.obj)
-#'   clUMAP()
+#' # Before flipping UMAP coordinates
+#' clUMAP()
+#' # Flip UMAP coordinates and visualize again
+#' combined.obj <- FlipReductionCoordinates(combined.obj)
+#' clUMAP()
 #' }
 #'
 #' @export
@@ -2764,9 +2794,11 @@ FlipReductionCoordinates <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction = "umap",
-#'                                      res = "integrated_snn_res.0.5")
-#'   DimPlot.ClusterNames(combined.obj, ident = "integrated_snn_res.0.5.ordered")
+#' combined.obj <- AutoNumber.by.UMAP(
+#'   obj = combined.obj, dim = 1, reduction = "umap",
+#'   res = "integrated_snn_res.0.5"
+#' )
+#' DimPlot.ClusterNames(combined.obj, ident = "integrated_snn_res.0.5.ordered")
 #' }
 #'
 #' @export
@@ -2814,12 +2846,13 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 #' .adjustLayout("tall", 1, 8.27, 11.69, env)
 #' print(env$w) # Should print the width based on "tall" layout scaling.
 #'
-
 .adjustLayout <- function(layout, scaling, wA4, hA4, env) {
   # Input checks
-  stopifnot(is.character(layout), is.numeric(scaling), is.numeric(wA4),
-            is.numeric(hA4), is.environment(env),
-            layout %in% c("tall", "wide"))
+  stopifnot(
+    is.character(layout), is.numeric(scaling), is.numeric(wA4),
+    is.numeric(hA4), is.environment(env),
+    layout %in% c("tall", "wide")
+  )
 
   if (layout == "tall") {
     assign("w", wA4 * scaling, envir = env)
@@ -2866,9 +2899,11 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
 #'
 #' @examples
 #' \dontrun{
-#'   p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) + geom_point()
-#'   p2 <- ggplot(iris, aes(Petal.Length, Petal.Width, color = Species)) + geom_point()
-#'   save2plots.A4(plot_list = list(p1, p2))
+#' p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) +
+#'   geom_point()
+#' p2 <- ggplot(iris, aes(Petal.Length, Petal.Width, color = Species)) +
+#'   geom_point()
+#' save2plots.A4(plot_list = list(p1, p2))
 #' }
 #'
 #' @export
@@ -2879,12 +2914,14 @@ save2plots.A4 <- function(
     nrow = 2, ncol = 1,
     h = hA4 * scale, w = wA4 * scale, ...) {
   if (pname == FALSE) pname <- Stringendo::sppp(substitute(plot_list), suffix)
-  p1 <- cowplot::plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol,
-                           labels = LETTERS[1:length(plot_list)], ...)
+  p1 <- cowplot::plot_grid(
+    plotlist = plot_list, nrow = nrow, ncol = ncol,
+    labels = LETTERS[1:length(plot_list)], ...
+  )
   p1 <- cowplot::ggdraw(p1) +
-    theme(plot.background = element_rect(fill="white", color = NA))
+    theme(plot.background = element_rect(fill = "white", color = NA))
 
-  iprint('Saved as:', pname)
+  iprint("Saved as:", pname)
 
   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
@@ -2907,11 +2944,15 @@ save2plots.A4 <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) + geom_point()
-#'   p2 <- ggplot(mtcars, aes(mpg, disp, color = as.factor(cyl))) + geom_point()
-#'   p3 <- ggplot(mpg, aes(displ, hwy, color = class)) + geom_point()
-#'   p4 <- ggplot(diamonds, aes(carat, price, color = cut)) + geom_point()
-#'   save4plots.A4(plot_list = list(p1, p2, p3, p4))
+#' p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) +
+#'   geom_point()
+#' p2 <- ggplot(mtcars, aes(mpg, disp, color = as.factor(cyl))) +
+#'   geom_point()
+#' p3 <- ggplot(mpg, aes(displ, hwy, color = class)) +
+#'   geom_point()
+#' p4 <- ggplot(diamonds, aes(carat, price, color = cut)) +
+#'   geom_point()
+#' save4plots.A4(plot_list = list(p1, p2, p3, p4))
 #' }
 #'
 #' @export
@@ -2920,17 +2961,18 @@ save2plots.A4 <- function(
 save4plots.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 2,
-    h = wA4 * scale, w = hA4 * scale
-    , ...) {
-
+    h = wA4 * scale, w = hA4 * scale,
+    ...) {
   if (pname == FALSE) pname <- Stringendo::sppp(substitute(plot_list), suffix)
-  p1 <- cowplot::plot_grid(plotlist = plot_list, nrow = nrow, ncol = ncol,
-                           labels = LETTERS[1:length(plot_list)], ...)
+  p1 <- cowplot::plot_grid(
+    plotlist = plot_list, nrow = nrow, ncol = ncol,
+    labels = LETTERS[1:length(plot_list)], ...
+  )
   # https://stackoverflow.com/questions/13691415/change-the-background-color-of-grid-arrange-output
   p1 <- cowplot::ggdraw(p1) +
-    theme(plot.background = element_rect(fill="white", color = NA))
+    theme(plot.background = element_rect(fill = "white", color = NA))
 
-  iprint('Saved as:', pname)
+  iprint("Saved as:", pname)
   # fname <- MarkdownHelpers::ww.FnP_parser(extPNG(pname) )
   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
@@ -3205,9 +3247,9 @@ SavePlotlyAsHtml <- function(plotly_obj, category. = category, suffix. = NULL) {
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
-#'   }
+#' if (interactive()) {
+#'   obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
+#' }
 #' }
 #'
 #' @export
@@ -3236,10 +3278,12 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { #
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10,
-#'     dimensions = 2:3, reduction = "umap")
-#'   }
+#' if (interactive()) {
+#'   combined.obj <- SetupReductionsNtoKdimensions(
+#'     obj = combined.obj, nPCs = 10,
+#'     dimensions = 2:3, reduction = "umap"
+#'   )
+#' }
 #' }
 #'
 #' @export
@@ -3274,12 +3318,12 @@ SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", d
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
-#'     qUMAP()
-#'     combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
-#'     qUMAP()
-#'   }
+#' if (interactive()) {
+#'   combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
+#'   qUMAP()
+#'   combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
+#'   qUMAP()
+#' }
 #' }
 #'
 #' @export
@@ -3459,7 +3503,8 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
   stopifnot(is.numeric(cex.cor) && cex.cor > 0)
   stopifnot(method %in% c("pearson", "kendall", "spearman"))
 
-  usr <- par("usr"); on.exit(par(usr))
+  usr <- par("usr")
+  on.exit(par(usr))
   par(usr = c(0, 1, 0, 1))
   r <- abs(cor(x, y, method = method, use = "complete.obs"))
   txt <- format(c(r, 0.123456789), digits = digits)[1]
@@ -3467,9 +3512,11 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
   if (missing(cex.cor)) cex <- 0.8 / strwidth(txt)
 
   test <- cor.test(x, y, method = method)
-  Signif <- symnum(test$p.value, corr = FALSE, na = FALSE,
-                   cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
-                   symbols = c("***", "**", "*", ".", " "))
+  Signif <- symnum(test$p.value,
+    corr = FALSE, na = FALSE,
+    cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
+    symbols = c("***", "**", "*", ".", " ")
+  )
 
   cex <- ifelse(missing(cex.cor), 0.8 / strwidth(txt), cex.cor)
   text(0.5, 0.5, txt, cex = cex * r)
@@ -3518,12 +3565,14 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
 #' }
 #' @export
 suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
-                                   repel = TRUE, plotWidth = 7, plotHeight = 5, save = T,
+                                   repel = TRUE, plotWidth = 7, plotHeight = 5, save = TRUE,
                                    suffix = kpp("nVF", .getNrScaledFeatures(obj)),
                                    ...) {
   # Input validation
-  stopifnot(is(obj, "Seurat"), is.function(ppp), is.logical(repel),
-            is.numeric(plotWidth), is.numeric(plotHeight))
+  stopifnot(
+    is(obj, "Seurat"), is.function(ppp), is.logical(repel),
+    is.numeric(plotWidth), is.numeric(plotHeight)
+  )
 
   obj.name <- deparse(substitute(obj))
 
@@ -3534,17 +3583,20 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
 
   # Assuming LabelPoints is defined elsewhere and available for use.
   TopVarGenes <- VariableFeatures(obj)[1:NrVarGenes]
-  labeledPlot <- LabelPoints(plot = plot1, points = TopVarGenes, repel = repel,
-                             xnudge = 0, ynudge = 0, max.overlaps=15)
+  labeledPlot <- LabelPoints(
+    plot = plot1, points = TopVarGenes, repel = repel,
+    xnudge = 0, ynudge = 0, max.overlaps = 15
+  )
   print(labeledPlot)
-  filename <- ppp("Var.genes", obj.name, suffix, idate(), 'png')
+  filename <- ppp("Var.genes", obj.name, suffix, idate(), "png")
 
   # if (save) ggplot2::ggsave(plot = labeledPlot, filename = filename, width = plotWidth, height = plotHeight)
-  if (save) qqSave(ggobj = labeledPlot,
-                   # title = plotname,
-                   fname = filename, ext = ext,
-                   w = plotWidth, h = plotHeight, also.pdf = F)
-
+  if (save) {
+    qqSave(
+      ggobj = labeledPlot,
+      # title = plotname,
+      fname = filename, ext = ext,
+      w = plotWidth, h = plotHeight, also.pdf = FALSE
+    )
+  }
 }
-
-

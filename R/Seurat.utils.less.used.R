@@ -82,9 +82,9 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", 
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     umapNamedClusters(obj = combined.obj, metaD.colname = "metaD.colname.labeled")
-#'   }
+#' if (interactive()) {
+#'   umapNamedClusters(obj = combined.obj, metaD.colname = "metaD.colname.labeled")
+#' }
 #' }
 #'
 #' @export
@@ -145,8 +145,8 @@ AutoNumber.by.PrinCurve <- function(
   fit <- princurve::principal_curve(x = as.matrix(coord.umap))
   if (plotit) {
     plot(fit,
-         xlim = range(coord.umap[, 1]), ylim = range(coord.umap[, 2]),
-         main = "principal_curve"
+      xlim = range(coord.umap[, 1]), ylim = range(coord.umap[, 2]),
+      main = "principal_curve"
     )
     # points(fit)
     points(coord.umap, pch = 18, cex = .25)
@@ -309,7 +309,7 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
   }
   if (is.null(channelName)) {
     channelName <- ifelse(is.null(names(dataDir)), dataDir,
-                          names(dataDir)
+      names(dataDir)
     )
   }
 
@@ -413,8 +413,3 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 save2umaps.A4 <- function(...) .Deprecated("save2plots.A4()")
 
 save4umaps.A4 <- function(...) .Deprecated("save4plots.A4()")
-
-
-
-
-

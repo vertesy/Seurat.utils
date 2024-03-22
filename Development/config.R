@@ -12,7 +12,7 @@ DESCRIPTION <- list(
     htmlwidgets, MarkdownHelpers, MarkdownReports, Matrix, matrixStats, princurve, pheatmap,
     R.utils, readr, reshape2, scales, SoupX, sparseMatrixStats, stringr, tibble, tictoc,
     plotly, rstudioapi, vroom, job, qs, foreach, tidyverse",
-  suggests = "SoupX, princurve, EnhancedVolcano, DatabaseLinke.R",
+  suggests = "SoupX, princurve, EnhancedVolcano, DatabaseLinke.R, RColorBrewer, fs, gplots",
 
   author.given = "Abel",
   author.family = "Vertesy",

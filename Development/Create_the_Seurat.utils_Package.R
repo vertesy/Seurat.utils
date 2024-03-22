@@ -12,7 +12,7 @@ r$PackageTools()
 # devtools::load_all("~/GitHub/Packages/PackageTools")
 
 # Setup ------------------------
-repository.dir <- "~/GitHub/Packages/Seurat.utils/"
+repository.dir <- "~/GitHub/Packages/Seurat.utils"
 config.path <- file.path(repository.dir, "Development/config.R")
 
 "TAKE A LOOK AT"
@@ -28,11 +28,11 @@ PackageTools::document_and_create_package(repository.dir, config_file = 'config.
 source('~/GitHub/Packages/Rocinante/R/Rocinante.R')
 rprofile()
 devtools::install_local(repository.dir, upgrade = F)
-PackageTools:::.parse_description(config_path = config_path)
+PackageTools:::.parse_description(config_path = config.path)
 
 # Test if you can install from github ------------------------------------------------
 remote.path <- file.path(DESCRIPTION$'github.user', package.name)
-pak::pkg_install(remote.path)
+# pak::pkg_install(remote.path)
 
 devtools::install_github(repo = "vertesy/Seurat.utils", upgrade = F)
 

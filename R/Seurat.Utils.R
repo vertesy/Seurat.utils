@@ -75,8 +75,8 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
 #'
 #' @export
 IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown = 10,
-                                      species_ = "human", EnforceUnique = T, ShowStats = T,
-                                      strict = TRUE, verbose = T) {
+                                      species_ = "human", EnforceUnique = TRUE, ShowStats = TRUE,
+                                      strict = TRUE, verbose = TRUE) {
   message(">>> Running IntersectGeneLsWithObject()")
   # "formerly IntersectWithExpressed(), which still exist in gruffi."
 
@@ -110,7 +110,7 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
 
   # Finding genes that are missing in the Seurat object
   missing_in_obj <- setdiff(genes, rownames(obj))
-  if(verbose) {
+  if (verbose) {
     Stringendo::iprint(
       length(missing_in_obj), " (of ", length(genes),
       ") genes are MISSING from the Seurat object with (", length(rownames(obj)),
@@ -152,17 +152,17 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
 #'
 #' @export
 SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
-                                          above = 0, sort = F, strict = FALSE) {
-  message('Running SelectHighlyExpressedGenesq99()...')
+                                          above = 0, sort = FALSE, strict = FALSE) {
+  message("Running SelectHighlyExpressedGenesq99()...")
   stopifnot(is.character(genes), is(obj, "Seurat"), is.numeric(above))
 
-  genes.expr <- IntersectGeneLsWithObject(genes = genes, obj = obj, verbose = F, strict = strict)
-  if(length(genes.expr) < length(genes)) message("Some genes not expressed. Recommend to IntersectGeneLsWithObject() first.")
+  genes.expr <- IntersectGeneLsWithObject(genes = genes, obj = obj, verbose = FALSE, strict = strict)
+  if (length(genes.expr) < length(genes)) message("Some genes not expressed. Recommend to IntersectGeneLsWithObject() first.")
 
   q99.expression <- obj@misc$expr.q99
-  print(pc_TRUE(q99.expression==0, suffix ="of genes at q99.expression are zero" ))
+  print(pc_TRUE(q99.expression == 0, suffix = "of genes at q99.expression are zero"))
   genes.expr.high <- q99.expression[genes.expr]
-  if(sort) genes.expr.high <- sort.decreasing(genes.expr.high)
+  if (sort) genes.expr.high <- sort.decreasing(genes.expr.high)
   print(genes.expr.high)
   genes.filt <- names(genes.expr.high)[genes.expr.high > above]
 
@@ -324,7 +324,6 @@ addToMiscOrToolsSlot <- function(obj, pocket_name = "misc",
 #'
 #' @export
 showToolsSlots <- function(obj, max.level = 1, subslot = NULL, ...) {
-
   slotX <- if (is.null(subslot)) obj@tools else obj@tools[[subslot]]
   str(slotX, max.level = max.level, ...)
 
@@ -455,8 +454,10 @@ calc.q99.Expression.and.set.all.genes <- function(
   # if (set.all.genes) obj@misc$'all.genes' = all.genes
   if (set.misc) obj@misc[[slot_name]] <- expr.q99
 
-  iprint("Quantile", quantileX, "is now stored under obj@misc$all.genes and $", slot_name,
-         " Please execute all.genes <- obj@misc$all.genes.")
+  iprint(
+    "Quantile", quantileX, "is now stored under obj@misc$all.genes and $", slot_name,
+    " Please execute all.genes <- obj@misc$all.genes."
+  )
   return(obj)
 }
 
@@ -855,8 +856,10 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene = "ACTB", filterZe
   } else {
     pos.GOI <- which(names(expr.all) == gene)
     quantile.GOI <- ecdf(expr.all)(expr.all)[pos.GOI]
-    title <- paste(gene, "is in the", Stringendo::percentage_formatter(quantile.GOI),
-                   "quantile of 'q90-av' expression. \n There are", counts, "counts")
+    title <- paste(
+      gene, "is in the", Stringendo::percentage_formatter(quantile.GOI),
+      "quantile of 'q90-av' expression. \n There are", counts, "counts"
+    )
   }
   suppressWarnings(
     MarkdownReports::whist(expr.all,
@@ -1028,11 +1031,10 @@ ww.get.1st.Seur.element <- function(obj) {
 #' @importFrom MarkdownHelpers ww.assign_to_global
 #'
 #' @export
-recallAllGenes <- function(obj = combined.obj, overwrite = F) { # all.genes set by calc.q99.Expression.and.set.all.genes()
+recallAllGenes <- function(obj = combined.obj, overwrite = FALSE) { # all.genes set by calc.q99.Expression.and.set.all.genes()
   obj <- ww.get.1st.Seur.element(obj)
 
   if ("all.genes" %in% names(obj@misc)) {
-
     if (!exists("all.genes") | overwrite) {
       all.genes <- obj@misc$all.genes
       print(head(unlist(all.genes)))
@@ -1040,7 +1042,6 @@ recallAllGenes <- function(obj = combined.obj, overwrite = F) { # all.genes set 
     } else {
       print("  ->   Variable 'all.genes' exits in the global namespace, and overwrite is: FALSE")
     }
-
   } else {
     print("  ->   Slot 'all.genes' does not exist in obj@misc.")
     hits <- grepv(pattern = "expr.", names(obj@misc))
@@ -1180,9 +1181,9 @@ recall.genes.ls <- function(obj = combined.obj, overwrite = FALSE) { # genes.ls
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     save.parameters(obj = combined.obj, params = p)
-#'   }
+#' if (interactive()) {
+#'   save.parameters(obj = combined.obj, params = p)
+#' }
 #' }
 #'
 #' @export
@@ -1259,28 +1260,33 @@ create_scCombinedMeta <- function(experiment, project_ = getProject()) {
 #'
 #' @export
 copyMiscElements <- function(obj.from, obj.to, elements.needed, overwrite = TRUE) {
-
   obj.from <- ww.get.1st.Seur.element(obj.from)
 
-  stopifnot(inherits(obj.from, "Seurat"),
-            inherits(obj.to, "Seurat"))
+  stopifnot(
+    inherits(obj.from, "Seurat"),
+    inherits(obj.to, "Seurat")
+  )
 
   # Check for missing elements in obj.to@misc
   elements.from <- names(obj.from@misc)
   missing <- setdiff(elements.needed, elements.from)
   if (length(missing) > 0) {
-    warning("Missing elements in obj.from@misc: ", paste(missing, collapse = ", "), immediate. = T)
+    warning("Missing elements in obj.from@misc: ", paste(missing, collapse = ", "), immediate. = TRUE)
   }
 
   # Check for existing elements in obj.to@misc
   elements.already.exisiting <- intersect(elements.needed, names(obj.to@misc))
   if (length(elements.already.exisiting) > 0) {
     if (!overwrite) {
-      stop("The following elements already exist in obj.to@misc and 'overwrite' is FALSE: ",
-           paste(elements.already.exisiting, collapse = ", "))
+      stop(
+        "The following elements already exist in obj.to@misc and 'overwrite' is FALSE: ",
+        paste(elements.already.exisiting, collapse = ", ")
+      )
     } else {
       warning("Overwriting the following elements in obj.to@misc: ",
-              paste(elements.already.exisiting, collapse = ", "), immediate. = T)
+        paste(elements.already.exisiting, collapse = ", "),
+        immediate. = TRUE
+      )
     }
   }
 
@@ -1316,8 +1322,10 @@ copyMiscElements <- function(obj.from, obj.to, elements.needed, overwrite = TRUE
 #' obj.to <- copyCompleteToolsSlots(ls.obj, obj.to, overwrite = TRUE, new.slot = "per.experiment")
 #' @export
 copyCompleteToolsSlots <- function(ls.obj, obj.to, overwrite = TRUE, new.slot = "per.experiment") {
-  stopifnot(inherits(obj.to, "Seurat"),
-            all(sapply(ls.obj, inherits, "Seurat")))
+  stopifnot(
+    inherits(obj.to, "Seurat"),
+    all(sapply(ls.obj, inherits, "Seurat"))
+  )
 
   ls.tools <- lapply(ls.obj, function(x) x@tools)
   obj.to@tools[[new.slot]] <- ls.tools
@@ -1350,15 +1358,16 @@ copyCompleteToolsSlots <- function(ls.obj, obj.to, overwrite = TRUE, new.slot = 
 #'
 #' @examples
 #' # Assuming `seurat_obj` is your Seurat object and you want to subset based on cluster 1
-#' subsetted_obj <- subsetSeuObjByIdent(obj = seurat_obj, ident = "your_ident_column",
-#'                                      clusters = c(1), invert = FALSE)
+#' subsetted_obj <- subsetSeuObjByIdent(
+#'   obj = seurat_obj, ident = "your_ident_column",
+#'   clusters = c(1), invert = FALSE
+#' )
 #'
 #' @export
 subsetSeuObjByIdent <- function(
     obj = combined.obj, ident = GetClusteringRuns()[1],
     clusters,
     invert = FALSE) {
-
   # browser()
   # Input checks
   stopifnot(
@@ -1390,14 +1399,20 @@ downsampleSeuObj <- function(obj = ls.Seurat[[i]], fractionCells = 0.25, nCells 
   set.seed(seed)
   if (isFALSE(nCells)) {
     cellIDs.keep <- sampleNpc(metaDF = obj@meta.data, pc = fractionCells)
-    iprint(length(cellIDs.keep), "or", Stringendo::percentage_formatter(fractionCells),
-           "of the cells are kept. Seed:", seed)
+    iprint(
+      length(cellIDs.keep), "or", Stringendo::percentage_formatter(fractionCells),
+      "of the cells are kept. Seed:", seed
+    )
   } else if (nCells > 1) {
     nKeep <- min(ncol(obj), nCells)
     # print(nKeep)
     cellIDs.keep <- sample(colnames(obj), size = nKeep, replace = FALSE)
-    if (nKeep < nCells) iprint("Only", nCells,
-                               "cells were found in the object, so downsampling is not possible.")
+    if (nKeep < nCells) {
+      iprint(
+        "Only", nCells,
+        "cells were found in the object, so downsampling is not possible."
+      )
+    }
   }
   obj <- subset(x = obj, cells = cellIDs.keep) # downsample
   return(obj)
@@ -1417,9 +1432,7 @@ downsampleSeuObj <- function(obj = ls.Seurat[[i]], fractionCells = 0.25, nCells 
 downsampleSeuObj.and.Save <- function(
     obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir,
     min.features = p$"min.features", suffix = fraction,
-    nthreads = if(exists('CBE.params')) CBE.params$'cpus' else 12
-    ) {
-
+    nthreads = if (exists("CBE.params")) CBE.params$"cpus" else 12) {
   obj_Xpc <- downsampleSeuObj(obj = obj, fractionCells = fraction, seed = seed)
   nr.cells.kept <- ncol(obj_Xpc)
 
@@ -1462,10 +1475,9 @@ downsampleSeuObj.and.Save <- function(
 #'
 #' @export
 downsampleSeuObjByIdentAndMaxcells <- function(obj, ident,
-                                                 max.cells,
-                                                 verbose = TRUE,
-                                                 seed = 1989) {
-
+                                               max.cells,
+                                               verbose = TRUE,
+                                               seed = 1989) {
   stopifnot(
     "obj must be a Seurat object" = inherits(obj, "Seurat"),
     "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
@@ -1491,17 +1503,20 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj, ident,
   Idents(obj) <- ident
   obj2 <- subset(x = obj, cells = sampledCells)
 
-  subb <- paste0("From ", ncol(obj)," reduced to " , ncol(obj2), " cells.")
+  subb <- paste0("From ", ncol(obj), " reduced to ", ncol(obj2), " cells.")
   message(subb)
 
   if (verbose) {
     cat("Total cells sampled:", length(sampledCells), "\n")
     nr_remaining_cells <- orig_cells <- table(data)
-    nr_remaining_cells[nr_remaining_cells>max.cells] <- max.cells
-    fr_remaining_per_cluster <- iround(nr_remaining_cells/orig_cells)
+    nr_remaining_cells[nr_remaining_cells > max.cells] <- max.cells
+    fr_remaining_per_cluster <- iround(nr_remaining_cells / orig_cells)
     print(fr_remaining_per_cluster)
-    pobj <- qbarplot(vec = fr_remaining_per_cluster, subtitle = subb, label = fr_remaining_per_cluster,
-                     ylab = "fr. of cells", save = F); print(pobj)
+    pobj <- qbarplot(
+      vec = fr_remaining_per_cluster, subtitle = subb, label = fr_remaining_per_cluster,
+      ylab = "fr. of cells", save = FALSE
+    )
+    print(pobj)
   }
   return(obj2)
 }
@@ -1522,9 +1537,9 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj, ident,
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     combined.obj <- removeResidualSmallClusters(obj = combined.obj)
-#'   }
+#' if (interactive()) {
+#'   combined.obj <- removeResidualSmallClusters(obj = combined.obj)
+#' }
 #' }
 #'
 #' @export
@@ -1554,8 +1569,10 @@ removeResidualSmallClusters <- function(
 
   all.cells.2.remove <- unique(unlist(cells.to.remove))
   if (length(all.cells.2.remove)) {
-    iprint(">>> a total of", length(all.cells.2.remove),
-           "cells are removed which belonged to a small cluster in any of the identities.")
+    iprint(
+      ">>> a total of", length(all.cells.2.remove),
+      "cells are removed which belonged to a small cluster in any of the identities."
+    )
   } else {
     iprint(">>> No cells are removed because belonging to small cluster.")
   }
@@ -1712,11 +1729,13 @@ removeCellsByUmap <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     downsampledSeuratList <- downsampleListSeuObjsNCells(ls.obj =
-#'                                       list(yourSeuratObj1, yourSeuratObj2), NrCells = 2000)
-#'     downsampledSeuratList <- downsampleListSeuObjsNCells(NrCells = 200)
-#'   }
+#' if (interactive()) {
+#'   downsampledSeuratList <- downsampleListSeuObjsNCells(
+#'     ls.obj =
+#'       list(yourSeuratObj1, yourSeuratObj2), NrCells = 2000
+#'   )
+#'   downsampledSeuratList <- downsampleListSeuObjsNCells(NrCells = 200)
+#' }
 #' }
 #'
 #' @export
@@ -1727,7 +1746,6 @@ removeCellsByUmap <- function(
 downsampleListSeuObjsNCells <- function(
     ls.obj = ls.Seurat, NrCells = p$"dSample.Organoids",
     save_object = FALSE) {
-
   # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
   if (!is.list(ls.obj) & inherits(ls.obj, "Seurat")) ls.obj <- list(ls.obj)
   stopifnot(is.list(ls.obj) & all(sapply(ls.obj, function(x) inherits(x, "Seurat"))))
@@ -1776,9 +1794,9 @@ downsampleListSeuObjsNCells <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     downsampled_objs <- downsampleListSeuObjsPercent(ls.obj = yourListOfSeuratObjects, fraction = 0.1)
-#'   }
+#' if (interactive()) {
+#'   downsampled_objs <- downsampleListSeuObjsPercent(ls.obj = yourListOfSeuratObjects, fraction = 0.1)
+#' }
 #' }
 #'
 #' @export
@@ -1878,9 +1896,9 @@ Add.DE.combined.score <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     combined.obj <- StoreTop25Markers(obj = combined.obj, df_markers = df.markers, res = 0.5)
-#'   }
+#' if (interactive()) {
+#'   combined.obj <- StoreTop25Markers(obj = combined.obj, df_markers = df.markers, res = 0.5)
+#' }
 #' }
 #'
 #' @seealso \code{\link[Seurat]{FindAllMarkers}}, \code{\link[dplyr]{top_n}}
@@ -1890,8 +1908,9 @@ Add.DE.combined.score <- function(
 #' @importFrom dplyr group_by top_n select arrange
 #' @importFrom magrittr `%>%`
 
-StoreTop25Markers <- function(obj = combined.obj
-                              , df_markers = df.markers, res = 0.5) {
+StoreTop25Markers <- function(
+    obj = combined.obj,
+    df_markers = df.markers, res = 0.5) {
   top25.markers <-
     df_markers %>%
     group_by(cluster) %>%
@@ -1920,9 +1939,9 @@ StoreTop25Markers <- function(obj = combined.obj
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     combined.obj <- StoreAllMarkers(obj = combined.obj, df_markers = df.markers, res = 0.5)
-#'   }
+#' if (interactive()) {
+#'   combined.obj <- StoreAllMarkers(obj = combined.obj, df_markers = df.markers, res = 0.5)
+#' }
 #' }
 #'
 #' @export
@@ -1953,9 +1972,9 @@ StoreAllMarkers <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     topMarkersDF <- GetTopMarkersDF(dfDE = df.markers, n = 3)
-#'   }
+#' if (interactive()) {
+#'   topMarkersDF <- GetTopMarkersDF(dfDE = df.markers, n = 3)
+#' }
 #' }
 #'
 #' @seealso \code{\link[Seurat]{FindAllMarkers}}, \code{\link[dplyr]{arrange}},
@@ -2003,9 +2022,9 @@ GetTopMarkersDF <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     topMarkers <- GetTopMarkers(df = df.markers, n = 3)
-#'   }
+#' if (interactive()) {
+#'   topMarkers <- GetTopMarkers(df = df.markers, n = 3)
+#' }
 #' }
 #'
 #' @seealso \code{\link[Seurat]{FindAllMarkers}}, \code{\link[dplyr]{arrange}}, \code{\link[dplyr]{group_by}}
@@ -2016,7 +2035,6 @@ GetTopMarkersDF <- function(
 GetTopMarkers <- function(dfDE = df.markers,
                           n = p$"n.markers",
                           order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]) {
-
   message("Works on active Idents()") # thus we call cluster
   TopMarkers <- dfDE |>
     arrange(desc(!!as.name(order.by))) |>
@@ -2241,10 +2259,10 @@ AutoLabel.KnownMarkers <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   library(Matrix)
-#'   smat <- Matrix(rnorm(1000), nrow = 100, sparse = TRUE)
-#'   cor_res <- sparse.cor(smat)
-#'   print(cor_res$cor)
+#' library(Matrix)
+#' smat <- Matrix(rnorm(1000), nrow = 100, sparse = TRUE)
+#' cor_res <- sparse.cor(smat)
+#' print(cor_res$cor)
 #' }
 #'
 #' @export
@@ -2305,8 +2323,12 @@ Calc.Cor.Seurat <- function(
   qname <- paste0("q", quantileX * 100)
   quantile_name <- kpp("expr", qname)
 
-  if (is.null(obj@misc[[quantile_name]])) iprint("Call: combined.obj <- calc.q99.Expression.and.set.all.genes(combined.obj, quantileX =",
-                                                 quantileX, " first )")
+  if (is.null(obj@misc[[quantile_name]])) {
+    iprint(
+      "Call: combined.obj <- calc.q99.Expression.and.set.all.genes(combined.obj, quantileX =",
+      quantileX, " first )"
+    )
+  }
   genes.HE <- which_names(obj@misc[[quantile_name]] > 0)
   iprint("Pearson correlation is calculated for", length(genes.HE), "HE genes with expr.", qname, ": > 0.")
   tictoc::tic()
@@ -2344,9 +2366,9 @@ Calc.Cor.Seurat <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     plot.Gene.Cor.Heatmap(genes = c("Gene1", "Gene2", "Gene3"), obj = combined.obj)
-#'   }
+#' if (interactive()) {
+#'   plot.Gene.Cor.Heatmap(genes = c("Gene1", "Gene2", "Gene3"), obj = combined.obj)
+#' }
 #' }
 #'
 #' @importFrom Seurat GetAssayData
@@ -2437,11 +2459,11 @@ plot.Gene.Cor.Heatmap <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   # Assuming seurat_obj1 and seurat_obj2 are Seurat objects
-#'   ls_obj <- list(seurat_obj1, seurat_obj2)
-#'   obj_IDs <- c("sample1", "sample2")
-#'   ls_obj_prefixed <- prefix_cells_seurat(ls_obj = ls_obj, obj_IDs = obj_IDs)
-#'   # Now each cell name in seurat_obj1 and seurat_obj2 will be prefixed with 'sample1_' and 'sample2_', respectively.
+#' # Assuming seurat_obj1 and seurat_obj2 are Seurat objects
+#' ls_obj <- list(seurat_obj1, seurat_obj2)
+#' obj_IDs <- c("sample1", "sample2")
+#' ls_obj_prefixed <- prefix_cells_seurat(ls_obj = ls_obj, obj_IDs = obj_IDs)
+#' # Now each cell name in seurat_obj1 and seurat_obj2 will be prefixed with 'sample1_' and 'sample2_', respectively.
 #' }
 #'
 #' @return A list of Seurat objects with updated cell names, incorporating the specified prefixes.
@@ -2544,13 +2566,15 @@ find_prefix_in_cell_IDs <- function(obj, cell_ID_pattern = "[ATCG]{16}.*$") {
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     # Assuming `TopGenes.Classic` is a named vector of top genes and cluster IDs,
-#'     # and `metaD.CL.colname` is a column in metadata with cluster IDs per cell
-#'     cellLabels <- seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic,
-#'       clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname))
-#'     # `cellLabels` now contains labels for each cell in the format "GeneName.ClusterID"
-#'   }
+#' if (interactive()) {
+#'   # Assuming `TopGenes.Classic` is a named vector of top genes and cluster IDs,
+#'   # and `metaD.CL.colname` is a column in metadata with cluster IDs per cell
+#'   cellLabels <- seu.Make.Cl.Label.per.cell(
+#'     TopGenes = TopGenes.Classic,
+#'     clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname)
+#'   )
+#'   # `cellLabels` now contains labels for each cell in the format "GeneName.ClusterID"
+#' }
 #' }
 #'
 #' @export
@@ -2575,10 +2599,10 @@ seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) {
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     # Assuming `combined.obj` is a Seurat object with computed variable genes
-#'     varGenes <- GetMostVarGenes(obj = combined.obj, nGenes = 100)
-#'   }
+#' if (interactive()) {
+#'   # Assuming `combined.obj` is a Seurat object with computed variable genes
+#'   varGenes <- GetMostVarGenes(obj = combined.obj, nGenes = 100)
+#' }
 #' }
 #'
 #' @export
@@ -2604,11 +2628,11 @@ GetMostVarGenes <- function(obj, nGenes = p$nVarGenes) {
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     # Assuming `combined.obj` is your Seurat object
-#'     gene.name.check(Seu.obj = combined.obj)
-#'     # This will print examples of gene names containing '-', '_', '.', and '.AS[1-9]'
-#'   }
+#' if (interactive()) {
+#'   # Assuming `combined.obj` is your Seurat object
+#'   gene.name.check(Seu.obj = combined.obj)
+#'   # This will print examples of gene names containing '-', '_', '.', and '.AS[1-9]'
+#' }
 #' }
 #'
 #' @seealso \code{\link[Seurat]{GetAssayData}}
@@ -2659,13 +2683,13 @@ gene.name.check <- function(Seu.obj) {
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     # Check for the presence of a gene name in uppercase
-#'     check.genes(list.of.genes = "top2a", makeuppercase = TRUE, obj = combined.obj)
+#' if (interactive()) {
+#'   # Check for the presence of a gene name in uppercase
+#'   check.genes(list.of.genes = "top2a", makeuppercase = TRUE, obj = combined.obj)
 #'
-#'     # Check for a gene name with verbose output and HGNC lookup
-#'     check.genes(list.of.genes = "VGLUT2", verbose = TRUE, HGNC.lookup = TRUE, obj = combined.obj)
-#'   }
+#'   # Check for a gene name with verbose output and HGNC lookup
+#'   check.genes(list.of.genes = "VGLUT2", verbose = TRUE, HGNC.lookup = TRUE, obj = combined.obj)
+#' }
 #' }
 #'
 #' @seealso \code{\link[Seurat]{GetAssayData}}, \code{\link[DatabaseLinke.R]{qHGNC}}
@@ -2686,14 +2710,16 @@ check.genes <- function(
   missingGenes <- setdiff(list.of.genes, all_genes)
   if (length(missingGenes) > 0) {
     if (verbose) {
-      iprint(length(missingGenes), "or", Stringendo::percentage_formatter(length(missingGenes) / length(list.of.genes)),
-             "genes not found in the data, e.g:", head(missingGenes, n = 10))
+      iprint(
+        length(missingGenes), "or", Stringendo::percentage_formatter(length(missingGenes) / length(list.of.genes)),
+        "genes not found in the data, e.g:", head(missingGenes, n = 10)
+      )
     }
     if (HGNC.lookup) {
       if (exists("qHGNC", mode = "function")) {
         try(DatabaseLinke.R::qHGNC(missingGenes))
       } else {
-        warning("DatabaseLinke.R's qHGNC() function is needed, please install from github.", immediate. = T)
+        warning("DatabaseLinke.R's qHGNC() function is needed, please install from github.", immediate. = TRUE)
       }
     }
   }
@@ -2715,11 +2741,11 @@ check.genes <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     # Assuming `org` is a Seurat object with zero-based cluster indexing
-#'     org <- fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
-#'     # Now, `org` has its cluster indices in the 'res.0.6' metadata column adjusted to one-based indexing
-#'   }
+#' if (interactive()) {
+#'   # Assuming `org` is a Seurat object with zero-based cluster indexing
+#'   org <- fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
+#'   # Now, `org` has its cluster indices in the 'res.0.6' metadata column adjusted to one-based indexing
+#' }
 #' }
 #'
 #' @export
@@ -2750,11 +2776,11 @@ fixZeroIndexing.seurat <- function(ColName.metadata = "res.0.6", obj = org) {
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     # Assuming `combined.obj` is your Seurat object
-#'     fractionInTranscriptome <- CalculateFractionInTranscriptome(geneset = c("MALAT1", "GAPDH"), obj = combined.obj)
-#'     # This will return the fraction of MALAT1 and GAPDH in the transcriptome of each cell
-#'   }
+#' if (interactive()) {
+#'   # Assuming `combined.obj` is your Seurat object
+#'   fractionInTranscriptome <- CalculateFractionInTranscriptome(geneset = c("MALAT1", "GAPDH"), obj = combined.obj)
+#'   # This will return the fraction of MALAT1 and GAPDH in the transcriptome of each cell
+#' }
 #' }
 #'
 #' @note This function calls `check.genes` to verify the existence of the specified genes within the Seurat object.
@@ -2765,8 +2791,8 @@ fixZeroIndexing.seurat <- function(ColName.metadata = "res.0.6", obj = org) {
 #' @export
 #'
 CalculateFractionInTrome <- function(
-    genesCalc.Cor.Seuratet = c("MALAT1")
-    , obj = combined.obj,
+    genesCalc.Cor.Seuratet = c("MALAT1"),
+    obj = combined.obj,
     dataslot = c("counts", "data")[2]) {
   warning("    >>>> Use addMetaFraction() <<<<", immediate. = TRUE)
   geneset <- check.genes(list.of.genes = geneset)
@@ -2800,8 +2826,9 @@ CalculateFractionInTrome <- function(
 #' }
 #' }
 #' @export
-AddNewAnnotation <- function(obj = obj
-                             , source = "RNA_snn_res.0.5", named.list.of.identities = ls.Subset.ClusterLists) {
+AddNewAnnotation <- function(
+    obj = obj,
+    source = "RNA_snn_res.0.5", named.list.of.identities = ls.Subset.ClusterLists) {
   NewID <- as.named.vector.df(obj[[source]])
 
   for (i in 1:length(named.list.of.identities)) {
@@ -2828,8 +2855,10 @@ AddNewAnnotation <- function(obj = obj
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   ls.Seurat.subset <- whitelist.subset.ls.Seurat(ls.obj = ls.Seurat, metadir = p$"cellWhiteList",
-#'   whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv")
+#'   ls.Seurat.subset <- whitelist.subset.ls.Seurat(
+#'     ls.obj = ls.Seurat, metadir = p$"cellWhiteList",
+#'     whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv"
+#'   )
 #' }
 #' }
 #' @seealso
@@ -2963,12 +2992,14 @@ FindCorrelatedGenes <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     # Assuming `mySeuratObject` is your Seurat object
-#'     updatedSeuratObject <- UpdateGenesSeurat(obj = mySeuratObject, species_ = "human",
-#'                                               EnforceUnique = TRUE, ShowStats = TRUE)
-#'     # `updatedSeuratObject` now has updated gene symbols
-#'   }
+#' if (interactive()) {
+#'   # Assuming `mySeuratObject` is your Seurat object
+#'   updatedSeuratObject <- UpdateGenesSeurat(
+#'     obj = mySeuratObject, species_ = "human",
+#'     EnforceUnique = TRUE, ShowStats = TRUE
+#'   )
+#'   # `updatedSeuratObject` now has updated gene symbols
+#' }
 #' }
 #'
 #' @seealso
@@ -3018,33 +3049,39 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceU
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     # Assuming `SeuratObj` is your Seurat object
-#'     # and `HGNC.updated.genes` contains the updated gene symbols
-#'     SeuratObj <- RenameGenesSeurat(obj = SeuratObj,
-#'                                    newnames = HGNC.updated.genes$Suggested.Symbol)
-#'     # `SeuratObj` now has updated gene symbols in the specified assay and slots
-#'   }
+#' if (interactive()) {
+#'   # Assuming `SeuratObj` is your Seurat object
+#'   # and `HGNC.updated.genes` contains the updated gene symbols
+#'   SeuratObj <- RenameGenesSeurat(
+#'     obj = SeuratObj,
+#'     newnames = HGNC.updated.genes$Suggested.Symbol
+#'   )
+#'   # `SeuratObj` now has updated gene symbols in the specified assay and slots
+#' }
 #' }
 #'
 #' @export
 RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
                               newnames = HGNC.updated[[i]]$Suggested.Symbol,
                               assay = "RNA",
-                              slots = c("data", "counts", "meta.features") ) {
+                              slots = c("data", "counts", "meta.features")) {
   message(assay)
   warning("Run this before integration and downstream processing. It only attempts to change
           @counts, @data, and @meta.features in obj@assays$YOUR_ASSAY.", immediate. = TRUE)
 
-  stopifnot("Unequal gene name sets: nrow(assayobj) != nrow(newnames):" =
-              nrow(obj) == length(newnames) )
+  stopifnot(
+    "Unequal gene name sets: nrow(assayobj) != nrow(newnames):" =
+      nrow(obj) == length(newnames)
+  )
 
-  if(obj@version < 5)  warning("obj@version < 5. Old versions are not supported. Update the obj!", immediate. = T)
+  if (obj@version < 5) warning("obj@version < 5. Old versions are not supported. Update the obj!", immediate. = TRUE)
 
-  if("scale.data" %in% slots) {
+  if ("scale.data" %in% slots) {
     n_genes_sc_dta <- nrow(obj@assays[[assay]]$"scale.data")
-    stopifnot("scale.data does has different number of genes than newnames!" =
-                n_genes_sc_dta == length(newnames))
+    stopifnot(
+      "scale.data does has different number of genes than newnames!" =
+        n_genes_sc_dta == length(newnames)
+    )
   }
 
   LayersFound <- SeuratObject::Layers(obj@assays[[assay]])
@@ -3164,11 +3201,11 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     # Assuming `SeuratObj` is your Seurat object and you want to remove the gene "TOP2A"
-#'     updatedSeuratObj <- RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
-#'     # Now `updatedSeuratObj` does not contain "TOP2A" in the specified slots
-#'   }
+#' if (interactive()) {
+#'   # Assuming `SeuratObj` is your Seurat object and you want to remove the gene "TOP2A"
+#'   updatedSeuratObj <- RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
+#'   # Now `updatedSeuratObj` does not contain "TOP2A" in the specified slots
+#' }
 #' }
 #'
 #' @return A Seurat object with the specified genes removed from the mentioned slots.
@@ -3241,11 +3278,11 @@ RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     # Assuming `SymUpd` is your data frame of updated symbols from HGNChelper::checkGeneSymbols()
-#'     uniqueSymbols <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
-#'     # `uniqueSymbols` now contains unique gene symbols in its third column
-#'   }
+#' if (interactive()) {
+#'   # Assuming `SymUpd` is your data frame of updated symbols from HGNChelper::checkGeneSymbols()
+#'   uniqueSymbols <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
+#'   # `uniqueSymbols` now contains unique gene symbols in its third column
+#' }
 #' }
 #'
 #' @note This function is a workaround for ensuring unique gene symbols and might not be suitable
@@ -3286,12 +3323,12 @@ HGNC.EnforceUnique <- function(updatedSymbols) {
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     # Assuming `HGNC.updated.genes` is your data frame containing the original and
-#'     # suggested gene symbols, as returned by `UpdateGenesSeurat()`
-#'     updateStats <- GetUpdateStats(genes = HGNC.updated.genes)
-#'     # `updateStats` now contains the update statistics, including percentage and count of updated genes
-#'   }
+#' if (interactive()) {
+#'   # Assuming `HGNC.updated.genes` is your data frame containing the original and
+#'   # suggested gene symbols, as returned by `UpdateGenesSeurat()`
+#'   updateStats <- GetUpdateStats(genes = HGNC.updated.genes)
+#'   # `updateStats` now contains the update statistics, including percentage and count of updated genes
+#' }
 #' }
 #'
 #' @note The function requires the input data frame to have specific columns as produced by
@@ -3307,8 +3344,10 @@ HGNC.EnforceUnique <- function(updatedSymbols) {
 GetUpdateStats <- function(genes = HGNC.updated[[i]]) {
   MarkedAsUpdated <- genes[genes$Approved == FALSE, ]
   AcutallyUpdated <- sum(MarkedAsUpdated[, 1] != MarkedAsUpdated[, 3])
-  UpdateStats <- c("Updated (%)" = Stringendo::percentage_formatter(AcutallyUpdated / nrow(genes)),
-                   "Updated Genes" = floor(AcutallyUpdated), "Total Genes" = floor(nrow(genes)))
+  UpdateStats <- c(
+    "Updated (%)" = Stringendo::percentage_formatter(AcutallyUpdated / nrow(genes)),
+    "Updated Genes" = floor(AcutallyUpdated), "Total Genes" = floor(nrow(genes))
+  )
   return(UpdateStats)
 }
 
@@ -3654,11 +3693,11 @@ LoadAllSeurats <- function(
 #'
 #' @examples
 #' \dontrun{
-#'   if (interactive()) {
-#'     # Replace `path_to_10x_data` with the path to your 10X data directory
-#'     seuratObject <- read10x(dir = "path_to_10x_data")
-#'     # `seuratObject` is now a Seurat object containing the loaded 10X data
-#'   }
+#' if (interactive()) {
+#'   # Replace `path_to_10x_data` with the path to your 10X data directory
+#'   seuratObject <- read10x(dir = "path_to_10x_data")
+#'   # `seuratObject` is now a Seurat object containing the loaded 10X data
+#' }
 #' }
 #'
 #' @note Ensure that the specified directory contains the required gzipped files.
@@ -3815,7 +3854,6 @@ xsave <- function(
     background_job = FALSE,
     showMemObject = TRUE, saveParams = TRUE,
     saveLocation = TRUE) {
-
   message(nthreads, " threads.")
 
   try(tictoc::tic(), silent = TRUE)
@@ -3823,21 +3861,23 @@ xsave <- function(
     try(memory.biggest.objects(), silent = TRUE)
   }
 
-  annot.suffix <- if(inherits(obj, "Seurat")) kpp(ncol(obj), "cells") else if(is.list(obj)) kppd("ls",length(obj)) else NULL
-  fnameBase <- trimws(kppu(prefix, substitute(obj), annot.suffix, suffix, project,
-                           idate(Format = "%Y.%m.%d_%H.%M")), whitespace = "_")
+  annot.suffix <- if (inherits(obj, "Seurat")) kpp(ncol(obj), "cells") else if (is.list(obj)) kppd("ls", length(obj)) else NULL
+  fnameBase <- trimws(kppu(
+    prefix, substitute(obj), annot.suffix, suffix, project,
+    idate(Format = "%Y.%m.%d_%H.%M")
+  ), whitespace = "_")
 
   FNN <- paste0(out_dir, fnameBase, ".qs")
   print(paste0(substitute(obj), " <- xread('", FNN, "')"))
 
-  if ("seurat" %in% is(obj) ) {
+  if ("seurat" %in% is(obj)) {
     if (saveParams) {
-      try(obj@misc$'p' <- p, silent = TRUE)
-      try(obj@misc$'all.genes' <- all.genes, silent = TRUE)
+      try(obj@misc$"p" <- p, silent = TRUE)
+      try(obj@misc$"all.genes" <- all.genes, silent = TRUE)
     }
     if (saveLocation) {
       loc <- 1
-      try(obj@misc$'file.location' <- loc, silent = TRUE)
+      try(obj@misc$"file.location" <- loc, silent = TRUE)
     }
   }
 
@@ -3847,7 +3887,9 @@ xsave <- function(
 
     message("Started saving as background job.")
     job::job(
-      { qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset) },
+      {
+        qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
+      },
       import = c("obj", "FNN", "nthreads", "preset")
     )
   } else {
@@ -3900,9 +3942,9 @@ xread <- function(file, nthreads = 4,
   x <- qs::qread(file = file, nthreads = nthreads, ...)
   # }
 
-  report <- if(is(x, "Seurat")) {
+  report <- if (is(x, "Seurat")) {
     kppws("with", ncol(x), "cells &", ncol(x@meta.data), "meta colums.")
-  } else if(is.list(x)) {
+  } else if (is.list(x)) {
     kppws("is a list of:", length(x))
   } else {
     kppws("of length:", length(x))
@@ -3970,7 +4012,6 @@ xread <- function(file, nthreads = 4,
 isave.image <- function(
     ..., path_rdata = paste0("~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/", basename(OutDir)),
     showMemObject = TRUE, options = c("--force", NULL)[1]) {
-
   dir.create(path_rdata)
 
   if (showMemObject) {
@@ -4590,11 +4631,11 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) {
 #' # Assuming obj1 and obj2 are Seurat objects
 #' result <- compareVarFeaturesAndRanks(obj1, obj2, cor.plot = TRUE)
 #' @export
-compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL, cor.plot = T, save.plot = T
-                                       , plot_venn = T
-                                       , suffix = NULL
-                                       , ...) {
-
+compareVarFeaturesAndRanks <- function(
+    obj1 = NULL, obj2 = NULL, cor.plot = TRUE, save.plot = TRUE,
+    plot_venn = TRUE,
+    suffix = NULL,
+    ...) {
   stopifnot(!is.null(obj1), !is.null(obj2))
   stopifnot(is(obj1, "Seurat"), is(obj2, "Seurat"))
 
@@ -4636,33 +4677,41 @@ compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL, cor.plot = T, s
     colnames(plot_data) <- paste("Rank in", c(name1, name2))
     TTL <- paste("Spearman Rank Correlation of Shared Variable Genes")
 
-    SUB <- paste("between objects:", name1, "&", name2, "\n",
-                 length(common_genes), "or", percent_common, "% overlap from objects:",
-                 nr_genes1, "&", nr_genes2, "genes.")
+    SUB <- paste(
+      "between objects:", name1, "&", name2, "\n",
+      length(common_genes), "or", percent_common, "% overlap from objects:",
+      nr_genes1, "&", nr_genes2, "genes."
+    )
     CPT <- paste("median ranks:", median(ranks1), "/", median(ranks2))
-    file_name <- paste0("Spearman_Rank_Correlation_of_",
-                        name1, "_and_", name2,
-                        "_", sprintf("%.2f", spearman_correlation), ".png")
+    file_name <- paste0(
+      "Spearman_Rank_Correlation_of_",
+      name1, "_and_", name2,
+      "_", sprintf("%.2f", spearman_correlation), ".png"
+    )
     print(head(plot_data))
-    plt <- ggExpress::qscatter(df_XYcol = plot_data,
-                               plotname = TTL,
-                               subtitle = SUB,
-                               caption = CPT,
-                               # abline = c(0,1),
-                               save = save.plot,
-                               filename = file_name,
-                               correlation_r2=T,
-                               also.pdf = F,
-                               cor.coef = TRUE, cor.method = "spearman",
-                               ...)
+    plt <- ggExpress::qscatter(
+      df_XYcol = plot_data,
+      plotname = TTL,
+      subtitle = SUB,
+      caption = CPT,
+      # abline = c(0,1),
+      save = save.plot,
+      filename = file_name,
+      correlation_r2 = TRUE,
+      also.pdf = FALSE,
+      cor.coef = TRUE, cor.method = "spearman",
+      ...
+    )
     print(plt)
   }
 
   unique.genes <- symdiff(var.genes1, var.genes2)
   names(unique.genes) <- paste0("Unique.", c(name1, name2))
-  return(list('common_genes' = common_genes,
-              'unique.genes' = unique.genes,
-              'spearman_correlation' = spearman_correlation))
+  return(list(
+    "common_genes" = common_genes,
+    "unique.genes" = unique.genes,
+    "spearman_correlation" = spearman_correlation
+  ))
 }
 
 
@@ -4684,9 +4733,9 @@ compareVarFeaturesAndRanks <- function(obj1 = NULL, obj2 = NULL, cor.plot = T, s
 #' # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
 #' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
 #' @export
-processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot = T,
-                                nfeatures = p$'n.var.genes') {
-  warning("Make sure you cleaned up the memory!", immediate. = T)
+processSeuratObject <- function(obj, param.list = p, compute = TRUE, save = TRUE, plot = TRUE,
+                                nfeatures = p$"n.var.genes") {
+  warning("Make sure you cleaned up the memory!", immediate. = TRUE)
   stopifnot(require(tictoc))
   message("nfeatures: ", nfeatures)
 
@@ -4705,17 +4754,28 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
   gc()
   if (compute) {
     message("------------------- FindVariableFeatures -------------------")
-    tic(); obj <- FindVariableFeatures(obj, mean.function = 'FastExpMean', dispersion.function = 'FastLogVMR', nfeatures = nfeatures); toc()
-    obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc()
+    tic()
+    obj <- FindVariableFeatures(obj, mean.function = "FastExpMean", dispersion.function = "FastLogVMR", nfeatures = nfeatures)
+    toc()
+    obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
+    toc()
     message("------------------- ScaleData -------------------")
-    tic(); obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = param.list$"variables.2.regress.combined")
+    tic()
+    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = param.list$"variables.2.regress.combined")
     message("------------------- PCA /UMAP -------------------")
-    tic(); obj <- RunPCA(obj, npcs = param.list$"n.PC", verbose = TRUE); toc()
-    tic(); obj <- RunUMAP(obj, reduction = "pca", dims = 1:param.list$"n.PC"); toc()
+    tic()
+    obj <- RunPCA(obj, npcs = param.list$"n.PC", verbose = TRUE)
+    toc()
+    tic()
+    obj <- RunUMAP(obj, reduction = "pca", dims = 1:param.list$"n.PC")
+    toc()
     message("------------------- FindNeighbors & Clusters -------------------")
-    tic(); obj <- FindNeighbors(obj, reduction = "pca", dims = 1:param.list$"n.PC"); toc()
-    tic(); obj <- FindClusters(obj, resolution = param.list$"snn_res"); toc()
-
+    tic()
+    obj <- FindNeighbors(obj, reduction = "pca", dims = 1:param.list$"n.PC")
+    toc()
+    tic()
+    obj <- FindClusters(obj, resolution = param.list$"snn_res")
+    toc()
   }
   if (save) xsave(obj, suffix = "reprocessed")
   if (plot) {
@@ -4740,16 +4800,16 @@ processSeuratObject <- function(obj, param.list = p, compute = T, save = T, plot
 
     Signature.Genes.Top20 <- c(
       `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
-      , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1"
-      , Interneurons = "ERBB4", Interneurons = "SCGN"
-      , `Intermediate progenitor` = "EOMES" # ,  `Intermediate progenitor1` = "TAC3"
-      , `S-phase` = "TOP2A", `G2M-phase` = 'H4C3' # formerly: HIST1H4C
-      , `oRG` = "HOPX" , `oRG` = "ID4" # oRG outer radial glia
-      , Astroglia = "GFAP"
-      , Astrocyte = "S100B", `Hypoxia/Stress` = "DDIT4"
-      , `Choroid.Plexus` = "TTR", `Low-Quality` = "POLR2A"
-      , `Mesenchyme` = "DCN", Glycolytic = "PDK1"
-      , `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
+      , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1",
+      Interneurons = "ERBB4", Interneurons = "SCGN",
+      `Intermediate progenitor` = "EOMES" # ,  `Intermediate progenitor1` = "TAC3"
+      , `S-phase` = "TOP2A", `G2M-phase` = "H4C3" # formerly: HIST1H4C
+      , `oRG` = "HOPX", `oRG` = "ID4" # oRG outer radial glia
+      , Astroglia = "GFAP",
+      Astrocyte = "S100B", `Hypoxia/Stress` = "DDIT4",
+      `Choroid.Plexus` = "TTR", `Low-Quality` = "POLR2A",
+      `Mesenchyme` = "DCN", Glycolytic = "PDK1",
+      `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
     )
     message("plotQUMAPsInAFolder")
     plotQUMAPsInAFolder(genes = Signature.Genes.Top20, obj = obj)
@@ -4798,7 +4858,6 @@ regress_out_and_recalculate_seurat <- function(
     plot_umaps = TRUE,
     save_obj = TRUE,
     assayX = "RNA") {
-
   .Deprecated("processSeuratObject")
 
   tictoc::tic()
@@ -4875,7 +4934,6 @@ regress_out_and_recalculate_seurat <- function(
 #' @param param_list A list containing variables to be checked. Default: `NULL`.
 #' @param elements A character vector of element names in `param_list` to check.
 #' Default: `character(0)`.
-#' @importFrom rlang is_null
 #'
 #' @return A message for each element that is defined, and a warning for elements that are not.
 #' @examples
@@ -4907,11 +4965,11 @@ regress_out_and_recalculate_seurat <- function(
 #' `obj@assays$RNA@scale.data` (v1-4).
 #' @return Integer representing the number of scaled features
 .getNrScaledFeatures <- function(obj) {
-  if(obj@version > 5) {
+  if (obj@version > 5) {
     message("Seurat version 5+")
-    nrow(obj@assays$RNA@layers$'scale.data')
+    nrow(obj@assays$RNA@layers$"scale.data")
   } else {
-    nrow(obj@assays$RNA@'scale.data')
+    nrow(obj@assays$RNA@"scale.data")
   }
 }
 
@@ -4931,7 +4989,7 @@ regress_out_and_recalculate_seurat <- function(
 #' @return Integer representing the number of principal components
 .parseRegressionVariablesForScaleData <- function(element = "variables.2.regress.combined", par.list = p) {
   (regV <- par.list[[element]])
-  txt <- if(is.null(regV)) "No.Regr" else kpp("Regr",regV)
+  txt <- if (is.null(regV)) "No.Regr" else kpp("Regr", regV)
   return(txt)
 }
 
@@ -4948,20 +5006,20 @@ regress_out_and_recalculate_seurat <- function(
 #' @return A character string summarizing the key parameters.
 .parseKeyParams <- function(obj, regressionVariables = p$"variables.2.regress.combined",
                             nrVarFeatures = NULL,
-                            return.as.name = F, suffix = NULL) {
+                            return.as.name = FALSE, suffix = NULL) {
   scaledFeatures <- .getNrScaledFeatures(obj)
 
   if (!is.null(nrVarFeatures)) {
-    if(nrVarFeatures !=  scaledFeatures) {
-      warning("nrVarFeatures !=  scaledFeatures. Reporting nrVarFeatures: ", nrVarFeatures, immediate. = T)
+    if (nrVarFeatures != scaledFeatures) {
+      warning("nrVarFeatures !=  scaledFeatures. Reporting nrVarFeatures: ", nrVarFeatures, immediate. = TRUE)
     }
     scaledFeatures <- nrVarFeatures
   } # else use scaledFeatures
 
   pcs <- .getNrPCs(obj)
   regressionInfo <- kppc(regressionVariables)
-  reg <- if(!is.null(regressionVariables)) paste0(" regress ", regressionInfo) else "no regression"
-  if(return.as.name) {
+  reg <- if (!is.null(regressionVariables)) paste0(" regress ", regressionInfo) else "no regression"
+  if (return.as.name) {
     reg <- ReplaceSpecialCharacters(RemoveWhitespaces(reg, replacement = "."))
     tag <- kpp(scaledFeatures, "ScaledFeatures", pcs, "PCs", reg, suffix)
   } else {
@@ -4979,7 +5037,7 @@ regress_out_and_recalculate_seurat <- function(
 #' @param obj An object to extract information from.
 #' @return A character string summarizing the key parameters.
 #'
-.parseBasicObjStats <- function(obj, sep = ' ') {
+.parseBasicObjStats <- function(obj, sep = " ") {
   n.cells <- format(ncol(obj), big.mark = sep, scientific = FALSE)
   n.feat <- format(nrow(obj), big.mark = sep, scientific = FALSE)
   paste(n.cells, "cells,", n.feat, "features.")
@@ -5013,7 +5071,10 @@ cellID_to_cellType <- function(cellIDs, ident_w_names) {
 #' seuratList <- removeScaleData(seuratList)
 #' @export
 removeScaleData <- function(ls.obj) {
-  lapply(ls.obj, function(x) { x@assays$RNA@layers$scale.data <- NULL; x })
+  lapply(ls.obj, function(x) {
+    x@assays$RNA@layers$scale.data <- NULL
+    x
+  })
 }
 
 
@@ -5029,9 +5090,9 @@ removeScaleData <- function(ls.obj) {
 #' @importFrom CodeAndRoll2 grepv
 #' @return A Seurat object with specified layers removed.
 #' @export
-removeLayersByPattern <- function(obj, pattern = 'sc[0-9][0-9]_', perl = TRUE) {
+removeLayersByPattern <- function(obj, pattern = "sc[0-9][0-9]_", perl = TRUE) {
   message(paste("pattern: ", pattern))
-  stopifnot("obj must be a Seurat object" = inherits(obj, "Seurat") )
+  stopifnot("obj must be a Seurat object" = inherits(obj, "Seurat"))
 
   layerNames <- Layers(obj)
   layersToRemove <- CodeAndRoll2::grepv(pattern, x = layerNames, perl = perl)
@@ -5039,4 +5100,3 @@ removeLayersByPattern <- function(obj, pattern = 'sc[0-9][0-9]_', perl = TRUE) {
   obj@assays$RNA@layers[layersToRemove] <- NULL
   return(obj)
 }
-
