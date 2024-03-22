@@ -423,17 +423,22 @@ PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj) {
 
 
 # _________________________________________________________________________________________________
-#' @title ww.calc_helper
+#' @title Helper to calculate Cell Expression Proportion for Gene
 #'
-#' @description Helper function for PrctCellExpringGene() to calculate the proportion of cells in a Seurat object that express a given gene.
-#' @param obj A Seurat object containing cell data.
-#' @param genes A character vector of genes of interest.
-#' @return The proportion of cells in obj that express the specified gene.
+#' @description Computes the proportion of cells expressing a specific gene within a Seurat object.
+#'
+#' @param obj Seurat object with cell data.
+#' @param genes Single gene name as a character string.
+#'
+#' @return Proportion of cells expressing the gene. Returns `NA` if the gene is not found.
+#'
 #' @examples
 #' \dontrun{
 #' ww.calc_helper(obj = seurat_object, genes = "Gene1")
 #' }
-#' @source Adapted from code by Ryan-Zhu on Github (https://github.com/satijalab/seurat/issues/371)
+#'
+#' @source Adapted from Ryan-Zhu on GitHub.
+#'
 #' @export
 ww.calc_helper <- function(obj, genes) {
   counts <- obj[["RNA"]]@counts
@@ -451,20 +456,28 @@ ww.calc_helper <- function(obj, genes) {
 # Barplots / Compositional analysis ______________________________ ----
 # _________________________________________________________________________________________________
 
-#' @title get.clustercomposition
+#' @title Cluster Composition Analysis
 #'
-#' @description Get cluster composition: which datasets contribute to each cluster?
-#' @param obj Seurat object, Default: combined.obj
-#' @param x Bars along the X axis, Default: 'integrated_snn_res.0.3'
-#' @param y Vertical split of each bar, Default: 'project'
-#' @param color Color, Default: y
-#' @param plot  Show plot, Default: TRUE
-#' @param ScaleTo100pc Scale the Y Axis, Default: TRUE
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @examples get.clustercomposition()
+#' @description Analyzes and visualizes the composition of clusters in a Seurat object, indicating
+#' the contribution of different datasets to each cluster.
+#'
+#' @param obj Seurat object to analyze. Default: `combined.obj`.
+#' @param ident Cluster identity resolution to use. Default: 'integrated_snn_res.0.3'.
+#' @param splitby Variable to split the data by, typically a project or dataset identifier.
+#' Default: 'ShortNames'.
+#' @param color Bar color. Default: as defined by `splitby`.
+#' @param plot Whether to display the plot. Default: TRUE.
+#' @param ScaleTo100pc Whether to scale Y axis to 100%. Default: TRUE.
+#' @param ... Additional parameters for plotting functions.
+#'
+#' @return If `plot` is TRUE, displays a bar plot showing the composition of each cluster. Otherwise,
+#' performs the analysis without plotting.
+#'
+#' @examples
 #' get.clustercomposition()
+#'
 #' @export
-#' @importFrom dplyr group_by_
+#' @importFrom dplyr group_by_ summarise
 #' @importFrom scales percent_format
 get.clustercomposition <- function(
     obj = combined.obj, ident = "integrated_snn_res.0.3", splitby = "ShortNames",
