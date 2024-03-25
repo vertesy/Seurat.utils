@@ -1,0 +1,624 @@
+# Vignette for 57 functions in Seurat.Utils.Visualization.R
+Updated: 2024/03/25 15:51
+
+Seurat.utils Is a collection of utility functions for Seurat single cell analysis.
+    Functions allow 3D plotting, visualisation of statistics & QC,
+    the automation / multiplexing of plotting, interaction with the Seurat object, etc.
+    Some functionalities require functions from CodeAndRoll and MarkdownReports libraries.> For details, please use the `help()` function, or browse the source code.
+
+#### 1. PlotFilters: `PlotFilters()`
+Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.
+
+```r
+   PlotFilters(ls.Seurat)
+
+```
+<br>
+
+#### 2. Calculate the percent of variation explained by individual PC's: `scCalcPCAVarExplained()`
+This function calculates the percentage of variation each principal component (PC)
+
+```r
+   data("combined.obj") # Example Seurat object
+   var_explained <- scCalcPCAVarExplained(combined.obj)
+   print(var_explained)
+
+
+```
+<br>
+
+#### 3. Plot the percent of variation explained by individual PC's: `scPlotPCAvarExplained()`
+This function plots the percentage of variation explained by each principal
+
+```r
+   data("combined.obj") # Example Seurat object
+   scPlotPCAvarExplained(combined.obj, use.MarkdownReports = TRUE)
+
+
+```
+<br>
+
+#### 4. Gene Expression as Fraction of Total UMI Counts: `Percent.in.Trome()`
+This function computes and visualizes gene expression levels as a fraction of total
+
+```r
+ combined.obj <- Percent.in.Trome(combined.obj)
+
+
+```
+<br>
+
+#### 5. Histogram of Gene Expression Levels: `geneExpressionLevelPlots()`
+This function generates a histogram to visualize the expression level distribution
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 6. Proportion of Cells Expressing Given Genes: `PrctCellExpringGene()`
+Calculates the proportion of cells expressing one or more specified genes.
+
+```r
+ PrctCellExpringGene(genes = c("Gene1", "Gene2"), obj = seurat_object)
+
+
+```
+<br>
+
+#### 7. Helper to calculate Cell Expression Proportion for Gene: `ww.calc_helper()`
+Computes the proportion of cells expressing a specific gene within a Seurat object.
+
+```r
+ ww.calc_helper(obj = seurat_object, genes = "Gene1")
+
+
+```
+<br>
+
+#### 8. Cluster Composition Analysis: `get.clustercomposition()`
+Analyzes and visualizes the composition of clusters in a Seurat object, indicating
+
+```r
+ get.clustercomposition()
+
+
+```
+<br>
+
+#### 9. Generate Barplot of Cell Fractions: `scBarplot.CellFractions()`
+This function generates a bar plot of cell fractions per cluster from a Seurat object.
+
+```r
+   scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = TRUE)
+   scBarplot.CellFractions(obj = combined.obj, group.by = "integrated_snn_res.0.1", fill.by = "Phase", downsample = FALSE)
+
+```
+<br>
+
+#### 10. Barplot of Fraction of Cells per Cluster: `scBarplot.CellsPerCluster()`
+Visualizes the fraction of cells within each cluster through a barplot.
+
+```r
+ scBarplot.CellsPerCluster()
+ scBarplot.CellsPerCluster(sort = TRUE)
+
+```
+<br>
+
+#### 11. Barplot of Cells Per Seurat Object: `scBarplot.CellsPerObject()`
+Visualizes the number of cells in each Seurat object within a list, showing the
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 12. Cluster Size Distribution Plot (Barplot or Histogram): `plotClustSizeDistr()`
+Generates a bar plot or histogram to visualize the size distribution of clusters
+
+```r
+ plotClustSizeDistr()
+
+
+```
+<br>
+
+#### 13. Barplot the Fraction of Cells Above Threshold per Cluster: `scBarplot.FractionAboveThr()`
+Generates a bar plot depicting the percentage of cells within each cluster that
+
+```r
+ scBarplot.FractionAboveThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.3)
+
+
+```
+<br>
+
+#### 14. Fraction of Cells Below Threshold per Cluster: `scBarplot.FractionBelowThr()`
+Generates a bar plot to visualize the percentage of cells within each cluster that
+
+```r
+ scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01)
+
+
+```
+<br>
+
+#### 15. Stacked Barplot of Metadata Categories for List of Seurat Objects: `scBarplotStackedMetaCateg_List()`
+Creates and saves a stacked barplot for a specified metadata category
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 16. Reproduce the ggplot2 default color palette: `gg_color_hue()`
+Generates a vector of colors that emulates the default color palette used by ggplot2.
+
+```r
+ # Generate a palette of 5 colors
+ print(gg_color_hue(5))
+
+
+```
+<br>
+
+#### 17. Safely generate a discrete color palette (NA).: `getDiscretePalette()`
+Safe wrapper around Seurat's DiscretePalette(), which returns NA's if too many
+
+```r
+   getDiscretePalette()
+
+```
+<br>
+
+#### 18. Generate a Discrete Color Palette for Seurat Clusters: `getDiscretePaletteObj()`
+Generates a discrete color palette for visualizing clusters in a Seurat object,
+
+```r
+   ident.used <- "resolution_1"
+   obj <- YourSeuratObject
+   colors <- getDiscretePaletteObj(ident.used = ident.used, obj = obj)
+   print(colors)
+
+
+```
+<br>
+
+#### 19. Safely generate a Discrete color palette.: `DiscretePaletteSafe()`
+Generates a discrete color palette, ensuring no NA values are included, suitable
+
+```r
+ colors <- DiscretePaletteSafe(n = 10)
+ print(colors)
+
+
+```
+<br>
+
+#### 20. Regenerate Cluster Colors from a Seurat Object: `getClusterColors()`
+Regenerate and optionally displays the color scheme associated with the clusters
+
+```r
+   getClusterColors(obj = combined.obj, ident = GetClusteringRuns(combined.obj)[1])
+
+```
+<br>
+
+#### 21. Regenerate Color Scheme for Clusters in Seurat Object as a vector: `SeuratColorVector()`
+Extracts and optionally displays the color scheme assigned to cluster identities
+
+```r
+ # Display colors for the active identity
+ SeuratColorVector()
+ # Retrieve and plot colors for a specified clustering identity
+ SeuratColorVector(ident = "RNA_snn_res.1", plot.colors = TRUE)
+
+
+```
+<br>
+
+#### 22. Plot and Save Heatmaps from Metadata Calculation Results: `plotAndSaveHeatmaps()`
+Generates and saves heatmap visualizations for each metric in the results obtained
+
+```r
+ # Assuming `results` is the output from `calculateAverageMetaData`:
+ plotAndSaveHeatmaps(results, path = "path/to/save/heatmaps", file.prefix = "myData_")
+
+
+```
+<br>
+
+#### 23. Scatter Plot of Two Features in Seurat Object: `qFeatureScatter()`
+Generates a scatter plot comparing two features (genes or metrics) from a Seurat
+
+```r
+ # Generate and display a scatter plot for features TOP2A and ID2
+ qFeatureScatter(feature1 = "TOP2A", feature2 = "ID2", obj = yourSeuratObject)
+
+
+```
+<br>
+
+#### 24. Create a Violin Plot for a Seurat Object Feature and save the file.: `qSeuViolin()`
+Generates a violin plot for a specified feature in a Seurat object,
+
+```r
+ # Assuming `seurat_obj` is a valid Seurat object
+ qSeuViolin(object = seurat_obj, features = "nFeature_RNA")
+
+
+```
+<br>
+
+#### 25. Histogram of Gene Expression in Seurat Object: `plotGeneExpHist()`
+Creates and optionally saves a histogram showing expression levels of specified genes
+
+```r
+ plotGeneExpHist(obj = yourSeuratObject, genes = c("GeneA", "GeneB"))
+
+
+```
+<br>
+
+#### 26. Quick UMAP Visualization of Gene Expression and automatically save the plot: `qUMAP()`
+Generates a UMAP visualization for a specific feature from a Seurat object, and
+
+```r
+   qUMAP(feature = "nFeature_RNA", obj = yourSeuratObject)
+   qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
+
+
+```
+<br>
+
+#### 27. Quick Visualization of Clustering Results with UMAP and automatically save the plot: `clUMAP()`
+Generates a UMAP visualization based on clustering results from a Seurat object,
+
+```r
+ clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj)
+ clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj, cols = RColorBrewer::brewer.pal(8, "Dark2"))
+
+
+```
+<br>
+
+#### 28. Highlight Selected Clusters on UMAP: `umapHiLightSel()`
+Generates a UMAP plot from a Seurat object with specified clusters highlighted.
+
+```r
+   umapHiLightSel(obj = combined.obj, COI = c("0", "1"), res.cl = "resolution_0.8")
+
+
+```
+<br>
+
+#### 29. DimPlot.ClusterNames: `DimPlot.ClusterNames()`
+Plot UMAP with Cluster names.
+
+```r
+   DimPlot.ClusterNames()
+
+```
+<br>
+
+#### 30. multiFeaturePlot.A4: `multiFeaturePlot.A4()`
+Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 31. Generate Cluster Highlight UMAPs compiled into A4 pages: `multiSingleClusterHighlightPlots.A4()`
+This function generates and saves cluster highlight plots for both single and multiple
+
+```r
+ multiSingleClusterHighlightPlots.A4(ident = "cluster_id", obj = yourSeuratObject)
+
+
+```
+<br>
+
+#### 32. multiFeatureHeatmap.A4: `multiFeatureHeatmap.A4()`
+Save multiple FeatureHeatmaps from a list of genes on A4 jpeg.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 33. Plot multiple categorical variables in combined UMAPs: `multi_clUMAP.A4()`
+Generates and saves multiple UMAP plots for clustering results, adjusting the
+
+```r
+ multi_clUMAP.A4(idents = c("S1", "S2"), obj = YourSeuratObject)
+
+```
+<br>
+
+#### 34. Quick Clustering UMAPs on A4 Page: `qClusteringUMAPS()`
+Generates and arranges UMAP plots for up to four specified clustering resolutions
+
+```r
+ qClusteringUMAPS()
+
+
+```
+<br>
+
+#### 35. Plot qUMAPs for Genes in a Folder: `plotQUMAPsInAFolder()`
+This function plots qUMAPs for a specified set of genes, storing the results in a
+
+```r
+ plotQUMAPsInAFolder(
+   genes = c("Gene1", "Gene2"), obj = combined.obj,
+   foldername = "MyGenePlots", intersectionAssay = "RNA",
+   plot.reduction = "umap"
+ )
+
+
+```
+<br>
+
+#### 36. Plot Top N Differentially Expressed Genes Per Cluster: `PlotTopGenesPerCluster()`
+Visualizes the top N differentially expressed (DE) genes for each cluster within a
+
+```r
+   PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = 10)
+
+
+```
+<br>
+
+#### 37. Quickly Plot Key QC Markers in Brain Organoids: `qQC.plots.BrainOrg()`
+Generates and arranges UMAP plots for specified QC features
+
+```r
+ qQC.plots.BrainOrg()
+
+
+```
+<br>
+
+#### 38. Quickly Plot Key Markers in Brain Organoids: `qMarkerCheck.BrainOrg()`
+Generates plots for a predefined or custom set of gene markers within brain organoids,
+
+```r
+ qMarkerCheck.BrainOrg(combined.obj)
+ qMarkerCheck.BrainOrg(combined.obj, custom.genes = c("Gene1", "Gene2"))
+
+
+```
+<br>
+
+#### 39. Plot Top Genes: `PlotTopGenes()`
+This function plots the highest expressed genes on UMAPs, saving the plots in a
+
+```r
+   PlotTopGenes()
+
+
+```
+<br>
+
+#### 40. Flip Reduction Coordinates: `FlipReductionCoordinates()`
+Flips dimensionality reduction coordinates (such as UMAP or tSNE) vertically or
+
+```r
+ # Before flipping UMAP coordinates
+ clUMAP()
+ # Flip UMAP coordinates and visualize again
+ combined.obj <- FlipReductionCoordinates(combined.obj)
+ clUMAP()
+
+
+```
+<br>
+
+#### 41. Relabel Cluster Numbers Along a UMAP (or tSNE) Axis: `AutoNumber.by.UMAP()`
+Automatically renumbers clusters based on their position along a specified dimension
+
+```r
+ combined.obj <- AutoNumber.by.UMAP(
+   obj = combined.obj, dim = 1, reduction = "umap",
+   res = "integrated_snn_res.0.5"
+ )
+ DimPlot.ClusterNames(combined.obj, ident = "integrated_snn_res.0.5.ordered")
+
+
+```
+<br>
+
+#### 42. Adjust Layout Parameters for multi* plotting fucntions: `.adjustLayout()`
+Adjusts layout dimensions and properties based on the specified layout type.
+
+```r
+ env <- new.env()
+ .adjustLayout("tall", 1, 8.27, 11.69, env)
+ print(env$w) # Should print the width based on "tall" layout scaling.
+
+
+```
+<br>
+
+#### 43. Save Two Plots on One A4 Page: `save2plots.A4()`
+Arranges and saves two UMAP plots (or any plots) side-by-side or one above
+
+```r
+ p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) +
+   geom_point()
+ p2 <- ggplot(iris, aes(Petal.Length, Petal.Width, color = Species)) +
+   geom_point()
+ save2plots.A4(plot_list = list(p1, p2))
+
+
+```
+<br>
+
+#### 44. Save Four Plots on One A4 Page: `save4plots.A4()`
+Arranges and saves four plots (e.g. UMAPs) onto a single A4 page, allowing for a
+
+```r
+ p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) +
+   geom_point()
+ p2 <- ggplot(mtcars, aes(mpg, disp, color = as.factor(cyl))) +
+   geom_point()
+ p3 <- ggplot(mpg, aes(displ, hwy, color = class)) +
+   geom_point()
+ p4 <- ggplot(diamonds, aes(carat, price, color = cut)) +
+   geom_point()
+ save4plots.A4(plot_list = list(p1, p2, p3, p4))
+
+
+```
+<br>
+
+#### 45. qqSaveGridA4: `qqSaveGridA4()`
+Saves a grid of 2 or 4 ggplot objects onto an A4 page.
+
+```r
+   qqSaveGridA4(plotlist = pl, plots = 1:2, fname = "Fractions.per.Cl.png")
+   qqSaveGridA4(plotlist = pl, plots = 1:4, fname = "Fractions.per.Cl.4.png")
+
+```
+<br>
+
+#### 46. ww.check.if.3D.reduction.exist: `ww.check.if.3D.reduction.exist()`
+ww.check.if.3D.reduction.exist in backup slot #
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 47. Check Quantile Cutoff and Clip Outliers: `ww.check.quantile.cutoff.and.clip.outliers()`
+Checks a specified quantile cutoff and clips outliers from an expression vector,
+
+```r
+ expr.vec <- c(...)
+ quantileCutoff <- 0.99
+ min.cells.expressing <- 10
+ ww.check.quantile.cutoff.and.clip.outliers(expr.vec, quantileCutoff, min.cells.expressing)
+
+```
+<br>
+
+#### 48. plot3D.umap.gene: `plot3D.umap.gene()`
+Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
+
+```r
+   plot3D.umap.gene(obj = combined.obj, gene = "DDIT4", quantileCutoff = .95)
+   plot3D.umap.gene(obj = combined.obj, gene = "percent.mito", quantileCutoff = .95) # for continous meta variables
+   plot3D.umap.gene(obj = combined.obj, gene = "nFeature_RNA", quantileCutoff = .95) # for continous meta variables
+
+```
+<br>
+
+#### 49. plot3D.umap: `plot3D.umap()`
+Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
+
+```r
+   plot3D.umap(combined.obj, category = "Phase")
+
+```
+<br>
+
+#### 50. SavePlotlyAsHtml: `SavePlotlyAsHtml()`
+Save a Plotly 3D scatterplot as an HTML file.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 51. Backup Dimensionality Reduction Data: `BackupReduction()`
+Stores a backup of specified dimensionality reduction data (e.g., UMAP, tSNE, PCA)
+
+```r
+   obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
+
+
+```
+<br>
+
+#### 52. Compute and Backup Dimensionality Reductions: `SetupReductionsNtoKdimensions()`
+Executes specified dimensionality reduction (UMAP, tSNE, or PCA) over a range of dimensions
+
+```r
+   combined.obj <- SetupReductionsNtoKdimensions(
+     obj = combined.obj, nPCs = 10,
+     dimensions = 2:3, reduction = "umap"
+   )
+
+
+```
+<br>
+
+#### 53. Recall Dimensionality Reduction from backup slot: `RecallReduction()`
+Restores dimensionality reduction data (e.g., UMAP, tSNE, PCA) from a backup
+
+```r
+   combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
+   qUMAP()
+   combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
+   qUMAP()
+
+
+```
+<br>
+
+#### 54. Annotate4Plotly3D: `Annotate4Plotly3D()`
+Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 55. Plot3D.ListOfGenes: `Plot3D.ListOfGenes()`
+Plot and save list of 3D UMAP or tSNE plots using plotly.
+
+```r
+   CellTypeMarkers <- c("PGK1", "CTIP2" = "BCL11B", "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4", "TOP2A", "PTGDS", "EDNRB", "EGFR", "SCGN", "NR2F2", "EMX2", "GAD2", "DLX2", "SATB2")
+   Plot3D.ListOfGenes(obj = combined.obj, ListOfGenes = CellTypeMarkers)
+
+```
+<br>
+
+#### 56. Plot3D.ListOfCategories: `Plot3D.ListOfCategories()`
+This function plots and saves a list of 3D UMAP or tSNE plots using plotly.
+
+```r
+   categ3Dplots <- c("v.project", "experiment", "Phase", "integrated_snn_res.0.7", "Area", "Individual", "Type")
+   Plot3D.ListOfCategories(obj = combined.obj, ListOfCategories = categ3Dplots)
+
+```
+<br>
+
+#### 57. Display Correlation Values in Pairs Plot: `panelCorPearson()`
+This function displays the correlation coefficient and significance level within
+
+```r
+ pairs(mtcars[, 1:4], panel = panelCorPearson)
+
+```
+<br>
+
+#### 58. suPlotVariableFeatures for Single Seurat Object: `suPlotVariableFeatures()`
+Generates a Variable Feature Plot for a specified Seurat object, labels points with
+
+```r
+ suPlotVariableFeatures(combined.obj)
+
+```
+<br>
+
