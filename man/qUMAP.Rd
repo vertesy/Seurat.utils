@@ -26,7 +26,7 @@ qUMAP(
   check_for_2D = TRUE,
   qlow = "q10",
   qhigh = "q90",
-  caption = .parseBasicObjStats(obj),
+  caption = .parseBasicObjStats(obj, simple = TRUE),
   ...
 )
 }

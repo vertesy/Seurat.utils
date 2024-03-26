@@ -6,7 +6,7 @@
 \usage{
 .parseKeyParams(
   obj,
-  regressionVariables = p$variables.2.regress.combined,
+  regressionVariables = obj@misc$p$variables.2.regress.combined,
   nrVarFeatures = NULL,
   return.as.name = FALSE,
   suffix = NULL

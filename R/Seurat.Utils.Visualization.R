@@ -1709,6 +1709,7 @@ plotGeneExpHist <- function(
 #' @export
 #' @importFrom Seurat FeaturePlot NoLegend NoAxes
 #' @importFrom ggplot2 ggtitle coord_fixed labs
+#'
 qUMAP <- function(
     feature = "TOP2A", obj = combined.obj,
     title = feature, sub = NULL,
@@ -1725,7 +1726,7 @@ qUMAP <- function(
     make.uppercase = FALSE,
     check_for_2D = TRUE,
     qlow = "q10", qhigh = "q90",
-    caption = .parseBasicObjStats(obj),
+    caption = .parseBasicObjStats(obj, simple = TRUE),
     ...) {
   # Checks
   if (check_for_2D) {
@@ -1758,7 +1759,7 @@ qUMAP <- function(
     if (!axes) NoAxes() else NULL
 
   if (aspect.ratio) ggplot.obj <- ggplot.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
-  if (!isFALSE(caption)) ggplot.obj <- ggplot.obj + labs(caption = caption)
+  if (!isFALSE(caption)) ggplot.obj <- ggplot.obj + ggplot2::labs(caption = caption)
 
   if (save.plot) {
     fname <- ww.FnP_parser(Stringendo::sppp(prefix, toupper(reduction), feature, assay, suffix), if (PNG) "png" else "pdf")

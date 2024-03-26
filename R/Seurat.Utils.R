@@ -4939,8 +4939,9 @@ regress_out_and_recalculate_seurat <- function(
 #' `obj@assays$RNA@scale.data` (v1-4).
 #' @return Integer representing the number of scaled features
 .getNrScaledFeatures <- function(obj) {
+
+  message("Seurat version: ", obj@version)
   if (obj@version > 5) {
-    message("Seurat version 5+")
     nrow(obj@assays$RNA@layers$"scale.data")
   } else {
     nrow(obj@assays$RNA@"scale.data")
@@ -4978,7 +4979,8 @@ regress_out_and_recalculate_seurat <- function(
 #' @param nrVarFeatures You can provide this number manually. Default: NULL.
 #' @param suffix A suffix string to add.
 #' @return A character string summarizing the key parameters.
-.parseKeyParams <- function(obj, regressionVariables = p$"variables.2.regress.combined",
+#'
+.parseKeyParams <- function(obj, regressionVariables = obj@misc$p$"variables.2.regress.combined",
                             nrVarFeatures = NULL,
                             return.as.name = FALSE, suffix = NULL) {
   scaledFeatures <- .getNrScaledFeatures(obj)
@@ -4997,11 +4999,12 @@ regress_out_and_recalculate_seurat <- function(
     reg <- ReplaceSpecialCharacters(RemoveWhitespaces(reg, replacement = "."))
     tag <- kpp(scaledFeatures, "ScaledFeatures", pcs, "PCs", reg, suffix)
   } else {
-    tag <- paste0(scaledFeatures, " ScaledFeatures |", pcs, " PCs |", reg, " ", suffix)
+    tag <- paste0(scaledFeatures, " ScaledFeatures | ", pcs, " PCs | ", reg, " ", suffix)
   }
 
   return(tag)
 }
+
 
 
 # _________________________________________________________________________________________________
@@ -5011,10 +5014,14 @@ regress_out_and_recalculate_seurat <- function(
 #' @param obj An object to extract information from.
 #' @return A character string summarizing the key parameters.
 #'
-.parseBasicObjStats <- function(obj, sep = " ") {
+.parseBasicObjStats <- function(obj, sep = " ", simple = FALSE) {
   n.cells <- format(ncol(obj), big.mark = sep, scientific = FALSE)
   n.feat <- format(nrow(obj), big.mark = sep, scientific = FALSE)
-  paste(n.cells, "cells,", n.feat, "features.")
+    if (simple) {
+      return(paste(n.cells, "cells."))
+    } else {
+      return(paste(n.cells, "cells,", n.feat, "features."))
+    }
 }
 
 
