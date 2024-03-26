@@ -234,21 +234,6 @@ AreTheseCellNamesTheSame <- function(
 }
 
 
-
-# _________________________________________________________________________________________________
-#' Create.MiscSlot
-#'
-#' @param obj Seurat object
-#' @param NewSlotName Name of the new element inside obj@misc.
-#' @export
-
-Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL) {
-  .Deprecated("addToMiscOrToolsSlot")
-  # if (is.null(obj@misc[[NewSlotName]])) obj@misc[[NewSlotName]] <- list() else iprint(NewSlotName, "already exists in @misc.")
-  # if (is.null(obj@misc[[NewSlotName]][[SubSlotName]])) obj@misc[[NewSlotName]][[SubSlotName]] <- list() else iprint(SubSlotName, "subslot already exists in @misc$NewSlot.")
-  return(obj)
-}
-
 # _________________________________________________________________________________________________
 #' @title Add to Misc or Tools Slot
 #'
@@ -553,12 +538,19 @@ shorten_clustering_names <- function(str) {
 
 
 # _________________________________________________________________________________________________
-#' getClusterNames
+#' @title Retrieve Cluster Names
 #'
-#' @param obj Seurat object
-#' @param ident ident
+#' @description Extracts cluster names based on a specified identity class from a Seurat object.
+#'
+#' @param obj A Seurat object. Default: `combined.obj`.
+#' @param ident The identity class from which to retrieve cluster names.
+#' Default uses the second clustering run from `GetClusteringRuns(obj)`.
+#' @examples
+#' \dontrun{
+#'  getClusterNames(obj = combined.obj, ident = GetClusteringRuns(obj)[2])
+#'  }
+#' @return Prints and returns the sorted unique cluster names as a character vector.
 #' @export
-
 getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
   print(GetClusteringRuns(obj))
   clz <- as.character(sort(deframe(unique(obj[[ident]]))))
@@ -574,15 +566,15 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #' @description Get Clustering Runs: metadata column names.
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: FALSE
-#' @param pat Pettern to match, Default: '*snn_res.*[0-9]$'
+#' @param pat Pettern to match, Default: `*snn_res.*[0-9]$`
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   GetClusteringRuns()
+  #'   GetClusteringRuns(obj = combined.obj, pat = `*snn_res.*[0-9]$`)
 #' }
 #' }
 #' @export
-GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.*[0-9]$") {
+GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = `*snn_res.*[0-9]$`) {
   if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
   if (identical(clustering.results, character(0))) warning("No matching column found!", immediate. = TRUE)
@@ -2277,15 +2269,6 @@ sparse.cor <- function(smat) {
   list(cov = covmat, cor = cormat)
 }
 
-#
-# sparse.cor4 <- function(x){
-#   n <- nrow(x)
-#   cMeans <- colMeans(x)
-#   covmat <- (as.matrix(crossprod(x)) - n*tcrossprod(cMeans))/(n-1)
-#   sdvec <- sqrt(diag(covmat))
-#   cormat <- covmat/tcrossprod(sdvec)
-#   list(cov=covmat,cor=cormat)
-# }
 
 # _________________________________________________________________________________________________
 #' @title Calc.Cor.Seurat
@@ -5050,15 +5033,6 @@ regress_out_and_recalculate_seurat <- function(
 # Temp _____________________________ ------
 # _________________________________________________________________________________________________
 
-# will it be used?
-cellID_to_cellType_v1 <- function(cellIDs, ident, obj = aaa) {
-  celltypes <- as.named.vector.df(obj@meta.data[, ident], verbose = FALSE)
-  celltypes[cellIDs]
-}
-
-cellID_to_cellType <- function(cellIDs, ident_w_names) {
-  ident_w_names[cellIDs]
-}
 
 
 # _________________________________________________________________________________________________
