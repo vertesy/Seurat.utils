@@ -416,6 +416,55 @@ save4umaps.A4 <- function(...) .Deprecated("save4plots.A4()")
 
 
 
+# -----------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------
+# Main script / functions
+
+
+# will it be used?
+cellID_to_cellType_v1 <- function(cellIDs, ident, obj = aaa) {
+  celltypes <- as.named.vector.df(obj@meta.data[, ident], verbose = FALSE)
+  celltypes[cellIDs]
+}
+
+cellID_to_cellType <- function(cellIDs, ident_w_names) {
+  ident_w_names[cellIDs]
+}
+
+
+# _________________________________________________________________________________________________
+#' @title Create.MiscSlot
+#'
+#' @description Create a new slot in the 'misc' slot of a Seurat object.
+#' @param obj Seurat object
+#' @param NewSlotName Name of the new element inside obj@misc.
+#' @export
+
+Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL) {
+  .Deprecated("addToMiscOrToolsSlot")
+  # if (is.null(obj@misc[[NewSlotName]])) obj@misc[[NewSlotName]] <- list() else iprint(NewSlotName, "already exists in @misc.")
+  # if (is.null(obj@misc[[NewSlotName]][[SubSlotName]])) obj@misc[[NewSlotName]][[SubSlotName]] <- list() else iprint(SubSlotName, "subslot already exists in @misc$NewSlot.")
+  return(obj)
+}
+
+
+
+#
+# sparse.cor4 <- function(x){
+#   n <- nrow(x)
+#   cMeans <- colMeans(x)
+#   covmat <- (as.matrix(crossprod(x)) - n*tcrossprod(cMeans))/(n-1)
+#   sdvec <- sqrt(diag(covmat))
+#   cormat <- covmat/tcrossprod(sdvec)
+#   list(cov=covmat,cor=cormat)
+# }
+
+
+
+# -----------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------
+# VISUALIZATION
+
 # panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method = "pearson") {
 #   usr <- par("usr"); on.exit(par(usr))
 #   par(usr = c(0, 1, 0, 1))
@@ -468,3 +517,40 @@ save4umaps.A4 <- function(...) .Deprecated("save4plots.A4()")
 #   return(colorz)
 # }
 
+
+# -----------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------
+# META
+
+# transferMetadataV1 <- function(from, to, colname_from, colname_to = colname_from, verbose = TRUE, overwrite = FALSE) {
+#
+#   stopifnot(
+#     is(from, "Seurat"), is(to, "Seurat"),
+#     is.character(colname_from), is.character(colname_to),
+#     "Column not found" = colname_from %in% colnames(from@meta.data),
+#     "Column already exists" = !(colname_to %in% colnames(to@meta.data)) | overwrite
+#   )
+#
+#   # Extract the metadata column to transfer
+#   data.to.transfer <- data.frame(new.metadata = from[[colname_from]])
+#
+#   # Check cell overlaps
+#   cells_in_both <- intersect(colnames(from), colnames(to))
+#   cells_only_in_from <- setdiff(colnames(from), colnames(to))
+#   cells_only_in_to <- setdiff(colnames(to), colnames(from))
+#
+#   if (verbose) {
+#     cat("Number and % of cells matching between objects:", length(cells_in_both),
+#         "(", sprintf("%.2f%%", length(cells_in_both) / length(colnames(from)) * 100), "of from and",
+#         sprintf("%.2f%%", length(cells_in_both) / length(colnames(to)) * 100), "of to)\n")
+#     cat("Number and % of cells only in obj1 (from):", length(cells_only_in_from),
+#         "(", sprintf("%.2f%%", length(cells_only_in_from) / length(colnames(from)) * 100), ")\n")
+#     cat("Number and % of cells only in obj2 (to):", length(cells_only_in_to),
+#         "(", sprintf("%.2f%%", length(cells_only_in_to) / length(colnames(to)) * 100), ")\n")
+#   }
+#
+#   # Add the metadata to the 2nd obj
+#   to <- Seurat::AddMetaData(object = to, metadata = data.to.transfer, col.name = colname_to )
+#
+#   return(to)
+# }

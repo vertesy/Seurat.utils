@@ -701,38 +701,6 @@ transferMetadata <- function(from, to, colname_from, colname_to = colname_from, 
   return(to)
 }
 
-# transferMetadataV1 <- function(from, to, colname_from, colname_to = colname_from, verbose = TRUE, overwrite = FALSE) {
-#
-#   stopifnot(
-#     is(from, "Seurat"), is(to, "Seurat"),
-#     is.character(colname_from), is.character(colname_to),
-#     "Column not found" = colname_from %in% colnames(from@meta.data),
-#     "Column already exists" = !(colname_to %in% colnames(to@meta.data)) | overwrite
-#   )
-#
-#   # Extract the metadata column to transfer
-#   data.to.transfer <- data.frame(new.metadata = from[[colname_from]])
-#
-#   # Check cell overlaps
-#   cells_in_both <- intersect(colnames(from), colnames(to))
-#   cells_only_in_from <- setdiff(colnames(from), colnames(to))
-#   cells_only_in_to <- setdiff(colnames(to), colnames(from))
-#
-#   if (verbose) {
-#     cat("Number and % of cells matching between objects:", length(cells_in_both),
-#         "(", sprintf("%.2f%%", length(cells_in_both) / length(colnames(from)) * 100), "of from and",
-#         sprintf("%.2f%%", length(cells_in_both) / length(colnames(to)) * 100), "of to)\n")
-#     cat("Number and % of cells only in obj1 (from):", length(cells_only_in_from),
-#         "(", sprintf("%.2f%%", length(cells_only_in_from) / length(colnames(from)) * 100), ")\n")
-#     cat("Number and % of cells only in obj2 (to):", length(cells_only_in_to),
-#         "(", sprintf("%.2f%%", length(cells_only_in_to) / length(colnames(to)) * 100), ")\n")
-#   }
-#
-#   # Add the metadata to the 2nd obj
-#   to <- Seurat::AddMetaData(object = to, metadata = data.to.transfer, col.name = colname_to )
-#
-#   return(to)
-# }
 
 
 # _________________________________________________________________________________________________
@@ -1083,15 +1051,31 @@ plotMetadataMedianFractionBarplot <- function(
 
 
 # _________________________________________________________________________________________________
-#' plotMetadataCategPie
+#' @title Plot Metadata Category Pie Chart
 #'
-#' @param metacol Which column in metadata should be used?
-#' @param plot_name Plot name
-#' @param obj Seurat object, Default: combined.obj
-#' @param max.categs Maximum number of categories allowed for this pie chart. Error otherwise.
-#' @param both_pc_and_value Report both percentage AND number.
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @description Generates a pie chart visualizing the distribution of categories within a specified
+#' metadata column of a Seurat object.
 #'
+#' @param metacol The metadata column to visualize.
+#' @param plot_name Name of the plot to generate.
+#' @param obj Seurat object containing the metadata. Default: `combined.obj`.
+#' @param max.categs The maximum number of categories to display in the pie chart.
+#' If the number of categories exceeds this value, an error is thrown.
+#' @param both_pc_and_value If `TRUE`, labels on the pie chart will show both the percentage
+#' and the count of each category. If `FALSE`, only the percentage is shown.
+#' @param subtitle Optional subtitle for the pie chart.
+#' @param ... Additional arguments to pass to the pie chart plotting function.
+#'
+#' @examples
+#' \dontrun{
+#' plotMetadataCategPie(metacol = "Singlet.status",
+#'                      plot_name = "Singlet Status Distribution",
+#'                      obj = combined.obj,
+#'                      max.categs = 20,
+#'                      both_pc_and_value = TRUE)
+#' }
+#'
+#' @return A pie chart visualizing the distribution of categories within the specified metadata column.
 #' @export
 plotMetadataCategPie <- function(
     metacol = "Singlet.status",
