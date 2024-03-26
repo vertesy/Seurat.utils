@@ -449,7 +449,7 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 
 
 
-#
+# # _________________________________________________________________________________________________
 # sparse.cor4 <- function(x){
 #   n <- nrow(x)
 #   cMeans <- colMeans(x)
@@ -459,6 +459,45 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 #   list(cov=covmat,cor=cormat)
 # }
 
+
+# # _________________________________________________________________________________________________
+# #' @title Find Specific Files in Specified Subdirectories
+# #'
+# #' @description This function searches through specified subdirectories within a root directory
+# #' to find files that match a specified pattern and returns a character vector with their full paths.
+# #' The printed output excludes the root directory part from the paths.
+# #'
+# #' @param root_dir The root directory.
+# #' @param subdir A character vector of subdirectory names within the root directory to be scanned.
+# #' @param file_name_pattern The pattern of the file name to search for.
+# #' @param recursive Boolean indicating whether to search recursively within subdirectories.
+# #' @return A character vector containing the full paths to the located files.
+# # #' @importFrom fs dir_ls
+# #' @export
+
+# findBamFilesInSubdirs <- function(root_dir, subdir, file_name_pattern = "possorted_genome_bam.bam", recursive = TRUE) {
+#   stopifnot(is.character(root_dir), length(root_dir) == 1, dir.exists(root_dir),
+#             is.character(subdir), all(dir.exists(file.path(root_dir, subdir))),
+#             is.character(file_name_pattern), length(file_name_pattern) == 1,
+#             is.logical(recursive))
+
+#   pattern <- paste0("**/", file_name_pattern)
+#   paths_to_search <- file.path(root_dir, subdir)
+#   bams <- c()
+
+#   for (path in paths_to_search) {
+#     iprint("Searching in:", path)
+#     found_files <- fs::dir_ls(path, recurse = recursive, glob = pattern, type = "file")
+#     iprint(length(found_files), "files found.")
+#     bams <- c(bams, found_files)
+#   }
+
+#   # Replace root_dir in the paths with an empty string for printing
+#   bams_print <- gsub(paste0("^", root_dir, "/?"), "", bams)
+#   iprint(length(bams), bams_print)
+
+#   return(bams)
+# }
 
 
 # -----------------------------------------------------------------------------------------------

@@ -8,6 +8,8 @@ recall.genes.ls(obj = combined.obj, overwrite = FALSE)
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
+
+\item{overwrite}{Overwrite already existing in environment? Default: FALSE}
 }
 \description{
 Recall genes.ls from obj@misc to "genes.ls" in the global environment.

@@ -30,6 +30,7 @@ rprofile()
 devtools::install_local(repository.dir, upgrade = F)
 PackageTools:::.parse_description(config_path = config.path)
 
+
 # Test if you can install from github ------------------------------------------------
 remote.path <- file.path(DESCRIPTION$'github.user', package.name)
 # pak::pkg_install(remote.path)
@@ -47,7 +48,6 @@ devtools::install_github(repo = "vertesy/Seurat.utils", upgrade = F)
 
 # CMD CHECK ------------------------------------------------
 checkres <- devtools::check(repository.dir, cran = FALSE)
-
 
 
 # Automated Codebase linting to tidyverse style ------------------------------------------------

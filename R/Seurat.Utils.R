@@ -1008,36 +1008,38 @@ ww.get.1st.Seur.element <- function(obj) {
 
 
 # _________________________________________________________________________________________________
-#' @title recallAllGenes
+#' @title Recall all.genes global variable from a Seurat object
 #'
 #' @description all.genes set by calc.q99.Expression.and.set.all.genes() #
 #' @param obj Seurat object, Default: combined.obj
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   recallAllGenes()
+#'   recall.all.genes()
 #'   all.genes
 #' }
 #' }
 #' @importFrom MarkdownHelpers ww.assign_to_global
 #'
 #' @export
-recallAllGenes <- function(obj = combined.obj, overwrite = FALSE) { # all.genes set by calc.q99.Expression.and.set.all.genes()
+recall.all.genes <- function(obj = combined.obj, overwrite = FALSE) {
   obj <- ww.get.1st.Seur.element(obj)
 
   if ("all.genes" %in% names(obj@misc)) {
+
     if (!exists("all.genes") | overwrite) {
       all.genes <- obj@misc$all.genes
       print(head(unlist(all.genes)))
       MarkdownHelpers::ww.assign_to_global(name = "all.genes", value = all.genes, verbose = FALSE)
+      message("all.genes is now (re)defined in the global environment.")
     } else {
-      print("  ->   Variable 'all.genes' exits in the global namespace, and overwrite is: FALSE")
+      message("  ->   Variable 'all.genes' exits in the global namespace, and overwrite is: FALSE")
     }
   } else {
-    print("  ->   Slot 'all.genes' does not exist in obj@misc.")
+    message("  ->   Slot 'all.genes' does not exist in obj@misc.")
     hits <- grepv(pattern = "expr.", names(obj@misc))
     if (!is.null(hits)) {
-      iprint("Found instead (", hits, "). Returning 1st element:", hits[1])
+      message("Found instead (", hits, "). Returning 1st element: ", hits[1])
       all.genes <- obj@misc[[hits[1]]]
       MarkdownHelpers::ww.assign_to_global(name = "all.genes", value = as.list(all.genes), verbose = FALSE)
     }
@@ -1110,16 +1112,17 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
   obj <- ww.get.1st.Seur.element(obj)
 
   if ("p" %in% names(obj@misc)) {
-    if (!exists("p")) iprint("variable 'p' exits in the global namespace:", head(p))
+    p_found <- exists("p", envir = .GlobalEnv)
+    if (p_found) message("  ->   Variable 'p' exits in the global namespace.")
 
-    if (!exists("p") | (exists("p") & overwrite == TRUE)) {
-      MarkdownHelpers::ww.assign_to_global(name = "p", value = obj@misc$"p")
-      print("Overwritten.")
+    if (!p_found | (p_found & overwrite == TRUE)) {
+      MarkdownHelpers::ww.assign_to_global(name = "p", value = obj@misc$"p", verbose = F)
+      message("p is now (re)defined in the global environment.")
     } else {
-      print("Not overwritten.")
+      message("p not overwritten.")
     }
   } else {
-    print("  ->   Slot 'p' does not exist in obj@misc.")
+    message("  ->   Slot 'p' does not exist in obj@misc.")
   }
 }
 
@@ -1130,6 +1133,7 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
 #'
 #' @description Recall genes.ls from obj@misc to "genes.ls" in the global environment.
 #' @param obj Seurat object, Default: combined.obj
+#' @param overwrite Overwrite already existing in environment? Default: FALSE
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -1145,19 +1149,18 @@ recall.genes.ls <- function(obj = combined.obj, overwrite = FALSE) { # genes.ls
   obj <- ww.get.1st.Seur.element(obj)
 
   if ("genes.ls" %in% names(obj@misc)) {
-    if (!exists("genes.ls")) iprint("variable 'genes.ls' exits in the global namespace:", head(p))
+    if (!exists("genes.ls")) message("variable 'genes.ls' exits in the global namespace: ", head(p))
 
     if (!exists("genes.ls") | (exists("genes.ls") & overwrite == TRUE)) {
       MarkdownHelpers::ww.assign_to_global(name = "genes.ls", value = obj@misc$"genes.ls")
-      print("Overwritten.")
+      message("Overwritten.")
     } else {
-      print("Not overwritten.")
+      message("Not overwritten.")
     }
   } else {
-    print("  ->   Slot 'genes.ls' does not exist in obj@misc.")
+    message("  ->   Slot 'genes.ls' does not exist in obj@misc.")
   }
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -2291,8 +2294,11 @@ sparse.cor <- function(smat) {
 #'
 #' @export
 Calc.Cor.Seurat <- function(
-    assay.use = "RNA", slot.use = "data",
-    quantileX = 0.95, max.cells = 40000, seed = p$"seed",
+    assay.use = "RNA",
+    slot.use = "data",
+    quantileX = 0.95,
+    max.cells = 40000,
+    seed = p$"seed",
     digits = 2, obj = combined.obj) {
   expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
   if (ncol(expr.mat) > max.cells) {
@@ -3778,7 +3784,7 @@ isave.RDS <- function(
   if (showMemObject) {
     try(memory.biggest.objects(), silent = TRUE)
   }
-  if ("seurat" %in% is(obj) & saveParams) {
+  if ("Seurat" %in% is(obj) & saveParams) {
     try(obj@misc$p <- p, silent = TRUE)
     try(obj@misc$all.genes <- all.genes, silent = TRUE)
   }
@@ -3852,7 +3858,7 @@ xsave <- function(
   FNN <- paste0(out_dir, fnameBase, ".qs")
   print(paste0(substitute(obj), " <- xread('", FNN, "')"))
 
-  if ("seurat" %in% is(obj)) {
+  if ("Seurat" %in% is(obj)) {
     if (saveParams) {
       try(obj@misc$"p" <- p, silent = TRUE)
       try(obj@misc$"all.genes" <- all.genes, silent = TRUE)
@@ -3902,6 +3908,9 @@ xsave <- function(
 #'
 #' @export
 xread <- function(file, nthreads = 4,
+                  loadParamsAndAllGenes = TRUE,
+                  overwriteParams = FALSE,
+                  overwriteAllGenes = FALSE,
                   ...) {
   stopifnot(file.exists(file))
 
@@ -3921,19 +3930,41 @@ xread <- function(file, nthreads = 4,
   #     import = c("file", "nthreads")
   #   )
   # } else {
-  x <- qs::qread(file = file, nthreads = nthreads, ...)
+  obj <- qs::qread(file = file, nthreads = nthreads, ...)
   # }
 
-  report <- if (is(x, "Seurat")) {
-    kppws("with", ncol(x), "cells &", ncol(x@meta.data), "meta colums.")
-  } else if (is.list(x)) {
-    kppws("is a list of:", length(x))
+  report <- if (is(obj, "Seurat")) {
+    kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "meta colums.")
+  } else if (is.list(obj)) {
+    kppws("is a list of:", length(obj))
   } else {
-    kppws("of length:", length(x))
+    kppws("of length:", length(obj))
   }
-  iprint(is(x)[1], report)
+
+
+  if ("Seurat" %in% is(obj)) {
+    if (loadParamsAndAllGenes) {
+      p_local <- obj@misc$"p"
+      all.genes_local <- obj@misc$"all.genes"
+
+      if (is.null(p_local)) {
+        message("No parameter list 'p' found in object@misc.")
+      } else {
+          recall.parameters(obj = obj, overwrite = overwriteParams )
+      }
+
+      if (is.null(all.genes_local)) {
+        message("No gene list 'all.genes' found in object@misc.")
+      } else {
+        recall.all.genes(obj = obj, overwrite = overwriteAllGenes)
+      }
+    }
+  }
+
+
+  iprint(is(obj)[1], report)
   try(tictoc::toc(), silent = TRUE)
-  invisible(x)
+  invisible(obj)
 }
 
 
@@ -4068,45 +4099,6 @@ find10XoutputFolders <- function(root_dir, subdir, recursive = TRUE) {
 
   return(outs_dirs)
 }
-
-# # _________________________________________________________________________________________________
-# #' @title Find Specific Files in Specified Subdirectories
-# #'
-# #' @description This function searches through specified subdirectories within a root directory
-# #' to find files that match a specified pattern and returns a character vector with their full paths.
-# #' The printed output excludes the root directory part from the paths.
-# #'
-# #' @param root_dir The root directory.
-# #' @param subdir A character vector of subdirectory names within the root directory to be scanned.
-# #' @param file_name_pattern The pattern of the file name to search for.
-# #' @param recursive Boolean indicating whether to search recursively within subdirectories.
-# #' @return A character vector containing the full paths to the located files.
-# # #' @importFrom fs dir_ls
-# #' @export
-
-# findBamFilesInSubdirs <- function(root_dir, subdir, file_name_pattern = "possorted_genome_bam.bam", recursive = TRUE) {
-#   stopifnot(is.character(root_dir), length(root_dir) == 1, dir.exists(root_dir),
-#             is.character(subdir), all(dir.exists(file.path(root_dir, subdir))),
-#             is.character(file_name_pattern), length(file_name_pattern) == 1,
-#             is.logical(recursive))
-
-#   pattern <- paste0("**/", file_name_pattern)
-#   paths_to_search <- file.path(root_dir, subdir)
-#   bams <- c()
-
-#   for (path in paths_to_search) {
-#     iprint("Searching in:", path)
-#     found_files <- fs::dir_ls(path, recurse = recursive, glob = pattern, type = "file")
-#     iprint(length(found_files), "files found.")
-#     bams <- c(bams, found_files)
-#   }
-
-#   # Replace root_dir in the paths with an empty string for printing
-#   bams_print <- gsub(paste0("^", root_dir, "/?"), "", bams)
-#   iprint(length(bams), bams_print)
-
-#   return(bams)
-# }
 
 
 # _________________________________________________________________________________________________
