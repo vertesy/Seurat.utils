@@ -1118,42 +1118,8 @@ gg_color_hue <- function(n) {
 #' @importFrom MarkdownHelpers color_check
 #' @importFrom gplots rich.colors
 #'
-#' @export getDiscretePalette
+#' @export
 getDiscretePalette <- function() .Deprecated("DiscretePaletteSafe and DiscretePaletteObj")
-# getDiscretePalette <- function(
-#     ident.used = GetClusteringRuns()[1],
-#     obj = combined.obj,
-#     palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1],
-#     show.colors = FALSE, seed = 1989) {
-#
-#   n.clusters <- nrow(unique(obj[[ident.used]]))
-#
-#   colorz <- Seurat::DiscretePalette(n = n.clusters, palette = palette.used)
-#
-#   if (anyNA(colorz)) {
-#
-#     colorsOK <- colorz[!is.na(colorz)] # Extract non-NA values
-#     n.colz <- length(colorsOK)
-#
-#     msg <- paste("More categories then present in the palette", n.clusters, "vs."
-#                  , n.colz, "in", palette.used, "-> recycling.")
-#     warning(msg, immediate. = TRUE)
-#
-#     # Resample non-NA values and replace NA values
-#     set.seed(seed)
-#
-#     if (n.clusters > 10 * n.colz) {
-#       colorz <- sample(gplots::rich.colors(n.clusters))
-#     } else {
-#       colorz <- sample(x = colorsOK, size = n.clusters, replace = TRUE)
-#     }
-#
-#     stopif(anyNA(colorz))
-#
-#   }
-#   if (show.colors) MarkdownHelpers::color_check(colorz)
-#   return(colorz)
-# }
 
 
 # _________________________________________________________________________________________________
@@ -3056,23 +3022,28 @@ ww.check.if.3D.reduction.exist <- function(obj = obj) {
 }
 
 # _________________________________________________________________________________________________
-#' @title ww.check.quantile.cutoff.and.clip.outliers
+#' @title Check Quantile Cutoff and Clip Outliers
 #'
-#' @description Function to check a specified quantile cutoff and clip outliers from a given expression vector.
-#' @param expr.vec A numeric vector representing gene expression data. Default: plotting.data[, gene]
-#' @param quantileCutoffX A numeric value representing the quantile at which to clip outliers. Default: quantileCutoff
-#' @param min.cells.expressing A numeric value representing the minimum number of cells expressing a gene that should remain after clipping outliers. Default: 10
-#' @return The input expression vector with outliers clipped.
+#' @description Checks a specified quantile cutoff and clips outliers from an expression vector,
+#' ensuring that a minimum number of cells expressing a gene remain.
+#'
+#' @param expr.vec A numeric vector representing gene expression data.
+#' @param quantileCutoffX The quantile cutoff for clipping outliers.
+#' @param min.cells.expressing The minimum number of cells that should remain expressing after clipping.
+#' @return The expression vector with outliers clipped, ensuring the minimum number of cells expressing.
 #' @examples
 #' \dontrun{
-#' ww.check.quantile.cutoff.and.clip.outliers(expr.vec = expr.data, quantileCutoffX = 0.99, min.cells.expressing = 10)
+#' expr.vec <- c(...)
+#' quantileCutoff <- 0.99
+#' min.cells.expressing <- 10
+#' ww.check.quantile.cutoff.and.clip.outliers(expr.vec, quantileCutoff, min.cells.expressing)
 #' }
+#' @export
 #' @importFrom CodeAndRoll2 clip.outliers.at.percentile
 #'
-#' @export
-ww.check.quantile.cutoff.and.clip.outliers <-
-  function(expr.vec = plotting.data[, gene], quantileCutoffX = quantileCutoff,
-           min.cells.expressing = 10) {
+ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[, gene],
+                                                       quantileCutoffX = quantileCutoff,
+                                                       min.cells.expressing = 10) {
     expr.vec.clipped <-
       CodeAndRoll2::clip.outliers.at.percentile(expr.vec, probs = c(1 - quantileCutoffX, quantileCutoffX))
     if (sum(expr.vec.clipped > 0) > min.cells.expressing) {
@@ -3081,7 +3052,9 @@ ww.check.quantile.cutoff.and.clip.outliers <-
       iprint("WARNING: quantile.cutoff too stringent, would leave <", min.cells.expressing, "cells. It is NOT applied.")
     }
     return(expr.vec)
+
   }
+
 
 # _________________________________________________________________________________________________
 #' @title plot3D.umap.gene
@@ -3466,7 +3439,6 @@ Plot3D.ListOfCategories <- function(
 # TEMPORARY ______________________________ ----
 # _________________________________________________________________________________________________
 
-
 # _________________________________________________________________________________________________
 #' @title Display Correlation Values in Pairs Plot
 #'
@@ -3522,24 +3494,6 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
   text(0.5, 0.5, txt, cex = cex * r)
   text(.8, .8, Signif, cex = cex, col = 2)
 }
-
-
-# panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method = "pearson") {
-#   usr <- par("usr"); on.exit(par(usr))
-#   par(usr = c(0, 1, 0, 1))
-#   r <- abs(cor(x, y, method = method, use = "complete.obs"))
-#   txt <- format(c(r, 0.123456789), digits = digits)[1]
-#   txt <- paste(prefix, txt, sep = "")
-#   if (missing(cex.cor)) cex <- 0.8/strwidth(txt)
-#
-#   test <- cor.test(x, y)
-#   Signif <- symnum(test$p.value, corr = FALSE, na = FALSE,
-#                    cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
-#                    symbols = c("***", "**", "*", ".", " "))
-#
-#   text(0.5, 0.5, txt, cex = cex * r)
-#   text(.8, .8, Signif, cex = cex,  col = 2)
-# }
 
 
 

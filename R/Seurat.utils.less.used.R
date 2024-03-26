@@ -413,3 +413,58 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 save2umaps.A4 <- function(...) .Deprecated("save2plots.A4()")
 
 save4umaps.A4 <- function(...) .Deprecated("save4plots.A4()")
+
+
+
+# panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method = "pearson") {
+#   usr <- par("usr"); on.exit(par(usr))
+#   par(usr = c(0, 1, 0, 1))
+#   r <- abs(cor(x, y, method = method, use = "complete.obs"))
+#   txt <- format(c(r, 0.123456789), digits = digits)[1]
+#   txt <- paste(prefix, txt, sep = "")
+#   if (missing(cex.cor)) cex <- 0.8/strwidth(txt)
+#
+#   test <- cor.test(x, y)
+#   Signif <- symnum(test$p.value, corr = FALSE, na = FALSE,
+#                    cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
+#                    symbols = c("***", "**", "*", ".", " "))
+#
+#   text(0.5, 0.5, txt, cex = cex * r)
+#   text(.8, .8, Signif, cex = cex,  col = 2)
+# }
+
+# getDiscretePalette <- function(
+    #     ident.used = GetClusteringRuns()[1],
+#     obj = combined.obj,
+#     palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1],
+#     show.colors = FALSE, seed = 1989) {
+#
+#   n.clusters <- nrow(unique(obj[[ident.used]]))
+#
+#   colorz <- Seurat::DiscretePalette(n = n.clusters, palette = palette.used)
+#
+#   if (anyNA(colorz)) {
+#
+#     colorsOK <- colorz[!is.na(colorz)] # Extract non-NA values
+#     n.colz <- length(colorsOK)
+#
+#     msg <- paste("More categories then present in the palette", n.clusters, "vs."
+#                  , n.colz, "in", palette.used, "-> recycling.")
+#     warning(msg, immediate. = TRUE)
+#
+#     # Resample non-NA values and replace NA values
+#     set.seed(seed)
+#
+#     if (n.clusters > 10 * n.colz) {
+#       colorz <- sample(gplots::rich.colors(n.clusters))
+#     } else {
+#       colorz <- sample(x = colorsOK, size = n.clusters, replace = TRUE)
+#     }
+#
+#     stopif(anyNA(colorz))
+#
+#   }
+#   if (show.colors) MarkdownHelpers::color_check(colorz)
+#   return(colorz)
+# }
+
