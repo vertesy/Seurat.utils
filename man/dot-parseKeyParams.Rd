@@ -9,6 +9,7 @@
   regressionVariables = obj@misc$p$variables.2.regress.combined,
   nrVarFeatures = NULL,
   return.as.name = FALSE,
+  assay = Seurat::DefaultAssay(obj),
   suffix = NULL
 )
 }

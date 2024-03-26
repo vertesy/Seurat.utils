@@ -4934,19 +4934,21 @@ regress_out_and_recalculate_seurat <- function(
 # _________________________________________________________________________________________________
 #' @title Get number of scaled features
 #'
-#' @param obj A Seurat object containing scaled data in `assays$RNA@layers$scale.data` (v5) or
-#' `obj@assays$RNA@scale.data` (v1-4).
+#' @param obj A Seurat object containing scaled data in  `obj@assays$RNA@scale.data`.
 #' @return Integer representing the number of scaled features
 .getNrScaledFeatures <- function(obj, assay = Seurat::DefaultAssay(obj)) {
 
   message("Seurat version: ", obj@version)
   message("Assay searched: ", assay)
 
-  if (obj@version > 5) {
-    nrow(obj@assays[[assay]]@layers$"scale.data")
-  } else {
-    nrow(obj@assays[[assay]]@"scale.data")
-  }
+  # !!! Below may have been necessary bc of a bug in version 5.0.0
+  # if (obj@version > 5) {
+  #   nrow(obj@assays[[assay]]@layers$"scale.data")
+  # } else {
+  #   nrow(obj@assays[[assay]]@"scale.data")
+  # }
+
+  nrow(obj@assays[[assay]]@"scale.data")
 }
 
 # _________________________________________________________________________________________________
