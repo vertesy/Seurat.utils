@@ -559,7 +559,6 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 
 
 
-
 # _________________________________________________________________________________________________
 #' @title GetClusteringRuns
 #'
@@ -570,11 +569,11 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-  #'   GetClusteringRuns(obj = combined.obj, pat = `*snn_res.*[0-9]$`)
+  #'   GetClusteringRuns(obj = combined.obj, pat = '*snn_res.*[0-9]$')
 #' }
 #' }
 #' @export
-GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = `*snn_res.*[0-9]$`) {
+GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = '*snn_res.*[0-9]$') {
   if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
   if (identical(clustering.results, character(0))) warning("No matching column found!", immediate. = TRUE)
