@@ -40,7 +40,7 @@ from a Seurat object on an A4 page, facilitating a quick quality control (QC) ov
 }
 \examples{
 \dontrun{
-  qQC.plots.BrainOrg()
+qQC.plots.BrainOrg()
 }
 
 }

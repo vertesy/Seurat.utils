@@ -48,7 +48,9 @@ the two objects, which can be useful for understanding the relationship between 
 \examples{
 # Assuming `object1` and `object2` are Seurat objects, and you want to transfer
 # metadata columns named 'patientID' and 'treatmentGroup' from `object1` to `object2`:
-object2 <- transferMetadata(from = object1, to = object2,
-                           colname_from = c("patientID", "treatmentGroup"))
+object2 <- transferMetadata(
+  from = object1, to = object2,
+  colname_from = c("patientID", "treatmentGroup")
+)
 
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{PlotFilters}
 \alias{PlotFilters}
-\title{PlotFilters}
+\title{Plot filtering thresholds and distributions}
 \usage{
 PlotFilters(
   ls.obj = ls.Seurat,
@@ -26,38 +26,40 @@ PlotFilters(
 )
 }
 \arguments{
-\item{ls.obj}{A list of Seurat objects to be analyzed. Default is ls.Seurat.}
+\item{ls.obj}{A list of Seurat objects to be analyzed. Default: \code{ls.Seurat}.}
 
-\item{parentdir}{A string representing the parent directory where the plots will be stored. Default is OutDirOrig.}
+\item{parentdir}{The parent directory where the plots will be stored. Default: \code{OutDirOrig}.}
 
-\item{suffices}{A vector of strings that will be used as suffixes in the output plot file names. Default is the names of the Seurat objects in ls.obj.}
+\item{suffices}{Suffixes used in the output plot file names. Default: Names of the Seurat objects in \code{ls.obj}.}
 
-\item{filetype}{A string indicating the file type of the output plot images. Default is '.png'.}
+\item{filetype}{The file type of the output plot images. Default: \code{'.png'}.}
 
-\item{below.mito}{Numeric threshold for the lower bound of mitochondrial content. Default is p$thr.lp.mito.}
+\item{below.mito}{Lower bound of mitochondrial content. Default: \code{p$thr.lp.mito}.}
 
-\item{above.mito}{Numeric threshold for the upper bound of mitochondrial content. Default is p$thr.hp.mito.}
+\item{above.mito}{Upper bound of mitochondrial content. Default: \code{p$thr.hp.mito}.}
 
-\item{below.ribo}{Numeric threshold for the lower bound of ribosomal content. Default is p$thr.lp.ribo.}
+\item{below.ribo}{Lower bound of ribosomal content. Default: \code{p$thr.lp.ribo}.}
 
-\item{above.ribo}{Numeric threshold for the upper bound of ribosomal content. Default is p$thr.hp.ribo.}
+\item{above.ribo}{Upper bound of ribosomal content. Default: \code{p$thr.hp.ribo}.}
 
-\item{below.nFeature_RNA}{Numeric threshold for the lower bound of RNA features. Default is p$thr.lp.nFeature_RNA.}
+\item{below.nFeature_RNA}{Lower bound of RNA features. Default: \code{p$thr.lp.nFeature_RNA}.}
 
-\item{above.nFeature_RNA}{Numeric threshold for the upper bound of RNA features. Default is p$thr.hp.nFeature_RNA.}
+\item{above.nFeature_RNA}{Upper bound of RNA features. Default: \code{p$thr.hp.nFeature_RNA}.}
 
-\item{subdir}{A string specifying the subdirectory within the parent directory where the plots will be stored. Default is generated using a call to kpp().}
+\item{subdir}{Subdirectory within \code{parentdir} where plots will be stored. Default is generated using a call to \code{kpp()}.}
 
-\item{transparency}{Numeric value controlling the transparency of points on the scatter plots. Default is 0.25.}
+\item{transparency}{Point transparency on scatter plots. Default: 0.25.}
 
-\item{cex}{Numeric value controlling the size of points on the scatter plots. Default is 0.75.}
+\item{cex}{Size of points on scatter plots. Default: 0.75.}
 
-\item{theme.used}{A ggplot2 theme to be used for all plots. Default is theme_bw(base_size = 18).}
+\item{theme.used}{A \code{ggplot2} theme for all plots. Default: \code{theme_bw(base_size = 18)}.}
 
-\item{LabelDistFromTop}{Numeric value specifying the distance from the top of the plot for the label placement. Default is 200.}
+\item{LabelDistFromTop}{Distance from top for label placement. Default: 200.}
 }
 \description{
-Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.
+This function plots the filtering thresholds and distributions for Seurat objects,
+using four panels to highlight the relationship between gene- and UMI-counts, and the
+ribosomal- and mitochondrial-content.
 }
 \examples{
 \dontrun{
@@ -65,7 +67,9 @@ if (interactive()) {
   PlotFilters(ls.Seurat)
 }
 }
+
 }
 \seealso{
-\code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{labs}}, \code{\link[ggplot2]{geom_point}}
+\code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{labs}},
+\code{\link[ggplot2]{geom_point}}
 }

@@ -913,11 +913,12 @@ plotClustSizeDistr <- function(
 #' @param label Whether to add labels to the bar plot. Default: FALSE.
 #' @param subtitle Optional subtitle for the plot.
 #' @param suffix Suffix for the output file name.
+#' @param above Whether to calculate the fraction of cells above or below the threshold. Default: TRUE.
 #' @param ... Additional parameters for plotting functions.
 #'
 #' @examples
 #' \dontrun{
-#' scBarplot.FractionAboveThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.3)
+#' scBarplot.FractionAboveThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.2)
 #' }
 #'
 #' @seealso \code{\link[dplyr]{select}}, \code{\link[dplyr]{group_by}}
@@ -926,46 +927,65 @@ plotClustSizeDistr <- function(
 #'
 #' @export
 scBarplot.FractionAboveThr <- function(
-    thrX = 0.3, value.col = "percent.ribo",
+    thrX = 0.2,
+    value.col = "percent.ribo",
     id.col = "cl.names.top.gene.res.0.3",
-    obj = combined.obj, return.df = FALSE, label = FALSE,
-    suffix = NULL, subtitle = id.col,
+    obj = combined.obj,
+    return.df = FALSE,
+    label = percentage_formatter(deframe(df_2vec), digitz = 2),
+    subtitle = id.col,
+    suffix = NULL,
+    above = TRUE,
     ...) {
   meta <- obj@meta.data
   metacol <- meta %>%
     dplyr::select(c(id.col, value.col))
 
   (df_cells_above <- metacol %>%
-    dplyr::group_by_(id.col) %>%
+    dplyr::group_by(!!sym(id.col)) %>%
     summarize(
       n_cells = n(),
-      n_cells_above = sum(!!as.name(value.col) > thrX),
-      fr_n_cells_above = n_cells_above / n_cells
+      n_cells_above = sum(!!sym(value.col) > thrX),
+      fr_n_cells_above = n_cells_above / n_cells,
+      fr_n_cells_below = 1-fr_n_cells_above
     )
   )
 
-  total_average <- iround(100 * mean(metacol[, value.col] > thrX))
+  pass <-
+    if (above) {
+      metacol[, value.col] > thrX
+    } else {
+      metacol[, value.col] < thrX
+    }
+  total_average <- iround(100 * mean(pass))
 
-  df_2vec <- df_cells_above[, c(1, 4)]
+  df_2vec <-
+    if (above) {
+      df_cells_above[, c(1, 4)]
+    } else {
+      df_cells_above[, c(1, 5)]
+    }
+
   (v.fr_n_cells_above <- 100 * deframe(df_2vec))
-  if (label == TRUE) lab <- percentage_formatter(deframe(df_2vec), digitz = 2) else lab <- NULL
 
-  pname <- paste("Pc. cells above", value.col, "of", thrX)
+  tag <- if (above) "above" else "below"
+
+  pname <- paste("Pc. cells", tag, value.col, "of", thrX)
   ggobj <- ggExpress::qbarplot(v.fr_n_cells_above,
-    plotname = pname,
-    filename = FixPlotName(kpp(pname, id.col, ".pdf")),
-    suffix = suffix,
-    subtitle = subtitle,
-    caption = paste(
-      "Overall average:", iround(total_average), "% |",
-      substitute(obj)
-    ) # , '\n', id.col
-    , xlab.angle = 45,
-    xlab = "Clusters", ylab = paste("% Cells above thr. (", value.col, ")"),
-    label = lab,
-    hline = total_average,
-    ...
-  )
+                               plotname = pname,
+                               filename = FixPlotName(kpp(pname, id.col, ".pdf")),
+                               suffix = suffix,
+                               subtitle = subtitle,
+                               caption = paste(
+                                 "Overall average (black line):", iround(total_average), "% |",
+                                 substitute(obj)),
+                               xlab.angle = 45,
+                               xlab = "Clusters",
+                               ylab = paste("% Cells", tag, "thr. (", value.col, ")"),
+                               ylim = c(0, 100),
+                               label = label,
+                               hline = total_average,
+                               ...)
   if (return.df) {
     return(df_cells_above)
   } else {
@@ -979,6 +999,7 @@ scBarplot.FractionAboveThr <- function(
 #'
 #' @description Generates a bar plot to visualize the percentage of cells within each cluster that
 #' fall below a specified threshold, according to a metadata column value.
+#'Inherits all parameters from `scBarplot.FractionAboveThr` with the exception that `above` is set to FALSE.
 #'
 #' @param thrX Threshold value for assessing cell counts. Default: 0.01.
 #' @param value.col Metadata column with values for threshold comparison. Default: 'percent.ribo'.
@@ -991,39 +1012,35 @@ scBarplot.FractionAboveThr <- function(
 #' scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01)
 #' }
 #'
+#' @seealso `scBarplot.FractionAboveThr`
 #' @seealso \code{\link[dplyr]{select}}, \code{\link[dplyr]{group_by}}
 #'
 #' @importFrom dplyr select group_by summarize
 #'
 #' @export
 scBarplot.FractionBelowThr <- function(
-    thrX = 0.01, value.col = "percent.ribo", id.col = "cl.names.top.gene.res.0.3",
-    obj = combined.obj, return.df = FALSE) { # Calculat the fraction of cells per cluster below a certain threhold
-  meta <- obj@meta.data
-  (df_cells_below <- meta %>%
-    dplyr::select(c(id.col, value.col)) %>%
-    dplyr::group_by_(id.col) %>%
-    summarize(
-      n_cells = n(),
-      n_cells_below = sum(!!as.name(value.col) < thrX),
-      fr_n_cells_below = n_cells_below / n_cells
-    ) %>%
-    FirstCol2RowNames())
+    thrX = 0.2,
+    value.col = "percent.ribo",
+    id.col = "cl.names.top.gene.res.0.3",
+    obj = combined.obj,
+    return.df = FALSE,
+    subtitle = id.col,
+    suffix = NULL,
+    ...
+) {
 
-  (v.fr_n_cells_below <- 100 * as.named.vector.df(df_cells_below[3]))
-
-  pname <- make.names(paste("Cells with", value.col, "<", thrX, id.col))
-  ggobj <- ggExpress::qbarplot(v.fr_n_cells_below,
-    xlab = "Clusters", ylab = "% Cells",
-    plotname = pname,
-    subtitle = id.col, xlab.angle = 45
+  scBarplot.FractionAboveThr(
+    thrX = thrX,
+    value.col = value.col,
+    id.col = id.col,
+    obj = obj,
+    return.df = return.df,
+    subtitle = subtitle,
+    suffix = suffix,
+    above = FALSE # Set `above` argument to FALSE to get fraction below threshold
   )
-  if (return.df) {
-    return(df_cells_below)
-  } else {
-    ggobj
-  }
 }
+
 
 # _________________________________________________________________________________________________
 #' @title Stacked Barplot of Metadata Categories for List of Seurat Objects

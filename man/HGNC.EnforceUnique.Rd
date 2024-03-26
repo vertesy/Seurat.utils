@@ -34,11 +34,11 @@ symbols accurately represent your data.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    # Assuming `SymUpd` is your data frame of updated symbols from HGNChelper::checkGeneSymbols()
-    uniqueSymbols <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
-    # `uniqueSymbols` now contains unique gene symbols in its third column
-  }
+if (interactive()) {
+  # Assuming `SymUpd` is your data frame of updated symbols from HGNChelper::checkGeneSymbols()
+  uniqueSymbols <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
+  # `uniqueSymbols` now contains unique gene symbols in its third column
+}
 }
 
 }

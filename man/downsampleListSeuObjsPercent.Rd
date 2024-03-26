@@ -24,9 +24,9 @@ This is useful for reducing dataset size for quicker processing or testing workf
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    downsampled_objs <- downsampleListSeuObjsPercent(ls.obj = yourListOfSeuratObjects, fraction = 0.1)
-  }
+if (interactive()) {
+  downsampled_objs <- downsampleListSeuObjsPercent(ls.obj = yourListOfSeuratObjects, fraction = 0.1)
+}
 }
 
 }

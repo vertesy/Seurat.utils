@@ -37,13 +37,13 @@ correctly formatted and exist within the dataset or are recognized gene symbols.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    # Check for the presence of a gene name in uppercase
-    check.genes(list.of.genes = "top2a", makeuppercase = TRUE, obj = combined.obj)
+if (interactive()) {
+  # Check for the presence of a gene name in uppercase
+  check.genes(list.of.genes = "top2a", makeuppercase = TRUE, obj = combined.obj)
 
-    # Check for a gene name with verbose output and HGNC lookup
-    check.genes(list.of.genes = "VGLUT2", verbose = TRUE, HGNC.lookup = TRUE, obj = combined.obj)
-  }
+  # Check for a gene name with verbose output and HGNC lookup
+  check.genes(list.of.genes = "VGLUT2", verbose = TRUE, HGNC.lookup = TRUE, obj = combined.obj)
+}
 }
 
 }

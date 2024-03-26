@@ -4,14 +4,14 @@
 \alias{GetClusteringRuns}
 \title{GetClusteringRuns}
 \usage{
-GetClusteringRuns(obj = combined.obj, res = FALSE, pat = "*snn_res.*[0-9]$")
+GetClusteringRuns(obj = combined.obj, res = FALSE, pat = `*snn_res.*[0-9]$`)
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}
 
 \item{res}{Clustering resoluton to use, Default: FALSE}
 
-\item{pat}{Pettern to match, Default: '\emph{snn_res.}\link{0-9}$'}
+\item{pat}{Pettern to match, Default: \verb{*snn_res.*[0-9]$}}
 }
 \description{
 Get Clustering Runs: metadata column names.
@@ -19,7 +19,7 @@ Get Clustering Runs: metadata column names.
 \examples{
 \dontrun{
 if (interactive()) {
-  GetClusteringRuns()
+  GetClusteringRuns(obj = combined.obj, pat = `*snn_res.*[0-9]$`)
 }
 }
 }

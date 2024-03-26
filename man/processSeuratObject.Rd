@@ -7,9 +7,9 @@
 processSeuratObject(
   obj,
   param.list = p,
-  compute = T,
-  save = T,
-  plot = T,
+  compute = TRUE,
+  save = TRUE,
+  plot = TRUE,
   nfeatures = p$n.var.genes
 )
 }

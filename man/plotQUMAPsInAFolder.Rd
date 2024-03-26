@@ -35,8 +35,10 @@ This function plots qUMAPs for a specified set of genes, storing the results in 
 specified folder. If no folder name is provided, it defaults to using the gene set name.
 }
 \examples{
-plotQUMAPsInAFolder(genes = c("Gene1", "Gene2"), obj = combined.obj,
-                    foldername = "MyGenePlots", intersectionAssay = 'RNA',
-                    plot.reduction = 'umap')
+plotQUMAPsInAFolder(
+  genes = c("Gene1", "Gene2"), obj = combined.obj,
+  foldername = "MyGenePlots", intersectionAssay = "RNA",
+  plot.reduction = "umap"
+)
 
 }

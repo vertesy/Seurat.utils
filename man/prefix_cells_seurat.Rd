@@ -22,11 +22,11 @@ This is useful for ensuring unique cell names across multiple samples or conditi
 }
 \examples{
 \dontrun{
-  # Assuming seurat_obj1 and seurat_obj2 are Seurat objects
-  ls_obj <- list(seurat_obj1, seurat_obj2)
-  obj_IDs <- c("sample1", "sample2")
-  ls_obj_prefixed <- prefix_cells_seurat(ls_obj = ls_obj, obj_IDs = obj_IDs)
-  # Now each cell name in seurat_obj1 and seurat_obj2 will be prefixed with 'sample1_' and 'sample2_', respectively.
+# Assuming seurat_obj1 and seurat_obj2 are Seurat objects
+ls_obj <- list(seurat_obj1, seurat_obj2)
+obj_IDs <- c("sample1", "sample2")
+ls_obj_prefixed <- prefix_cells_seurat(ls_obj = ls_obj, obj_IDs = obj_IDs)
+# Now each cell name in seurat_obj1 and seurat_obj2 will be prefixed with 'sample1_' and 'sample2_', respectively.
 }
 
 }

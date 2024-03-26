@@ -5,14 +5,15 @@
 \title{Barplot the Fraction of Cells Above Threshold per Cluster}
 \usage{
 scBarplot.FractionAboveThr(
-  thrX = 0.3,
+  thrX = 0.2,
   value.col = "percent.ribo",
   id.col = "cl.names.top.gene.res.0.3",
   obj = combined.obj,
   return.df = FALSE,
-  label = FALSE,
-  suffix = NULL,
+  label = percentage_formatter(deframe(df_2vec), digitz = 2),
   subtitle = id.col,
+  suffix = NULL,
+  above = TRUE,
   ...
 )
 }
@@ -29,9 +30,11 @@ scBarplot.FractionAboveThr(
 
 \item{label}{Whether to add labels to the bar plot. Default: FALSE.}
 
+\item{subtitle}{Optional subtitle for the plot.}
+
 \item{suffix}{Suffix for the output file name.}
 
-\item{subtitle}{Optional subtitle for the plot.}
+\item{above}{Whether to calculate the fraction of cells above or below the threshold. Default: TRUE.}
 
 \item{...}{Additional parameters for plotting functions.}
 }
@@ -41,7 +44,7 @@ exceed a specified threshold, based on a selected metadata column.
 }
 \examples{
 \dontrun{
-  scBarplot.FractionAboveThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.3)
+scBarplot.FractionAboveThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.2)
 }
 
 }

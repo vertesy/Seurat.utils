@@ -19,9 +19,9 @@ allowing for easy reference and tracking of analysis parameters used.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    save.parameters(obj = combined.obj, params = p)
-  }
+if (interactive()) {
+  save.parameters(obj = combined.obj, params = p)
+}
 }
 
 }

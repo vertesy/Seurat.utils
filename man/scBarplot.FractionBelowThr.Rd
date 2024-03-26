@@ -5,11 +5,14 @@
 \title{Fraction of Cells Below Threshold per Cluster}
 \usage{
 scBarplot.FractionBelowThr(
-  thrX = 0.01,
+  thrX = 0.2,
   value.col = "percent.ribo",
   id.col = "cl.names.top.gene.res.0.3",
   obj = combined.obj,
-  return.df = FALSE
+  return.df = FALSE,
+  subtitle = id.col,
+  suffix = NULL,
+  ...
 )
 }
 \arguments{
@@ -26,13 +29,16 @@ scBarplot.FractionBelowThr(
 \description{
 Generates a bar plot to visualize the percentage of cells within each cluster that
 fall below a specified threshold, according to a metadata column value.
+Inherits all parameters from \code{scBarplot.FractionAboveThr} with the exception that \code{above} is set to FALSE.
 }
 \examples{
 \dontrun{
-  scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01)
+scBarplot.FractionBelowThr(id.col = "cl.names.top.gene.res.0.3", value.col = "percent.ribo", thrX = 0.01)
 }
 
 }
 \seealso{
+\code{scBarplot.FractionAboveThr}
+
 \code{\link[dplyr]{select}}, \code{\link[dplyr]{group_by}}
 }

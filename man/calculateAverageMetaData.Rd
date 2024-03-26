@@ -42,11 +42,13 @@ metric calculation on specified features, providing insights into the data distr
 }
 \examples{
 # Assuming `obj` is a Seurat object with relevant metadata columns:
-results <- calculateAverageMetaData(obj = obj,
-                                    meta.features = c("nFeature_RNA", "percent.ribo"),
-                                    ident = "ident_column_name",
-                                    metrics = list('median' = median, 'mean' = mean),
-                                    verbose = TRUE)
+results <- calculateAverageMetaData(
+  obj = obj,
+  meta.features = c("nFeature_RNA", "percent.ribo"),
+  ident = "ident_column_name",
+  metrics = list("median" = median, "mean" = mean),
+  verbose = TRUE
+)
 # This will return a list with data frames containing the median and mean
 # of "nFeature_RNA" and "percent.ribo" for each category in "ident_column_name".
 

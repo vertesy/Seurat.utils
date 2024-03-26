@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{ww.check.quantile.cutoff.and.clip.outliers}
 \alias{ww.check.quantile.cutoff.and.clip.outliers}
-\title{ww.check.quantile.cutoff.and.clip.outliers}
+\title{Check Quantile Cutoff and Clip Outliers}
 \usage{
 ww.check.quantile.cutoff.and.clip.outliers(
   expr.vec = plotting.data[, gene],
@@ -11,20 +11,24 @@ ww.check.quantile.cutoff.and.clip.outliers(
 )
 }
 \arguments{
-\item{expr.vec}{A numeric vector representing gene expression data. Default: plotting.data\link{, gene}}
+\item{expr.vec}{A numeric vector representing gene expression data.}
 
-\item{quantileCutoffX}{A numeric value representing the quantile at which to clip outliers. Default: quantileCutoff}
+\item{quantileCutoffX}{The quantile cutoff for clipping outliers.}
 
-\item{min.cells.expressing}{A numeric value representing the minimum number of cells expressing a gene that should remain after clipping outliers. Default: 10}
+\item{min.cells.expressing}{The minimum number of cells that should remain expressing after clipping.}
 }
 \value{
-The input expression vector with outliers clipped.
+The expression vector with outliers clipped, ensuring the minimum number of cells expressing.
 }
 \description{
-Function to check a specified quantile cutoff and clip outliers from a given expression vector.
+Checks a specified quantile cutoff and clips outliers from an expression vector,
+ensuring that a minimum number of cells expressing a gene remain.
 }
 \examples{
 \dontrun{
-ww.check.quantile.cutoff.and.clip.outliers(expr.vec = expr.data, quantileCutoffX = 0.99, min.cells.expressing = 10)
+expr.vec <- c(...)
+quantileCutoff <- 0.99
+min.cells.expressing <- 10
+ww.check.quantile.cutoff.and.clip.outliers(expr.vec, quantileCutoff, min.cells.expressing)
 }
 }

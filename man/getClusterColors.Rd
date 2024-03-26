@@ -32,8 +32,8 @@ in a Seurat object as defined by a specified identity column.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    getClusterColors(obj = combined.obj, ident = GetClusteringRuns(combined.obj)[1])
-  }
+if (interactive()) {
+  getClusterColors(obj = combined.obj, ident = GetClusteringRuns(combined.obj)[1])
+}
 }
 }

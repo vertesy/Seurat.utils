@@ -42,8 +42,8 @@ enhanced usability, including optional logarithmic transformations and saving ca
 }
 \examples{
 \dontrun{
-  # Generate and display a scatter plot for features TOP2A and ID2
-  qFeatureScatter(feature1 = "TOP2A", feature2 = "ID2", obj = yourSeuratObject)
+# Generate and display a scatter plot for features TOP2A and ID2
+qFeatureScatter(feature1 = "TOP2A", feature2 = "ID2", obj = yourSeuratObject)
 }
 
 }

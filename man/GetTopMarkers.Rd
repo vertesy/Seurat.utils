@@ -24,9 +24,9 @@ gene expression analysis, such as that provided by \code{FindAllMarkers()}.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    topMarkers <- GetTopMarkers(df = df.markers, n = 3)
-  }
+if (interactive()) {
+  topMarkers <- GetTopMarkers(df = df.markers, n = 3)
+}
 }
 
 }

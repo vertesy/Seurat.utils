@@ -31,12 +31,12 @@ if (interactive()) {
 }
 }
 \dontrun{
-  if (interactive()) {
-    combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
-    qUMAP()
-    combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
-    qUMAP()
-  }
+if (interactive()) {
+  combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
+  qUMAP()
+  combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
+  qUMAP()
+}
 }
 
 }

@@ -28,11 +28,11 @@ with downstream analyses or integration processes.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    # Assuming `SeuratObj` is your Seurat object and you want to remove the gene "TOP2A"
-    updatedSeuratObj <- RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
-    # Now `updatedSeuratObj` does not contain "TOP2A" in the specified slots
-  }
+if (interactive()) {
+  # Assuming `SeuratObj` is your Seurat object and you want to remove the gene "TOP2A"
+  updatedSeuratObj <- RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
+  # Now `updatedSeuratObj` does not contain "TOP2A" in the specified slots
+}
 }
 
 }

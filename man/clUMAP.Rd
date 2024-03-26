@@ -28,7 +28,7 @@ clUMAP(
   MaxCategThrHP = 200,
   axes = FALSE,
   aspect.ratio = c(FALSE, 0.6)[2],
-  save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = F),
+  save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
   PNG = TRUE,
   check_for_2D = TRUE,
   caption = .parseKeyParams(obj),
@@ -99,8 +99,8 @@ default options for custom titles, subtitles, saving, and more.
 }
 \examples{
 \dontrun{
-  clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj)
-  clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj, cols = RColorBrewer::brewer.pal(8, "Dark2"))
+clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj)
+clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj, cols = RColorBrewer::brewer.pal(8, "Dark2"))
 }
 
 }

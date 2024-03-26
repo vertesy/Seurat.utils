@@ -26,9 +26,9 @@ where small, possibly unrepresentative clusters may remain.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    combined.obj <- removeResidualSmallClusters(obj = combined.obj)
-  }
+if (interactive()) {
+  combined.obj <- removeResidualSmallClusters(obj = combined.obj)
+}
 }
 
 }

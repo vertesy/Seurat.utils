@@ -22,11 +22,11 @@ and cleaning before further analysis or data export.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    # Assuming `combined.obj` is your Seurat object
-    gene.name.check(Seu.obj = combined.obj)
-    # This will print examples of gene names containing '-', '_', '.', and '.AS[1-9]'
-  }
+if (interactive()) {
+  # Assuming `combined.obj` is your Seurat object
+  gene.name.check(Seu.obj = combined.obj)
+  # This will print examples of gene names containing '-', '_', '.', and '.AS[1-9]'
+}
 }
 
 }

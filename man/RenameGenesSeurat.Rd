@@ -44,13 +44,15 @@ this function.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    # Assuming `SeuratObj` is your Seurat object
-    # and `HGNC.updated.genes` contains the updated gene symbols
-    SeuratObj <- RenameGenesSeurat(obj = SeuratObj,
-                                   newnames = HGNC.updated.genes$Suggested.Symbol)
-    # `SeuratObj` now has updated gene symbols in the specified assay and slots
-  }
+if (interactive()) {
+  # Assuming `SeuratObj` is your Seurat object
+  # and `HGNC.updated.genes` contains the updated gene symbols
+  SeuratObj <- RenameGenesSeurat(
+    obj = SeuratObj,
+    newnames = HGNC.updated.genes$Suggested.Symbol
+  )
+  # `SeuratObj` now has updated gene symbols in the specified assay and slots
+}
 }
 
 }

@@ -33,12 +33,12 @@ Ensure that the input adheres to this format for accurate statistics.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    # Assuming `HGNC.updated.genes` is your data frame containing the original and
-    # suggested gene symbols, as returned by `UpdateGenesSeurat()`
-    updateStats <- GetUpdateStats(genes = HGNC.updated.genes)
-    # `updateStats` now contains the update statistics, including percentage and count of updated genes
-  }
+if (interactive()) {
+  # Assuming `HGNC.updated.genes` is your data frame containing the original and
+  # suggested gene symbols, as returned by `UpdateGenesSeurat()`
+  updateStats <- GetUpdateStats(genes = HGNC.updated.genes)
+  # `updateStats` now contains the update statistics, including percentage and count of updated genes
+}
 }
 
 }

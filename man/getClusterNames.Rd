@@ -2,15 +2,24 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{getClusterNames}
 \alias{getClusterNames}
-\title{getClusterNames}
+\title{Retrieve Cluster Names}
 \usage{
 getClusterNames(obj = combined.obj, ident = GetClusteringRuns(obj)[2])
 }
 \arguments{
-\item{obj}{Seurat object}
+\item{obj}{A Seurat object. Default: \code{combined.obj}.}
 
-\item{ident}{ident}
+\item{ident}{The identity class from which to retrieve cluster names.
+Default uses the second clustering run from \code{GetClusteringRuns(obj)}.}
+}
+\value{
+Prints and returns the sorted unique cluster names as a character vector.
 }
 \description{
-getClusterNames
+Extracts cluster names based on a specified identity class from a Seurat object.
+}
+\examples{
+\dontrun{
+ getClusterNames(obj = combined.obj, ident = GetClusteringRuns(obj)[2])
+ }
 }

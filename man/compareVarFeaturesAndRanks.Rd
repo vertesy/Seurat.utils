@@ -7,9 +7,9 @@
 compareVarFeaturesAndRanks(
   obj1 = NULL,
   obj2 = NULL,
-  cor.plot = T,
-  save.plot = T,
-  plot_venn = T,
+  cor.plot = TRUE,
+  save.plot = TRUE,
+  plot_venn = TRUE,
   suffix = NULL,
   ...
 )

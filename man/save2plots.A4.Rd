@@ -44,9 +44,11 @@ the other on a single A4 page.
 }
 \examples{
 \dontrun{
-  p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) + geom_point()
-  p2 <- ggplot(iris, aes(Petal.Length, Petal.Width, color = Species)) + geom_point()
-  save2plots.A4(plot_list = list(p1, p2))
+p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) +
+  geom_point()
+p2 <- ggplot(iris, aes(Petal.Length, Petal.Width, color = Species)) +
+  geom_point()
+save2plots.A4(plot_list = list(p1, p2))
 }
 
 }

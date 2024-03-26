@@ -8,7 +8,7 @@
   obj,
   regressionVariables = p$variables.2.regress.combined,
   nrVarFeatures = NULL,
-  return.as.name = F,
+  return.as.name = FALSE,
   suffix = NULL
 )
 }

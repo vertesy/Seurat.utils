@@ -29,9 +29,9 @@ It saves the resulting UMAP plot directly to the current working directory.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    umapHiLightSel(obj = combined.obj, COI = c("0", "1"), res.cl = "resolution_0.8")
-  }
+if (interactive()) {
+  umapHiLightSel(obj = combined.obj, COI = c("0", "1"), res.cl = "resolution_0.8")
+}
 }
 
 }

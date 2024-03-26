@@ -33,9 +33,11 @@ in a UMAP (or tSNE or PCA) plot, potentially enhancing interpretability by order
 }
 \examples{
 \dontrun{
-  combined.obj <- AutoNumber.by.UMAP(obj = combined.obj, dim = 1, reduction = "umap",
-                                     res = "integrated_snn_res.0.5")
-  DimPlot.ClusterNames(combined.obj, ident = "integrated_snn_res.0.5.ordered")
+combined.obj <- AutoNumber.by.UMAP(
+  obj = combined.obj, dim = 1, reduction = "umap",
+  res = "integrated_snn_res.0.5"
+)
+DimPlot.ClusterNames(combined.obj, ident = "integrated_snn_res.0.5.ordered")
 }
 
 }

@@ -32,11 +32,11 @@ accordingly before running this function.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    # Replace `path_to_10x_data` with the path to your 10X data directory
-    seuratObject <- read10x(dir = "path_to_10x_data")
-    # `seuratObject` is now a Seurat object containing the loaded 10X data
-  }
+if (interactive()) {
+  # Replace `path_to_10x_data` with the path to your 10X data directory
+  seuratObject <- read10x(dir = "path_to_10x_data")
+  # `seuratObject` is now a Seurat object containing the loaded 10X data
+}
 }
 
 }

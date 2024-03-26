@@ -21,10 +21,10 @@ typically used to focus subsequent analyses on genes with the greatest variation
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    # Assuming `combined.obj` is a Seurat object with computed variable genes
-    varGenes <- GetMostVarGenes(obj = combined.obj, nGenes = 100)
-  }
+if (interactive()) {
+  # Assuming `combined.obj` is a Seurat object with computed variable genes
+  varGenes <- GetMostVarGenes(obj = combined.obj, nGenes = 100)
+}
 }
 
 }

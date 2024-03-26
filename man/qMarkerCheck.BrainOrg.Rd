@@ -20,8 +20,8 @@ aiding in the quick assessment of their expression across different cells or clu
 }
 \examples{
 \dontrun{
-  qMarkerCheck.BrainOrg(combined.obj)
-  qMarkerCheck.BrainOrg(combined.obj, custom.genes = c("Gene1", "Gene2"))
+qMarkerCheck.BrainOrg(combined.obj)
+qMarkerCheck.BrainOrg(combined.obj, custom.genes = c("Gene1", "Gene2"))
 }
 
 }

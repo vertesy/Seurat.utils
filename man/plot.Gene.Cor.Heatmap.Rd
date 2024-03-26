@@ -47,9 +47,9 @@ or cell types in a Seurat object.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    plot.Gene.Cor.Heatmap(genes = c("Gene1", "Gene2", "Gene3"), obj = combined.obj)
-  }
+if (interactive()) {
+  plot.Gene.Cor.Heatmap(genes = c("Gene1", "Gene2", "Gene3"), obj = combined.obj)
+}
 }
 
 }

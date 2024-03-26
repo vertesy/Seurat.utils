@@ -40,7 +40,7 @@ from a Seurat object onto an A4 page, facilitating comparative visualization.
 }
 \examples{
 \dontrun{
-  qClusteringUMAPS()
+qClusteringUMAPS()
 }
 
 }

@@ -33,9 +33,9 @@ expression patterns across clusters.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = 10)
-  }
+if (interactive()) {
+  PlotTopGenesPerCluster(obj = combined.obj, cl_res = 0.5, nrGenes = 10)
+}
 }
 
 }

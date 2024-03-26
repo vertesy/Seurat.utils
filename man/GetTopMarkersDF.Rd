@@ -30,9 +30,9 @@ based on patterns.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    topMarkersDF <- GetTopMarkersDF(dfDE = df.markers, n = 3)
-  }
+if (interactive()) {
+  topMarkersDF <- GetTopMarkersDF(dfDE = df.markers, n = 3)
+}
 }
 
 }

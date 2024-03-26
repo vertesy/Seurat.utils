@@ -4,7 +4,7 @@
 \alias{recallAllGenes}
 \title{recallAllGenes}
 \usage{
-recallAllGenes(obj = combined.obj, overwrite = F)
+recallAllGenes(obj = combined.obj, overwrite = FALSE)
 }
 \arguments{
 \item{obj}{Seurat object, Default: combined.obj}

@@ -25,11 +25,13 @@ preliminary analyses or testing.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    downsampledSeuratList <- downsampleListSeuObjsNCells(ls.obj =
-                                      list(yourSeuratObj1, yourSeuratObj2), NrCells = 2000)
-    downsampledSeuratList <- downsampleListSeuObjsNCells(NrCells = 200)
-  }
+if (interactive()) {
+  downsampledSeuratList <- downsampleListSeuObjsNCells(
+    ls.obj =
+      list(yourSeuratObj1, yourSeuratObj2), NrCells = 2000
+  )
+  downsampledSeuratList <- downsampleListSeuObjsNCells(NrCells = 200)
+}
 }
 
 }

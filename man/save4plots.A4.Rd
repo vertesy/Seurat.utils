@@ -41,11 +41,15 @@ compact comparison of different visualizations or clustering results.
 }
 \examples{
 \dontrun{
-  p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) + geom_point()
-  p2 <- ggplot(mtcars, aes(mpg, disp, color = as.factor(cyl))) + geom_point()
-  p3 <- ggplot(mpg, aes(displ, hwy, color = class)) + geom_point()
-  p4 <- ggplot(diamonds, aes(carat, price, color = cut)) + geom_point()
-  save4plots.A4(plot_list = list(p1, p2, p3, p4))
+p1 <- ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) +
+  geom_point()
+p2 <- ggplot(mtcars, aes(mpg, disp, color = as.factor(cyl))) +
+  geom_point()
+p3 <- ggplot(mpg, aes(displ, hwy, color = class)) +
+  geom_point()
+p4 <- ggplot(diamonds, aes(carat, price, color = cut)) +
+  geom_point()
+save4plots.A4(plot_list = list(p1, p2, p3, p4))
 }
 
 }

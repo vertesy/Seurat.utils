@@ -23,10 +23,10 @@ of both covariance and correlation matrices without converting to a dense format
 }
 \examples{
 \dontrun{
-  library(Matrix)
-  smat <- Matrix(rnorm(1000), nrow = 100, sparse = TRUE)
-  cor_res <- sparse.cor(smat)
-  print(cor_res$cor)
+library(Matrix)
+smat <- Matrix(rnorm(1000), nrow = 100, sparse = TRUE)
+cor_res <- sparse.cor(smat)
+print(cor_res$cor)
 }
 
 }

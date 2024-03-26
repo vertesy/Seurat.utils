@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Metadata.R
 \name{plotMetadataCategPie}
 \alias{plotMetadataCategPie}
-\title{plotMetadataCategPie}
+\title{Plot Metadata Category Pie Chart}
 \usage{
 plotMetadataCategPie(
   metacol = "Singlet.status",
@@ -15,18 +15,36 @@ plotMetadataCategPie(
 )
 }
 \arguments{
-\item{metacol}{Which column in metadata should be used?}
+\item{metacol}{The metadata column to visualize.}
 
-\item{plot_name}{Plot name}
+\item{plot_name}{Name of the plot to generate.}
 
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object containing the metadata. Default: \code{combined.obj}.}
 
-\item{max.categs}{Maximum number of categories allowed for this pie chart. Error otherwise.}
+\item{max.categs}{The maximum number of categories to display in the pie chart.
+If the number of categories exceeds this value, an error is thrown.}
 
-\item{both_pc_and_value}{Report both percentage AND number.}
+\item{both_pc_and_value}{If \code{TRUE}, labels on the pie chart will show both the percentage
+and the count of each category. If \code{FALSE}, only the percentage is shown.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+\item{subtitle}{Optional subtitle for the pie chart.}
+
+\item{...}{Additional arguments to pass to the pie chart plotting function.}
+}
+\value{
+A pie chart visualizing the distribution of categories within the specified metadata column.
 }
 \description{
-plotMetadataCategPie
+Generates a pie chart visualizing the distribution of categories within a specified
+metadata column of a Seurat object.
+}
+\examples{
+\dontrun{
+plotMetadataCategPie(metacol = "Singlet.status",
+                     plot_name = "Singlet Status Distribution",
+                     obj = combined.obj,
+                     max.categs = 20,
+                     both_pc_and_value = TRUE)
+}
+
 }

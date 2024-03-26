@@ -36,11 +36,11 @@ If genes are not found, it will return a warning.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    # Assuming `combined.obj` is your Seurat object
-    fractionInTranscriptome <- CalculateFractionInTranscriptome(geneset = c("MALAT1", "GAPDH"), obj = combined.obj)
-    # This will return the fraction of MALAT1 and GAPDH in the transcriptome of each cell
-  }
+if (interactive()) {
+  # Assuming `combined.obj` is your Seurat object
+  fractionInTranscriptome <- CalculateFractionInTranscriptome(geneset = c("MALAT1", "GAPDH"), obj = combined.obj)
+  # This will return the fraction of MALAT1 and GAPDH in the transcriptome of each cell
+}
 }
 
 }

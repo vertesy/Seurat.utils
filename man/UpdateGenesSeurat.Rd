@@ -39,12 +39,14 @@ The function optionally enforces unique gene symbols and provides statistics on 
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    # Assuming `mySeuratObject` is your Seurat object
-    updatedSeuratObject <- UpdateGenesSeurat(obj = mySeuratObject, species_ = "human",
-                                              EnforceUnique = TRUE, ShowStats = TRUE)
-    # `updatedSeuratObject` now has updated gene symbols
-  }
+if (interactive()) {
+  # Assuming `mySeuratObject` is your Seurat object
+  updatedSeuratObject <- UpdateGenesSeurat(
+    obj = mySeuratObject, species_ = "human",
+    EnforceUnique = TRUE, ShowStats = TRUE
+  )
+  # `updatedSeuratObject` now has updated gene symbols
+}
 }
 
 }

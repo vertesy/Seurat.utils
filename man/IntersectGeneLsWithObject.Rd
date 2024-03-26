@@ -9,10 +9,10 @@ IntersectGeneLsWithObject(
   obj = combined.obj,
   n_genes_shown = 10,
   species_ = "human",
-  EnforceUnique = T,
-  ShowStats = T,
+  EnforceUnique = TRUE,
+  ShowStats = TRUE,
   strict = TRUE,
-  verbose = T
+  verbose = TRUE
 )
 }
 \arguments{

@@ -28,9 +28,9 @@ if (interactive()) {
 }
 }
 \dontrun{
-  if (interactive()) {
-    obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
-  }
+if (interactive()) {
+  obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
+}
 }
 
 }

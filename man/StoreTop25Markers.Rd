@@ -21,9 +21,9 @@ rounding insignificant digits to three decimal places.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    combined.obj <- StoreTop25Markers(obj = combined.obj, df_markers = df.markers, res = 0.5)
-  }
+if (interactive()) {
+  combined.obj <- StoreTop25Markers(obj = combined.obj, df_markers = df.markers, res = 0.5)
+}
 }
 
 }

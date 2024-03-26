@@ -31,8 +31,8 @@ for visualizations where a specific number of distinct, reproducible colors is n
 }
 \examples{
 \dontrun{
-  colors <- DiscretePaletteSafe(n = 10)
-  print(colors)
+colors <- DiscretePaletteSafe(n = 10)
+print(colors)
 }
 
 }

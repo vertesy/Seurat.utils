@@ -44,7 +44,7 @@ Visualizes the fraction of cells within each cluster through a barplot.
 }
 \examples{
 \dontrun{
-  scBarplot.CellsPerCluster()
-  scBarplot.CellsPerCluster(sort = TRUE)
+scBarplot.CellsPerCluster()
+scBarplot.CellsPerCluster(sort = TRUE)
 }
 }

@@ -28,9 +28,9 @@ Generates a UMAP plot colored by a specified metadata column and saves the plot 
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    umapNamedClusters(obj = combined.obj, metaD.colname = "metaD.colname.labeled")
-  }
+if (interactive()) {
+  umapNamedClusters(obj = combined.obj, metaD.colname = "metaD.colname.labeled")
+}
 }
 
 }

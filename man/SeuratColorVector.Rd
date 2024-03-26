@@ -32,10 +32,10 @@ check results in a barplot with \code{MarkdownHelpers::color_check()}.
 }
 \examples{
 \dontrun{
-  # Display colors for the active identity
-  SeuratColorVector()
-  # Retrieve and plot colors for a specified clustering identity
-  SeuratColorVector(ident = "RNA_snn_res.1", plot.colors = TRUE)
+# Display colors for the active identity
+SeuratColorVector()
+# Retrieve and plot colors for a specified clustering identity
+SeuratColorVector(ident = "RNA_snn_res.1", plot.colors = TRUE)
 }
 
 }

@@ -64,7 +64,7 @@ and quantile clipping for count data.
 }
 \examples{
 \dontrun{
-  plotGeneExpHist(obj = yourSeuratObject, genes = c("GeneA", "GeneB"))
+plotGeneExpHist(obj = yourSeuratObject, genes = c("GeneA", "GeneB"))
 }
 
 }

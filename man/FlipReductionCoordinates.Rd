@@ -29,11 +29,11 @@ horizontally to change the visualization perspective.
 }
 \examples{
 \dontrun{
-  # Before flipping UMAP coordinates
-  clUMAP()
-  # Flip UMAP coordinates and visualize again
-  combined.obj <- FlipReductionCoordinates(combined.obj)
-  clUMAP()
+# Before flipping UMAP coordinates
+clUMAP()
+# Flip UMAP coordinates and visualize again
+combined.obj <- FlipReductionCoordinates(combined.obj)
+clUMAP()
 }
 
 }

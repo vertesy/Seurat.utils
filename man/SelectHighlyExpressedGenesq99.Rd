@@ -8,7 +8,7 @@ SelectHighlyExpressedGenesq99(
   genes,
   obj = combined.obj,
   above = 0,
-  sort = F,
+  sort = FALSE,
   strict = FALSE
 )
 }

@@ -4,7 +4,7 @@
 \alias{.metaColnames}
 \title{Extract meta.data Column Names Matching a Pattern}
 \usage{
-.metaColnames(obj = combined.obj, pattern, perl = T, ...)
+.metaColnames(obj = combined.obj, pattern, perl = TRUE, ...)
 }
 \arguments{
 \item{obj}{A dataframe from which to extract column names.}

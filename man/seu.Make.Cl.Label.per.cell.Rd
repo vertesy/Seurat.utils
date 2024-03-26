@@ -25,13 +25,15 @@ is labeled with its top gene and cluster ID in the format "GeneName.ClusterID".
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    # Assuming `TopGenes.Classic` is a named vector of top genes and cluster IDs,
-    # and `metaD.CL.colname` is a column in metadata with cluster IDs per cell
-    cellLabels <- seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic,
-      clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname))
-    # `cellLabels` now contains labels for each cell in the format "GeneName.ClusterID"
-  }
+if (interactive()) {
+  # Assuming `TopGenes.Classic` is a named vector of top genes and cluster IDs,
+  # and `metaD.CL.colname` is a column in metadata with cluster IDs per cell
+  cellLabels <- seu.Make.Cl.Label.per.cell(
+    TopGenes = TopGenes.Classic,
+    clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname)
+  )
+  # `cellLabels` now contains labels for each cell in the format "GeneName.ClusterID"
+}
 }
 
 }

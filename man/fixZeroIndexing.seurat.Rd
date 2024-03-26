@@ -20,11 +20,11 @@ This function modifies a specified metadata column in the Seurat object to repla
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    # Assuming `org` is a Seurat object with zero-based cluster indexing
-    org <- fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
-    # Now, `org` has its cluster indices in the 'res.0.6' metadata column adjusted to one-based indexing
-  }
+if (interactive()) {
+  # Assuming `org` is a Seurat object with zero-based cluster indexing
+  org <- fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
+  # Now, `org` has its cluster indices in the 'res.0.6' metadata column adjusted to one-based indexing
+}
 }
 
 }

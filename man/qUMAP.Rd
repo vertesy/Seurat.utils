@@ -13,7 +13,7 @@ qUMAP(
   splitby = NULL,
   prefix = NULL,
   suffix = make.names(sub),
-  save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = F),
+  save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
   PNG = TRUE,
   h = 7,
   w = NULL,
@@ -84,10 +84,10 @@ default options for custom titles, subtitles, saving, and more.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    qUMAP(feature = "nFeature_RNA", obj = yourSeuratObject)
-    qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
-  }
+if (interactive()) {
+  qUMAP(feature = "nFeature_RNA", obj = yourSeuratObject)
+  qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
+}
 }
 
 }

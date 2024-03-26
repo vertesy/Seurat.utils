@@ -32,7 +32,9 @@ for an optional inversion of the selection.
 }
 \examples{
 # Assuming `seurat_obj` is your Seurat object and you want to subset based on cluster 1
-subsetted_obj <- subsetSeuObjByIdent(obj = seurat_obj, ident = "your_ident_column",
-                                     clusters = c(1), invert = FALSE)
+subsetted_obj <- subsetSeuObjByIdent(
+  obj = seurat_obj, ident = "your_ident_column",
+  clusters = c(1), invert = FALSE
+)
 
 }

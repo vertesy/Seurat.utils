@@ -25,7 +25,7 @@ within a Seurat object, based on the specified clustering identity.
 }
 \examples{
 \dontrun{
-  plotClustSizeDistr()
+plotClustSizeDistr()
 }
 
 }

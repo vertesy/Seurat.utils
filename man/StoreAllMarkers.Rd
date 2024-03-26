@@ -28,9 +28,9 @@ specified number of digits to maintain readability and manage file sizes.
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    combined.obj <- StoreAllMarkers(obj = combined.obj, df_markers = df.markers, res = 0.5)
-  }
+if (interactive()) {
+  combined.obj <- StoreAllMarkers(obj = combined.obj, df_markers = df.markers, res = 0.5)
+}
 }
 
 }

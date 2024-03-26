@@ -25,9 +25,9 @@ the results in a subfolder named "Highest.Expressed.Genes".
 }
 \examples{
 \dontrun{
-  if (interactive()) {
-    PlotTopGenes()
-  }
+if (interactive()) {
+  PlotTopGenes()
+}
 }
 
 }
