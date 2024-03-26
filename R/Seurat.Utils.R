@@ -582,7 +582,6 @@ GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = '*snn_res.*
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title GetNamedClusteringRuns
 #'
@@ -4938,13 +4937,15 @@ regress_out_and_recalculate_seurat <- function(
 #' @param obj A Seurat object containing scaled data in `assays$RNA@layers$scale.data` (v5) or
 #' `obj@assays$RNA@scale.data` (v1-4).
 #' @return Integer representing the number of scaled features
-.getNrScaledFeatures <- function(obj) {
+.getNrScaledFeatures <- function(obj, assay = Seurat::DefaultAssay(obj)) {
 
   message("Seurat version: ", obj@version)
+  message("Assay searched: ", assay)
+
   if (obj@version > 5) {
-    nrow(obj@assays$RNA@layers$"scale.data")
+    nrow(obj@assays[[assay]]@layers$"scale.data")
   } else {
-    nrow(obj@assays$RNA@"scale.data")
+    nrow(obj@assays[[assay]]@"scale.data")
   }
 }
 
@@ -4980,10 +4981,13 @@ regress_out_and_recalculate_seurat <- function(
 #' @param suffix A suffix string to add.
 #' @return A character string summarizing the key parameters.
 #'
-.parseKeyParams <- function(obj, regressionVariables = obj@misc$p$"variables.2.regress.combined",
+.parseKeyParams <- function(obj,
+                            regressionVariables = obj@misc$p$"variables.2.regress.combined",
                             nrVarFeatures = NULL,
-                            return.as.name = FALSE, suffix = NULL) {
-  scaledFeatures <- .getNrScaledFeatures(obj)
+                            return.as.name = FALSE,
+                            assay = Seurat::DefaultAssay(obj),
+                            suffix = NULL) {
+  scaledFeatures <- .getNrScaledFeatures(obj, assay = assay)
 
   if (!is.null(nrVarFeatures)) {
     if (nrVarFeatures != scaledFeatures) {
