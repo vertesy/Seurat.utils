@@ -489,7 +489,7 @@ RenameClustering <- function(
 
   if (plot_umaps) {
     stopifnot(is.character(suffix.plot))
-    suffix.plot <- make.names(suffix.plot)
+    suffix.plot <- if (nchar(suffix.plot)) make.names(suffix.plot)
     print(clUMAP(orig.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
     print(clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
   } else {
@@ -1425,7 +1425,8 @@ downsampleSeuObj <- function(obj = ls.Seurat[[i]], fractionCells = 0.25, nCells 
 downsampleSeuObj.and.Save <- function(
     obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir,
     min.features = p$"min.features", suffix = fraction,
-    nthreads = if (exists("CBE.params")) CBE.params$"cpus" else 12) {
+    nthreads = .getNrCores()
+    ) {
   obj_Xpc <- downsampleSeuObj(obj = obj, fractionCells = fraction, seed = seed)
   nr.cells.kept <- ncol(obj_Xpc)
 
@@ -3429,7 +3430,7 @@ Convert10Xfolders <- function(
     updateHGNC = TRUE, ShowStats = TRUE,
     writeCBCtable = TRUE,
     sample.barcoding = FALSE,
-    nthreads = 12,
+    nthreads = .getNrCores(),
     preset = "high",
     ext = "qs",
     sort_alphanumeric = TRUE,
@@ -3834,7 +3835,7 @@ isave.RDS <- function(
 xsave <- function(
     obj, prefix = NULL,
     suffix = NULL,
-    nthreads = .getCPUsCBE(12),
+    nthreads = .getNrCores(12),
     preset = "high",
     project = getProject(),
     out_dir = if (exists("OutDir")) OutDir else getwd(),
@@ -3986,15 +3987,15 @@ xread <- function(file, nthreads = 4,
 #'
 #' # Assuming CBE.params exists and has a `cpus` entry of 4
 #' getCPUsCBE() # returns 3
-.getCPUsCBE <- function(n.cpus.def = 8) {
+.getNrCores <- function(n.cpus.def = 8) {
   # Check if 'CBE.params' exists and contains 'cpus'
-  if (exists("CBE.params", where = .GlobalEnv) && !is.null(CBE.params$"cpus")) {
+  if (exists("CBE.params") && is.list(CBE.params) &&
+      is.numeric(CBE.params$"cpus") && CBE.params$"cpus" > 0) {
     max(CBE.params$"cpus" - 1, 1)
   } else {
     return(n.cpus.def)
   }
 }
-
 
 
 
@@ -4931,6 +4932,11 @@ regress_out_and_recalculate_seurat <- function(
 }
 
 
+
+# _________________________________________________________________________________________________
+
+
+
 # _________________________________________________________________________________________________
 #' @title Get number of scaled features
 #'
@@ -4942,14 +4948,19 @@ regress_out_and_recalculate_seurat <- function(
   message("Assay searched: ", assay)
 
   # !!! Below may have been necessary bc of a bug in version 5.0.0
-  # if (obj@version > 5) {
-  #   nrow(obj@assays[[assay]]@layers$"scale.data")
-  # } else {
-  #   nrow(obj@assays[[assay]]@"scale.data")
-  # }
+  if (obj@version >= 5) {
+    if ("scale.data" %in% names(obj@assays[[assay]])) {
+      nrow(obj@assays[[assay]]@"scale.data")
+    } else {
+      nrow(obj@assays[[assay]]@layers$"scale.data")
+    }
+  } else {
+    nrow(obj@assays[[assay]]@"scale.data")
+  }
 
-  nrow(obj@assays[[assay]]@"scale.data")
 }
+
+
 
 # _________________________________________________________________________________________________
 #' @title Get number of principal components

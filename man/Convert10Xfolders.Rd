@@ -15,7 +15,7 @@ Convert10Xfolders(
   ShowStats = TRUE,
   writeCBCtable = TRUE,
   sample.barcoding = FALSE,
-  nthreads = 12,
+  nthreads = .getNrCores(),
   preset = "high",
   ext = "qs",
   sort_alphanumeric = TRUE,

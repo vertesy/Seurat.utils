@@ -8,7 +8,7 @@ xsave(
   obj,
   prefix = NULL,
   suffix = NULL,
-  nthreads = .getCPUsCBE(12),
+  nthreads = .getNrCores(12),
   preset = "high",
   project = getProject(),
   out_dir = if (exists("OutDir")) OutDir else getwd(),

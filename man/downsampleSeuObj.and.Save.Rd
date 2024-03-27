@@ -11,7 +11,7 @@ downsampleSeuObj.and.Save(
   dir = OutDir,
   min.features = p$min.features,
   suffix = fraction,
-  nthreads = if (exists("CBE.params")) CBE.params$cpus else 12
+  nthreads = .getNrCores()
 )
 }
 \arguments{
