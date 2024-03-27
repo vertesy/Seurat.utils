@@ -1370,7 +1370,8 @@ subsetSeuObjByIdent <- function(
 
   Idents(obj) <- ident
   cellz <- WhichCells(obj, idents = clusters, invert = invert)
-  message(length(cellz), "cells are selected from", ncol(obj), "using", clusters, "from", ident, ".")
+  message(length(cellz), " cells are selected from ", ncol(obj), ", using values:",
+          clusters, ", from", ident, ".")
   subset(x = obj, cells = cellz)
 }
 
