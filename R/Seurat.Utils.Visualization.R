@@ -910,7 +910,7 @@ plotClustSizeDistr <- function(
 #' @param id.col Cluster identity column in metadata. Default: 'cl.names.top.gene.res.0.3'.
 #' @param obj Seurat object with single-cell data. Default: `combined.obj`.
 #' @param return.df Whether to return the underlying data frame instead of the plot. Default: FALSE.
-#' @param label Whether to add labels to the bar plot. Default: FALSE.
+#' @param label Whether to add labels to the bar plot. Default: NULL.
 #' @param subtitle Optional subtitle for the plot.
 #' @param suffix Suffix for the output file name.
 #' @param above Whether to calculate the fraction of cells above or below the threshold. Default: TRUE.
@@ -929,14 +929,17 @@ plotClustSizeDistr <- function(
 scBarplot.FractionAboveThr <- function(
     thrX = 0.2,
     value.col = "percent.ribo",
-    id.col = "cl.names.top.gene.res.0.3",
+    id.col = getClusterNames()[1],
     obj = combined.obj,
     return.df = FALSE,
-    label = percentage_formatter(deframe(df_2vec), digitz = 2),
     subtitle = id.col,
+    label = NULL,
     suffix = NULL,
     above = TRUE,
+    ylim = c(0, 100), # set to null for relative y axis
     ...) {
+
+  # browser()
   meta <- obj@meta.data
   metacol <- meta %>%
     dplyr::select(c(id.col, value.col))
@@ -950,6 +953,7 @@ scBarplot.FractionAboveThr <- function(
       fr_n_cells_below = 1-fr_n_cells_above
     )
   )
+  print(1)
 
   pass <-
     if (above) {
@@ -966,12 +970,14 @@ scBarplot.FractionAboveThr <- function(
       df_cells_above[, c(1, 5)]
     }
 
+
   (v.fr_n_cells_above <- 100 * deframe(df_2vec))
 
   tag <- if (above) "above" else "below"
+  if (is.null(label)) label <- percentage_formatter(deframe(df_2vec), digitz = 2)
 
   pname <- paste("Pc. cells", tag, value.col, "of", thrX)
-  ggobj <- ggExpress::qbarplot(v.fr_n_cells_above,
+  ggobj <- ggExpress::qbarplot(v.fr_n_cells_above, label = label,
                                plotname = pname,
                                filename = FixPlotName(kpp(pname, id.col, ".pdf")),
                                suffix = suffix,
@@ -982,10 +988,11 @@ scBarplot.FractionAboveThr <- function(
                                xlab.angle = 45,
                                xlab = "Clusters",
                                ylab = paste("% Cells", tag, "thr. (", value.col, ")"),
-                               ylim = c(0, 100),
-                               label = label,
+                               ylim = ylim,
+
                                hline = total_average,
                                ...)
+  print(ggobj)
   if (return.df) {
     return(df_cells_above)
   } else {
@@ -1820,7 +1827,8 @@ qUMAP <- function(
 clUMAP <- function(
     ident = "integrated_snn_res.0.5", obj = combined.obj, # The quickest way to draw a clustering result  UMAP
     reduction = "umap", splitby = NULL,
-    title = ident, sub = NULL,
+    title = ident,
+    sub = NULL,
     prefix = NULL,
     suffix = make.names(sub),
     label.cex = 7,
@@ -1856,7 +1864,8 @@ clUMAP <- function(
     idx.ok <- identity[, 1] %in% highlight.clusters
     highlight.these <- rownames(identity)[idx.ok]
     PCT <- percentage_formatter(length(highlight.these) / ncol(obj), suffix = "or")
-    sub <- paste(PCT, length(highlight.these), "cells in cluster. |", ident, "\n", sub)
+    if (is.null(sub)) sub <- paste(PCT, length(highlight.these), "cells in ", ident)
+
     title <- kppc(highlight.clusters)
   } else {
     highlight.these <- NULL
