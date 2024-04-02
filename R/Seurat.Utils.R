@@ -1361,17 +1361,19 @@ subsetSeuObjByIdent <- function(
     obj = combined.obj, ident = GetClusteringRuns()[1],
     clusters,
     invert = FALSE) {
-  # browser()
+
   # Input checks
   stopifnot(
     "obj must be a Seurat object" = inherits(obj, "Seurat"),
-    "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data)
+    "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
+    "clusters must exist in ident" = all(clusters %in% unique(combined.obj[[ident]][ ,1] ))
   )
 
   Idents(obj) <- ident
   cellz <- WhichCells(obj, idents = clusters, invert = invert)
-  message(length(cellz), " cells are selected from ", ncol(obj), ", using values:",
-          clusters, ", from", ident, ".")
+  message(length(cellz), " cells are selected from ", ncol(obj),
+          ", using values: ", clusters,
+          ", from ", ident, ".")
   subset(x = obj, cells = cellz)
 }
 
