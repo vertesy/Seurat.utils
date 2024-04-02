@@ -2046,9 +2046,9 @@ multiFeaturePlot.A4 <- function(
     layout = c("tall", "wide", FALSE)[2],
     colors = c("grey", "red"),
     nr.Col = 2, nr.Row = 4,
-    raster = if (ncol(obj) > 1e5) TRUE else NULL,
+    raster = if (ncol(obj) > 1e5) TRUE else FALSE,
     cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
-    cex.min = if (raster) 1 else NULL,
+    cex.min = if (raster) TRUE else FALSE,
     gene.min.exp = "q01", gene.max.exp = "q99", subdir = TRUE,
     prefix = NULL, suffix = NULL,
     background_col = "white",
@@ -2678,6 +2678,9 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
     )
     print(Signature.Genes.Top16)
   }
+
+  stopifnot()
+
   print(CodeAndRoll2::as_tibble_from_namedVec(Signature.Genes.Top16))
   multiFeaturePlot.A4(
     obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall",

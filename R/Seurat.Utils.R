@@ -4728,6 +4728,7 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE, save = TRUE
   )
   .checkListElements(param_list = p, elements = c("variables.2.regress.combined", "n.PC", "snn_res"))
 
+
   gc()
   if (compute) {
     message("------------------- FindVariableFeatures -------------------")
@@ -4754,7 +4755,11 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE, save = TRUE
     obj <- FindClusters(obj, resolution = param.list$"snn_res")
     toc()
   }
+
+  message("------------------- Save -------------------")
   if (save) xsave(obj, suffix = "reprocessed")
+
+
   if (plot) {
     message("scPlotPCAvarExplained")
     scPlotPCAvarExplained(obj)
@@ -4770,9 +4775,10 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE, save = TRUE
 
     message("suPlotVariableFeatures")
     suPlotVariableFeatures(obj = obj)
+
     if (ncol(obj) < 50000) { # TEMP
       message("qMarkerCheck.BrainOrg")
-      qMarkerCheck.BrainOrg(obj = obj)
+      try(qMarkerCheck.BrainOrg(obj = obj), silent = TRUE)
     }
 
     Signature.Genes.Top20 <- c(
@@ -4789,7 +4795,7 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE, save = TRUE
       `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
     )
     message("plotQUMAPsInAFolder")
-    plotQUMAPsInAFolder(genes = Signature.Genes.Top20, obj = obj)
+    try(plotQUMAPsInAFolder(genes = Signature.Genes.Top20, obj = obj), silent = TRUE)
   }
   tictoc::toc()
 
