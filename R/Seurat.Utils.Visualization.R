@@ -1861,7 +1861,16 @@ clUMAP <- function(
 
 
   if (!missing(highlight.clusters)) {
+    if ( !(all(highlight.clusters %in% identity[, 1])) ) {
+      MSG <- paste("Some clusters not found in the object! Missing:",
+                   kppc(setdiff(highlight.clusters, unique(identity[, 1]))), "\nFrom:\n",
+                   kppc(sort(unique(identity[, 1]))))
+      warning(MSG, immediate. = TRUE)
+    }
+
     idx.ok <- identity[, 1] %in% highlight.clusters
+    stopifnot(sum(idx.ok) > 10) # minimum 10 cells needed
+
     highlight.these <- rownames(identity)[idx.ok]
     PCT <- percentage_formatter(length(highlight.these) / ncol(obj), suffix = "or")
     if (is.null(sub)) sub <- paste(PCT, length(highlight.these), "cells in ", ident)
@@ -1873,7 +1882,6 @@ clUMAP <- function(
   if (!missing(cells.highlight)) {
     highlight.these <- cells.highlight
   } # overwrite, if directly defined
-
 
   if (is.null(cols)) {
     # browser()
