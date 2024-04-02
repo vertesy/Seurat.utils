@@ -4711,12 +4711,12 @@ compareVarFeaturesAndRanks <- function(
 #' # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
 #' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
 #' @export
-processSeuratObject <- function(obj, param.list = p, compute = TRUE, save = TRUE, plot = TRUE,
-                                nfeatures = p$"n.var.genes") {
+processSeuratObject <- function(obj, param.list = p, compute = TRUE,
+                                save = TRUE, plot = TRUE,
+                                nfeatures = param.list$"n.var.genes") {
   warning("Make sure you cleaned up the memory!", immediate. = TRUE)
   stopifnot(require(tictoc))
   message("nfeatures: ", nfeatures)
-
 
   # Assertions to check input types
   stopifnot(
@@ -4759,7 +4759,6 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE, save = TRUE
 
   message("------------------- Save -------------------")
   if (save) xsave(obj, suffix = "reprocessed")
-
 
   if (plot) {
     message("scPlotPCAvarExplained")
