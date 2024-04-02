@@ -6,8 +6,8 @@
 \usage{
 xsave(
   obj,
-  prefix = NULL,
   suffix = NULL,
+  prefix = NULL,
   nthreads = .getNrCores(12),
   preset = "high",
   project = getProject(),
@@ -21,9 +21,9 @@ xsave(
 \arguments{
 \item{obj}{The R object to be saved.}
 
-\item{prefix}{Optional; a prefix to add to the filename.}
-
 \item{suffix}{Optional; a suffix to add to the filename.}
+
+\item{prefix}{Optional; a prefix to add to the filename.}
 
 \item{nthreads}{Number of threads to use when saving, defaults to 12.}
 

@@ -7,13 +7,14 @@
 scBarplot.FractionAboveThr(
   thrX = 0.2,
   value.col = "percent.ribo",
-  id.col = "cl.names.top.gene.res.0.3",
+  id.col = getClusterNames()[1],
   obj = combined.obj,
   return.df = FALSE,
-  label = percentage_formatter(deframe(df_2vec), digitz = 2),
   subtitle = id.col,
+  label = NULL,
   suffix = NULL,
   above = TRUE,
+  ylim = c(0, 100),
   ...
 )
 }
@@ -28,9 +29,9 @@ scBarplot.FractionAboveThr(
 
 \item{return.df}{Whether to return the underlying data frame instead of the plot. Default: FALSE.}
 
-\item{label}{Whether to add labels to the bar plot. Default: FALSE.}
-
 \item{subtitle}{Optional subtitle for the plot.}
+
+\item{label}{Whether to add labels to the bar plot. Default: NULL.}
 
 \item{suffix}{Suffix for the output file name.}
 

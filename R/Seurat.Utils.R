@@ -3811,8 +3811,8 @@ isave.RDS <- function(
 #' The saving path can be adjusted by the presence of 'OutDir' in the global environment or defaults to the working directory.
 #'
 #' @param obj The R object to be saved.
-#' @param prefix Optional; a prefix to add to the filename.
 #' @param suffix Optional; a suffix to add to the filename.
+#' @param prefix Optional; a prefix to add to the filename.
 #' @param nthreads Number of threads to use when saving, defaults to 12.
 #' @param preset Compression preset, defaults to 'high'.
 #' @param project The project name to be included in the filename, defaults to the result of `getProject()`.
@@ -3836,8 +3836,9 @@ isave.RDS <- function(
 #'
 #' @export
 xsave <- function(
-    obj, prefix = NULL,
+    obj,
     suffix = NULL,
+    prefix = NULL,
     nthreads = .getNrCores(12),
     preset = "high",
     project = getProject(),
