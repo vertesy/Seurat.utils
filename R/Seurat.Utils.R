@@ -1371,7 +1371,8 @@ subsetSeuObjByIdent <- function(
 
   Idents(obj) <- ident
   cellz <- WhichCells(obj, idents = clusters, invert = invert)
-  message(length(cellz), " cells are selected from ", ncol(obj),
+  PCT <- pc_TRUE(length(cellz)/ncol(obj))
+  message(PCT, " or ",length(cellz) ," cells are selected from ", ncol(obj),
           ", using values: ", clusters,
           ", from ", ident, ".")
   subset(x = obj, cells = cellz)
@@ -1528,7 +1529,7 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
 
   if (verbose) {
     message("Total cells sampled: ", length(sampledCells))
-    message(table(data))
+    print(table(data))
 
     nr_remaining_cells <- orig_cells <- table(data)
     nr_remaining_cells[nr_remaining_cells > max.cells] <- max.cells

@@ -9,6 +9,8 @@ scBarplot.CellFractions(
   group.by = GetNamedClusteringRuns()[1],
   fill.by,
   downsample = FALSE,
+  replacement.thr = 0.05,
+  with.replacement = (max.cells/ncol(obj)) < replacement.thr,
   plotname = kpp(toTitleCase(fill.by), "proportions.by", group.by),
   suffix = NULL,
   sub_title = suffix,
@@ -38,6 +40,10 @@ scBarplot.CellFractions(
 \item{fill.by}{The variable to fill by for the bar plot.}
 
 \item{downsample}{Logical indicating whether to downsample data to equalize group sizes.}
+
+\item{replacement.thr}{A numeric value between 0 and 1 indicating the percentage of cells to sample from each identity class. Defaults to 0.05.}
+
+\item{with.replacement}{Logical indicating if sampling should be done with replacement. Defaults to FALSE.}
 
 \item{plotname}{The title of the plot.}
 

@@ -525,6 +525,8 @@ get.clustercomposition <- function(
 #' @param group.by The variable to group by for the bar plot.
 #' @param fill.by The variable to fill by for the bar plot.
 #' @param downsample Logical indicating whether to downsample data to equalize group sizes.
+#' @param replacement.thr A numeric value between 0 and 1 indicating the percentage of cells to sample from each identity class. Defaults to 0.05.
+#' @param with.replacement Logical indicating if sampling should be done with replacement. Defaults to FALSE.
 #' @param plotname The title of the plot.
 #' @param suffix Optional suffix for the plot title.
 #' @param sub_title Optional subtitle for the plot.
@@ -567,6 +569,8 @@ scBarplot.CellFractions <- function(
     group.by = GetNamedClusteringRuns()[1],
     fill.by,
     downsample = FALSE,
+    replacement.thr = 0.05,
+    with.replacement = (max.cells / ncol(obj)) < replacement.thr, # if less than 5% of cells are sampled, sample with replacement
     plotname = kpp(toTitleCase(fill.by), "proportions.by", group.by),
     suffix = NULL,
     sub_title = suffix,
@@ -609,7 +613,9 @@ scBarplot.CellFractions <- function(
     message("Calculate the size of the smallest and largest groups, and downsample to that: ", downsample, " cells.")
 
     obj <- DietSeurat(obj)
-    obj <- downsampleSeuObjByIdentAndMaxcells(obj = obj, ident = fill.by, plot = F)
+    obj <- downsampleSeuObjByIdentAndMaxcells(obj = obj, ident = fill.by, plot = F,
+                                              with.replacement  = with.replacement,
+                                              replacement.thr = replacement.thr)
 
     # Update plot name and caption to reflect downsampling
     plotname <- kpp(plotname, "downsampled")
@@ -1842,17 +1848,19 @@ clUMAP <- function(
     label.cex = 7,
     h = 7, w = NULL, nr.cols = NULL,
     plotname = ppp(toupper(reduction), ident),
-    cols = NULL, palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
+    cols = NULL,
+    palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
     highlight.clusters = NULL, cells.highlight = NULL,
-    label = TRUE, repel = TRUE, legend = !label, MaxCategThrHP = 200,
+    label = TRUE, repel = TRUE,
+    legend = !label, MaxCategThrHP = 200,
     axes = FALSE,
     aspect.ratio = c(FALSE, 0.6)[2],
     save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     check_for_2D = TRUE,
     caption = .parseKeyParams(obj)
-    # , save.object = FALSE
     , ...) {
+  #
   if (check_for_2D) {
     umap_dims <- ncol(obj@reductions[[reduction]]@cell.embeddings)
     if (umap_dims != 2) warning(">>> UMAP is not 2 dimensional! \n Check obj@reductions[[reduction]]@cell.embeddings")
@@ -1929,7 +1937,6 @@ clUMAP <- function(
       fname <- ww.FnP_parser(pname, if (PNG) "png" else "pdf")
       try(save_plot(filename = fname, plot = ggplot.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
     }
-    # if(save.object) saveRDS(object = ggplot.obj, file = ppp(fname, 'ggobj.RDS'))
     return(ggplot.obj)
   } # if not too many categories
 }
