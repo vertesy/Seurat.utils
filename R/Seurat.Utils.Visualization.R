@@ -1482,7 +1482,7 @@ qFeatureScatter <- function(
 #' allowing for the data to be split by a specified grouping variable.
 #' The function supports customization options such as logarithmic scaling, custom titles, and more.
 #'
-#' @param object A Seurat object to be plotted.
+#' @param obj A Seurat object to be plotted.
 #' @param features A character string specifying the name of the feature to plot.
 #' @param idents A character vector specifying the identities to be used in the plot.
 #' @param split.by A character string specifying the grouping variable for splitting the plot.
@@ -1501,13 +1501,13 @@ qFeatureScatter <- function(
 #'
 #' @examples
 #' # Assuming `seurat_obj` is a valid Seurat object
-#' qSeuViolin(object = seurat_obj, features = "nFeature_RNA")
+#' qSeuViolin(obj = seurat_obj, features = "nFeature_RNA")
 #'
 #' @export
 qSeuViolin <- function(
-    object = ls.Seurat[[1]],
+    obj,
     features = "nFeature_RNA",
-    idents = GetNamedClusteringRuns(object)[1],
+    idents = GetNamedClusteringRuns(obj)[1],
     split.by = NULL,
     replace.na = FALSE,
     suffix = NULL,
@@ -1517,7 +1517,7 @@ qSeuViolin <- function(
     w = 9, h = 5,
     ...) {
   stopifnot(
-    "Seurat" %in% class(object), # object must be a Seurat object
+    "Seurat" %in% class(obj), # object must be a Seurat object
     # is.character(split.by), # split.by must be a character
     is.character(idents), # idents must be a character vector
     is.character(features), # features must be a character
@@ -1528,8 +1528,8 @@ qSeuViolin <- function(
     is.numeric(w) && w > 0, # w must be a positive number
     is.numeric(h) && h > 0, # h must be a positive number
     is.logical(show_plot), # show_plot must be logical
-    c(split.by, idents) %in% names(object@meta.data),
-    features %in% names(object@meta.data) || features %in% rownames(object)
+    c(split.by, idents) %in% names(obj@meta.data),
+    features %in% names(obj@meta.data) || features %in% rownames(obj)
   )
 
   print(unique(idents))
@@ -1545,10 +1545,10 @@ qSeuViolin <- function(
 
   if (replace.na) {
     warning("NA's are not, but zeros are displayed on the plot. Avoid replace.na when possible", immediate. = TRUE)
-    object@meta.data[[features]] <- na.replace(x = object@meta.data[[features]], replace = 0)
+    obj@meta.data[[features]] <- na.replace(x = obj@meta.data[[features]], replace = 0)
   }
 
-  p <- VlnPlot(object = object, features = features, split.by = split.by, group.by = idents, ...) +
+  p <- VlnPlot(object = obj, features = features, split.by = split.by, group.by = idents, ...) +
     theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
   p <- p + ggtitle(label = ttl, subtitle = subt)
 
@@ -1563,6 +1563,8 @@ qSeuViolin <- function(
   qqSave(p, title = title_, w = w, h = h)
   if (show_plot) p
 }
+
+
 
 
 
