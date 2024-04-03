@@ -18,7 +18,7 @@ scBarplot.CellFractions(
   also.pdf = FALSE,
   seedNr = 1989,
   w = 10,
-  h = ceiling(0.5 * w),
+  h = ceiling(0.7 * w),
   draw_plot = TRUE,
   show_numbers = FALSE,
   min.pct = 0.05,

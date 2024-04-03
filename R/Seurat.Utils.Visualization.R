@@ -575,7 +575,7 @@ scBarplot.CellFractions <- function(
     save_plot = TRUE,
     also.pdf = FALSE,
     seedNr = 1989,
-    w = 10, h = ceiling(0.5 * w),
+    w = 10, h = ceiling(0.7 * w),
     draw_plot = TRUE,
     show_numbers = FALSE,
     min.pct = 0.05,
@@ -603,10 +603,10 @@ scBarplot.CellFractions <- function(
   pname.suffix <- capt.suffix <- NULL
 
   if (downsample) {
-    message("Calculate the size of the smallest and largest groups, and downsample to that")
     tbl_X <- table(obj@meta.data[[fill.by]])
     downsample <- min(tbl_X)
     largest_grp <- max(tbl_X)
+    message("Calculate the size of the smallest and largest groups, and downsample to that: ", downsample, " cells.")
 
     obj <- DietSeurat(obj)
     obj <- downsampleSeuObjByIdentAndMaxcells(obj = obj, ident = fill.by, plot = F)

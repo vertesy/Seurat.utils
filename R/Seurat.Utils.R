@@ -1454,7 +1454,11 @@ downsampleSeuObj.and.Save <- function(
 #' @param ident A character vector specifying the identity class from which cells are to be sampled.
 #' @param max.cells A positive integer indicating the maximum number of cells to sample from each identity class.
 #' @param verbose Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.
+#' @param replacement.thr A numeric value between 0 and 1 indicating the percentage of cells to sample from each identity class. Defaults to 0.05.
+#' @param with.replacement Logical indicating if sampling should be done with replacement. Defaults to FALSE.
 #' @param plot Logical indicating to plot a barplot.
+#' @param seed An integer to set the seed for reproducibility.
+#'
 #'
 #' @return Returns a Seurat object containing only the sampled cells.
 #'
@@ -1477,6 +1481,8 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
                                                ident = GetNamedClusteringRuns()[1],
                                                max.cells = min(table(combined.obj[[ident]])),
                                                verbose = TRUE,
+                                               replacement.thr = 0.05,
+                                               with.replacement = (max.cells / ncol(obj)) < replacement.thr, # if less than 5% of cells are sampled, sample with replacement
                                                plot = TRUE,
                                                seed = 1989) {
   stopifnot(
@@ -1490,9 +1496,22 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
   uniqueCategories <- unique(data)
 
   set.seed(seed)
+
+  if (with.replacement) {
+    max.cells <- round(ncol(obj) * replacement.thr)
+    msg <- percentage_formatter(replacement.thr,
+                                suffix = paste("or", max.cells, "of cells."),
+                                prefix = "Sampling with replacement to:")
+    message(msg)
+  }
+
+
+
+  # Sample cells from each identity class
   sampledNames <- lapply(uniqueCategories, function(category) {
     namesInCategory <- names(data[data == category])
     if (length(namesInCategory) <= max.cells) {
+      # If the number of cells in the category is less than or equal to max.cells, return all cells
       return(namesInCategory)
     } else {
       return(sample(namesInCategory, max.cells))
