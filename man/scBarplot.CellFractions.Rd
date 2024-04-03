@@ -9,7 +9,7 @@ scBarplot.CellFractions(
   group.by = GetNamedClusteringRuns()[1],
   fill.by,
   downsample = FALSE,
-  plotname = paste(tools::toTitleCase(fill.by), "proportions"),
+  plotname = paste0(tools::toTitleCase(fill.by), ".proportions.by.", group.by),
   suffix = NULL,
   sub_title = suffix,
   hlines = c(0.25, 0.5, 0.75),
@@ -25,8 +25,8 @@ scBarplot.CellFractions(
   cex.pct = 2.5,
   min_frequency = 0,
   custom_col_palette = FALSE,
-  color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name =
-    "RdYlBu")))(100),
+  color_scale = getDiscretePaletteObj(ident.used = group.by, obj = combined.obj,
+    palette.used = "glasbey"),
   show.total.cells = TRUE,
   cex.total = 2,
   ...

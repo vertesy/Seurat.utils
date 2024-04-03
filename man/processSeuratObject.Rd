@@ -10,7 +10,7 @@ processSeuratObject(
   compute = TRUE,
   save = TRUE,
   plot = TRUE,
-  nfeatures = p$n.var.genes
+  nfeatures = param.list$n.var.genes
 )
 }
 \arguments{

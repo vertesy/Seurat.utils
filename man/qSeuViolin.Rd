@@ -5,9 +5,9 @@
 \title{Create a Violin Plot for a Seurat Object Feature and save the file.}
 \usage{
 qSeuViolin(
-  object = ls.Seurat[[1]],
+  obj,
   features = "nFeature_RNA",
-  idents = GetNamedClusteringRuns(object)[1],
+  idents = GetNamedClusteringRuns(obj)[1],
   split.by = NULL,
   replace.na = FALSE,
   suffix = NULL,
@@ -15,6 +15,7 @@ qSeuViolin(
   logY = TRUE,
   hline = FALSE,
   caption = FALSE,
+  ylab = "Expression",
   show_plot = TRUE,
   w = 9,
   h = 5,
@@ -22,7 +23,7 @@ qSeuViolin(
 )
 }
 \arguments{
-\item{object}{A Seurat object to be plotted.}
+\item{obj}{A Seurat object to be plotted.}
 
 \item{features}{A character string specifying the name of the feature to plot.}
 
@@ -60,6 +61,6 @@ The function supports customization options such as logarithmic scaling, custom 
 }
 \examples{
 # Assuming `seurat_obj` is a valid Seurat object
-qSeuViolin(object = seurat_obj, features = "nFeature_RNA")
+qSeuViolin(obj = seurat_obj, features = "nFeature_RNA")
 
 }

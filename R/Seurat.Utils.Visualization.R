@@ -567,7 +567,7 @@ scBarplot.CellFractions <- function(
     group.by = GetNamedClusteringRuns()[1],
     fill.by,
     downsample = FALSE,
-    plotname = paste(tools::toTitleCase(fill.by), "proportions"),
+    plotname = paste0(tools::toTitleCase(fill.by), ".proportions.by.", group.by),
     suffix = NULL,
     sub_title = suffix,
     hlines = c(.25, .5, .75),
@@ -582,7 +582,8 @@ scBarplot.CellFractions <- function(
     cex.pct = 2.5,
     min_frequency = 0, # 0.025,
     custom_col_palette = FALSE,
-    color_scale = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
+    color_scale = getDiscretePaletteObj(ident.used = group.by, obj = combined.obj, palette.used = "glasbey"),
+      # colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
     show.total.cells = TRUE,
     cex.total = 2,
     ...) {
@@ -1513,6 +1514,7 @@ qSeuViolin <- function(
     suffix = NULL,
     suffix.2.title = FALSE,
     logY = TRUE, hline = FALSE, caption = FALSE,
+    ylab = "Expression",
     show_plot = TRUE,
     w = 9, h = 5,
     ...) {
@@ -1535,7 +1537,6 @@ qSeuViolin <- function(
   print(unique(idents))
   # browser()
 
-
   ttl <- if (suffix.2.title) {
     paste(features, "|", suffix)
   } else {
@@ -1549,7 +1550,7 @@ qSeuViolin <- function(
   }
 
   p <- VlnPlot(object = obj, features = features, split.by = split.by, group.by = idents, ...) +
-    theme(axis.title.x = element_blank()) + labs(y = "Top UVI's depth")
+    theme(axis.title.x = element_blank()) + labs(y = ylab)
   p <- p + ggtitle(label = ttl, subtitle = subt)
 
 
