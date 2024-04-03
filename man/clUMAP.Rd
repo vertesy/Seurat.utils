@@ -5,7 +5,7 @@
 \title{Quick Visualization of Clustering Results with UMAP and automatically save the plot}
 \usage{
 clUMAP(
-  ident = "integrated_snn_res.0.5",
+  ident = GetNamedClusteringRuns()[1],
   obj = combined.obj,
   reduction = "umap",
   splitby = NULL,

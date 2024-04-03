@@ -9,7 +9,7 @@ scBarplot.CellFractions(
   group.by = GetNamedClusteringRuns()[1],
   fill.by,
   downsample = FALSE,
-  plotname = paste0(tools::toTitleCase(fill.by), ".proportions.by.", group.by),
+  plotname = kpp(toTitleCase(fill.by), "proportions.by", group.by),
   suffix = NULL,
   sub_title = suffix,
   hlines = c(0.25, 0.5, 0.75),

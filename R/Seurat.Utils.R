@@ -1471,8 +1471,10 @@ downsampleSeuObj.and.Save <- function(
 #' @importFrom CodeAndRoll2 as.named.vector.df
 #'
 #' @export
-downsampleSeuObjByIdentAndMaxcells <- function(obj, ident,
-                                               max.cells,
+#'
+downsampleSeuObjByIdentAndMaxcells <- function(obj,
+                                               ident = GetNamedClusteringRuns()[1],
+                                               max.cells = min(table(combined.obj[[ident]])),
                                                verbose = TRUE,
                                                seed = 1989) {
   stopifnot(

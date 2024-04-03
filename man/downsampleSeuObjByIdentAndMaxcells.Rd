@@ -6,8 +6,8 @@
 \usage{
 downsampleSeuObjByIdentAndMaxcells(
   obj,
-  ident,
-  max.cells,
+  ident = GetNamedClusteringRuns()[1],
+  max.cells = min(table(combined.obj[[ident]])),
   verbose = TRUE,
   seed = 1989
 )

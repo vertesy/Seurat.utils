@@ -608,10 +608,12 @@ scBarplot.CellFractions <- function(
     downsample <- min(tbl_X)
     largest_grp <- max(tbl_X)
 
+    downsampleSeuObjByIdentAndMaxcells(obj, fill.by, downsample)
+
     # Update plot name and caption to reflect downsampling
     plotname <- kpp(plotname, "downsampled")
     pname.suffix <- "(downsampled)"
-    capt.suffix <- paste("Downsampled from (max)", largest_grp, "\nto", downsample, "cells in the smallest", fill.by, "group.")
+    capt.suffix <- paste("\nDownsampled from (max)", largest_grp, "to", downsample, "cells in the smallest", fill.by, "group.")
   }
 
   # Construct the caption based on downsampling and minimum frequency
@@ -1829,7 +1831,8 @@ qUMAP <- function(
 #'
 #' @export
 clUMAP <- function(
-    ident = "integrated_snn_res.0.5", obj = combined.obj, # The quickest way to draw a clustering result  UMAP
+    ident = GetNamedClusteringRuns()[1],
+    obj = combined.obj,
     reduction = "umap", splitby = NULL,
     title = ident,
     sub = NULL,
