@@ -9,6 +9,7 @@ downsampleSeuObjByIdentAndMaxcells(
   ident = GetNamedClusteringRuns()[1],
   max.cells = min(table(combined.obj[[ident]])),
   verbose = TRUE,
+  plot = TRUE,
   seed = 1989
 )
 }
@@ -20,6 +21,8 @@ downsampleSeuObjByIdentAndMaxcells(
 \item{max.cells}{A positive integer indicating the maximum number of cells to sample from each identity class.}
 
 \item{verbose}{Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.}
+
+\item{plot}{Logical indicating to plot a barplot.}
 }
 \value{
 Returns a Seurat object containing only the sampled cells.

@@ -1454,6 +1454,7 @@ downsampleSeuObj.and.Save <- function(
 #' @param ident A character vector specifying the identity class from which cells are to be sampled.
 #' @param max.cells A positive integer indicating the maximum number of cells to sample from each identity class.
 #' @param verbose Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.
+#' @param plot Logical indicating to plot a barplot.
 #'
 #' @return Returns a Seurat object containing only the sampled cells.
 #'
@@ -1476,6 +1477,7 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
                                                ident = GetNamedClusteringRuns()[1],
                                                max.cells = min(table(combined.obj[[ident]])),
                                                verbose = TRUE,
+                                               plot = TRUE,
                                                seed = 1989) {
   stopifnot(
     "obj must be a Seurat object" = inherits(obj, "Seurat"),
@@ -1506,16 +1508,21 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
   message(subb)
 
   if (verbose) {
-    cat("Total cells sampled:", length(sampledCells), "\n")
+    message("Total cells sampled: ", length(sampledCells))
+    message(table(data))
+
     nr_remaining_cells <- orig_cells <- table(data)
     nr_remaining_cells[nr_remaining_cells > max.cells] <- max.cells
     fr_remaining_per_cluster <- iround(nr_remaining_cells / orig_cells)
     print(fr_remaining_per_cluster)
+  }
+  if (plot) {
     pobj <- qbarplot(
       vec = fr_remaining_per_cluster, subtitle = subb, label = fr_remaining_per_cluster,
       ylab = "fr. of cells", save = FALSE
     )
     print(pobj)
+
   }
   return(obj2)
 }

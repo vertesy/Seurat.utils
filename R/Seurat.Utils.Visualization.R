@@ -603,12 +603,13 @@ scBarplot.CellFractions <- function(
   pname.suffix <- capt.suffix <- NULL
 
   if (downsample) {
-    # Calculate the size of the smallest and largest groups for downsampling
+    message("Calculate the size of the smallest and largest groups, and downsample to that")
     tbl_X <- table(obj@meta.data[[fill.by]])
     downsample <- min(tbl_X)
     largest_grp <- max(tbl_X)
 
-    downsampleSeuObjByIdentAndMaxcells(obj, fill.by, downsample)
+    obj <- DietSeurat(obj)
+    obj <- downsampleSeuObjByIdentAndMaxcells(obj = obj, ident = fill.by, plot = F)
 
     # Update plot name and caption to reflect downsampling
     plotname <- kpp(plotname, "downsampled")
@@ -657,9 +658,9 @@ scBarplot.CellFractions <- function(
     subtt <- kppws(group.by, "|", ncol(obj), "cells", sub_title)
     pl <- obj@meta.data %>%
       # pl <- data_with_totals %>%
-      {
-        if (downsample) dplyr::sample_n(., downsample) else .
-      } %>%
+      # {
+      #   if (downsample) dplyr::sample_n(., downsample) else .
+      # } %>%
       group_by(group_by = !!sym(group.by)) %>%
       ggplot(aes(fill = category, x = !!sym(group.by))) +
       geom_hline(yintercept = hlines, lwd = 1.5) +
