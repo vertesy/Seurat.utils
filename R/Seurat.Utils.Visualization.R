@@ -567,7 +567,7 @@ scBarplot.CellFractions <- function(
     group.by = GetNamedClusteringRuns()[1],
     fill.by,
     downsample = FALSE,
-    plotname = paste0(tools::toTitleCase(fill.by), ".proportions.by.", group.by),
+    plotname = kpp(toTitleCase(fill.by), "proportions.by", group.by),
     suffix = NULL,
     sub_title = suffix,
     hlines = c(.25, .5, .75),
@@ -609,6 +609,7 @@ scBarplot.CellFractions <- function(
     largest_grp <- max(tbl_X)
 
     # Update plot name and caption to reflect downsampling
+    plotname <- kpp(plotname, "downsampled")
     pname.suffix <- "(downsampled)"
     capt.suffix <- paste("Downsampled from (max)", largest_grp, "\nto", downsample, "cells in the smallest", fill.by, "group.")
   }
