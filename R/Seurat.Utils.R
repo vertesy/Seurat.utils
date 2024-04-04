@@ -1371,7 +1371,7 @@ subsetSeuObjByIdent <- function(
 
   Idents(obj) <- ident
   cellz <- WhichCells(obj, idents = clusters, invert = invert)
-  PCT <- pc_TRUE(length(cellz)/ncol(obj))
+  PCT <- percentage_formatter(length(cellz)/ncol(obj))
   message(PCT, " or ",length(cellz) ," cells are selected from ", ncol(obj),
           ", using values: ", clusters,
           ", from ", ident, ".")
