@@ -1356,9 +1356,11 @@ copyCompleteToolsSlots <- function(ls.obj, obj.to, overwrite = TRUE, new.slot = 
 #'   clusters = c(1), invert = FALSE
 #' )
 #'
+#' @importFrom tictoc tic toc
 #' @export
 subsetSeuObjByIdent <- function(
-    obj = combined.obj, ident = GetClusteringRuns()[1],
+    obj = combined.obj,
+    ident = GetClusteringRuns()[1],
     clusters,
     invert = FALSE) {
 
@@ -1368,14 +1370,18 @@ subsetSeuObjByIdent <- function(
     "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
     "clusters must exist in ident" = all(clusters %in% unique(combined.obj[[ident]][ ,1] ))
   )
+  tic()
 
   Idents(obj) <- ident
   cellz <- WhichCells(obj, idents = clusters, invert = invert)
   PCT <- percentage_formatter(length(cellz)/ncol(obj))
   message(PCT, " or ",length(cellz) ," cells are selected from ", ncol(obj),
-          ", using values: ", clusters,
-          ", from ", ident, ".")
-  subset(x = obj, cells = cellz)
+          ", using values: ", clusters, ", from ", ident, ".")
+
+  x <- subset(x = obj, cells = cellz)
+  toc()
+  return(x)
+
 }
 
 

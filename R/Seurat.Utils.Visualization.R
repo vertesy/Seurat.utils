@@ -1817,7 +1817,7 @@ qUMAP <- function(
 #' @param label Show cluster labels; Default: TRUE.
 #' @param repel Repel labels to avoid overlap; Default: TRUE.
 #' @param legend Show legend; Default: opposite of `label`.
-#' @param legen.pos Position of legend; Default: 'NULL'.
+#' @param legend.pos Position of legend; Default: 'NULL'.
 #' @param axes Show axes; Default: FALSE.
 #' @param aspect.ratio Fixed aspect ratio for the plot; Default: TRUE.
 #' @param MaxCategThrHP Maximum number of categories before simplification; Default: 200.
@@ -1854,7 +1854,7 @@ clUMAP <- function(
     highlight.clusters = NULL, cells.highlight = NULL,
     label = TRUE, repel = TRUE,
     legend = !label,
-    legen.pos = NULL, # c("top", "bottom", "left", "right", "none")[2],
+    legend.pos = NULL, # c("top", "bottom", "left", "right", "none")[2],
     MaxCategThrHP = 200,
     axes = NULL,
     aspect.ratio = c(FALSE, 0.6)[2],
@@ -1933,7 +1933,7 @@ clUMAP <- function(
 
     if (is.null(axes))        gg.obj <- gg.obj + NoAxes()
     if (!is.null(caption))    gg.obj <- gg.obj + labs(caption = caption)
-    if (!is.null(legen.pos))  gg.obj <- gg.obj + theme(legend.position = legen.pos)
+    if (!is.null(legend.pos))  gg.obj <- gg.obj + theme(legend.position = legend.pos)
     if (aspect.ratio)         gg.obj <- gg.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
 
     if (save.plot) {
