@@ -612,9 +612,13 @@ scBarplot.CellFractions <- function(
     downsample <- min(tbl_X)
     largest_grp <- max(tbl_X)
 
-    dsample.to.repl.thr <- (downsample / ncol(obj)) < replacement.thr # if less than 5% of cells are sampled, sample with replacement
-
     message("The size of the smallest group is: ", downsample, " cells.")
+
+    dsample.to.repl.thr <- (downsample / ncol(obj)) < replacement.thr # if less than 5% of cells are sampled, sample with replacement
+    if (dsample.to.repl.thr) {
+      message("If smallest category is < 5% of total cells, than sampling with replacement to 5%.")
+      nr.sampled.cells <- round(ncol(obj) * replacement.thr)
+    }
 
     # Downsample the object
     obj <- DietSeurat(obj)
@@ -625,7 +629,8 @@ scBarplot.CellFractions <- function(
     # Update plot name and caption to reflect downsampling
     plotname <- kpp(plotname, "downsampled")
     pname.suffix <- "(downsampled)"
-    capt.suffix <- paste("\nDownsampled from (max)", largest_grp, "to", downsample, "cells in the smallest", fill.by, "group.")
+    capt.suffix <- paste("\nDownsampled from (max)", largest_grp, "all groups to",
+                         nr.sampled.cells, "cells in the smallest", fill.by, "group / min. 5%.")
   }
 
   # Construct the caption based on downsampling and minimum frequency

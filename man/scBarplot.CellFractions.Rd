@@ -83,7 +83,7 @@ are aggregated into an "Other" category.}
 
 \item{...}{Additional parameters passed to internally called functions.}
 
-\item{with.replacement}{Logical indicating if sampling should be done with replacement. Defaults to FALSE.}
+\item{dsample.to.repl.thr}{Logical indicating if sampling should be done with replacement. Defaults to FALSE.}
 }
 \value{
 Depending on the value of \code{return_table}, either returns a ggplot object or a list

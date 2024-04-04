@@ -226,8 +226,8 @@ AreTheseCellNamesTheSame <- function(
   Percent_Overlapping <- Nr.overlapping / Nr.total
   print("")
   report <- percentage_formatter(Percent_Overlapping,
-    prefix = "In total,",
-    suffix = paste("of the cellIDs overlap across", names(Cellname.Overlap)[1], "and", names(Cellname.Overlap)[2])
+                                 prefix = "In total,",
+                                 suffix = paste("of the cellIDs overlap across", names(Cellname.Overlap)[1], "and", names(Cellname.Overlap)[2])
   )
   print(report[1])
   stopifnot(Percent_Overlapping > min.overlap)
@@ -258,11 +258,11 @@ addToMiscOrToolsSlot <- function(obj, pocket_name = "misc",
                                  sub_slot_name = deparse(substitute(sub_slot_value)),
                                  overwrite = FALSE) {
   stopifnot(is(obj, "Seurat"),
-    pocket_name %in% c("misc", "tools"),
-    is.character(slot_name), length(slot_name) == 1,
-    is.character(sub_slot_name), length(sub_slot_name) == 1,
-    "slot name or value is provided" = is.null(slot_value) || !is.null(slot_name),
-    "sub_slot name or value is provided" = is.null(sub_slot_value) || !is.null(sub_slot_name)
+            pocket_name %in% c("misc", "tools"),
+            is.character(slot_name), length(slot_name) == 1,
+            is.character(sub_slot_name), length(sub_slot_name) == 1,
+            "slot name or value is provided" = is.null(slot_value) || !is.null(slot_name),
+            "sub_slot name or value is provided" = is.null(sub_slot_value) || !is.null(sub_slot_name)
   )
 
   # Accessing the specified slot
@@ -416,16 +416,16 @@ calc.q99.Expression.and.set.all.genes <- function(
   qnameP <- paste0(100 * quantileX, "th quantile")
   try(
     ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile,
-      ext = "pdf", breaks = 30,
-      plotname = paste("Gene expression in the", qnameP),
-      subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0."),
-      caption = paste(n.cells, "cells in", qnameP),
-      xlab = paste0("log2(expr. in the ", qnameP, "quantile+1) [UMI]"),
-      ylab = "Nr. of genes",
-      plot = show, save = TRUE,
-      vline = .15,
-      filtercol = TRUE,
-      palette_use = "npg"
+                          ext = "pdf", breaks = 30,
+                          plotname = paste("Gene expression in the", qnameP),
+                          subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0."),
+                          caption = paste(n.cells, "cells in", qnameP),
+                          xlab = paste0("log2(expr. in the ", qnameP, "quantile+1) [UMI]"),
+                          ylab = "Nr. of genes",
+                          plot = show, save = TRUE,
+                          vline = .15,
+                          filtercol = TRUE,
+                          palette_use = "npg"
     ),
     silent = TRUE
   )
@@ -569,7 +569,7 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-  #'   GetClusteringRuns(obj = combined.obj, pat = '*snn_res.*[0-9]$')
+#'   GetClusteringRuns(obj = combined.obj, pat = '*snn_res.*[0-9]$')
 #' }
 #' }
 #' @export
@@ -606,7 +606,7 @@ GetNamedClusteringRuns <- function(
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
   if (identical(clustering.results, character(0))) {
     warning("No matching column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)",
-      immediate. = TRUE
+            immediate. = TRUE
     )
     clustering.results <- GetClusteringRuns(obj = obj, res = FALSE, pat = "*_res.*[0,1]\\.[0-9]$")
   }
@@ -853,9 +853,9 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene = "ACTB", filterZe
   }
   suppressWarnings(
     MarkdownReports::whist(expr.all,
-      vline = expr.GOI, breaks = 100, main = title, plotname = make.names(title),
-      ylab = "Genes",
-      xlab = "Av. mRNA in the 10% top expressing cells (q90 av.exp.)"
+                           vline = expr.GOI, breaks = 100, main = title, plotname = make.names(title),
+                           ylab = "Genes",
+                           xlab = "Av. mRNA in the 10% top expressing cells (q90 av.exp.)"
     )
   )
 }
@@ -1277,8 +1277,8 @@ copyMiscElements <- function(obj.from, obj.to, elements.needed, overwrite = TRUE
       )
     } else {
       warning("Overwriting the following elements in obj.to@misc: ",
-        paste(elements.already.exisiting, collapse = ", "),
-        immediate. = TRUE
+              paste(elements.already.exisiting, collapse = ", "),
+              immediate. = TRUE
       )
     }
   }
@@ -1441,15 +1441,15 @@ downsampleSeuObj.and.Save <- function(
     obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir,
     min.features = p$"min.features", suffix = fraction,
     nthreads = .getNrCores()
-    ) {
+) {
   obj_Xpc <- downsampleSeuObj(obj = obj, fractionCells = fraction, seed = seed)
   nr.cells.kept <- ncol(obj_Xpc)
 
   # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),
   # suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
   xsave(obj_Xpc,
-    suffix = ppp(suffix, nr.cells.kept, "cells.with.min.features", min.features),
-    nthreads = nthreads, project = getProject(), showMemObject = TRUE, saveParams = FALSE
+        suffix = ppp(suffix, nr.cells.kept, "cells.with.min.features", min.features),
+        nthreads = nthreads, project = getProject(), showMemObject = TRUE, saveParams = FALSE
   )
 }
 
@@ -1511,7 +1511,7 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
   if (dsample.to.repl.thr) {
     max.cells <- round(ncol(obj) * replacement.thr)
     msg <- percentage_formatter(replacement.thr,
-                                suffix = paste("or", max.cells, "of cells."),
+                                suffix = paste("of the data or", max.cells, "of cells."),
                                 prefix = "Sampling with replacement to:")
     message(msg)
   }
@@ -1909,7 +1909,7 @@ Add.DE.combined.score <- function(
     df = df.markers, p_val_min = 1e-25, pval_scaling = 0.001, colP = "p_val",
     colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = TRUE)
     # , colLFC = "avg_log2FC"
-    ) { # Score = -LOG10(p_val) * avg_log2FC
+) { # Score = -LOG10(p_val) * avg_log2FC
   p_cutoff <- SmallestNonAboveX(vec = df[[colP]], X = p_val_min)
   df$"combined.score" <- round(df[[colLFC]] * -log10(p_cutoff / pval_scaling))
   return(df)
@@ -2142,10 +2142,10 @@ AutoLabelTop.logFC <- function(
     top_log2FC <- df.top.markers$"avg_log2FC"
     names(top_log2FC) <- ppp(df.top.markers$"cluster", df.top.markers$"gene")
     ggExpress::qbarplot(top_log2FC,
-      label = iround(top_log2FC),
-      subtitle = suffix,
-      ylab = "avg_log2FC", xlab = "clusters",
-      suffix = suffix
+                        label = iround(top_log2FC),
+                        subtitle = suffix,
+                        ylab = "avg_log2FC", xlab = "clusters",
+                        suffix = suffix
     )
   }
 
@@ -3195,8 +3195,8 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
         rownames(matrix_n) <- newnames
       } else {
         warning(">>> No renaming: ", assay, "@", layer.name,
-          " not of type dgeCMatrix / Matrix / data.frame.",
-          immediate. = TRUE
+                " not of type dgeCMatrix / Matrix / data.frame.",
+                immediate. = TRUE
         )
       }
       stopifnot(nr1 == nrow(matrix_n))
@@ -3410,9 +3410,9 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
   colnames(HGNC.UpdateStatistics) <- c("Gene Symbols updated (% of Total Genes)", "Number of Gene Symbols updated")
   lll <- wcolorize(vector = rownames(HGNC.UpdateStatistics))
   MarkdownReports::wplot(HGNC.UpdateStatistics,
-    col = lll,
-    xlim = c(0, max(HGNC.UpdateStatistics[, 1])),
-    ylim = c(0, max(HGNC.UpdateStatistics[, 2]))
+                         col = lll,
+                         xlim = c(0, max(HGNC.UpdateStatistics[, 1])),
+                         ylim = c(0, max(HGNC.UpdateStatistics[, 2]))
   )
   MarkdownReports::wlegend(NamedColorVec = lll, poz = 1)
 }
@@ -3993,7 +3993,7 @@ xread <- function(file, nthreads = 4,
       if (is.null(p_local)) {
         message("No parameter list 'p' found in object@misc.")
       } else {
-          recall.parameters(obj = obj, overwrite = overwriteParams )
+        recall.parameters(obj = obj, overwrite = overwriteParams )
       }
 
       if (is.null(all.genes_local)) {
@@ -4329,7 +4329,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 
     Outlier <- idx.HE2 &
       (cell.rate < quantile(cell.rate, probs = pr) |
-        soup.rate < quantile(soup.rate, probs = pr))
+         soup.rate < quantile(soup.rate, probs = pr))
 
     pc_TRUE(Outlier)
     sum(Outlier)
@@ -4352,7 +4352,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
       ylab(paste(axl.pfx, "Cells", axl.sfx)) +
       ggtitle("Soup VS. Cells", subtitle = pr) +
       ggrepel::geom_text_repel(aes(label = ifelse(Outlier,
-        as.character(gene), ""
+                                                  as.character(gene), ""
       )))
     ggsave(pgg, filename = file.path(OutDir, fname))
   }
@@ -4377,11 +4377,11 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes <- 100 * head(sort(CR.matrices$"soup.rel.RC", decreasing = TRUE), n = 20)
 
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes,
-    plotname = kppd("Soup.GEMs.top.Genes", SeqRun),
-    ylab = "% mRNA in the Soup",
-    sub = paste("Within the", SeqRun, "dataset"),
-    tilted_text = TRUE,
-    ylim = c(0, max(Soup.GEMs.top.Genes) * 1.5)
+                            plotname = kppd("Soup.GEMs.top.Genes", SeqRun),
+                            ylab = "% mRNA in the Soup",
+                            sub = paste("Within the", SeqRun, "dataset"),
+                            tilted_text = TRUE,
+                            ylim = c(0, max(Soup.GEMs.top.Genes) * 1.5)
   )
   barplot_label(
     barplotted_variable = Soup.GEMs.top.Genes,
@@ -4421,10 +4421,10 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes.summarized <- 100 * soupProfile.summarized[1:NrColumns2Show] / CR.matrices$"soup.total.sum"
   maxx <- max(Soup.GEMs.top.Genes.summarized)
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes.summarized,
-    plotname = kppd("Soup.GEMs.top.Genes.summarized", SeqRun),
-    ylab = "% mRNA in the Soup", ylim = c(0, maxx + 3),
-    sub = paste("Within the", SeqRun, "dataset"),
-    tilted_text = TRUE, col = ccc
+                            plotname = kppd("Soup.GEMs.top.Genes.summarized", SeqRun),
+                            ylab = "% mRNA in the Soup", ylim = c(0, maxx + 3),
+                            sub = paste("Within the", SeqRun, "dataset"),
+                            tilted_text = TRUE, col = ccc
   )
   barplot_label(
     barplotted_variable = Soup.GEMs.top.Genes.summarized,
@@ -4437,10 +4437,10 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 
   maxx <- max(Absolute.fraction.soupProfile.summarized)
   MarkdownReports::wbarplot(Absolute.fraction.soupProfile.summarized,
-    plotname = kppd("Absolute.fraction.soupProfile.summarized", SeqRun),
-    ylab = "% of mRNA in cells", ylim = c(0, maxx * 1.33),
-    sub = paste(Stringendo::percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", SeqRun),
-    tilted_text = TRUE, col = ccc
+                            plotname = kppd("Absolute.fraction.soupProfile.summarized", SeqRun),
+                            ylab = "% of mRNA in cells", ylim = c(0, maxx * 1.33),
+                            sub = paste(Stringendo::percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", SeqRun),
+                            tilted_text = TRUE, col = ccc
   )
   barplot_label(
     barplotted_variable = Absolute.fraction.soupProfile.summarized,
@@ -4453,11 +4453,11 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes.non.summarized <- 100 * sort(genes.non.Above, decreasing = TRUE)[1:20] / CR.matrices$"soup.total.sum"
   maxx <- max(Soup.GEMs.top.Genes.non.summarized)
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes.non.summarized,
-    plotname = kppd("Soup.GEMs.top.Genes.non.summarized", SeqRun),
-    ylab = "% mRNA in the Soup",
-    sub = paste("Within the", SeqRun, "dataset"),
-    tilted_text = TRUE, col = "#BF3100",
-    ylim = c(0, maxx * 1.5)
+                            plotname = kppd("Soup.GEMs.top.Genes.non.summarized", SeqRun),
+                            ylab = "% mRNA in the Soup",
+                            sub = paste("Within the", SeqRun, "dataset"),
+                            tilted_text = TRUE, col = "#BF3100",
+                            ylim = c(0, maxx * 1.5)
   )
   barplot_label(
     barplotted_variable = Soup.GEMs.top.Genes.non.summarized,
@@ -5082,11 +5082,11 @@ regress_out_and_recalculate_seurat <- function(
 .parseBasicObjStats <- function(obj, sep = " ", simple = FALSE, suffix = NULL) {
   n.cells <- format(ncol(obj), big.mark = sep, scientific = FALSE)
   n.feat <- format(nrow(obj), big.mark = sep, scientific = FALSE)
-    if (simple) {
-      return(paste(n.cells, "cells.", suffix))
-    } else {
-      return(paste(n.cells, "cells,", n.feat, "features.", suffix))
-    }
+  if (simple) {
+    return(paste(n.cells, "cells.", suffix))
+  } else {
+    return(paste(n.cells, "cells,", n.feat, "features.", suffix))
+  }
 }
 
 

@@ -10,7 +10,7 @@ downsampleSeuObjByIdentAndMaxcells(
   max.cells = min(table(obj[[ident]])),
   verbose = TRUE,
   replacement.thr = 0.05,
-  with.replacement = (max.cells/ncol(obj)) < replacement.thr,
+  dsample.to.repl.thr = (max.cells/ncol(obj)) < replacement.thr,
   plot_stats = TRUE,
   seed = 1989
 )
@@ -26,7 +26,7 @@ downsampleSeuObjByIdentAndMaxcells(
 
 \item{replacement.thr}{A numeric value between 0 and 1 indicating the percentage of cells to sample from each identity class. Defaults to 0.05.}
 
-\item{with.replacement}{Logical indicating if sampling should be done with replacement. Defaults to FALSE.}
+\item{dsample.to.repl.thr}{Logical indicating if sampling should be done with replacement. Defaults to FALSE.}
 
 \item{plot_stats}{Logical indicating to plot a barplot.}
 
