@@ -1467,8 +1467,8 @@ downsampleSeuObj.and.Save <- function(
 #' @param max.cells A positive integer indicating the maximum number of cells to sample from each identity class.
 #' @param verbose Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.
 #' @param replacement.thr A numeric value between 0 and 1 indicating the percentage of cells to sample from each identity class. Defaults to 0.05.
-#' @param with.replacement Logical indicating if sampling should be done with replacement. Defaults to FALSE.
-#' @param plot Logical indicating to plot a barplot.
+#' @param dsample.to.repl.thr Logical indicating if sampling should be done with replacement. Defaults to FALSE.
+#' @param plot_stats Logical indicating to plot a barplot.
 #' @param seed An integer to set the seed for reproducibility.
 #'
 #'
@@ -1494,8 +1494,8 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
                                                max.cells = min(table(obj[[ident]])),
                                                verbose = TRUE,
                                                replacement.thr = 0.05,
-                                               with.replacement = (max.cells / ncol(obj)) < replacement.thr, # if less than 5% of cells are sampled, sample with replacement
-                                               plot = TRUE,
+                                               dsample.to.repl.thr = (max.cells / ncol(obj)) < replacement.thr, # if less than 5% of cells are sampled, sample with replacement
+                                               plot_stats = TRUE,
                                                seed = 1989) {
   stopifnot(
     "obj must be a Seurat object" = inherits(obj, "Seurat"),
@@ -1508,8 +1508,7 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
   uniqueCategories <- unique(data)
 
   set.seed(seed)
-
-  if (with.replacement) {
+  if (dsample.to.repl.thr) {
     max.cells <- round(ncol(obj) * replacement.thr)
     msg <- percentage_formatter(replacement.thr,
                                 suffix = paste("or", max.cells, "of cells."),
@@ -1547,7 +1546,7 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
     fr_remaining_per_cluster <- iround(nr_remaining_cells / orig_cells)
     print(fr_remaining_per_cluster)
   }
-  if (plot) {
+  if (plot_stats) {
     pobj <- qbarplot(
       vec = fr_remaining_per_cluster, subtitle = subb, label = fr_remaining_per_cluster,
       ylab = "fr. of cells", save = FALSE

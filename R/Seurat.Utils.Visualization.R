@@ -526,7 +526,7 @@ get.clustercomposition <- function(
 #' @param fill.by The variable to fill by for the bar plot.
 #' @param downsample Logical indicating whether to downsample data to equalize group sizes.
 #' @param replacement.thr A numeric value between 0 and 1 indicating the percentage of cells to sample from each identity class. Defaults to 0.05.
-#' @param with.replacement Logical indicating if sampling should be done with replacement. Defaults to FALSE.
+#' @param dsample.to.repl.thr Logical indicating if sampling should be done with replacement. Defaults to FALSE.
 #' @param plotname The title of the plot.
 #' @param suffix Optional suffix for the plot title.
 #' @param sub_title Optional subtitle for the plot.
@@ -565,12 +565,12 @@ get.clustercomposition <- function(
 #'
 #' @export
 scBarplot.CellFractions <- function(
-    obj = combined.obj,
-    group.by = GetNamedClusteringRuns()[1],
     fill.by,
+    group.by = GetNamedClusteringRuns()[1],
+    obj = combined.obj,
     downsample = FALSE,
     replacement.thr = 0.05,
-    with.replacement = (max.cells / ncol(obj)) < replacement.thr, # if less than 5% of cells are sampled, sample with replacement
+    # dsample.to.repl.thr = (max.cells / ncol(obj)) < replacement.thr, # if less than 5% of cells are sampled, sample with replacement
     plotname = kpp(toTitleCase(fill.by), "proportions.by", group.by),
     suffix = NULL,
     sub_title = suffix,
@@ -586,7 +586,7 @@ scBarplot.CellFractions <- function(
     cex.pct = 2.5,
     min_frequency = 0, # 0.025,
     custom_col_palette = FALSE,
-    color_scale = getDiscretePaletteObj(ident.used = group.by, obj = combined.obj, palette.used = "glasbey"),
+    color_scale = getDiscretePaletteObj(ident.used = group.by, obj = obj, palette.used = "glasbey"),
       # colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
     show.total.cells = TRUE,
     cex.total = 2,
@@ -603,6 +603,7 @@ scBarplot.CellFractions <- function(
     is.numeric(min_frequency) && length(min_frequency) == 1 && min_frequency >= 0 && min_frequency < 1 # min_frequency must be between 0 and 1
   )
 
+
   set.seed(seedNr)
   pname.suffix <- capt.suffix <- NULL
 
@@ -610,11 +611,15 @@ scBarplot.CellFractions <- function(
     tbl_X <- table(obj@meta.data[[fill.by]])
     downsample <- min(tbl_X)
     largest_grp <- max(tbl_X)
-    message("Calculate the size of the smallest and largest groups, and downsample to that: ", downsample, " cells.")
 
+    dsample.to.repl.thr <- (downsample / ncol(obj)) < replacement.thr # if less than 5% of cells are sampled, sample with replacement
+
+    message("The size of the smallest group is: ", downsample, " cells.")
+
+    # Downsample the object
     obj <- DietSeurat(obj)
-    obj <- downsampleSeuObjByIdentAndMaxcells(obj = obj, ident = fill.by, plot = F,
-                                              with.replacement  = with.replacement,
+    obj <- downsampleSeuObjByIdentAndMaxcells(obj = obj, ident = fill.by, plot_stats = F,
+                                              dsample.to.repl.thr  = dsample.to.repl.thr,
                                               replacement.thr = replacement.thr)
 
     # Update plot name and caption to reflect downsampling

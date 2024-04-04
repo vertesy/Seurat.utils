@@ -11,7 +11,7 @@ downsampleSeuObjByIdentAndMaxcells(
   verbose = TRUE,
   replacement.thr = 0.05,
   with.replacement = (max.cells/ncol(obj)) < replacement.thr,
-  plot = TRUE,
+  plot_stats = TRUE,
   seed = 1989
 )
 }
@@ -28,7 +28,7 @@ downsampleSeuObjByIdentAndMaxcells(
 
 \item{with.replacement}{Logical indicating if sampling should be done with replacement. Defaults to FALSE.}
 
-\item{plot}{Logical indicating to plot a barplot.}
+\item{plot_stats}{Logical indicating to plot a barplot.}
 
 \item{seed}{An integer to set the seed for reproducibility.}
 }
