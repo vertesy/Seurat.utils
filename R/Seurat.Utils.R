@@ -1364,16 +1364,21 @@ subsetSeuObjByIdent <- function(
     clusters,
     invert = FALSE) {
 
+  message("ident: ", ident, " | clusters: ", clusters, " | invert: ", invert)
+
   # Input checks
   stopifnot(
     "obj must be a Seurat object" = inherits(obj, "Seurat"),
     "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
-    "clusters must exist in ident" = all(clusters %in% unique(combined.obj[[ident]][ ,1] ))
+    "clusters must exist in ident" = all(clusters %in% unique(obj@meta.data[[ident]] ))
   )
   tic()
 
-  Idents(obj) <- ident
-  cellz <- WhichCells(obj, idents = clusters, invert = invert)
+  # Idents(obj) <- ident
+  # cellz <- WhichCells(obj, idents = clusters, invert = invert)
+  idx.cells.pass <- obj@meta.data[[ident]] %in% clusters
+  cellz <- colnames(obj)[idx.cells.pass]
+
   PCT <- percentage_formatter(length(cellz)/ncol(obj))
   message(PCT, " or ",length(cellz) ," cells are selected from ", ncol(obj),
           ", using values: ", clusters, ", from ", ident, ".")
@@ -1486,7 +1491,7 @@ downsampleSeuObj.and.Save <- function(
 #'
 downsampleSeuObjByIdentAndMaxcells <- function(obj,
                                                ident = GetNamedClusteringRuns()[1],
-                                               max.cells = min(table(combined.obj[[ident]])),
+                                               max.cells = min(table(obj[[ident]])),
                                                verbose = TRUE,
                                                replacement.thr = 0.05,
                                                with.replacement = (max.cells / ncol(obj)) < replacement.thr, # if less than 5% of cells are sampled, sample with replacement

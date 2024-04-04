@@ -7,7 +7,7 @@
 downsampleSeuObjByIdentAndMaxcells(
   obj,
   ident = GetNamedClusteringRuns()[1],
-  max.cells = min(table(combined.obj[[ident]])),
+  max.cells = min(table(obj[[ident]])),
   verbose = TRUE,
   replacement.thr = 0.05,
   with.replacement = (max.cells/ncol(obj)) < replacement.thr,

@@ -25,7 +25,7 @@ clUMAP(
   label = TRUE,
   repel = TRUE,
   legend = !label,
-  legen.pos = NULL,
+  legend.pos = NULL,
   MaxCategThrHP = 200,
   axes = NULL,
   aspect.ratio = c(FALSE, 0.6)[2],
@@ -77,7 +77,7 @@ clUMAP(
 
 \item{legend}{Show legend; Default: opposite of \code{label}.}
 
-\item{legen.pos}{Position of legend; Default: 'NULL'.}
+\item{legend.pos}{Position of legend; Default: 'NULL'.}
 
 \item{MaxCategThrHP}{Maximum number of categories before simplification; Default: 200.}
 
