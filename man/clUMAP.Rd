@@ -25,8 +25,9 @@ clUMAP(
   label = TRUE,
   repel = TRUE,
   legend = !label,
+  legen.pos = NULL,
   MaxCategThrHP = 200,
-  axes = FALSE,
+  axes = NULL,
   aspect.ratio = c(FALSE, 0.6)[2],
   save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
   PNG = TRUE,
@@ -75,6 +76,8 @@ clUMAP(
 \item{repel}{Repel labels to avoid overlap; Default: TRUE.}
 
 \item{legend}{Show legend; Default: opposite of \code{label}.}
+
+\item{legen.pos}{Position of legend; Default: 'NULL'.}
 
 \item{MaxCategThrHP}{Maximum number of categories before simplification; Default: 200.}
 

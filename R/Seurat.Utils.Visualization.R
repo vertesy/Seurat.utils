@@ -1767,7 +1767,7 @@ qUMAP <- function(
   }
 
   DefaultAssay(obj) <- assay
-  ggplot.obj <- Seurat::FeaturePlot(obj,
+  gg.obj <- Seurat::FeaturePlot(obj,
     features = feature,
     reduction = reduction,
     min.cutoff = qlow, max.cutoff = qhigh,
@@ -1778,14 +1778,14 @@ qUMAP <- function(
     ggtitle(label = title, subtitle = sub) +
     if (!axes) NoAxes() else NULL
 
-  if (aspect.ratio) ggplot.obj <- ggplot.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
-  if (!isFALSE(caption)) ggplot.obj <- ggplot.obj + ggplot2::labs(caption = caption)
+  if (aspect.ratio) gg.obj <- gg.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
+  if (!isFALSE(caption)) gg.obj <- gg.obj + ggplot2::labs(caption = caption)
 
   if (save.plot) {
     fname <- ww.FnP_parser(Stringendo::sppp(prefix, toupper(reduction), feature, assay, suffix), if (PNG) "png" else "pdf")
-    try(save_plot(filename = fname, plot = ggplot.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
+    try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
   }
-  return(ggplot.obj)
+  return(gg.obj)
 }
 
 
@@ -1817,6 +1817,7 @@ qUMAP <- function(
 #' @param label Show cluster labels; Default: TRUE.
 #' @param repel Repel labels to avoid overlap; Default: TRUE.
 #' @param legend Show legend; Default: opposite of `label`.
+#' @param legen.pos Position of legend; Default: 'NULL'.
 #' @param axes Show axes; Default: FALSE.
 #' @param aspect.ratio Fixed aspect ratio for the plot; Default: TRUE.
 #' @param MaxCategThrHP Maximum number of categories before simplification; Default: 200.
@@ -1852,8 +1853,10 @@ clUMAP <- function(
     palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
     highlight.clusters = NULL, cells.highlight = NULL,
     label = TRUE, repel = TRUE,
-    legend = !label, MaxCategThrHP = 200,
-    axes = FALSE,
+    legend = !label,
+    legen.pos = NULL, # c("top", "bottom", "left", "right", "none")[2],
+    MaxCategThrHP = 200,
+    axes = NULL,
     aspect.ratio = c(FALSE, 0.6)[2],
     save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
@@ -1916,7 +1919,7 @@ clUMAP <- function(
     iprint("Too many categories (", NtCategs, ") in ", ident, "- use qUMAP for continous variables.")
   } else {
     if (length(unique(identity)) < MaxCategThrHP) {
-      ggplot.obj <-
+      gg.obj <-
         Seurat::DimPlot(
           object = obj, group.by = ident,
           cols = cols,
@@ -1928,16 +1931,17 @@ clUMAP <- function(
         if (!legend) NoLegend() else NULL
     }
 
-    if (!axes) ggplot.obj <- ggplot.obj + NoAxes()
-    if (aspect.ratio) ggplot.obj <- ggplot.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
-    if (!isFALSE(caption)) ggplot.obj <- ggplot.obj + labs(caption = caption)
+    if (is.null(axes))        gg.obj <- gg.obj + NoAxes()
+    if (!is.null(caption))    gg.obj <- gg.obj + labs(caption = caption)
+    if (!is.null(legen.pos))  gg.obj <- gg.obj + theme(legend.position = legen.pos)
+    if (aspect.ratio)         gg.obj <- gg.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
 
     if (save.plot) {
       pname <- Stringendo::sppp(prefix, plotname, suffix, sppp(highlight.clusters))
       fname <- ww.FnP_parser(pname, if (PNG) "png" else "pdf")
-      try(save_plot(filename = fname, plot = ggplot.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
+      try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
     }
-    return(ggplot.obj)
+    return(gg.obj)
   } # if not too many categories
 }
 
