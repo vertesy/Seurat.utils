@@ -590,6 +590,7 @@ scBarplot.CellFractions <- function(
       # colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
     show.total.cells = TRUE,
     cex.total = 2,
+    xlab.angle = 45,
     ...) {
   # Input assertions
   stopifnot(
@@ -689,7 +690,8 @@ scBarplot.CellFractions <- function(
       ) +
       theme_classic() +
       theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
-      scale_y_continuous(limits = c(0, 1), expand = expansion(mult = c(0, 0.1)))
+      scale_y_continuous(limits = c(0, 1), expand = expansion(mult = c(0, 0.1))) +
+      theme(axis.text.x = element_text(angle = xlab.angle, hjust = 1))
 
 
     # Apply custom color palette if specified
@@ -740,6 +742,7 @@ scBarplot.CellFractions <- function(
     )
     return(ls.tables)
   } else {
+    # if(show_plot)
     return(pl)
   } # else barplot
 }
