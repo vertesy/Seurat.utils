@@ -2108,7 +2108,7 @@ GetTopMarkers <- function(dfDE = df.markers,
 #' @param order.by Sorting criterion for the output tibble, defaults to the second element
 #' of `c("combined.score", "avg_log2FC", "p_val_adj")`.
 #' @param exclude A vector of regular expressions to specify genes to exclude, with
-#' default value `c("^AL*|^AC*|^LINC*")`.
+#' default value `c("^AL*|^AC*|^LINC*|^C[0-9]+orf[0-9]*")`.
 #' @param df_markers Data frame resulting from DGEA analysis (`FindAllMarkers`). The default
 #' is `combined.obj@misc$df.markers[[paste0("res.", res)]]`.
 #' @param plotEnrichment Logical indicating whether to plot enrichment, default is `TRUE`.
@@ -2128,7 +2128,7 @@ AutoLabelTop.logFC <- function(
     res = 0.1, plot.top.genes = TRUE,
     suffix = res,
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2],
-    exclude = c("^AL*|^AC*|^LINC*|^C[0-9]orf*"),
+    exclude = c("^AL*|^AC*|^LINC*|^C[0-9]+orf[0-9]*"),
     df_markers = obj@misc$"df.markers"[[paste0("res.", res)]],
     plotEnrichment = TRUE) {
   stopifnot(
