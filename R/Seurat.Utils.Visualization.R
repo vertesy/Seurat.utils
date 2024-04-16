@@ -2840,7 +2840,7 @@ FlipReductionCoordinates <- function(
 #'
 #' @export
 #' @importFrom CodeAndRoll2 as.named.vector.df unlapply translate
-#' @importFrom Strngendo kpp kppu iprint
+#' @importFrom Stringendo kpp kppu iprint
 #' @importFrom Seurat FetchData
 AutoNumber.by.UMAP <- function(obj = combined.obj, reduction = "umap",
                                dim = 1, swap = FALSE,
