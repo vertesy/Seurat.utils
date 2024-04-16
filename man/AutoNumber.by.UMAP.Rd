@@ -6,26 +6,29 @@
 \usage{
 AutoNumber.by.UMAP(
   obj = combined.obj,
+  reduction = "umap",
   dim = 1,
   swap = FALSE,
-  reduction = "umap",
-  res = "RNA_snn_res.0.5"
+  res = "RNA_snn_res.0.5",
+  plot = TRUE
 )
 }
 \arguments{
 \item{obj}{Seurat object containing clustering and UMAP (or other dimensional reduction) data;
 Default: \code{combined.obj}.}
 
+\item{reduction}{Dimension reduction technique used for cluster positioning ('umap', 'tsne', or 'pca');
+Default: 'umap'.}
+
 \item{dim}{Dimension along which to order clusters (1 for the first dimension, typically horizontal);
 Default: 1.}
 
 \item{swap}{If TRUE, reverses the ordering direction; Default: FALSE.}
 
-\item{reduction}{Dimension reduction technique used for cluster positioning ('umap', 'tsne', or 'pca');
-Default: 'umap'.}
-
 \item{res}{Clustering resolution identifier used to fetch cluster labels from \code{obj} metadata;
 Default: 'integrated_snn_res.0.5'.}
+
+\item{plot}{If TRUE, plots the UMAP with new cluster names; Default: TRUE.}
 }
 \description{
 Automatically renumbers clusters based on their position along a specified dimension

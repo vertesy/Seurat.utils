@@ -2827,6 +2827,7 @@ FlipReductionCoordinates <- function(
 #' Default: 'umap'.
 #' @param res Clustering resolution identifier used to fetch cluster labels from `obj` metadata;
 #' Default: 'integrated_snn_res.0.5'.
+#' @param plot If TRUE, plots the UMAP with new cluster names; Default: TRUE.
 #'
 #' @examples
 #' \dontrun{
@@ -2838,15 +2839,29 @@ FlipReductionCoordinates <- function(
 #' }
 #'
 #' @export
+#' @importFrom CodeAndRoll2 as.named.vector.df unlapply translate
+#' @importFrom Strngendo kpp kppu iprint
 #' @importFrom Seurat FetchData
-AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers along a UMAP (or tSNE) axis
-                               , dim = 1, swap = FALSE, reduction = "umap", res = "RNA_snn_res.0.5") {
-  dim_name <- kppu(toupper(reduction), dim)
-  coord.umap <- as.named.vector.df(FetchData(object = obj, vars = dim_name))
+AutoNumber.by.UMAP <- function(obj = combined.obj, reduction = "umap",
+                               dim = 1, swap = FALSE,
+                               res = "RNA_snn_res.0.5",
+                               plot = TRUE) {
+
+
+  dim_name <- kppu(reduction, dim)
+  if (obj@version < 5) dim_name <- toupper(dim_name)
+  message("Using dimension: ", dim_name)
+
+
+  coord.umap <- obj@reductions$umap@cell.embeddings[ ,dim_name]
+  # coord.umap <- round(coord.umap,digits = 2)
+
+
   identX <- as.character(obj@meta.data[[res]])
 
   ls.perCl <- split(coord.umap, f = identX)
-  MedianClusterCoordinate <- unlapply(ls.perCl, median)
+  MedianClusterCoordinate <- sapply(ls.perCl, median)
+  # sort(MedianClusterCoordinate)
 
   OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
   NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
@@ -2855,6 +2870,9 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
   iprint("NewMetaCol:", NewMetaCol)
 
   obj[[NewMetaCol]] <- NewMeta
+  if (plot) {
+    clUMAP(obj, ident = NewMetaCol)
+  }
   return(obj)
 }
 

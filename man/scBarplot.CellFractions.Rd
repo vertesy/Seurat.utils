@@ -30,6 +30,7 @@ scBarplot.CellFractions(
     "glasbey"),
   show.total.cells = TRUE,
   cex.total = 2,
+  xlab.angle = 45,
   ...
 )
 }
