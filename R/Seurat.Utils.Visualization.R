@@ -1583,8 +1583,8 @@ qSeuViolin <- function(
   if (!isFALSE(caption)) p <- p + ggplot2::labs(caption = caption)
 
   # Save the plot.
-  title_ <- ppp(as.character(features), suffix, flag.nameiftrue(logY))
-  qqSave(p, title = title_, w = w, h = h)
+  TTL <- ppp(as.character(features), suffix, flag.nameiftrue(logY))
+  qqSave(p, title = TTL, w = w, h = h)
   if (show_plot) p
 }
 
@@ -1631,7 +1631,8 @@ qSeuViolin <- function(
 #' @importFrom ggplot2 geom_vline labs
 #' @importFrom ggExpress qhistogram
 plotGeneExpHist <- function(
-    obj = cobj.H9.L92, genes = c("MALAT1", "MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN"),
+    genes = c("MALAT1", "MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN"),
+    obj = combined.obj,
     assay = "RNA", slot_ = "data",
     thr_expr = 10,
     suffix = NULL,
@@ -1642,36 +1643,47 @@ plotGeneExpHist <- function(
     w = 9, h = 5,
     show_plot = TRUE,
     ...) {
-  # Check arguments
-  stopifnot(length(genes) > 0)
-  stopifnot(slot_ %in% c("data", "counts"))
 
+  stopifnot(length(genes) > 0,
+            slot_ %in% c("data", "counts")
+            )
+
+  # browser()
   # Aggregate genes if necessary
   aggregate <- length(genes) > 1
-  G_expression <- colSums(GetAssayData(object = obj, assay = assay, slot = slot_)[genes, ])
-
-  # Add a subtitle with the number of genes and the expression threshold
-  subx <- filter_HP(G_expression, threshold = thr_expr, return_conclusion = TRUE, plot.hist = FALSE)
-  if (aggregate) subx <- paste0(subx, "\n", length(genes), " aggregated:", paste(head(genes), collapse = " "))
+  GeneExpressionInDataset <- colSums(GetAssayData(object = obj, assay = assay, slot = slot_)[genes, , drop = F])
+  head(GeneExpressionInDataset)
 
   # Clip counts if necessary
   if (slot_ == "counts") {
-    G_expression <- CodeAndRoll2::clip.at.fixed.value(
-      distribution = G_expression,
-      thr = quantile(G_expression, probs = .95)
+    GeneExpressionInDataset <- CodeAndRoll2::clip.at.fixed.value(
+      distribution = GeneExpressionInDataset,
+      thr = quantile(GeneExpressionInDataset, probs = .95)
     )
   }
 
   # Create the plot
-  title_ <- paste("Gene Expression", Stringendo::flag.nameiftrue(aggregate, prefix = "- "), suffix, slot_)
-  pobj <- ggExpress::qhistogram(G_expression,
-    plotname = title_,
+
+  CPT <- paste("slot:", slot_, "| assay:", assay, "| cutoff at", iround(thr_expr))
+
+  # Add a subtitle with the number of genes and the expression threshold
+  SUBT <- filter_HP(GeneExpressionInDataset, threshold = thr_expr, return_conclusion = TRUE, plot.hist = FALSE)
+  if (aggregate) {
+
+    SUBT <- paste(SUBT, "\n", length(genes), "genes summed up, e.g:", kppc(head(genes))
+    TTL <- paste("Gene Expression", Stringendo::flag.nameiftrue(aggregate, prefix = "- "), suffix)
+  } else {
+    TTL <- trimws(paste("Gene Expression -", paste(genes), suffix))
+  }
+
+  pobj <- ggExpress::qhistogram(GeneExpressionInDataset,
+    plotname = TTL,
+    subtitle = SUBT,
+    caption = CPT,
     suffix = suffix,
     vline = thr_expr[1], filtercol = -1,
     xlab = xlab,
     ylab = "# of cells",
-    subtitle = subx,
-    caption = paste("cutoff at", iround(thr_expr)),
     w = w, h = h,
     ...
   )
@@ -1681,7 +1693,7 @@ plotGeneExpHist <- function(
     pobj <- pobj +
       ggplot2::geom_vline(xintercept = thr_expr[-1], col = 2, lty = 2, lwd = 1) +
       ggplot2::labs(caption = "Red line marks original estimate")
-    ggExpress::qqSave(ggobj = pobj, title = sppp(title_, "w.orig")) # , ext = '.png'
+    ggExpress::qqSave(ggobj = pobj, title = sppp(TTL, "w.orig")) # , ext = '.png'
   }
 
 
@@ -1690,7 +1702,7 @@ plotGeneExpHist <- function(
 
   # Return the number of cells passing the filter
   if (return_cells_passing) {
-    return(MarkdownHelpers::filter_HP(G_expression, threshold = thr_expr, plot.hist = FALSE))
+    return(MarkdownHelpers::filter_HP(GeneExpressionInDataset, threshold = thr_expr, plot.hist = FALSE))
   }
 }
 

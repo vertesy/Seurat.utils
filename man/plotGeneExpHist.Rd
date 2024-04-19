@@ -5,7 +5,7 @@
 \title{Histogram of Gene Expression in Seurat Object}
 \usage{
 plotGeneExpHist(
-  obj = cobj.H9.L92,
+  obj = combined.obj,
   genes = c("MALAT1", "MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN"),
   assay = "RNA",
   slot_ = "data",
