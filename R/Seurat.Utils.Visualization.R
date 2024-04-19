@@ -1670,7 +1670,7 @@ plotGeneExpHist <- function(
   SUBT <- filter_HP(GeneExpressionInDataset, threshold = thr_expr, return_conclusion = TRUE, plot.hist = FALSE)
   if (aggregate) {
 
-    SUBT <- paste(SUBT, "\n", length(genes), "genes summed up, e.g:", kppc(head(genes))
+    SUBT <- paste(SUBT, "\n", length(genes), "genes summed up, e.g:", kppc(head(genes)))
     TTL <- paste("Gene Expression", Stringendo::flag.nameiftrue(aggregate, prefix = "- "), suffix)
   } else {
     TTL <- trimws(paste("Gene Expression -", paste(genes), suffix))

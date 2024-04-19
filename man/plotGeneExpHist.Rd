@@ -5,8 +5,8 @@
 \title{Histogram of Gene Expression in Seurat Object}
 \usage{
 plotGeneExpHist(
-  obj = combined.obj,
   genes = c("MALAT1", "MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN"),
+  obj = combined.obj,
   assay = "RNA",
   slot_ = "data",
   thr_expr = 10,
@@ -22,9 +22,9 @@ plotGeneExpHist(
 )
 }
 \arguments{
-\item{obj}{Seurat object to analyze; Default: \code{combined.obj}.}
-
 \item{genes}{Vector of gene names to include in the analysis; Default: c("MALAT1", "MT-CO1").}
+
+\item{obj}{Seurat object to analyze; Default: \code{combined.obj}.}
 
 \item{assay}{Assay to use from the Seurat object; Default: "RNA".}
 
