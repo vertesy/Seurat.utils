@@ -411,13 +411,13 @@ set.all.genes <- function(obj = combined.obj) iprint("Use calc.q99.Expression.an
 # Deprecated ----
 # _________________________________________________________________________________________________
 save2umaps.A4 <- function(...) .Deprecated("save2plots.A4()")
-
 save4umaps.A4 <- function(...) .Deprecated("save4plots.A4()")
+plotGeneExpHist <- function(...) .Deprecated("plotGeneExprHistAcrossCells()")
+geneExpressionLevelPlots <- function(...) .Deprecated("plotGeneExpressionInBackgroundHist()")
 
 
 
-# -----------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------
+# _________________________________________________________________________________________________
 # Main script / functions
 
 
@@ -446,6 +446,13 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
   # if (is.null(obj@misc[[NewSlotName]][[SubSlotName]])) obj@misc[[NewSlotName]][[SubSlotName]] <- list() else iprint(SubSlotName, "subslot already exists in @misc$NewSlot.")
   return(obj)
 }
+
+
+
+
+# _________________________________________________________________________________________________
+# Archived ----
+# _________________________________________________________________________________________________
 
 
 
@@ -500,8 +507,7 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 # }
 
 
-# -----------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------
+# _________________________________________________________________________________________________
 # VISUALIZATION
 
 # panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method = "pearson") {
@@ -557,8 +563,8 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 # }
 
 
-# -----------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------
+# _________________________________________________________________________________________________
+# _________________________________________________________________________________________________
 # META
 
 # transferMetadataV1 <- function(from, to, colname_from, colname_to = colname_from, verbose = TRUE, overwrite = FALSE) {

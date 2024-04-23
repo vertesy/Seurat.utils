@@ -9,7 +9,7 @@ scBarplot.CellFractions(
   group.by = GetNamedClusteringRuns()[1],
   obj = combined.obj,
   downsample = FALSE,
-  replacement.thr = 0.05,
+  min.nr.sampled.cells = 200,
   plotname = kpp(toTitleCase(fill.by), "proportions.by", group.by),
   suffix = NULL,
   sub_title = suffix,
@@ -41,7 +41,7 @@ scBarplot.CellFractions(
 
 \item{downsample}{Logical indicating whether to downsample data to equalize group sizes.}
 
-\item{replacement.thr}{A numeric value between 0 and 1 indicating the percentage of cells to sample from each identity class. Defaults to 0.05.}
+\item{min.nr.sampled.cells}{The minimal number of cells to sample from each identity class. Defaults to 200 cells.}
 
 \item{plotname}{The title of the plot.}
 

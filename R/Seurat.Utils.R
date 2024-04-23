@@ -1464,7 +1464,8 @@ downsampleSeuObj.and.Save <- function(
 #'
 #' @param obj A Seurat object from which cells are to be sampled.
 #' @param ident A character vector specifying the identity class from which cells are to be sampled.
-#' @param max.cells A positive integer indicating the maximum number of cells to sample from each identity class.
+#' @param max.cells A positive integer indicating the maximum number of cells to sample from each
+#' identity class. Defaults to the smallest group size, `min(table(obj[[ident]]))`.
 #' @param verbose Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.
 #' @param replacement.thr A numeric value between 0 and 1 indicating the percentage of cells to sample from each identity class. Defaults to 0.05.
 #' @param dsample.to.repl.thr Logical indicating if sampling should be done with replacement. Defaults to FALSE.
@@ -1488,48 +1489,64 @@ downsampleSeuObj.and.Save <- function(
 #' @importFrom CodeAndRoll2 as.named.vector.df
 #'
 #' @export
-#'
+
 downsampleSeuObjByIdentAndMaxcells <- function(obj,
                                                ident = GetNamedClusteringRuns()[1],
-                                               max.cells = min(table(obj[[ident]])),
+                                               nr.cells.sampled = min(table(obj[[ident]])),
                                                verbose = TRUE,
-                                               replacement.thr = 0.05,
-                                               dsample.to.repl.thr = (max.cells / ncol(obj)) < replacement.thr, # if less than 5% of cells are sampled, sample with replacement
+                                               replacement.thr = 200,
+                                               dsample.to.repl.thr = (nr.cells.sampled < replacement.thr), # if less than 200 cells are sampled, sample with replacement
                                                plot_stats = TRUE,
                                                seed = 1989) {
+
+  message("Running downsampleSeuObjByIdentAndMaxcells()...")
+
   stopifnot(
     "obj must be a Seurat object" = inherits(obj, "Seurat"),
     "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
-    "max.cells must be a positive integer" = is.numeric(max.cells) && max.cells > 0,
-    max.cells < ncol(obj)
+    "nr.cells.sampled must be a positive integer" = is.numeric(nr.cells.sampled) && nr.cells.sampled > 0,
+    nr.cells.sampled < ncol(obj)
   )
 
-  data <- CodeAndRoll2::as.named.vector.df(obj[[ident]])
-  uniqueCategories <- unique(data)
+  id.vec <- CodeAndRoll2::as.named.vector.df(obj[[ident]])
+  uniqueCategories <- unique(id.vec)
 
   set.seed(seed)
   if (dsample.to.repl.thr) {
-    max.cells <- round(ncol(obj) * replacement.thr)
+    nr.cells.sampled <- round(ncol(obj) * replacement.thr)
     msg <- percentage_formatter(replacement.thr,
-                                suffix = paste("of the data or", max.cells, "of cells."),
-                                prefix = "Sampling with replacement to:")
+            prefix = "Sampling with replacement to:",
+            suffix = paste("of the id.vec or", nr.cells.sampled, "of cells.")
+    )
     message(msg)
   }
 
+  get_cellIDs_from_category <- function(category, id_vec, nr_cells_sampled) {
+
+    cellIDsInCategory <- names(id_vec[id_vec == category])
+    NrCellsInCategory <- length(cellIDsInCategory)
+
+    # Decide on sampling strategy.
+    cellsSampled <-
+      if (NrCellsInCategory >= nr_cells_sampled) {
+        # If more/equal cellIDs in category than the desired sample size,
+        # perform sampling without replacement to avoid duplicates.
+        sample(cellIDsInCategory, nr_cells_sampled)
+      } else {
+        # If less cellIDs in category than the desired sample size,
+        # perform sampling with replacement to meet the sample size requirement.
+        sample(cellIDsInCategory, nr_cells_sampled, replace = TRUE)
+      }
+
+    # Return the sampled names.
+    return(cellsSampled)
+  }
 
 
-  # Sample cells from each identity class
-  sampledNames <- lapply(uniqueCategories, function(category) {
-    namesInCategory <- names(data[data == category])
-    if (length(namesInCategory) <= max.cells) {
-      # If the number of cells in the category is less than or equal to max.cells, return all cells
-      return(namesInCategory)
-    } else {
-      return(sample(namesInCategory, max.cells))
-    }
-  })
-
+  # Sample cells from each identity class using the defined function
+  sampledNames <- lapply(uniqueCategories, get_cellIDs_from_category, category, id.vec, nr.cells.sampled)
   sampledCells <- unlist(sampledNames)
+  message(paste(length(sampledNames), "nr cells targeted." ) )
 
   Idents(obj) <- ident
   obj2 <- subset(x = obj, cells = sampledCells)
@@ -1539,10 +1556,10 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
 
   if (verbose) {
     message("Total cells sampled: ", length(sampledCells))
-    print(table(data))
+    print(table(id_vec))
 
-    nr_remaining_cells <- orig_cells <- table(data)
-    nr_remaining_cells[nr_remaining_cells > max.cells] <- max.cells
+    nr_remaining_cells <- orig_cells <- table(id_vec)
+    nr_remaining_cells[nr_remaining_cells > nr.cells.sampled] <- nr.cells.sampled
     fr_remaining_per_cluster <- iround(nr_remaining_cells / orig_cells)
     print(fr_remaining_per_cluster)
   }
@@ -1556,6 +1573,97 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
   }
   return(obj2)
 }
+
+
+
+# downsampleSeuObjByIdentAndMaxcells <- function(obj,
+#                                                ident = GetNamedClusteringRuns()[1],
+#                                                max.cells = min(table(obj[[ident]])),
+#                                                verbose = TRUE,
+#                                                replacement.thr = 200,
+#                                                dsample.to.repl.thr = (max.cells < replacement.thr), # if less than 200 cells are sampled, sample with replacement
+#                                                plot_stats = TRUE,
+#                                                seed = 1989) {
+#   stopifnot(
+#     "obj must be a Seurat object" = inherits(obj, "Seurat"),
+#     "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
+#     "max.cells must be a positive integer" = is.numeric(max.cells) && max.cells > 0,
+#     max.cells < ncol(obj)
+#   )
+#
+#   data <- CodeAndRoll2::as.named.vector.df(obj[[ident]])
+#   uniqueCategories <- unique(data)
+#
+#   set.seed(seed)
+#   if (dsample.to.repl.thr) {
+#     max.cells <- round(ncol(obj) * replacement.thr)
+#     msg <- (replacement.thr,
+#             prefix = "Sampling with replacement to:"
+#             suffix = paste("of the data or", max.cells, "of cells."),
+#             )
+#     message(msg)
+#   }
+#
+#
+#
+#
+#   # A function to sample names from each category
+#   get_sample_names_from_category <- function(category, data, max_cells) {
+#
+#     namesInCategory <- names(data[data == category])
+#
+#     if (length(namesInCategory) <= max_cells) {
+#       # If the number of cells in the category is less than or equal to max_cells, return all cells
+#       return(namesInCategory)
+#     } else {
+#       # Otherwise, sample up to max_cells from the names in the category
+#       return(sample(namesInCategory, max_cells))
+#     }
+#   }
+#
+#   # Sample cells from each identity class using the defined function
+#   sampledNames <- lapply(uniqueCategories, sample_names_from_category category, data, max.cells)
+#
+#
+#
+#   # Sample cells from each identity class
+#   sampledNames <- lapply(uniqueCategories, function(category) {
+#     namesInCategory <- names(data[data == category])
+#     if (length(namesInCategory) <= max.cells) {
+#       # If the number of cells in the category is less than or equal to max.cells, return all cells
+#       return(namesInCategory)
+#     } else {
+#       return(sample(namesInCategory, max.cells))
+#     }
+#   })
+#
+#   sampledCells <- unlist(sampledNames)
+#
+#   Idents(obj) <- ident
+#   obj2 <- subset(x = obj, cells = sampledCells)
+#
+#   subb <- paste0("From ", ncol(obj), " reduced to ", ncol(obj2), " cells.")
+#   message(subb)
+#
+#   if (verbose) {
+#     message("Total cells sampled: ", length(sampledCells))
+#     print(table(data))
+#
+#     nr_remaining_cells <- orig_cells <- table(data)
+#     nr_remaining_cells[nr_remaining_cells > max.cells] <- max.cells
+#     fr_remaining_per_cluster <- iround(nr_remaining_cells / orig_cells)
+#     print(fr_remaining_per_cluster)
+#   }
+#   if (plot_stats) {
+#     pobj <- qbarplot(
+#       vec = fr_remaining_per_cluster, subtitle = subb, label = fr_remaining_per_cluster,
+#       ylab = "fr. of cells", save = FALSE
+#     )
+#     print(pobj)
+#
+#   }
+#   return(obj2)
+# }
 
 
 # _________________________________________________________________________________________________

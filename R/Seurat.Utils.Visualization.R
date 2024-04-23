@@ -289,6 +289,11 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
 
 
 # _________________________________________________________________________________________________
+# Gene Expression Plots ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+# _________________________________________________________________________________________________
 #' @title Gene Expression as Fraction of Total UMI Counts
 #'
 #' @description This function computes and visualizes gene expression levels as a fraction of total
@@ -347,7 +352,7 @@ Percent.in.Trome <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title Histogram of Gene Expression Levels
+#' @title Histogram All Genes' Expression Level and a Highlighted Gene
 #'
 #' @description This function generates a histogram to visualize the expression level distribution
 #' of a specified gene across all cells in a Seurat object. It highlights the position of the gene
@@ -357,6 +362,7 @@ Percent.in.Trome <- function(
 #' Default: 'TOP2A'.
 #' @param obj A Seurat object containing the expression data. Default: The first Seurat object in
 #' `ls.Seurat`.
+#' @param assay The assay from which to retrieve the expression data. Default: "RNA".
 #' @param slot The slot in the Seurat object from which to retrieve the expression data. Options
 #' include "counts" for raw counts and "data" for normalized (and possibly log-transformed) data.
 #' Default: "data".
@@ -365,32 +371,153 @@ Percent.in.Trome <- function(
 #' @param ... Any other parameter that can be passed to the internally called functions.
 #'
 #' @export
-geneExpressionLevelPlots <- function(
-    gene = "TOP2A", obj = ls.Seurat[[1]],
+plotGeneExpressionInBackgroundHist <- function(
+    gene = "TOP2A",
+    obj = ls.Seurat[[1]],
+    assay = "RNA",
     slot = c("counts", "data")[2],
     w = 7, h = 4,
     ...) {
-  print(gene)
-  if (gene %in% rownames(obj)) {
-    GEX.Counts <- GetAssayData(object = obj, assay = "RNA", slot = slot)
 
-    GEX.Counts.total <- rowSums(GEX.Counts)
-    genes.expression <- GEX.Counts.total[gene]
-    mean.expr <- iround(mean(GEX.Counts[gene, ]))
+  message("gene: ", gene)
+  stopifnot(gene %in% rownames(obj))
 
-    suffx <- if (slot == "counts") "raw" else "normalised, logtransformed"
-    (pname <- paste(gene, "and the", suffx, "transcript count distribution"))
 
-    ggExpress::qhistogram(GEX.Counts.total,
-      vline = genes.expression, logX = TRUE, w = w, h = h,
-      subtitle = paste("It belong to the top", pc_TRUE(GEX.Counts.total > genes.expression), "of genes (black line). Mean expr:", mean.expr),
-      plotname = pname, xlab = "Total Transcripts in Dataset", ylab = "Number of Genes",
-      ...
+  GEX.Counts <- GetAssayData(object = obj, assay = assay, slot = slot)
+
+  GEX.Counts.total <- rowSums(GEX.Counts)
+  genes.expression <- GEX.Counts.total[gene]
+  mean.expr <- iround(mean(GEX.Counts[gene, ]))
+
+  suffx <- if (slot == "counts") "raw" else "normalised, logtransformed"
+  (pname <- paste(gene, "and the", suffx, "transcript count distribution"))
+
+  ggExpress::qhistogram(GEX.Counts.total,
+    vline = genes.expression, logX = TRUE, w = w, h = h,
+    subtitle = paste("It belong to the top", pc_TRUE(GEX.Counts.total > genes.expression), "of genes (black line). Mean expr:", mean.expr),
+    plotname = pname, xlab = "Total Transcripts in Dataset", ylab = "Number of Genes",
+    ...
+  )
+
+}
+
+
+
+
+# _________________________________________________________________________________________________
+#' @title Histogram of Gene / Geneset Aggregate Expression Across Cells
+#'
+#' @description Creates and optionally saves a histogram showing expression levels of specified genes
+#' within a Seurat object. Provides options for aggregate gene expression, expression threshold filtering,
+#' and quantile clipping for count data.
+#'
+#' @param obj Seurat object to analyze; Default: `combined.obj`.
+#' @param genes Vector of gene names to include in the analysis; Default: c("MALAT1", "MT-CO1").
+#' @param assay Assay to use from the Seurat object; Default: "RNA".
+#' @param slot_ Data slot to use ('data' or 'counts'); Default: "data".
+#' @param thr_expr Expression threshold for highlighting in the plot; Default: 10.
+#' @param suffix Additional text to append to the plot title; Default: NULL.
+#' @param xlab Label for the x-axis; Default: "log10(Summed UMI count @data)".
+#' @param return_cells_passing If TRUE, returns count of cells exceeding the expression threshold; Default: TRUE.
+#' @param quantile_thr Quantile threshold for clipping count data; Default: 0.95.
+#' @param return_quantile If TRUE, returns cell count exceeding the quantile threshold; Default: FALSE.
+#' @param w Width of the plot in inches; Default: 9.
+#' @param h Height of the plot in inches; Default: 5.
+#' @param show_plot If TRUE, displays the generated plot; Default: TRUE.
+#' @param ... Additional arguments for customization.
+#'
+#' @return Depending on the parameters, can return a ggplot object, the number of cells passing
+#' the expression threshold, or the number of cells exceeding the quantile threshold.
+#'
+#' @examples
+#' \dontrun{
+#' plotGeneExprHistAcrossCells(obj = yourSeuratObject, genes = c("GeneA", "GeneB"))
+#' }
+#'
+#' @return Depending on the parameters, can return a ggplot object, the number of cells passing
+#' the expression threshold, or the number of cells exceeding the quantile threshold.
+#'
+#' @export
+#' @importFrom scales hue_pal
+#' @importFrom Seurat GetAssayData
+#' @importFrom ggplot2 geom_vline labs
+#' @importFrom ggExpress qhistogram
+plotGeneExprHistAcrossCells <- function(
+    genes = c("MALAT1", "MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN"),
+    obj = combined.obj,
+    assay = "RNA", slot_ = "data",
+    thr_expr = 10,
+    suffix = NULL,
+    xlab = paste0("log10(Summed UMI count @", slot_, ")"),
+    return_cells_passing = TRUE,
+    quantile_thr = 0.95,
+    return_quantile,
+    w = 9, h = 5,
+    show_plot = TRUE,
+    ...) {
+
+  stopifnot(length(genes) > 0,
+            slot_ %in% c("data", "counts")
+  )
+
+  # browser()
+  # Aggregate genes if necessary
+  aggregate <- length(genes) > 1
+  GeneExpressionInDataset <- colSums(GetAssayData(object = obj, assay = assay, slot = slot_)[genes, , drop = F])
+  head(GeneExpressionInDataset)
+
+  # Clip counts if necessary
+  if (slot_ == "counts") {
+    GeneExpressionInDataset <- CodeAndRoll2::clip.at.fixed.value(
+      distribution = GeneExpressionInDataset,
+      thr = quantile(GeneExpressionInDataset, probs = .95)
     )
+  }
+
+  # Create annotation
+  CPT <- paste("slot:", slot_, "| assay:", assay, "| cutoff at", iround(thr_expr))
+
+  # Add a subtitle with the number of genes and the expression threshold
+  SUBT <- filter_HP(GeneExpressionInDataset, threshold = thr_expr, return_conclusion = TRUE, plot.hist = FALSE)
+  if (aggregate) {
+
+    SUBT <- paste(SUBT, "\n", length(genes), "genes summed up, e.g:", kppc(head(genes)))
+    TTL <- paste("Gene Expression", Stringendo::flag.nameiftrue(aggregate, prefix = "- "), suffix)
   } else {
-    print("     !!! Gene not found in object!")
+    TTL <- trimws(paste("Gene Expression -", paste(genes), suffix))
+  }
+
+  # Create the plot
+  pobj <- ggExpress::qhistogram(GeneExpressionInDataset,
+                                plotname = TTL,
+                                subtitle = SUBT,
+                                caption = CPT,
+                                suffix = suffix,
+                                vline = thr_expr[1], filtercol = -1,
+                                xlab = xlab,
+                                ylab = "# of cells",
+                                w = w, h = h,
+                                ...
+  )
+
+  # draw additional vlines if needed
+  if (length(thr_expr) > 1) {
+    pobj <- pobj +
+      ggplot2::geom_vline(xintercept = thr_expr[-1], col = 2, lty = 2, lwd = 1) +
+      ggplot2::labs(caption = "Red line marks original estimate")
+    ggExpress::qqSave(ggobj = pobj, title = sppp(TTL, "w.orig")) # , ext = '.png'
+  }
+
+
+  # Print the plot
+  if (show_plot) print(pobj)
+
+  # Return the number of cells passing the filter
+  if (return_cells_passing) {
+    return(MarkdownHelpers::filter_HP(GeneExpressionInDataset, threshold = thr_expr, plot.hist = FALSE))
   }
 }
+
 
 # _________________________________________________________________________________________________
 #' @title Proportion of Cells Expressing Given Genes
@@ -525,7 +652,7 @@ get.clustercomposition <- function(
 #' @param group.by The variable to group by for the bar plot.
 #' @param fill.by The variable to fill by for the bar plot.
 #' @param downsample Logical indicating whether to downsample data to equalize group sizes.
-#' @param replacement.thr A numeric value between 0 and 1 indicating the percentage of cells to sample from each identity class. Defaults to 0.05.
+#' @param min.nr.sampled.cells The minimal number of cells to sample from each identity class. Defaults to 200 cells.
 #' @param dsample.to.repl.thr Logical indicating if sampling should be done with replacement. Defaults to FALSE.
 #' @param plotname The title of the plot.
 #' @param suffix Optional suffix for the plot title.
@@ -569,8 +696,7 @@ scBarplot.CellFractions <- function(
     group.by = GetNamedClusteringRuns()[1],
     obj = combined.obj,
     downsample = FALSE,
-    replacement.thr = 0.05,
-    # dsample.to.repl.thr = (max.cells / ncol(obj)) < replacement.thr, # if less than 5% of cells are sampled, sample with replacement
+    min.nr.sampled.cells = 200,
     plotname = kpp(toTitleCase(fill.by), "proportions.by", group.by),
     suffix = NULL,
     sub_title = suffix,
@@ -604,7 +730,6 @@ scBarplot.CellFractions <- function(
     is.numeric(min_frequency) && length(min_frequency) == 1 && min_frequency >= 0 && min_frequency < 1 # min_frequency must be between 0 and 1
   )
 
-
   set.seed(seedNr)
   pname.suffix <- capt.suffix <- NULL
 
@@ -615,23 +740,26 @@ scBarplot.CellFractions <- function(
 
     message("The size of the smallest group is: ", downsample, " cells.")
 
-    dsample.to.repl.thr <- (downsample / ncol(obj)) < replacement.thr # if less than 5% of cells are sampled, sample with replacement
+    dsample.to.repl.thr  <- (downsample < min.nr.sampled.cells) # if less than 200 cells are sampled, sample with replacement
     if (dsample.to.repl.thr) {
-      message("If smallest category is < 5% of total cells, than sampling with replacement to 5%.")
-      nr.sampled.cells <- round(ncol(obj) * replacement.thr)
+      message(paste("If smallest category is <", min.nr.sampled.cells,
+              "of total cells, than down- or up-sampling, with replacement to that minimum."))
     }
 
     # Downsample the object
     obj <- DietSeurat(obj)
     obj <- downsampleSeuObjByIdentAndMaxcells(obj = obj, ident = fill.by, plot_stats = F,
                                               dsample.to.repl.thr  = dsample.to.repl.thr,
-                                              replacement.thr = replacement.thr)
+                                              replacement.thr = min.nr.sampled.cells)
+    # browser()
 
     # Update plot name and caption to reflect downsampling
     plotname <- kpp(plotname, "downsampled")
     pname.suffix <- "(downsampled)"
-    capt.suffix <- paste("\nDownsampled from (max)", largest_grp, "all groups to",
-                         nr.sampled.cells, "cells in the smallest", fill.by, "group / min. 5%.")
+
+    capt.suffix <- paste0("\nDownsampled all groups in ", fill.by, " (Y) to ", min.nr.sampled.cells,
+                          "cells. \nThis number is max(smallest group, 5% of total cells). Largest groups previosly was: ", largest_grp)
+
   }
 
   # Construct the caption based on downsampling and minimum frequency
@@ -1588,123 +1716,6 @@ qSeuViolin <- function(
   if (show_plot) p
 }
 
-
-
-
-
-# _________________________________________________________________________________________________
-#' @title Histogram of Gene Expression in Seurat Object
-#'
-#' @description Creates and optionally saves a histogram showing expression levels of specified genes
-#' within a Seurat object. Provides options for aggregate gene expression, expression threshold filtering,
-#' and quantile clipping for count data.
-#'
-#' @param obj Seurat object to analyze; Default: `combined.obj`.
-#' @param genes Vector of gene names to include in the analysis; Default: c("MALAT1", "MT-CO1").
-#' @param assay Assay to use from the Seurat object; Default: "RNA".
-#' @param slot_ Data slot to use ('data' or 'counts'); Default: "data".
-#' @param thr_expr Expression threshold for highlighting in the plot; Default: 10.
-#' @param suffix Additional text to append to the plot title; Default: NULL.
-#' @param xlab Label for the x-axis; Default: "log10(Summed UMI count @data)".
-#' @param return_cells_passing If TRUE, returns count of cells exceeding the expression threshold; Default: TRUE.
-#' @param quantile_thr Quantile threshold for clipping count data; Default: 0.95.
-#' @param return_quantile If TRUE, returns cell count exceeding the quantile threshold; Default: FALSE.
-#' @param w Width of the plot in inches; Default: 9.
-#' @param h Height of the plot in inches; Default: 5.
-#' @param show_plot If TRUE, displays the generated plot; Default: TRUE.
-#' @param ... Additional arguments for customization.
-#'
-#' @return Depending on the parameters, can return a ggplot object, the number of cells passing
-#' the expression threshold, or the number of cells exceeding the quantile threshold.
-#'
-#' @examples
-#' \dontrun{
-#' plotGeneExpHist(obj = yourSeuratObject, genes = c("GeneA", "GeneB"))
-#' }
-#'
-#' @return Depending on the parameters, can return a ggplot object, the number of cells passing
-#' the expression threshold, or the number of cells exceeding the quantile threshold.
-#'
-#' @export
-#' @importFrom scales hue_pal
-#' @importFrom Seurat GetAssayData
-#' @importFrom ggplot2 geom_vline labs
-#' @importFrom ggExpress qhistogram
-plotGeneExpHist <- function(
-    genes = c("MALAT1", "MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN"),
-    obj = combined.obj,
-    assay = "RNA", slot_ = "data",
-    thr_expr = 10,
-    suffix = NULL,
-    xlab = paste0("log10(Summed UMI count @", slot_, ")"),
-    return_cells_passing = TRUE,
-    quantile_thr = 0.95,
-    return_quantile,
-    w = 9, h = 5,
-    show_plot = TRUE,
-    ...) {
-
-  stopifnot(length(genes) > 0,
-            slot_ %in% c("data", "counts")
-            )
-
-  # browser()
-  # Aggregate genes if necessary
-  aggregate <- length(genes) > 1
-  GeneExpressionInDataset <- colSums(GetAssayData(object = obj, assay = assay, slot = slot_)[genes, , drop = F])
-  head(GeneExpressionInDataset)
-
-  # Clip counts if necessary
-  if (slot_ == "counts") {
-    GeneExpressionInDataset <- CodeAndRoll2::clip.at.fixed.value(
-      distribution = GeneExpressionInDataset,
-      thr = quantile(GeneExpressionInDataset, probs = .95)
-    )
-  }
-
-  # Create the plot
-
-  CPT <- paste("slot:", slot_, "| assay:", assay, "| cutoff at", iround(thr_expr))
-
-  # Add a subtitle with the number of genes and the expression threshold
-  SUBT <- filter_HP(GeneExpressionInDataset, threshold = thr_expr, return_conclusion = TRUE, plot.hist = FALSE)
-  if (aggregate) {
-
-    SUBT <- paste(SUBT, "\n", length(genes), "genes summed up, e.g:", kppc(head(genes)))
-    TTL <- paste("Gene Expression", Stringendo::flag.nameiftrue(aggregate, prefix = "- "), suffix)
-  } else {
-    TTL <- trimws(paste("Gene Expression -", paste(genes), suffix))
-  }
-
-  pobj <- ggExpress::qhistogram(GeneExpressionInDataset,
-    plotname = TTL,
-    subtitle = SUBT,
-    caption = CPT,
-    suffix = suffix,
-    vline = thr_expr[1], filtercol = -1,
-    xlab = xlab,
-    ylab = "# of cells",
-    w = w, h = h,
-    ...
-  )
-
-  # draw additional vlines if needed
-  if (length(thr_expr) > 1) {
-    pobj <- pobj +
-      ggplot2::geom_vline(xintercept = thr_expr[-1], col = 2, lty = 2, lwd = 1) +
-      ggplot2::labs(caption = "Red line marks original estimate")
-    ggExpress::qqSave(ggobj = pobj, title = sppp(TTL, "w.orig")) # , ext = '.png'
-  }
-
-
-  # Print the plot
-  if (show_plot) print(pobj)
-
-  # Return the number of cells passing the filter
-  if (return_cells_passing) {
-    return(MarkdownHelpers::filter_HP(GeneExpressionInDataset, threshold = thr_expr, plot.hist = FALSE))
-  }
-}
 
 
 
