@@ -718,6 +718,7 @@ scBarplot.CellFractions <- function(
     cex.total = 2,
     xlab.angle = 45,
     ...) {
+
   # Input assertions
   stopifnot(
     inherits(obj, "Seurat"), # obj must be a Seurat object
@@ -748,9 +749,12 @@ scBarplot.CellFractions <- function(
 
     # Downsample the object
     obj <- DietSeurat(obj)
+
     obj <- downsampleSeuObjByIdentAndMaxcells(obj = obj, ident = fill.by, plot_stats = F,
                                               dsample.to.repl.thr  = dsample.to.repl.thr,
                                               replacement.thr = min.nr.sampled.cells)
+    cat(2)
+
     # browser()
 
     # Update plot name and caption to reflect downsampling

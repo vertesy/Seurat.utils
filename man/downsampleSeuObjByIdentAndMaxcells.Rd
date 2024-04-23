@@ -2,15 +2,15 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{downsampleSeuObjByIdentAndMaxcells}
 \alias{downsampleSeuObjByIdentAndMaxcells}
-\title{Sample Cells From Identifiers in Seurat Object}
+\title{Sample max number of Cells From each identity in a Seurat Object}
 \usage{
 downsampleSeuObjByIdentAndMaxcells(
   obj,
   ident = GetNamedClusteringRuns()[1],
-  nr.cells.sampled = min(table(obj[[ident]])),
+  max.cells = min(table(obj[[ident]])),
   verbose = TRUE,
-  replacement.thr = 200,
-  dsample.to.repl.thr = (nr.cells.sampled < replacement.thr),
+  replacement.thr = 0.05,
+  dsample.to.repl.thr = (max.cells/ncol(obj)) < replacement.thr,
   plot_stats = TRUE,
   seed = 1989
 )
@@ -19,6 +19,8 @@ downsampleSeuObjByIdentAndMaxcells(
 \item{obj}{A Seurat object from which cells are to be sampled.}
 
 \item{ident}{A character vector specifying the identity class from which cells are to be sampled.}
+
+\item{max.cells}{A positive integer indicating the maximum number of cells to sample from each identity class.}
 
 \item{verbose}{Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.}
 
@@ -29,9 +31,6 @@ downsampleSeuObjByIdentAndMaxcells(
 \item{plot_stats}{Logical indicating to plot a barplot.}
 
 \item{seed}{An integer to set the seed for reproducibility.}
-
-\item{max.cells}{A positive integer indicating the maximum number of cells to sample from each
-identity class. Defaults to the smallest group size, \code{min(table(obj[[ident]]))}.}
 }
 \value{
 Returns a Seurat object containing only the sampled cells.
