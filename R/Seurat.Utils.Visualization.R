@@ -990,16 +990,27 @@ scBarplot.CellsPerCluster <- function(
 #' from `ls.Seu`. Default: FALSE.
 #' @param ... Extra parameters passed to `qbarplot`.
 #'
+#' @examples
+#' \dontrun{
+#' ls.Seu <- list(obj, obj)
+#' scBarplot.CellsPerObject(ls.Seu)
+#' }
+#'
 #' @export scBarplot.CellsPerObject
 
 scBarplot.CellsPerObject <- function(
     ls.Seu = ls.Seurat,
-    plotname = "Nr.Cells.After.Filtering", xlab.angle = 45,
+    plotname = "Nr.Cells.After.Filtering",
+    xlab.angle = 45,
     names = FALSE, ...) {
+
+  stopifnot("Should be run on a list of Seu. objects" = length(ls.Seu) > 1,
+            "Should be run on a list of Seu. objects" = all(sapply(ls.Seu, is, "Seurat"))
+            )
+
   cellCounts <- unlapply(ls.Seu, ncol)
-  names(cellCounts) <- if (length(names) == length(ls.Seurat)) names else names(ls.Seurat)
-  qbarplot(cellCounts,
-           plotname = plotname,
+  names(cellCounts) <- if (length(names) == length(ls.Seu)) names else names(ls.Seu)
+  ggExpress::qbarplot(cellCounts, plotname = plotname,
            subtitle = paste(sum(cellCounts), "cells in total"),
            label = cellCounts,
            xlab.angle = xlab.angle,
