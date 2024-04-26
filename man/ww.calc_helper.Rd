@@ -7,12 +7,14 @@
 Adapted from Ryan-Zhu on GitHub.
 }
 \usage{
-ww.calc_helper(obj, genes)
+ww.calc_helper(obj, genes, slot = "RNA")
 }
 \arguments{
 \item{obj}{Seurat object with cell data.}
 
 \item{genes}{Single gene name as a character string.}
+
+\item{slot}{Slot to use for the analysis. Default: 'RNA'.}
 }
 \value{
 Proportion of cells expressing the gene. Returns \code{NA} if the gene is not found.

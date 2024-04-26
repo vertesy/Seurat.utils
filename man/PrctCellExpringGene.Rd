@@ -24,7 +24,7 @@ Calculates the proportion of cells expressing one or more specified genes.
 }
 \examples{
 \dontrun{
-PrctCellExpringGene(genes = c("Gene1", "Gene2"), obj = seurat_object)
+PrctCellExpringGene(genes = c("LTB", "GNLY"), obj = combined.obj)
 }
 
 }

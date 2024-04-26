@@ -532,17 +532,21 @@ plotGeneExprHistAcrossCells <- function(
 #'
 #' @examples
 #' \dontrun{
-#' PrctCellExpringGene(genes = c("Gene1", "Gene2"), obj = seurat_object)
+#' PrctCellExpringGene(genes = c("LTB", "GNLY"), obj = combined.obj)
 #' }
 #'
 #' @source Adapted from Ryan-Zhu on GitHub.
 #'
 #' @export
 PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj) {
+  stopifnot("Some genes not foun!." = all(genes %in% row.names(obj)))
+
   if (group.by == "all") {
-    prct <- unlist(lapply(genes, ww.calc_helper, object = obj))
-    result <- data.frame(Markers = genes, Cell_proportion = prct)
+    prct <- 1:length(genes)
+    for (i in seq(prct)) prct[i] <- ww.calc_helper(genes = genes[1], obj = obj)
+    result <- data.frame("Markers" = genes, "Cell_proportion" = prct)
     return(result)
+
   } else {
     list <- Seurat::SplitObject(object = obj, split.by = group.by)
     factors <- names(list)
@@ -563,6 +567,7 @@ PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj) {
 #'
 #' @param obj Seurat object with cell data.
 #' @param genes Single gene name as a character string.
+#' @param slot Slot to use for the analysis. Default: 'RNA'.
 #'
 #' @return Proportion of cells expressing the gene. Returns `NA` if the gene is not found.
 #'
@@ -574,8 +579,9 @@ PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj) {
 #' @source Adapted from Ryan-Zhu on GitHub.
 #'
 #' @export
-ww.calc_helper <- function(obj, genes) {
-  counts <- obj[["RNA"]]@counts
+ww.calc_helper <- function(obj, genes, slot= "RNA") {
+  # stopifnot("Some genes not found!." = all(genes %in% row.names(obj)))
+  counts <- obj[[slot]]@counts
   ncells <- ncol(counts)
   if (genes %in% row.names(counts)) {
     sum(counts[genes, ] > 0) / ncells
