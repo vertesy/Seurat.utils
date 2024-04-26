@@ -360,8 +360,7 @@ Percent.in.Trome <- function(
 #'
 #' @param gene The gene of interest for which the expression level distribution is to be plotted.
 #' Default: 'TOP2A'.
-#' @param obj A Seurat object containing the expression data. Default: The first Seurat object in
-#' `ls.Seurat`.
+#' @param obj A Seurat object containing the expression data. Default: The first Seurat object in `ls.Seurat`.
 #' @param assay The assay from which to retrieve the expression data. Default: "RNA".
 #' @param slot The slot in the Seurat object from which to retrieve the expression data. Options
 #' include "counts" for raw counts and "data" for normalized (and possibly log-transformed) data.
@@ -925,52 +924,6 @@ scBarplot.CellsPerCluster <- function(
   }
 }
 
-
-
-
-# _________________________________________________________________________________________________
-#' @title Barplot of Cells Per Seurat Object
-#'
-#' @description Visualizes the number of cells in each Seurat object within a list, showing the
-#' distribution of cell counts across different datasets or experimental conditions.
-#'
-#' @param ls.Seu List of Seurat objects to analyze. Default: `ls.Seurat`.
-#' @param plotname Title for the plot. Default: 'Nr.Cells.After.Filtering'.
-#' @param xlab.angle Angle for x-axis labels, enhancing readability. Default: 45.
-#' @param names Optionally provide custom names for x-axis labels. If FALSE, uses object names
-#' from `ls.Seu`. Default: FALSE.
-#' @param ... Extra parameters passed to `qbarplot`.
-#'
-#' @examples
-#' \dontrun{
-#' ls.Seu <- list(obj, obj)
-#' scBarplot.CellsPerObject(ls.Seu)
-#' }
-#'
-#' @export scBarplot.CellsPerObject
-
-scBarplot.CellsPerObject <- function(
-    ls.Seu = ls.Seurat,
-    plotname = "Nr.Cells.After.Filtering",
-    xlab.angle = 45,
-    names = FALSE, ...) {
-
-  stopifnot("Should be run on a list of Seu. objects" = length(ls.Seu) > 1,
-            "Should be run on a list of Seu. objects" = all(sapply(ls.Seu, is, "Seurat"))
-            )
-
-  cellCounts <- unlapply(ls.Seu, ncol)
-  names(cellCounts) <- if (length(names) == length(ls.Seu)) names else names(ls.Seu)
-  ggExpress::qbarplot(cellCounts, plotname = plotname,
-           subtitle = paste(sum(cellCounts), "cells in total"),
-           label = cellCounts,
-           xlab.angle = xlab.angle,
-           ylab = "Cells",
-           ...
-  )
-}
-
-
 # _________________________________________________________________________________________________
 #' @title Cluster Size Distribution Plot (Barplot or Histogram)
 #'
@@ -1180,6 +1133,60 @@ scBarplot.FractionBelowThr <- function(
 }
 
 
+
+# _________________________________________________________________________________________________
+# List of Seurat Objects ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+
+
+
+
+# _________________________________________________________________________________________________
+#' @title Barplot of Cells Per Seurat Object
+#'
+#' @description Visualizes the number of cells in each Seurat object within a list, showing the
+#' distribution of cell counts across different datasets or experimental conditions.
+#'
+#' @param ls.obj List of Seurat objects to analyze. Default: `ls.Seurat`.
+#' @param plotname Title for the plot. Default: 'Nr.Cells.After.Filtering'.
+#' @param xlab.angle Angle for x-axis labels, enhancing readability. Default: 45.
+#' @param names Optionally provide custom names for x-axis labels. If FALSE, uses object names
+#' from `ls.obj`. Default: FALSE.
+#' @param ... Extra parameters passed to `qbarplot`.
+#'
+#' @examples
+#' \dontrun{
+#' ls.obj <- list(obj, obj)
+#' scBarplot.CellsPerObject(ls.obj)
+#' }
+#'
+#' @export scBarplot.CellsPerObject
+
+scBarplot.CellsPerObject <- function(
+    ls.obj = ls.Seurat,
+    plotname = "Nr.Cells.After.Filtering",
+    xlab.angle = 45,
+    names = FALSE, ...) {
+
+  stopifnot("Should be run on a list of Seu. objects" = length(ls.obj) > 1,
+            "Should be run on a list of Seu. objects" = all(sapply(ls.obj, is, "Seurat"))
+  )
+
+  cellCounts <- unlapply(ls.obj, ncol)
+  names(cellCounts) <- if (length(names) == length(ls.obj)) names else names(ls.obj)
+  ggExpress::qbarplot(cellCounts, plotname = plotname,
+                      subtitle = paste(sum(cellCounts), "cells in total"),
+                      label = cellCounts,
+                      xlab.angle = xlab.angle,
+                      ylab = "Cells",
+                      ...
+  )
+}
+
+
+
 # _________________________________________________________________________________________________
 #' @title Stacked Barplot of Metadata Categories for List of Seurat Objects
 #'
@@ -1190,15 +1197,26 @@ scBarplot.FractionBelowThr <- function(
 #' @param meta.col The metadata column name to be used for the barplot.
 #' @return A ggplot object representing the stacked barplot.
 #'
+#' @examples
+#' \dontrun{
+#' ls.obj <- list(obj, obj)
+#' scBarplotStackedMetaCateg_List(ls.obj, meta.col = orig.ident)
+#' }
+#'
 #' @importFrom ggExpress qbarplot.df
 #' @importFrom dplyr group_by summarise select
 #'
 #' @export
 scBarplotStackedMetaCateg_List <- function(
-    ls.obj, meta.col,
+    ls.obj,
+    meta.col, # e.g. orig.ident
     ...) {
-  stopifnot(is.list(ls.obj), all(sapply(ls.obj, inherits, "Seurat")))
-  stopifnot(is.character(meta.col), length(meta.col) == 1)
+
+  stopifnot("Should be run on a list of Seu. objects" = length(ls.obj) > 1,
+            "Should be run on a list of Seu. objects" = all(sapply(ls.obj, is, "Seurat")),
+            length(meta.col) == 1,
+            "meta.col not found in 1st object" = meta.col %in% colnames(ls.obj[[1]]@meta.data)
+  )
 
   # Creating a data frame for the stacked bar plot
   df <- do.call(rbind, lapply(seq_along(ls.obj), function(x) {

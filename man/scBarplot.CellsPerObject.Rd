@@ -5,7 +5,7 @@
 \title{Barplot of Cells Per Seurat Object}
 \usage{
 scBarplot.CellsPerObject(
-  ls.Seu = ls.Seurat,
+  ls.obj = ls.Seurat,
   plotname = "Nr.Cells.After.Filtering",
   xlab.angle = 45,
   names = FALSE,
@@ -13,14 +13,14 @@ scBarplot.CellsPerObject(
 )
 }
 \arguments{
-\item{ls.Seu}{List of Seurat objects to analyze. Default: \code{ls.Seurat}.}
+\item{ls.obj}{List of Seurat objects to analyze. Default: \code{ls.Seurat}.}
 
 \item{plotname}{Title for the plot. Default: 'Nr.Cells.After.Filtering'.}
 
 \item{xlab.angle}{Angle for x-axis labels, enhancing readability. Default: 45.}
 
 \item{names}{Optionally provide custom names for x-axis labels. If FALSE, uses object names
-from \code{ls.Seu}. Default: FALSE.}
+from \code{ls.obj}. Default: FALSE.}
 
 \item{...}{Extra parameters passed to \code{qbarplot}.}
 }
@@ -30,8 +30,8 @@ distribution of cell counts across different datasets or experimental conditions
 }
 \examples{
 \dontrun{
-ls.Seu <- list(obj, obj)
-scBarplot.CellsPerObject(ls.Seu)
+ls.obj <- list(obj, obj)
+scBarplot.CellsPerObject(ls.obj)
 }
 
 }

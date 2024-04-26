@@ -18,8 +18,7 @@ plotGeneExpressionInBackgroundHist(
 \item{gene}{The gene of interest for which the expression level distribution is to be plotted.
 Default: 'TOP2A'.}
 
-\item{obj}{A Seurat object containing the expression data. Default: The first Seurat object in
-\code{ls.Seurat}.}
+\item{obj}{A Seurat object containing the expression data. Default: The first Seurat object in \code{ls.Seurat}.}
 
 \item{assay}{The assay from which to retrieve the expression data. Default: "RNA".}
 

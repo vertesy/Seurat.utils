@@ -18,3 +18,10 @@ A ggplot object representing the stacked barplot.
 Creates and saves a stacked barplot for a specified metadata category
 from a list of Seurat objects.
 }
+\examples{
+\dontrun{
+ls.obj <- list(obj, obj)
+scBarplotStackedMetaCateg_List(ls.obj, meta.col = orig.ident)
+}
+
+}
