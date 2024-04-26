@@ -28,3 +28,10 @@ from \code{ls.Seu}. Default: FALSE.}
 Visualizes the number of cells in each Seurat object within a list, showing the
 distribution of cell counts across different datasets or experimental conditions.
 }
+\examples{
+\dontrun{
+ls.Seu <- list(obj, obj)
+scBarplot.CellsPerObject(ls.Seu)
+}
+
+}

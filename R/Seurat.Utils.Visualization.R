@@ -596,55 +596,6 @@ ww.calc_helper <- function(obj, genes, slot= "RNA") {
 # Barplots / Compositional analysis ______________________________ ----
 # _________________________________________________________________________________________________
 
-#' @title Cluster Composition Analysis
-#'
-#' @description Analyzes and visualizes the composition of clusters in a Seurat object, indicating
-#' the contribution of different datasets to each cluster.
-#'
-#' @param obj Seurat object to analyze. Default: `combined.obj`.
-#' @param ident Cluster identity resolution to use. Default: 'integrated_snn_res.0.3'.
-#' @param splitby Variable to split the data by, typically a project or dataset identifier.
-#' Default: 'ShortNames'.
-#' @param color Bar color. Default: as defined by `splitby`.
-#' @param plot Whether to display the plot. Default: TRUE.
-#' @param ScaleTo100pc Whether to scale Y axis to 100%. Default: TRUE.
-#' @param ... Additional parameters for plotting functions.
-#'
-#' @return If `plot` is TRUE, displays a bar plot showing the composition of each cluster. Otherwise,
-#' performs the analysis without plotting.
-#'
-#' @examples
-#' get.clustercomposition()
-#'
-#' @export
-#' @importFrom dplyr group_by_ summarise
-#' @importFrom scales percent_format
-get.clustercomposition <- function(
-    obj = combined.obj, ident = "integrated_snn_res.0.3", splitby = "ShortNames",
-    color = y,
-    plot = TRUE, ScaleTo100pc = TRUE,
-    ...) {
-  try(setwd(OutDir), silent = TRUE)
-  clUMAP(obj = obj, ident = x, save.plot = TRUE, suffix = "as.in.barplot")
-
-  (df.meta <- obj@meta.data[, c(ident, splitby)])
-
-  df.meta %>%
-    dplyr::group_by_(splitby) %>%
-    summarise()
-
-  categ.per.cluster <- ggbarplot(obj@meta.data,
-                                 x = x,
-                                 y = y,
-                                 color = y,
-                                 ...
-  )
-  if (ScaleTo100pc) categ.per.cluster <- categ.per.cluster + scale_y_discrete(labels = scales::percent_format())
-  if (plot) categ.per.cluster
-
-  ggExpress::qqSave(categ.per.cluster, ...)
-}
-
 
 # _________________________________________________________________________________________________
 
