@@ -19,7 +19,7 @@ plotAndSaveHeatmaps(
 \arguments{
 \item{results}{A list containing data frames with calculated metrics for each specified
 metadata feature, grouped by categories. Typically, this is the output from a
-function like \code{calculateAverageMetaData}.}
+function like \code{calculateAverageMetaData()}.}
 
 \item{path}{The directory path where the heatmap images will be saved.
 Defaults to the current working directory (\code{getwd()}).}
@@ -43,8 +43,8 @@ Invisible. The function primarily generates and saves files without returning da
 }
 \description{
 Generates and saves heatmap visualizations for each metric in the results obtained
-from metadata calculations, such as mean or median values of specified features
-across different categories.
+from metadata calculations, such as  `calculateAverageMetaData() - mean or median values of
+specified features across different categories.
 }
 \details{
 This function loops through each metric in the \code{results}, creates a heatmap

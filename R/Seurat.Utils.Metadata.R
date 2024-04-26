@@ -143,11 +143,10 @@ get_levels_seu <- function(obj, ident, max_levels = 100, dput = TRUE) {
 #'   grouped by the identity categories. Each data frame corresponds to one of the specified metrics.
 #'
 #' @examples
-#' # Assuming `obj` is a Seurat object with relevant metadata columns:
+#' # Assuming `combined.obj` is a Seurat object with relevant metadata columns:
 #' results <- calculateAverageMetaData(
-#'   obj = obj,
-#'   meta.features = c("nFeature_RNA", "percent.ribo"),
-#'   ident = "ident_column_name",
+#'   obj = combined.obj,
+#'   meta.features = c("nFeature_RNA", "nCount_RNA"),
 #'   metrics = list("median" = median, "mean" = mean),
 #'   verbose = TRUE
 #' )
@@ -158,16 +157,18 @@ get_levels_seu <- function(obj, ident, max_levels = 100, dput = TRUE) {
 calculateAverageMetaData <- function(
     obj = combined.obj,
     meta.features = c("nFeature_RNA", "percent.ribo", "percent.mito"),
-    ident = GetNamedClusteringRuns()[2],
+    ident = GetClusteringRuns()[1],
     metrics = list("median" = median, "mean" = mean),
     verbose = TRUE, max.categ = 30) {
+
   stopifnot(
     is(obj, "Seurat"),
-    ident %in% colnames(obj@meta.data),
-    all(meta.features %in% colnames(obj@meta.data)),
+    "ident not found in object" = ident %in% colnames(obj@meta.data),
+    "Not all meta.features found in object" = all(meta.features %in% colnames(obj@meta.data)),
     length(unique(obj@meta.data[, ident])) < max.categ
   )
 
+  # browser()
   # Initialize list to store results
   results <- list()
 

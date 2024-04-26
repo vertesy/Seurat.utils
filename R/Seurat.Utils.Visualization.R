@@ -1514,12 +1514,12 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = FA
 #' @title Plot and Save Heatmaps from Metadata Calculation Results
 #'
 #' @description Generates and saves heatmap visualizations for each metric in the results obtained
-#' from metadata calculations, such as mean or median values of specified features
-#' across different categories.
+#' from metadata calculations, such as  `calculateAverageMetaData() - mean or median values of
+#' specified features across different categories.
 #'
 #' @param results A list containing data frames with calculated metrics for each specified
 #'   metadata feature, grouped by categories. Typically, this is the output from a
-#'   function like `calculateAverageMetaData`.
+#'   function like `calculateAverageMetaData()`.
 #' @param path The directory path where the heatmap images will be saved.
 #'   Defaults to the current working directory (`getwd()`).
 #' @param file.prefix A prefix for the filenames of the saved heatmap images.
@@ -1542,15 +1542,19 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = FA
 #' @return Invisible. The function primarily generates and saves files without returning data.
 #'
 #' @export
-plotAndSaveHeatmaps <- function(results, path = getwd(), file.prefix = "heatmap_",
-                                scale = "column", cluster_rows = FALSE,
+plotAndSaveHeatmaps <- function(results, path = getwd(),
+                                file.prefix = "heatmap_",
+                                scale = "column",
+                                cluster_rows = FALSE,
                                 display_numbers = TRUE,
-                                show_rownames = TRUE, show_colnames = TRUE, ...) {
+                                show_rownames = TRUE,
+                                show_colnames = TRUE,
+                                ...) {
   stopifnot(is.list(results), is.character(file.prefix), is.character(path))
 
   for (mt in names(results)) {
     # Generate heatmap plot
-    pobj <- pheatmap::pheatmap(FirstCol2RowNames.as.df(results[[mt]]),
+    pobj <- pheatmap::pheatmap(ReadWriter::column.2.row.names(results[[mt]]),
                                main = paste("Heatmap of", mt, "values"),
                                scale = "column",
                                cluster_rows = cluster_rows,

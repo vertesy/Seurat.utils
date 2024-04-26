@@ -7,7 +7,7 @@
 calculateAverageMetaData(
   obj = combined.obj,
   meta.features = c("nFeature_RNA", "percent.ribo", "percent.mito"),
-  ident = GetNamedClusteringRuns()[2],
+  ident = GetClusteringRuns()[1],
   metrics = list(median = median, mean = mean),
   verbose = TRUE,
   max.categ = 30
@@ -41,11 +41,10 @@ defined by an identity column in a Seurat object's metadata. This function allow
 metric calculation on specified features, providing insights into the data distribution.
 }
 \examples{
-# Assuming `obj` is a Seurat object with relevant metadata columns:
+# Assuming `combined.obj` is a Seurat object with relevant metadata columns:
 results <- calculateAverageMetaData(
-  obj = obj,
-  meta.features = c("nFeature_RNA", "percent.ribo"),
-  ident = "ident_column_name",
+  obj = combined.obj,
+  meta.features = c("nFeature_RNA", "nCount_RNA"),
   metrics = list("median" = median, "mean" = mean),
   verbose = TRUE
 )
