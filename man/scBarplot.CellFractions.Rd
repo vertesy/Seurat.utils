@@ -28,6 +28,7 @@ scBarplot.CellFractions(
   custom_col_palette = FALSE,
   color_scale = getDiscretePaletteObj(ident.used = group.by, obj = obj, palette.used =
     "glasbey"),
+  rnd_colors = FALSE,
   show.total.cells = TRUE,
   cex.total = 2,
   xlab.angle = 45,

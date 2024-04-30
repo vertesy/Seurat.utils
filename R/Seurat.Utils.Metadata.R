@@ -185,6 +185,70 @@ calculateAverageMetaData <- function(
     cat("For features:", paste(meta.features, collapse = ", "), "\n")
     cat("Based on identifier:", ident, "\n")
   }
+  return(results)
+}
+
+
+# _________________________________________________________________________________________________
+#' @title Calculate the Percentage of Matches per Category
+#'
+#' @description This function calculates the percentage of matches for specified metadata features
+#' against provided match values within each category of an identifier in a Seurat object.
+#'
+#' @param obj A Seurat object containing the data to be analyzed. Default: combined.obj.
+#' @param ident A string specifying the column in the metadata that identifies the categories.
+#' Default: first element of `GetClusteringRuns()`.
+#' @param meta.features A vector of strings specifying which metadata features to analyze.
+#' Default: c("AAV.detected.min2", "AAV.detected").
+#' @param match.values A named vector where names correspond to `meta.features` and values are
+#' the strings to match against. Default: c("AAV.detected.min2" = "AAV", "AAV.detected" = "AAV").
+#' @param verbose A logical value indicating whether to print detailed output. Default: TRUE.
+#' @param max.categ The maximum number of categories allowed before stopping. Default: 30.
+#'
+#' @return A data frame with the category as the first column and the subsequent columns showing
+#' the percentage of matches for each metadata feature.
+#' @export
+#'
+#' @examples
+#' calculatePercentageMatch(obj = combined.obj, ident = "Simple_Celltypes")
+
+calculatePercentageMatch <- function(
+    obj,
+    ident = GetClusteringRuns()[1],
+    meta.features = c("AAV.detected.min2", "AAV.detected"),
+    match.values = c("AAV.detected.min2" = "AAV", "AAV.detected" = "AAV"), # Named vector for matches
+    verbose = TRUE,
+    max.categ = 100) {
+
+  # Check for preconditions
+  stopifnot(
+    is(obj, "Seurat"),
+    "ident not found in object" = ident %in% colnames(obj@meta.data),
+    "Not all meta.features found in object" = all(meta.features %in% colnames(obj@meta.data)),
+    "Too many categories" = length(unique(obj@meta.data[, ident])) < max.categ,
+    length(match.values) == length(meta.features), # Check if match.values has the same length as meta.features
+    all(names(match.values) == meta.features) # Ensure match.values has names corresponding to meta.features
+  )
+
+  # Initialize a data frame to store results
+  results <- data.frame(Category = unique(obj@meta.data[[ident]]))
+
+  # Calculate the percentage of matches for each meta.feature within each ident category
+  for (feature in meta.features) {
+    results[[paste0("pct_match_", feature)]] <- sapply(results$Category, function(cat) {
+      idx <- obj@meta.data[[ident]] == cat
+      subset_data <- obj@meta.data[idx, feature, drop = TRUE]
+      pct_match <- mean(subset_data == match.values[feature], na.rm = TRUE)
+      return(pct_match)
+    })
+  }
+
+  # Verbose output
+  if (verbose) {
+    cat("Calculated percentage of matches for values:", paste(match.values, collapse = ", "), "\n")
+    cat("Corresponding to features:", paste(meta.features, collapse = ", "), "\n")
+    cat("Based on identifier:", ident, "\n")
+  }
 
   return(results)
 }

@@ -669,6 +669,7 @@ scBarplot.CellFractions <- function(
     min_frequency = 0, # 0.025,
     custom_col_palette = FALSE,
     color_scale = getDiscretePaletteObj(ident.used = group.by, obj = obj, palette.used = "glasbey"),
+    rnd_colors =  FALSE,
     # colorRampPalette(rev(RColorBrewer::brewer.pal(n = 7, name = "RdYlBu")))(100),
     show.total.cells = TRUE,
     cex.total = 2,
@@ -717,12 +718,11 @@ scBarplot.CellFractions <- function(
 
   if (min_frequency > 0) caption_ <- paste(caption_, "\nCategories <", percentage_formatter(min_frequency), "are shown together as 'Other'")
   pname_ <- paste(plotname, pname.suffix)
-  # cat(33)
+
 
   # Create a contingency table of the data
   contingency.table <- table(META[, group.by], META[, fill.by])
   print(contingency.table)
-
 
 
   if (show.total.cells) {
@@ -747,7 +747,8 @@ scBarplot.CellFractions <- function(
       mutate("category" = ifelse(proportion < min_frequency, "Other", as.character(!!as.name(fill.by))))
 
     categories <- unique(prop_table$"category")
-    message("categories present: ", kppc(sort(categories)))
+    n.categories <- length(categories)
+    message(n.categories, " Y-categories present: ", kppc(sort(categories)))
 
     # join the proportions back to the original data
     META <- left_join(META, prop_table, by = fill.by)
@@ -756,7 +757,6 @@ scBarplot.CellFractions <- function(
 
 
     if(downsample) {
-
       # Downsample the data
       META <-
         META %>%
@@ -794,6 +794,9 @@ scBarplot.CellFractions <- function(
       palette_x <- color_scale[seq(categories)]
       message("palette: ", kppc(palette_x))
       pl <- pl + scale_fill_manual(values = palette_x)
+    } else if (rnd_colors) {
+      colzz <- sample(rainbow(n.categories))
+      pl <- pl + scale_fill_manual(values = colzz)
     }
 
     if (show_numbers) {
