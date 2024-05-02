@@ -718,8 +718,8 @@ getMetadataColumn <- mmeta <- function(ColName.metadata = 'batch', obj = combine
 }
 
 # GetCellIDs from metadata ---------------
-getCellIDs.from.meta <- function(ColName.meta = 'res.0.6', values = NA, obj=combined.obj, inverse = F ) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
-  mdat <- obj@meta.data[ , ColName.meta]
+getCellIDs.from.meta <- function(ident = 'res.0.6', values = NA, obj=combined.obj, inverse = F ) { # Get cellIDs from a metadata column, matching a list of values (using %in%).
+  mdat <- obj@meta.data[ , ident]
   cells <- if (inverse) {mdat %!in% values} else {mdat %in% values}
   idx.matching.cells = which(cells)
   iprint(length(idx.matching.cells), 'cells found.')
@@ -1601,7 +1601,7 @@ qqSaveGridA4 <- function(plotlist= pl # Save 2 or 4 ggplot objects using plot_gr
 # umapHiLightSel highlight a set of cells based on clusterIDs provided---------------
 umapHiLightSel <- function(obj = combined.obj, # Highlight a set of cells based on clusterIDs provided.
                            COI =  c("0", "2", "4", "5",  "11"), res.cl = 'integrated_snn_res.0.3') {
-  cellsSel = getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
+  cellsSel = getCellIDs.from.meta(obj, values = COI, ident = res.cl)
   DimPlot(obj, reduction = "umap", group.by = res.cl,
           label = T, cells.highlight = cellsSel)
   ggsave(filename = extPNG(kollapse("cells",COI, collapseby = '.')))

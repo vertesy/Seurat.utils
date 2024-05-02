@@ -286,10 +286,10 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
 #' @title getCellIDs.from.meta
 #'
 #' @description Retrieves cell IDs from a specified metadata column of a Seurat object, where the cell ID matches a provided list of values. The matching operation uses the `%in%` operator.
-#' @param ColName.meta A string specifying the name of the metadata column from which to retrieve cell IDs. Default: 'res.0.6'.
-#' @param values A vector of values to match in the metadata column. Default: NA.
+#' @param ident A string specifying the name of the metadata column from which to retrieve cell IDs. Default: 'res.0.6'.
+#' @param ident_values A vector of values to match in the metadata column. Default: NA.
 #' @param obj The Seurat object from which to retrieve the cell IDs. Default: combined.obj.
-#' @param inverse A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of values. Default: FALSE.
+#' @param inverse A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of ident_values. Default: FALSE.
 #' @return A vector of cell IDs that match (or don't match, if `inverse = TRUE`) the provided list of values.
 #' @examples
 #' \dontrun{
@@ -299,10 +299,12 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
 #' }
 #' }
 #' @export
-getCellIDs.from.meta <- function(ColName.meta = "res.0.6", values = NA, obj = combined.obj,
+getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],
+                                 ident_values = NA, obj = combined.obj,
                                  inverse = FALSE) {
-  mdat <- obj@meta.data[, ColName.meta]
-  cells.pass <- mdat %in% values
+  browser()
+  mdat <- obj@meta.data[, ident]
+  cells.pass <- mdat %in% ident_values
   if (inverse) cells.pass <- !cells.pass
 
   iprint(sum(cells.pass), "cells found.")

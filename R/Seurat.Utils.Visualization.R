@@ -2022,7 +2022,12 @@ umapHiLightSel <- function(obj = combined.obj,
                            COI = c("0", "2", "4"),
                            ident = GetClusteringRuns()[1],
                            ...) {
-  cellsSel <- getCellIDs.from.meta(obj, values = COI, ColName.meta = ident)
+  stopifnot(is(obj, "Seurat"),
+            ident %in% colnames(obj@meta.data),
+            "Not all clusters in COI are found the object!" = all(COI %in% unique(obj@meta.data[[ident]]))
+            )
+
+  cellsSel <- getCellIDs.from.meta(ident = ident, values = COI, obj = obj)
   Seurat::DimPlot(obj,
                   reduction = "umap",
                   group.by = ident,
@@ -2030,7 +2035,7 @@ umapHiLightSel <- function(obj = combined.obj,
                   cells.highlight = cellsSel,
                   ...)
 
-  ggsave(filename = extPNG(kollapse("cells", COI, collapseby = ".")))
+  ggplot2::ggsave(filename = extPNG(kollapse("cells", COI, collapseby = ".")))
 }
 
 
