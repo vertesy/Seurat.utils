@@ -6,17 +6,18 @@
 \usage{
 umapHiLightSel(
   obj = combined.obj,
-  COI = c("0", "2", "4", "5", "11"),
-  res.cl = "integrated_snn_res.0.3"
+  COI = c("0", "2", "4"),
+  ident = GetClusteringRuns()[1],
+  ...
 )
 }
 \arguments{
 \item{obj}{Seurat object to be visualized; Default: \code{combined.obj}.}
 
 \item{COI}{Vector of cluster IDs to highlight on the UMAP plot;
-Default: \code{c("0", "2", "4", "5", "11")}.}
+Default: \code{c("0", "2", "4")}.}
 
-\item{res.cl}{Name of the metadata column containing cluster IDs;
+\item{ident}{Name of the metadata column containing cluster IDs;
 Default: 'integrated_snn_res.0.3'.}
 }
 \value{
@@ -30,7 +31,8 @@ It saves the resulting UMAP plot directly to the current working directory.
 \examples{
 \dontrun{
 if (interactive()) {
-  umapHiLightSel(obj = combined.obj, COI = c("0", "1"), res.cl = "resolution_0.8")
+  # GetClusteringRuns()[1] "integrated_snn_res.0.1"
+  umapHiLightSel(obj = combined.obj, COI = c("0", "1"), ident = GetClusteringRuns()[1])
 }
 }
 

@@ -1998,8 +1998,8 @@ clUMAP <- function(
 #'
 #' @param obj Seurat object to be visualized; Default: `combined.obj`.
 #' @param COI Vector of cluster IDs to highlight on the UMAP plot;
-#' Default: `c("0", "2", "4", "5", "11")`.
-#' @param res.cl Name of the metadata column containing cluster IDs;
+#' Default: `c("0", "2", "4")`.
+#' @param ident Name of the metadata column containing cluster IDs;
 #' Default: 'integrated_snn_res.0.3'.
 #'
 #' @return Saves a UMAP plot highlighting specified clusters to the current working directory.
@@ -2008,7 +2008,8 @@ clUMAP <- function(
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   umapHiLightSel(obj = combined.obj, COI = c("0", "1"), res.cl = "resolution_0.8")
+#'   # GetClusteringRuns()[1] "integrated_snn_res.0.1"
+#'   umapHiLightSel(obj = combined.obj, COI = c("0", "1"), ident = GetClusteringRuns()[1])
 #' }
 #' }
 #'
@@ -2018,12 +2019,17 @@ clUMAP <- function(
 #' @importFrom Seurat DimPlot
 #' @importFrom ggplot2 ggsave
 umapHiLightSel <- function(obj = combined.obj,
-                           COI = c("0", "2", "4", "5", "11"), res.cl = "integrated_snn_res.0.3") {
-  cellsSel <- getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
+                           COI = c("0", "2", "4"),
+                           ident = GetClusteringRuns()[1],
+                           ...) {
+  cellsSel <- getCellIDs.from.meta(obj, values = COI, ColName.meta = ident)
   Seurat::DimPlot(obj,
-                  reduction = "umap", group.by = res.cl,
-                  label = TRUE, cells.highlight = cellsSel
-  )
+                  reduction = "umap",
+                  group.by = ident,
+                  label = TRUE,
+                  cells.highlight = cellsSel,
+                  ...)
+
   ggsave(filename = extPNG(kollapse("cells", COI, collapseby = ".")))
 }
 
