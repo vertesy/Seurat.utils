@@ -302,13 +302,13 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
 getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],
                                  ident_values = NA, obj = combined.obj,
                                  inverse = FALSE) {
-  browser()
+  # browser()
   mdat <- obj@meta.data[, ident]
   cells.pass <- mdat %in% ident_values
   if (inverse) cells.pass <- !cells.pass
 
   iprint(sum(cells.pass), "cells found.")
-  return(rownames(obj@meta.data)[which(cells.pass), ])
+  return(rownames(obj@meta.data)[which(cells.pass)])
 }
 
 

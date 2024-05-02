@@ -2027,7 +2027,7 @@ umapHiLightSel <- function(obj = combined.obj,
             "Not all clusters in COI are found the object!" = all(COI %in% unique(obj@meta.data[[ident]]))
             )
 
-  cellsSel <- getCellIDs.from.meta(ident = ident, values = COI, obj = obj)
+  cellsSel <- getCellIDs.from.meta(ident = ident, ident_values =  COI, obj = obj)
   Seurat::DimPlot(obj,
                   reduction = "umap",
                   group.by = ident,
