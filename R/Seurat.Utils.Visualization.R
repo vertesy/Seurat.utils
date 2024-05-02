@@ -2314,63 +2314,6 @@ multiSingleClusterHighlightPlots.A4 <- function(
 }
 
 
-# _________________________________________________________________________________________________
-# Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
-# code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
-
-#' @title multiFeatureHeatmap.A4
-#'
-#' @description Save multiple FeatureHeatmaps from a list of genes on A4 jpeg.
-#' @param obj Seurat object, Default: combined.obj
-#' @param list.of.genes A list of genes to plot. No default.
-#' @param gene.per.page Number of genes to plot per page. Default: 5
-#' @param group.cells.by Cell grouping variable for the heatmap. Default: 'batch'
-#' @param plot.reduction Dimension reduction technique to use for plots. Default: 'umap'
-#' @param cex Point size in the plot. Default: iround(3/gene.per.page)
-#' @param sep_scale Logical, whether to scale the features separately. Default: FALSE
-#' @param gene.min.exp Minimum gene expression level for plotting. Default: 'q5'
-#' @param gene.max.exp Maximum gene expression level for plotting. Default: 'q95'
-#' @param jpeg.res Resolution of the jpeg output. Default: 225
-#' @param jpeg.q Quality of the jpeg output. Default: 90
-#' @param ... Pass any other parameter to the internally called functions (most of them should work).
-#' @seealso
-#'  \code{\link[tictoc]{tic}}
-#' @importFrom tictoc tic toc
-#'
-#' @export
-multiFeatureHeatmap.A4 <- function(
-    obj = combined.obj,
-    list.of.genes, gene.per.page = 5,
-    group.cells.by = "batch", plot.reduction = "umap",
-    cex = iround(3 / gene.per.page), sep_scale = FALSE,
-    gene.min.exp = "q5", gene.max.exp = "q95",
-    jpeg.res = 225, jpeg.q = 90,
-    ...) {
-  tictoc::tic()
-  list.of.genes <- check.genes(list.of.genes, obj = obj)
-
-  lsG <- CodeAndRoll2::split_vec_to_list_by_N(1:length(list.of.genes), by = gene.per.page)
-  for (i in 1:length(lsG)) {
-    print(i)
-    genes <- list.of.genes[lsG[[i]]]
-    plotname <- kpp(c("FeatureHeatmap", plot.reduction, i, genes, "jpg"))
-    print(plotname)
-    jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
-    try(
-      FeatureHeatmap(obj,
-                     features.plot = genes, group.by = group.cells.by,
-                     reduction.use = plot.reduction, do.return = FALSE,
-                     sep.scale = sep_scale, min.exp = gene.min.exp, max.exp = gene.max.exp,
-                     pt.size = cex, key.position = "top", ...
-      ),
-      silent = FALSE
-    )
-    try.dev.off()
-  }
-  tictoc::toc()
-}
-
-
 
 # _________________________________________________________________________________________________
 #' @title Plot multiple categorical variables in combined UMAPs

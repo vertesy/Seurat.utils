@@ -324,7 +324,7 @@ This function generates and saves cluster highlight plots for both single and mu
 ```
 <br>
 
-#### 32. multiFeatureHeatmap.A4: `multiFeatureHeatmap.A4()`
+#### 32. multiSeuratHeatmap.A4: `multiSeuratHeatmap.A4()`
 Save multiple FeatureHeatmaps from a list of genes on A4 jpeg.
 
 ```r

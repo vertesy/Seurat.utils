@@ -415,6 +415,7 @@ save4umaps.A4 <- function(...) .Deprecated("save4plots.A4()")
 plotGeneExpHist <- function(...) .Deprecated("plotGeneExprHistAcrossCells()")
 geneExpressionLevelPlots <- function(...) .Deprecated("plotGeneExpressionInBackgroundHist()")
 get.clustercomposition <- function(...) .Deprecated("No longer provided.")
+multiFeatureHeatmap.A4 <- function(...) .Deprecated("No longer provided.")
 
 
 # _________________________________________________________________________________________________
@@ -602,60 +603,60 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 
 # _________________________________________________________________________________________________
 
+# #' @title Cluster Composition Analysis
+# #'
+# #' @description Analyzes and visualizes the composition of clusters in a Seurat object, indicating
+# #' the contribution of different datasets to each cluster.
+# #'
+# #' @param obj Seurat object to analyze. Default: `combined.obj`.
+# #' @param ident Cluster identity resolution to use. Default: 'integrated_snn_res.0.3'.
+# #' @param splitby Variable to split the data by, typically a project or dataset identifier.
+# #' Default: 'ShortNames'.
+# #' @param color Bar color. Default: as defined by `splitby`.
+# #' @param plot Whether to display the plot. Default: TRUE.
+# #' @param ScaleTo100pc Whether to scale Y axis to 100%. Default: TRUE.
+# #' @param ... Additional parameters for plotting functions.
+# #'
+# #' @return If `plot` is TRUE, displays a bar plot showing the composition of each cluster. Otherwise,
+# #' performs the analysis without plotting.
+# #'
+# #' @examples
+# #' get.clustercomposition()
+# #'
+# #' @export
+# #' @importFrom dplyr group_by_ summarise
+# #' @importFrom scales percent_format
+# get.clustercomposition <- function(
+    #     obj = combined.obj,
+#     ident = GetClusteringRuns()[1],
+#     splitby = "orig.ident",
+#     color = splitby,
+#     plot = TRUE, ScaleTo100pc = TRUE,
+#     ...) {
+#
+#   stopifnot(ident %in% colnames(obj@meta.data),
+#             splitby %in% colnames(obj@meta.data)
+#   )
+#   (df.meta <- obj@meta.data[, c(ident, splitby)])
+#
+#   try(setwd(OutDir), silent = TRUE)
+#
+#   df.meta %>%
+#     dplyr::group_by_(splitby) %>%
+#     summarise()
+#
+#   categ.per.cluster <- ggbarplot(obj@meta.data,
+#                                  x = ident,
+#                                  y = splitby,
+#                                  color = splitby,
+#                                  ...
+#   )
+#   if (ScaleTo100pc) categ.per.cluster <- categ.per.cluster + scale_y_discrete(labels = scales::percent_format())
+#   if (plot) categ.per.cluster
+#
+#   # ggExpress::qqSave(categ.per.cluster, ...)
+# }
 
-#' @title Cluster Composition Analysis
-#'
-#' @description Analyzes and visualizes the composition of clusters in a Seurat object, indicating
-#' the contribution of different datasets to each cluster.
-#'
-#' @param obj Seurat object to analyze. Default: `combined.obj`.
-#' @param ident Cluster identity resolution to use. Default: 'integrated_snn_res.0.3'.
-#' @param splitby Variable to split the data by, typically a project or dataset identifier.
-#' Default: 'ShortNames'.
-#' @param color Bar color. Default: as defined by `splitby`.
-#' @param plot Whether to display the plot. Default: TRUE.
-#' @param ScaleTo100pc Whether to scale Y axis to 100%. Default: TRUE.
-#' @param ... Additional parameters for plotting functions.
-#'
-#' @return If `plot` is TRUE, displays a bar plot showing the composition of each cluster. Otherwise,
-#' performs the analysis without plotting.
-#'
-#' @examples
-#' get.clustercomposition()
-#'
-#' @export
-#' @importFrom dplyr group_by_ summarise
-#' @importFrom scales percent_format
-get.clustercomposition <- function(
-    obj = combined.obj,
-    ident = GetClusteringRuns()[1],
-    splitby = "orig.ident",
-    color = splitby,
-    plot = TRUE, ScaleTo100pc = TRUE,
-    ...) {
-
-  stopifnot(ident %in% colnames(obj@meta.data),
-            splitby %in% colnames(obj@meta.data)
-  )
-  (df.meta <- obj@meta.data[, c(ident, splitby)])
-
-  try(setwd(OutDir), silent = TRUE)
-
-  df.meta %>%
-    dplyr::group_by_(splitby) %>%
-    summarise()
-
-  categ.per.cluster <- ggbarplot(obj@meta.data,
-                                 x = ident,
-                                 y = splitby,
-                                 color = splitby,
-                                 ...
-  )
-  if (ScaleTo100pc) categ.per.cluster <- categ.per.cluster + scale_y_discrete(labels = scales::percent_format())
-  if (plot) categ.per.cluster
-
-  # ggExpress::qqSave(categ.per.cluster, ...)
-}
 
 
 # _________________________________________________________________________________________________
@@ -712,3 +713,61 @@ get.clustercomposition <- function(
 #
 #   # ggExpress::qqSave(categ.per.cluster, ...)
 # }
+
+
+# # _________________________________________________________________________________________________
+# # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
+# # code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
+#
+# #' @title multiFeatureHeatmap.A4
+# #'
+# #' @description Save multiple FeatureHeatmaps from a list of genes on A4 jpeg.
+# #' @param obj Seurat object, Default: combined.obj
+# #' @param list.of.genes A list of genes to plot. No default.
+# #' @param gene.per.page Number of genes to plot per page. Default: 5
+# #' @param group.cells.by Cell grouping variable for the heatmap. Default: 'batch'
+# #' @param plot.reduction Dimension reduction technique to use for plots. Default: 'umap'
+# #' @param cex Point size in the plot. Default: iround(3/gene.per.page)
+# #' @param sep_scale Logical, whether to scale the features separately. Default: FALSE
+# #' @param gene.min.exp Minimum gene expression level for plotting. Default: 'q5'
+# #' @param gene.max.exp Maximum gene expression level for plotting. Default: 'q95'
+# #' @param jpeg.res Resolution of the jpeg output. Default: 225
+# #' @param jpeg.q Quality of the jpeg output. Default: 90
+# #' @param ... Pass any other parameter to the internally called functions (most of them should work).
+# #' @seealso
+# #'  \code{\link[tictoc]{tic}}
+# #' @importFrom tictoc tic toc
+# #'
+# #' @export
+# multiFeatureHeatmap.A4 <- function(
+    #     obj = combined.obj,
+#     list.of.genes, gene.per.page = 5,
+#     group.cells.by = "batch", plot.reduction = "umap",
+#     cex = iround(3 / gene.per.page), sep_scale = FALSE,
+#     gene.min.exp = "q5", gene.max.exp = "q95",
+#     jpeg.res = 225, jpeg.q = 90,
+#     ...) {
+#   tictoc::tic()
+#   list.of.genes <- check.genes(list.of.genes, obj = obj)
+#
+#   lsG <- CodeAndRoll2::split_vec_to_list_by_N(1:length(list.of.genes), by = gene.per.page)
+#   for (i in 1:length(lsG)) {
+#     print(i)
+#     genes <- list.of.genes[lsG[[i]]]
+#     plotname <- kpp(c("FeatureHeatmap", plot.reduction, i, genes, "jpg"))
+#     print(plotname)
+#     jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
+#     try(
+#       FeatureHeatmap(obj,
+#                      features.plot = genes, group.by = group.cells.by,
+#                      reduction.use = plot.reduction, do.return = FALSE,
+#                      sep.scale = sep_scale, min.exp = gene.min.exp, max.exp = gene.max.exp,
+#                      pt.size = cex, key.position = "top", ...
+#       ),
+#       silent = FALSE
+#     )
+#     try.dev.off()
+#   }
+#   tictoc::toc()
+# }
+#

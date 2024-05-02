@@ -54,7 +54,7 @@
   multi_clUMAP.A4(multi_clUMAP.A4) --> .adjustLayout(.adjustLayout)
   multi_clUMAP.A4(multi_clUMAP.A4) --> clUMAP(clUMAP)
   multiSingleClusterHighlightPlots.A4(multiSingleClusterHighlightPlots.A4) --> clUMAP(clUMAP)
-  multiFeatureHeatmap.A4(multiFeatureHeatmap.A4) --> check.genes(check.genes)
+  multiSeuratHeatmap.A4(multiSeuratHeatmap.A4) --> check.genes(check.genes)
   matchBestIdentity(matchBestIdentity) --> .replace_by_most_frequent_categories(.replace_by_most_frequent_categories)
   matchBestIdentity(matchBestIdentity) --> clUMAP(clUMAP)
   jPairwiseJaccardIndexList(jPairwiseJaccardIndexList) --> jJaccardIndexVec(jJaccardIndexVec)

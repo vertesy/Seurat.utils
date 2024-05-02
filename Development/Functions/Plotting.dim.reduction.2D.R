@@ -259,7 +259,7 @@ multiFeaturePlot.A4 <- function(list.of.genes # Save multiple FeaturePlots, as j
 # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
 # code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
 
-multiFeatureHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
+multiSeuratHeatmap.A4 <- function(obj = combined.obj # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg
                                    , list.of.genes, gene.per.page=5
                                    , group.cells.by= "batch", plot.reduction='umap'
                                    , cex = iround(3/gene.per.page), sep_scale = F

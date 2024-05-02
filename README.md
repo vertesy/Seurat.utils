@@ -614,9 +614,9 @@ Updated: 2024/03/22 15:41
 
   Generate Cluster Highlight UMAPs compiled into A4 pages. This function generates and saves cluster highlight plots for both single and multiple  clusters using UMAP or other dimensionality reduction techniques. It supports saving plots in various  formats and allows customization of plot appearance and layout. 
 
-- #### 32 `multiFeatureHeatmap.A4()`
+- #### 32 `multiSeuratHeatmap.A4()`
 
-  multiFeatureHeatmap.A4. Save multiple FeatureHeatmaps from a list of genes on A4 jpeg.
+  multiSeuratHeatmap.A4. Save multiple FeatureHeatmaps from a list of genes on A4 jpeg.
 
 - #### 33 `multi_clUMAP.A4()`
 
