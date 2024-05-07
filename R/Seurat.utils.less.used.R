@@ -455,6 +455,115 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 # Archived ----
 # _________________________________________________________________________________________________
 
+".Deprecated"
+
+#' @title Regress Out and Recalculate Seurat
+#'
+#' @description The function performs a series of calculations and manipulations on a Seurat object,
+#' including identifying variable features, scaling data, running PCA, setting up reductions, finding neighbors,
+#' and finding clusters. It optionally performs t-SNE and saves the object.
+#'
+#' @param obj The Seurat object.
+#' @param n.var.features The number of variable features to use. Default is the 'n.var.genes' element from a list 'p'.
+#' @param features.scale A logical value indicating whether to scale the data. Default is TRUE.
+#' @param vars.to.regress A vector of variable names to be regressed out.
+#' @param suffix A character string to be used as a suffix when saving the object.
+#' @param nPCs The number of principal components to use. Default is the 'n.PC' element from a list 'p'.
+#' @param clust_resolutions The resolution for clustering. Default is the 'snn_res' element from a list 'p'.
+#' @param calc_tSNE Logical, if TRUE, t-SNE will be performed. Default is FALSE.
+#' @param plot_umaps Logical, if TRUE, UMAP plots will be generated. Default is TRUE.
+#' @param save_obj Logical, if TRUE, the object will be saved. Default is TRUE.
+#' @param assayX The assay to be used in scaling data. Default is 'RNA'.
+#' @return Seurat object after calculations and manipulations.
+#' @importFrom Seurat FindVariableFeatures ScaleData RunPCA FindNeighbors FindClusters RunTSNE
+#' @importFrom MarkdownReports create_set_OutDir
+#' @examples
+#' \dontrun{
+#' # Assuming 'seurat_obj' is a valid Seurat object and 'vars' is a vector of variable names to be regressed out.
+#' result <- regress_out_and_recalculate_seurat(seurat_obj, vars, suffix = "_regressed")
+#' }
+#' @importFrom tictoc tic toc
+#'
+#' @export
+regress_out_and_recalculate_seurat <- function(
+    obj,
+    n.var.features = p$"n.var.genes", # p is a list of parameters, 2000
+    features.scale = n.var.features,
+    vars.to.regress,
+    suffix,
+    nPCs = p$"n.PC",
+    clust_resolutions = p$"snn_res",
+    calc_tSNE = FALSE,
+    plot_umaps = TRUE,
+    save_obj = TRUE,
+    assayX = "RNA") {
+  .Deprecated("processSeuratObject")
+
+  tictoc::tic()
+  print("FindVariableFeatures")
+  obj <- FindVariableFeatures(obj, mean.function = "FastExpMean", dispersion.function = "FastLogVMR", nfeatures = n.var.features)
+  tictoc::toc()
+
+  tictoc::tic()
+  print("calc.q99.Expression.and.set.all.genes")
+  obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
+  tictoc::toc()
+
+  tictoc::tic()
+  print("ScaleData")
+  obj <- ScaleData(obj, assay = assayX, verbose = TRUE, vars.to.regress = vars.to.regress, features = features.scale)
+  tictoc::toc()
+
+  tictoc::tic()
+  print("RunPCA")
+  obj <- RunPCA(obj, npcs = nPCs, verbose = TRUE)
+  tictoc::toc()
+
+  tictoc::tic()
+  print("SetupReductionsNtoKdimensions")
+  obj <- SetupReductionsNtoKdimensions(obj = obj, nPCs = nPCs, dimensions = 3:2, reduction = "umap")
+  tictoc::toc()
+
+  tictoc::tic()
+  print("FindNeighbors")
+  obj <- FindNeighbors(obj, reduction = "pca", dims = 1:nPCs)
+  tictoc::toc()
+
+  tictoc::tic()
+  print("FindClusters")
+  obj <- FindClusters(obj, resolution = clust_resolutions)
+  tictoc::toc()
+
+  if (calc_tSNE) {
+    tictoc::tic()
+    print("RunTSNE")
+    obj <- RunTSNE(obj, reduction = "pca", dims = 1:nPCs)
+    tictoc::toc()
+  }
+
+  # orig.dir <- getwd()
+  # new_path <- FixPath(orig.dir, suffix)
+  # MarkdownReports::create_set_OutDir(new_path)
+
+  clz <- GetClusteringRuns(obj, pat = "*snn_res.*[0-9]$")
+
+  if (plot_umaps) {
+    print("Plotting umaps")
+    for (v in clz) clUMAP(ident = v, obj = obj, sub = suffix)
+
+    # MarkdownReports::create_set_OutDir(new_path, 'UMAP_stats')
+    for (v in vars.to.regress) qUMAP(feature = v, obj = obj, sub = suffix)
+    # MarkdownReports::create_set_OutDir(new_path)
+  }
+
+
+  if (save_obj) {
+    print("Save RDS")
+    isave.RDS(obj, suffix = suffix, inOutDir = TRUE)
+  }
+
+  return(obj)
+}
 
 
 # # _________________________________________________________________________________________________

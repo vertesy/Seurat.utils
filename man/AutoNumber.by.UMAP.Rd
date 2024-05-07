@@ -9,7 +9,7 @@ AutoNumber.by.UMAP(
   reduction = "umap",
   dim = 1,
   swap = FALSE,
-  res = "RNA_snn_res.0.5",
+  res = GetClusteringRuns(obj = obj)[1],
   plot = TRUE
 )
 }

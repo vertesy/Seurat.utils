@@ -575,7 +575,7 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #' }
 #' }
 #' @export
-GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = '*snn_res.*[0-9]$') {
+GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = '*snn_res.[0-9].[0-9]$') { # OLD: '*snn_res.*[0-9]$'
   if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
   if (identical(clustering.results, character(0))) warning("No matching column found!", immediate. = TRUE)
@@ -633,7 +633,8 @@ GetNamedClusteringRuns <- function(
 #' }
 #' }
 #' @export
-GetOrderedClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.*[0,1]\\.[0-9]\\.ordered$") {
+GetOrderedClusteringRuns <- function(obj = combined.obj, res = FALSE,
+                                     pat = "*snn_res.*[0,1]\\.[0-9]\\.ordered$") {
   if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
   if (identical(clustering.results, character(0))) warning("No matching column found!", immediate. = TRUE)
@@ -1584,16 +1585,18 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
 #' @export
 removeResidualSmallClusters <- function(
     obj = combined.obj,
-    identitites = GetClusteringRuns(obj),
-    max.cells = max(round((ncol(obj)) / 2000), 5)) {
+    identitites = GetClusteringRuns(obj, pat = '*snn_res.[0-9].[0-9]$')[1:5],
+    max.cells = max(round((ncol(obj)) / 1500), 5),
+    plot.removed = TRUE) {
+
   META <- obj@meta.data
   all.cells <- rownames(META)
 
-  iprint("max.cells:", max.cells, "| Scanning over these", length(identitites), "identities:", identitites)
-  small.clusters <- cells.to.remove <- list.fromNames(identitites)
+  message("max.cells: ", max.cells, " | Scanning over these identities:")
+  small.clusters <- cells.to.remove <- CodeAndRoll2::list.fromNames(identitites)
 
   for (i in 1:length(identitites)) {
-    # colX <- identitites[i]
+    colX <- identitites[i]; print(colX)
     tbl <- table(META[[colX]])
 
     small.clusters[[i]] <- which_names(tbl <= max.cells)
@@ -1607,6 +1610,8 @@ removeResidualSmallClusters <- function(
   }
 
   all.cells.2.remove <- unique(unlist(cells.to.remove))
+  if(plot.removed) pobj <- clUMAP(obj = obj, cells.highlight = all.cells.2.remove); print(pobj)
+
   if (length(all.cells.2.remove)) {
     iprint(
       ">>> a total of", length(all.cells.2.remove),
@@ -4755,7 +4760,8 @@ compareVarFeaturesAndRanks <- function(
 #' @export
 processSeuratObject <- function(obj, param.list = p, compute = TRUE,
                                 save = TRUE, plot = TRUE,
-                                nfeatures = param.list$"n.var.genes") {
+                                nfeatures = param.list$"n.var.genes"
+                                ) {
   warning("Make sure you cleaned up the memory!", immediate. = TRUE)
   stopifnot(require(tictoc))
   message("nfeatures: ", nfeatures)
@@ -4771,32 +4777,31 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE,
   )
   .checkListElements(param_list = p, elements = c("variables.2.regress.combined", "n.PC", "snn_res"))
 
+  iprint("nfeatures:", nfeatures)
+  iprint("n.PC:", param.list$"n.PC")
+  iprint("snn_res:", param.list$"snn_res")
+  iprint("variables.2.regress.combined:", param.list$"variables.2.regress.combined")
+
+
 
   gc()
   if (compute) {
     message("------------------- FindVariableFeatures -------------------")
-    tic()
-    obj <- FindVariableFeatures(obj, mean.function = "FastExpMean", dispersion.function = "FastLogVMR", nfeatures = nfeatures)
-    toc()
-    obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
-    toc()
+    tic(); obj <- FindVariableFeatures(obj, mean.function = "FastExpMean", dispersion.function = "FastLogVMR", nfeatures = nfeatures); toc()
+
+    tic(); obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc()
     message("------------------- ScaleData -------------------")
-    tic()
-    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = param.list$"variables.2.regress.combined")
+    tic(); obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = param.list$"variables.2.regress.combined"); toc()
+
     message("------------------- PCA /UMAP -------------------")
-    tic()
-    obj <- RunPCA(obj, npcs = param.list$"n.PC", verbose = TRUE)
-    toc()
-    tic()
-    obj <- RunUMAP(obj, reduction = "pca", dims = 1:param.list$"n.PC")
-    toc()
+    tic(); obj <- RunPCA(obj, npcs = param.list$"n.PC", verbose = TRUE); toc()
+
+    tic(); obj <- RunUMAP(obj, reduction = "pca", dims = 1:param.list$"n.PC"); toc()
     message("------------------- FindNeighbors & Clusters -------------------")
-    tic()
-    obj <- FindNeighbors(obj, reduction = "pca", dims = 1:param.list$"n.PC")
-    toc()
-    tic()
-    obj <- FindClusters(obj, resolution = param.list$"snn_res")
-    toc()
+    tic(); obj <- FindNeighbors(obj, reduction = "pca", dims = 1:param.list$"n.PC"); toc()
+
+    tic(); obj <- FindClusters(obj, resolution = param.list$"snn_res"); toc()
+
   }
 
   message("------------------- Save -------------------")
@@ -4845,111 +4850,6 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE,
 }
 
 
-
-# _________________________________________________________________________________________________
-#' @title Regress Out and Recalculate Seurat
-#'
-#' @description The function performs a series of calculations and manipulations on a Seurat object,
-#' including identifying variable features, scaling data, running PCA, setting up reductions, finding neighbors,
-#' and finding clusters. It optionally performs t-SNE and saves the object.
-#'
-#' @param obj The Seurat object.
-#' @param vars.to.regress A vector of variable names to be regressed out.
-#' @param suffix A character string to be used as a suffix when saving the object.
-#' @param nPCs The number of principal components to use. Default is the 'n.PC' element from a list 'p'.
-#' @param clust_resolutions The resolution for clustering. Default is the 'snn_res' element from a list 'p'.
-#' @param calc_tSNE Logical, if TRUE, t-SNE will be performed. Default is FALSE.
-#' @param plot_umaps Logical, if TRUE, UMAP plots will be generated. Default is TRUE.
-#' @param save_obj Logical, if TRUE, the object will be saved. Default is TRUE.
-#' @param assayX The assay to be used in scaling data. Default is 'RNA'.
-#' @return Seurat object after calculations and manipulations.
-#' @importFrom Seurat FindVariableFeatures ScaleData RunPCA FindNeighbors FindClusters RunTSNE
-#' @importFrom MarkdownReports create_set_OutDir
-#' @examples
-#' \dontrun{
-#' # Assuming 'seurat_obj' is a valid Seurat object and 'vars' is a vector of variable names to be regressed out.
-#' result <- regress_out_and_recalculate_seurat(seurat_obj, vars, suffix = "_regressed")
-#' }
-#' @importFrom tictoc tic toc
-#'
-#' @export
-regress_out_and_recalculate_seurat <- function(
-    obj,
-    vars.to.regress,
-    suffix,
-    nPCs = p$"n.PC",
-    clust_resolutions = p$"snn_res",
-    calc_tSNE = FALSE,
-    plot_umaps = TRUE,
-    save_obj = TRUE,
-    assayX = "RNA") {
-  .Deprecated("processSeuratObject")
-
-  tictoc::tic()
-  print("FindVariableFeatures")
-  obj <- FindVariableFeatures(obj, mean.function = "FastExpMean", dispersion.function = "FastLogVMR", nfeatures = 10000)
-  tictoc::toc()
-
-  tictoc::tic()
-  print("calc.q99.Expression.and.set.all.genes")
-  obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
-  tictoc::toc()
-
-  tictoc::tic()
-  print("ScaleData")
-  obj <- ScaleData(obj, assay = assayX, verbose = TRUE, vars.to.regress = vars.to.regress)
-  tictoc::toc()
-
-  tictoc::tic()
-  print("RunPCA")
-  obj <- RunPCA(obj, npcs = nPCs, verbose = TRUE)
-  tictoc::toc()
-
-  tictoc::tic()
-  print("SetupReductionsNtoKdimensions")
-  obj <- SetupReductionsNtoKdimensions(obj = obj, nPCs = nPCs, dimensions = 3:2, reduction = "umap")
-  tictoc::toc()
-
-  tictoc::tic()
-  print("FindNeighbors")
-  obj <- FindNeighbors(obj, reduction = "pca", dims = 1:nPCs)
-  tictoc::toc()
-
-  tictoc::tic()
-  print("FindClusters")
-  obj <- FindClusters(obj, resolution = clust_resolutions)
-  tictoc::toc()
-
-  if (calc_tSNE) {
-    tictoc::tic()
-    print("RunTSNE")
-    obj <- RunTSNE(obj, reduction = "pca", dims = 1:nPCs)
-    tictoc::toc()
-  }
-
-  # orig.dir <- getwd()
-  # new_path <- FixPath(orig.dir, suffix)
-  # MarkdownReports::create_set_OutDir(new_path)
-
-  clz <- GetClusteringRuns(obj, pat = "*snn_res.*[0-9]$")
-
-  if (plot_umaps) {
-    print("Plotting umaps")
-    for (v in clz) clUMAP(ident = v, obj = obj, sub = suffix)
-
-    # MarkdownReports::create_set_OutDir(new_path, 'UMAP_stats')
-    for (v in vars.to.regress) qUMAP(feature = v, obj = obj, sub = suffix)
-    # MarkdownReports::create_set_OutDir(new_path)
-  }
-
-
-  if (save_obj) {
-    print("Save RDS")
-    isave.RDS(obj, suffix = suffix, inOutDir = TRUE)
-  }
-
-  return(obj)
-}
 
 # _________________________________________________________________________________________________
 #' @title Check List Elements

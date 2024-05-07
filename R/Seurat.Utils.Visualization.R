@@ -1944,7 +1944,7 @@ clUMAP <- function(
 
   if (is.null(cols)) {
     # browser()
-    cols <- if (NtCategs > 5) {
+    cols <- if (NtCategs > 7) {
       getDiscretePaletteObj(
         ident.used = ident, palette.used = palette,
         obj = obj, show.colors = FALSE
@@ -2825,15 +2825,16 @@ FlipReductionCoordinates <- function(
 #' @importFrom Seurat FetchData
 AutoNumber.by.UMAP <- function(obj = combined.obj, reduction = "umap",
                                dim = 1, swap = FALSE,
-                               res = "RNA_snn_res.0.5",
+                               res = GetClusteringRuns(obj = obj)[1],
                                plot = TRUE) {
 
 
   dim_name <- kppu(reduction, dim)
   if (obj@version < 5) dim_name <- toupper(dim_name)
-  message("Using dimension: ", dim_name)
+  message("Running AutoNumber.by.UMAP with dimension: ", dim_name)
+  message("Resolution: ", res)
 
-
+  # browser()
   coord.umap <- obj@reductions$umap@cell.embeddings[ ,dim_name]
   # coord.umap <- round(coord.umap,digits = 2)
 
