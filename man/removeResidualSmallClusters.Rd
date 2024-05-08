@@ -6,8 +6,9 @@
 \usage{
 removeResidualSmallClusters(
   obj = combined.obj,
-  identitites = GetClusteringRuns(obj.RG, pat = "*snn_res.[0-9].[0-9]$")[1:5],
-  max.cells = max(round((ncol(obj))/2000), 5)
+  identitites = GetClusteringRuns(obj, pat = "*snn_res.[0-9].[0-9]$")[1:5],
+  max.cells = max(round((ncol(obj))/2000), 5),
+  plot.removed = TRUE
 )
 }
 \arguments{
@@ -17,7 +18,9 @@ removeResidualSmallClusters(
 Default: \code{GetClusteringRuns(obj)}.}
 
 \item{max.cells}{Maximum number of cells a cluster can contain to still be considered for removal.
-Default: The lesser of 0.5\% of the dataset or 5 cells.}
+Default: The lesser of 0.5\% of the dataset or 10 cells.}
+
+\item{plot.removed}{Logical indicating if a umap of the cells removed should be plotted.}
 }
 \description{
 Removes clusters containing fewer cells than specified by \code{max.cells}

@@ -9,7 +9,8 @@ PlotTopGenesPerCluster(
   cl_res = res,
   nrGenes = p$n.markers,
   order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1],
-  df_markers = obj@misc$df.markers[[paste0("res.", cl_res)]]
+  df_markers = obj@misc$df.markers[[paste0("res.", cl_res)]],
+  ...
 )
 }
 \arguments{

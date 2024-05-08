@@ -655,6 +655,7 @@ scBarplot.CellFractions <- function(
     min.nr.sampled.cells = 200,
     plotname = kpp(toTitleCase(fill.by), "proportions.by", group.by),
     suffix = NULL,
+    prefix = NULL,
     sub_title = suffix,
     hlines = c(.25, .5, .75),
     return_table = FALSE,
@@ -2570,18 +2571,23 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj, foldername = NULL,
 PlotTopGenesPerCluster <- function(
     obj = combined.obj, cl_res = res, nrGenes = p$"n.markers",
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1],
-    df_markers = obj@misc$"df.markers"[[paste0("res.", cl_res)]]) {
-  topX.markers <- GetTopMarkers(
-    df = df_markers, n = nrGenes,
-    order.by = order.by
-  )
-  ls.topMarkers <- splitbyitsnames(topX.markers)
-  for (i in 1:length(ls.topMarkers)) {
-    multiFeaturePlot.A4(
-      list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = FALSE,
-      prefix = ppp("DEG.markers.res", cl_res, "cluster", names(ls.topMarkers)[i])
+    df_markers = obj@misc$"df.markers"[[paste0("res.", cl_res)]]
+    , ...) {
+
+  message("Running PlotTopGenesPerCluster...")
+
+    topX.markers <- GetTopMarkers(
+      df = df_markers, n = nrGenes,
+      order.by = order.by
     )
-  }
+
+    ls.topMarkers <- splitbyitsnames(topX.markers)
+    for (i in 1:length(ls.topMarkers)) {
+      multiFeaturePlot.A4(
+        list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = FALSE,
+        prefix = ppp("DEG.markers.res", cl_res, "cluster", names(ls.topMarkers)[i])
+      )
+    }
 }
 
 # _________________________________________________________________________________________________

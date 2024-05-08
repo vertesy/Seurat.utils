@@ -10,7 +10,10 @@ processSeuratObject(
   compute = TRUE,
   save = TRUE,
   plot = TRUE,
-  nfeatures = param.list$n.var.genes
+  nfeatures = param.list$n.var.genes,
+  variables.2.regress = param.list$variables.2.regress.combined,
+  n.PC = param.list$n.PC,
+  ...
 )
 }
 \arguments{
