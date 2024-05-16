@@ -13,6 +13,7 @@ processSeuratObject(
   nfeatures = param.list$n.var.genes,
   variables.2.regress = param.list$variables.2.regress.combined,
   n.PC = param.list$n.PC,
+  resolutions = param.list$snn_res,
   ...
 )
 }
@@ -20,6 +21,20 @@ processSeuratObject(
 \item{obj}{A Seurat object to be processed.}
 
 \item{param.list}{A list of parameters used in the processing steps.}
+
+\item{compute}{A boolean indicating whether to compute the results. Default: TRUE.}
+
+\item{save}{A boolean indicating whether to save the results. Default: TRUE.}
+
+\item{plot}{A boolean indicating whether to plot the results. Default: TRUE.}
+
+\item{nfeatures}{The number of variable genes to use. Default: 2000.}
+
+\item{variables.2.regress}{A list of variables to regress out. Default: NULL.}
+
+\item{n.PC}{The number of principal components to use. Default: 30.}
+
+\item{resolutions}{A list of resolutions to use for clustering. Default: c(0.1, 0.2, 0.3, 0.4, 0.5).}
 }
 \value{
 A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and clustering.

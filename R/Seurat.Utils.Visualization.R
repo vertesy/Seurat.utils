@@ -2437,11 +2437,11 @@ multi_clUMAP.A4 <- function(
 #' from a Seurat object onto an A4 page, facilitating comparative visualization.
 #'
 #' @param obj Seurat object to visualize; Default: `combined.obj`.
-#' @param dims Vector of clustering resolution identifiers to plot;
+#' @param idents Vector of clustering resolution identifiers to plot;
 #' dynamically defaults to the first 4 found by `GetClusteringRuns`.
 #' @param prefix Prefix for plot titles; Default: "Clustering.UMAP.Res".
 #' @param suffix Suffix for plot titles; Default: "".
-#' @param title Custom title for the composite plot; dynamically generated from `prefix`, `dims`, and `suffix`.
+#' @param title Custom title for the composite plot; dynamically generated from `prefix`, `idents`, and `suffix`.
 #' @param nrow Number of rows in the plot grid; Default: 2.
 #' @param ncol Number of columns in the plot grid; Default: 2.
 #' @param ... Additional parameters for individual UMAP plots.
@@ -2456,12 +2456,12 @@ multi_clUMAP.A4 <- function(
 #' @importFrom ggExpress qA4_grid_plot
 qClusteringUMAPS <- function(
     obj = combined.obj,
-    dims = na.omit.strip(GetClusteringRuns(obj)[1:4]),
+    idents = na.omit.strip(GetClusteringRuns(obj)[1:4]),
     prefix = "Clustering.UMAP.Res",
     suffix = "",
     title = sppu(
       prefix,
-      as.numeric(stringr::str_extract(dims, "\\d+\\.\\d+$")),
+      as.numeric(stringr::str_extract(idents, "\\d+\\.\\d+$")),
       suffix
     ),
     nrow = 2, ncol = 2,
@@ -2470,15 +2470,15 @@ qClusteringUMAPS <- function(
   message("Duplicate of less pretty multi_clUMAP.A4, partially")
 
   # Check that the QC markers are in the object
-  n.found <- intersect(dims, colnames(obj@meta.data))
-  message(kppws(length(n.found), " found of ", dims))
+  n.found <- intersect(idents, colnames(obj@meta.data))
+  message(kppws(length(n.found), " found of ", idents))
   stopifnot(length(n.found) > 1)
 
   px <- list(
-    "A" = clUMAP(dims[1], save.plot = FALSE, obj = obj, ...) + NoAxes(),
-    "B" = clUMAP(dims[2], save.plot = FALSE, obj = obj, ...) + NoAxes(),
-    "C" = clUMAP(dims[3], save.plot = FALSE, obj = obj, ...) + NoAxes(),
-    "D" = clUMAP(dims[4], save.plot = FALSE, obj = obj, ...) + NoAxes()
+    "A" = clUMAP(ident = idents[1], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "B" = clUMAP(ident = idents[2], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "C" = clUMAP(ident = idents[3], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "D" = clUMAP(ident = idents[4], save.plot = FALSE, obj = obj, ...) + NoAxes()
   )
 
   ggExpress::qA4_grid_plot(

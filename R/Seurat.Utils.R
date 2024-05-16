@@ -576,7 +576,8 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #' }
 #' @export
 GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = '*snn_res.[0-9].[0-9]$') { # OLD: '*snn_res.*[0-9]$'
-  if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
+  if (!isFALSE(res)) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
+
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
   if (identical(clustering.results, character(0))) warning("No matching column found!", immediate. = TRUE)
   dput(clustering.results)
@@ -4834,7 +4835,8 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE,
     multi_clUMAP.A4(obj = obj)
 
     message("qClusteringUMAPS")
-    qClusteringUMAPS(obj = obj)
+    res.ident <-paste0(DefaultAssay(obj), "_snn_res.", resolutions)
+    qClusteringUMAPS(obj = obj, idents = res.ident)
 
     message("suPlotVariableFeatures")
     suPlotVariableFeatures(obj = obj)

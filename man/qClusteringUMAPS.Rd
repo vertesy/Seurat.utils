@@ -6,10 +6,10 @@
 \usage{
 qClusteringUMAPS(
   obj = combined.obj,
-  dims = na.omit.strip(GetClusteringRuns(obj)[1:4]),
+  idents = na.omit.strip(GetClusteringRuns(obj)[1:4]),
   prefix = "Clustering.UMAP.Res",
   suffix = "",
-  title = sppu(prefix, as.numeric(stringr::str_extract(dims, "\\\\d+\\\\.\\\\d+$")),
+  title = sppu(prefix, as.numeric(stringr::str_extract(idents, "\\\\d+\\\\.\\\\d+$")),
     suffix),
   nrow = 2,
   ncol = 2,
@@ -19,14 +19,14 @@ qClusteringUMAPS(
 \arguments{
 \item{obj}{Seurat object to visualize; Default: \code{combined.obj}.}
 
-\item{dims}{Vector of clustering resolution identifiers to plot;
+\item{idents}{Vector of clustering resolution identifiers to plot;
 dynamically defaults to the first 4 found by \code{GetClusteringRuns}.}
 
 \item{prefix}{Prefix for plot titles; Default: "Clustering.UMAP.Res".}
 
 \item{suffix}{Suffix for plot titles; Default: "".}
 
-\item{title}{Custom title for the composite plot; dynamically generated from \code{prefix}, \code{dims}, and \code{suffix}.}
+\item{title}{Custom title for the composite plot; dynamically generated from \code{prefix}, \code{idents}, and \code{suffix}.}
 
 \item{nrow}{Number of rows in the plot grid; Default: 2.}
 

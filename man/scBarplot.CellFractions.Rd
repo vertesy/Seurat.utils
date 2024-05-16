@@ -12,6 +12,7 @@ scBarplot.CellFractions(
   min.nr.sampled.cells = 200,
   plotname = kpp(toTitleCase(fill.by), "proportions.by", group.by),
   suffix = NULL,
+  prefix = NULL,
   sub_title = suffix,
   hlines = c(0.25, 0.5, 0.75),
   return_table = FALSE,
