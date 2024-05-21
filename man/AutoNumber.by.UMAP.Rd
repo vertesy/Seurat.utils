@@ -9,7 +9,7 @@ AutoNumber.by.UMAP(
   reduction = "umap",
   dim = 1,
   swap = FALSE,
-  res = GetClusteringRuns(obj = obj)[1],
+  ident = GetClusteringRuns(obj = obj)[1],
   plot = TRUE
 )
 }
@@ -25,7 +25,7 @@ Default: 1.}
 
 \item{swap}{If TRUE, reverses the ordering direction; Default: FALSE.}
 
-\item{res}{Clustering resolution identifier used to fetch cluster labels from \code{obj} metadata;
+\item{ident}{Clustering resolution identifier used to fetch cluster labels from \code{obj} metadata;
 Default: 'integrated_snn_res.0.5'.}
 
 \item{plot}{If TRUE, plots the UMAP with new cluster names; Default: TRUE.}
@@ -38,9 +38,9 @@ in a UMAP (or tSNE or PCA) plot, potentially enhancing interpretability by order
 \dontrun{
 combined.obj <- AutoNumber.by.UMAP(
   obj = combined.obj, dim = 1, reduction = "umap",
-  res = "integrated_snn_res.0.5"
+  ident = "integrated_snn_res.0.5"
 )
-DimPlot.ClusterNames(combined.obj, ident = "integrated_snn_res.0.5.ordered")
+DimPlot.ClusterNames(combined.obj, ident = GetClusteringRuns(combined.obj)[1])
 }
 
 }

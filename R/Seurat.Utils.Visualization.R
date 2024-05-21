@@ -2812,7 +2812,7 @@ FlipReductionCoordinates <- function(
 #' @param swap If TRUE, reverses the ordering direction; Default: FALSE.
 #' @param reduction Dimension reduction technique used for cluster positioning ('umap', 'tsne', or 'pca');
 #' Default: 'umap'.
-#' @param res Clustering resolution identifier used to fetch cluster labels from `obj` metadata;
+#' @param ident Clustering resolution identifier used to fetch cluster labels from `obj` metadata;
 #' Default: 'integrated_snn_res.0.5'.
 #' @param plot If TRUE, plots the UMAP with new cluster names; Default: TRUE.
 #'
@@ -2820,9 +2820,9 @@ FlipReductionCoordinates <- function(
 #' \dontrun{
 #' combined.obj <- AutoNumber.by.UMAP(
 #'   obj = combined.obj, dim = 1, reduction = "umap",
-#'   res = "integrated_snn_res.0.5"
+#'   ident = "integrated_snn_res.0.5"
 #' )
-#' DimPlot.ClusterNames(combined.obj, ident = "integrated_snn_res.0.5.ordered")
+#' DimPlot.ClusterNames(combined.obj, ident = GetClusteringRuns(combined.obj)[1])
 #' }
 #'
 #' @export
@@ -2831,21 +2831,23 @@ FlipReductionCoordinates <- function(
 #' @importFrom Seurat FetchData
 AutoNumber.by.UMAP <- function(obj = combined.obj, reduction = "umap",
                                dim = 1, swap = FALSE,
-                               res = GetClusteringRuns(obj = obj)[1],
+                               ident = GetClusteringRuns(obj = obj)[1],
                                plot = TRUE) {
 
 
   dim_name <- kppu(reduction, dim)
   if (obj@version < 5) dim_name <- toupper(dim_name)
-  message("Running AutoNumber.by.UMAP with dimension: ", dim_name)
-  message("Resolution: ", res)
+  message("Seu. obj. version: ", obj@version, " \ndimension name: ", dim_name)
+  message("Resolution: ", ident)
 
-  # browser()
-  coord.umap <- obj@reductions$umap@cell.embeddings[ ,dim_name]
+  stopifnot("Identity not found." = ident %in% colnames(obj@meta.data))
+
+  coord.umap <- obj@reductions$umap@cell.embeddings[ , dim_name]
+
   # coord.umap <- round(coord.umap,digits = 2)
 
 
-  identX <- as.character(obj@meta.data[[res]])
+  identX <- as.character(obj@meta.data[[ident]])
 
   ls.perCl <- split(coord.umap, f = identX)
   MedianClusterCoordinate <- sapply(ls.perCl, median)
@@ -2854,7 +2856,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj, reduction = "umap",
   OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
   NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
   NewMeta <- translate(vec = identX, oldvalues = OldLabel, newvalues = NewLabel)
-  NewMetaCol <- kpp(res, "ordered")
+  NewMetaCol <- kpp(ident, "ordered")
   iprint("NewMetaCol:", NewMetaCol)
 
   obj[[NewMetaCol]] <- NewMeta
