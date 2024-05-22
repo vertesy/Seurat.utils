@@ -5,9 +5,11 @@
 \title{Barplot of Fraction of Cells per Cluster}
 \usage{
 scBarplot.CellsPerCluster(
-  ident = GetOrderedClusteringRuns(obj = obj)[1],
   obj = combined.obj,
+  ident = GetOrderedClusteringRuns(obj = obj)[1],
   sort = FALSE,
+  title = "Cells per Identity Group",
+  sub = ident,
   label = list(TRUE, "percent")[[1]],
   suffix = if (label == "percent") "percent" else NULL,
   palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
@@ -18,12 +20,16 @@ scBarplot.CellsPerCluster(
 )
 }
 \arguments{
+\item{obj}{Seurat object for analysis. Default: \code{combined.obj}.}
+
 \item{ident}{Cluster identity. Used to specify which clustering results to visualize.
 Default: First entry from ordered clustering runs.}
 
-\item{obj}{Seurat object for analysis. Default: \code{combined.obj}.}
-
 \item{sort}{If TRUE, sorts clusters by size. Default: FALSE.}
+
+\item{title}{Title for the plot. Default: "Cells per Identity Group".}
+
+\item{sub}{Subtitle for the plot. Default: "identity".}
 
 \item{label}{If TRUE, shows cell count or percentage based on the label vector. Default: TRUE.}
 

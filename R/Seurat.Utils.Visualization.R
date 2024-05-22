@@ -859,6 +859,8 @@ scBarplot.CellFractions <- function(
 #' @param ident Cluster identity. Used to specify which clustering results to visualize.
 #' Default: First entry from ordered clustering runs.
 #' @param sort If TRUE, sorts clusters by size. Default: FALSE.
+#' @param title Title for the plot. Default: "Cells per Identity Group".
+#' @param sub Subtitle for the plot. Default: "identity".
 #' @param label If TRUE, shows cell count or percentage based on the label vector. Default: TRUE.
 #' @param palette Color palette for the barplot. Default: 'glasbey'.
 #' @param return_table If TRUE, returns the data used for plotting instead of the plot itself. Default: FALSE.
@@ -877,9 +879,11 @@ scBarplot.CellFractions <- function(
 #' @importFrom ggExpress qbarplot
 
 scBarplot.CellsPerCluster <- function(
-    ident = GetOrderedClusteringRuns(obj = obj)[1],
     obj = combined.obj,
+    ident = GetOrderedClusteringRuns(obj = obj)[1],
     sort = FALSE,
+    title = "Cells per Identity Group",
+    sub = ident,
     label = list(TRUE, "percent")[[1]],
     suffix = if (label == "percent") "percent" else NULL,
     palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
@@ -887,6 +891,9 @@ scBarplot.CellsPerCluster <- function(
     ylab_adj = 1.1,
     min.cells = round(ncol(obj) / 500),
     ...) {
+
+  stopifnot(ident %in% colnames(obj@meta.data))
+
   cell.per.cl <- obj[[ident]][, 1]
   cell.per.cluster <- (table(cell.per.cl))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
@@ -909,14 +916,14 @@ scBarplot.CellsPerCluster <- function(
   )
 
   pl <- ggExpress::qbarplot(cell.per.cluster,
-                            subtitle = paste0(ident, "\n", SBT),
+                            plotname = title,
+                            subtitle = paste0(sub, "\n", SBT),
                             suffix = kpp(ident, suffix),
                             col = 1:n.clusters,
                             xlab.angle = 45,
                             ylim = c(0, ylab_adj * max(cell.per.cluster)),
                             label = lbl,
                             ylab = "Cells",
-                            # , col = getClusterColors(ident = ident, show = TRUE)
                             palette_use = DiscretePaletteSafe(n = n.clusters, palette.used = palette),
                             ...
   )
@@ -2845,8 +2852,6 @@ AutoNumber.by.UMAP <- function(obj = combined.obj, reduction = "umap",
   coord.umap <- obj@reductions$umap@cell.embeddings[ , dim_name]
 
   # coord.umap <- round(coord.umap,digits = 2)
-
-
   identX <- as.character(obj@meta.data[[ident]])
 
   ls.perCl <- split(coord.umap, f = identX)
@@ -3179,7 +3184,7 @@ plot3D.umap.gene <- function(
   plotting.data$"label" <- paste(rownames(plotting.data), " - ", plotting.data[, gene], sep = "")
 
   ls.ann.auto <- if (AutoAnnotBy != FALSE) {
-    Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
+    .Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
   } else {
     NULL
   }
@@ -3240,7 +3245,7 @@ plot3D.umap <- function(
   plotting.data$label <- paste(rownames(plotting.data)) # Make a column of row name identities (these will be your cell/barcode names)
 
   ls.ann.auto <- if (AutoAnnotBy != FALSE) {
-    Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
+    .Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
   } else {
     NULL
   }
@@ -3274,6 +3279,10 @@ plot3D.umap <- function(
 #' @param OutputDir The output directory.
 #' @seealso
 #'  \code{\link[htmlwidgets]{saveWidget}}
+#'  @examples \dontrun{
+#'  plt <- plotly::plot_ly("some stuff")
+#'  SavePlotlyAsHtml(plt, category. = "label.categ", suffix. = "test")
+#'  }
 #'
 #' @export
 #' @importFrom htmlwidgets saveWidget
@@ -3392,23 +3401,28 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
 
 
 # _________________________________________________________________________________________________
-#' @title Annotate4Plotly3D
+#' @title .Annotate4Plotly3D
 #'
-#' @description Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations.
+#' @description Internal helper function. Create annotation labels for 3D plots.
+#' Source https://plot.ly/r/text-and-annotations/#3d-annotations.
 #' @param obj The Seurat object for which the 3D plot annotations will be generated. Default: combined.obj
-#' @param plotting.data. The data frame containing plotting data. Default: plotting.data
-#' @param AnnotCateg The category for which the annotation is generated. Default: AutoAnnotBy
+#' @param plotting.data. The data frame containing plotting data.
+#' @param AnnotCateg The category for which the annotation is generated.
 #' @export
 #' @importFrom dplyr group_by summarise
 #' @importFrom Seurat FetchData
 
-Annotate4Plotly3D <- function(
-    obj = combined.obj # Create annotation labels for 3D plots. Source https://plot.ly/r/text-and-annotations/#3d-annotations
-    , plotting.data. = plotting.data,
-    AnnotCateg = AutoAnnotBy) {
-  stopifnot(AnnotCateg %in% colnames(obj@meta.data))
+.Annotate4Plotly3D <- function(
+    obj = combined.obj,
+    plotting.data., # = plotting.data
+    AnnotCateg #  = AutoAnnotBy
+    ) {
 
-  plotting.data.$"annot" <- FetchData(object = obj, vars = c(AnnotCateg))[, 1]
+  stopifnot("AnnotCateg is missing" = !is.null(AnnotCateg),
+            "plotting.data. is missing" = !is.null(plotting.data.),
+            "AnnotCateg is not in meta.data" = AnnotCateg %in% colnames(obj@meta.data))
+
+  plotting.data.$"annot" <- Seurat::FetchData(object = obj, vars = c(AnnotCateg))[, 1]
   auto_annot <-
     plotting.data. %>%
     group_by(annot) %>%

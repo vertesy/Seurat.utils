@@ -20,4 +20,8 @@ Save a Plotly 3D scatterplot as an HTML file.
 }
 \seealso{
 \code{\link[htmlwidgets]{saveWidget}}
+@examples \dontrun{
+ plt <- plotly::plot_ly("some stuff")
+ SavePlotlyAsHtml(plt, category. = "label.categ", suffix. = "test")
+ }
 }

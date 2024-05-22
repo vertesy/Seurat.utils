@@ -416,6 +416,7 @@ plotGeneExpHist <- function(...) .Deprecated("plotGeneExprHistAcrossCells()")
 geneExpressionLevelPlots <- function(...) .Deprecated("plotGeneExpressionInBackgroundHist()")
 get.clustercomposition <- function(...) .Deprecated("No longer provided.")
 multiFeatureHeatmap.A4 <- function(...) .Deprecated("No longer provided.")
+Annotate4Plotly3D <- function(...) .Deprecated(".Annotate4Plotly3D() - with dot/invisible.")
 
 
 # _________________________________________________________________________________________________
