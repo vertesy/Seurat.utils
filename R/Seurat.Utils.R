@@ -1367,8 +1367,7 @@ subsetSeuObjByIdent <- function(
     ident = GetClusteringRuns()[1],
     clusters,
     invert = FALSE) {
-
-  message("ident: ", ident, " | clusters: ", clusters, " | invert: ", invert)
+  tic()
 
   # Input checks
   stopifnot(
@@ -1376,16 +1375,21 @@ subsetSeuObjByIdent <- function(
     "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
     "clusters must exist in ident" = all(clusters %in% unique(obj@meta.data[[ident]] ))
   )
-  tic()
 
-  # Idents(obj) <- ident
-  # cellz <- WhichCells(obj, idents = clusters, invert = invert)
+  clusters <- if (invert) {
+    setdiff(unique(obj@meta.data[[ident]]), clusters)
+  } else {
+    clusters
+  }
+  message("ident: ", ident, " | ", length(clusters), " ID-groups selected: ", paste(head(clusters)),
+          "... | invert: ", invert, "\n")
+
   idx.cells.pass <- obj@meta.data[[ident]] %in% clusters
   cellz <- colnames(obj)[idx.cells.pass]
 
   PCT <- percentage_formatter(length(cellz)/ncol(obj))
   message(PCT, " or ",length(cellz) ," cells are selected from ", ncol(obj),
-          ", using values: ", clusters, ", from ", ident, ".")
+          ", using values: ", paste(clusters), ", from ", ident, ".")
 
   x <- subset(x = obj, cells = cellz)
   toc()
