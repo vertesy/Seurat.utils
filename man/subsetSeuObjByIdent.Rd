@@ -7,7 +7,7 @@
 subsetSeuObjByIdent(
   obj = combined.obj,
   ident = GetClusteringRuns()[1],
-  clusters,
+  identGroupKeep,
   invert = FALSE
 )
 }
@@ -17,14 +17,14 @@ subsetSeuObjByIdent(
 \item{ident}{The name of the identity column to use for subsetting. It is recommended to
 specify this explicitly. Default: First entry from the result of \code{GetClusteringRuns()}.}
 
-\item{clusters}{A vector of cluster values for which cells should be matched and retained.
+\item{identGroupKeep}{A vector of cluster values for which cells should be matched and retained.
 This parameter does not have a default value and must be specified.}
 
 \item{invert}{A logical indicating whether to invert the selection, keeping cells that do
-not match the specified clusters. Default: \code{FALSE}.}
+not match the specified identity values. Default: \code{FALSE}.}
 }
 \value{
-A Seurat object subsetted based on the specified identity and clusters.
+A Seurat object subsetted based on the specified identity and identity values.
 }
 \description{
 Subsets a Seurat object based on a specified identity column and values. It allows
@@ -34,7 +34,7 @@ for an optional inversion of the selection.
 # Assuming `seurat_obj` is your Seurat object and you want to subset based on cluster 1
 subsetted_obj <- subsetSeuObjByIdent(
   obj = seurat_obj, ident = "your_ident_column",
-  clusters = c(1), invert = FALSE
+  identGroupKeep = c(1), invert = FALSE
 )
 
 }

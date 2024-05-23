@@ -1346,18 +1346,18 @@ copyCompleteToolsSlots <- function(ls.obj, obj.to, overwrite = TRUE, new.slot = 
 #' @param obj A Seurat object. Default: `NULL`.
 #' @param ident The name of the identity column to use for subsetting. It is recommended to
 #'   specify this explicitly. Default: First entry from the result of `GetClusteringRuns()`.
-#' @param clusters A vector of cluster values for which cells should be matched and retained.
+#' @param identGroupKeep A vector of cluster values for which cells should be matched and retained.
 #'   This parameter does not have a default value and must be specified.
 #' @param invert A logical indicating whether to invert the selection, keeping cells that do
-#'   not match the specified clusters. Default: `FALSE`.
+#'   not match the specified identity values. Default: `FALSE`.
 #'
-#' @return A Seurat object subsetted based on the specified identity and clusters.
+#' @return A Seurat object subsetted based on the specified identity and identity values.
 #'
 #' @examples
 #' # Assuming `seurat_obj` is your Seurat object and you want to subset based on cluster 1
 #' subsetted_obj <- subsetSeuObjByIdent(
 #'   obj = seurat_obj, ident = "your_ident_column",
-#'   clusters = c(1), invert = FALSE
+#'   identGroupKeep = c(1), invert = FALSE
 #' )
 #'
 #' @importFrom tictoc tic toc
@@ -1365,7 +1365,7 @@ copyCompleteToolsSlots <- function(ls.obj, obj.to, overwrite = TRUE, new.slot = 
 subsetSeuObjByIdent <- function(
     obj = combined.obj,
     ident = GetClusteringRuns()[1],
-    clusters,
+    identGroupKeep,
     invert = FALSE) {
   tic()
 
@@ -1373,23 +1373,23 @@ subsetSeuObjByIdent <- function(
   stopifnot(
     "obj must be a Seurat object" = inherits(obj, "Seurat"),
     "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
-    "clusters must exist in ident" = all(clusters %in% unique(obj@meta.data[[ident]] ))
+    "identGroupKeep must exist in ident" = all(identGroupKeep %in% unique(obj@meta.data[[ident]] ))
   )
 
-  clusters <- if (invert) {
-    setdiff(unique(obj@meta.data[[ident]]), clusters)
+  identGroupKeep <- if (invert) {
+    setdiff(unique(obj@meta.data[[ident]]), identGroupKeep)
   } else {
-    clusters
+    identGroupKeep
   }
-  message("ident: ", ident, " | ", length(clusters), " ID-groups selected: ", paste(head(clusters)),
+  message("ident: ", ident, " | ", length(identGroupKeep), " ID-groups selected: ", paste(head(identGroupKeep)),
           "... | invert: ", invert, "\n")
 
-  idx.cells.pass <- obj@meta.data[[ident]] %in% clusters
+  idx.cells.pass <- obj@meta.data[[ident]] %in% identGroupKeep
   cellz <- colnames(obj)[idx.cells.pass]
 
   PCT <- percentage_formatter(length(cellz)/ncol(obj))
   message(PCT, " or ",length(cellz) ," cells are selected from ", ncol(obj),
-          ", using values: ", paste(clusters), ", from ", ident, ".")
+          ", using values: ", paste(identGroupKeep), ", from ", ident, ".")
 
   x <- subset(x = obj, cells = cellz)
   toc()
@@ -4819,8 +4819,6 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE,
   param.list$"n.PC" <- n.PC
   param.list$"snn_res" <- resolutions
 
-
-
   gc()
   if (compute) {
     message("------------------- FindVariableFeatures -------------------")
@@ -4841,10 +4839,8 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE,
 
   }
 
-
-
   message("------------------- Save -------------------")
-  if (save) xsave(obj, suffix = "reprocessed")
+  if (save) xsave(obj, suffix = "reprocessed", paramList = param.list)
 
   if (plot) {
     message("scPlotPCAvarExplained")
