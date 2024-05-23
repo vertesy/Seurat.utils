@@ -3873,11 +3873,13 @@ isave.RDS <- function(
 #' @param nthreads Number of threads to use when saving, defaults to 12.
 #' @param preset Compression preset, defaults to 'high'.
 #' @param project The project name to be included in the filename, defaults to the result of `getProject()`.
-#' @param out_dir Output Directory
-#' @param background_job Logical; if TRUE save runs as "background job"
+#' @param dir Output Directory
+#' @param backgroundJob Logical; if TRUE save runs as "background job"
 #' @param showMemObject Logical; if TRUE, displays the memory size of the largest objects.
 #' @param saveParams Logical; if TRUE and if the object is a Seurat object, additional parameters
 #' are saved within it.
+#' @param paramList Optional; a list of parameters to save within the Seurat object.
+#' @param allGenes Optional; a list of all genes to save within the Seurat object.
 #' @param saveLocation Logical; if TRUE and if the object is a Seurat object, file location is saved
 #' into misc slot.
 #'
@@ -3899,11 +3901,18 @@ xsave <- function(
     nthreads = .getNrCores(12),
     preset = "high",
     project = getProject(),
-    out_dir = if (exists("OutDir")) OutDir else getwd(),
-    background_job = FALSE,
-    showMemObject = TRUE, saveParams = TRUE,
+    dir = if (exists("OutDir")) OutDir else getwd(),
+    backgroundJob = FALSE,
+    showMemObject = TRUE,
+    saveParams = TRUE,
+    paramList = p,
+    allGenes = all.genes,
     saveLocation = TRUE) {
-  message(nthreads, " threads.")
+
+  message(nthreads, " threads.\n-----------")
+  message("project: ", project)
+  message("paramList: ", if(exists("paramList") & saveParams) paste(substitute(paramList), length(paramList), "elements.") else "not provided.")
+  message("allGenes: ", if(exists("allGenes") & saveParams) substitute(allGenes) else "not",  " provided.")
 
   try(tictoc::tic(), silent = TRUE)
   if (showMemObject) {
@@ -3916,13 +3925,13 @@ xsave <- function(
     idate(Format = "%Y.%m.%d_%H.%M")
   ), whitespace = "_")
 
-  FNN <- paste0(out_dir, fnameBase, ".qs")
+  FNN <- paste0(dir, fnameBase, ".qs")
   print(paste0(substitute(obj), " <- xread('", FNN, "')"))
 
   if ("Seurat" %in% is(obj)) {
     if (saveParams) {
-      try(obj@misc$"p" <- p, silent = TRUE)
-      try(obj@misc$"all.genes" <- all.genes, silent = TRUE)
+      if(exists("paramList")) try(obj@misc$"p" <- paramList, silent = TRUE)
+      if(exists("allGenes")) try(obj@misc$"all.genes" <- allGenes, silent = TRUE)
     }
     if (saveLocation) {
       loc <- 1
@@ -3931,7 +3940,7 @@ xsave <- function(
   }
 
 
-  if (background_job & rstudioapi::isAvailable()) {
+  if (backgroundJob & rstudioapi::isAvailable()) {
     "This part is not debugged yet!"
 
     message("Started saving as background job.")
@@ -4787,7 +4796,8 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE,
   stopifnot(require(tictoc))
   message("nfeatures: ", nfeatures)
 
-  # Assertions to check input types
+
+  # Assertions to check input types  ------------------------------------------------
   stopifnot(
     "Seurat" %in% class(obj),
     is.list(param.list),
@@ -4801,7 +4811,13 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE,
   iprint("nfeatures:", nfeatures)
   iprint("n.PC:", n.PC)
   iprint("snn_res:", resolutions)
-  iprint("variables.2.regress:", variables.2.regress)
+  iprint("variables.2.regress (combined):", variables.2.regress)
+
+  # Save parameters ------------------------------------------------
+  param.list$"n.var.genes" <- nfeatures
+  param.list$"variables.2.regress.combined" <- variables.2.regress
+  param.list$"n.PC" <- n.PC
+  param.list$"snn_res" <- resolutions
 
 
 
@@ -4824,6 +4840,8 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE,
     tic(); obj <- FindClusters(obj, resolution = resolutions); toc()
 
   }
+
+
 
   message("------------------- Save -------------------")
   if (save) xsave(obj, suffix = "reprocessed")

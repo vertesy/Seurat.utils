@@ -11,10 +11,12 @@ xsave(
   nthreads = .getNrCores(12),
   preset = "high",
   project = getProject(),
-  out_dir = if (exists("OutDir")) OutDir else getwd(),
-  background_job = FALSE,
+  dir = if (exists("OutDir")) OutDir else getwd(),
+  backgroundJob = FALSE,
   showMemObject = TRUE,
   saveParams = TRUE,
+  paramList = p,
+  allGenes = all.genes,
   saveLocation = TRUE
 )
 }
@@ -31,14 +33,18 @@ xsave(
 
 \item{project}{The project name to be included in the filename, defaults to the result of \code{getProject()}.}
 
-\item{out_dir}{Output Directory}
+\item{dir}{Output Directory}
 
-\item{background_job}{Logical; if TRUE save runs as "background job"}
+\item{backgroundJob}{Logical; if TRUE save runs as "background job"}
 
 \item{showMemObject}{Logical; if TRUE, displays the memory size of the largest objects.}
 
 \item{saveParams}{Logical; if TRUE and if the object is a Seurat object, additional parameters
 are saved within it.}
+
+\item{paramList}{Optional; a list of parameters to save within the Seurat object.}
+
+\item{allGenes}{Optional; a list of all genes to save within the Seurat object.}
 
 \item{saveLocation}{Logical; if TRUE and if the object is a Seurat object, file location is saved
 into misc slot.}
