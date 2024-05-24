@@ -5,22 +5,25 @@
 \title{plot3D.umap}
 \usage{
 plot3D.umap(
-  category = "v.project",
+  category = GetNamedClusteringRuns(obj)[1],
+  annotate.by = GetNamedClusteringRuns(obj)[1],
   obj = combined.obj,
   suffix = NULL,
-  AutoAnnotBy = GetNamedClusteringRuns(obj)[1],
   dotsize = 1.25,
+  col.names = c("umap_1", "umap_2", "umap_3"),
   ...
 )
 }
 \arguments{
-\item{category}{The metadata column based on which the 3D UMAP will be plotted. Default: 'v.project'}
+\item{category}{The metadata column based on which the 3D UMAP will be plotted.
+Default: First returned result from GetNamedClusteringRuns(obj) function.}
+
+\item{annotate.by}{The cluster or grouping to be used for automatic annotation.
+Default: First returned result from GetNamedClusteringRuns(obj) function.}
 
 \item{obj}{The Seurat object for which the 3D umap plot will be generated. Default: combined.obj}
 
 \item{suffix}{A suffix added to the filename. Default: NULL}
-
-\item{AutoAnnotBy}{The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.}
 
 \item{dotsize}{The size of the dots in the plot. Default: 1.25}
 

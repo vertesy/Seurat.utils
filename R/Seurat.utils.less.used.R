@@ -881,3 +881,22 @@ regress_out_and_recalculate_seurat <- function(
 #   tictoc::toc()
 # }
 #
+
+
+# # _________________________________________________________________________________________________
+# #' @title ww.check.if.3D.reduction.exist
+# #'
+# #' @description ww.check.if.3D.reduction.exist in backup slot #
+# #' @param obj Seurat object, Default: obj
+# #' @export
+# ww.check.if.3D.reduction.exist <- function(obj = obj) {
+#   if (!("UMAP_3" %in% colnames(obj@reductions$"umap"))) {
+#     stopif(
+#       is.null(obj@misc$reductions.backup$"umap3d"),
+#       "No 3D umap found in backup slot, @misc$reductions.backup. Run SetupReductionsNtoKdimensions() first."
+#     )
+#     RecallReduction(obj = obj, dim = 3, reduction = "umap")
+#   } else { # Reduction found in normal UMAP slot
+#     obj
+#   }
+# }

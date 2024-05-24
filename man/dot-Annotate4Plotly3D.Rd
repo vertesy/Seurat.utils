@@ -4,14 +4,14 @@
 \alias{.Annotate4Plotly3D}
 \title{.Annotate4Plotly3D}
 \usage{
-.Annotate4Plotly3D(obj = combined.obj, plotting.data., AnnotCateg)
+.Annotate4Plotly3D(obj = combined.obj, plotting.data., AnnotCate)
 }
 \arguments{
 \item{obj}{The Seurat object for which the 3D plot annotations will be generated. Default: combined.obj}
 
 \item{plotting.data.}{The data frame containing plotting data.}
 
-\item{AnnotCateg}{The category for which the annotation is generated.}
+\item{annotation.category}{The category for which the annotation is generated.}
 }
 \description{
 Internal helper function. Create annotation labels for 3D plots.

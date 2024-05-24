@@ -3085,23 +3085,6 @@ qqSaveGridA4 <- function(
 # require('MarkdownReports') # require("devtools")
 
 
-# _________________________________________________________________________________________________
-#' @title ww.check.if.3D.reduction.exist
-#'
-#' @description ww.check.if.3D.reduction.exist in backup slot #
-#' @param obj Seurat object, Default: obj
-#' @export
-ww.check.if.3D.reduction.exist <- function(obj = obj) {
-  if (!("UMAP_3" %in% colnames(obj@reductions$"umap"))) {
-    stopif(
-      is.null(obj@misc$reductions.backup$"umap3d"),
-      "No 3D umap found in backup slot, @misc$reductions.backup. Run SetupReductionsNtoKdimensions() first."
-    )
-    RecallReduction(obj = obj, dim = 3, reduction = "umap")
-  } else { # Reduction found in normal UMAP slot
-    obj
-  }
-}
 
 # _________________________________________________________________________________________________
 #' @title Check Quantile Cutoff and Clip Outliers
@@ -3147,7 +3130,7 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 #' @param quantileCutoff Cutoff value for the quantile for clipping outliers in the gene expression data. Default: 0.99
 #' @param def.assay The default assay to be used. Choose between "integrated" and "RNA". Default: "RNA"
 #' @param suffix A suffix added to the filename. Default: NULL
-#' @param AutoAnnotBy The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.
+#' @param annotate.by The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.
 #' @param alpha Opacity of the points in the plot. Default: 0.5
 #' @param dotsize The size of the dots in the plot. Default: 1.25
 #' @param ... Pass any other parameter to the internally called `plotly::plot_ly`.
@@ -3165,25 +3148,41 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 #' @export
 
 plot3D.umap.gene <- function(
-    gene = "TOP2A", obj = combined.obj # Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
-    , quantileCutoff = .99, def.assay = c("integrated", "RNA")[2],
-    suffix = NULL, AutoAnnotBy = GetNamedClusteringRuns(obj)[1],
-    alpha = .5, dotsize = 1.25, ...) {
-  # stopifnot(AutoAnnotBy %in% colnames(obj@meta.data) | AutoAnnotBy = FALSE)
+    gene = "TOP2A",
+    obj = combined.obj,
+    annotate.by = GetNamedClusteringRuns(obj)[1],
+    quantileCutoff = .99,
+    def.assay = c("integrated", "RNA")[2],
+    suffix = NULL,
+    alpha = .5,
+    dotsize = 1.25,
+    col.names = c("umap_1", "umap_2", "umap_3"),
+    ...) {
 
-  obj <- ww.check.if.3D.reduction.exist(obj = obj)
+  # Input assertions ____________________________________
+  stopifnot(
+    is(obj, "Seurat"),
+    (annotate.by %in% colnames(obj@meta.data) | annotate.by == FALSE),
+    "reductions.backup is missing from @misc" = is.list(obj@misc$"reductions.backup"),
+    "umap3d is missing from @misc$reductions.backup" = is(obj@misc$reductions.backup$"umap3d", class2 = "DimReduc"),
+    "reductionn has 3 columns" = (ncol(obj@misc$reductions.backup$"umap3d") == 3),
+    "3D reduction has >/< cells than object" = (ncol(obj) == nrow(obj@misc$reductions.backup$"umap3d"@cell.embeddings))
+    )
+
+  if (obj@version < 5) col.names <- toupper(col.names)
+
   stopifnot((gene %in% rownames(obj) | gene %in% colnames(obj@meta.data)))
   DefaultAssay(object = obj) <- def.assay
   iprint(DefaultAssay(object = obj), "assay")
 
-  plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", "Expression" = gene), slot = "data")
+  plotting.data <- Seurat::FetchData(object = obj, vars = c(col.names, "Expression" = gene), slot = "data")
 
   plotting.data$"Expression" <- ww.check.quantile.cutoff.and.clip.outliers(expr.vec = plotting.data[, gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10)
   CodeAndRoll2::clip.outliers.at.percentile(plotting.data[, gene], probs = c(1 - quantileCutoff, quantileCutoff))
   plotting.data$"label" <- paste(rownames(plotting.data), " - ", plotting.data[, gene], sep = "")
 
-  ls.ann.auto <- if (AutoAnnotBy != FALSE) {
-    .Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
+  ls.ann.auto <- if (annotate.by != FALSE) {
+    .Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, annotation.category = annotate.by)
   } else {
     NULL
   }
@@ -3215,10 +3214,12 @@ plot3D.umap.gene <- function(
 #' @title plot3D.umap
 #'
 #' @description Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
-#' @param category The metadata column based on which the 3D UMAP will be plotted. Default: 'v.project'
+#' @param category The metadata column based on which the 3D UMAP will be plotted.
+#' Default: First returned result from GetNamedClusteringRuns(obj) function.
 #' @param obj The Seurat object for which the 3D umap plot will be generated. Default: combined.obj
 #' @param suffix A suffix added to the filename. Default: NULL
-#' @param AutoAnnotBy The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.
+#' @param annotate.by The cluster or grouping to be used for automatic annotation.
+#' Default: First returned result from GetNamedClusteringRuns(obj) function.
 #' @param dotsize The size of the dots in the plot. Default: 1.25
 #' @param ... Pass any other parameter to the internally called `plotly::plot_ly`.
 #' @examples
@@ -3233,22 +3234,44 @@ plot3D.umap.gene <- function(
 #' @export
 
 plot3D.umap <- function(
-    category = "v.project", obj = combined.obj # Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
-    , suffix = NULL, AutoAnnotBy = GetNamedClusteringRuns(obj)[1],
-    dotsize = 1.25, ...) {
-  stopifnot(category %in% colnames(obj@meta.data))
-  obj <- ww.check.if.3D.reduction.exist(obj = obj)
+    category = GetNamedClusteringRuns(obj)[1],
+    annotate.by = GetNamedClusteringRuns(obj)[1],
+    obj = combined.obj,
+    suffix = NULL,
+    dotsize = 1.25,
+    col.names = c("umap_1", "umap_2", "umap_3"),
+    ...) {
 
-  plotting.data <- FetchData(object = obj, vars = c("UMAP_1", "UMAP_2", "UMAP_3", category))
+  # Input assertions ____________________________________
+  stopifnot(
+    is(obj, "Seurat"),
+    category %in% colnames(obj@meta.data),
+    annotate.by %in% colnames(obj@meta.data),
+    "reductions.backup is missing from @misc" = is.list(obj@misc$"reductions.backup"),
+    "umap3d is missing from @misc$reductions.backup" = is(obj@misc$reductions.backup$"umap3d", class2 = "DimReduc"),
+    "reductionn has 3 columns" = (ncol(obj@misc$reductions.backup$"umap3d") == 3),
+    "3D reduction has >/< cells than object" = (ncol(obj) == nrow(obj@misc$reductions.backup$"umap3d"@cell.embeddings))
+  )
+
+  if (obj@version < 5) col.names <- toupper(col.names)
+  message("Seu. obj. version: ", obj@version, " \ndim names: ", kppc(col.names))
+
+  cat(1)
+  # Get and format 3D plotting data ____________________________________
+  plotting.data <- obj@misc$reductions.backup$"umap3d"@cell.embeddings # plotting.data <- Seurat::FetchData(object = obj, vars = c(col.names, category))
+  colnames(plotting.data) <- toupper(col.names)
+  plotting.data <- cbind(plotting.data,obj[[category]])
   colnames(plotting.data)[4] <- "category"
   plotting.data$label <- paste(rownames(plotting.data)) # Make a column of row name identities (these will be your cell/barcode names)
 
-  ls.ann.auto <- if (AutoAnnotBy != FALSE) {
-    .Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, AnnotCateg = AutoAnnotBy)
+  cat(2)
+  ls.ann.auto <- if (annotate.by != FALSE) {
+    .Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, annotation.category = annotate.by)
   } else {
     NULL
   }
 
+  cat(3)
   plt <- plotly::plot_ly(
     data = plotting.data,
     x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3,
@@ -3262,7 +3285,7 @@ plot3D.umap <- function(
     , ...
   ) %>%
     plotly::layout(title = category, scene = list(annotations = ls.ann.auto))
-
+  cat(2)
   SavePlotlyAsHtml(plt, category. = category, suffix. = suffix)
   return(plt)
 }
@@ -3406,22 +3429,22 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
 #' Source https://plot.ly/r/text-and-annotations/#3d-annotations.
 #' @param obj The Seurat object for which the 3D plot annotations will be generated. Default: combined.obj
 #' @param plotting.data. The data frame containing plotting data.
-#' @param AnnotCateg The category for which the annotation is generated.
+#' @param annotation.category The category for which the annotation is generated.
 #' @export
 #' @importFrom dplyr group_by summarise
 #' @importFrom Seurat FetchData
 
 .Annotate4Plotly3D <- function(
     obj = combined.obj,
-    plotting.data., # = plotting.data
-    AnnotCateg #  = AutoAnnotBy
+    plotting.data.,
+    AnnotCate
     ) {
 
-  stopifnot("AnnotCateg is missing" = !is.null(AnnotCateg),
+  stopifnot("annotation.category is missing" = !is.null(annotation.category),
             "plotting.data. is missing" = !is.null(plotting.data.),
-            "AnnotCateg is not in meta.data" = AnnotCateg %in% colnames(obj@meta.data))
+            "annotation.category is not in meta.data" = annotation.category %in% colnames(obj@meta.data))
 
-  plotting.data.$"annot" <- Seurat::FetchData(object = obj, vars = c(AnnotCateg))[, 1]
+  plotting.data.$"annot" <- Seurat::FetchData(object = obj, vars = c(annotation.category))[, 1]
   auto_annot <-
     plotting.data. %>%
     group_by(annot) %>%
@@ -3476,7 +3499,7 @@ Plot3D.ListOfGenes <- function(
   for (i in 1:length(ListOfGenes)) {
     g <- ListOfGenes[i]
     print(g)
-    plot3D.umap.gene(obj = obj., gene = g, AutoAnnotBy = annotate.by, alpha = opacity, def.assay = default.assay, dotsize = cex)
+    plot3D.umap.gene(obj = obj., gene = g, annotate.by = annotate.by, alpha = opacity, def.assay = default.assay, dotsize = cex)
   }
   try(oo())
   try(create_set_Original_OutDir(NewOutDir = ParentDir))
@@ -3519,7 +3542,7 @@ Plot3D.ListOfCategories <- function(
   for (i in 1:length(ListOfCategories)) {
     categ <- ListOfCategories[i]
     print(categ)
-    plot3D.umap(obj = obj., category = categ, AutoAnnotBy = annotate.by, dotsize = cex)
+    plot3D.umap(obj = obj., category = categ, annotate.by = annotate.by, dotsize = cex)
   }
   try(oo())
   try(create_set_Original_OutDir(NewOutDir = ParentDir))
@@ -3560,11 +3583,12 @@ Plot3D.ListOfCategories <- function(
 
 panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method = "pearson") {
   # Input validation
-  stopifnot(is.numeric(x), is.numeric(y))
-  stopifnot(is.numeric(digits) && digits > 0)
-  stopifnot(is.character(prefix))
-  stopifnot(is.numeric(cex.cor) && cex.cor > 0)
-  stopifnot(method %in% c("pearson", "kendall", "spearman"))
+  stopifnot(is.numeric(x), is.numeric(y),
+            is.numeric(digits) && digits > 0,
+            is.character(prefix),
+            is.numeric(cex.cor) && cex.cor > 0,
+            method %in% c("pearson", "kendall", "spearman")
+            )
 
   usr <- par("usr")
   on.exit(par(usr))

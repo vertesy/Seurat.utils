@@ -7,12 +7,13 @@
 plot3D.umap.gene(
   gene = "TOP2A",
   obj = combined.obj,
+  annotate.by = GetNamedClusteringRuns(obj)[1],
   quantileCutoff = 0.99,
   def.assay = c("integrated", "RNA")[2],
   suffix = NULL,
-  AutoAnnotBy = GetNamedClusteringRuns(obj)[1],
   alpha = 0.5,
   dotsize = 1.25,
+  col.names = c("umap_1", "umap_2", "umap_3"),
   ...
 )
 }
@@ -21,13 +22,13 @@ plot3D.umap.gene(
 
 \item{obj}{The Seurat object for which the 3D umap plot will be generated. Default: combined.obj}
 
+\item{annotate.by}{The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.}
+
 \item{quantileCutoff}{Cutoff value for the quantile for clipping outliers in the gene expression data. Default: 0.99}
 
 \item{def.assay}{The default assay to be used. Choose between "integrated" and "RNA". Default: "RNA"}
 
 \item{suffix}{A suffix added to the filename. Default: NULL}
-
-\item{AutoAnnotBy}{The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.}
 
 \item{alpha}{Opacity of the points in the plot. Default: 0.5}
 
