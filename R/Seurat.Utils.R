@@ -4831,7 +4831,9 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE,
     message("------------------- PCA /UMAP -------------------")
     tic(); obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE); toc()
 
-    tic(); obj <- RunUMAP(obj, reduction = "pca", dims = 1:n.PC); toc()
+    # tic(); obj <- RunUMAP(obj, reduction = "pca", dims = 1:n.PC); toc()
+    tic(); obj <- SetupReductionsNtoKdimensions(obj, nPCs = n.PC, reduction = "umap", dimensions = 3:2); toc()
+
     message("------------------- FindNeighbors & Clusters -------------------")
     tic(); obj <- FindNeighbors(obj, reduction = "pca", dims = 1:n.PC); toc()
 

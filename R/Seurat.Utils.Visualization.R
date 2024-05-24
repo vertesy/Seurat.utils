@@ -3265,6 +3265,7 @@ plot3D.umap <- function(
   plotting.data$label <- paste(rownames(plotting.data)) # Make a column of row name identities (these will be your cell/barcode names)
 
   cat(2)
+
   ls.ann.auto <- if (annotate.by != FALSE) {
     .Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, annotation.category = annotate.by)
   } else {
@@ -3437,7 +3438,7 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
 .Annotate4Plotly3D <- function(
     obj = combined.obj,
     plotting.data.,
-    AnnotCate
+    annotation.category
     ) {
 
   stopifnot("annotation.category is missing" = !is.null(annotation.category),
