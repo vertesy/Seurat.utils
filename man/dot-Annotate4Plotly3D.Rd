@@ -4,7 +4,7 @@
 \alias{.Annotate4Plotly3D}
 \title{.Annotate4Plotly3D}
 \usage{
-.Annotate4Plotly3D(obj = combined.obj, plotting.data., AnnotCate)
+.Annotate4Plotly3D(obj = combined.obj, plotting.data., annotation.category)
 }
 \arguments{
 \item{obj}{The Seurat object for which the 3D plot annotations will be generated. Default: combined.obj}

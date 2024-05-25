@@ -11,8 +11,8 @@ save4plots.A4(
   scale = 1,
   nrow = 2,
   ncol = 2,
-  h = wA4 * scale,
-  w = hA4 * scale,
+  h = 8.27 * scale,
+  w = 11.69 * scale,
   ...
 )
 }
@@ -29,9 +29,9 @@ save4plots.A4(
 
 \item{ncol}{Number of columns to arrange the plots in; Default: 2.}
 
-\item{h}{Height of the plot canvas, calculated as the height of an A4 page times \code{scale}; Default: \code{wA4 * scale}.}
+\item{h}{Height of the plot canvas, calculated as the height of an A4 page times \code{scale}; Default: \code{8.27 * scale}.}
 
-\item{w}{Width of the plot canvas, calculated as the width of an A4 page times \code{scale}; Default: \code{hA4 * scale}.}
+\item{w}{Width of the plot canvas, calculated as the width of an A4 page times \code{scale}; Default: \code{11.69 * scale}.}
 
 \item{...}{Additional parameters passed to \code{plot_grid}.}
 }

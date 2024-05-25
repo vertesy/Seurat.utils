@@ -2101,8 +2101,8 @@ DimPlot.ClusterNames <- function(
 #' @param suffix Suffix for the plot filenames. Default: NULL
 #' @param background_col Background color of the plots. Default: "white"
 #' @param saveGeneList Should the list of genes be saved? Default: FALSE
-#' @param w Width of the plot. Default: wA4
-#' @param h Height of the plot. Default: hA4
+#' @param w Width of the plot. Default: 8.27
+#' @param h Height of the plot. Default: 11.69
 #' @param scaling Scaling factor for plot size. Default: 1
 #' @param aspect.ratio Should the aspect ratio be fixed? Default: Yes, at 0.6
 #' @param format Format to save the plot file. Default: 'jpg'
@@ -2131,7 +2131,7 @@ multiFeaturePlot.A4 <- function(
     background_col = "white",
     aspect.ratio = c(FALSE, 0.6)[2],
     saveGeneList = FALSE,
-    w = wA4, h = hA4, scaling = 1,
+    w = 8.27, h = 11.69, scaling = 1,
     format = c("jpg", "pdf", "png")[1],
     ...) {
   tictoc::tic()
@@ -2149,15 +2149,15 @@ multiFeaturePlot.A4 <- function(
   if (!is.null(cex.min)) cex <- max(cex.min, cex)
 
   if (layout == "tall") {
-    w <- wA4 * scaling
-    h <- hA4 * scaling
+    w <- 8.27 * scaling
+    h <- 11.69 * scaling
     nr.Col <- 2
     nr.Row <- 4
     print("layout active, nr.Col ignored.")
   }
   if (layout == "wide") {
-    w <- hA4 * scaling
-    h <- wA4 * scaling
+    w <- 11.69 * scaling
+    h <- 8.27 * scaling
     nr.Col <- 2
     nr.Row <- 2
     print("layout active, nr.Col ignored.")
@@ -2225,8 +2225,8 @@ multiFeaturePlot.A4 <- function(
 #' @param background_col Background color of the plots. Default: `"white"`.
 #' @param aspect.ratio Aspect ratio of the plots, can be `FALSE` for default ratio or a numeric value. Default: 0.6.
 #' @param saveGeneList Logical flag indicating whether to save the list of genes used in the plots. Default: `FALSE`.
-#' @param w Width of the plots, in inches. Default: `wA4`.
-#' @param h Height of the plots, in inches. Default: `hA4`.
+#' @param w Width of the plots, in inches. Default: `8.27`.
+#' @param h Height of the plots, in inches. Default: `11.69`.
 #' @param scaling Scaling factor for adjusting the size of the plots. Default: 1.
 #' @param format Format to save the plots in, can be `"jpg"`, `"pdf"`, or `"png"`. Default: `"jpg"`.
 #' @param ... Additional arguments passed to lower-level plotting functions.
@@ -2255,7 +2255,7 @@ multiSingleClusterHighlightPlots.A4 <- function(
     background_col = "white",
     aspect.ratio = c(FALSE, 0.6)[2],
     saveGeneList = FALSE,
-    w = wA4, h = hA4, scaling = 1,
+    w = 8.27, h = 11.69, scaling = 1,
     format = c("jpg", "pdf", "png")[1],
     ...) {
   tictoc::tic()
@@ -2269,15 +2269,15 @@ multiSingleClusterHighlightPlots.A4 <- function(
 
   # Adjust plot dimensions and grid layout based on specified layout
   if (layout == "tall") {
-    w <- wA4 * scaling
-    h <- hA4 * scaling
+    w <- 8.27 * scaling
+    h <- 11.69 * scaling
     nr.Col <- 2
     nr.Row <- 4
     message("tall layout active, nr.Col ignored.")
   }
   if (layout == "wide") {
-    w <- hA4 * scaling
-    h <- wA4 * scaling
+    w <- 11.69 * scaling
+    h <- 8.27 * scaling
     nr.Col <- 2
     nr.Row <- 2
     message("wide layout active, nr.Col ignored.")
@@ -2346,8 +2346,8 @@ multiSingleClusterHighlightPlots.A4 <- function(
 #' @param background_col The background color of the plot. Default: "white".
 #' @param aspect.ratio The aspect ratio of the plot, `FALSE` to disable fixed ratio. Default: 0.6.
 #' @param saveGeneList Logical indicating if a list of genes should be saved. Default: `FALSE`.
-#' @param w The width of the plot in inches. Default: `wA4`.
-#' @param h The height of the plot in inches. Default: `hA4`.
+#' @param w The width of the plot in inches. Default: `8.27`.
+#' @param h The height of the plot in inches. Default: `11.69`.
 #' @param scaling The scaling factor to apply to plot dimensions. Default: 1.
 #' @param format The file format for saving plots. Default: "jpg".
 #' @param ... Additional arguments passed to plotting functions.
@@ -2376,7 +2376,7 @@ multi_clUMAP.A4 <- function(
     background_col = "white",
     aspect.ratio = c(FALSE, 0.6)[2],
     saveGeneList = FALSE,
-    w = wA4, h = hA4, scaling = 1,
+    w = 8.27, h = 11.69, scaling = 1,
     format = c("jpg", "pdf", "png")[1],
     ...) {
   message("> > > > > Plotting multi_clUMAP.A4")
@@ -2389,7 +2389,7 @@ multi_clUMAP.A4 <- function(
   DefaultAssay(obj) <- intersectionAssay
 
   # Adjust plot dimensions and grid layout based on specified layout
-  .adjustLayout(layout, scaling, wA4 = wA4, hA4 = hA4, environment())
+  .adjustLayout(layout, scaling, wA4 = 8.27, hA4 = 11.69, environment())
 
 
   # Split clusters into lists for plotting
@@ -2490,7 +2490,7 @@ qClusteringUMAPS <- function(
   ggExpress::qA4_grid_plot(
     plot_list = px,
     plotname = title,
-    w = hA4, h = wA4,
+    w = 11.69, h = 8.27,
     nrow = nrow, ncol = ncol
   )
 }
@@ -2655,7 +2655,7 @@ qQC.plots.BrainOrg <- function(
   ggExpress::qA4_grid_plot(
     plot_list = px,
     plotname = title,
-    w = hA4, h = wA4,
+    w = 11.69, h = 8.27,
     nrow = nrow, ncol = ncol
   )
 }
@@ -2960,7 +2960,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj, reduction = "umap",
 save2plots.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 1,
-    h = hA4 * scale, w = wA4 * scale, ...) {
+    h = 11.69 * scale, w = 8.27 * scale, ...) {
   if (pname == FALSE) pname <- Stringendo::sppp(substitute(plot_list), suffix)
   p1 <- cowplot::plot_grid(
     plotlist = plot_list, nrow = nrow, ncol = ncol,
@@ -2986,8 +2986,8 @@ save2plots.A4 <- function(
 #' @param scale Scaling factor for adjusting the size of the overall plot canvas; Default: 1.
 #' @param nrow Number of rows to arrange the plots in; Default: 2.
 #' @param ncol Number of columns to arrange the plots in; Default: 2.
-#' @param h Height of the plot canvas, calculated as the height of an A4 page times `scale`; Default: `wA4 * scale`.
-#' @param w Width of the plot canvas, calculated as the width of an A4 page times `scale`; Default: `hA4 * scale`.
+#' @param h Height of the plot canvas, calculated as the height of an A4 page times `scale`; Default: `8.27 * scale`.
+#' @param w Width of the plot canvas, calculated as the width of an A4 page times `scale`; Default: `11.69 * scale`.
 #' @param ... Additional parameters passed to `plot_grid`.
 #'
 #' @examples
@@ -3009,7 +3009,7 @@ save2plots.A4 <- function(
 save4plots.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 2,
-    h = wA4 * scale, w = hA4 * scale,
+    h = 8.27 * scale, w = 11.69 * scale,
     ...) {
   if (pname == FALSE) pname <- Stringendo::sppp(substitute(plot_list), suffix)
   p1 <- cowplot::plot_grid(
@@ -3034,8 +3034,8 @@ save4plots.A4 <- function(
 #' @param plotlist A list of ggplot objects. Default: pl.
 #' @param plots A numeric vector indicating the indices of the plots to save from the 'plotlist'. Default: 1:2.
 #' @param NrPlots Number of plots to save. Default: length(plots).
-#' @param height Height for the saved image. Default: hA4.
-#' @param width Width for the saved image. Default: wA4.
+#' @param height Height for the saved image. Default: 11.69.
+#' @param width Width for the saved image. Default: 8.27.
 #' @param fname File name for the saved image. Default: "Fractions.Organoid-to-organoid variation.png".
 #' @param ... Additional arguments passed to the plot_grid function.
 #' @return This function does not return a value. It saves a grid plot of ggplot objects to the specified file.
@@ -3053,7 +3053,7 @@ save4plots.A4 <- function(
 #' @export
 qqSaveGridA4 <- function(
     plotlist = pl,
-    plots = 1:2, NrPlots = length(plots), height = hA4, width = wA4,
+    plots = 1:2, NrPlots = length(plots), height = 11.69, width = 8.27,
     fname = "Fractions.Organoid-to-organoid variation.png", ...) {
   stopifnot(NrPlots %in% c(2, 4))
   iprint(NrPlots, "plots found,", plots, "are saved.")

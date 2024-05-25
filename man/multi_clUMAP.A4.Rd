@@ -22,8 +22,8 @@ multi_clUMAP.A4(
   background_col = "white",
   aspect.ratio = c(FALSE, 0.6)[2],
   saveGeneList = FALSE,
-  w = wA4,
-  h = hA4,
+  w = 8.27,
+  h = 11.69,
   scaling = 1,
   format = c("jpg", "pdf", "png")[1],
   ...
@@ -64,9 +64,9 @@ multi_clUMAP.A4(
 
 \item{saveGeneList}{Logical indicating if a list of genes should be saved. Default: \code{FALSE}.}
 
-\item{w}{The width of the plot in inches. Default: \code{wA4}.}
+\item{w}{The width of the plot in inches. Default: \code{8.27}.}
 
-\item{h}{The height of the plot in inches. Default: \code{hA4}.}
+\item{h}{The height of the plot in inches. Default: \code{11.69}.}
 
 \item{scaling}{The scaling factor to apply to plot dimensions. Default: 1.}
 

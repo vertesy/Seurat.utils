@@ -4819,10 +4819,13 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE,
   param.list$"n.PC" <- n.PC
   param.list$"snn_res" <- resolutions
 
+  obj@misc$"p" <- param.list # overwrite previous parameters
+
   gc()
   if (compute) {
     message("------------------- FindVariableFeatures -------------------")
-    tic(); obj <- FindVariableFeatures(obj, mean.function = "FastExpMean", dispersion.function = "FastLogVMR", nfeatures = nfeatures); toc()
+    tic(); obj <- FindVariableFeatures(obj, mean.function = "FastExpMean", dispersion.function = "FastLogVMR",
+                                       nfeatures = nfeatures); toc()
 
     tic(); obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc()
     message("------------------- ScaleData -------------------")

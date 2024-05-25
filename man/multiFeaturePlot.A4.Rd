@@ -25,8 +25,8 @@ multiFeaturePlot.A4(
   background_col = "white",
   aspect.ratio = c(FALSE, 0.6)[2],
   saveGeneList = FALSE,
-  w = wA4,
-  h = hA4,
+  w = 8.27,
+  h = 11.69,
   scaling = 1,
   format = c("jpg", "pdf", "png")[1],
   ...
@@ -69,9 +69,9 @@ multiFeaturePlot.A4(
 
 \item{saveGeneList}{Should the list of genes be saved? Default: FALSE}
 
-\item{w}{Width of the plot. Default: wA4}
+\item{w}{Width of the plot. Default: 8.27}
 
-\item{h}{Height of the plot. Default: hA4}
+\item{h}{Height of the plot. Default: 11.69}
 
 \item{scaling}{Scaling factor for plot size. Default: 1}
 

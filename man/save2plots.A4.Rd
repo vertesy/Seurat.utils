@@ -11,8 +11,8 @@ save2plots.A4(
   scale = 1,
   nrow = 2,
   ncol = 1,
-  h = hA4 * scale,
-  w = wA4 * scale,
+  h = 11.69 * scale,
+  w = 8.27 * scale,
   ...
 )
 }

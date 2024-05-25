@@ -8,8 +8,8 @@ qqSaveGridA4(
   plotlist = pl,
   plots = 1:2,
   NrPlots = length(plots),
-  height = hA4,
-  width = wA4,
+  height = 11.69,
+  width = 8.27,
   fname = "Fractions.Organoid-to-organoid variation.png",
   ...
 )
@@ -21,9 +21,9 @@ qqSaveGridA4(
 
 \item{NrPlots}{Number of plots to save. Default: length(plots).}
 
-\item{height}{Height for the saved image. Default: hA4.}
+\item{height}{Height for the saved image. Default: 11.69.}
 
-\item{width}{Width for the saved image. Default: wA4.}
+\item{width}{Width for the saved image. Default: 8.27.}
 
 \item{fname}{File name for the saved image. Default: "Fractions.Organoid-to-organoid variation.png".}
 
