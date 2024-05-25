@@ -6,7 +6,7 @@
 \usage{
 plot3D.umap(
   category = GetNamedClusteringRuns(obj)[1],
-  annotate.by = GetNamedClusteringRuns(obj)[1],
+  annotate.by = category,
   obj = combined.obj,
   suffix = NULL,
   dotsize = 1.25,

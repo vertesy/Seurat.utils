@@ -1908,8 +1908,8 @@ clUMAP <- function(
     save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     check_for_2D = TRUE,
-    caption = .parseKeyParams(obj)
-    , ...) {
+    caption = NULL, # .parseKeyParams(obj)
+    ...) {
   #
   if (check_for_2D) {
     umap_dims <- ncol(obj@reductions[[reduction]]@cell.embeddings)
