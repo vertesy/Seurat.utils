@@ -3162,6 +3162,7 @@ plot3D.umap.gene <- function(
   # Input assertions ____________________________________
   stopifnot(
     is(obj, "Seurat"),
+    "gene or feature not found in obj" = (gene %in% rownames(obj) | gene %in% colnames(obj@meta.data)),
     (annotate.by %in% colnames(obj@meta.data) | annotate.by == FALSE),
     "reductions.backup is missing from @misc" = is.list(obj@misc$"reductions.backup"),
     "umap3d is missing from @misc$reductions.backup" = is(obj@misc$reductions.backup$"umap3d", class2 = "DimReduc"),
@@ -3170,15 +3171,23 @@ plot3D.umap.gene <- function(
     )
 
   if (obj@version < 5) col.names <- toupper(col.names)
+  message("Seu. obj. version: ", obj@version, " \ndim names: ", kppc(col.names))
 
-  stopifnot((gene %in% rownames(obj) | gene %in% colnames(obj@meta.data)))
   DefaultAssay(object = obj) <- def.assay
   iprint(DefaultAssay(object = obj), "assay")
 
-  plotting.data <- Seurat::FetchData(object = obj, vars = c(col.names, "Expression" = gene), slot = "data")
+  # Get and format 3D plotting data ____________________________________
+  plotting.data <- obj@misc$reductions.backup$"umap3d"@cell.embeddings
+  colnames(plotting.data) <- toupper(col.names)
 
-  plotting.data$"Expression" <- ww.check.quantile.cutoff.and.clip.outliers(expr.vec = plotting.data[, gene], quantileCutoffX = quantileCutoff, min.cells.expressing = 10)
-  CodeAndRoll2::clip.outliers.at.percentile(plotting.data[, gene], probs = c(1 - quantileCutoff, quantileCutoff))
+  # browser()
+  Expression <- Seurat::FetchData(object = obj, vars = gene)
+  plotting.data <- cbind(plotting.data, Expression)
+
+  plotting.data$"Expression" <- ww.check.quantile.cutoff.and.clip.outliers(expr.vec = plotting.data[ , gene],
+                                                                           quantileCutoffX = quantileCutoff, min.cells.expressing = 10)
+  # browser()
+  # CodeAndRoll2::clip.outliers.at.percentile(plotting.data[, gene], probs = c(1 - quantileCutoff, quantileCutoff))
   plotting.data$"label" <- paste(rownames(plotting.data), " - ", plotting.data[, gene], sep = "")
 
   ls.ann.auto <- if (annotate.by != FALSE) {
@@ -3235,7 +3244,7 @@ plot3D.umap.gene <- function(
 
 plot3D.umap <- function(
     category = GetNamedClusteringRuns(obj)[1],
-    annotate.by = GetNamedClusteringRuns(obj)[1],
+    annotate.by = category,
     obj = combined.obj,
     suffix = NULL,
     dotsize = 1.25,
@@ -3256,15 +3265,13 @@ plot3D.umap <- function(
   if (obj@version < 5) col.names <- toupper(col.names)
   message("Seu. obj. version: ", obj@version, " \ndim names: ", kppc(col.names))
 
-  cat(1)
   # Get and format 3D plotting data ____________________________________
   plotting.data <- obj@misc$reductions.backup$"umap3d"@cell.embeddings # plotting.data <- Seurat::FetchData(object = obj, vars = c(col.names, category))
   colnames(plotting.data) <- toupper(col.names)
-  plotting.data <- cbind(plotting.data,obj[[category]])
+
+  plotting.data <- cbind(plotting.data, obj[[category]])
   colnames(plotting.data)[4] <- "category"
   plotting.data$label <- paste(rownames(plotting.data)) # Make a column of row name identities (these will be your cell/barcode names)
-
-  cat(2)
 
   ls.ann.auto <- if (annotate.by != FALSE) {
     .Annotate4Plotly3D(obj = obj, plotting.data. = plotting.data, annotation.category = annotate.by)
@@ -3272,7 +3279,6 @@ plot3D.umap <- function(
     NULL
   }
 
-  cat(3)
   plt <- plotly::plot_ly(
     data = plotting.data,
     x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3,
@@ -3286,7 +3292,7 @@ plot3D.umap <- function(
     , ...
   ) %>%
     plotly::layout(title = category, scene = list(annotations = ls.ann.auto))
-  cat(2)
+
   SavePlotlyAsHtml(plt, category. = category, suffix. = suffix)
   return(plt)
 }
