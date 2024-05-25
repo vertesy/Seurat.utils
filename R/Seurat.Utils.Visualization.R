@@ -1935,7 +1935,7 @@ clUMAP <- function(
     }
 
     idx.ok <- identity[, 1] %in% highlight.clusters
-    stopifnot(sum(idx.ok) > 10) # minimum 10 cells needed
+    stopifnot("minimum 10 cells are needed" = sum(idx.ok) > 10)
 
     highlight.these <- rownames(identity)[idx.ok]
     PCT <- percentage_formatter(length(highlight.these) / ncol(obj), suffix = "or")
@@ -3642,7 +3642,8 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
 #' @export
 suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
                                    repel = TRUE, plotWidth = 7, plotHeight = 5, save = TRUE,
-                                   suffix = kpp("nVF", .getNrScaledFeatures(obj)),
+                                   # suffix = kpp("nVF", .getNrScaledFeatures(obj)),
+                                   suffix = NULL,
                                    ...) {
   # Input validation
   stopifnot(
