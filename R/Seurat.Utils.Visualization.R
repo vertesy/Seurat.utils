@@ -271,17 +271,20 @@ scCalcPCAVarExplained <- function(obj = combined.obj) { # Determine percent of v
 scPlotPCAvarExplained <- function(obj = combined.obj,
                                   plotname = "Variance Explained by Principal Components",
                                   sub = paste(ncol(obj), "cells, ", nrow(obj), "features."),
-                                  use.MarkdownReports = FALSE) {
+                                  use.MarkdownReports = FALSE,
+                                  # caption = .parseKeyParams(obj, suffix = "| hline at 1%"),
+                                  caption = "hline at 1%",
+                                  ...) {
+
   pct <- scCalcPCAVarExplained(obj)
   if (use.MarkdownReports) {
     MarkdownReports::wbarplot(pct, xlab = "Principal Components", ylab = "% of variation explained")
     barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5)
   } else {
-    CPT <- .parseKeyParams(obj, suffix = "| hline at 1%")
     ggExpress::qbarplot(
       vec = pct, plotname = plotname, subtitle = sub,
       xlab = "Principal Components", ylab = "% of variation explained",
-      w = 10, h = 5, hline = 1, caption = CPT
+      w = 10, h = 5, hline = 1, caption = caption
     )
   }
 }
@@ -317,21 +320,28 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
 #'
 #' @export
 Percent.in.Trome <- function(
-    obj = combined.obj, n.genes.barplot = 25,
-    width.barplot = round(n.genes.barplot / 4)) {
+    obj = combined.obj,
+    n.genes.barplot = 25,
+    width.barplot = round(n.genes.barplot / 4),
+    ...) {
+  message("Obj version", obj@version)
+
   m.expr <- obj@assays$RNA@counts
   total.Expr <- sort(rowSums(m.expr), decreasing = TRUE)
   relative.total.Expr <- total.Expr / sum(total.Expr)
   print(head(iround(100 * relative.total.Expr), n = n.genes.barplot))
 
-  qhistogram(relative.total.Expr * 100,
+  Relative.of.Total.Gene.Expression <- relative.total.Expr * 100
+
+  qhistogram(Relative.of.Total.Gene.Expression,
     logX = FALSE, logY = TRUE,
     plotname = "Gene expression as fraction of all UMI's",
     subtitle = "Percentage in RNA-counts",
     xlab = "Percent in Transcriptome (total per gene)",
     ylab = "Number of genes",
-    xlab.angle = 45
-  ) # + geom_hline(yintercept = 10)
+    xlab.angle = 45,
+    w = 7, h = 5,
+    ...)
 
   Highest.Expressed.Genes <- head(iround(100 * relative.total.Expr), n = n.genes.barplot)
   qbarplot(Highest.Expressed.Genes,
@@ -340,11 +350,13 @@ Percent.in.Trome <- function(
     subtitle = "Total, in RNA-counts",
     xlab = "",
     ylab = "Gene expression as percent of all UMI's",
-    xlab.angle = 45
-  )
+    xlab.angle = 45,
+    w = 7, h = 5,
+    ...)
+
   print("!!!")
-  print("TotalReadFraction is stored under combined.obj@misc$'TotalReadFraction'  ")
-  print("!!!")
+  print("TotalReadFraction is now stored under combined.obj@misc$'TotalReadFraction'.")
+
   obj@misc$"TotalReadFraction" <- relative.total.Expr
   return(obj)
 }
@@ -354,9 +366,10 @@ Percent.in.Trome <- function(
 # _________________________________________________________________________________________________
 #' @title Histogram All Genes' Expression Level and a Highlighted Gene
 #'
-#' @description This function generates a histogram to visualize the expression level distribution
-#' of a specified gene across all cells in a Seurat object. It highlights the position of the gene
-#' of interest within the overall distribution.
+#' @description Shows a comparison of the expression level of the chose gene to all genes.
+#' Very useful to see if the gene has a meaningful expression level. This function generates a
+#' histogram to visualize the expression level distribution of a specified gene across all cells in
+#' a Seurat object. It highlights the position of the gene of interest within the overall distribution.
 #'
 #' @param gene The gene of interest for which the expression level distribution is to be plotted.
 #' Default: 'TOP2A'.
@@ -445,7 +458,7 @@ plotGeneExprHistAcrossCells <- function(
     assay = "RNA", slot_ = "data",
     thr_expr = 10,
     suffix = NULL,
-    xlab = paste0("log10(Summed UMI count @", slot_, ")"),
+    xlab = paste0("Expression -log10(Summed UMI count @", slot_, ")"),
     return_cells_passing = TRUE,
     quantile_thr = 0.95,
     return_quantile,
@@ -460,14 +473,15 @@ plotGeneExprHistAcrossCells <- function(
   # browser()
   # Aggregate genes if necessary
   aggregate <- length(genes) > 1
-  GeneExpressionInDataset <- colSums(GetAssayData(object = obj, assay = assay, slot = slot_)[genes, , drop = F])
-  head(GeneExpressionInDataset)
+  SummedExpressionPerCell <- colSums(GetAssayData(object = obj, assay = assay,
+                                                  slot = slot_)[genes, , drop = F])
+  head(SummedExpressionPerCell)
 
   # Clip counts if necessary
   if (slot_ == "counts") {
-    GeneExpressionInDataset <- CodeAndRoll2::clip.at.fixed.value(
-      distribution = GeneExpressionInDataset,
-      thr = quantile(GeneExpressionInDataset, probs = .95)
+    SummedExpressionPerCell <- CodeAndRoll2::clip.at.fixed.value(
+      distribution = SummedExpressionPerCell,
+      thr = quantile(SummedExpressionPerCell, probs = .95)
     )
   }
 
@@ -475,16 +489,16 @@ plotGeneExprHistAcrossCells <- function(
   CPT <- paste("slot:", slot_, "| assay:", assay, "| cutoff at", iround(thr_expr))
 
   # Add a subtitle with the number of genes and the expression threshold
-  SUBT <- filter_HP(GeneExpressionInDataset, threshold = thr_expr, return_conclusion = TRUE, plot.hist = FALSE)
+  SUBT <- filter_HP(SummedExpressionPerCell, threshold = thr_expr, return_conclusion = TRUE, plot.hist = FALSE)
   if (aggregate) {
-    SUBT <- paste(SUBT, "\n", length(genes), "genes summed up, e.g:", kppc(head(genes)))
-    TTL <- paste("Gene Expression", Stringendo::flag.nameiftrue(aggregate, prefix = "- "), suffix)
+    SUBT <- paste(SUBT, "\n", length(genes), "genes summed up, \n e.g:", kppc(head(genes)))
+    TTL <- paste("Summed Gene-set Expression -", suffix)
   } else {
     TTL <- trimws(paste("Gene Expression -", paste(genes), suffix))
   }
 
   # Create the plot
-  pobj <- ggExpress::qhistogram(GeneExpressionInDataset,
+  pobj <- ggExpress::qhistogram(SummedExpressionPerCell,
     plotname = TTL,
     subtitle = SUBT,
     caption = CPT,
@@ -510,7 +524,7 @@ plotGeneExprHistAcrossCells <- function(
 
   # Return the number of cells passing the filter
   if (return_cells_passing) {
-    return(MarkdownHelpers::filter_HP(GeneExpressionInDataset, threshold = thr_expr, plot.hist = FALSE))
+    return(MarkdownHelpers::filter_HP(SummedExpressionPerCell, threshold = thr_expr, plot.hist = FALSE))
   }
 }
 
@@ -887,7 +901,7 @@ scBarplot.CellsPerCluster <- function(
     palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
     return_table = FALSE,
     ylab_adj = 1.1,
-    min.cells = round(ncol(obj) / 500),
+    min.cells = round(ncol(obj) / 100),
     ...) {
   stopifnot(ident %in% colnames(obj@meta.data))
 
@@ -909,7 +923,7 @@ scBarplot.CellsPerCluster <- function(
   nr.cells.per.cl <- table(obj[[ident]][, 1])
   SBT <- pc_TRUE(nr.cells.per.cl < min.cells,
     NumberAndPC = TRUE,
-    suffix = paste("of identites are below min.cells:", min.cells)
+    suffix = paste("of identites are < 1% (below min.cells:", min.cells, ")")
   )
 
   pl <- ggExpress::qbarplot(cell.per.cluster,
@@ -976,7 +990,7 @@ plotClustSizeDistr <- function(
     if (length(clust.size.distr) < thr.hist) {
       ggExpress::qbarplot(clust.size.distr,
         plotname = ptitle, subtitle = psubtitle,
-        label = clust.size.distr, xlab = xlb, ylab = ylb, ...
+        label = clust.size.distr, xlab = "Clusters", ylab = xlb, ...
       )
     } else {
       ggExpress::qhistogram(
@@ -997,10 +1011,10 @@ plotClustSizeDistr <- function(
 #' @description Generates a bar plot depicting the percentage of cells within each cluster that
 #' exceed a specified threshold, based on a selected metadata column.
 #'
-#' @param thrX Threshold for calculating the fraction of cells. Default: 0.3.
 #' @param value.col Column in metadata with values to assess against `thrX`. Default: 'percent.ribo'.
-#' @param id.col Cluster identity column in metadata. Default: 'cl.names.top.gene.res.0.3'.
+#' @param thrX Threshold for calculating the fraction of cells. Default: 0.3.
 #' @param obj Seurat object with single-cell data. Default: `combined.obj`.
+#' @param id.col Cluster identity column in metadata. Default: 'cl.names.top.gene.res.0.3'.
 #' @param return.df Whether to return the underlying data frame instead of the plot. Default: FALSE.
 #' @param label Whether to add labels to the bar plot. Default: NULL.
 #' @param subtitle Optional subtitle for the plot.
@@ -1019,18 +1033,19 @@ plotClustSizeDistr <- function(
 #'
 #' @export
 scBarplot.FractionAboveThr <- function(
-    thrX = 0.2,
     value.col = "percent.ribo",
-    id.col = getClusterNames()[1],
+    thrX = 0.1,
     obj = combined.obj,
-    return.df = FALSE,
+    id.col = GetClusteringRuns(obj)[1],
     subtitle = id.col,
+    return.df = FALSE,
     label = NULL,
     suffix = NULL,
     above = TRUE,
     ylim = c(0, 100), # set to null for relative y axis
     ...) {
-  # browser()
+  stopifnot(value.col %in% colnames(obj@meta.data))
+
   meta <- obj@meta.data
   metacol <- meta %>%
     dplyr::select(c(id.col, value.col))
@@ -1044,7 +1059,7 @@ scBarplot.FractionAboveThr <- function(
       fr_n_cells_below = 1 - fr_n_cells_above
     )
   )
-  print(1)
+
 
   pass <-
     if (above) {
@@ -2028,11 +2043,12 @@ clUMAP <- function(
 umapHiLightSel <- function(obj = combined.obj,
                            COI = c("0", "2", "4"),
                            ident = GetClusteringRuns()[1],
+                           h = 7, w = 5,
                            ...) {
   stopifnot(is(obj, "Seurat"),
-    ident %in% colnames(obj@meta.data),
-    "Not all clusters in COI are found the object!" = all(COI %in% unique(obj@meta.data[[ident]]))
-  )
+            "Ident no found the object!" =ident %in% colnames(obj@meta.data),
+            "Not all clusters in COI are found the object!" = all(COI %in% unique(obj@meta.data[[ident]]))
+            )
 
   cellsSel <- getCellIDs.from.meta(ident = ident, ident_values = COI, obj = obj)
   Seurat::DimPlot(obj,
@@ -2043,7 +2059,8 @@ umapHiLightSel <- function(obj = combined.obj,
     ...
   )
 
-  ggplot2::ggsave(filename = extPNG(kollapse("cells", COI, collapseby = ".")))
+  ggplot2::ggsave(filename = extPNG(kollapse("cells", COI, collapseby = ".")),
+                  height = h, width = w)
 }
 
 
@@ -2243,7 +2260,7 @@ multiFeaturePlot.A4 <- function(
 #'
 #' @export
 multiSingleClusterHighlightPlots.A4 <- function(
-    ident,
+    ident = GetClusteringRuns()[1],
     obj = combined.obj,
     foldername = substitute(ident), plot.reduction = "umap",
     intersectionAssay = c("RNA", "integrated")[1],
@@ -2561,7 +2578,8 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj, foldername = NULL,
 #' @param obj Seurat object containing single-cell RNA-seq data and clustering information;
 #' Default: `combined.obj`.
 #' @param cl_res Cluster resolution used to identify distinct clusters for analysis; Default: `res`.
-#' @param nrGenes Number of top DE genes to display for each cluster; Default: `p$'n.markers'`.
+#' @param nrGenes Number of top DE genes to display for each cluster;
+#' Default: GetClusteringRuns()[1].
 #' @param order.by Criteria for ranking DE genes within clusters; Default: `"combined.score"`.
 #' @param df_markers Data frame or list of DE genes across clusters. If not provided,
 #' attempts to retrieve from `obj@misc$df.markers[[paste0("res.", cl_res)]]`;
@@ -2576,7 +2594,9 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj, foldername = NULL,
 #'
 #' @export
 PlotTopGenesPerCluster <- function(
-    obj = combined.obj, cl_res = res, nrGenes = p$"n.markers",
+    obj = combined.obj,
+    cl_res = GetClusteringRuns()[1],
+    nrGenes = p$"n.markers",
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1],
     df_markers = obj@misc$"df.markers"[[paste0("res.", cl_res)]],
     ...) {
@@ -3678,3 +3698,8 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
     )
   }
 }
+
+
+
+
+

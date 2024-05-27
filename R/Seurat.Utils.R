@@ -564,7 +564,8 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 # _________________________________________________________________________________________________
 #' @title GetClusteringRuns
 #'
-#' @description Get Clustering Runs: metadata column names.
+#' @description The `GetClusteringRuns` function retrieves metadata column names associated with
+#'  clustering runs, based on a pattern to match, `"*snn_res.[0-9].[0-9]$"`, by default.
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: FALSE
 #' @param pat Pettern to match, Default: `*snn_res.*[0-9]$`
@@ -580,6 +581,7 @@ GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.[
 
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
   if (identical(clustering.results, character(0))) warning("No matching column found!", immediate. = TRUE)
+  message("Clustering runs found:")
   dput(clustering.results)
   return(clustering.results)
 }
@@ -588,7 +590,8 @@ GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.[
 # _________________________________________________________________________________________________
 #' @title GetNamedClusteringRuns
 #'
-#' @description Get Clustering Runs: metadata column names
+#' @description The `GetNamedClusteringRuns` function retrieves metadata column names associated with
+#'  non-numeric ("named") clustering runs, based on a pattern to match, `"Name|name"`, by default.
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: c(FALSE, 0.5)[1]
 #' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: FALSE
