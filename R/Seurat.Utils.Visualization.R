@@ -3324,8 +3324,11 @@ SavePlotlyAsHtml <- function(plotly_obj, category. = category, suffix. = NULL) {
 # _________________________________________________________________________________________________
 #' @title Backup Dimensionality Reduction Data
 #'
-#' @description Stores a backup of specified dimensionality reduction data (e.g., UMAP, tSNE, PCA)
-#' within the Seurat object, from `obj@reductions$umap` to the `@misc$reductions.backup` slot.
+#' @description This function is mostly used internally.It stores a backup of specified
+#' dimensionality reduction data (e.g., UMAP, tSNE, PCA)
+#' within the Seurat object, from `obj@reductions$umap` to the `@misc$reductions.backup` slot. This
+#' allows to store 2D and 3D UMAP visualizations in parallel and easily switch between them via
+#' the `RecallReduction` function.
 #'
 #' @param obj Seurat object containing dimensionality reduction data; Default: `combined.obj`.
 #' @param dim Number of dimensions to include in the backup; Default: 2.
