@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
-Version: 2.7.3
+Version: 2.7.5
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <av@imba.oeaw.ac.at> [aut, cre]
@@ -59,6 +59,6 @@ Suggests:
     RColorBrewer,
     SoupX
 Encoding: UTF-8
-Packaged: 2024-03-26 16:06:20.075737
+Packaged: 2024-05-27 16:35:31.283439
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1

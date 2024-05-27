@@ -639,7 +639,7 @@ regress_out_and_recalculate_seurat <- function(
 # }
 
 # getDiscretePalette <- function(
-    #     ident.used = GetClusteringRuns()[1],
+#     ident.used = GetClusteringRuns()[1],
 #     obj = combined.obj,
 #     palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[1],
 #     show.colors = FALSE, seed = 1989) {
@@ -737,7 +737,7 @@ regress_out_and_recalculate_seurat <- function(
 # #' @importFrom dplyr group_by_ summarise
 # #' @importFrom scales percent_format
 # get.clustercomposition <- function(
-    #     obj = combined.obj,
+#     obj = combined.obj,
 #     ident = GetClusteringRuns()[1],
 #     splitby = "orig.ident",
 #     color = splitby,
@@ -794,7 +794,7 @@ regress_out_and_recalculate_seurat <- function(
 # #' @importFrom dplyr group_by_ summarise
 # #' @importFrom scales percent_format
 # get.clustercomposition <- function(
-    #     obj = combined.obj,
+#     obj = combined.obj,
 #     ident = GetClusteringRuns()[1],
 #     splitby = "orig.ident",
 #     color = splitby,
@@ -850,7 +850,7 @@ regress_out_and_recalculate_seurat <- function(
 # #'
 # #' @export
 # multiFeatureHeatmap.A4 <- function(
-    #     obj = combined.obj,
+#     obj = combined.obj,
 #     list.of.genes, gene.per.page = 5,
 #     group.cells.by = "batch", plot.reduction = "umap",
 #     cex = iround(3 / gene.per.page), sep_scale = FALSE,

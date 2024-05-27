@@ -160,7 +160,6 @@ calculateAverageMetaData <- function(
     ident = GetClusteringRuns()[1],
     metrics = list("median" = median, "mean" = mean),
     verbose = TRUE, max.categ = 30) {
-
   stopifnot(
     is(obj, "Seurat"),
     "ident not found in object" = ident %in% colnames(obj@meta.data),
@@ -211,7 +210,6 @@ calculateAverageMetaData <- function(
 #'
 #' @examples
 #' calculatePercentageMatch(obj = combined.obj, ident = "Simple_Celltypes")
-
 calculatePercentageMatch <- function(
     obj,
     ident = GetClusteringRuns()[1],
@@ -219,7 +217,6 @@ calculatePercentageMatch <- function(
     match.values = c("AAV.detected.min2" = "AAV", "AAV.detected" = "AAV"), # Named vector for matches
     verbose = TRUE,
     max.categ = 100) {
-
   # Check for preconditions
   stopifnot(
     is(obj, "Seurat"),
@@ -1135,11 +1132,13 @@ plotMetadataMedianFractionBarplot <- function(
 #'
 #' @examples
 #' \dontrun{
-#' plotMetadataCategPie(metacol = "Singlet.status",
-#'                      plot_name = "Singlet Status Distribution",
-#'                      obj = combined.obj,
-#'                      max.categs = 20,
-#'                      both_pc_and_value = TRUE)
+#' plotMetadataCategPie(
+#'   metacol = "Singlet.status",
+#'   plot_name = "Singlet Status Distribution",
+#'   obj = combined.obj,
+#'   max.categs = 20,
+#'   both_pc_and_value = TRUE
+#' )
 #' }
 #'
 #' @return A pie chart visualizing the distribution of categories within the specified metadata column.

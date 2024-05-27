@@ -11,7 +11,7 @@ suPlotVariableFeatures(
   plotWidth = 7,
   plotHeight = 5,
   save = TRUE,
-  suffix = kpp("nVF", .getNrScaledFeatures(obj)),
+  suffix = NULL,
   ...
 )
 }
