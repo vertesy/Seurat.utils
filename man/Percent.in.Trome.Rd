@@ -7,7 +7,8 @@
 Percent.in.Trome(
   obj = combined.obj,
   n.genes.barplot = 25,
-  width.barplot = round(n.genes.barplot/4)
+  width.barplot = round(n.genes.barplot/4),
+  ...
 )
 }
 \arguments{

@@ -8,7 +8,9 @@ scPlotPCAvarExplained(
   obj = combined.obj,
   plotname = "Variance Explained by Principal Components",
   sub = paste(ncol(obj), "cells, ", nrow(obj), "features."),
-  use.MarkdownReports = FALSE
+  use.MarkdownReports = FALSE,
+  caption = "hline at 1\%",
+  ...
 )
 }
 \arguments{

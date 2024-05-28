@@ -18,8 +18,11 @@ BackupReduction(obj = combined.obj, dim = 2, reduction = "umap")
 \description{
 Backup UMAP to \code{obj@misc$reductions.backup} from \code{obj@reductions$umap}. #
 
-Stores a backup of specified dimensionality reduction data (e.g., UMAP, tSNE, PCA)
-within the Seurat object, from \code{obj@reductions$umap} to the \verb{@misc$reductions.backup} slot.
+This function is mostly used internally.It stores a backup of specified
+dimensionality reduction data (e.g., UMAP, tSNE, PCA)
+within the Seurat object, from \code{obj@reductions$umap} to the \verb{@misc$reductions.backup} slot. This
+allows to store 2D and 3D UMAP visualizations in parallel and easily switch between them via
+the \code{RecallReduction} function.
 }
 \examples{
 \dontrun{

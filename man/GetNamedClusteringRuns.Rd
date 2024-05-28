@@ -21,7 +21,8 @@ GetNamedClusteringRuns(
 \item{pat}{Pettern to match, Default: '^cl.names.Known.*\link{0,1}\.\link{0-9}$'}
 }
 \description{
-Get Clustering Runs: metadata column names
+The \code{GetNamedClusteringRuns} function retrieves metadata column names associated with
+non-numeric ("named") clustering runs, based on a pattern to match, \code{"Name|name"}, by default.
 }
 \examples{
 \dontrun{

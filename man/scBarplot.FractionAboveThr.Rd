@@ -5,12 +5,12 @@
 \title{Barplot the Fraction of Cells Above Threshold per Cluster}
 \usage{
 scBarplot.FractionAboveThr(
-  thrX = 0.2,
   value.col = "percent.ribo",
-  id.col = getClusterNames()[1],
+  thrX = 0.1,
   obj = combined.obj,
-  return.df = FALSE,
+  id.col = GetClusteringRuns(obj)[1],
   subtitle = id.col,
+  return.df = FALSE,
   label = NULL,
   suffix = NULL,
   above = TRUE,
@@ -19,17 +19,17 @@ scBarplot.FractionAboveThr(
 )
 }
 \arguments{
-\item{thrX}{Threshold for calculating the fraction of cells. Default: 0.3.}
-
 \item{value.col}{Column in metadata with values to assess against \code{thrX}. Default: 'percent.ribo'.}
 
-\item{id.col}{Cluster identity column in metadata. Default: 'cl.names.top.gene.res.0.3'.}
+\item{thrX}{Threshold for calculating the fraction of cells. Default: 0.3.}
 
 \item{obj}{Seurat object with single-cell data. Default: \code{combined.obj}.}
 
-\item{return.df}{Whether to return the underlying data frame instead of the plot. Default: FALSE.}
+\item{id.col}{Cluster identity column in metadata. Default: 'cl.names.top.gene.res.0.3'.}
 
 \item{subtitle}{Optional subtitle for the plot.}
+
+\item{return.df}{Whether to return the underlying data frame instead of the plot. Default: FALSE.}
 
 \item{label}{Whether to add labels to the bar plot. Default: NULL.}
 

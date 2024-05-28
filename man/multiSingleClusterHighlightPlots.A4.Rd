@@ -5,11 +5,11 @@
 \title{Generate Cluster Highlight UMAPs compiled into A4 pages}
 \usage{
 multiSingleClusterHighlightPlots.A4(
-  ident,
   obj = combined.obj,
-  foldername = substitute(ident),
+  ident = GetClusteringRuns(obj)[1],
+  foldername = ident,
   plot.reduction = "umap",
-  intersectionAssay = c("RNA", "integrated")[1],
+  intersectionAssay = DefaultAssay(combined.obj),
   layout = c("tall", "wide", FALSE)[2],
   colors = c("grey", "red"),
   nr.Col = 2,
@@ -29,9 +29,9 @@ multiSingleClusterHighlightPlots.A4(
 )
 }
 \arguments{
-\item{ident}{The name of the metadata column in the Seurat object \code{obj} to use for identifying clusters.}
-
 \item{obj}{A Seurat object combining multiple datasets. Default: \code{combined.obj}.}
+
+\item{ident}{The name of the metadata column in the Seurat object \code{obj} to use for identifying clusters.}
 
 \item{foldername}{Name of the folder to save the plots in. Default: Value of \code{ident}.}
 

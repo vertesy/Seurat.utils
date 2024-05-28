@@ -6,7 +6,7 @@
 \usage{
 PlotTopGenesPerCluster(
   obj = combined.obj,
-  cl_res = res,
+  cl_res = GetClusteringRuns()[1],
   nrGenes = p$n.markers,
   order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1],
   df_markers = obj@misc$df.markers[[paste0("res.", cl_res)]],
@@ -19,7 +19,8 @@ Default: \code{combined.obj}.}
 
 \item{cl_res}{Cluster resolution used to identify distinct clusters for analysis; Default: \code{res}.}
 
-\item{nrGenes}{Number of top DE genes to display for each cluster; Default: \code{p$'n.markers'}.}
+\item{nrGenes}{Number of top DE genes to display for each cluster;
+Default: GetClusteringRuns()\link{1}.}
 
 \item{order.by}{Criteria for ranking DE genes within clusters; Default: \code{"combined.score"}.}
 

@@ -40,11 +40,13 @@ metadata column of a Seurat object.
 }
 \examples{
 \dontrun{
-plotMetadataCategPie(metacol = "Singlet.status",
-                     plot_name = "Singlet Status Distribution",
-                     obj = combined.obj,
-                     max.categs = 20,
-                     both_pc_and_value = TRUE)
+plotMetadataCategPie(
+  metacol = "Singlet.status",
+  plot_name = "Singlet Status Distribution",
+  obj = combined.obj,
+  max.categs = 20,
+  both_pc_and_value = TRUE
+)
 }
 
 }

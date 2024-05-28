@@ -18,12 +18,13 @@ GetClusteringRuns(
 \item{pat}{Pettern to match, Default: \verb{*snn_res.*[0-9]$}}
 }
 \description{
-Get Clustering Runs: metadata column names.
+The \code{GetClusteringRuns} function retrieves metadata column names associated with
+clustering runs, based on a pattern to match, \code{"*snn_res.[0-9].[0-9]$"}, by default.
 }
 \examples{
 \dontrun{
 if (interactive()) {
-  GetClusteringRuns(obj = combined.obj, pat = '*snn_res.*[0-9]$')
+  GetClusteringRuns(obj = combined.obj, pat = "*snn_res.*[0-9]$")
 }
 }
 }

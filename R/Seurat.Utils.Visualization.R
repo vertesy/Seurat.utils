@@ -385,7 +385,7 @@ Percent.in.Trome <- function(
 #' @export
 plotGeneExpressionInBackgroundHist <- function(
     gene = "TOP2A",
-    obj = ls.Seurat[[1]],
+    obj = combined.obj,
     assay = "RNA",
     slot = c("counts", "data")[2],
     w = 7, h = 4,
@@ -2044,6 +2044,7 @@ umapHiLightSel <- function(obj = combined.obj,
                            COI = c("0", "2", "4"),
                            ident = GetClusteringRuns()[1],
                            h = 7, w = 5,
+                           show_plot = T,
                            ...) {
   stopifnot(is(obj, "Seurat"),
             "Ident no found the object!" =ident %in% colnames(obj@meta.data),
@@ -2051,13 +2052,14 @@ umapHiLightSel <- function(obj = combined.obj,
             )
 
   cellsSel <- getCellIDs.from.meta(ident = ident, ident_values = COI, obj = obj)
-  Seurat::DimPlot(obj,
+  pl <- Seurat::DimPlot(obj,
     reduction = "umap",
     group.by = ident,
     label = TRUE,
     cells.highlight = cellsSel,
     ...
   )
+  if(show_plot) print(pl)
 
   ggplot2::ggsave(filename = extPNG(kollapse("cells", COI, collapseby = ".")),
                   height = h, width = w)
@@ -2260,10 +2262,11 @@ multiFeaturePlot.A4 <- function(
 #'
 #' @export
 multiSingleClusterHighlightPlots.A4 <- function(
-    ident = GetClusteringRuns()[1],
     obj = combined.obj,
-    foldername = substitute(ident), plot.reduction = "umap",
-    intersectionAssay = c("RNA", "integrated")[1],
+    ident = GetClusteringRuns(obj)[1],
+    foldername = ident,
+    plot.reduction = "umap",
+    intersectionAssay = DefaultAssay(combined.obj), # c("RNA", "integrated")[1],
     layout = c("tall", "wide", FALSE)[2],
     colors = c("grey", "red"),
     nr.Col = 2, nr.Row = 4,

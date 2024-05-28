@@ -15,7 +15,7 @@ scBarplot.CellsPerCluster(
   palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
   return_table = FALSE,
   ylab_adj = 1.1,
-  min.cells = round(ncol(obj)/500),
+  min.cells = round(ncol(obj)/100),
   ...
 )
 }

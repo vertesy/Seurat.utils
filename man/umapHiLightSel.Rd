@@ -8,6 +8,9 @@ umapHiLightSel(
   obj = combined.obj,
   COI = c("0", "2", "4"),
   ident = GetClusteringRuns()[1],
+  h = 7,
+  w = 5,
+  show_plot = T,
   ...
 )
 }

@@ -20,6 +20,6 @@ Extracts cluster names based on a specified identity class from a Seurat object.
 }
 \examples{
 \dontrun{
- getClusterNames(obj = combined.obj, ident = GetClusteringRuns(obj)[2])
- }
+getClusterNames(obj = combined.obj, ident = GetClusteringRuns(obj)[2])
+}
 }
