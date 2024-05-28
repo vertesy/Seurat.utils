@@ -9,10 +9,12 @@ qClusteringUMAPS(
   idents = na.omit.strip(GetClusteringRuns(obj)[1:4]),
   prefix = "Clustering.UMAP.Res",
   suffix = "",
-  title = sppu(prefix, as.numeric(stringr::str_extract(idents, "\\\\d+\\\\.\\\\d+$")),
-    suffix),
   nrow = 2,
   ncol = 2,
+  w = 11.69,
+  h = 8.27,
+  title = sppu(prefix, as.numeric(stringr::str_extract(idents, "\\\\d+\\\\.\\\\d+$")),
+    suffix),
   ...
 )
 }
@@ -26,11 +28,15 @@ dynamically defaults to the first 4 found by \code{GetClusteringRuns}.}
 
 \item{suffix}{Suffix for plot titles; Default: "".}
 
-\item{title}{Custom title for the composite plot; dynamically generated from \code{prefix}, \code{idents}, and \code{suffix}.}
-
 \item{nrow}{Number of rows in the plot grid; Default: 2.}
 
 \item{ncol}{Number of columns in the plot grid; Default: 2.}
+
+\item{w}{Width of the plot; Default: 11.69.}
+
+\item{h}{Height of the plot; Default: 8.27.}
+
+\item{title}{Custom title for the composite plot; dynamically generated from \code{prefix}, \code{idents}, and \code{suffix}.}
 
 \item{...}{Additional parameters for individual UMAP plots.}
 }

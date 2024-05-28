@@ -68,6 +68,122 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", 
   )
 }
 
+
+# _________________________________________________________________________________________________
+#' @title Plot multiple categorical variables in combined UMAPs
+#'
+#' @description Generates and saves multiple UMAP plots for clustering results, adjusting the
+#' layout and plot dimensions. Supports the generation of plots in different
+#' formats and customization of the visual appearance.
+#'
+#' @param idents A vector of cluster identities to plot. Default: `GetClusteringRuns()[1:4]`.
+#' @param obj The Seurat object containing clustering information. Default: `combined.obj`.
+#' @param foldername The name of the folder to save plots. Default: `substitute(ident)`.
+#' @param plot.reduction The dimensionality reduction technique to use for plotting. Default: "umap".
+#' @param intersectionAssay The assay to use for intersection. Default: "RNA".
+#' @param layout The layout orientation, either "tall", "wide", or `FALSE` to disable. Default: "wide".
+#' @param nr.Col Number of columns in the plot grid. Default: 2.
+#' @param nr.Row Number of rows in the plot grid. Default: 4.
+#' @param cex The character expansion size for plot text, automatically adjusted. Default: `round(0.1 / (nr.Col * nr.Row), digits = 2)`.
+#' @param label Logical indicating if labels should be displayed on the plots. Default: `FALSE`.
+#' @param legend Logical indicating if a legend should be included in the plots. Default: `!label`.
+#' @param subdir Logical indicating if a subdirectory should be created for saving plots. Default: `TRUE`.
+#' @param prefix Optional prefix for plot filenames. Default: `NULL`.
+#' @param suffix Optional suffix for plot filenames. Default: `NULL`.
+#' @param background_col The background color of the plot. Default: "white".
+#' @param aspect.ratio The aspect ratio of the plot, `FALSE` to disable fixed ratio. Default: 0.6.
+#' @param saveGeneList Logical indicating if a list of genes should be saved. Default: `FALSE`.
+#' @param w The width of the plot in inches. Default: `8.27`.
+#' @param h The height of the plot in inches. Default: `11.69`.
+#' @param scaling The scaling factor to apply to plot dimensions. Default: 1.
+#' @param format The file format for saving plots. Default: "jpg".
+#' @param ... Additional arguments passed to plotting functions.
+#'
+#' @return Invisible `NULL`. Plots are saved to files.
+#' @examples
+#' \dontrun{
+#' multi_clUMAP.A4(idents = c("S1", "S2"), obj = YourSeuratObject)
+#' }
+#' @export
+
+multi_clUMAP.A4 <- function(
+    obj = combined.obj,
+    idents = GetClusteringRuns(obj)[1:4],
+    foldername = "clUMAPs_multi",
+    plot.reduction = "umap",
+    intersectionAssay = c("RNA", "integrated")[1],
+    layout = c("tall", "wide", FALSE)[2],
+    # colors = c("grey", "red"),
+    nr.Col = 2, nr.Row = 4,
+    cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
+    label = FALSE, # can be a vector of length idents
+    legend = !label,
+    subdir = TRUE,
+    prefix = NULL, suffix = NULL,
+    background_col = "white",
+    aspect.ratio = c(FALSE, 0.6)[2],
+    saveGeneList = FALSE,
+    w = 8.27, h = 11.69, scaling = 1,
+    format = c("jpg", "pdf", "png")[1],
+    ...) {
+
+  .Deprecated("qClusteringUMAPS")
+  message("multi_clUMAP.A4() is kept because it can plot more than 4 resolutions, inti a subfolder.")
+  tictoc::tic()
+  ParentDir <- OutDir
+  if (is.null(foldername)) foldername <- "clusters"
+  if (subdir) create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
+
+  DefaultAssay(obj) <- intersectionAssay
+
+  # Adjust plot dimensions and grid layout based on specified layout
+  .adjustLayout(layout, scaling, wA4 = 8.27, hA4 = 11.69, environment())
+
+
+  # Split clusters into lists for plotting
+  ls.idents <- CodeAndRoll2::split_vec_to_list_by_N(1:length(idents), by = nr.Row * nr.Col)
+  for (i in 1:length(ls.idents)) {
+    idents_on_this_page <- idents[ls.idents[[i]]]
+    iprint("page:", i, "| idents", kppc(idents_on_this_page))
+    (plotname <- kpp(c(prefix, plot.reduction, i, "idents", ls.idents[[i]], suffix, format)))
+
+    plot.list <- list()
+    for (i in seq(idents_on_this_page)) {
+      # browser()
+      if (length(label) == 1) {
+        label_X <- label
+        legend_X <- legend
+      } else {
+        label_X <- label[i]
+        legend_X <- legend[i]
+      }
+
+      ident_X <- idents_on_this_page[i]
+      imessage("plotting:", ident_X)
+      plot.list[[i]] <- clUMAP(
+        ident = ident_X, obj = obj, plotname = label_X,
+        label = label_X, legend = legend_X, save.plot = FALSE, h = h, w = w, ...
+      )
+    }
+
+    # Customize plot appearance
+    for (i in 1:length(plot.list)) {
+      plot.list[[i]] <- plot.list[[i]] + NoAxes()
+      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]]
+      ggplot2::coord_fixed(ratio = aspect.ratio)
+    }
+
+    # Save plots
+    pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
+    cowplot::ggsave2(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
+  } # for ls.idents
+
+  if (subdir) MarkdownReports::create_set_OutDir(ParentDir)
+  tictoc::toc()
+}
+
+
+
 # _________________________________________________________________________________________________
 #' @title Plot and Save UMAP without legend
 #'
