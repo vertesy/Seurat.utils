@@ -2512,7 +2512,7 @@ GetTopMarkers <- function(dfDE = df.markers,
 #' @param obj A Seurat object, with default value `combined.obj`.
 #' @param group.by The clustering group to be used, defaults to the first entry by
 #' `GetClusteringRuns()`.
-#' @param res Clustering resolution to use, with a default value of 0.1.
+#' @param res Clustering resolution tag. Default is extracted from `group.by`.
 #' @param plot.top.genes Logical indicating whether to show a plot, default is `TRUE`.
 #' @param suffix Suffix for the naming, defaults to the value of `res`.
 #' @param order.by Sorting criterion for the output tibble, defaults to the second element
@@ -2535,12 +2535,14 @@ GetTopMarkers <- function(dfDE = df.markers,
 AutoLabelTop.logFC <- function(
     obj = combined.obj,
     group.by = GetClusteringRuns(obj)[1],
-    res = 0.1, plot.top.genes = TRUE,
+    res = stringr::str_extract(string, "\\d+\\.\\d+"),
+    plot.top.genes = TRUE,
     suffix = res,
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2],
     exclude = c("^AL*|^AC*|^LINC*|^C[0-9]+orf[0-9]*"),
     df_markers = obj@misc$"df.markers"[[paste0("res.", res)]],
     plotEnrichment = TRUE) {
+
   stopifnot(
     !is.null("df_markers"),
     order.by %in% colnames(df_markers)
@@ -2551,11 +2553,12 @@ AutoLabelTop.logFC <- function(
   if (plotEnrichment) {
     top_log2FC <- df.top.markers$"avg_log2FC"
     names(top_log2FC) <- ppp(df.top.markers$"cluster", df.top.markers$"gene")
-    ggExpress::qbarplot(top_log2FC,
-      label = iround(top_log2FC),
-      subtitle = suffix,
-      ylab = "avg_log2FC", xlab = "clusters",
-      suffix = suffix
+    ggExpress::qbarplot(top_log2FC, plotname = "The strongest fold change by cluster",
+                        label = iround(top_log2FC),
+                        subtitle = group.by,
+                        ylab = "avg_log2FC", xlab = "clusters",
+                        hline = 2,
+                        suffix = group.by
     )
   }
 
