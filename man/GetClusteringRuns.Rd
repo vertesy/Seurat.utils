@@ -7,7 +7,7 @@
 GetClusteringRuns(
   obj = combined.obj,
   res = FALSE,
-  pat = "*snn_res.[0-9].[0-9]$"
+  pat = "*snn_res.[0-9].[0-9]+$"
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ GetClusteringRuns(
 
 \item{res}{Clustering resoluton to use, Default: FALSE}
 
-\item{pat}{Pettern to match, Default: \verb{*snn_res.*[0-9]$}}
+\item{pat}{Pattern to match, Default: \verb{*snn_res.*[0-9]$}}
 }
 \description{
 The \code{GetClusteringRuns} function retrieves metadata column names associated with

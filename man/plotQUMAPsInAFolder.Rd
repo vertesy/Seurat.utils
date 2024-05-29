@@ -8,7 +8,7 @@ plotQUMAPsInAFolder(
   genes,
   obj = combined.obj,
   foldername = NULL,
-  intersectionAssay = "RNA",
+  intersectionAssay = DefaultAssay(obj),
   plot.reduction = "umap",
   ...
 )

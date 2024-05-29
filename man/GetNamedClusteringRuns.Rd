@@ -8,7 +8,8 @@ GetNamedClusteringRuns(
   obj = combined.obj,
   res = list(FALSE, 0.5)[[1]],
   topgene = FALSE,
-  pat = c("^cl.names.Known.*[0,1]\\\\.[0-9]$", "Name|name")[2]
+  pat = c("^cl.names.*[0-9]\\\\.[0-9]", "Name|name")[2],
+  find.alternatives = TRUE
 )
 }
 \arguments{
@@ -18,7 +19,10 @@ GetNamedClusteringRuns(
 
 \item{topgene}{Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: FALSE}
 
-\item{pat}{Pettern to match, Default: '^cl.names.Known.*\link{0,1}\.\link{0-9}$'}
+\item{pat}{Pattern to match, Default: '^cl.names.Known.*\link{0,1}\.\link{0-9}$'}
+
+\item{find.alternatives}{If TRUE, tries to find alternative clustering runs with
+simple GetClusteringRuns(), Default: TRUE}
 }
 \description{
 The \code{GetNamedClusteringRuns} function retrieves metadata column names associated with

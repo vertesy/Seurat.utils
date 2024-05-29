@@ -1999,7 +1999,7 @@ clUMAP <- function(
     if (aspect.ratio) gg.obj <- gg.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
 
     if (save.plot) {
-      pname <- Stringendo::sppp(prefix, plotname, suffix, sppp(highlight.clusters))
+      pname <- Stringendo::sppp(prefix, plotname, paste0(ncol(obj),"c"), suffix, sppp(highlight.clusters))
       fname <- ww.FnP_parser(pname, if (PNG) "png" else "pdf")
       try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
     }
@@ -2392,9 +2392,9 @@ qClusteringUMAPS <- function(
   message(kppws(length(n.found), " found of ", idents))
 
   px <- list(
-    "A" = clUMAP(ident = idents[1], save.plot = FALSE, obj = obj, ...) + NoAxes(),
-    "B" = clUMAP(ident = idents[2], save.plot = FALSE, obj = obj, ...) + NoAxes(),
-    "C" = clUMAP(ident = idents[3], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "A" = clUMAP(ident = idents[1], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
+    "B" = clUMAP(ident = idents[2], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
+    "C" = clUMAP(ident = idents[3], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
     "D" = clUMAP(ident = idents[4], save.plot = FALSE, obj = obj, ...) + NoAxes()
   )
 
@@ -2406,6 +2406,64 @@ qClusteringUMAPS <- function(
   )
 }
 
+# _________________________________________________________________________________________________
+#' @title Quickly Draw 4 Gene Expression UMAPs on an A4 Page
+#'
+#' @description Generates and arranges UMAP plots for up to four specified gene expressions
+#' from a Seurat object onto an A4 page, facilitating comparative visualization.
+#'
+#' @param obj Seurat object to visualize; Default: `combined.obj`.
+#' @param features Vector of gene identifiers to plot;
+#' dynamically defaults to the first 4 found by `rownames(obj)`.
+#' @param prefix Prefix for plot titles; Default: "Expression.UMAP.Gene".
+#' @param suffix Suffix for plot titles; Default: "".
+#' @param title Custom title for the composite plot; dynamically generated from `prefix`, `genes`, and `suffix`.
+#' @param nrow Number of rows in the plot grid; Default: 2.
+#' @param ncol Number of columns in the plot grid; Default: 2.
+#' @param w Width of the plot; Default: 11.69.
+#' @param h Height of the plot; Default: 8.27.
+#' @param ... Additional parameters for individual UMAP plots.
+#'
+#' @examples
+#' \dontrun{
+#' qGeneExpressionUMAPS()
+#' }
+#'
+#' @export
+#' @importFrom Seurat NoAxes
+#' @importFrom ggExpress qA4_grid_plot
+qGeneExpressionUMAPS <- function(
+    obj = combined.obj,
+    features = rownames(obj)[1:4],
+    prefix = "Expression.UMAP.Gene",
+    suffix = "",
+    nrow = 2, ncol = 2,
+    w = 11.69, h = 8.27,
+    title = paste0(prefix, " ", paste(features, collapse = ", "), " ", suffix),
+    ...) {
+  message("Plotting qGeneExpressionUMAPS")
+
+  # Check that the features are in the object
+  n.found <- intersect(features, c(colnames(obj@meta.data), rownames(obj)))
+  stopifnot("None of the features found" = length(n.found) > 1,
+            "Only 4 features are allowed" = length(n.found) <5)
+
+  message(kppws(length(n.found), "found of", length(features), "features:", features))
+
+  px <- list(
+    "A" = qUMAP(feature = features[1], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
+    "B" = qUMAP(feature = features[2], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
+    "C" = qUMAP(feature = features[3], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
+    "D" = qUMAP(feature = features[4], save.plot = FALSE, obj = obj, ...) + NoAxes()
+  )
+
+  ggExpress::qA4_grid_plot(
+    plot_list = px,
+    plotname = title,
+    w = w, h = h,
+    nrow = nrow, ncol = ncol
+  )
+}
 
 
 # _________________________________________________________________________________________________
@@ -2434,17 +2492,21 @@ qClusteringUMAPS <- function(
 #' @importFrom MarkdownReports create_set_SubDir create_set_OutDir
 #' @export
 
-plotQUMAPsInAFolder <- function(genes, obj = combined.obj, foldername = NULL,
-                                intersectionAssay = "RNA", plot.reduction = "umap", ...) {
+plotQUMAPsInAFolder <- function(genes, obj = combined.obj,
+                                foldername = NULL,
+                                intersectionAssay = DefaultAssay(obj),
+                                plot.reduction = "umap",
+                                ...) {
   # Input checks
-  stopifnot(is.character(genes))
-  stopifnot(is.null(foldername) || is.character(foldername))
-  stopifnot(is.character(intersectionAssay))
-  stopifnot(is.character(plot.reduction))
+  stopifnot(is.character(genes),
+            is.null(foldername) || is.character(foldername),
+            is.character(plot.reduction))
 
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- deparse(substitute(genes))
+
   MarkdownReports::create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
+
   list.of.genes.found <- check.genes(
     list.of.genes = genes, obj = obj,
     assay.slot = intersectionAssay, makeuppercase = FALSE
@@ -2748,7 +2810,8 @@ FlipReductionCoordinates <- function(
 #' @importFrom CodeAndRoll2 as.named.vector.df unlapply translate
 #' @importFrom Stringendo kpp kppu iprint
 #' @importFrom Seurat FetchData
-AutoNumber.by.UMAP <- function(obj = combined.obj, reduction = "umap",
+AutoNumber.by.UMAP <- function(obj = combined.obj,
+                               reduction = "umap",
                                dim = 1, swap = FALSE,
                                ident = GetClusteringRuns(obj = obj)[1],
                                plot = TRUE) {

@@ -20,6 +20,385 @@
 # require(princurve) # only for AutoNumber.by.PrinCurve
 
 
+
+# _________________________________________________________________________________________________
+# One-stop-shop functions for entire pipelines _____________________________ ------
+# _________________________________________________________________________________________________
+
+
+#' @title Process Seurat Objects in Parallel
+#'
+#' @description Applies a series of Seurat processing steps to each Seurat object in a list.
+#'              The operations include scaling data, running PCA, UMAP, finding neighbors, and finding clusters.
+#'              This is done in parallel using multiple cores.
+#'
+#' @param obj A Seurat object to be processed.
+#' @param param.list A list of parameters used in the processing steps.
+#' @param compute A boolean indicating whether to compute the results. Default: TRUE.
+#' @param save A boolean indicating whether to save the results. Default: TRUE.
+#' @param plot A boolean indicating whether to plot the results. Default: TRUE.
+#' @param nfeatures The number of variable genes to use. Default: 2000.
+#' @param variables.2.regress A list of variables to regress out. Default: NULL.
+#' @param n.PC The number of principal components to use. Default: 30.
+#' @param resolutions A list of resolutions to use for clustering. Default: c(0.1, 0.2, 0.3, 0.4, 0.5).
+#' @return A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and clustering.
+#' @examples
+#' # Assuming ls.Seurat is a list of Seurat objects and params is a list of parameters
+#' # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
+#' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
+#' @export
+processSeuratObject <- function(obj, param.list = p, compute = TRUE,
+                                save = TRUE, plot = TRUE,
+                                nfeatures = param.list$"n.var.genes",
+                                variables.2.regress = param.list$"variables.2.regress.combined",
+                                n.PC = param.list$"n.PC",
+                                resolutions = param.list$"snn_res",
+                                ...) {
+  warning("Make sure you cleaned up the memory!", immediate. = TRUE)
+  stopifnot(require(tictoc))
+  message("nfeatures: ", nfeatures)
+
+
+  # Assertions to check input types _________________________________________________
+  stopifnot(
+    "Seurat" %in% class(obj),
+    is.list(param.list),
+    all(c("n.PC", "snn_res") %in% names(param.list)),
+    is.numeric(n.PC),
+    is.numeric(resolutions),
+    is.character(variables.2.regress) | is.null(variables.2.regress)
+  )
+  .checkListElements(param_list = p, elements = c("variables.2.regress.combined", "n.PC", "snn_res"))
+
+  iprint("nfeatures:", nfeatures)
+  iprint("n.PC:", n.PC)
+  iprint("snn_res:", resolutions)
+  iprint("variables.2.regress (combined):", variables.2.regress)
+
+  # Save parameters _________________________________________________
+  param.list$"n.var.genes" <- nfeatures
+  param.list$"variables.2.regress.combined" <- variables.2.regress
+  param.list$"n.PC" <- n.PC
+  param.list$"snn_res" <- resolutions
+
+  obj@misc$"p" <- param.list # overwrite previous parameters
+
+  gc()
+  if (compute) {
+    message("------------------- FindVariableFeatures -------------------")
+    tic()
+    obj <- FindVariableFeatures(obj,
+                                mean.function = "FastExpMean", dispersion.function = "FastLogVMR",
+                                nfeatures = nfeatures
+    )
+    toc()
+
+    tic()
+    obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
+    toc()
+    message("------------------- ScaleData -------------------")
+    tic()
+    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress)
+    toc()
+
+    message("------------------- PCA /UMAP -------------------")
+    tic()
+    obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE)
+    toc()
+
+    # tic(); obj <- RunUMAP(obj, reduction = "pca", dims = 1:n.PC); toc()
+    tic()
+    obj <- SetupReductionsNtoKdimensions(obj, nPCs = n.PC, reduction = "umap", dimensions = 3:2)
+    toc()
+
+    message("------------------- FindNeighbors & Clusters -------------------")
+    tic()
+    obj <- FindNeighbors(obj, reduction = "pca", dims = 1:n.PC)
+    toc()
+
+    tic()
+    obj <- FindClusters(obj, resolution = resolutions)
+    toc()
+  }
+
+  message("------------------- Save -------------------")
+  if (save) xsave(obj, suffix = "reprocessed", paramList = param.list)
+
+  if (plot) {
+    message("scPlotPCAvarExplained")
+    scPlotPCAvarExplained(obj)
+
+    message("qQC.plots.BrainOrg")
+    qQC.plots.BrainOrg(obj = obj)
+
+    message("multi_clUMAP.A4")
+    multi_clUMAP.A4(obj = obj)
+
+    message("qClusteringUMAPS")
+    res.ident <- paste0(DefaultAssay(obj), "_snn_res.", resolutions)
+    qClusteringUMAPS(obj = obj, idents = res.ident)
+
+    message("suPlotVariableFeatures")
+    suPlotVariableFeatures(obj = obj)
+
+    if (ncol(obj) < 50000) { # TEMP
+      message("qMarkerCheck.BrainOrg")
+      try(qMarkerCheck.BrainOrg(obj = obj), silent = TRUE)
+    }
+
+    Signature.Genes.Top20 <- c(
+      `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
+      , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1",
+      Interneurons = "ERBB4", Interneurons = "SCGN",
+      `Intermediate progenitor` = "EOMES" # ,  `Intermediate progenitor1` = "TAC3"
+      , `S-phase` = "TOP2A", `G2M-phase` = "H4C3" # formerly: HIST1H4C
+      , `oRG` = "HOPX", `oRG` = "ID4" # oRG outer radial glia
+      , Astroglia = "GFAP",
+      Astrocyte = "S100B", `Hypoxia/Stress` = "DDIT4",
+      `Choroid.Plexus` = "TTR", `Low-Quality` = "POLR2A",
+      `Mesenchyme` = "DCN", Glycolytic = "PDK1",
+      `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
+    )
+    message("plotQUMAPsInAFolder")
+    try(plotQUMAPsInAFolder(genes = Signature.Genes.Top20, obj = obj), silent = TRUE)
+  }
+  tictoc::toc()
+
+  return(obj)
+}
+
+# _________________________________________________________________________________________________
+#' @title Run Differential Gene Expression Analysis (DGEA)
+#'
+#' @description Runs a differential gene expression analysis based on specified parameters,
+#' reorders clusters if needed, and optionally saves results. Supports output and plotting configurations.
+#'
+#' @param obj Seurat object, assumed to be pre-configured with necessary data. Default: obj.RG.
+#' @param param.list List of parameters for DE analysis. Default: p.
+#' @param reorder.clusters Logical indicating whether to reorder clusters based on dimension.
+#'        Default: TRUE.
+#' @param reorder.dimension Integer specifying the dimension for reordering (1 for x, -1 for y).
+#'        Default: 1.
+#' @param clean.misc.slot Logical indicating whether to clean the misc slots of previous
+#' clustering results. Default: TRUE.
+#' @param clean.meta.data Logical indicating whether to clean the metadata slots of
+#' previous clustering results. Default: TRUE.
+#' @param ordering Character string specifying the cluster annotation method; can be "ordered"
+#'        or "simple". Default: "ordered".
+#' @param res.analyzed.DE Vector of numeric values specifying the resolutions to analyze.
+#'        Default: c(0.1).
+#' @param add.combined.score Logical indicating whether to add a combined score to the markers.
+#'        Default: TRUE.
+#' @param save.obj Logical indicating whether to save the modified Seurat object.
+#'        Default: TRUE.
+#' @param directory Character string specifying the base directory for saving results.
+#'        Default: OutDirOrig.
+#' @param calculate.DGEA Logical determining if the DE analysis should be calculated.
+#'        Default: TRUE.
+#' @param plot.DGEA Logical determining if results should be plotted.
+#'        Default: TRUE.
+#' @param Cluster.Labels.Automatic Logical indicating automatic labeling of clusters.
+#'        Default: TRUE.
+#' @param plot.av.enrichment.hist Logical indicating whether to plot the average enrichment histogram.
+#'       Default: TRUE.
+#' @param subdirectory Character string specifying the subdirectory for saving outputs within
+#'        the base directory. Default: "DGEA".
+#' @return Modified Seurat object and markers list.
+#' @examples
+#' runDGEA(obj = mySeuratObject, param.list = myListParams, directory = "Results/MyAnalysis")
+#'
+#' @export
+
+runDGEA <- function(obj = obj.RG,
+                    param.list = p,
+                    reorder.clusters = TRUE,
+                    clean.misc.slot = TRUE,
+                    clean.meta.data = TRUE,
+                    reorder.dimension = 1,
+                    ordering = "ordered", # param.list$"cl.annotation"
+                    res.analyzed.DE = c(.1), # param.list$'res.analyzed.DE'
+                    add.combined.score = TRUE,
+                    save.obj = TRUE,
+                    directory = OutDirOrig,
+                    calculate.DGEA = TRUE,
+                    plot.DGEA = TRUE,
+                    Cluster.Labels.Automatic = TRUE,
+                    plot.av.enrichment.hist = TRUE,
+                    subdirectory = "DGEA") {
+
+  # Assertions for input parameters
+  stopifnot(
+    is(obj, "Seurat"),
+    is.list(param.list),
+    dir.exists(directory)
+  )
+  create_set_OutDir(directory, subdirectory, newName = "dir_DGEA")
+
+  # Log utilized parameters from param.list
+  message("cl.annotation: ", param.list$"cl.annotation")
+  message("test: ", param.list$"test")
+  message("only.pos: ", param.list$"only.pos")
+  message("return.thresh: ", param.list$"return.thresh")
+  message("min.pct: ", param.list$"min.pct")
+  message("min.diff.pct: ", param.list$"min.diff.pct")
+  message("min.cells.group: ", param.list$"min.cells.group")
+  message("logfc.threshold: ", param.list$"logfc.threshold")
+  message("max.cells.per.ident: ", param.list$"max.cells.per.ident")
+
+  obj@misc$p$"res.analyzed.DE" <- res.analyzed.DE
+
+  # Retrieve analyzed DE resolutions
+  message("Resolutions analyzed:")
+  df.markers.all <- Idents.for.DEG <- list.fromNames(x = res.analyzed.DE)
+
+  if (clean.misc.slot) {
+    message("Erasing up the misc slot: df.markers and top.markers.resX")
+    obj@misc$'df.markers' <- NULL
+    topMslots <- grepv("top.markers.res", names(obj@misc))
+    obj@misc[topMslots] <- NULL
+  }
+
+  if (clean.meta.data) {
+    message("Erasing up the meta.data clustering columns.")
+    topMslots <- grepv("top.markers.res", names(obj@meta.data))
+
+    cl.ordered <- GetOrderedClusteringRuns(obj=obj)
+    cl.names <- GetNamedClusteringRuns(obj=obj, pat = "^cl.names.*[0-1]\\.[0-9]", find.alternatives = FALSE)
+    obj@meta.data[, c(cl.ordered, cl.names)] <- NULL
+  }
+
+  # Loop through each resolution setting to find markers ________________________________________
+  for (i in 1:length(res.analyzed.DE)) {
+    res <- res.analyzed.DE[i]
+    create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
+
+    if (reorder.clusters && ordering == "ordered") {
+      # Reorder clusters based on average expression of markers
+      message("Reordering clusters along dimension: ", sign(reorder.dimension), "*", if (abs(reorder.dimension) == 1) "x" else "y")
+
+      obj <- AutoNumber.by.UMAP(obj = obj,
+                                ident = GetClusteringRuns(res = res, obj = obj)[1],
+                                dim = abs(reorder.dimension), reduction = "umap",
+                                swap = (reorder.dimension < 0), plot = TRUE
+      )
+    }
+
+    # Set up clustering identity for DE analysis
+    Idents.for.DEG[[i]] <-
+      if (ordering == "ordered") {
+        GetOrderedClusteringRuns(res = res, obj = obj)
+      } else if (ordering == "simple") {
+        GetClusteringRuns(res = res, obj = obj)
+      } else {
+        print("not found")
+      }
+
+    stopifnot(Idents.for.DEG[[i]] %in% names(obj@meta.data))
+  } # end for loop
+
+
+  # Loop through each resolution setting to find markers ________________________________________
+  if (calculate.DGEA) {
+    for (i in 1:length(res.analyzed.DE)) {
+      res <- res.analyzed.DE[i]
+
+      message("res. ", res, " ------------------------------------------------------")
+      create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
+
+      message("Ident.for.DEG: ", Idents.for.DEG[[i]])
+      Idents(obj) <- Idents.for.DEG[[i]]
+
+      # Perform differential expression analysis
+      tic()
+      df.markers <- Seurat::FindAllMarkers(obj,
+                                           verbose = TRUE,
+                                           test.use = param.list$"test",
+                                           only.pos = param.list$"only.pos",
+                                           return.thresh = param.list$"return.thresh",
+                                           min.pct = param.list$"min.pct",
+                                           min.diff.pct = param.list$"min.diff.pct",
+                                           min.cells.group = param.list$"min.cells.group",
+                                           logfc.threshold = param.list$"logfc.threshold",
+                                           max.cells.per.ident = param.list$"max.cells.per.ident"
+      )
+      toc()
+      Stringendo::stopif(is.null(df.markers))
+      if (add.combined.score) df.markers <- Add.DE.combined.score(df.markers)
+      obj@misc$"df.markers"[[ppp("res", res)]] <- df.markers
+
+      # Save results to disk
+      fname <- ppp("df.markers", res, "tsv")
+      ReadWriter::write.simple.tsv(df.markers, filename = fname)
+      df.markers.all[[i]] <- df.markers
+      xsave(df.markers, suffix = kpp("res", res))
+    } # end for loop
+
+    # Assign df.markers.all to global environment
+    ReadWriter::write.simple.xlsx(named_list = df.markers.all, filename = "df.markers.all.xlsx")
+    assign("df.markers.all", df.markers.all, envir = .GlobalEnv)
+
+    # Save final results to disk
+    create_set_OutDir(directory)
+    if (save.obj) {
+      xsave(obj, suffix = kpp("w.DGEA", kpp("res", res.analyzed.DE)))
+    }
+  } # end if calculate.DGEA
+
+  # Loop through each resolution setting to find markers ________________________________________
+  if (plot.DGEA) {
+    message('Plotting results -----------------')
+
+    for (i in 1:length(res.analyzed.DE)) {
+      res <- res.analyzed.DE[i]
+      message('Resolution: ', res)
+      create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
+
+      df.markers <- obj@misc$"df.markers"[[ppp("res", res)]]
+      Stringendo::stopif(is.null(df.markers))
+
+      PlotTopGenesPerCluster(
+        obj = obj,
+        cl_res = res,
+        df_markers = df.markers,
+        nrGenes = param.list$"n.markers",
+        order.by = param.list$"DEG.ranking"
+      )
+
+      # Automatic cluster labeling by top gene ________________________________________
+      if (Cluster.Labels.Automatic) {
+        message('Automatic cluster labeling by top gene.')
+
+        obj <- StoreAllMarkers(df_markers = df.markers, res = res, obj = obj)
+        obj <- AutoLabelTop.logFC(res = res, obj = obj)
+        clUMAP(ident = ppp("cl.names.top.gene.res", res), obj = obj)
+      } # end if Cluster.Labels.Automatic
+
+      # Plot per-cluster gene enrichment histogram ________________________________________
+      if (plot.av.enrichment.hist) {
+        message('Plotting per-cluster gene enrichment histogram.')
+
+        df.markers.tbl <- as_tibble(df.markers)
+        df.markers.tbl$'cluster' <- as.character(df.markers.tbl$'cluster')
+        p.deg.hist <- ggpubr::gghistogram(df.markers.tbl, x = "avg_log2FC",
+                                          title =  "Number of enriched genes per cluster",
+                                          subtitle =  "Binned by Log2(FC)",
+                                          caption =  paste(res, "| vertical line at LFC: 2."),
+                                          rug = TRUE,
+                                          color = "cluster", fill = "cluster",
+                                          facet.by = 'cluster', xlim = c(0,3),
+                                          ylab = "Nr. D.E. Genes") +
+          geom_vline(xintercept = 1) +
+          theme_linedraw()
+        qqSave(ggobj = p.deg.hist, w = 10, h = 6, title = ppp("Enrichment log2FC per cluster",res))
+      }
+    } # end for loop
+
+  } # end if plot.DGEA
+
+  # Return obj and df.markers.all to global environment
+  return(obj)
+} # end runDGEA
+
 # _________________________________________________________________________________________________
 # General ______________________________ ----
 # _________________________________________________________________________________________________
@@ -568,7 +947,7 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #'  clustering runs, based on a pattern to match, `"*snn_res.[0-9].[0-9]$"`, by default.
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: FALSE
-#' @param pat Pettern to match, Default: `*snn_res.*[0-9]$`
+#' @param pat Pattern to match, Default: `*snn_res.*[0-9]$`
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -576,10 +955,10 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #' }
 #' }
 #' @export
-GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.[0-9].[0-9]$") { # OLD: '*snn_res.*[0-9]$'
+GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.[0-9].[0-9]+$") { # OLD: '*snn_res.*[0-9]$'
   if (!isFALSE(res)) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
 
-  clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
+  clustering.results <- sort(CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat))
   if (identical(clustering.results, character(0))) warning("No matching column found!", immediate. = TRUE)
   message("Clustering runs found:")
   dput(clustering.results)
@@ -595,7 +974,9 @@ GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.[
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: c(FALSE, 0.5)[1]
 #' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: FALSE
-#' @param pat Pettern to match, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
+#' @param pat Pattern to match, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
+#' @param find.alternatives If TRUE, tries to find alternative clustering runs with
+#' simple GetClusteringRuns(), Default: TRUE
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -606,16 +987,20 @@ GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.[
 GetNamedClusteringRuns <- function(
     obj = combined.obj,
     res = list(FALSE, 0.5)[[1]], topgene = FALSE,
-    pat = c("^cl.names.Known.*[0,1]\\.[0-9]$", "Name|name")[2]) {
+    pat = c("^cl.names.*[0-9]\\.[0-9]", "Name|name")[2],
+    find.alternatives = TRUE) {
+
   if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
   if (topgene) pat <- gsub(x = pat, pattern = "Known", replacement = "top")
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
+
   if (identical(clustering.results, character(0))) {
     warning("No matching column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)",
-      immediate. = TRUE
-    )
-    clustering.results <- GetClusteringRuns(obj = obj, res = FALSE, pat = "*_res.*[0,1]\\.[0-9]$")
+      immediate. = TRUE )
+    if (find.alternatives) clustering.results <-
+        GetClusteringRuns(obj = obj, res = FALSE, pat = "*_res.*[0,1]\\.[0-9]$")
   }
+
   dput(clustering.results)
   return(clustering.results)
 }
@@ -628,7 +1013,7 @@ GetNamedClusteringRuns <- function(
 #' @description Get Clustering Runs: metadata column names.
 #' @param obj Seurat object, Default: combined.obj.
 #' @param res Clustering resoluton to use, Default: FALSE
-#' @param pat Pettern to match, Default: '*snn_res.*[0,1]\.[0-9]\.ordered$'
+#' @param pat Pattern to match, Default: '*snn_res.*[0,1]\.[0-9]\.ordered$'
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -4044,36 +4429,6 @@ xread <- function(file, nthreads = 4,
 }
 
 
-# _________________________________________________________________________________________________
-#' @title Get the number of CPUs to use for CBE processing
-#'
-#' @description This function checks for the presence of a global `CBE.params` list and,
-#' if found and contains a `cpus` entry, returns the number of CPUs specified by `cpus` minus one.
-#' Otherwise, it returns a default number of CPUs.
-#'
-#' @param n.cpus.def The default number of CPUs to return if `CBE.params` does not exist
-#' or does not contain a `cpus` entry. Defaults to 8.
-#'
-#' @return The number of CPUs to use for CBE processing. If `CBE.params$cpus` is set,
-#' returns `CBE.params$cpus - 1`, ensuring at least 1 CPU is returned. Otherwise, returns `n.cpus.def`.
-#'
-#' @examples
-#' # Assuming CBE.params does not exist or does not have a `cpus` entry
-#' getCPUsCBE() # returns 8 by default
-#'
-#' # Assuming CBE.params exists and has a `cpus` entry of 4
-#' getCPUsCBE() # returns 3
-.getNrCores <- function(n.cpus.def = 8) {
-  # Check if 'CBE.params' exists and contains 'cpus'
-  if (exists("CBE.params") && is.list(CBE.params) &&
-    is.numeric(CBE.params$"cpus") && CBE.params$"cpus" > 0) {
-    max(CBE.params$"cpus" - 1, 1)
-  } else {
-    return(n.cpus.def)
-  }
-}
-
-
 
 # _________________________________________________________________________________________________
 # Save workspace
@@ -4766,328 +5121,39 @@ compareVarFeaturesAndRanks <- function(
 
 
 # _________________________________________________________________________________________________
-# New additions,  categorized _____________________________ ------
+# Helper Functions _____________________________ ------
 # _________________________________________________________________________________________________
 
-#' @title Process Seurat Objects in Parallel
+
+
+# _________________________________________________________________________________________________
+#' @title Get the number of CPUs to use for CBE processing
 #'
-#' @description Applies a series of Seurat processing steps to each Seurat object in a list.
-#'              The operations include scaling data, running PCA, UMAP, finding neighbors, and finding clusters.
-#'              This is done in parallel using multiple cores.
+#' @description This function checks for the presence of a global `CBE.params` list and,
+#' if found and contains a `cpus` entry, returns the number of CPUs specified by `cpus` minus one.
+#' Otherwise, it returns a default number of CPUs.
 #'
-#' @param obj A Seurat object to be processed.
-#' @param param.list A list of parameters used in the processing steps.
-#' @param compute A boolean indicating whether to compute the results. Default: TRUE.
-#' @param save A boolean indicating whether to save the results. Default: TRUE.
-#' @param plot A boolean indicating whether to plot the results. Default: TRUE.
-#' @param nfeatures The number of variable genes to use. Default: 2000.
-#' @param variables.2.regress A list of variables to regress out. Default: NULL.
-#' @param n.PC The number of principal components to use. Default: 30.
-#' @param resolutions A list of resolutions to use for clustering. Default: c(0.1, 0.2, 0.3, 0.4, 0.5).
-#' @return A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and clustering.
+#' @param n.cpus.def The default number of CPUs to return if `CBE.params` does not exist
+#' or does not contain a `cpus` entry. Defaults to 8.
+#'
+#' @return The number of CPUs to use for CBE processing. If `CBE.params$cpus` is set,
+#' returns `CBE.params$cpus - 1`, ensuring at least 1 CPU is returned. Otherwise, returns `n.cpus.def`.
+#'
 #' @examples
-#' # Assuming ls.Seurat is a list of Seurat objects and params is a list of parameters
-#' # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
-#' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
-#' @export
-processSeuratObject <- function(obj, param.list = p, compute = TRUE,
-                                save = TRUE, plot = TRUE,
-                                nfeatures = param.list$"n.var.genes",
-                                variables.2.regress = param.list$"variables.2.regress.combined",
-                                n.PC = param.list$"n.PC",
-                                resolutions = param.list$"snn_res",
-                                ...) {
-  warning("Make sure you cleaned up the memory!", immediate. = TRUE)
-  stopifnot(require(tictoc))
-  message("nfeatures: ", nfeatures)
-
-
-  # Assertions to check input types  ------------------------------------------------
-  stopifnot(
-    "Seurat" %in% class(obj),
-    is.list(param.list),
-    all(c("n.PC", "snn_res") %in% names(param.list)),
-    is.numeric(n.PC),
-    is.numeric(resolutions),
-    is.character(variables.2.regress) | is.null(variables.2.regress)
-  )
-  .checkListElements(param_list = p, elements = c("variables.2.regress.combined", "n.PC", "snn_res"))
-
-  iprint("nfeatures:", nfeatures)
-  iprint("n.PC:", n.PC)
-  iprint("snn_res:", resolutions)
-  iprint("variables.2.regress (combined):", variables.2.regress)
-
-  # Save parameters ------------------------------------------------
-  param.list$"n.var.genes" <- nfeatures
-  param.list$"variables.2.regress.combined" <- variables.2.regress
-  param.list$"n.PC" <- n.PC
-  param.list$"snn_res" <- resolutions
-
-  obj@misc$"p" <- param.list # overwrite previous parameters
-
-  gc()
-  if (compute) {
-    message("------------------- FindVariableFeatures -------------------")
-    tic()
-    obj <- FindVariableFeatures(obj,
-      mean.function = "FastExpMean", dispersion.function = "FastLogVMR",
-      nfeatures = nfeatures
-    )
-    toc()
-
-    tic()
-    obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
-    toc()
-    message("------------------- ScaleData -------------------")
-    tic()
-    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress)
-    toc()
-
-    message("------------------- PCA /UMAP -------------------")
-    tic()
-    obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE)
-    toc()
-
-    # tic(); obj <- RunUMAP(obj, reduction = "pca", dims = 1:n.PC); toc()
-    tic()
-    obj <- SetupReductionsNtoKdimensions(obj, nPCs = n.PC, reduction = "umap", dimensions = 3:2)
-    toc()
-
-    message("------------------- FindNeighbors & Clusters -------------------")
-    tic()
-    obj <- FindNeighbors(obj, reduction = "pca", dims = 1:n.PC)
-    toc()
-
-    tic()
-    obj <- FindClusters(obj, resolution = resolutions)
-    toc()
+#' # Assuming CBE.params does not exist or does not have a `cpus` entry
+#' getCPUsCBE() # returns 8 by default
+#'
+#' # Assuming CBE.params exists and has a `cpus` entry of 4
+#' getCPUsCBE() # returns 3
+.getNrCores <- function(n.cpus.def = 8) {
+  # Check if 'CBE.params' exists and contains 'cpus'
+  if (exists("CBE.params") && is.list(CBE.params) &&
+      is.numeric(CBE.params$"cpus") && CBE.params$"cpus" > 0) {
+    max(CBE.params$"cpus" - 1, 1)
+  } else {
+    return(n.cpus.def)
   }
-
-  message("------------------- Save -------------------")
-  if (save) xsave(obj, suffix = "reprocessed", paramList = param.list)
-
-  if (plot) {
-    message("scPlotPCAvarExplained")
-    scPlotPCAvarExplained(obj)
-
-    message("qQC.plots.BrainOrg")
-    qQC.plots.BrainOrg(obj = obj)
-
-    message("multi_clUMAP.A4")
-    multi_clUMAP.A4(obj = obj)
-
-    message("qClusteringUMAPS")
-    res.ident <- paste0(DefaultAssay(obj), "_snn_res.", resolutions)
-    qClusteringUMAPS(obj = obj, idents = res.ident)
-
-    message("suPlotVariableFeatures")
-    suPlotVariableFeatures(obj = obj)
-
-    if (ncol(obj) < 50000) { # TEMP
-      message("qMarkerCheck.BrainOrg")
-      try(qMarkerCheck.BrainOrg(obj = obj), silent = TRUE)
-    }
-
-    Signature.Genes.Top20 <- c(
-      `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
-      , `Immature neurons` = "SLA", Interneurons = "DLX6-AS1",
-      Interneurons = "ERBB4", Interneurons = "SCGN",
-      `Intermediate progenitor` = "EOMES" # ,  `Intermediate progenitor1` = "TAC3"
-      , `S-phase` = "TOP2A", `G2M-phase` = "H4C3" # formerly: HIST1H4C
-      , `oRG` = "HOPX", `oRG` = "ID4" # oRG outer radial glia
-      , Astroglia = "GFAP",
-      Astrocyte = "S100B", `Hypoxia/Stress` = "DDIT4",
-      `Choroid.Plexus` = "TTR", `Low-Quality` = "POLR2A",
-      `Mesenchyme` = "DCN", Glycolytic = "PDK1",
-      `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
-    )
-    message("plotQUMAPsInAFolder")
-    try(plotQUMAPsInAFolder(genes = Signature.Genes.Top20, obj = obj), silent = TRUE)
-  }
-  tictoc::toc()
-
-  return(obj)
 }
-
-# _________________________________________________________________________________________________
-#' @title Run Differential Gene Expression Analysis (DGEA)
-#'
-#' @description Runs a differential gene expression analysis based on specified parameters, reorders clusters
-#' if needed, and optionally saves results. Supports output and plotting configurations.
-#'
-#' @param obj Seurat object, assumed to be pre-configured with necessary data. Default: obj.RG.
-#' @param param.list List of parameters for DE analysis. Default: p.
-#' @param reorder.clusters Logical indicating whether to reorder clusters based on dimension.
-#'        Default: TRUE.
-#' @param reorder.dimension Integer specifying the dimension for reordering (1 for x, -1 for y).
-#'        Default: 1.
-#' @param ordering Character string specifying the cluster annotation method; can be "ordered"
-#'        or "simple". Default: "ordered".
-#' @param res.analyzed.DE Vector of numeric values specifying the resolutions to analyze.
-#'        Default: c(0.1).
-#' @param add.combined.score Logical indicating whether to add a combined score to the markers.
-#'        Default: TRUE.
-#' @param save.obj Logical indicating whether to save the modified Seurat object.
-#'        Default: TRUE.
-#' @param directory Character string specifying the base directory for saving results.
-#'        Default: OutDirOrig.
-#' @param calculte.DGEA Logical determining if the DE analysis should be calculated.
-#'        Default: TRUE.
-#' @param plot.DGEA Logical determining if results should be plotted.
-#'        Default: TRUE.
-#' @param Cluster.Labels.Automatic Logical indicating automatic labeling of clusters.
-#'        Default: TRUE.
-#' @param subdirectory Character string specifying the subdirectory for saving outputs within
-#'        the base directory. Default: "DGEA".
-#' @return Modified Seurat object and markers list.
-#' @examples
-#' RunDGEA(obj = mySeuratObject, param.list = myListParams, directory = "Results/MyAnalysis")
-#'
-#' @export
-
-RunDGEA <- function(obj = obj.RG,
-                    param.list = p,
-                    reorder.clusters = TRUE,
-                    reorder.dimension = 1,
-                    ordering = "ordered", # param.list$"cl.annotation"
-                    # res.analyzed.DE = c(.1, .2, .3), # param.list$'res.analyzed.DE'
-                    res.analyzed.DE = c(.1), # param.list$'res.analyzed.DE'
-                    add.combined.score = TRUE,
-                    save.obj = TRUE,
-                    directory = OutDirOrig,
-                    calculte.DGEA = TRUE,
-                    plot.DGEA = TRUE,
-                    Cluster.Labels.Automatic = TRUE,
-                    subdirectory = "DGEA") {
-  # Assertions for input parameters
-  stopifnot(
-    is(obj, "Seurat"),
-    is.list(param.list),
-    dir.exists(directory)
-  )
-  create_set_OutDir(directory, subdirectory, newName = "dir_DGEA")
-
-  # Log utilized parameters from param.list
-  message("cl.annotation: ", param.list$"cl.annotation")
-  message("test: ", param.list$"test")
-  message("only.pos: ", param.list$"only.pos")
-  message("return.thresh: ", param.list$"return.thresh")
-  message("min.pct: ", param.list$"min.pct")
-  message("min.diff.pct: ", param.list$"min.diff.pct")
-  message("min.cells.group: ", param.list$"min.cells.group")
-  message("logfc.threshold: ", param.list$"logfc.threshold")
-  message("max.cells.per.ident: ", param.list$"max.cells.per.ident")
-
-  # Retrieve analyzed DE resolutions
-  message("Resolutions analyzed:")
-  df.markers.all <- Idents.for.DEG <- list.fromNames(x = res.analyzed.DE)
-
-  # Loop through each resolution setting to find markers ------------------------------------------------------------
-  for (i in 1:length(res.analyzed.DE)) {
-    res <- res.analyzed.DE[i]
-    create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
-
-    if (reorder.clusters && ordering == "ordered") {
-      # Reorder clusters based on average expression of markers
-      message("Reordering clusters along dimension: ", sign(reorder.dimension), "*", if (abs(reorder.dimension) == 1) "x" else "y")
-
-      obj <- AutoNumber.by.UMAP(
-        obj = obj, dim = abs(reorder.dimension), reduction = "umap",
-        swap = (reorder.dimension < 0), res = GetClusteringRuns(res = res, obj = obj)[1],
-        plot = TRUE
-      )
-    }
-
-    # Set up clustering identity for DE analysis
-    Idents.for.DEG[[i]] <-
-      if (ordering == "ordered") {
-        GetOrderedClusteringRuns(res = res, obj = obj)
-      } else if (ordering == "simple") {
-        GetClusteringRuns(res = res, obj = obj)
-      } else {
-        print("not found")
-      }
-
-    stopifnot(Idents.for.DEG[[i]] %in% names(obj@meta.data))
-  } # end for loop
-
-
-  # Loop through each resolution setting to find markers ------------------------------------------------------------
-  if (calculte.DGEA) {
-    for (i in 1:length(res.analyzed.DE)) {
-      res <- res.analyzed.DE[i]
-      message("res. ", res, " ------------------------------------------------------")
-      create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
-
-      message("Ident.for.DEG: ", Idents.for.DEG[[i]])
-      Idents(obj) <- Idents.for.DEG[[i]]
-
-      # Perform differential expression analysis
-      tic()
-      df.markers <- Seurat::FindAllMarkers(obj,
-        verbose = TRUE,
-        test.use = param.list$"test",
-        only.pos = param.list$"only.pos",
-        return.thresh = param.list$"return.thresh",
-        min.pct = param.list$"min.pct",
-        min.diff.pct = param.list$"min.diff.pct",
-        min.cells.group = param.list$"min.cells.group",
-        logfc.threshold = param.list$"logfc.threshold",
-        max.cells.per.ident = param.list$"max.cells.per.ident"
-      )
-      toc()
-      Stringendo::stopif(is.null(df.markers))
-      if (add.combined.score) df.markers <- Add.DE.combined.score(df.markers)
-      obj@misc$"df.markers"[[ppp("res", res)]] <- df.markers
-
-      # Save results to disk
-      fname <- ppp("df.markers", res, "tsv")
-      ReadWriter::write.simple.tsv(df.markers, filename = fname)
-      df.markers.all[[i]] <- df.markers
-      xsave(df.markers, suffix = kpp("res", res))
-    } # end for loop
-
-    # Assign df.markers.all to global environment
-    assign("df.markers.all", df.markers.all, envir = .GlobalEnv)
-
-    # Save final results to disk
-    create_set_OutDir(directory)
-    if (save.obj) {
-      xsave(obj, suffix = kpp("w.DGEA", kpp("res", res.analyzed.DE)))
-    }
-  } # end if calculte.DGEA
-
-  # Loop through each resolution setting to find markers ------------------------------------------------------------
-  if (plot.DGEA) {
-    for (i in 1:length(res.analyzed.DE)) {
-      res <- res.analyzed.DE[i]
-      create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
-
-      df.markers <- obj@misc$"df.markers"[[ppp("res", res)]]
-      Stringendo::stopif(is.null(df.markers))
-
-      PlotTopGenesPerCluster(
-        obj = obj,
-        cl_res = res,
-        df_markers = df.markers,
-        nrGenes = param.list$"n.markers",
-        order.by = param.list$"DEG.ranking"
-      )
-
-      # Idents.for.DEG[[i]]
-      # Auto Top genes
-      if (Cluster.Labels.Automatic) {
-        obj <- StoreAllMarkers(df_markers = df.markers, res = res, obj = obj)
-        obj <- AutoLabelTop.logFC(res = res, obj = obj)
-        clUMAP(ident = ppp("cl.names.top.gene.res", res), obj = obj)
-      } # end if Cluster.Labels.Automatic
-    } # end for loop
-  } # end if plot.DGEA
-
-  # Return obj and df.markers.all to global environment
-  return(obj)
-} # end RunDGEA
 
 
 # _________________________________________________________________________________________________
@@ -5122,11 +5188,6 @@ RunDGEA <- function(obj = obj.RG,
 }
 
 
-
-# _________________________________________________________________________________________________
-
-
-
 # _________________________________________________________________________________________________
 #' @title Get number of scaled features
 #'
@@ -5147,7 +5208,6 @@ RunDGEA <- function(obj = obj.RG,
     nrow(obj@assays[[assay]]@"scale.data")
   }
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -5181,7 +5241,7 @@ RunDGEA <- function(obj = obj.RG,
 #' @param nrVarFeatures You can provide this number manually. Default: NULL.
 #' @param suffix A suffix string to add.
 #' @return A character string summarizing the key parameters.
-#'
+
 .parseKeyParams <- function(obj,
                             regressionVariables = obj@misc$p$"variables.2.regress.combined",
                             nrVarFeatures = NULL,
@@ -5231,12 +5291,27 @@ RunDGEA <- function(obj = obj.RG,
 
 
 
+# _________________________________________________________________________________________________
+# New additions,  categorized _____________________________ ------
+# _________________________________________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # _________________________________________________________________________________________________
 # Temp _____________________________ ------
 # _________________________________________________________________________________________________
-
-
 
 # _________________________________________________________________________________________________
 #' @title Remove Scale Data from Seurat Objects
