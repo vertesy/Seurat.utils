@@ -268,10 +268,12 @@ runDGEA <- function(obj = obj.RG,
   }
 
   # Loop through each resolution setting to find markers ________________________________________
+  message("Calclulating ----------------------------------------")
   for (i in 1:length(res.analyzed.DE)) {
     res <- res.analyzed.DE[i]
     create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
 
+    message(i)
     if (reorder.clusters && ordering == "ordered") {
       # Reorder clusters based on average expression of markers
       message("Reordering clusters along dimension: ", sign(reorder.dimension), "*", if (abs(reorder.dimension) == 1) "x" else "y")
@@ -287,14 +289,14 @@ runDGEA <- function(obj = obj.RG,
     Idents.for.DEG[[i]] <-
       if (ordering == "ordered") {
         GetOrderedClusteringRuns(res = res, obj = obj)
-      } else if (ordering == "simple") {
-        GetClusteringRuns(res = res, obj = obj)
       } else {
-        print("not found")
+        GetClusteringRuns(res = res, obj = obj)
       }
 
     stopifnot(Idents.for.DEG[[i]] %in% names(obj@meta.data))
   } # end for loop
+
+  message("end for calc loop")
 
 
   # Loop through each resolution setting to find markers ________________________________________
@@ -320,25 +322,31 @@ runDGEA <- function(obj = obj.RG,
                                            min.cells.group = param.list$"min.cells.group",
                                            logfc.threshold = param.list$"logfc.threshold",
                                            max.cells.per.ident = param.list$"max.cells.per.ident"
-      )
+                                           )
+
       toc()
       Stringendo::stopif(is.null(df.markers))
+      # order df.markers by logFC
+      df.markers <- df.markers[order(df.markers$"avg_log2FC", decreasing = TRUE), ]
+
       if (add.combined.score) df.markers <- Add.DE.combined.score(df.markers)
       obj@misc$"df.markers"[[ppp("res", res)]] <- df.markers
 
       # Save results to disk
-      fname <- ppp("df.markers", res, "tsv")
+      fname <- ppp("df.markers", res)
       ReadWriter::write.simple.tsv(df.markers, filename = fname)
       df.markers.all[[i]] <- df.markers
       xsave(df.markers, suffix = kpp("res", res))
     } # end for loop
 
-    # Assign df.markers.all to global environment
-    ReadWriter::write.simple.xlsx(named_list = df.markers.all, filename = "df.markers.all.xlsx")
-    assign("df.markers.all", df.markers.all, envir = .GlobalEnv)
-
     # Save final results to disk
     create_set_OutDir(directory)
+
+    # Assign df.markers.all to global environment
+    ReadWriter::write.simple.xlsx(named_list = df.markers.all, filename = "df.markers.all")
+    assign("df.markers.all", df.markers.all, envir = .GlobalEnv)
+
+
     if (save.obj) {
       xsave(obj, suffix = kpp("w.DGEA", kpp("res", res.analyzed.DE)))
     }
@@ -369,12 +377,14 @@ runDGEA <- function(obj = obj.RG,
         message('Automatic cluster labeling by top gene.')
 
         obj <- StoreAllMarkers(df_markers = df.markers, res = res, obj = obj)
-        obj <- AutoLabelTop.logFC(res = res, obj = obj)
+        obj <- AutoLabelTop.logFC(group.by = res, obj = obj)
         clUMAP(ident = ppp("cl.names.top.gene.res", res), obj = obj)
       } # end if Cluster.Labels.Automatic
 
       # Plot per-cluster gene enrichment histogram ________________________________________
       if (plot.av.enrichment.hist) {
+        create_set_OutDir(directory)
+
         message('Plotting per-cluster gene enrichment histogram.')
 
         df.markers.tbl <- as_tibble(df.markers)
@@ -389,10 +399,11 @@ runDGEA <- function(obj = obj.RG,
                                           ylab = "Nr. D.E. Genes") +
           geom_vline(xintercept = 1) +
           theme_linedraw()
+
         qqSave(ggobj = p.deg.hist, w = 10, h = 6, title = ppp("Enrichment log2FC per cluster",res))
       }
-    } # end for loop
 
+    } # end for loop
   } # end if plot.DGEA
 
   # Return obj and df.markers.all to global environment
@@ -959,7 +970,7 @@ GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.[
   if (!isFALSE(res)) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
 
   clustering.results <- sort(CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat))
-  if (identical(clustering.results, character(0))) warning("No matching column found!", immediate. = TRUE)
+  if (identical(clustering.results, character(0))) warning("No matching (simple) clustering column found!", immediate. = TRUE)
   message("Clustering runs found:")
   dput(clustering.results)
   return(clustering.results)
@@ -995,7 +1006,7 @@ GetNamedClusteringRuns <- function(
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
 
   if (identical(clustering.results, character(0))) {
-    warning("No matching column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)",
+    warning("No matching (named) clustering column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)",
       immediate. = TRUE )
     if (find.alternatives) clustering.results <-
         GetClusteringRuns(obj = obj, res = FALSE, pat = "*_res.*[0,1]\\.[0-9]$")
@@ -1026,7 +1037,7 @@ GetOrderedClusteringRuns <- function(obj = combined.obj, res = FALSE,
                                      pat = "*snn_res.*[0,1]\\.[0-9]\\.ordered$") {
   if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
-  if (identical(clustering.results, character(0))) warning("No matching column found!", immediate. = TRUE)
+  if (identical(clustering.results, character(0))) warning("No matching (ordered) clustering column found!", immediate. = TRUE)
   return(clustering.results)
 }
 
@@ -2534,7 +2545,7 @@ GetTopMarkers <- function(dfDE = df.markers,
 #' @export
 AutoLabelTop.logFC <- function(
     obj = combined.obj,
-    group.by = GetClusteringRuns(obj)[1],
+    group.by,
     res = stringr::str_extract(string, "\\d+\\.\\d+"),
     plot.top.genes = TRUE,
     suffix = res,

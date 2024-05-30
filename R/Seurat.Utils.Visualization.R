@@ -1688,7 +1688,9 @@ qSeuViolin <- function(
     replace.na = FALSE,
     suffix = NULL,
     suffix.2.title = FALSE,
-    logY = TRUE, hline = FALSE, caption = FALSE,
+    caption = .parseKeyParams(obj),
+    logY = TRUE,
+    hline = FALSE,
     ylab = "Expression",
     show_plot = TRUE,
     w = 9, h = 5,
@@ -1717,7 +1719,7 @@ qSeuViolin <- function(
   } else {
     as.character(features)
   }
-  subt <- paste(suffix, "- by -", split.by)
+  subt <- paste(features, "- by -", idents)
 
   if (replace.na) {
     warning("NA's are not, but zeros are displayed on the plot. Avoid replace.na when possible", immediate. = TRUE)
@@ -1725,8 +1727,9 @@ qSeuViolin <- function(
   }
 
   p <- VlnPlot(object = obj, features = features, split.by = split.by, group.by = idents, ...) +
-    theme(axis.title.x = element_blank()) + labs(y = ylab)
-  p <- p + ggtitle(label = ttl, subtitle = subt)
+    theme(axis.title.x = element_blank()) +
+    labs(y = ylab)
+  p <- p + ggtitle(label = ttl, subtitle = subt )
 
 
   # If `logY` is TRUE, plot the y-axis on a log scale.
