@@ -327,6 +327,8 @@ getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],
 #' @importFrom Seurat AddMetaData
 #' @export
 addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE) {
+
+  message("Running addMetaDataSafe...")
   # browser()
   stopifnot(
     is(obj, "Seurat"),

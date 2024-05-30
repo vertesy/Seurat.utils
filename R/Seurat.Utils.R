@@ -235,7 +235,7 @@ runDGEA <- function(obj = obj.RG,
   create_set_OutDir(directory, subdirectory, newName = "dir_DGEA")
 
   # Log utilized parameters from param.list
-  message("cl.annotation: ", param.list$"cl.annotation")
+  message("cl.annotation: ", ordering)
   message("test: ", param.list$"test")
   message("only.pos: ", param.list$"only.pos")
   message("return.thresh: ", param.list$"return.thresh")
@@ -245,7 +245,9 @@ runDGEA <- function(obj = obj.RG,
   message("logfc.threshold: ", param.list$"logfc.threshold")
   message("max.cells.per.ident: ", param.list$"max.cells.per.ident")
 
+  # Record changes in @misc$p
   obj@misc$p$"res.analyzed.DE" <- res.analyzed.DE
+  obj@misc$p$"cl.annotation" <- ordering
 
   # Retrieve analyzed DE resolutions
   message("Resolutions analyzed:")
@@ -268,7 +270,7 @@ runDGEA <- function(obj = obj.RG,
   }
 
   # Loop through each resolution setting to find markers ________________________________________
-  message("Calclulating ----------------------------------------")
+  message("Renumbering ----------------------------------------")
   for (i in 1:length(res.analyzed.DE)) {
     res <- res.analyzed.DE[i]
     create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
@@ -296,15 +298,14 @@ runDGEA <- function(obj = obj.RG,
     stopifnot(Idents.for.DEG[[i]] %in% names(obj@meta.data))
   } # end for loop
 
-  message("end for calc loop")
-
 
   # Loop through each resolution setting to find markers ________________________________________
   if (calculate.DGEA) {
+    message("Calclulating ----------------------------------------")
     for (i in 1:length(res.analyzed.DE)) {
       res <- res.analyzed.DE[i]
 
-      message("res. ", res, " ------------------------------------------------------")
+      message("Resolution.: ", res, " -----------")
       create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
 
       message("Ident.for.DEG: ", Idents.for.DEG[[i]])
@@ -364,28 +365,28 @@ runDGEA <- function(obj = obj.RG,
       df.markers <- obj@misc$"df.markers"[[ppp("res", res)]]
       Stringendo::stopif(is.null(df.markers))
 
-      PlotTopGenesPerCluster(
-        obj = obj,
-        cl_res = res,
-        df_markers = df.markers,
-        nrGenes = param.list$"n.markers",
-        order.by = param.list$"DEG.ranking"
-      )
+      # PlotTopGenesPerCluster(
+      #   obj = obj,
+      #   cl_res = res,
+      #   df_markers = df.markers,
+      #   nrGenes = param.list$"n.markers",
+      #   order.by = param.list$"DEG.ranking"
+      # )
 
       # Automatic cluster labeling by top gene ________________________________________
       if (Cluster.Labels.Automatic) {
         message('Automatic cluster labeling by top gene.')
 
         obj <- StoreAllMarkers(df_markers = df.markers, res = res, obj = obj)
-        obj <- AutoLabelTop.logFC(group.by = res, obj = obj)
+        obj <- AutoLabelTop.logFC(group.by = Idents.for.DEG[[i]], res = res, obj = obj)
+        # browser()
         clUMAP(ident = ppp("cl.names.top.gene.res", res), obj = obj)
       } # end if Cluster.Labels.Automatic
 
       # Plot per-cluster gene enrichment histogram ________________________________________
       if (plot.av.enrichment.hist) {
-        create_set_OutDir(directory)
-
         message('Plotting per-cluster gene enrichment histogram.')
+        create_set_OutDir(directory)
 
         df.markers.tbl <- as_tibble(df.markers)
         df.markers.tbl$'cluster' <- as.character(df.markers.tbl$'cluster')
@@ -401,6 +402,11 @@ runDGEA <- function(obj = obj.RG,
           theme_linedraw()
 
         qqSave(ggobj = p.deg.hist, w = 10, h = 6, title = ppp("Enrichment log2FC per cluster",res))
+      }
+
+      # Plot per-cluster enriched gene counts ________________________________________
+      if (T) {
+        message('Plotting per-cluster enriched gene counts.')
       }
 
     } # end for loop
@@ -2546,13 +2552,17 @@ GetTopMarkers <- function(dfDE = df.markers,
 AutoLabelTop.logFC <- function(
     obj = combined.obj,
     group.by,
-    res = stringr::str_extract(string, "\\d+\\.\\d+"),
+    res = stringr::str_extract(group.by, "\\d+\\.\\d+"),
     plot.top.genes = TRUE,
     suffix = res,
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2],
     exclude = c("^AL*|^AC*|^LINC*|^C[0-9]+orf[0-9]*"),
     df_markers = obj@misc$"df.markers"[[paste0("res.", res)]],
     plotEnrichment = TRUE) {
+
+  message(group.by)
+  message("Running AutoLabelTop.logFC...")
+  # browser()
 
   stopifnot(
     !is.null("df_markers"),
@@ -2561,6 +2571,7 @@ AutoLabelTop.logFC <- function(
 
   df.top.markers <- GetTopMarkersDF(dfDE = df_markers, order.by = order.by, n = 1, exclude = exclude)
 
+  # Enrichment plot ______________________________________________________________
   if (plotEnrichment) {
     top_log2FC <- df.top.markers$"avg_log2FC"
     names(top_log2FC) <- ppp(df.top.markers$"cluster", df.top.markers$"gene")
@@ -2577,9 +2588,11 @@ AutoLabelTop.logFC <- function(
 
   obj@misc[[ppp("top.markers.res", res)]] <- top.markers
 
+  # group.by <- 'RNA_snn_res.0.08'
   ids_CBC <- deframe(obj[[group.by]])
   ids <- unique(ids_CBC)
 
+  # Check if all clusters have DE-genes ____________________________________________________
   if (length(ids) != length(top.markers)) {
     warning("Not all clusters returned DE-genes!", immediate. = TRUE)
     missing <- setdiff(ids, names(top.markers))
@@ -2592,9 +2605,12 @@ AutoLabelTop.logFC <- function(
   names(top.markers.ID) <- names(top.markers)
   named.group.by <- top.markers.ID[ids_CBC]
 
-  namedIDslot <- ppp("cl.names.top.gene.res", res)
-  obj <- addMetaDataSafe(obj, metadata = as.character(named.group.by), col.name = namedIDslot, overwrite = TRUE)
-  if (plot.top.genes) multiFeaturePlot.A4(list.of.genes = top.markers, suffix = suffix)
+  # Check if the clustering was ordered _____________________________________________________
+  sfx.ord <- ifelse(grepl("ordered", group.by), group.by, "")
+  namedIDslot <- sppp("cl.names.top.gene.", sfx.ord, "res", res)
+
+  obj <- addMetaDataSafe(obj = obj, metadata = as.character(named.group.by), col.name = namedIDslot, overwrite = TRUE)
+  if (plot.top.genes) multiFeaturePlot.A4(list.of.genes = top.markers, suffix = suffix, obj = obj)
 
   return(obj)
 }
