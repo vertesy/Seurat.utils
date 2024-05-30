@@ -305,7 +305,7 @@ runDGEA <- function(obj = obj.RG,
     for (i in 1:length(res.analyzed.DE)) {
       res <- res.analyzed.DE[i]
 
-      message("Resolution.: ", res, " -----------")
+      message("Resolution: ", res, " -----------")
       create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
 
       message("Ident.for.DEG: ", Idents.for.DEG[[i]])
@@ -341,7 +341,7 @@ runDGEA <- function(obj = obj.RG,
     } # end for loop
 
     # Save final results to disk
-    create_set_OutDir(directory)
+    create_set_OutDir(directory, subdirectory)
 
     # Assign df.markers.all to global environment
     ReadWriter::write.simple.xlsx(named_list = df.markers.all, filename = "df.markers.all")
@@ -365,13 +365,13 @@ runDGEA <- function(obj = obj.RG,
       df.markers <- obj@misc$"df.markers"[[ppp("res", res)]]
       Stringendo::stopif(is.null(df.markers))
 
-      # PlotTopGenesPerCluster(
-      #   obj = obj,
-      #   cl_res = res,
-      #   df_markers = df.markers,
-      #   nrGenes = param.list$"n.markers",
-      #   order.by = param.list$"DEG.ranking"
-      # )
+      PlotTopGenesPerCluster(
+        obj = obj,
+        cl_res = res,
+        df_markers = df.markers,
+        nrGenes = param.list$"n.markers",
+        order.by = param.list$"DEG.ranking"
+      )
 
       # Automatic cluster labeling by top gene ________________________________________
       if (Cluster.Labels.Automatic) {
@@ -386,7 +386,7 @@ runDGEA <- function(obj = obj.RG,
       # Plot per-cluster gene enrichment histogram ________________________________________
       if (plot.av.enrichment.hist) {
         message('Plotting per-cluster gene enrichment histogram.')
-        create_set_OutDir(directory)
+        create_set_OutDir(directory, subdirectory)
 
         df.markers.tbl <- as_tibble(df.markers)
         df.markers.tbl$'cluster' <- as.character(df.markers.tbl$'cluster')
@@ -407,6 +407,24 @@ runDGEA <- function(obj = obj.RG,
       # Plot per-cluster enriched gene counts ________________________________________
       if (T) {
         message('Plotting per-cluster enriched gene counts.')
+        # Filter genes with avg_log2FC > 2
+        (lfc2_hiSig_genes <- df.markers %>%
+            filter(avg_log2FC > 2) %>%
+            filter(p_val_adj < 0.01) %>%
+            group_by(cluster))
+
+        # Get the number of genes per cluster
+        (NrOfHighlySignLFC2_genes <- lfc2_hiSig_genes %>%
+            summarise(n = n()) %>%
+            deframe() %>%
+            sortbyitsnames())
+
+        qbarplot(NrOfHighlySignLFC2_genes, label = NrOfHighlySignLFC2_genes,
+                 plotname = "Number of diff. genes per cluster",
+                 sub = 'Genes with avg_log2FC > 2 and p_val_adj < 0.01',
+                 xlab = "Clusters", ylab = "Number of diff. genes"
+        )
+
       }
 
     } # end for loop
