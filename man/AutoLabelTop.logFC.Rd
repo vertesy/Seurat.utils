@@ -6,8 +6,8 @@
 \usage{
 AutoLabelTop.logFC(
   obj = combined.obj,
-  group.by = GetClusteringRuns(obj)[1],
-  res = stringr::str_extract(string, "\\\\d+\\\\.\\\\d+"),
+  group.by,
+  res = stringr::str_extract(group.by, "\\\\d+\\\\.\\\\d+"),
   plot.top.genes = TRUE,
   suffix = res,
   order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2],

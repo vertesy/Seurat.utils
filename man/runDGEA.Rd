@@ -15,12 +15,14 @@ runDGEA(
   res.analyzed.DE = c(0.1),
   add.combined.score = TRUE,
   save.obj = TRUE,
-  directory = OutDirOrig,
+  directory = OutDir,
+  subdirectory = "DGEA_res",
   calculate.DGEA = TRUE,
   plot.DGEA = TRUE,
-  Cluster.Labels.Automatic = TRUE,
+  auto.cluster.naming = TRUE,
   plot.av.enrichment.hist = TRUE,
-  subdirectory = "DGEA"
+  plot.log.top.gene.stats = TRUE,
+  ...
 )
 }
 \arguments{
@@ -55,20 +57,22 @@ Default: TRUE.}
 \item{directory}{Character string specifying the base directory for saving results.
 Default: OutDirOrig.}
 
+\item{subdirectory}{Character string specifying the subdirectory for saving outputs within
+the base directory. Default: "DGEA".}
+
 \item{calculate.DGEA}{Logical determining if the DE analysis should be calculated.
 Default: TRUE.}
 
 \item{plot.DGEA}{Logical determining if results should be plotted.
 Default: TRUE.}
 
-\item{Cluster.Labels.Automatic}{Logical indicating automatic labeling of clusters.
+\item{auto.cluster.naming}{Logical indicating automatic labeling of clusters.
 Default: TRUE.}
 
 \item{plot.av.enrichment.hist}{Logical indicating whether to plot the average enrichment histogram.
 Default: TRUE.}
 
-\item{subdirectory}{Character string specifying the subdirectory for saving outputs within
-the base directory. Default: "DGEA".}
+\item{plot.log.top.gene.stats}{Logical indicating whether to plot the log top gene statistics.}
 }
 \value{
 Modified Seurat object and markers list.

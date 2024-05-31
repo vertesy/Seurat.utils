@@ -197,10 +197,11 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE,
 #'        Default: TRUE.
 #' @param plot.DGEA Logical determining if results should be plotted.
 #'        Default: TRUE.
-#' @param Cluster.Labels.Automatic Logical indicating automatic labeling of clusters.
+#' @param auto.cluster.naming Logical indicating automatic labeling of clusters.
 #'        Default: TRUE.
 #' @param plot.av.enrichment.hist Logical indicating whether to plot the average enrichment histogram.
 #'       Default: TRUE.
+#' @param plot.log.top.gene.stats Logical indicating whether to plot the log top gene statistics.
 #' @param subdirectory Character string specifying the subdirectory for saving outputs within
 #'        the base directory. Default: "DGEA".
 #' @return Modified Seurat object and markers list.
@@ -219,12 +220,14 @@ runDGEA <- function(obj = obj.RG,
                     res.analyzed.DE = c(.1), # param.list$'res.analyzed.DE'
                     add.combined.score = TRUE,
                     save.obj = TRUE,
-                    directory = OutDirOrig,
+                    directory = OutDir,
+                    subdirectory = "DGEA_res",
                     calculate.DGEA = TRUE,
                     plot.DGEA = TRUE,
-                    Cluster.Labels.Automatic = TRUE,
+                    auto.cluster.naming = TRUE,
                     plot.av.enrichment.hist = TRUE,
-                    subdirectory = "DGEA") {
+                    plot.log.top.gene.stats = TRUE,
+                    ...) {
 
   # Assertions for input parameters
   stopifnot(
@@ -235,15 +238,17 @@ runDGEA <- function(obj = obj.RG,
   create_set_OutDir(directory, subdirectory, newName = "dir_DGEA")
 
   # Log utilized parameters from param.list
-  message("cl.annotation: ", ordering)
-  message("test: ", param.list$"test")
-  message("only.pos: ", param.list$"only.pos")
-  message("return.thresh: ", param.list$"return.thresh")
-  message("min.pct: ", param.list$"min.pct")
-  message("min.diff.pct: ", param.list$"min.diff.pct")
-  message("min.cells.group: ", param.list$"min.cells.group")
-  message("logfc.threshold: ", param.list$"logfc.threshold")
-  message("max.cells.per.ident: ", param.list$"max.cells.per.ident")
+  {
+    message("cl.annotation: ", ordering)
+    message("test: ", param.list$"test")
+    message("only.pos: ", param.list$"only.pos")
+    message("return.thresh: ", param.list$"return.thresh")
+    message("min.pct: ", param.list$"min.pct")
+    message("min.diff.pct: ", param.list$"min.diff.pct")
+    message("min.cells.group: ", param.list$"min.cells.group")
+    message("logfc.threshold: ", param.list$"logfc.threshold")
+    message("max.cells.per.ident: ", param.list$"max.cells.per.ident")
+  }
 
   # Record changes in @misc$p
   obj@misc$p$"res.analyzed.DE" <- res.analyzed.DE
@@ -374,19 +379,19 @@ runDGEA <- function(obj = obj.RG,
       )
 
       # Automatic cluster labeling by top gene ________________________________________
-      if (Cluster.Labels.Automatic) {
+      if (auto.cluster.naming) {
         message('Automatic cluster labeling by top gene.')
 
         obj <- StoreAllMarkers(df_markers = df.markers, res = res, obj = obj)
         obj <- AutoLabelTop.logFC(group.by = Idents.for.DEG[[i]], res = res, obj = obj)
-        # browser()
+
         clUMAP(ident = ppp("cl.names.top.gene.res", res), obj = obj)
-      } # end if Cluster.Labels.Automatic
+      } # end if auto.cluster.naming
 
       # Plot per-cluster gene enrichment histogram ________________________________________
       if (plot.av.enrichment.hist) {
         message('Plotting per-cluster gene enrichment histogram.')
-        create_set_OutDir(directory, subdirectory)
+        # create_set_OutDir(directory, subdirectory)
 
         df.markers.tbl <- as_tibble(df.markers)
         df.markers.tbl$'cluster' <- as.character(df.markers.tbl$'cluster')
@@ -405,13 +410,18 @@ runDGEA <- function(obj = obj.RG,
       }
 
       # Plot per-cluster enriched gene counts ________________________________________
-      if (T) {
+      if (plot.log.top.gene.stats) {
         message('Plotting per-cluster enriched gene counts.')
+
         # Filter genes with avg_log2FC > 2
-        (lfc2_hiSig_genes <- df.markers %>%
-            filter(avg_log2FC > 2) %>%
-            filter(p_val_adj < 0.01) %>%
-            group_by(cluster))
+        lfc2_hiSig_genes <- df.markers %>%
+            filter(avg_log2FC > 2, p_val_adj < 0.01) %>%
+            group_by(cluster) %>%
+            arrange(cluster, desc(avg_log2FC))
+
+        top_genes <- lfc2_hiSig_genes %>%
+          top_n(1, avg_log2FC) %>%
+          pull(gene)
 
         # Get the number of genes per cluster
         (NrOfHighlySignLFC2_genes <- lfc2_hiSig_genes %>%
@@ -425,13 +435,35 @@ runDGEA <- function(obj = obj.RG,
                  xlab = "Clusters", ylab = "Number of diff. genes"
         )
 
-      }
+        # Write out gene lists per cluster ________________________________________
+        {
+          # Get the genes in a list per cluster
+          genes_list <- lfc2_hiSig_genes %>%
+            group_by(cluster) %>%
+            summarise(genes = list(gene)) %>%
+            select(genes) %>%
+            deframe()
 
-    } # end for loop
+          names(genes_list) <- unique(lfc2_hiSig_genes$"cluster")
+          genes_list <- sortbyitsnames(genes_list)
+          names(genes_list) <- ppp("cl", names(genes_list), top_genes,"DGs")
+
+          # write out the gene list, each element to a txt file.
+          create_set_OutDir(p0(dir_DGEA, ppp("res", res), "/top_genes"))
+          for (i in 1:l(genes_list)) {
+            write.simple.vec(input_vec = genes_list[[i]],
+                             filename = names(genes_list)[i]
+            )
+          } # for cluster
+        }
+      } # end if plot.log.top.gene.stats
+    } # end for loop of resolutions
   } # end if plot.DGEA
+  create_set_OutDir(directory, subdirectory)
 
   # Return obj and df.markers.all to global environment
   return(obj)
+  create_set_OutDir(directory)
 } # end runDGEA
 
 # _________________________________________________________________________________________________

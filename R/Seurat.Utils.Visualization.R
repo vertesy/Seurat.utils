@@ -1154,6 +1154,45 @@ scBarplot.FractionBelowThr <- function(
   )
 }
 
+# _________________________________________________________________________________________________
+# Pie Charts / Compositional analysis ______________________________ ----
+# _________________________________________________________________________________________________
+#' @title scPieClusterDistribution
+#'
+#' @description This function generates a pie chart of cluster distributions for a given clustering
+#' identity in a single-cell RNA-seq object.
+#'
+#' @param obj A single-cell RNA-seq object. Default: `combined.obj`.
+#' @param ident A character string specifying the clustering identity to be used. Default: the first
+#' clustering run in the object.
+#' @param ... Additional arguments passed to other methods.
+#'
+#' @return A pie chart displaying the cluster distribution.
+#' @importFrom ggplot2 ggplot aes geom_bar coord_polar theme_minimal
+#' @importFrom scales percent
+#'
+#' @examples
+#' \dontrun{
+#' scPieClusterDistribution(obj = combined.obj, ident = 'cluster_identity')
+#' }
+scPieClusterDistribution <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[1],
+                                     ...) {
+
+  # Input assertions
+  stopifnot(
+    is(obj, "Seurat"), is.character(ident), length(ident) == 1,
+    ident %in% colnames(obj@meta.data)
+  )
+
+  # Compute cluster sizes
+  cluster_sizes <- table(obj[[ident]])
+  print(cluster_sizes)
+
+  # Create pie chart
+  qpie(cluster_sizes, caption = .parseBasicObjStats(obj), subtitle = ident)
+}
+
+
 
 
 # _________________________________________________________________________________________________

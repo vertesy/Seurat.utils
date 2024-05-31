@@ -12,9 +12,9 @@ qSeuViolin(
   replace.na = FALSE,
   suffix = NULL,
   suffix.2.title = FALSE,
+  caption = .parseKeyParams(obj),
   logY = TRUE,
   hline = FALSE,
-  caption = FALSE,
   ylab = "Expression",
   show_plot = TRUE,
   w = 9,
@@ -37,11 +37,11 @@ qSeuViolin(
 
 \item{suffix.2.title}{A logical indicating whether to append the suffix to the plot title.}
 
+\item{caption}{A character string or logical for the plot caption. If FALSE, no caption is displayed.}
+
 \item{logY}{A logical indicating whether to use a logarithmic scale for the y-axis.}
 
 \item{hline}{A numeric or logical value; if numeric, the value where a horizontal line should be drawn.}
-
-\item{caption}{A character string or logical for the plot caption. If FALSE, no caption is displayed.}
 
 \item{show_plot}{A logical indicating whether to display the plot.}
 
