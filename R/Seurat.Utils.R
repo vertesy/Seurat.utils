@@ -924,6 +924,7 @@ RenameClustering <- function(
     suffix.plot = "",
     plot_umaps = TRUE,
     ...) {
+
   NewX <- translate(
     vec = as.character(obj@meta.data[, orig.ident]),
     oldvalues = names(namedVector),
@@ -940,6 +941,7 @@ RenameClustering <- function(
     suffix.plot <- if (nchar(suffix.plot)) make.names(suffix.plot)
     print(clUMAP(orig.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
     print(clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
+    clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, label = F, obj = obj, ...)
   } else {
     iprint("New ident:", new.ident)
   }

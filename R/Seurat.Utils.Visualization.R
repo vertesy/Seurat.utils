@@ -1732,26 +1732,21 @@ qSeuViolin <- function(
     hline = FALSE,
     ylab = "Expression",
     show_plot = TRUE,
+    ylimit = NULL,
     w = 9, h = 5,
     ...) {
   stopifnot(
     "Seurat" %in% class(obj), # object must be a Seurat object
-    # is.character(split.by), # split.by must be a character
-    is.character(idents), # idents must be a character vector
-    is.character(features), # features must be a character
     is.logical(logY), # logY must be logical (TRUE or FALSE)
     is.logical(hline) || is.numeric(hline), # hline must be logical or numeric
     is.logical(caption) || is.character(caption), # caption must be logical or character
     is.logical(suffix.2.title), # suffix.2.title must be logical
-    is.numeric(w) && w > 0, # w must be a positive number
-    is.numeric(h) && h > 0, # h must be a positive number
-    is.logical(show_plot), # show_plot must be logical
-    c(split.by, idents) %in% names(obj@meta.data),
-    features %in% names(obj@meta.data) || features %in% rownames(obj)
+    split.by %in% colnames(obj@meta.data),
+    idents %in% colnames(obj@meta.data),
+    features %in% colnames(obj@meta.data) || features %in% rownames(obj)
   )
 
   print(unique(idents))
-  # browser()
 
   ttl <- if (suffix.2.title) {
     paste(features, "|", suffix)
@@ -1767,9 +1762,9 @@ qSeuViolin <- function(
 
   p <- VlnPlot(object = obj, features = features, split.by = split.by, group.by = idents, ...) +
     theme(axis.title.x = element_blank()) +
-    labs(y = ylab)
-  p <- p + ggtitle(label = ttl, subtitle = subt )
-
+    labs(y = ylab) +
+    ggtitle(label = ttl, subtitle = subt ) +
+    ylim(ylimit[1], ylimit[2])
 
   # If `logY` is TRUE, plot the y-axis on a log scale.
   if (logY) p <- p + ggplot2::scale_y_log10()
@@ -1884,7 +1879,7 @@ qUMAP <- function(
   if (!isFALSE(caption)) gg.obj <- gg.obj + ggplot2::labs(caption = caption)
 
   if (save.plot) {
-    fname <- ww.FnP_parser(Stringendo::sppp(prefix, toupper(reduction), feature, assay, suffix), if (PNG) "png" else "pdf")
+    fname <- ww.FnP_parser(Stringendo::sppp(prefix, toupper(reduction), feature, assay, paste0(ncol(obj),"c"), suffix), if (PNG) "png" else "pdf")
     try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
   }
   return(gg.obj)
@@ -2039,6 +2034,7 @@ clUMAP <- function(
     if (!is.null(caption)) gg.obj <- gg.obj + labs(caption = caption)
     if (!is.null(legend.pos)) gg.obj <- gg.obj + theme(legend.position = legend.pos)
     if (aspect.ratio) gg.obj <- gg.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
+    if (legend) suffix <- paste0(suffix, ".lgnd")
 
     if (save.plot) {
       pname <- Stringendo::sppp(prefix, plotname, paste0(ncol(obj),"c"), suffix, sppp(highlight.clusters))
