@@ -3170,10 +3170,12 @@ plot3D.umap.gene <- function(
     col.names = c("umap_1", "umap_2", "umap_3"),
     ...) {
   # Input assertions ____________________________________
+
   stopifnot(
     is(obj, "Seurat"),
-    "gene or feature not found in obj" = (gene %in% rownames(obj) | gene %in% colnames(obj@meta.data)),
-    (annotate.by %in% colnames(obj@meta.data) | annotate.by == FALSE),
+    is.character(gene),
+    "gene or feature not found in obj" = (gene %in% Features(obj) | gene %in% colnames(obj@meta.data)),
+    "annotate.by not found in @meta" = (annotate.by %in% colnames(obj@meta.data) | annotate.by == FALSE),
     "reductions.backup is missing from @misc" = is.list(obj@misc$"reductions.backup"),
     "umap3d is missing from @misc$reductions.backup" = is(obj@misc$reductions.backup$"umap3d", class2 = "DimReduc"),
     "reductionn has 3 columns" = (ncol(obj@misc$reductions.backup$"umap3d") == 3),
