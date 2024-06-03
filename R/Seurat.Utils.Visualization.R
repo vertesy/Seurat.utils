@@ -3248,7 +3248,7 @@ plot3D.umap.gene <- function(
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   plot3D.umap(combined.obj, category = "Phase")
+#'   plot3D.umap(category = "integrated_snn_res.0.1", obj = combined.obj)
 #' }
 #' }
 #' @importFrom plotly plot_ly layout
@@ -3257,13 +3257,19 @@ plot3D.umap.gene <- function(
 #' @export
 
 plot3D.umap <- function(
-    category = GetNamedClusteringRuns(obj)[1],
-    annotate.by = category,
+    category,
     obj = combined.obj,
+    annotate.by = category,
     suffix = NULL,
     dotsize = 1.25,
     col.names = c("umap_1", "umap_2", "umap_3"),
     ...) {
+
+  message("category: ", category)
+  message("annotate.by: ", annotate.by)
+
+  # browser()
+
   # Input assertions ____________________________________
   stopifnot(
     is(obj, "Seurat"),
