@@ -1735,18 +1735,20 @@ qSeuViolin <- function(
     ylimit = NULL,
     w = 9, h = 5,
     ...) {
+  #
   stopifnot(
     "Seurat" %in% class(obj), # object must be a Seurat object
     is.logical(logY), # logY must be logical (TRUE or FALSE)
     is.logical(hline) || is.numeric(hline), # hline must be logical or numeric
     is.logical(caption) || is.character(caption), # caption must be logical or character
     is.logical(suffix.2.title), # suffix.2.title must be logical
+    is.character(split.by) | is.null(split.by), # split.by must be a character or NULL
     split.by %in% colnames(obj@meta.data),
+    is.character(idents),
     idents %in% colnames(obj@meta.data),
+    is.character(features),
     features %in% colnames(obj@meta.data) || features %in% rownames(obj)
   )
-
-  print(unique(idents))
 
   ttl <- if (suffix.2.title) {
     paste(features, "|", suffix)
@@ -1763,10 +1765,10 @@ qSeuViolin <- function(
   p <- VlnPlot(object = obj, features = features, split.by = split.by, group.by = idents, ...) +
     theme(axis.title.x = element_blank()) +
     labs(y = ylab) +
-    ggtitle(label = ttl, subtitle = subt ) +
-    ylim(ylimit[1], ylimit[2])
+    ggtitle(label = ttl, subtitle = subt )
 
-  # If `logY` is TRUE, plot the y-axis on a log scale.
+  # Add additional customization, if needed..
+  if (!is.null(ylimit)) p <- p + ylim(ylimit[1], ylimit[2])
   if (logY) p <- p + ggplot2::scale_y_log10()
   if (hline) p <- p + ggplot2::geom_hline(yintercept = hline)
   if (!isFALSE(caption)) p <- p + ggplot2::labs(caption = caption)
