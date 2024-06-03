@@ -269,8 +269,9 @@ runDGEA <- function(obj = obj.RG,
     message("Erasing up the meta.data clustering columns.")
     topMslots <- grepv("top.markers.res", names(obj@meta.data))
 
-    cl.ordered <- GetOrderedClusteringRuns(obj=obj)
-    cl.names <- GetNamedClusteringRuns(obj=obj, pat = "^cl.names.*[0-1]\\.[0-9]", find.alternatives = FALSE)
+    cl.ordered <- GetOrderedClusteringRuns(obj = obj)
+    cl.names <- GetNamedClusteringRuns(obj = obj, pat = "^cl.names.*[0-1]\\.[0-9]",
+                                       find.alternatives = FALSE)
     obj@meta.data[, c(cl.ordered, cl.names)] <- NULL
   }
 
