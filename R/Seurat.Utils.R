@@ -498,7 +498,11 @@ UpdateSeuratObjectProperly <- function(obj) {
   message("Input obj. version: ", obj@version)
 
   # Update Object Structure (not Assays, etc.) _________
-  obj <- SeuratObject::UpdateSeuratObject(obj)
+  if (obj@version < 5) {
+    obj <- SeuratObject::UpdateSeuratObject(obj)
+  } else {
+    message("Object already updated to version 5. Skipping 'UpdateSeuratObject()'.")
+  }
 
   # Update assays individually __________________
   existing_assays <- names(obj@assays)
@@ -510,6 +514,8 @@ UpdateSeuratObjectProperly <- function(obj) {
   # Update UMAP DimReduc manually __________________
   cn <- colnames(obj@reductions$umap@cell.embeddings)
   colnames(obj@reductions$umap@cell.embeddings) <- tolower(cn)
+
+  obj@reductions$umap@key <- tolower(obj@reductions$umap@key)
 
   message("Output obj. version: ", obj@version)
   return(obj)
