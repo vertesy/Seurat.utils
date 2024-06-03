@@ -502,7 +502,7 @@ Updated: 2024/03/22 15:41
 
   Plot the percent of variation explained by individual PC's. This function plots the percentage of variation explained by each principal  component (PC) in a Seurat object. It allows for a visual assessment of how much variance is  captured by each PC, which is crucial for dimensionality reduction analyses. Users can choose  between two plotting methods: one using `MarkdownReports` and the other using `ggExpress`. 
 
-- #### 4 `Percent.in.Trome()`
+- #### 4 `PercentInTranscriptome()`
 
   Gene Expression as Fraction of Total UMI Counts. This function computes and visualizes gene expression levels as a fraction of total  UMI (Unique Molecular Identifier) counts across all genes in a Seurat object. It aims to highlight  the relative contribution of the most highly expressed genes to the overall transcriptome. 
 

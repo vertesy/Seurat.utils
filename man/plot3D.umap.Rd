@@ -5,9 +5,9 @@
 \title{plot3D.umap}
 \usage{
 plot3D.umap(
-  category = GetNamedClusteringRuns(obj)[1],
-  annotate.by = category,
+  category,
   obj = combined.obj,
+  annotate.by = category,
   suffix = NULL,
   dotsize = 1.25,
   col.names = c("umap_1", "umap_2", "umap_3"),
@@ -18,10 +18,10 @@ plot3D.umap(
 \item{category}{The metadata column based on which the 3D UMAP will be plotted.
 Default: First returned result from GetNamedClusteringRuns(obj) function.}
 
+\item{obj}{The Seurat object for which the 3D umap plot will be generated. Default: combined.obj}
+
 \item{annotate.by}{The cluster or grouping to be used for automatic annotation.
 Default: First returned result from GetNamedClusteringRuns(obj) function.}
-
-\item{obj}{The Seurat object for which the 3D umap plot will be generated. Default: combined.obj}
 
 \item{suffix}{A suffix added to the filename. Default: NULL}
 
@@ -35,7 +35,7 @@ Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on githu
 \examples{
 \dontrun{
 if (interactive()) {
-  plot3D.umap(combined.obj, category = "Phase")
+  plot3D.umap(category = "integrated_snn_res.0.1", obj = combined.obj)
 }
 }
 }

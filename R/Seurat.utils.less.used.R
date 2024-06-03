@@ -533,6 +533,7 @@ geneExpressionLevelPlots <- function(...) .Deprecated("plotGeneExpressionInBackg
 get.clustercomposition <- function(...) .Deprecated("No longer provided.")
 multiFeatureHeatmap.A4 <- function(...) .Deprecated("No longer provided.")
 Annotate4Plotly3D <- function(...) .Deprecated(".Annotate4Plotly3D() - with dot/invisible.")
+Percent.in.Trome <- function(...) .Deprecated("PercentInTranscriptome()")
 
 
 # _________________________________________________________________________________________________

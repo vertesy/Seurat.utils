@@ -315,18 +315,27 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
 #'
 #' @examples
 #' \dontrun{
-#' combined.obj <- Percent.in.Trome(combined.obj)
+#' combined.obj <- PercentInTranscriptome(combined.obj)
 #' }
 #'
 #' @export
-Percent.in.Trome <- function(
+PercentInTranscriptome <- function(
     obj = combined.obj,
+    assay = DefaultAssay(obj),
     n.genes.barplot = 25,
     width.barplot = round(n.genes.barplot / 4),
     ...) {
+  #
   message("Obj. version: ", obj@version)
+  message("assay: ", assay)
 
-  m.expr <- obj@assays$RNA@counts
+  m.expr <- if (obj@version < "5") {
+    obj@assays$RNA@counts
+  } else {
+    SeuratObject::GetAssayData(object = obj, assay = assay)
+  }
+
+
   total.Expr <- sort(rowSums(m.expr), decreasing = TRUE)
   relative.total.Expr <- total.Expr / sum(total.Expr)
   print(head(iround(100 * relative.total.Expr), n = n.genes.barplot))
@@ -345,17 +354,15 @@ Percent.in.Trome <- function(
 
   Highest.Expressed.Genes <- head(iround(100 * relative.total.Expr), n = n.genes.barplot)
   qbarplot(Highest.Expressed.Genes,
-    w = width.barplot,
     plotname = "Percentage of highest expressed genes",
     subtitle = "Total, in RNA-counts",
     xlab = "",
     ylab = "Gene expression as percent of all UMI's",
     xlab.angle = 45,
-    w = 7, h = 5,
+    w = width.barplot,  h = 5,
     ...)
 
-  print("!!!")
-  print("TotalReadFraction is now stored under combined.obj@misc$'TotalReadFraction'.")
+  message("!!! \nTotalReadFraction is now stored under combined.obj@misc$'TotalReadFraction'.")
 
   obj@misc$"TotalReadFraction" <- relative.total.Expr
   return(obj)

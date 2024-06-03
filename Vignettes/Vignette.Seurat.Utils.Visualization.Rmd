@@ -38,11 +38,11 @@ This function plots the percentage of variation explained by each principal
 ```
 <br>
 
-#### 4. Gene Expression as Fraction of Total UMI Counts: `Percent.in.Trome()`
+#### 4. Gene Expression as Fraction of Total UMI Counts: `PercentInTranscriptome()`
 This function computes and visualizes gene expression levels as a fraction of total
 
 ```r
- combined.obj <- Percent.in.Trome(combined.obj)
+ combined.obj <- PercentInTranscriptome(combined.obj)
 
 
 ```
