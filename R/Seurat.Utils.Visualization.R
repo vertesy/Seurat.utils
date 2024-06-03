@@ -324,7 +324,7 @@ Percent.in.Trome <- function(
     n.genes.barplot = 25,
     width.barplot = round(n.genes.barplot / 4),
     ...) {
-  message("Obj version", obj@version)
+  message("Obj. version: ", obj@version)
 
   m.expr <- obj@assays$RNA@counts
   total.Expr <- sort(rowSums(m.expr), decreasing = TRUE)
@@ -2855,7 +2855,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
                                plot = TRUE) {
   dim_name <- kppu(reduction, dim)
   if (obj@version < 5) dim_name <- toupper(dim_name)
-  message("Seu. obj. version: ", obj@version, " \ndimension name: ", dim_name)
+  message("Obj. version: ", obj@version, " \ndimension name: ", dim_name)
   message("Resolution: ", ident)
 
   stopifnot("Identity not found." = ident %in% colnames(obj@meta.data))
@@ -3181,7 +3181,7 @@ plot3D.umap.gene <- function(
   )
 
   if (obj@version < 5) col.names <- toupper(col.names)
-  message("Seu. obj. version: ", obj@version, " \ndim names: ", kppc(col.names))
+  message("Obj. version: ", obj@version, " \ndim names: ", kppc(col.names))
 
   DefaultAssay(object = obj) <- def.assay
   iprint(DefaultAssay(object = obj), "assay")
@@ -3274,7 +3274,7 @@ plot3D.umap <- function(
   )
 
   if (obj@version < 5) col.names <- toupper(col.names)
-  message("Seu. obj. version: ", obj@version, " \ndim names: ", kppc(col.names))
+  message("Obj. version: ", obj@version, " \ndim names: ", kppc(col.names))
 
   # Get and format 3D plotting data ____________________________________
   plotting.data <- obj@misc$reductions.backup$"umap3d"@cell.embeddings # plotting.data <- Seurat::FetchData(object = obj, vars = c(col.names, category))

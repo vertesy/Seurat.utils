@@ -17,6 +17,7 @@ qSeuViolin(
   hline = FALSE,
   ylab = "Expression",
   show_plot = TRUE,
+  ylimit = NULL,
   w = 9,
   h = 5,
   ...

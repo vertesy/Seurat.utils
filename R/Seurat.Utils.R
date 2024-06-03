@@ -472,6 +472,50 @@ runDGEA <- function(obj = obj.RG,
 # _________________________________________________________________________________________________
 
 
+# _________________________________________________________________________________________________
+#' @title Update Seurat Object Properly, including Assays and DimReducs
+#'
+#' @description This function is an extension on `SeuratObject::UpdateSeuratObject()`. It
+#' first calls `UpdateSeuratObject()`, to updates the class definitions of of a (v3) Seurat object,
+#' then it updates its assays to the 'Assay5' class, and updates the UMAP DimReduc to keys.
+#'
+#' @param obj A Seurat object to be updated. Default: None.
+#'
+#' @return An updated Seurat object.
+#'
+#' @importFrom SeuratObject UpdateSeuratObject
+#' @examples
+#' \dontrun{
+#' combined.obj <- UpdateSeuratObjectProperly(combined.obj)
+#' }
+#'
+#' @export
+UpdateSeuratObjectProperly <- function(obj) {
+  # Input assertions
+  stopifnot(is(obj, "Seurat"))
+
+  warning("This function is not yet fully tested. Use with caution.", immediate. = TRUE)
+  message("Input obj. version: ", obj@version)
+
+  # Update Object Structure (not Assays, etc.) _________
+  obj <- SeuratObject::UpdateSeuratObject(obj)
+
+  # Update assays individually __________________
+  existing_assays <- names(obj@assays)
+  message("Updating assays to 'Assay5' class. Found: \n", existing_assays)
+  for (assay in existing_assays) {
+    obj[[assay]] <- as(obj[[assay]], Class = "Assay5")
+  }
+
+  # Update UMAP DimReduc manually __________________
+  cn <- colnames(obj@reductions$umap@cell.embeddings)
+  colnames(obj@reductions$umap@cell.embeddings) <- tolower(cn)
+
+  message("Output obj. version: ", obj@version)
+  return(obj)
+}
+
+
 #' @title parallel.computing.by.future
 #'
 #' @description Run gc(), load multi-session computing and extend memory limits.
