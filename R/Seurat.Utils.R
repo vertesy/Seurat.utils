@@ -5329,10 +5329,12 @@ compareVarFeaturesAndRanks <- function(
 #' @title Get number of scaled features
 #'
 #' @param obj A Seurat object containing scaled data in  `obj@assays$RNA@scale.data`.
+#' @param assay The name of the assay to search for scaled data. Default: `RNA`.
+#'
 #' @return Integer representing the number of scaled features
 .getNrScaledFeatures <- function(obj, assay = Seurat::DefaultAssay(obj)) {
-  message("Seurat version: ", obj@version)
-  message("Assay searched: ", assay)
+  message("Running .getNrScaledFeatures...")
+  message("Seurat version: ", obj@version, " | Assay searched: ", assay)
 
   # !!! Below may have been necessary bc of a bug in version 5.0.0
   if (obj@version >= 5) {
@@ -5359,13 +5361,36 @@ compareVarFeaturesAndRanks <- function(
 # _________________________________________________________________________________________________
 #' @title Parse regression variables for name tagging
 #'
-#' @param p list of parameters
+#' @description This function extracts the regression variables from the `@commands` slot of a Seurat object.
+#' If no regression variables are found, a message is printed.
+#' @param obj A Seurat object
+# #' @param element element to extract from the list
+# #' @param p list of parameters
+
 #' @return Integer representing the number of principal components
-.parseRegressionVariablesForScaleData <- function(element = "variables.2.regress.combined", par.list = p) {
-  (regV <- par.list[[element]])
-  txt <- if (is.null(regV)) "No.Regr" else kpp("Regr", regV)
-  return(txt)
+.getRegressionVariablesForScaleData <- function(obj,
+                                                # element = "variables.2.regress.combined", par.list = p
+                                                ...) {
+  stopifnot(is(obj, "Seurat"))
+
+  func_slot <- grepv(x = names(obj@commands), pattern = "^ScaleData")
+  regressionVariables <- obj@commands[[func_slot]]$'vars.to.regress'
+  message("Slot: ", func_slot)
+
+  if (is.null(regressionVariables)) {
+    message("No regression variables found in @commands")
+  } else {
+    message("regressionVariables found in @commands:", regressionVariables)
+  }
+
+  return(regressionVariables)
+
+  # (regV <- par.list[[element]])
+  # txt <- if (is.null(regV)) "No.Regr" else kpp("Regr", regV)
+  # return(txt)
 }
+
+
 
 
 # _________________________________________________________________________________________________
@@ -5388,17 +5413,11 @@ compareVarFeaturesAndRanks <- function(
                             return.as.name = FALSE,
                             assay = Seurat::DefaultAssay(obj),
                             suffix = NULL) {
+  #
+  message("Running .parseKeyParams...")
   scaledFeatures <- .getNrScaledFeatures(obj, assay = assay)
 
-  if (is.null(regressionVariables)) {
-    func_slot <- grepv(x = names(obj@commands), pattern = "^ScaleData")
-    regressionVariables <- obj@commands[[func_slot]]$'vars.to.regress'
-    if (is.null(regressionVariables)) {
-      message("No regression variables found in @commands")
-    } else {
-      message("regressionVariables found in @commands:", regressionVariables)
-    }
-  }
+  if (is.null(regressionVariables)) regressionVariables <- .getRegressionVariablesForScaleData(obj)
 
   if (!is.null(nrVarFeatures)) {
     if (nrVarFeatures != scaledFeatures) {

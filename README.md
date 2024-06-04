@@ -472,7 +472,7 @@ Updated: 2024/03/22 15:41
 
   Regress Out and Recalculate Seurat. The function performs a series of calculations and manipulations on a Seurat object,  including identifying variable features, scaling data, running PCA, setting up reductions, finding neighbors,  and finding clusters. It optionally performs t-SNE and saves the object. 
 
-- #### 92 `.parseRegressionVariablesForScaleData()`
+- #### 92 `.getRegressionVariablesForScaleData()`
 
   Check List Elements. Tests if list elements are defined and reports the value or issues a warning. 
 
