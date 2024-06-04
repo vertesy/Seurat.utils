@@ -5390,9 +5390,9 @@ compareVarFeaturesAndRanks <- function(
                             suffix = NULL) {
   scaledFeatures <- .getNrScaledFeatures(obj, assay = assay)
 
-  if (is.null(RegressionVariables)) {
+  if (is.null(regressionVariables)) {
     func_slot <- grepv(x = names(obj@commands), pattern = "^ScaleData")
-    regressionVariables <- obj.RG@commands[[func_slot]]$'vars.to.regress'
+    regressionVariables <- obj@commands[[func_slot]]$'vars.to.regress'
     if (is.null(regressionVariables)) {
       message("No regression variables found in @commands")
     } else {
@@ -5409,7 +5409,7 @@ compareVarFeaturesAndRanks <- function(
 
   pcs <- .getNrPCs(obj)
   regressionInfo <- kppc(regressionVariables)
-  reg <- if (!is.null(regressionVariables)) paste0(" regress ", regressionInfo) else "no regression"
+  reg <- if (!is.null(regressionVariables)) paste0(regressionInfo, " regressed out") else "no regression"
   if (return.as.name) {
     reg <- ReplaceSpecialCharacters(RemoveWhitespaces(reg, replacement = "."))
     tag <- kpp(scaledFeatures, "ScaledFeatures", pcs, "PCs", reg, suffix)
