@@ -570,6 +570,7 @@ UpdateSeuratObjectProperly <- function(obj, update.gene.symbols = TRUE) {
 }
 
 
+# _________________________________________________________________________________________________
 #' @title parallel.computing.by.future
 #'
 #' @description Run gc(), load multi-session computing and extend memory limits.
@@ -3629,14 +3630,24 @@ FindCorrelatedGenes <- function(
 #' @export
 #' @importFrom HGNChelper checkGeneSymbols
 #'
-UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", EnforceUnique = TRUE, ShowStats = FALSE) {
-  HGNC.updated <- HGNChelper::checkGeneSymbols(rownames(obj), unmapped.as.na = FALSE, map = NULL, species = species_)
-  if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
-  if (ShowStats) {
-    print(HGNC.updated)
-    print(GetUpdateStats(HGNC.updated))
+UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", assay = "RNA",
+                              EnforceUnique = TRUE, ShowStats = FALSE) {
+  assays.present <- Assays(obj)
+  for (assay in assays.present) {
+
+    message("Renaming in assay: ", assay, "...")
+
+    all.genes <- Features(obj, assay = assay)
+    HGNC.updated <- HGNChelper::checkGeneSymbols(all.genes, unmapped.as.na = FALSE, map = NULL, species = species_)
+    if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
+    if (ShowStats) {
+      print(HGNC.updated)
+      print(GetUpdateStats(HGNC.updated))
+    }
+
+    obj <- RenameGenesSeurat(obj, newnames = HGNC.updated$"Suggested.Symbol", assay = assay)
+
   }
-  obj <- RenameGenesSeurat(obj, newnames = HGNC.updated$"Suggested.Symbol")
   return(obj)
 }
 
@@ -3686,13 +3697,14 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
                               newnames = HGNC.updated[[i]]$Suggested.Symbol,
                               assay = "RNA",
                               slots = c("data", "counts", "meta.features")) {
-  message(assay)
+  #
+  message("RenameGenesSeurat, assay: ", assay)
   warning("Run this before integration and downstream processing. It only attempts to change
           @counts, @data, and @meta.features in obj@assays$YOUR_ASSAY.", immediate. = TRUE)
 
   stopifnot(
     "Unequal gene name sets: nrow(assayobj) != nrow(newnames):" =
-      nrow(obj) == length(newnames)
+      length(Features(obj, assay = assay)) == length(newnames)
   )
 
   if (obj@version < 5) warning("obj@version < 5. Old versions are not supported. Update the obj!", immediate. = TRUE)
@@ -3748,12 +3760,15 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 .check_and_rename <- function(obj, assay, newnames, layer.name) {
   cat(layer.name, fill = TRUE)
 
+  length_newnames <- length(newnames)
+  length_orig_names <- length(Features(obj, assay = assay))
+
   stopifnot(
     is(obj, "Seurat"),
     is.character(assay),
     is.character(layer.name),
     is.character(newnames),
-    nrow(obj) == length(newnames)
+    length_orig_names == length_newnames
   )
 
   assayobj <- obj@assays[[assay]]

@@ -462,16 +462,24 @@ addMetaFraction <- function(
     obj,
     col.name = "percent.mito",
     gene.symbol.pattern = c("^MT\\.|^MT-", FALSE)[1],
+    assay = "RNA",
     gene.set = FALSE,
     verbose = TRUE) {
   message("Should rather use the default `Seurat::PercentageFeatureSet`")
+  message("Assay: ", assay)
 
   stopif(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
   if (!isFALSE(gene.set)) geneset <- check.genes(list.of.genes = gene.set, obj = obj)
   total_expr <- Matrix::colSums(GetAssayData(object = obj))
-  genes.matching <- if (!isFALSE(gene.set)) intersect(gene.set, rownames(obj)) else CodeAndRoll2::grepv(pattern = gene.symbol.pattern, x = rownames(obj))
+  all.genes <- Features(obj, assay = assay)
+
+  genes.matching <- if (!isFALSE(gene.set)) {
+    intersect(gene.set, all.genes)
+  } else {
+    CodeAndRoll2::grepv(pattern = gene.symbol.pattern, x = all.genes)
+  }
 
   genes.expr <- GetAssayData(object = obj)[genes.matching, ]
   target_expr <- if (length(genes.matching) > 1) Matrix::colSums(genes.expr) else genes.expr
