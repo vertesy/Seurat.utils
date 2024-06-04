@@ -4,17 +4,15 @@
 \alias{.getRegressionVariablesForScaleData}
 \title{Parse regression variables for name tagging}
 \usage{
-.getRegressionVariablesForScaleData(
-  element = "variables.2.regress.combined",
-  par.list = p
-)
+.getRegressionVariablesForScaleData(obj, ...)
 }
 \arguments{
-\item{p}{list of parameters}
+\item{obj}{A Seurat object}
 }
 \value{
 Integer representing the number of principal components
 }
 \description{
-Parse regression variables for name tagging
+This function extracts the regression variables from the \verb{@commands} slot of a Seurat object.
+If no regression variables are found, a message is printed.
 }

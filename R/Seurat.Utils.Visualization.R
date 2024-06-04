@@ -1709,6 +1709,7 @@ qFeatureScatter <- function(
 #' @param ident A character vector specifying the identities to be used in the plot.
 #' @param split.by A character string specifying the grouping variable for splitting the plot.
 #' @param replace.na A logical indicating whether NA values should be replaced.
+#' @param pt.size The size of the individual datapoints in the plot. Set to 0 to get a clean violin plot.
 #' @param suffix An optional string to append to the title of the plot.
 #' @param suffix.2.title A logical indicating whether to append the suffix to the plot title.
 #' @param logY A logical indicating whether to use a logarithmic scale for the y-axis.
@@ -1732,6 +1733,7 @@ qSeuViolin <- function(
     ident = GetNamedClusteringRuns(obj)[1],
     split.by = NULL,
     replace.na = FALSE,
+    pt.size = NULL,
     suffix = NULL,
     suffix.2.title = FALSE,
     caption = .parseKeyParams(obj),
@@ -1769,7 +1771,8 @@ qSeuViolin <- function(
     obj@meta.data[[feature]] <- na.replace(x = obj@meta.data[[feature]], replace = 0)
   }
 
-  p <- VlnPlot(object = obj, features = feature, split.by = split.by, group.by = ident, ...) +
+  p <- VlnPlot(object = obj, features = feature, split.by = split.by, group.by = ident,
+               pt.size = pt.size, ...) +
     theme(axis.title.x = element_blank()) +
     labs(y = ylab) +
     ggtitle(label = ttl, subtitle = subt )

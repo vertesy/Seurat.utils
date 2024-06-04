@@ -6,10 +6,11 @@
 \usage{
 qSeuViolin(
   obj,
-  features = "nFeature_RNA",
-  idents = GetNamedClusteringRuns(obj)[1],
+  feature = "nFeature_RNA",
+  ident = GetNamedClusteringRuns(obj)[1],
   split.by = NULL,
   replace.na = FALSE,
+  pt.size = NULL,
   suffix = NULL,
   suffix.2.title = FALSE,
   caption = .parseKeyParams(obj),
@@ -26,13 +27,15 @@ qSeuViolin(
 \arguments{
 \item{obj}{A Seurat object to be plotted.}
 
-\item{features}{A character string specifying the name of the feature to plot.}
+\item{feature}{A character string specifying the name of the feature to plot.}
 
-\item{idents}{A character vector specifying the identities to be used in the plot.}
+\item{ident}{A character vector specifying the identities to be used in the plot.}
 
 \item{split.by}{A character string specifying the grouping variable for splitting the plot.}
 
 \item{replace.na}{A logical indicating whether NA values should be replaced.}
+
+\item{pt.size}{The size of the individual datapoints in the plot. Set to 0 to get a clean violin plot.}
 
 \item{suffix}{An optional string to append to the title of the plot.}
 
@@ -62,6 +65,6 @@ The function supports customization options such as logarithmic scaling, custom 
 }
 \examples{
 # Assuming `seurat_obj` is a valid Seurat object
-qSeuViolin(obj = seurat_obj, features = "nFeature_RNA")
+qSeuViolin(obj = seurat_obj, feature = "nFeature_RNA")
 
 }

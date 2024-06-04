@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{obj}{A Seurat object containing scaled data in  \code{obj@assays$RNA@scale.data}.}
+
+\item{assay}{The name of the assay to search for scaled data. Default: \code{RNA}.}
 }
 \value{
 Integer representing the number of scaled features
