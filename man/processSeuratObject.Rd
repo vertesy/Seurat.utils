@@ -7,6 +7,7 @@
 processSeuratObject(
   obj,
   param.list = p,
+  add.meta.fractions = FALSE,
   compute = TRUE,
   save = TRUE,
   plot = TRUE,
@@ -21,6 +22,8 @@ processSeuratObject(
 \item{obj}{A Seurat object to be processed.}
 
 \item{param.list}{A list of parameters used in the processing steps.}
+
+\item{add.meta.fractions}{A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: FALSE.}
 
 \item{compute}{A boolean indicating whether to compute the results. Default: TRUE.}
 

@@ -430,20 +430,20 @@ create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.inters
 #' @title addMetaFraction
 #'
 #' @description Add a new metadata column to a Seurat object, representing the fraction of a gene set in the transcriptome (expressed as a percentage).
+#' @param obj Seurat object to which the new metadata column will be added. Default: ls.Seurat[[1]]
 #' @param col.name Name of the new metadata column to be added. Default: 'percent.mito'
 #' @param gene.symbol.pattern Regular expression pattern to match gene symbols. Default: c("^MT\\.|^MT-", FALSE)[1]
 #' @param gene.set A set of gene symbols. If specified, it will be used instead of gene.symbol.pattern. Default: FALSE
-#' @param obj Seurat object to which the new metadata column will be added. Default: ls.Seurat[[1]]
 #' @param verbose Logical indicating whether to display detailed messages (TRUE) or not (FALSE). Default: TRUE
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-")
-#'   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.ribo", gene.symbol.pattern = "^RPL|^RPS")
-#'   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.AC.GenBank", gene.symbol.pattern = "^AC[0-9]{6}\\.")
-#'   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.AL.EMBL", gene.symbol.pattern = "^AL[0-9]{6}\\.")
-#'   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.LINC", gene.symbol.pattern = "^LINC0")
-#'   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.MALAT1", gene.symbol.pattern = "^MALAT1")
+#'   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-", obj = ls.Seurat[[1]])
+#'   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.ribo", gene.symbol.pattern = "^RPL|^RPS", obj = ls.Seurat[[1]])
+#'   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.AC.GenBank", gene.symbol.pattern = "^AC[0-9]{6}\\.", obj = ls.Seurat[[1]])
+#'   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.AL.EMBL", gene.symbol.pattern = "^AL[0-9]{6}\\.", obj = ls.Seurat[[1]])
+#'   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.LINC", gene.symbol.pattern = "^LINC0", obj = ls.Seurat[[1]])
+#'   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.MALAT1", gene.symbol.pattern = "^MALAT1", obj = ls.Seurat[[1]])
 #'   colnames(ls.Seurat[[1]]@meta.data)
 #'   HGA_MarkerGenes <- c(
 #'     "ENO1", "IGFBP2", "WSB1", "DDIT4", "PGK1", "BNIP3", "FAM162A", "TPI1",
@@ -459,8 +459,10 @@ create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.inters
 #' @importFrom Matrix colSums
 #' @importFrom CodeAndRoll2 grepv
 addMetaFraction <- function(
-    col.name = "percent.mito", gene.symbol.pattern = c("^MT\\.|^MT-", FALSE)[1],
-    gene.set = FALSE, obj = ls.Seurat[[1]],
+    obj,
+    col.name = "percent.mito",
+    gene.symbol.pattern = c("^MT\\.|^MT-", FALSE)[1],
+    gene.set = FALSE,
     verbose = TRUE) {
   message("Should rather use the default `Seurat::PercentageFeatureSet`")
 

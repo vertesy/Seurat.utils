@@ -34,6 +34,7 @@
 #'
 #' @param obj A Seurat object to be processed.
 #' @param param.list A list of parameters used in the processing steps.
+#' @param add.meta.fractions A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: FALSE.
 #' @param compute A boolean indicating whether to compute the results. Default: TRUE.
 #' @param save A boolean indicating whether to save the results. Default: TRUE.
 #' @param plot A boolean indicating whether to plot the results. Default: TRUE.
@@ -47,7 +48,8 @@
 #' # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
 #' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
 #' @export
-processSeuratObject <- function(obj, param.list = p, compute = TRUE,
+processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
+                                compute = TRUE,
                                 save = TRUE, plot = TRUE,
                                 nfeatures = param.list$"n.var.genes",
                                 variables.2.regress = param.list$"variables.2.regress.combined",
@@ -84,6 +86,55 @@ processSeuratObject <- function(obj, param.list = p, compute = TRUE,
   obj@misc$"p" <- param.list # overwrite previous parameters
 
   gc()
+
+  if (add.meta.fractions) {
+    message("Adding meta data for gene-class fractions, eg. percent.mito, etc.")
+
+    HGA_MarkerGenes <- c(
+      "ENO1", "IGFBP2", "WSB1", "DDIT4", "PGK1", "BNIP3", "FAM162A", "TPI1",
+      "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1", "NPAS4", "HK2", "BNIP3L",
+      "JUN", "ENO2", "GAPDH", "ANKRD37", "ALDOA", "GADD45G", "TXNIP"
+    )
+
+    if ( !metaColnameExists(col_name = "percent.mito", obj = obj) ) {
+      obj <- addMetaFraction(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-", obj = obj) } else {
+        message("percent.mito already present.") }
+    if ( !metaColnameExists(col_name = "percent.ribo", obj = obj) ) {
+      obj <- addMetaFraction(col.name = "percent.ribo", gene.symbol.pattern = "^RPL|^RPS", obj = obj) } else {
+        message("percent.ribo already present.") }
+    if ( !metaColnameExists(col_name = "percent.AC.GenBank", obj = obj) ) {
+      obj <- addMetaFraction(col.name = "percent.AC.GenBank", gene.symbol.pattern = "^AC[0-9]{6}\\.", obj = obj) } else {
+        message("percent.AC.GenBank already present.") }
+    if ( !metaColnameExists(col_name = "percent.AL.EMBL", obj = obj) ) {
+      obj <- addMetaFraction(col.name = "percent.AL.EMBL", gene.symbol.pattern = "^AL[0-9]{6}\\.", obj = obj) } else {
+        message("percent.AL.EMBL already present.") }
+    if ( !metaColnameExists(col_name = "percent.LINC", obj = obj) ) {
+      obj <- addMetaFraction(col.name = "percent.LINC", gene.symbol.pattern = "^LINC0", obj = obj) } else {
+        message("percent.LINC already present.") }
+    if ( !metaColnameExists(col_name = "percent.MALAT1", obj = obj) ) {
+      obj <- addMetaFraction(col.name = "percent.MALAT1", gene.symbol.pattern = "^MALAT1", obj = obj) } else {
+        message("percent.MALAT1 already present.") }
+    if ( !metaColnameExists(col_name = "percent.HGA", obj = obj) ) {
+      obj <- addMetaFraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj = obj) } else {
+        message("percent.HGA already present.") }
+
+    # if ( !metaColnameExists(col_name = "percent.mito", obj = obj) ) {
+    #   obj <- addMetaFraction(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-", obj = obj) }
+    # if ( !metaColnameExists(col_name = "percent.ribo", obj = obj) ) {
+    #   obj <- addMetaFraction(col.name = "percent.ribo", gene.symbol.pattern = "^RPL|^RPS", obj = obj) }
+    # if ( !metaColnameExists(col_name = "percent.AC.GenBank", obj = obj) ) {
+    #   obj <- addMetaFraction(col.name = "percent.AC.GenBank", gene.symbol.pattern = "^AC[0-9]{6}\\.", obj = obj) }
+    # if ( !metaColnameExists(col_name = "percent.AL.EMBL", obj = obj) ) {
+    #   obj <- addMetaFraction(col.name = "percent.AL.EMBL", gene.symbol.pattern = "^AL[0-9]{6}\\.", obj = obj) }
+    # if ( !metaColnameExists(col_name = "percent.LINC", obj = obj) ) {
+    #   obj <- addMetaFraction(col.name = "percent.LINC", gene.symbol.pattern = "^LINC0", obj = obj) }
+    # if ( !metaColnameExists(col_name = "percent.MALAT1", obj = obj) ) {
+    #   obj <- addMetaFraction(col.name = "percent.MALAT1", gene.symbol.pattern = "^MALAT1", obj = obj) }
+    # if ( !metaColnameExists(col_name = "percent.HGA", obj = obj) ) {
+    #   obj <- addMetaFraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj = obj) }
+
+  } # end if add.meta.fractions
+
   if (compute) {
     message("------------------- FindVariableFeatures -------------------")
     tic()
