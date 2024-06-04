@@ -512,10 +512,14 @@ UpdateSeuratObjectProperly <- function(obj) {
   }
 
   # Update UMAP DimReduc manually __________________
-  cn <- colnames(obj@reductions$umap@cell.embeddings)
-  colnames(obj@reductions$umap@cell.embeddings) <- tolower(cn)
-
-  obj@reductions$umap@key <- tolower(obj@reductions$umap@key)
+  umap.exists <- !is.null(obj@reductions$umap)
+  if (umap.exists) {
+    message("Updating UMAP DimReduc to keys.")
+    colnames(obj@reductions$umap@cell.embeddings) <- tolower(colnames(obj@reductions$umap@cell.embeddings))
+    obj@reductions$umap@key <- tolower(obj@reductions$umap@key)
+  } else {
+    message("No UMAP DimReduc found. Skipping.")
+  }
 
   message("Output obj. version: ", obj@version)
   return(obj)
@@ -5370,18 +5374,31 @@ compareVarFeaturesAndRanks <- function(
 #' @description This function extracts the number of scaled features, the number of principal components,
 #' and formats additional information including regression variables.
 #' @param obj An object to extract information from.
-#' @param regressionVariables A list or vector containing variables for regression.
+#' @param regressionVariables A list or vector containing variables for regression. Default: NULL.
+#' If NULL, the function will attempt to extract the variables from the `object@commands$ScaleData`.
 #' @param nrVarFeatures You can provide this number manually. Default: NULL.
+#' @param return.as.name If TRUE, returns the name of the object. Default: FALSE.
+#' @param assay The assay to extract scaled features from. Default: "RNA".
 #' @param suffix A suffix string to add.
 #' @return A character string summarizing the key parameters.
 
 .parseKeyParams <- function(obj,
-                            regressionVariables = obj@misc$p$"variables.2.regress.combined",
+                            regressionVariables = NULL,
                             nrVarFeatures = NULL,
                             return.as.name = FALSE,
                             assay = Seurat::DefaultAssay(obj),
                             suffix = NULL) {
   scaledFeatures <- .getNrScaledFeatures(obj, assay = assay)
+
+  if (is.null(RegressionVariables)) {
+    func_slot <- grepv(x = names(obj@commands), pattern = "^ScaleData")
+    regressionVariables <- obj.RG@commands[[func_slot]]$'vars.to.regress'
+    if (is.null(regressionVariables)) {
+      message("No regression variables found in @commands")
+    } else {
+      message("regressionVariables found in @commands:", regressionVariables)
+    }
+  }
 
   if (!is.null(nrVarFeatures)) {
     if (nrVarFeatures != scaledFeatures) {

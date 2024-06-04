@@ -6,7 +6,7 @@
 \usage{
 .parseKeyParams(
   obj,
-  regressionVariables = obj@misc$p$variables.2.regress.combined,
+  regressionVariables = NULL,
   nrVarFeatures = NULL,
   return.as.name = FALSE,
   assay = Seurat::DefaultAssay(obj),
@@ -16,9 +16,14 @@
 \arguments{
 \item{obj}{An object to extract information from.}
 
-\item{regressionVariables}{A list or vector containing variables for regression.}
+\item{regressionVariables}{A list or vector containing variables for regression. Default: NULL.
+If NULL, the function will attempt to extract the variables from the \code{object@commands$ScaleData}.}
 
 \item{nrVarFeatures}{You can provide this number manually. Default: NULL.}
+
+\item{return.as.name}{If TRUE, returns the name of the object. Default: FALSE.}
+
+\item{assay}{The assay to extract scaled features from. Default: "RNA".}
 
 \item{suffix}{A suffix string to add.}
 }

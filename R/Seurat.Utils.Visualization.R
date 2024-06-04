@@ -1967,7 +1967,8 @@ clUMAP <- function(
     save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     check_for_2D = TRUE,
-    caption = NULL, # .parseKeyParams(obj)
+    caption = .parseKeyParams(obj),
+    # caption = NULL,
     ...) {
   #
   if (check_for_2D) {
