@@ -492,6 +492,64 @@ addMetaFraction <- function(
 }
 
 
+
+# _________________________________________________________________________________________________
+#' @title Add Meta Data for Gene-Class Fractions
+#'
+#' @description
+#' This function adds meta data for various gene-class fractions such as percent.mito, percent.ribo,
+#' percent.AC.GenBank, percent.AL.EMBL, percent.LINC, percent.MALAT1, and percent.HGA to a Seurat object.
+#' If the meta data already exists, a message will be displayed.
+#'
+#' @param obj A Seurat object to be updated. Default: None.
+#' @param gene_fractions A named list containing gene symbol patterns for each meta column name.
+#'                       Default: List of predefined gene fractions.
+#' @param add_hga A logical value indicating whether to add percent.HGA meta data. Default: TRUE.
+#'
+#' @return An updated Seurat object.
+#' @export
+#'
+#' @importFrom SeuratObject UpdateSeuratObject
+#'
+add_gene_class_fractions <- function(obj,
+                                     gene_fractions = list(
+                                       "percent.mito" = "^MT\\.|^MT-",
+                                       "percent.ribo" = "^RPL|^RPS",
+                                       "percent.AC.GenBank" = "^AC[0-9]{6}\\.",
+                                       "percent.AL.EMBL" = "^AL[0-9]{6}\\.",
+                                       "percent.LINC" = "^LINC0",
+                                       "percent.MALAT1" = "^MALAT1"
+                                     ),
+                                     add_hga = TRUE) {
+  message("Adding meta data for gene-class fractions, e.g., percent.mito, etc.")
+
+  for (col_name in names(gene_fractions)) {
+    if (!metaColnameExists(col_name = col_name, obj = obj)) {
+      gene_data <- gene_fractions[[col_name]]
+      obj <- addMetaFraction(col.name = col_name, gene.symbol.pattern = gene_data, obj = obj)
+    } else {
+      message(paste(col_name, "already present."))
+    }
+  }
+
+  if (add_hga) {
+    HGA_MarkerGenes <- c(
+      "ENO1", "IGFBP2", "WSB1", "DDIT4", "PGK1", "BNIP3", "FAM162A", "TPI1",
+      "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1", "NPAS4", "HK2", "BNIP3L",
+      "JUN", "ENO2", "GAPDH", "ANKRD37", "ALDOA", "GADD45G", "TXNIP"
+    )
+
+    if (!metaColnameExists(col_name = "percent.HGA", obj = obj)) {
+      obj <- addMetaFraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj = obj)
+    } else {
+      message("percent.HGA already present.")
+    }
+  }
+
+  return(obj)
+}
+
+
 # _________________________________________________________________________________________________
 #' @title add.meta.tags
 #'

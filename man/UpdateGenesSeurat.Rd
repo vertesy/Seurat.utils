@@ -7,6 +7,7 @@
 UpdateGenesSeurat(
   obj = ls.Seurat[[i]],
   species_ = "human",
+  assay = "RNA",
   EnforceUnique = TRUE,
   ShowStats = FALSE
 )
