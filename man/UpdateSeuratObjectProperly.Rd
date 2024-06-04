@@ -4,10 +4,12 @@
 \alias{UpdateSeuratObjectProperly}
 \title{Update Seurat Object Properly, including Assays and DimReducs}
 \usage{
-UpdateSeuratObjectProperly(obj)
+UpdateSeuratObjectProperly(obj, update.gene.symbols = TRUE)
 }
 \arguments{
 \item{obj}{A Seurat object to be updated. Default: None.}
+
+\item{update.gene.symbols}{Logical. If TRUE, gene symbols are updated to the latest version.}
 }
 \value{
 An updated Seurat object.
