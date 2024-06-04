@@ -90,35 +90,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 
   if (add.meta.fractions) {
     message("Adding meta data for gene-class fractions, eg. percent.mito, etc.")
-
-    HGA_MarkerGenes <- c(
-      "ENO1", "IGFBP2", "WSB1", "DDIT4", "PGK1", "BNIP3", "FAM162A", "TPI1",
-      "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1", "NPAS4", "HK2", "BNIP3L",
-      "JUN", "ENO2", "GAPDH", "ANKRD37", "ALDOA", "GADD45G", "TXNIP"
-    )
-
-    if ( !metaColnameExists(col_name = "percent.mito", obj = obj) ) {
-      obj <- addMetaFraction(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-", obj = obj) } else {
-        message("percent.mito already present.") }
-    if ( !metaColnameExists(col_name = "percent.ribo", obj = obj) ) {
-      obj <- addMetaFraction(col.name = "percent.ribo", gene.symbol.pattern = "^RPL|^RPS", obj = obj) } else {
-        message("percent.ribo already present.") }
-    if ( !metaColnameExists(col_name = "percent.AC.GenBank", obj = obj) ) {
-      obj <- addMetaFraction(col.name = "percent.AC.GenBank", gene.symbol.pattern = "^AC[0-9]{6}\\.", obj = obj) } else {
-        message("percent.AC.GenBank already present.") }
-    if ( !metaColnameExists(col_name = "percent.AL.EMBL", obj = obj) ) {
-      obj <- addMetaFraction(col.name = "percent.AL.EMBL", gene.symbol.pattern = "^AL[0-9]{6}\\.", obj = obj) } else {
-        message("percent.AL.EMBL already present.") }
-    if ( !metaColnameExists(col_name = "percent.LINC", obj = obj) ) {
-      obj <- addMetaFraction(col.name = "percent.LINC", gene.symbol.pattern = "^LINC0", obj = obj) } else {
-        message("percent.LINC already present.") }
-    if ( !metaColnameExists(col_name = "percent.MALAT1", obj = obj) ) {
-      obj <- addMetaFraction(col.name = "percent.MALAT1", gene.symbol.pattern = "^MALAT1", obj = obj) } else {
-        message("percent.MALAT1 already present.") }
-    if ( !metaColnameExists(col_name = "percent.HGA", obj = obj) ) {
-      obj <- addMetaFraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj = obj) } else {
-        message("percent.HGA already present.") }
-
+    obj <- add_gene_class_fractions(obj)
 
   } # end if add.meta.fractions
 

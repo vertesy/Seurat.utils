@@ -468,6 +468,7 @@ addMetaFraction <- function(
   message("Should rather use the default `Seurat::PercentageFeatureSet`")
   message("Assay: ", assay)
 
+  # browser()
   stopif(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
@@ -481,7 +482,7 @@ addMetaFraction <- function(
     CodeAndRoll2::grepv(pattern = gene.symbol.pattern, x = all.genes)
   }
 
-  genes.expr <- GetAssayData(object = obj)[genes.matching, ]
+  genes.expr <- GetAssayData(object = obj, assay = assay)[genes.matching, ]
   target_expr <- if (length(genes.matching) > 1) Matrix::colSums(genes.expr) else genes.expr
 
   iprint(length(genes.matching), "genes found, :", head(genes.matching))
@@ -525,8 +526,10 @@ add_gene_class_fractions <- function(obj,
 
   for (col_name in names(gene_fractions)) {
     if (!metaColnameExists(col_name = col_name, obj = obj)) {
+      message("Adding meta data for ", col_name, "... ", gene_data)
       gene_data <- gene_fractions[[col_name]]
-      obj <- addMetaFraction(col.name = col_name, gene.symbol.pattern = gene_data, obj = obj)
+      obj <- addMetaFraction(col.name = col_name, gene.symbol.pattern = gene_data, obj = obj,
+                             assay = "RNA")
     } else {
       message(paste(col_name, "already present."))
     }
