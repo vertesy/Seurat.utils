@@ -1705,8 +1705,8 @@ qFeatureScatter <- function(
 #' The function supports customization options such as logarithmic scaling, custom titles, and more.
 #'
 #' @param obj A Seurat object to be plotted.
-#' @param features A character string specifying the name of the feature to plot.
-#' @param idents A character vector specifying the identities to be used in the plot.
+#' @param feature A character string specifying the name of the feature to plot.
+#' @param ident A character vector specifying the identities to be used in the plot.
 #' @param split.by A character string specifying the grouping variable for splitting the plot.
 #' @param replace.na A logical indicating whether NA values should be replaced.
 #' @param suffix An optional string to append to the title of the plot.
@@ -1723,13 +1723,13 @@ qFeatureScatter <- function(
 #'
 #' @examples
 #' # Assuming `seurat_obj` is a valid Seurat object
-#' qSeuViolin(obj = seurat_obj, features = "nFeature_RNA")
+#' qSeuViolin(obj = seurat_obj, feature = "nFeature_RNA")
 #'
 #' @export
 qSeuViolin <- function(
     obj,
-    features = "nFeature_RNA",
-    idents = GetNamedClusteringRuns(obj)[1],
+    feature = "nFeature_RNA",
+    ident = GetNamedClusteringRuns(obj)[1],
     split.by = NULL,
     replace.na = FALSE,
     suffix = NULL,
@@ -1751,25 +1751,25 @@ qSeuViolin <- function(
     is.logical(suffix.2.title), # suffix.2.title must be logical
     is.character(split.by) | is.null(split.by), # split.by must be a character or NULL
     split.by %in% colnames(obj@meta.data),
-    is.character(idents),
-    idents %in% colnames(obj@meta.data),
-    is.character(features),
-    features %in% colnames(obj@meta.data) || features %in% rownames(obj)
+    is.character(ident),
+    ident %in% colnames(obj@meta.data),
+    is.character(feature),
+    feature %in% colnames(obj@meta.data) || feature %in% rownames(obj)
   )
 
   ttl <- if (suffix.2.title) {
-    paste(features, "|", suffix)
+    paste(feature, "|", suffix)
   } else {
-    as.character(features)
+    as.character(feature)
   }
-  subt <- paste(features, "- by -", idents)
+  subt <- paste(feature, "- by -", ident)
 
   if (replace.na) {
     warning("NA's are not, but zeros are displayed on the plot. Avoid replace.na when possible", immediate. = TRUE)
-    obj@meta.data[[features]] <- na.replace(x = obj@meta.data[[features]], replace = 0)
+    obj@meta.data[[feature]] <- na.replace(x = obj@meta.data[[feature]], replace = 0)
   }
 
-  p <- VlnPlot(object = obj, features = features, split.by = split.by, group.by = idents, ...) +
+  p <- VlnPlot(object = obj, features = feature, split.by = split.by, group.by = ident, ...) +
     theme(axis.title.x = element_blank()) +
     labs(y = ylab) +
     ggtitle(label = ttl, subtitle = subt )
@@ -1781,7 +1781,7 @@ qSeuViolin <- function(
   if (!isFALSE(caption)) p <- p + ggplot2::labs(caption = caption)
 
   # Save the plot.
-  TTL <- ppp(as.character(features), suffix, flag.nameiftrue(logY))
+  TTL <- ppp(as.character(feature), suffix, flag.nameiftrue(logY))
   qqSave(p, title = TTL, w = w, h = h)
   if (show_plot) p
 }
