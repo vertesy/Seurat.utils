@@ -1948,7 +1948,7 @@ qUMAP <- function(
 #'
 #' @export
 clUMAP <- function(
-    ident = GetNamedClusteringRuns()[1],
+    ident = NULL,
     obj = combined.obj,
     reduction = "umap", splitby = NULL,
     title = ident,
@@ -1970,10 +1970,16 @@ clUMAP <- function(
     save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     check_for_2D = TRUE,
-    caption = .parseKeyParams(obj),
+    caption = .parseKeyParams(obj = obj),
     # caption = NULL,
     ...) {
   #
+
+  if (is.null(ident)) {
+    ident <- GetNamedClusteringRuns(obj = obj)[1]
+    message("Identity not provided. Plotting: ", ident)
+  }
+
   if (check_for_2D) {
     umap_dims <- ncol(obj@reductions[[reduction]]@cell.embeddings)
     if (umap_dims != 2) warning(">>> UMAP is not 2 dimensional! \n Check obj@reductions[[reduction]]@cell.embeddings")

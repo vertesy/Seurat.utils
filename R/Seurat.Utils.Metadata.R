@@ -33,27 +33,31 @@
 addTranslatedMetadata <- function(obj = combined.obj,
                                   orig.ident = "RNA_snn_res.0.4",
                                   translation_as_named_vec,
-                                  suffix = ".") {
+                                  new_col_name = substitute(translation_as_named_vec),
+                                  suffix = NULL,
+                                  ...) {
   # Input assertions
   stopifnot(is(obj, "Seurat"),
             is.character(orig.ident) && length(orig.ident) == 1,
-            is.character(suffix) && length(suffix) == 1,
-            is.named(translation_as_named_vec)
+            is.character(suffix) |  is.null(suffix),
+            "Not a named vec was provided!" = !is.null(names(translation_as_named_vec))
   )
+  message("new_col_name: ", new_col_name)
 
   # Translate metadata
-  new_col_name <- paste0(orig.ident, suffix)
-  obj[[new_col_name]] <- CodeAndRoll2::translate(vec = as.character(obj[[orig.ident]]),
+  obj@meta.data[[new_col_name]] <- CodeAndRoll2::translate(vec = as.character(obj@meta.data[[orig.ident]]),
                                    oldvalues = names(translation_as_named_vec),
                                    newvalues = translation_as_named_vec)
+  # Output assertions
+  # stopifnot(is(obj, "Seurat")
+  #           # new_col_name %in% colnames(obj@meta.data)
+  #           )
 
   # Generate UMAP plots
-  clUMAP(new_col_name, obj = obj, suffix = suffix)
-  clUMAP(new_col_name, obj = obj, suffix = suffix)
-
-  # Output assertions
-  stopifnot(is(obj, "Seurat"))
-  stopifnot(new_col_name %in% colnames(obj@meta.data))
+  # message("new_col_name: ", new_col_name)
+  # clUMAP(ident = new_col_name, obj = obj, caption = NULL, ...)
+  # clUMAP(ident = new_col_name, obj = obj, caption = NULL, ...)
+  # cat(3)
 
   return(obj)
 }
