@@ -8,7 +8,9 @@ addTranslatedMetadata(
   obj = combined.obj,
   orig.ident = "RNA_snn_res.0.4",
   translation_as_named_vec,
-  suffix = "."
+  new_col_name = substitute(translation_as_named_vec),
+  suffix = NULL,
+  ...
 )
 }
 \arguments{

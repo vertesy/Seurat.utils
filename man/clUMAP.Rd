@@ -5,7 +5,7 @@
 \title{Quick Visualization of Clustering Results with UMAP and automatically save the plot}
 \usage{
 clUMAP(
-  ident = GetNamedClusteringRuns()[1],
+  ident = NULL,
   obj = combined.obj,
   reduction = "umap",
   splitby = NULL,
@@ -32,7 +32,7 @@ clUMAP(
   save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
   PNG = TRUE,
   check_for_2D = TRUE,
-  caption = .parseKeyParams(obj),
+  caption = .parseKeyParams(obj = obj),
   ...
 )
 }
