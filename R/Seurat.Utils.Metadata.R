@@ -575,8 +575,8 @@ addGeneClassFractions <- function(obj,
 
   for (col_name in names(gene_fractions)) {
     if (!metaColnameExists(col_name = col_name, obj = obj)) {
-      message("Adding meta data for ", col_name, "... ", gene_data)
       gene_data <- gene_fractions[[col_name]]
+      message("Adding ", col_name, "to  @meta.data...", gene_data)
       obj <- addMetaFraction(col.name = col_name, gene.symbol.pattern = gene_data, obj = obj,
                              assay = "RNA")
     } else {
@@ -585,6 +585,7 @@ addGeneClassFractions <- function(obj,
   }
 
   if (add_hga) {
+    message("Adding percent.HGA to @meta.data...")
     HGA_MarkerGenes <- c(
       "ENO1", "IGFBP2", "WSB1", "DDIT4", "PGK1", "BNIP3", "FAM162A", "TPI1",
       "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1", "NPAS4", "HK2", "BNIP3L",

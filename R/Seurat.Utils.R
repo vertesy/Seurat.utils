@@ -918,7 +918,7 @@ calc.q99.Expression.and.set.all.genes <- function(
     assign_to_global_env = TRUE,
     show = TRUE) {
   tictoc::tic()
-  x <- GetAssayData(object = obj, assay = assay, slot = slot) # , assay = 'RNA'
+  x <- GetAssayData(object = obj, assay = assay, slot = slot)
   if (ncol(x) > max.cells) {
     dsampled <- sample(x = 1:ncol(x), size = max.cells)
     x <- x[, dsampled]
@@ -4485,7 +4485,7 @@ xsave <- function(
   ), whitespace = "_")
 
   FNN <- paste0(dir, fnameBase, ".qs")
-  print(paste0(substitute(obj), " <- xread('", FNN, "')"))
+  message(substitute(obj), " <- xread('", FNN, "')")
 
   if ("Seurat" %in% is(obj)) {
     if (saveParams) {

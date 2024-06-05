@@ -2443,10 +2443,11 @@ qClusteringUMAPS <- function(
   message("Plotting qClusteringUMAPS")
 
   # Check that the QC markers are in the object
-  n.found <- intersect(idents, colnames(obj@meta.data))
-  stopifnot("None of the idents found" = length(n.found) > 1,
-            "Only 4 res's allowed" = length(n.found) <5)
-  message(kppws(length(n.found), " found of ", idents))
+  idents.found <- intersect(idents, colnames(obj@meta.data))
+  n.found <- length(idents.found)
+  stopifnot("None of the idents found" = n.found > 1,
+            "Only 4 res's allowed" = n.found <5)
+  message(kppws(n.found, " found of ", idents))
 
   px <- list(
     "A" = clUMAP(ident = idents[1], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
@@ -2501,11 +2502,12 @@ qGeneExpressionUMAPS <- function(
   message("Plotting qGeneExpressionUMAPS")
 
   # Check that the features are in the object
-  n.found <- intersect(features, c(colnames(obj@meta.data), rownames(obj)))
-  stopifnot("None of the features found" = length(n.found) > 1,
-            "Only 4 features are allowed" = length(n.found) <5)
+  features.found <- intersect(features, c(colnames(obj@meta.data), rownames(obj)))
+  n.found <- length(features.found)
+  stopifnot("None of the features found" = n.found > 1,
+            "Only 4 features are allowed" = n.found <5)
 
-  message(kppws(length(n.found), "found of", length(features), "features:", features))
+  message(kppws(n.found, "found of", length(features), "features:", features))
 
   px <- list(
     "A" = qUMAP(feature = features[1], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
@@ -2654,7 +2656,7 @@ PlotTopGenesPerCluster <- function(
 #' @importFrom ggExpress qA4_grid_plot
 qQC.plots.BrainOrg <- function(
     obj = combined.obj,
-    QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction"),
+    QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction", ""),
     prefix = "QC.markers.4.UMAP",
     suffix = "",
     title = sppu(prefix, QC.Features, suffix),
@@ -2663,9 +2665,10 @@ qQC.plots.BrainOrg <- function(
   message("> > > > > Plotting qQC.plots.BrainOrg")
 
   # Check that the QC markers are in the object
-  n.found <- intersect(QC.Features, colnames(obj@meta.data))
-  message(kppws(length(n.found), " found of ", QC.Features))
-  stopifnot(length(n.found) > 1)
+  QC.Features.Found <- intersect(QC.Features, colnames(obj@meta.data))
+  n.found <- length(QC.Features.Found)
+  message(kppws(n.found, " found of ", QC.Features))
+  stopifnot(n.found > 1)
 
   # Count the number of NAs in specified columns
   na_counts <- sapply(X = obj@meta.data[, QC.Features], function(x) sum(is.na(x)))
