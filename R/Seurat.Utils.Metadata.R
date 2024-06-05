@@ -27,8 +27,9 @@
 #'
 #' @return An updated Seurat object.
 #'
-#' @importFrom dplyr %>%
-#'
+#' @importFrom CodeAndRoll2 translate
+#' @export
+
 addTranslatedMetadata <- function(obj = combined.obj,
                                   orig.ident = "RNA_snn_res.0.4",
                                   translation_as_named_vec,
@@ -42,7 +43,7 @@ addTranslatedMetadata <- function(obj = combined.obj,
 
   # Translate metadata
   new_col_name <- paste0(orig.ident, suffix)
-  obj[[new_col_name]] <- translate(vec = as.character(obj[[orig.ident]]),
+  obj[[new_col_name]] <- CodeAndRoll2::translate(vec = as.character(obj[[orig.ident]]),
                                    oldvalues = names(translation_as_named_vec),
                                    newvalues = translation_as_named_vec)
 
