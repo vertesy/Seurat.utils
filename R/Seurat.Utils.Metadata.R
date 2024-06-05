@@ -561,7 +561,7 @@ addMetaFraction <- function(
 #'
 #' @importFrom SeuratObject UpdateSeuratObject
 #'
-add_gene_class_fractions <- function(obj,
+addGeneClassFractions <- function(obj,
                                      gene_fractions = list(
                                        "percent.mito" = "^MT\\.|^MT-",
                                        "percent.ribo" = "^RPL|^RPS",
