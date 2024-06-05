@@ -183,7 +183,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 #' @description Runs a differential gene expression analysis based on specified parameters,
 #' reorders clusters if needed, and optionally saves results. Supports output and plotting configurations.
 #'
-#' @param obj Seurat object, assumed to be pre-configured with necessary data. Default: obj.RG.
+#' @param obj Seurat object, assumed to be pre-configured with necessary data.
 #' @param param.list List of parameters for DE analysis. Default: p.
 #' @param reorder.clusters Logical indicating whether to reorder clusters based on dimension.
 #'        Default: TRUE.
@@ -220,7 +220,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 #'
 #' @export
 
-runDGEA <- function(obj = obj.RG,
+runDGEA <- function(obj,
                     param.list = p,
                     reorder.clusters = TRUE,
                     clean.misc.slot = TRUE,

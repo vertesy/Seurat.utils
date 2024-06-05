@@ -1859,7 +1859,7 @@ qUMAP <- function(
     ...) {
   #
   stopifnot(is(obj) == "Seurat")
-  message("feature: ", feature, "assay: ", assay)
+  message("Feature: ", feature, " | Assay: ", assay)
 
   if (feature %in% colnames(obj@meta.data)) {
     message(paste("...found in @meta.data."))
