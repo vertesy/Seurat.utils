@@ -13,8 +13,52 @@
 # Extract and check metadata columns  ______________________________ ----
 # _________________________________________________________________________________________________
 
+#' @title Add Translated Metadata to a Seurat Object
+#'
+#' @description
+#' This function translates a specified metadata vector in a Seurat object using a named vector of old
+#' and new values and adds it to the Seurat object with a specified suffix. The function also generates
+#' UMAP plots for the new metadata.
+#'
+#' @param obj A Seurat object to be updated. Default: combined.obj.
+#' @param orig.ident A character string specifying the original metadata to be translated. Default: "RNA_snn_res.0.4".
+#' @param translation_as_named_vec A named vector where names are old values and values are new translations. Default: None.
+#' @param suffix A character string specifying the suffix for the new metadata column name. Default: ".".
+#'
+#' @return An updated Seurat object.
+#'
+#' @importFrom dplyr %>%
+#'
+addTranslatedMetadata <- function(obj = combined.obj,
+                                  orig.ident = "RNA_snn_res.0.4",
+                                  translation_as_named_vec,
+                                  suffix = ".") {
+  # Input assertions
+  stopifnot(is(obj, "Seurat"),
+            is.character(orig.ident) && length(orig.ident) == 1,
+            is.character(suffix) && length(suffix) == 1,
+            is.named(translation_as_named_vec)
+  )
+
+  # Translate metadata
+  new_col_name <- paste0(orig.ident, suffix)
+  obj[[new_col_name]] <- translate(vec = as.character(obj[[orig.ident]]),
+                                   oldvalues = names(translation_as_named_vec),
+                                   newvalues = translation_as_named_vec)
+
+  # Generate UMAP plots
+  clUMAP(new_col_name, obj = obj, suffix = suffix)
+  clUMAP(new_col_name, obj = obj, suffix = suffix)
+
+  # Output assertions
+  stopifnot(is(obj, "Seurat"))
+  stopifnot(new_col_name %in% colnames(obj@meta.data))
+
+  return(obj)
+}
 
 
+# _________________________________________________________________________________________________
 #' @title Get Metadata Column Names Matching Pattern
 #'
 #' @description Retrieves column names from an object's metadata that match a specified pattern.
