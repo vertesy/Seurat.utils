@@ -1857,18 +1857,21 @@ qUMAP <- function(
     qlow = "q10", qhigh = "q90",
     caption = .parseBasicObjStats(obj, simple = TRUE),
     ...) {
-  # Checks
+  #
+  stopifnot(is(obj) == "Seurat")
+  message("feature: ", feature, "assay: ", assay)
+
+  if (feature %in% colnames(obj@meta.data)) {
+    message(paste("...found in @meta.data."))
+    stopifnot(is.numeric(obj@meta.data[, feature]))
+  }
+
   if (check_for_2D) {
     umap_dims <- ncol(obj@reductions[[reduction]]@cell.embeddings)
     if (umap_dims != 2) warning(">>> UMAP is not 2 dimensional! \n Check obj@reductions[[reduction]]@cell.embeddings")
   }
 
-  if (feature %in% colnames(obj@meta.data)) {
-    message("feature found in meta.data")
-    stopifnot(is.numeric(obj@meta.data[, feature]))
-  }
-
-  if (!(feature %in% colnames(obj@meta.data) | feature %in% rownames(obj))) {
+  if (!(feature %in% colnames(obj@meta.data) | feature %in% Features(obj, assay = assay))) {
     feature <- check.genes(
       list.of.genes = feature, obj = obj, verbose = FALSE,
       HGNC.lookup = HGNC.lookup, makeuppercase = make.uppercase
@@ -2656,7 +2659,7 @@ PlotTopGenesPerCluster <- function(
 #' @importFrom ggExpress qA4_grid_plot
 qQC.plots.BrainOrg <- function(
     obj = combined.obj,
-    QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction", ""),
+    QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction", "percent.HGA"),
     prefix = "QC.markers.4.UMAP",
     suffix = "",
     title = sppu(prefix, QC.Features, suffix),
@@ -2667,11 +2670,12 @@ qQC.plots.BrainOrg <- function(
   # Check that the QC markers are in the object
   QC.Features.Found <- intersect(QC.Features, colnames(obj@meta.data))
   n.found <- length(QC.Features.Found)
-  message(kppws(n.found, " found of ", QC.Features))
+  message(kppws(n.found, " found: ", QC.Features.Found))
   stopifnot(n.found > 1)
 
+  # browser()
   # Count the number of NAs in specified columns
-  na_counts <- sapply(X = obj@meta.data[, QC.Features], function(x) sum(is.na(x)))
+  na_counts <- sapply(X = obj@meta.data[, QC.Features.Found], function(x) sum(is.na(x)))
 
   # Raise a warning if there are any NAs
   if (sum(na_counts) > 0) {
@@ -2681,10 +2685,10 @@ qQC.plots.BrainOrg <- function(
   }
 
   px <- list(
-    "A" = qUMAP(QC.Features[1], save.plot = FALSE, obj = obj, ...) + NoAxes(),
-    "B" = qUMAP(QC.Features[2], save.plot = FALSE, obj = obj, ...) + NoAxes(),
-    "C" = qUMAP(QC.Features[3], save.plot = FALSE, obj = obj, ...) + NoAxes(),
-    "D" = qUMAP(QC.Features[4], save.plot = FALSE, obj = obj, ...) + NoAxes()
+    "A" = qUMAP(QC.Features.Found[1], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "B" = qUMAP(QC.Features.Found[2], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "C" = qUMAP(QC.Features.Found[3], save.plot = FALSE, obj = obj, ...) + NoAxes(),
+    "D" = qUMAP(QC.Features.Found[4], save.plot = FALSE, obj = obj, ...) + NoAxes()
   )
 
   ggExpress::qA4_grid_plot(
