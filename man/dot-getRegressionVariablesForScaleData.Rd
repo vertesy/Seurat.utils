@@ -4,7 +4,7 @@
 \alias{.getRegressionVariablesForScaleData}
 \title{Parse regression variables for name tagging}
 \usage{
-.getRegressionVariablesForScaleData(obj, ...)
+.getRegressionVariablesForScaleData(obj, assay = DefaultAssay(obj), ...)
 }
 \arguments{
 \item{obj}{A Seurat object}

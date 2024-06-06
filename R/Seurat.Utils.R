@@ -5447,11 +5447,11 @@ compareVarFeaturesAndRanks <- function(
   } else if(length(func_slot) > 1) {
     func_slot <- grepv(x = func_slot, pattern = assay)
     message("Multiple ScaleData slots found in @commands.")
-  } else {
-    regressionVariables <- obj@commands[[func_slot]]$'vars.to.regress'
   }
   message("Searching for parameters is command: ", func_slot[length(func_slot)])
 
+  # Extract regression variables
+  regressionVariables <- obj@commands[[func_slot]]$'vars.to.regress'
 
   if (is.null(regressionVariables)) {
     message("No regression variables found in @commands")
