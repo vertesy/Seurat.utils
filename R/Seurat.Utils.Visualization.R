@@ -2915,6 +2915,10 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 # General ______________________________ ----
 # _________________________________________________________________________________________________
 
+# _________________________________________________________________________________________________
+# DGEA and GO-term enrichment ______________________________ ----
+# _________________________________________________________________________________________________
+
 
 #' @title scEnhancedVolcano
 #'
@@ -3065,6 +3069,136 @@ countRelevantEnrichments <- function(df,
 
   return(list(enriched = enriched_count, depleted = depleted_count))
 }
+
+
+# ________________________________________________________________________
+#' @title Perform GO Enrichment Analysis
+#'
+#' @description This function performs Gene Ontology (GO) enrichment analysis using the
+#' `clusterProfiler::enrichGO` function. It takes the gene list, universe, organism database,
+#' gene identifier type, and ontology type as inputs and returns the enrichment results.
+#'
+#' @param gene Character vector. List of genes for enrichment analysis. Default: NULL.
+#' @param universe Character vector. Background gene list (universe). Default: NULL.
+#' @param org_db Character. Organism-specific database to use (e.g., 'org.Hs.eg.db'). Default: 'org.Hs.eg.db'.
+#' @param key_type Character. Gene identifier type (e.g., 'SYMBOL', 'ENTREZID'). Default: 'SYMBOL'.
+#' @param ont Character. Ontology type to use (e.g., 'BP', 'MF', 'CC'). Default: 'BP'.
+#' @param pAdjustMethod Character. Method for p-value adjustment. Default: 'BH' for Benjamini-Hochberg.
+#' @param pvalueCutoff Numeric. P-value cutoff for significance. Default: 0.05.
+#' @param qvalueCutoff Numeric. Q-value cutoff for significance. Default: 0.2.
+#' @param save Logical. Save the results as a data frame. Default: TRUE.
+#' @param suffix Character. Suffix to append to the output file name. Default: 'GO.Enrichments'.
+#' @importFrom clusterProfiler enrichGO
+#'
+#' @return A data frame with GO enrichment results.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' gene_list <- rownames(df.m.DL.up.in.TSC)
+#' background_genes <- names(all.genes)
+#' go_results <- performGOEnrichment(gene_list, background_genes, "org.Hs.eg.db", "SYMBOL", "BP")
+#' print(go_results)
+#' }
+
+scGOEnrichment <- function(gene, universe = NULL,
+                           org_db = "org.Hs.eg.db", key_type = "SYMBOL", ont = "BP",
+                           pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.2,
+                           save = TRUE,
+                           suffix = "GO.Enrichments",
+                           ...) {
+  # Load required library
+  if (!requireNamespace("clusterProfiler", quietly = TRUE)) {
+    stop("The 'clusterProfiler' package is required but not installed.")
+  }
+
+  # Input assertions
+  stopifnot(
+    is.character(gene), length(gene) > 10,
+    is.character(universe), length(universe) > 100,
+    is.character(org_db), is.character(key_type), is.character(ont),
+    is.character(ont)
+  )
+
+  message("Performing enrichGO() analysis...")
+  go_results <- clusterProfiler::enrichGO(
+    gene = gene,
+    universe = universe,
+    pAdjustMethod = pAdjustMethod,
+    OrgDb = org_db,
+    keyType = key_type,
+    pvalueCutoff = pvalueCutoff,
+    qvalueCutoff = qvalueCutoff,
+    ont = ont,
+    ...)
+
+  # Output assertions
+  stopifnot(
+    is(go_results, "enrichResult"),
+    nrow(go_results) > 0
+  )
+
+  if(save) write.simple.tsv(go_results, suffix = suffix)
+  return(go_results)
+}
+
+
+
+
+# ________________________________________________________________________
+#' @title Barplot GO Enrichment Results by enrichplot
+#'
+#' @description This function creates a bar plot of GO enrichment analysis results using the
+#' `enrichplot::barplot.enrichResult` function. It also allows saving the plot to a file.
+#'
+#' @param df.enrichment Data frame. Enrichment results from GO analysis. Default: NULL.
+#' @param tag Character. Tag to be added to the title of the plot. Default: "in ...".
+#' @param universe Character. Background gene list (universe). Default: NULL.
+#' @param title Character. Title of the plot. Default: "GO Enrichment Analysis" followed by `tag`.
+#' @param subtitle Character. Subtitle of the plot. Default: NULL.
+#' @param caption Character. Caption of the plot. Default: constructed from input parameters.
+#' @param save Logical. Whether to save the plot to a file. Default: TRUE.
+#' @param ... Additional arguments passed to `enrichplot::barplot.enrichResult`.
+#'
+#' @imports enrichplot
+#' @importFrom ggplot2 labs
+#'
+#' @return None. The function prints the plot and optionally saves it.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' df.enrichment <- data.frame() # Example enrichment results data frame
+#' plotGOEnrichment(df.enrichment)
+#' }
+
+scBarplotEnrichr <- function(df.enrichment,
+                             tag = "...",
+                             universe = NULL,
+                             title = paste(tag, "GO Enrichment Analysis"),
+                             subtitle = kppws("Input: ", substitute(df.enrichment)),
+                             caption = paste0("genes: ", nrow(df.enrichment),
+                                              " | background: ", length(universe) ),
+                             save = TRUE,
+                             ...) {
+
+  if(tag == "...") warning("Please provide a tag describing where are the enrichments.", immediate. = TRUE)
+
+  pobj <- enrichplot:::barplot.enrichResult(df.enrichment, showCategory = 20) +
+    ggplot2::labs(title = title, subtitle = subtitle, caption = caption)
+  print(pobj)
+
+  if (save) {
+    qqSave(pobj, title = title)
+  }
+
+}
+
+
+
+# ________________________________________________________________________
+# ________________________________________________________________________
+
 
 
 # _________________________________________________________________________________________________
