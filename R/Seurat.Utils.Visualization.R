@@ -3998,9 +3998,12 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
 suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
                                    repel = TRUE, plotWidth = 7, plotHeight = 5, save = TRUE,
                                    # suffix = kpp("nVF", .getNrScaledFeatures(obj)),
+                                   assay = DefaultAssay(obj),
                                    suffix = NULL,
                                    ...) {
-  # Input validation
+  message(" > Running suPlotVariableFeatures()...")
+  message(length(Cells(obj)), " cells | assay: ", assay, " | NrVarGenes: ", NrVarGenes)
+
   stopifnot(
     is(obj, "Seurat"), is.function(ppp), is.logical(repel),
     is.numeric(plotWidth), is.numeric(plotHeight)
@@ -4008,20 +4011,25 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
 
   obj.name <- deparse(substitute(obj))
 
-  plot1 <- Seurat::VariableFeaturePlot(obj) +
+  cat("1", "\n")
+  # browser()
+  plot1 <- Seurat::VariableFeaturePlot(obj, assay = assay) +
     theme(panel.background = element_rect(fill = "white")) +
-    ggtitle(label = "Variable Genes", subtitle = kppws(obj.name, suffix))
-
+    labs(title = "Variable Genes",
+         subtitle = kppws(obj.name, suffix),
+         caption = paste("Assay:", assay, "|", idate()))
+  cat("2", "\n")
 
   # Assuming LabelPoints is defined elsewhere and available for use.
-  TopVarGenes <- VariableFeatures(obj)[1:NrVarGenes]
+  TopVarGenes <- VariableFeatures(obj, assay = assay)[1:NrVarGenes]
   labeledPlot <- LabelPoints(
     plot = plot1, points = TopVarGenes, repel = repel,
     xnudge = 0, ynudge = 0, max.overlaps = 15
   )
+  cat("3", "\n")
   print(labeledPlot)
   filename <- ppp("Var.genes", obj.name, suffix, idate(), "png")
-
+  cat("4", "\n")
   # if (save) ggplot2::ggsave(plot = labeledPlot, filename = filename, width = plotWidth, height = plotHeight)
   if (save) {
     qqSave(

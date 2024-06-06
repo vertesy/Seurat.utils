@@ -11,6 +11,7 @@ suPlotVariableFeatures(
   plotWidth = 7,
   plotHeight = 5,
   save = TRUE,
+  assay = DefaultAssay(obj),
   suffix = NULL,
   ...
 )

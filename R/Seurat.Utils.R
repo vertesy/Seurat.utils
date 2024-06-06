@@ -141,24 +141,21 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
   if (plot) {
     message("------------------- Plotting -------------------")
 
-    res.ident <- paste0(DefaultAssay(obj), "_snn_res.", resolutions)[1:4]
-    print(res.ident)
-    message("qClusteringUMAPS: ", paste(res.ident))
-    qClusteringUMAPS(obj = obj, idents = res.ident)
-
+    try(suPlotVariableFeatures(obj = obj, assay = "RNA"), silent = TRUE)
 
     message("scPlotPCAvarExplained")
-    scPlotPCAvarExplained(obj)
+    try(scPlotPCAvarExplained(obj), silent = TRUE)
 
     message("qQC.plots.BrainOrg")
-    qQC.plots.BrainOrg(obj = obj)
+    try(qQC.plots.BrainOrg(obj = obj), silent = TRUE)
 
     # message("multi_clUMAP.A4")
     # multi_clUMAP.A4(obj = obj)
 
-    "HERE"
-    message("suPlotVariableFeatures")
-    suPlotVariableFeatures(obj = obj)
+    res.ident <- paste0(DefaultAssay(obj), "_snn_res.", resolutions)[1:4]
+    message("qClusteringUMAPS: ", paste(res.ident))
+    try(qClusteringUMAPS(obj = obj, idents = res.ident), silent = TRUE)
+
 
     if (ncol(obj) < 50000) { # TEMP
       message("qMarkerCheck.BrainOrg")
@@ -178,7 +175,6 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
       `Mesenchyme` = "DCN", Glycolytic = "PDK1",
       `Choroid.Plexus` = "OTX2", `Mesenchyme` = "DCN"
     )
-    message("plotQUMAPsInAFolder")
     try(plotQUMAPsInAFolder(genes = Signature.Genes.Top20, obj = obj), silent = TRUE)
   }
   tictoc::toc()
@@ -5439,7 +5435,6 @@ compareVarFeaturesAndRanks <- function(
 
   func_slot <- grepv(x = names(obj@commands), pattern = "^ScaleData")
   message("Slot: ", paste(func_slot))
-
 
   if(is.null(func_slot)) {
     message("No ScaleData slot found in @commands")
