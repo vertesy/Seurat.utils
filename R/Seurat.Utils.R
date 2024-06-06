@@ -71,6 +71,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
     is.numeric(resolutions),
     is.character(variables.2.regress) | is.null(variables.2.regress)
   )
+
   .checkListElements(param_list = p, elements = c("variables.2.regress.combined", "n.PC", "snn_res"))
 
   iprint("nfeatures:", nfeatures)
@@ -185,35 +186,36 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 #'
 #' @param obj Seurat object, assumed to be pre-configured with necessary data.
 #' @param param.list List of parameters for DE analysis. Default: p.
+#' @param res.analyzed.DE Vector of numeric values specifying the resolutions to analyze.
+#'        Default: c(0.1).
+#' @param ident Use this to specify a non-standard cluster identity, such as named clusters.
+#' `runDGEA` will use this ident explicitly for the DE analysis. Default: NULL.
 #' @param reorder.clusters Logical indicating whether to reorder clusters based on dimension.
 #'        Default: TRUE.
 #' @param reorder.dimension Integer specifying the dimension for reordering (1 for x, -1 for y).
 #'        Default: 1.
-#' @param clean.misc.slot Logical indicating whether to clean the misc slots of previous
-#' clustering results. Default: TRUE.
-#' @param clean.meta.data Logical indicating whether to clean the metadata slots of
-#' previous clustering results. Default: TRUE.
-#' @param ordering Character string specifying the cluster annotation method; can be "ordered"
-#'        or "simple". Default: "ordered".
-#' @param res.analyzed.DE Vector of numeric values specifying the resolutions to analyze.
-#'        Default: c(0.1).
 #' @param add.combined.score Logical indicating whether to add a combined score to the markers.
 #'        Default: TRUE.
 #' @param save.obj Logical indicating whether to save the modified Seurat object.
 #'        Default: TRUE.
 #' @param directory Character string specifying the base directory for saving results.
 #'        Default: OutDirOrig.
+#' @param subdirectory Character string specifying the subdirectory for saving outputs within
+#'        the base directory. Default: "DGEA".
 #' @param calculate.DGEA Logical determining if the DE analysis should be calculated.
 #'        Default: TRUE.
 #' @param plot.DGEA Logical determining if results should be plotted.
 #'        Default: TRUE.
-#' @param auto.cluster.naming Logical indicating automatic labeling of clusters.
-#'        Default: TRUE.
 #' @param plot.av.enrichment.hist Logical indicating whether to plot the average enrichment histogram.
 #'       Default: TRUE.
 #' @param plot.log.top.gene.stats Logical indicating whether to plot the log top gene statistics.
-#' @param subdirectory Character string specifying the subdirectory for saving outputs within
-#'        the base directory. Default: "DGEA".
+#' @param auto.cluster.naming Logical indicating automatic labeling of clusters.
+#'        Default: TRUE.
+#' @param clean.misc.slot Logical indicating whether to clean the misc slots of previous
+#' clustering results. Default: TRUE.
+#' @param clean.meta.data Logical indicating whether to clean the metadata slots of
+#' previous clustering results. Default: TRUE.
+#'
 #' @return Modified Seurat object and markers list.
 #' @examples
 #' runDGEA(obj = mySeuratObject, param.list = myListParams, directory = "Results/MyAnalysis")
@@ -222,34 +224,39 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 
 runDGEA <- function(obj,
                     param.list = p,
-                    reorder.clusters = TRUE,
-                    clean.misc.slot = TRUE,
-                    clean.meta.data = TRUE,
+                    ident = NULL,
+                    res.analyzed.DE = if(is.null(ident)) c(.1) else ident, # param.list$'res.analyzed.DE'
+                    reorder.clusters = if(is.null(ident)) TRUE else FALSE,
                     reorder.dimension = 1,
-                    ordering = "ordered", # param.list$"cl.annotation"
-                    res.analyzed.DE = c(.1), # param.list$'res.analyzed.DE'
+                    # ordering = if(any(!testNumericCompatible(res.analyzed.DE))) "no" else "ordered", # param.list$"cl.annotation"
+                    # ordering = "ordered", # param.list$"cl.annotation"
+                    directory = OutDirOrig,
+                    subdirectory = "DGEA_res",
                     add.combined.score = TRUE,
                     save.obj = TRUE,
-                    directory = OutDir,
-                    subdirectory = "DGEA_res",
                     calculate.DGEA = TRUE,
                     plot.DGEA = TRUE,
-                    auto.cluster.naming = TRUE,
                     plot.av.enrichment.hist = TRUE,
                     plot.log.top.gene.stats = TRUE,
+                    auto.cluster.naming = TRUE,
+                    clean.misc.slot = TRUE,
+                    clean.meta.data = TRUE,
                     ...) {
 
   # Assertions for input parameters
   stopifnot(
     is(obj, "Seurat"),
     is.list(param.list),
+    "res.analyzed.DE should be numeric, explicit strings should be provided in: ident" =
+      is.numeric(res.analyzed.DE) | !is.null(ident),
     dir.exists(directory)
   )
+
   create_set_OutDir(directory, subdirectory, newName = "dir_DGEA")
 
   # Log utilized parameters from param.list
   {
-    message("cl.annotation: ", ordering)
+    message("cl.annotation: ", if(reorder.clusters) paste("ordered:", reorder.dimension) else "no")
     message("test: ", param.list$"test")
     message("only.pos: ", param.list$"only.pos")
     message("return.thresh: ", param.list$"return.thresh")
@@ -261,8 +268,10 @@ runDGEA <- function(obj,
   }
 
   # Record changes in @misc$p
-  obj@misc$p$"res.analyzed.DE" <- res.analyzed.DE
-  obj@misc$p$"cl.annotation" <- ordering
+  obj@misc$p$"res.analyzed.DE" <- if(is.null(ident)) res.analyzed.DE else ident
+  obj@misc$p$"cl.annotation" <-  if(is.null(ident)) {
+    if(reorder.clusters) reorder.dimension else "no"
+  } else "character"
 
   # Retrieve analyzed DE resolutions
   message("Resolutions analyzed:")
@@ -286,43 +295,48 @@ runDGEA <- function(obj,
   }
 
   # Loop through each resolution setting to find markers ________________________________________
-  message("Renumbering ----------------------------------------")
-  for (i in 1:length(res.analyzed.DE)) {
-    res <- res.analyzed.DE[i]
-    create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
+  if (reorder.clusters) {
+    message("Renumbering ----------------------------------------")
+    for (i in 1:length(res.analyzed.DE)) {
+      res <- res.analyzed.DE[i]
+      create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
+      message(i)
 
-    message(i)
-    if (reorder.clusters && ordering == "ordered") {
       # Reorder clusters based on average expression of markers
       message("Reordering clusters along dimension: ", sign(reorder.dimension), "*", if (abs(reorder.dimension) == 1) "x" else "y")
-
       obj <- AutoNumber.by.UMAP(obj = obj,
                                 ident = GetClusteringRuns(res = res, obj = obj)[1],
                                 dim = abs(reorder.dimension), reduction = "umap",
                                 swap = (reorder.dimension < 0), plot = TRUE
       )
-    }
+    } # end for loop
+  } # end if reorder.clusters
 
-    # Set up clustering identity for DE analysis
+  # Set up clustering identity for DE analysis _______________________________________________
+  for (i in 1:length(res.analyzed.DE)) {
     Idents.for.DEG[[i]] <-
-      if (ordering == "ordered") {
-        GetOrderedClusteringRuns(res = res, obj = obj)
+      if (!is.null(ident)) {
+        ident
       } else {
-        GetClusteringRuns(res = res, obj = obj)
-      }
-
+        if (reorder.clusters) {
+          GetOrderedClusteringRuns(res = res, obj = obj)[1]
+        } else {
+          GetClusteringRuns(res = res, obj = obj)[1]
+        }
+      } # end if is.null(ident)
     stopifnot(Idents.for.DEG[[i]] %in% names(obj@meta.data))
   } # end for loop
-
 
   # Loop through each resolution setting to find markers ________________________________________
   if (calculate.DGEA) {
     message("Calclulating ----------------------------------------")
     for (i in 1:length(res.analyzed.DE)) {
       res <- res.analyzed.DE[i]
+      tag.res <- ppp("res", res)
+      df.slot <- if(!is.null(ident)) ident else tag.res
 
       message("Resolution: ", res, " -----------")
-      create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
+      create_set_OutDir(p0(dir_DGEA, tag.res))
 
       message("Ident.for.DEG: ", Idents.for.DEG[[i]])
       Idents(obj) <- Idents.for.DEG[[i]]
@@ -339,7 +353,8 @@ runDGEA <- function(obj,
                                            min.cells.group = param.list$"min.cells.group",
                                            logfc.threshold = param.list$"logfc.threshold",
                                            max.cells.per.ident = param.list$"max.cells.per.ident"
-                                           )
+      )
+      cat(222)
 
       toc()
       Stringendo::stopif(is.null(df.markers))
@@ -347,13 +362,14 @@ runDGEA <- function(obj,
       df.markers <- df.markers[order(df.markers$"avg_log2FC", decreasing = TRUE), ]
 
       if (add.combined.score) df.markers <- Add.DE.combined.score(df.markers)
-      obj@misc$"df.markers"[[ppp("res", res)]] <- df.markers
+
+      obj@misc$"df.markers"[[df.slot]] <- df.markers
 
       # Save results to disk
       fname <- ppp("df.markers", res)
       ReadWriter::write.simple.tsv(df.markers, filename = fname)
       df.markers.all[[i]] <- df.markers
-      xsave(df.markers, suffix = kpp("res", res))
+      xsave(df.markers, suffix = df.slot)
     } # end for loop
 
     # Save final results to disk
@@ -365,7 +381,8 @@ runDGEA <- function(obj,
 
 
     if (save.obj) {
-      xsave(obj, suffix = kpp("w.DGEA", kpp("res", res.analyzed.DE)))
+      tag <- if(is.null(ident)) kpp("res", res.analyzed.DE) else ident
+      xsave(obj, suffix = kpp("w.DGEA", tag))
     }
   } # end if calculate.DGEA
 
@@ -376,9 +393,12 @@ runDGEA <- function(obj,
     for (i in 1:length(res.analyzed.DE)) {
       res <- res.analyzed.DE[i]
       message('Resolution: ', res)
-      create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
+      tag.res <- ppp("res", res)
+      df.slot <- if (!is.null(ident)) ident else tag.res
 
-      df.markers <- obj@misc$"df.markers"[[ppp("res", res)]]
+      create_set_OutDir(p0(dir_DGEA, df.slot))
+
+      df.markers <- obj@misc$"df.markers"[[df.slot]]
       Stringendo::stopif(is.null(df.markers))
 
       PlotTopGenesPerCluster(
@@ -426,9 +446,9 @@ runDGEA <- function(obj,
 
         # Filter genes with avg_log2FC > 2
         lfc2_hiSig_genes <- df.markers %>%
-            filter(avg_log2FC > 2, p_val_adj < 0.01) %>%
-            group_by(cluster) %>%
-            arrange(cluster, desc(avg_log2FC))
+          filter(avg_log2FC > 2, p_val_adj < 0.01) %>%
+          group_by(cluster) %>%
+          arrange(cluster, desc(avg_log2FC))
 
         top_genes <- lfc2_hiSig_genes %>%
           top_n(1, avg_log2FC) %>%
@@ -476,6 +496,8 @@ runDGEA <- function(obj,
   return(obj)
   create_set_OutDir(directory)
 } # end runDGEA
+
+
 
 # _________________________________________________________________________________________________
 # General ______________________________ ----
