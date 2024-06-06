@@ -4,7 +4,7 @@
 \alias{.estMinimumFC}
 \title{Estimate Minimum Log2-Based Fold Change}
 \usage{
-.estMinimumFC(df = df.m.UL, col = "avg_log2FC")
+.estMinimumFC(df, col = "avg_log2FC")
 }
 \arguments{
 \item{df}{A data frame containing the fold change data. Default: \code{df.m.UL}.}

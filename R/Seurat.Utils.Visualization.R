@@ -2943,12 +2943,14 @@ scEnhancedVolcano <- function(
     suffix = "",
     title = paste("DGEA"),
     # title = paste("DGEA", substitute(toptable)),
-    subtitle = paste("min FC:", iround(2^abs(min(toptable$"avg_log2FC")))),
-    caption = paste("min p cutoff:", min.p),
+    subtitle = paste("Minimum Fold Change in datset:", .estMinimumFC(toptable)),
+    caption = paste("min p cutoff (from top of Y axis):", min.p),
     x = "avg_log2FC", y = "p_val_adj",
     selectLab = trail(lab, 10),
     pCutoffCol = "p_val_adj",
     pCutoff =  1e-3,
+    FCcutoff = 1,
+    count_stats = TRUE,
     h = 8, w = h,
     ...) {
 
@@ -2957,6 +2959,16 @@ scEnhancedVolcano <- function(
   toptable[["p_val_adj"]] <-
     clip.at.fixed.value(distribution = toptable[["p_val_adj"]], thr = min.p, high = F)
 
+  # Add statistical information to the subtitle.
+  if (count_stats) {
+    enr_stats <- unlist(countRelevantEnrichments(df = toptable, logfc_col = x, pval_col = y,
+                                                 logfc_cutoff = FCcutoff, pval_cutoff = pCutoff))
+    stat_info <- kppws("Genes", intermingle2vec(names(enr_stats), enr_stats))
+    subtitle <- paste0(subtitle,"\n", stat_info)
+  }
+
+  caption <- paste0(caption, "\n", paste("pCutoff: ", pCutoff, "log2FC-cutoff: ", FCcutoffd$Se))
+
   # Create an enhanced volcano plot.
   pobj <- EnhancedVolcano::EnhancedVolcano(
     toptable = toptable,
@@ -2964,6 +2976,7 @@ scEnhancedVolcano <- function(
     lab = lab, selectLab = selectLab,
     pCutoffCol = pCutoffCol,
     pCutoff = pCutoff,
+    FCcutoff = FCcutoff,
     caption = caption,
     x = x, y = y,
     ...
@@ -2993,7 +3006,7 @@ scEnhancedVolcano <- function(
 #' }
 #' @return The minimum log2-based fold change, rounded and transformed from log2 to linear scale.
 
-.estMinimumFC <- function(df = df.m.UL, col = "avg_log2FC") {
+.estMinimumFC <- function(df, col = "avg_log2FC") {
   lfc <- df[[col]]
   lfc_enr <- min(lfc[lfc>0])
   lfc_depl <- abs(max(lfc[lfc<0]))
@@ -3003,7 +3016,51 @@ scEnhancedVolcano <- function(
 
 
 # ________________________________________________________________________
+#' @title Count Relevant Enrichments
+#'
+#' @description This function counts the number of relevantly expressed genes from a differential
+#' gene expression table. It considers genes to be relevant if they fall under a maximum p-value
+#' cutoff and are above a minimum log2 fold change cutoff. The function reports the number of
+#' enriched and depleted genes.
+#'
+#' @param df Data frame containing the gene expression data.
+#' @param pval_col Character. Name of the column containing the adjusted p-values. Default: "p_val_adj".
+#' @param logfc_col Character. Name of the column containing the log2 fold change values. Default: "avg_log2FC".
+#' @param pval_cutoff Numeric. The maximum adjusted p-value to consider a gene relevant. Default: 1e-2.
+#' @param logfc_cutoff Numeric. The minimum log2 fold change to consider a gene relevant. Default: 1.
+#'
+#' @return A list with the counts of enriched and depleted genes.
+#' @export
+#'
+#' @examples
+#' df <- data.frame(
+#'   p_val_adj = c(0.001, 0.02, 0.03, 0.0001),
+#'   avg_log2FC = c(1.5, -2, 0.5, 2)
+#' )
+#' countRelevantEnrichments(df)
+countRelevantEnrichments <- function(df,
+                                     pval_col = "p_val_adj", logfc_col = "avg_log2FC",
+                                     pval_cutoff = 1e-2, logfc_cutoff = 1) {
+  #
+  stopifnot(is.data.frame(df),
+            pval_col %in% colnames(df),
+            logfc_col %in% colnames(df),
+            is.numeric(pval_cutoff),
+            is.numeric(logfc_cutoff))
 
+  relevant_genes <- df %>%
+    filter(!!sym(pval_col) <= pval_cutoff)
+
+  enriched_count <- relevant_genes %>%
+    filter(!!sym(logfc_col) >= logfc_cutoff) %>%
+    nrow()
+
+  depleted_count <- relevant_genes %>%
+    filter(!!sym(logfc_col) <= -logfc_cutoff) %>%
+    nrow()
+
+  return(list(enriched = enriched_count, depleted = depleted_count))
+}
 
 
 # _________________________________________________________________________________________________
