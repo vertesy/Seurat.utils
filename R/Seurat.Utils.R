@@ -132,23 +132,31 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
     toc()
   }
 
-  message("------------------- Save -------------------")
-  if (save) xsave(obj, suffix = "reprocessed", paramList = param.list)
+
+  if (save) {
+    message("------------------- Saving -------------------")
+    xsave(obj, suffix = "reprocessed", paramList = param.list)
+  }
 
   if (plot) {
+    message("------------------- Plotting -------------------")
+
+    res.ident <- paste0(DefaultAssay(obj), "_snn_res.", resolutions)[1:4]
+    print(res.ident)
+    message("qClusteringUMAPS: ", paste(res.ident))
+    qClusteringUMAPS(obj = obj, idents = res.ident)
+
+
     message("scPlotPCAvarExplained")
     scPlotPCAvarExplained(obj)
 
     message("qQC.plots.BrainOrg")
     qQC.plots.BrainOrg(obj = obj)
 
-    message("multi_clUMAP.A4")
-    multi_clUMAP.A4(obj = obj)
+    # message("multi_clUMAP.A4")
+    # multi_clUMAP.A4(obj = obj)
 
-    message("qClusteringUMAPS")
-    res.ident <- paste0(DefaultAssay(obj), "_snn_res.", resolutions)
-    qClusteringUMAPS(obj = obj, idents = res.ident)
-
+    "HERE"
     message("suPlotVariableFeatures")
     suPlotVariableFeatures(obj = obj)
 
@@ -635,7 +643,7 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
   if (!all.genes.found) {
     symbols.missing <- setdiff(genes, rownames(obj))
     iprint(length(symbols.missing), "symbols.missing:", symbols.missing)
-    message("running HGNChelper::checkGeneSymbols() to update symbols")
+    message(" > Running HGNChelper::checkGeneSymbols() to update symbols")
 
     HGNC.updated <- HGNChelper::checkGeneSymbols(genes, unmapped.as.na = FALSE, map = NULL, species = species_)
     if (ShowStats) {
@@ -695,7 +703,7 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
 #' @export
 SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
                                           above = 0, sort = FALSE, strict = FALSE) {
-  message("Running SelectHighlyExpressedGenesq99()...")
+  message(" > Running SelectHighlyExpressedGenesq99()...")
   stopifnot(is.character(genes), is(obj, "Seurat"), is.numeric(above))
 
   genes.expr <- IntersectGeneLsWithObject(genes = genes, obj = obj, verbose = FALSE, strict = strict)
@@ -2712,7 +2720,7 @@ AutoLabelTop.logFC <- function(
     plotEnrichment = TRUE) {
 
   message(group.by)
-  message("Running AutoLabelTop.logFC...")
+  message(" > Running AutoLabelTop.logFC...")
   # browser()
 
   stopifnot(
@@ -5390,15 +5398,14 @@ compareVarFeaturesAndRanks <- function(
 #'
 #' @return Integer representing the number of scaled features
 .getNrScaledFeatures <- function(obj, assay = Seurat::DefaultAssay(obj)) {
-  message("Running .getNrScaledFeatures...")
+  message(" > Running .getNrScaledFeatures...")
   message("Seurat version: ", obj@version, " | Assay searched: ", assay)
 
   # !!! Below may have been necessary bc of a bug in version 5.0.0
   if (obj@version >= 5) {
-    if ("scale.data" %in% names(obj@assays[[assay]])) {
-      nrow(obj@assays[[assay]]@"scale.data")
-    } else {
-      nrow(obj@assays[[assay]]@layers$"scale.data")
+    if ("scale.data" %in% Layers(obj, assay = assay) ) {
+      mx.scale.data <- LayerData(obj, assay = "RNA", layer = "scale.data")
+      nrow(mx.scale.data)
     }
   } else {
     nrow(obj@assays[[assay]]@"scale.data")
@@ -5425,14 +5432,26 @@ compareVarFeaturesAndRanks <- function(
 # #' @param p list of parameters
 
 #' @return Integer representing the number of principal components
-.getRegressionVariablesForScaleData <- function(obj,
+.getRegressionVariablesForScaleData <- function(obj, assay = DefaultAssay(obj),
                                                 # element = "variables.2.regress.combined", par.list = p
                                                 ...) {
   stopifnot(is(obj, "Seurat"))
 
   func_slot <- grepv(x = names(obj@commands), pattern = "^ScaleData")
-  regressionVariables <- obj@commands[[func_slot]]$'vars.to.regress'
-  message("Slot: ", func_slot)
+  message("Slot: ", paste(func_slot))
+
+
+  if(is.null(func_slot)) {
+    message("No ScaleData slot found in @commands")
+    stop()
+  } else if(length(func_slot) > 1) {
+    func_slot <- grepv(x = func_slot, pattern = assay)
+    message("Multiple ScaleData slots found in @commands.")
+  } else {
+    regressionVariables <- obj@commands[[func_slot]]$'vars.to.regress'
+  }
+  message("Searching for parameters is command: ", func_slot[length(func_slot)])
+
 
   if (is.null(regressionVariables)) {
     message("No regression variables found in @commands")
@@ -5471,8 +5490,8 @@ compareVarFeaturesAndRanks <- function(
                             assay = Seurat::DefaultAssay(obj),
                             suffix = NULL) {
   #
-  message("Running .parseKeyParams...")
-  scaledFeatures <- .getNrScaledFeatures(obj, assay = assay)
+  message(" > Running .parseKeyParams...")
+  scaledFeatures <- .getNrScaledFeatures(obj, assay)
 
   if (is.null(regressionVariables)) regressionVariables <- .getRegressionVariablesForScaleData(obj)
 

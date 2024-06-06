@@ -5,7 +5,7 @@
 \title{Perform GO Enrichment Analysis}
 \usage{
 scGOEnrichment(
-  gene,
+  genes,
   universe = NULL,
   org_db = "org.Hs.eg.db",
   key_type = "SYMBOL",
@@ -19,7 +19,7 @@ scGOEnrichment(
 )
 }
 \arguments{
-\item{gene}{Character vector. List of genes for enrichment analysis. Default: NULL.}
+\item{genes}{Character vector. List of genes for enrichment analysis. Default: NULL.}
 
 \item{universe}{Character vector. Background gene list (universe). Default: NULL.}
 

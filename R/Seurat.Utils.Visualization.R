@@ -2341,7 +2341,7 @@ multiSingleClusterHighlightPlots.A4 <- function(
     w = 8.27, h = 11.69, scaling = 1,
     format = c("jpg", "pdf", "png")[1],
     ...) {
-  message("Running multiSingleClusterHighlightPlots.A4...")
+  message(" > Running multiSingleClusterHighlightPlots.A4...")
 
   NrCellsPerCluster <- sort(table(obj[[ident]]), decreasing = TRUE)
   stopifnot("Some clusters too small (<20 cells). See: table(obj[[ident]]) | Try: removeResidualSmallClusters()" =
@@ -2451,14 +2451,18 @@ qClusteringUMAPS <- function(
       suffix
     ),
     ...) {
-  message("Plotting qClusteringUMAPS")
+  message(" > Running qClusteringUMAPS...")
 
   # Check that the QC markers are in the object
   idents.found <- intersect(idents, colnames(obj@meta.data))
   n.found <- length(idents.found)
-  stopifnot("None of the idents found" = n.found > 1,
-            "Only 4 res's allowed" = n.found <5)
+  stopifnot("None of the idents found" = n.found > 0)
   message(kppws(n.found, " found of ", idents))
+
+  if(n.found >5) {
+    idents.found <- idents.found[1:4]
+    message("Only the first 4 idents will be plotted: ", idents.found)
+  }
 
   px <- list(
     "A" = clUMAP(ident = idents[1], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
@@ -2625,7 +2629,7 @@ PlotTopGenesPerCluster <- function(
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1],
     df_markers = obj@misc$"df.markers"[[paste0("res.", cl_res)]],
     ...) {
-  message("Running PlotTopGenesPerCluster...")
+  message(" > Running PlotTopGenesPerCluster...")
 
   topX.markers <- GetTopMarkers(
     df = df_markers, n = nrGenes,
@@ -3084,7 +3088,7 @@ countRelevantEnrichments <- function(df,
 #' `clusterProfiler::enrichGO` function. It takes the gene list, universe, organism database,
 #' gene identifier type, and ontology type as inputs and returns the enrichment results.
 #'
-#' @param gene Character vector. List of genes for enrichment analysis. Default: NULL.
+#' @param genes Character vector. List of genes for enrichment analysis. Default: NULL.
 #' @param universe Character vector. Background gene list (universe). Default: NULL.
 #' @param org_db Character. Organism-specific database to use (e.g., 'org.Hs.eg.db'). Default: 'org.Hs.eg.db'.
 #' @param key_type Character. Gene identifier type (e.g., 'SYMBOL', 'ENTREZID'). Default: 'SYMBOL'.
@@ -3107,7 +3111,7 @@ countRelevantEnrichments <- function(df,
 #' print(go_results)
 #' }
 
-scGOEnrichment <- function(gene, universe = NULL,
+scGOEnrichment <- function(genes, universe = NULL,
                            org_db = "org.Hs.eg.db", key_type = "SYMBOL", ont = "BP",
                            pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.2,
                            save = TRUE,
@@ -3120,17 +3124,17 @@ scGOEnrichment <- function(gene, universe = NULL,
 
   # Input assertions
   stopifnot(
-    is.character(gene), length(gene) > 10,
+    is.character(genes), length(genes) > 10,
     is.character(universe), length(universe) > 100,
     is.character(org_db), is.character(key_type), is.character(ont),
     is.character(ont)
   )
 
   message("Performing enrichGO() analysis...")
-  message(length(genes), "genes of interest, in", length(universe), " background genes.")
+  message(length(genes), " genes of interest, in ", length(universe), " background genes.")
 
   go_results <- clusterProfiler::enrichGO(
-    gene = gene,
+    gene = genes,
     universe = universe,
     pAdjustMethod = pAdjustMethod,
     OrgDb = org_db,
@@ -3139,6 +3143,9 @@ scGOEnrichment <- function(gene, universe = NULL,
     qvalueCutoff = qvalueCutoff,
     ont = ont,
     ...)
+
+  nr_of_enr_terms <- length(go_results@result$"ID")
+  message("Nr of enriched terms: ", nr_of_enr_terms)
 
   # Output assertions
   stopifnot(
