@@ -2341,6 +2341,12 @@ multiSingleClusterHighlightPlots.A4 <- function(
     w = 8.27, h = 11.69, scaling = 1,
     format = c("jpg", "pdf", "png")[1],
     ...) {
+  message("Running multiSingleClusterHighlightPlots.A4...")
+
+  NrCellsPerCluster <- sort(table(obj[[ident]]), decreasing = TRUE)
+  stopifnot("Some clusters too small (<20 cells). See: table(obj[[ident]]) | Try: removeResidualSmallClusters()" =
+              all(NrCellsPerCluster > 20))
+
   tictoc::tic()
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- "clusters"
@@ -2365,7 +2371,6 @@ multiSingleClusterHighlightPlots.A4 <- function(
     nr.Row <- 2
     message("wide layout active, nr.Col ignored.")
   }
-
 
   # Split clusters into lists for plotting
   ls.Clust <- CodeAndRoll2::split_vec_to_list_by_N(1:length(clusters), by = nr.Row * nr.Col)
@@ -2392,7 +2397,8 @@ multiSingleClusterHighlightPlots.A4 <- function(
         plot.list[[i]] <- plot.list[[i]] +
           ggplot2::coord_fixed(ratio = aspect.ratio)
       }
-    }
+    } # for i
+
 
     # Save plots
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
@@ -3121,6 +3127,8 @@ scGOEnrichment <- function(gene, universe = NULL,
   )
 
   message("Performing enrichGO() analysis...")
+  message(length(genes), "genes of interest, in", length(universe), " background genes.")
+
   go_results <- clusterProfiler::enrichGO(
     gene = gene,
     universe = universe,

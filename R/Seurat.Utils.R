@@ -909,7 +909,8 @@ showMiscSlots <- function(obj, max.level = 1, subslot = NULL,
 #' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
 #' @param set.misc Create the "all.genes" variable in @misc? Default: TRUE
 #' @param assign_to_global_env Create the "all.genes" variable in the global env?, Default: TRUE
-#' @param show Show plot? Default: TRUE
+#' @param plot Plot the expression distribution? Default: TRUE
+#' @param show Show the distribution plot? Default: TRUE
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -938,7 +939,10 @@ calc.q99.Expression.and.set.all.genes <- function(
     assay = c("RNA", "integrated")[1],
     set.misc = TRUE,
     assign_to_global_env = TRUE,
+    suffix = substitute(obj),
+    plot = TRUE,
     show = TRUE) {
+  #
   tictoc::tic()
   x <- GetAssayData(object = obj, assay = assay, slot = slot)
   if (ncol(x) > max.cells) {
@@ -948,7 +952,6 @@ calc.q99.Expression.and.set.all.genes <- function(
   qname <- paste0("q", quantileX * 100)
   slot_name <- kpp("expr", qname)
 
-  # expr.q99 = iround(apply(x, 1, quantile, probs = quantileX) )
   print("Calculating Gene Quantiles")
   expr.q99.df <- sparseMatrixStats::rowQuantiles(x, probs = quantileX)
   expr.q99 <- iround(expr.q99.df)
@@ -956,21 +959,23 @@ calc.q99.Expression.and.set.all.genes <- function(
   log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q99 + 1)) # strip names
   n.cells <- floor(ncol(obj) * (1 - quantileX))
   qnameP <- paste0(100 * quantileX, "th quantile")
-  try(
-    ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile,
-      ext = "pdf", breaks = 30,
-      plotname = paste("Gene expression in the", qnameP),
-      subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0."),
-      caption = paste(n.cells, "cells in", qnameP),
-      xlab = paste0("log2(expr. in the ", qnameP, "quantile+1) [UMI]"),
-      ylab = "Nr. of genes",
-      plot = show, save = TRUE,
-      vline = .15,
-      filtercol = TRUE,
-      palette_use = "npg"
-    ),
-    silent = TRUE
-  )
+  if(plot){
+    pobj <- ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile,
+                                  ext = "pdf", breaks = 30,
+                                  plotname = paste("Gene expression in the", qnameP),
+                                  subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0."),
+                                  caption = paste(n.cells, "cells in", qnameP),
+                                  suffix = suffix,
+                                  xlab = paste0("log2(expr. in the ", qnameP, "quantile+1) [UMI]"),
+                                  ylab = "Nr. of genes",
+                                  plot = T, save = TRUE,
+                                  vline = .15,
+                                  filtercol = TRUE,
+                                  palette_use = "npg"
+    )
+    if(show) print(pobj)
+  }
+
 
   all.genes <- percent_rank(expr.q99)
   names(all.genes) <- names(expr.q99)
