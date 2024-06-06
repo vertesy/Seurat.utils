@@ -106,9 +106,8 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
     )
     toc()
 
-    tic()
     obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
-    toc()
+
     message("------------------- ScaleData -------------------")
     tic()
     obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress)
@@ -972,6 +971,7 @@ calc.q99.Expression.and.set.all.genes <- function(
                                   filtercol = TRUE,
                                   palette_use = "npg"
     )
+    tictoc::toc()
     if(show) print(pobj)
   }
 
@@ -1465,10 +1465,12 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
 #' if (interactive()) {
 #'   combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction = "umap")
 #' }
+#' @importFrom tictoc tic toc
 #' }
 #' @export
 SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", dimensions = 3:2,
                                           reduction = "umap", ...) {
+  tictoc::tic()
   red <- reduction
   for (d in dimensions) {
     iprint(d, "dimensional", red, "is calculated")
@@ -1481,6 +1483,8 @@ SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", d
     }
     obj <- BackupReduction(obj = obj, dim = d, reduction = red)
   }
+
+  tictoc::toc()
   return(obj)
 }
 
