@@ -100,37 +100,27 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
   if (compute) {
     message("------------------- FindVariableFeatures -------------------")
     tic()
-    obj <- FindVariableFeatures(obj,
-                                mean.function = "FastExpMean", dispersion.function = "FastLogVMR",
-                                nfeatures = nfeatures
-    )
-    toc()
+    obj <- FindVariableFeatures(obj, mean.function = "FastExpMean",
+                                dispersion.function = "FastLogVMR", nfeatures = nfeatures); toc()
 
     obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
 
     message("------------------- ScaleData -------------------")
     tic()
-    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress)
-    toc()
+    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress); toc()
 
     message("------------------- PCA /UMAP -------------------")
     tic()
-    obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE)
-    toc()
+    obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE); toc()
 
-    # tic(); obj <- RunUMAP(obj, reduction = "pca", dims = 1:n.PC); toc()
-    tic()
     obj <- SetupReductionsNtoKdimensions(obj, nPCs = n.PC, reduction = "umap", dimensions = 3:2)
-    toc()
 
     message("------------------- FindNeighbors & Clusters -------------------")
     tic()
-    obj <- FindNeighbors(obj, reduction = "pca", dims = 1:n.PC)
-    toc()
+    obj <- FindNeighbors(obj, reduction = "pca", dims = 1:n.PC); toc()
 
     tic()
-    obj <- FindClusters(obj, resolution = resolutions)
-    toc()
+    obj <- FindClusters(obj, resolution = resolutions); toc()
   }
 
 
