@@ -490,11 +490,11 @@ runDGEA <- function(obj,
       } # end if plot.log.top.gene.stats
     } # end for loop of resolutions
   } # end if plot.DGEA
-  create_set_OutDir(directory, subdirectory)
+  # create_set_OutDir(directory, subdirectory)
 
   # Return obj and df.markers.all to global environment
   return(obj)
-  create_set_OutDir(directory)
+  create_set_Original_OutDir()
 } # end runDGEA
 
 

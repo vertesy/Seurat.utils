@@ -834,7 +834,11 @@ saveLsSeuratMetadata <- function(ls.obj, suffix) {
 #' the two objects, which can be useful for understanding the relationship between datasets.
 #'
 #' @export
-transferMetadata <- function(from, to, colname_from, colname_to = colname_from, verbose = TRUE, overwrite = FALSE) {
+transferMetadata <- function(from, to,
+                             colname_from,
+                             colname_to = colname_from,
+                             verbose = TRUE,
+                             overwrite = FALSE) {
   stopifnot(
     is(from, "Seurat"), is(to, "Seurat"),
     is.character(colname_from), is.character(colname_to),
@@ -885,6 +889,10 @@ transferMetadata <- function(from, to, colname_from, colname_to = colname_from, 
       ), immediate. = TRUE)
     }
   }
+
+  qSeuViolin(feature = 'Major_Celltypes.tr.score', ident = 'Major_Celltypes.tr',
+             sub = Seurat.utils:::.parseBasicObjStats(to),
+             pt.size = 0, obj = to)
   return(to)
 }
 

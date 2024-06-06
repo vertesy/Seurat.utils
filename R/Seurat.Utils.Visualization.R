@@ -1733,7 +1733,8 @@ qSeuViolin <- function(
     ident = GetNamedClusteringRuns(obj)[1],
     split.by = NULL,
     replace.na = FALSE,
-    pt.size = NULL,
+    pt.size = 0.5,
+    sub = NULL,
     suffix = NULL,
     suffix.2.title = FALSE,
     caption = .parseKeyParams(obj),
@@ -1765,6 +1766,7 @@ qSeuViolin <- function(
     as.character(feature)
   }
   subt <- paste(feature, "- by -", ident)
+  if(!is.null(sub)) subt <- paste0(subt, "\n", sub)
 
   if (replace.na) {
     warning("NA's are not, but zeros are displayed on the plot. Avoid replace.na when possible", immediate. = TRUE)
