@@ -1519,6 +1519,11 @@ transferLabelsSeurat <- function(
     col.name = predictions_score
   )
 
+  qSeuViolin(feature = ppp(new_ident, 'score'), ident = new_ident,
+             sub = Seurat.utils:::.parseBasicObjStats(obj),
+             pt.size = 0.0, obj = obj)
+
+
   # Visualize combined object
   clUMAP(
     ident = new_ident, obj = query_obj, suffix = plot_suffix,
@@ -1528,6 +1533,8 @@ transferLabelsSeurat <- function(
     feature = predictions_score, obj = query_obj, suffix = plot_suffix,
     w = w, h = h, ...
   )
+
+  "HERE"
 
   return(query_obj)
 }
