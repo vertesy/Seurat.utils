@@ -962,7 +962,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   if(plot){
     pobj <- ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile,
                                   ext = "pdf", breaks = 30,
-                                  plotname = paste("Gene expression in the", qnameP),
+                                  plotname = paste("Gene expression in the", qnameP, suffix),
                                   subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0."),
                                   caption = paste(n.cells, "cells in", qnameP),
                                   suffix = suffix,
