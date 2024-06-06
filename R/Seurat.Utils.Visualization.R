@@ -2988,7 +2988,7 @@ scEnhancedVolcano <- function(
   print(pobj)
 
   # Save the plot.
-  qqSave(ggobj = pobj, title = paste0("Volcano.", title), h = h, w = w)
+  qqSave(ggobj = pobj, title = paste0("Volcano.", make.names(title)), h = h, w = w)
   return(pobj)
 }
 

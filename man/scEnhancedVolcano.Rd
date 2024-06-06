@@ -10,8 +10,8 @@ scEnhancedVolcano(
   min.p = 1e-50,
   suffix = "",
   title = paste("DGEA"),
-  subtitle = paste("Minimum Fold Change in datset:", .estMinimumFC(toptable)),
-  caption = paste("min p cutoff (from top of Y axis):", min.p),
+  caption = paste("Minimum Fold Change in datset:", .estMinimumFC(toptable)),
+  caption2 = paste("min p cutoff (from top of Y axis):", min.p),
   x = "avg_log2FC",
   y = "p_val_adj",
   selectLab = trail(lab, 10),
@@ -19,7 +19,9 @@ scEnhancedVolcano(
   pCutoff = 0.001,
   FCcutoff = 1,
   count_stats = TRUE,
-  h = 8,
+  drawConnectors = T,
+  max.overlaps = Inf,
+  h = 9,
   w = h,
   ...
 )
@@ -33,8 +35,6 @@ scEnhancedVolcano(
 
 \item{title}{The title of the plot.}
 
-\item{subtitle}{The subtitle of the plot.}
-
 \item{x}{The x-axis, which is typically the average log2 fold change.}
 
 \item{y}{The y-axis, which is typically the adjusted p-value.}
@@ -46,6 +46,8 @@ scEnhancedVolcano(
 \item{w}{The width of the plot.}
 
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
+
+\item{subtitle}{The subtitle of the plot.}
 }
 \value{
 A ggplot object.
