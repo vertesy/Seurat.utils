@@ -5,7 +5,7 @@
 \title{Run Differential Gene Expression Analysis (DGEA)}
 \usage{
 runDGEA(
-  obj = obj.RG,
+  obj,
   param.list = p,
   reorder.clusters = TRUE,
   clean.misc.slot = TRUE,
@@ -26,7 +26,7 @@ runDGEA(
 )
 }
 \arguments{
-\item{obj}{Seurat object, assumed to be pre-configured with necessary data. Default: obj.RG.}
+\item{obj}{Seurat object, assumed to be pre-configured with necessary data.}
 
 \item{param.list}{List of parameters for DE analysis. Default: p.}
 

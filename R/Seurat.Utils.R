@@ -4485,17 +4485,15 @@ xsave <- function(
   ), whitespace = "_")
 
   FNN <- paste0(dir, fnameBase, ".qs")
-  message(substitute(obj), " <- xread('", FNN, "')")
+  CMND <- paste0(substitute(obj), " <- xread('", FNN, "')")
+  message(CMND)
 
   if ("Seurat" %in% is(obj)) {
     if (saveParams) {
       if (exists("paramList")) try(obj@misc$"p" <- paramList, silent = TRUE)
       if (exists("allGenes")) try(obj@misc$"all.genes" <- allGenes, silent = TRUE)
     }
-    if (saveLocation) {
-      loc <- 1
-      try(obj@misc$"file.location" <- loc, silent = TRUE)
-    }
+    if (saveLocation) try(obj@misc$"file.location" <- CMND, silent = TRUE)
   }
 
 
