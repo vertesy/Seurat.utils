@@ -2943,15 +2943,16 @@ scEnhancedVolcano <- function(
     suffix = "",
     title = paste("DGEA"),
     # title = paste("DGEA", substitute(toptable)),
-    subtitle = paste("Minimum Fold Change in datset:", .estMinimumFC(toptable)),
-    caption = paste("min p cutoff (from top of Y axis):", min.p),
+    caption = paste("Minimum Fold Change in datset:", .estMinimumFC(toptable)),
+    caption2 = paste("min p cutoff (from top of Y axis):", min.p),
     x = "avg_log2FC", y = "p_val_adj",
     selectLab = trail(lab, 10),
     pCutoffCol = "p_val_adj",
     pCutoff =  1e-3,
     FCcutoff = 1,
     count_stats = TRUE,
-    h = 8, w = h,
+    drawConnectors = T, max.overlaps = Inf,
+    h = 9, w = h,
     ...) {
 
   # browser()
@@ -2963,11 +2964,12 @@ scEnhancedVolcano <- function(
   if (count_stats) {
     enr_stats <- unlist(countRelevantEnrichments(df = toptable, logfc_col = x, pval_col = y,
                                                  logfc_cutoff = FCcutoff, pval_cutoff = pCutoff))
-    stat_info <- kppws("Genes", intermingle2vec(names(enr_stats), enr_stats))
-    subtitle <- paste0(subtitle,"\n", stat_info)
+    stat_info <- kppws("Genes", intermingle2vec(names(enr_stats), enr_stats),"(red)")
+    subtitle <- paste0(stat_info, "\n",
+                       paste("max p-Cutoff: ", pCutoff, "log2FC-cutoff: ", FCcutoff))
   }
 
-  caption <- paste0(caption, "\n", paste("pCutoff: ", pCutoff, "log2FC-cutoff: ", FCcutoffd$Se))
+  caption <- paste0(caption, "\n", caption2)
 
   # Create an enhanced volcano plot.
   pobj <- EnhancedVolcano::EnhancedVolcano(
@@ -2978,13 +2980,15 @@ scEnhancedVolcano <- function(
     pCutoff = pCutoff,
     FCcutoff = FCcutoff,
     caption = caption,
+    drawConnectors=drawConnectors,
+    max.overlaps = max.overlaps,
     x = x, y = y,
     ...
   )
   print(pobj)
 
   # Save the plot.
-  qqSave(ggobj = pobj, title = title, h = h, w = w)
+  qqSave(ggobj = pobj, title = paste0("Volcano.", title), h = h, w = w)
   return(pobj)
 }
 
