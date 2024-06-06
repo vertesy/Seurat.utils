@@ -2911,6 +2911,100 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 }
 
 
+# _________________________________________________________________________________________________
+# General ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+#' @title scEnhancedVolcano
+#'
+#' @description This function creates an enhanced volcano plot.
+#'
+#' @param toptable A data frame with the results of differential gene expression analysis.
+#' @param lab A vector of gene symbols to label on the plot.
+#' @param suffix A string to append to the title of the plot.
+#' @param title The title of the plot.
+#' @param subtitle The subtitle of the plot.
+#' @param x The x-axis, which is typically the average log2 fold change.
+#' @param y The y-axis, which is typically the adjusted p-value.
+#' @param selectLab A vector of gene symbols to select for labeling.
+#' @param h The height of the plot.
+#' @param w The width of the plot.
+#' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#' @return A ggplot object.
+#' @importFrom EnhancedVolcano EnhancedVolcano
+#'
+#' @export
+
+scEnhancedVolcano <- function(
+    toptable,
+    lab = rownames(toptable),
+    min.p = 1e-50,
+    suffix = "",
+    title = paste("DGEA"),
+    # title = paste("DGEA", substitute(toptable)),
+    subtitle = paste("min FC:", iround(2^abs(min(toptable$"avg_log2FC")))),
+    caption = paste("min p cutoff:", min.p),
+    x = "avg_log2FC", y = "p_val_adj",
+    selectLab = trail(lab, 10),
+    pCutoffCol = "p_val_adj",
+    pCutoff =  1e-3,
+    h = 8, w = h,
+    ...) {
+
+  # browser()
+  # Clip p-values.
+  toptable[["p_val_adj"]] <-
+    clip.at.fixed.value(distribution = toptable[["p_val_adj"]], thr = min.p, high = F)
+
+  # Create an enhanced volcano plot.
+  pobj <- EnhancedVolcano::EnhancedVolcano(
+    toptable = toptable,
+    title = title, subtitle = subtitle,
+    lab = lab, selectLab = selectLab,
+    pCutoffCol = pCutoffCol,
+    pCutoff = pCutoff,
+    caption = caption,
+    x = x, y = y,
+    ...
+  )
+  print(pobj)
+
+  # Save the plot.
+  qqSave(ggobj = pobj, title = title, h = h, w = w)
+  return(pobj)
+}
+
+# ________________________________________________________________________
+#' @title Estimate Minimum Log2-Based Fold Change
+#'
+#' @description This function estimates the minimum log2-based fold change from a data frame column.
+#'
+#' @param df A data frame containing the fold change data. Default: `df.m.UL`.
+#' @param col A character string specifying the column name containing log2 fold change values. Default: "avg_log2FC".
+#'
+#' @return The minimum log2-based fold change, rounded and transformed from log2 to linear scale.
+#'
+#' @examples
+#' \dontrun{
+#' df <- data.frame(avg_log2FC = c(-1, -0.5, 0.5, 1))
+#' .estMinimumFC(df, "avg_log2FC")
+#' # .estMinimumFC(df = df.m.UL, col = "avg_log2FC")
+#' }
+#' @return The minimum log2-based fold change, rounded and transformed from log2 to linear scale.
+
+.estMinimumFC <- function(df = df.m.UL, col = "avg_log2FC") {
+  lfc <- df[[col]]
+  lfc_enr <- min(lfc[lfc>0])
+  lfc_depl <- abs(max(lfc[lfc<0]))
+  estim_min_l2fc <- min(lfc_enr, lfc_depl)
+  return(iround(2^estim_min_l2fc))
+}
+
+
+# ________________________________________________________________________
+
+
 
 # _________________________________________________________________________________________________
 # Helpers ______________________________ ----
