@@ -429,7 +429,7 @@ runDGEA <- function(obj,
         p.deg.hist <- ggpubr::gghistogram(df.markers.tbl, x = "avg_log2FC",
                                           title =  "Number of enriched genes per cluster",
                                           subtitle =  "Binned by Log2(FC)",
-                                          caption =  paste(res, "| vertical line at LFC: 2."),
+                                          caption =  paste(res, "| vertical line at FC of 2."),
                                           rug = TRUE,
                                           color = "cluster", fill = "cluster",
                                           facet.by = 'cluster', xlim = c(0,3),
@@ -446,7 +446,7 @@ runDGEA <- function(obj,
 
         # Filter genes with avg_log2FC > 2
         lfc2_hiSig_genes <- df.markers %>%
-          filter(avg_log2FC > 2, p_val_adj < 0.01) %>%
+          filter(avg_log2FC > 1, p_val_adj < 0.05) %>%
           group_by(cluster) %>%
           arrange(cluster, desc(avg_log2FC))
 
@@ -462,7 +462,7 @@ runDGEA <- function(obj,
 
         qbarplot(NrOfHighlySignLFC2_genes, label = NrOfHighlySignLFC2_genes,
                  plotname = "Number of diff. genes per cluster",
-                 sub = 'Genes with avg_log2FC > 2 and p_val_adj < 0.01',
+                 sub = 'Genes with avg_log2FC > 1 and p_val_adj < 0.05',
                  xlab = "Clusters", ylab = "Number of diff. genes"
         )
 
