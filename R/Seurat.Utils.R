@@ -47,6 +47,7 @@
 #' # Assuming ls.Seurat is a list of Seurat objects and params is a list of parameters
 #' # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
 #' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
+#' @importFrom tictoc tic toc
 #' @export
 processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
                                 compute = TRUE,
@@ -58,6 +59,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
                                 ...) {
   #
   warning("Make sure you cleaned up the memory!", immediate. = TRUE)
+  tic()
   stopifnot(require(tictoc))
   message("nfeatures: ", nfeatures)
 
@@ -143,24 +145,17 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 
     try(suPlotVariableFeatures(obj = obj, assay = "RNA"), silent = TRUE)
 
-    message("scPlotPCAvarExplained")
     try(scPlotPCAvarExplained(obj), silent = TRUE)
 
-    message("qQC.plots.BrainOrg")
     try(qQC.plots.BrainOrg(obj = obj), silent = TRUE)
 
-    # message("multi_clUMAP.A4")
     # multi_clUMAP.A4(obj = obj)
 
-    res.ident <- paste0(DefaultAssay(obj), "_snn_res.", resolutions)[1:4]
-    message("qClusteringUMAPS: ", paste(res.ident))
+    # res.ident <- paste0(DefaultAssay(obj), "_snn_res.", resolutions)[1:4]
     try(qClusteringUMAPS(obj = obj, idents = res.ident), silent = TRUE)
 
+    if (ncol(obj) < 50000) try(qMarkerCheck.BrainOrg(obj = obj), silent = TRUE)
 
-    if (ncol(obj) < 50000) { # TEMP
-      message("qMarkerCheck.BrainOrg")
-      try(qMarkerCheck.BrainOrg(obj = obj), silent = TRUE)
-    }
 
     Signature.Genes.Top20 <- c(
       `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron
@@ -177,7 +172,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
     )
     try(plotQUMAPsInAFolder(genes = Signature.Genes.Top20, obj = obj), silent = TRUE)
   }
-  tictoc::toc()
+  toc()
 
   return(obj)
 }

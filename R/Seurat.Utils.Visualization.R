@@ -275,6 +275,7 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
                                   # caption = .parseKeyParams(obj, suffix = "| hline at 1%"),
                                   caption = "hline at 1%",
                                   ...) {
+  message(" > Running scPlotPCAvarExplained...")
 
   pct <- scCalcPCAVarExplained(obj)
   if (use.MarkdownReports) {
@@ -2571,6 +2572,8 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj,
                                 intersectionAssay = DefaultAssay(obj),
                                 plot.reduction = "umap",
                                 ...) {
+  message(" > Running plotQUMAPsInAFolder...")
+
   # Input checks
   stopifnot(is.character(genes),
             is.null(foldername) || is.character(foldername),
@@ -2677,7 +2680,7 @@ qQC.plots.BrainOrg <- function(
     title = sppu(prefix, QC.Features, suffix),
     nrow = 2, ncol = 2,
     ...) {
-  message("> > > > > Plotting qQC.plots.BrainOrg")
+  message(" > Plotting qQC.plots.BrainOrg...")
 
   # Check that the QC markers are in the object
   QC.Features.Found <- intersect(QC.Features, colnames(obj@meta.data))
@@ -2734,7 +2737,7 @@ qQC.plots.BrainOrg <- function(
 
 qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
                                   suffix = "") {
-  message("> > > > > Plotting qMarkerCheck.BrainOrg")
+  message(" > Running qMarkerCheck.BrainOrg...")
 
   Signature.Genes.Top16 <- if (!isFALSE(custom.genes)) {
     custom.genes

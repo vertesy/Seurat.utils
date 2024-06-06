@@ -126,9 +126,9 @@ multi_clUMAP.A4 <- function(
     w = 8.27, h = 11.69, scaling = 1,
     format = c("jpg", "pdf", "png")[1],
     ...) {
-
   .Deprecated("qClusteringUMAPS")
   message("multi_clUMAP.A4() is kept because it can plot more than 4 resolutions, inti a subfolder.")
+
   tictoc::tic()
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- "clusters"
