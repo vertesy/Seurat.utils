@@ -3160,7 +3160,7 @@ scGOEnrichment <- function(gene, universe = NULL,
 #' @param save Logical. Whether to save the plot to a file. Default: TRUE.
 #' @param ... Additional arguments passed to `enrichplot::barplot.enrichResult`.
 #'
-#' @imports enrichplot
+#' @import enrichplot
 #' @importFrom ggplot2 labs
 #'
 #' @return None. The function prints the plot and optionally saves it.

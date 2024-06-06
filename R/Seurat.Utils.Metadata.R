@@ -1469,7 +1469,7 @@ transferLabelsSeurat <- function(
     plot_reference = TRUE,
     w = 12, h = 9,
     ...) {
-  # Assertions
+  #
   if (is.null(reference_obj)) {
     iprint("Loading reference object:", basename(reference_path))
     stopifnot(file.exists(reference_path))
@@ -1491,22 +1491,24 @@ transferLabelsSeurat <- function(
     )
   }
 
-  # browser()
   if (is.null(anchors)) {
     message("Calculating anchors. Provide anchors in 'anchors' to speed up.")
+    tictoc::tic()
     anchors <- Seurat::FindTransferAnchors(reference = reference_obj, query = query_obj)
     if (save_anchors) xsave(obj = anchors)
+    tictoc::toc()
   } else {
     message("Anchors provided")
   }
 
   message("Transferring labels")
+  tictoc::tic()
   transferred_clIDs <- Seurat::TransferData(
     anchorset = anchors,
     refdata = reference_obj@meta.data[, reference_ident],
   )
+  tictoc::toc()
 
-  # browser()
   # Add New Labels to query object
   query_obj <- Seurat::AddMetaData(
     object = query_obj, metadata = transferred_clIDs[, predictions_col],
@@ -1520,8 +1522,8 @@ transferLabelsSeurat <- function(
   )
 
   qSeuViolin(feature = ppp(new_ident, 'score'), ident = new_ident,
-             sub = Seurat.utils:::.parseBasicObjStats(obj),
-             pt.size = 0.0, obj = obj)
+             sub = Seurat.utils:::.parseBasicObjStats(query_obj),
+             pt.size = 0.0, obj = query_obj)
 
 
   # Visualize combined object
