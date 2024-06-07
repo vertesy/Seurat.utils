@@ -4,12 +4,24 @@
 \alias{dropLevelsSeurat}
 \title{dropLevelsSeurat}
 \usage{
-dropLevelsSeurat(obj = combined.obj, verbose = TRUE)
+dropLevelsSeurat(
+  obj = combined.obj,
+  verbose = TRUE,
+  also.character = FALSE,
+  include = NULL,
+  exclude = NULL
+)
 }
 \arguments{
 \item{obj}{A Seurat object.}
 
 \item{verbose}{Logical. Whether to print a message indicating which levels are being dropped.}
+
+\item{also.character}{Logical. Whether to also drop levels from character variables.}
+
+\item{include}{Character vector. Names of columns to include in the operation.}
+
+\item{exclude}{Character vector. Names of columns to exclude from the operation.#'}
 }
 \description{
 Drop unused levels from factor variables in a Seurat object.

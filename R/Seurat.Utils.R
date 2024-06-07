@@ -2197,12 +2197,35 @@ removeResidualSmallClusters <- function(
 #' @description Drop unused levels from factor variables in a Seurat object.
 #' @param obj A Seurat object.
 #' @param verbose Logical. Whether to print a message indicating which levels are being dropped.
+#' @param also.character Logical. Whether to also drop levels from character variables.
+#' @param include Character vector. Names of columns to include in the operation.
+#' @param exclude Character vector. Names of columns to exclude from the operation.#'
+#'
 #' @export
-dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE) {
+dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE, also.character = FALSE,
+                             include = NULL, exclude = NULL) {
+
+  names.meta <- colnames(obj@meta.data)
+  stopifnot(is(obj, "Seurat"),
+            is.logical(verbose),
+            is.logical(also.character),
+            is.null(include) | include %in% names.meta,
+            is.null(exclude) | exclude %in% names.meta
+            )
+
   META <- obj@meta.data
   colclasses <- sapply(META, class)
-  drop_in_these <- names(colclasses[colclasses == "factor"])
-  if (verbose) iprint("Dropping levels in", length(drop_in_these), drop_in_these)
+
+  col.class <- if (also.character) c("factor", "character") else "factor"
+  if (verbose) message("Column class(es): ", kppc(col.class))
+  drop_in_these <- names(colclasses[colclasses %in% col.class])
+
+  if (!is.null(include)) drop_in_these <- union(drop_in_these, include)
+  if (!is.null(exclude)) drop_in_these <- setdiff(drop_in_these, exclude)
+
+  if (verbose) message("Dropping levels in ", length(drop_in_these), "identities:\n",
+                       kppc(drop_in_these))
+
   for (i in 1:length(drop_in_these)) {
     colX <- drop_in_these[i]
     META[[colX]] <- droplevels(META[[colX]])

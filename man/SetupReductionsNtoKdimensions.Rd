@@ -47,11 +47,6 @@ at varying levels of granularity and ensures that reduction results are preserve
 \examples{
 \dontrun{
 if (interactive()) {
-  combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction = "umap")
-}
-}
-\dontrun{
-if (interactive()) {
   combined.obj <- SetupReductionsNtoKdimensions(
     obj = combined.obj, nPCs = 10,
     dimensions = 2:3, reduction = "umap"
