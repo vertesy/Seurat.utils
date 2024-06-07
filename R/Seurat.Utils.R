@@ -1455,8 +1455,9 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
 #' if (interactive()) {
 #'   combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction = "umap")
 #' }
-#' @importFrom tictoc tic toc
 #' }
+#' @importFrom tictoc tic toc
+#'
 #' @export
 SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", dimensions = 3:2,
                                           reduction = "umap", ...) {
