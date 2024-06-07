@@ -8,7 +8,7 @@ dropLevelsSeurat(
   obj = combined.obj,
   verbose = TRUE,
   also.character = FALSE,
-  include = NULL,
+  only = NULL,
   exclude = NULL
 )
 }
@@ -17,12 +17,10 @@ dropLevelsSeurat(
 
 \item{verbose}{Logical. Whether to print a message indicating which levels are being dropped.}
 
-\item{also.character}{Logical. Whether to also drop levels from character variables.}
-
-\item{include}{Character vector. Names of columns to include in the operation.}
+\item{only}{Character vector. Explicit list of columns to only in the operation.}
 
 \item{exclude}{Character vector. Names of columns to exclude from the operation.#'}
 }
 \description{
-Drop unused levels from factor variables in a Seurat object.
+Drop unused levels from \code{factor} variables in a Seurat object's meta.data.
 }
