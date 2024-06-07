@@ -3249,7 +3249,8 @@ scBarplotEnrichr <- function(df.enrichment,
 
 
 countEnrichedDepletedGenes <- function(df, min_padj = 0.01, min_logFC = 0.5,
-                                          colname.p = 'p_val_adj', colname.lFC = 'avg_log2FC') {
+                                       # genes = rownames(df),
+                                        colname.p = 'p_val_adj', colname.lFC = 'avg_log2FC') {
 
   stopifnot(min_padj > 0,
             min_logFC > 0,
@@ -3258,10 +3259,16 @@ countEnrichedDepletedGenes <- function(df, min_padj = 0.01, min_logFC = 0.5,
   )
 
   # Filter the dataframe for enriched genes
-  enriched_genes <- df[df[[colname.p]] <= min_padj & df[[colname.lFC]] >= min_logFC, ]
+  idx.enr <- df[[colname.p]] <= min_padj & df[[colname.lFC]] >= min_logFC
+  enriched_genes <- df[ idx.enr, ]
+  enriched_symbols <- rownames(enriched_genes)
+  # enriched_symbols <- genes[idx.enr]
 
   # Filter the dataframe for depleted genes
-  depleted_genes <- df[df[[colname.p]] <= min_padj & df[[colname.lFC]] <= -min_logFC, ]
+  idx.depl <- df[[colname.p]] <= min_padj & df[[colname.lFC]] <= -min_logFC
+  depleted_genes <- df[idx.depl, ]
+  depleted_symbols <- rownames(enriched_genes)
+  # depleted_symbols <- genes[idx.depl]
 
   # Create the named numeric vectors
   gene_counts <- c('Enriched' = nrow(enriched_genes), 'Depleted' = nrow(depleted_genes))
@@ -3269,9 +3276,12 @@ countEnrichedDepletedGenes <- function(df, min_padj = 0.01, min_logFC = 0.5,
   parameters <- c('min_padj' = min_padj, 'min_logFC' = min_logFC)
   print("parameters"); print(parameters)
 
+  # Create the list of gene symbols
+  gene_symbols <- list('Enriched' = enriched_symbols, 'Depleted' = depleted_symbols)
+
   # Return the results as a list
-  result <- list(gene_counts, parameters)
-  names(result) <- c("GeneCounts", "Parameters")
+  result <- list(gene_counts, parameters, gene_symbols)
+  names(result) <- c("GeneCounts", "Parameters", "GeneSymbols")
 
   return(result)
 }
