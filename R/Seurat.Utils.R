@@ -607,7 +607,7 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
 IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown = 10,
                                       species_ = "human", EnforceUnique = TRUE, ShowStats = TRUE,
                                       strict = TRUE, verbose = TRUE) {
-  message(">>> Running IntersectGeneLsWithObject()")
+  message(" > Running IntersectGeneLsWithObject()...")
   # "formerly IntersectWithExpressed(), which still exist in gruffi."
 
   stopifnot(
@@ -3033,9 +3033,10 @@ plot.Gene.Cor.Heatmap <- function(
 
     # Calculate --- --- --- --- ---
     if (calc.COR) {
-      print("Calculating correlation now.")
+      message("Calculating correlation now.")
       genes.found <- check.genes(list.of.genes = genes)
-      iprint(length(genes.found), "genes are found in the object.")
+      message(length(genes.found), " genes are found in the object.")
+
       if (length(genes.found) > 200) iprint("Too many genes found in data, cor will be slow: ", length(genes.found))
       ls.cor <- sparse.cor(t(expr.mat[genes.found, ]))
       cor.mat <- ls.cor$cor
@@ -3313,7 +3314,7 @@ gene.name.check <- function(Seu.obj) {
 #' verify their existence; Default: `FALSE`.
 #' @param obj The Seurat object against which the gene names will be checked; Default: `combined.obj`.
 #' @param assay.slot Assay slot of the Seurat object to check for gene names; Default: `'RNA'`.
-#' @param dataslot Data slot of the assay to check for gene names; Default: `'data'`.
+#' @param data.slot Data slot of the assay to check for gene names; Default: `'data'`.
 #'
 #' @examples
 #' \dontrun{
@@ -3337,21 +3338,25 @@ check.genes <- function(
     list.of.genes = ClassicMarkers, makeuppercase = FALSE, verbose = TRUE, HGNC.lookup = FALSE,
     obj = combined.obj,
     assay.slot = c("RNA", "integrated")[1],
-    dataslot = c("counts", "data")[2]) { # Check if genes exist in your dataset.
+    data.slot = c("counts", "data")[2],
+    ...) {
+  message(" > Running check.genes...")
+  message("assay: ", assay.slot, ", data.slot: ", data.slot)
+
   if (makeuppercase) list.of.genes <- toupper(list.of.genes)
-  all_genes <- rownames(GetAssayData(object = obj, assay = assay.slot, slot = dataslot))
-  length(all_genes)
+  all_genes <- rownames(GetAssayData(object = obj, assay = assay.slot, slot = data.slot))
+
   missingGenes <- setdiff(list.of.genes, all_genes)
   if (length(missingGenes) > 0) {
     if (verbose) {
-      iprint(
-        length(missingGenes), "or", Stringendo::percentage_formatter(length(missingGenes) / length(list.of.genes)),
-        "genes not found in the data, e.g:", head(missingGenes, n = 10)
+      message( "\n", length(missingGenes), " or ",
+               Stringendo::percentage_formatter(length(missingGenes) / length(list.of.genes)),
+               " genes not found in the data, e.g: ", kppc(head(missingGenes, n = 10))
       )
     }
     if (HGNC.lookup) {
       if (exists("qHGNC", mode = "function")) {
-        try(DatabaseLinke.R::qHGNC(missingGenes))
+        try(DatabaseLinke.R::qHGNC(missingGenes, Open = F))
       } else {
         warning("DatabaseLinke.R's qHGNC() function is needed, please install from github.", immediate. = TRUE)
       }
@@ -3402,7 +3407,7 @@ fixZeroIndexing.seurat <- function(ColName.metadata = "res.0.6", obj = org) {
 #' Default: `c("MALAT1")`. The function will check for the existence of these genes in the Seurat object.
 #' @param obj A Seurat object containing gene expression data; Default: `combined.obj`.
 #' The function extracts gene expression data from this object to calculate fractions.
-#' @param dataslot The data slot from which to extract expression data. This can be `"counts"`
+#' @param data.slot The data slot from which to extract expression data. This can be `"counts"`
 #' for raw counts or `"data"` for normalized data; Default: second element (`"data"`).
 #'
 #' @return A numeric vector where each element represents the fraction of the specified geneset's expression
@@ -3427,12 +3432,12 @@ fixZeroIndexing.seurat <- function(ColName.metadata = "res.0.6", obj = org) {
 CalculateFractionInTrome <- function(
     genesCalc.Cor.Seuratet = c("MALAT1"),
     obj = combined.obj,
-    dataslot = c("counts", "data")[2]) {
+    data.slot = c("counts", "data")[2]) {
   warning("    >>>> Use addMetaFraction() <<<<", immediate. = TRUE)
   geneset <- check.genes(list.of.genes = geneset)
   stopifnot(length(geneset) > 0)
 
-  mat <- as.matrix(slot(obj@assays$RNA, name = dataslot))
+  mat <- as.matrix(slot(obj@assays$RNA, name = data.slot))
   mat.sub <- mat[geneset, , drop = FALSE]
   RC.per.cell.geneset <- colSums(mat.sub)
 
