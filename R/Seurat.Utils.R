@@ -4576,13 +4576,11 @@ xsave <- function(
   #
   message(nthreads, " threads.\n-----------")
   message("project: ", project)
-  message("paramList: ", if (exists("paramList") & saveParams) paste(substitute(paramList), length(paramList), "elements.") else "not provided.")
-  message("allGenes: ", if (exists("allGenes") & saveParams) substitute(allGenes) else "not", " provided.")
+  if(!isFALSE(saveParams)) message("paramList: ", if (exists("paramList") & saveParams) paste(substitute(paramList), length(paramList), "elements.") else "not provided.")
+  if(!isFALSE(allGenes)) message("allGenes: ", if (exists("allGenes") & saveParams) substitute(allGenes) else "not", " provided.")
 
   try(tictoc::tic(), silent = TRUE)
-  if (showMemObject) {
-    try(memory.biggest.objects(), silent = TRUE)
-  }
+  if (showMemObject) try(memory.biggest.objects(), silent = TRUE)
 
   annot.suffix <- if (inherits(obj, "Seurat")) kpp(ncol(obj), "cells") else if (is.list(obj)) kppd("ls", length(obj)) else NULL
   fnameBase <- trimws(kppu(

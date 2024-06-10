@@ -3155,7 +3155,8 @@ scGOEnrichment <- function(genes, universe = NULL,
   # Output assertions
   if(nrow(go_results) < 1) warning("No enriched terms found!", immediate. = TRUE)
 
-  if(save) xsave(go_results, suffix = kpp("enr", nr_of_enr_terms, suffix))
+  if(save) xsave(go_results, suffix = kpp("enr", nr_of_enr_terms, suffix),
+                 showMemObject = F, saveParams = F, allGenes = F)
   message("\nNr of enriched terms: ", nr_of_enr_terms)
 
   return(go_results)
