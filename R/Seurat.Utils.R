@@ -1008,7 +1008,7 @@ filterNcGenes <- function(genes, pattern_NC = c("^AC[0-9].+", "^AL[0-9].+", "^AP
                                                 "^AF[0-9].+", "^Z[0-9]+.+",
                                                 "^LINC0.+", "^C[1-9]orf.+", "^MIR[1-9].+",
                                                 ".+\\.AS[1-9]$", ".+\\.DT[1-9]$"),
-                          ...) {
+                          unique = TRUE, ...) {
 
   # Input assertions
   stopifnot(is.character(genes), length(genes) > 0,
@@ -1033,6 +1033,8 @@ filterNcGenes <- function(genes, pattern_NC = c("^AC[0-9].+", "^AL[0-9].+", "^AP
 
   # Output assertions
   stopifnot(is.character(genes_kept), length(genes_kept) <= original_length)
+
+  if(unique) genes_kept <- unique(genes_kept)
 
   return(genes_kept)
 }
