@@ -8,6 +8,7 @@ filterNcGenes(
   genes,
   pattern_NC = c("^AC[0-9].+", "^AL[0-9].+", "^AP[0-9].+", "^AF[0-9].+", "^Z[0-9]+.+",
     "^LINC0.+", "^C[1-9]orf.+", "^MIR[1-9].+", ".+\\\\.AS[1-9]$", ".+\\\\.DT[1-9]$"),
+  unique = TRUE,
   ...
 )
 }

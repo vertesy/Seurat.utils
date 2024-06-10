@@ -12,6 +12,8 @@ scBarplotEnrichr(
   subtitle = kppws("Input: ", substitute(df.enrichment)),
   caption = paste0("genes: ", nrow(df.enrichment), " | background: ", length(universe)),
   save = TRUE,
+  w = 12,
+  h = 8,
   ...
 )
 }

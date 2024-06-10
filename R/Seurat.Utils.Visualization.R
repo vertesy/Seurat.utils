@@ -3130,7 +3130,8 @@ scGOEnrichment <- function(genes, universe = NULL,
   # Input assertions
   stopifnot(
     is.character(genes), length(genes) > 10,
-    is.character(universe), length(universe) > 100,
+    (is.character(universe) | is.null(universe)),
+    (length(universe) > 100  | is.null(universe)),
     is.character(org_db), is.character(key_type), is.character(ont),
     is.character(ont)
   )
@@ -3153,10 +3154,7 @@ scGOEnrichment <- function(genes, universe = NULL,
   message("Nr of enriched terms: ", nr_of_enr_terms)
 
   # Output assertions
-  stopifnot(
-    is(go_results, "enrichResult"),
-    nrow(go_results) > 0
-  )
+  if(nrow(go_results) < 1) warning("No enriched terms found!", immediate. = TRUE)
 
   if(save) write.simple.tsv(go_results, suffix = suffix)
   return(go_results)
@@ -3200,18 +3198,26 @@ scBarplotEnrichr <- function(df.enrichment,
                              caption = paste0("genes: ", nrow(df.enrichment),
                                               " | background: ", length(universe) ),
                              save = TRUE,
+                             w = 12, h = 8,
                              ...) {
 
   if(tag == "...") warning("Please provide a tag describing where are the enrichments.", immediate. = TRUE)
 
-  pobj <- enrichplot:::barplot.enrichResult(df.enrichment, showCategory = 20) +
-    ggplot2::labs(title = title, subtitle = subtitle, caption = caption)
-  print(pobj)
+  pobj <-
+  if(nrow(df.enrichment) < 1) {
+    warning("No enriched terms input!", immediate. = TRUE)
+    ggplot() + theme_void() + annotate("text", x = 1, y = 1, label = "NO ENRICHMENT",
+                                       size = 8, color = "red", hjust = 0.5, vjust = 0.5)
+  } else {
+    enrichplot:::barplot.enrichResult(df.enrichment, showCategory = 20)
+  }
+  pobj <- pobj + ggplot2::labs(title = title, subtitle = subtitle, caption = caption)
 
   if (save) {
-    qqSave(pobj, title = title)
+    qqSave(pobj, title = title, w = w, h = h)
   }
 
+  return(pobj)
 }
 
 
