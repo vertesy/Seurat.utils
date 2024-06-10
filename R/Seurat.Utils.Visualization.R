@@ -937,8 +937,9 @@ scBarplot.CellsPerCluster <- function(
   pl <- ggExpress::qbarplot(cell.per.cluster,
     plotname = title,
     subtitle = paste0(sub, "\n", SBT),
-    suffix = kpp(ident, suffix),
+    suffix = kpp(ident, ncol(obj),"c", suffix),
     col = 1:n.clusters,
+    caption = .parseBasicObjStats(obj = obj),
     xlab.angle = 45,
     ylim = c(0, ylab_adj * max(cell.per.cluster)),
     label = lbl,
@@ -2972,6 +2973,8 @@ scEnhancedVolcano <- function(
     h = 9, w = h,
     ...) {
 
+  stopifnot(nrow(toptable) >5)
+
   # browser()
   # Clip p-values.
   toptable[["p_val_adj"]] <-
@@ -2991,17 +2994,16 @@ scEnhancedVolcano <- function(
   # Create an enhanced volcano plot.
   pobj <- EnhancedVolcano::EnhancedVolcano(
     toptable = toptable,
+    x = x, y = y,
     title = title, subtitle = subtitle,
     lab = lab, selectLab = selectLab,
+    caption = caption,
     pCutoffCol = pCutoffCol,
     pCutoff = pCutoff,
     FCcutoff = FCcutoff,
-    caption = caption,
     drawConnectors=drawConnectors,
     max.overlaps = max.overlaps,
-    x = x, y = y,
-    ...
-  )
+    ...)
   print(pobj)
 
   # Save the plot.
