@@ -3120,7 +3120,7 @@ scGOEnrichment <- function(genes, universe = NULL,
                            org_db = "org.Hs.eg.db", key_type = "SYMBOL", ont = "BP",
                            pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.2,
                            save = TRUE,
-                           suffix = "GO.Enrichments",
+                           suffix = NULL,
                            ...) {
   # Load required library
   if (!requireNamespace("clusterProfiler", quietly = TRUE)) {
@@ -3151,12 +3151,13 @@ scGOEnrichment <- function(genes, universe = NULL,
     ...)
 
   nr_of_enr_terms <- length(go_results@result$"ID")
-  message("Nr of enriched terms: ", nr_of_enr_terms)
 
   # Output assertions
   if(nrow(go_results) < 1) warning("No enriched terms found!", immediate. = TRUE)
 
-  if(save) write.simple.tsv(go_results, suffix = suffix)
+  if(save) xsave(go_results, suffix = kpp("enr", nr_of_enr_terms, suffix))
+  message("\nNr of enriched terms: ", nr_of_enr_terms)
+
   return(go_results)
 }
 
@@ -3195,7 +3196,7 @@ scBarplotEnrichr <- function(df.enrichment,
                              universe = NULL,
                              title = paste(tag, "GO Enrichment Analysis"),
                              subtitle = kppws("Input: ", substitute(df.enrichment)),
-                             caption = paste0("genes: ", nrow(df.enrichment),
+                             caption = paste0("Enr. terms: ", nrow(df.enrichment),
                                               " | background: ", length(universe) ),
                              save = TRUE,
                              w = 12, h = 8,
