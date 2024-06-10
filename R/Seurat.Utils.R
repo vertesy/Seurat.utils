@@ -1004,8 +1004,11 @@ calc.q99.Expression.and.set.all.genes <- function(
 #'
 #' @importFrom stringr str_detect
 #' @export
-filterNcGenes <- function(genes, pattern_NC = c("^AC[0-9].", "^AL[0-9].",
-                                                  "^c[1-9]orf", "\\.AS[1-9]$")) {
+filterNcGenes <- function(genes, pattern_NC = c("^AC[0-9].+", "^AL[0-9].+", "^AP[0-9].+",
+                                                "^AF[0-9].+", "^Z[0-9]+.+",
+                                                "^LINC0.+", "^C[1-9]orf.+", "^MIR[1-9].+",
+                                                ".+\\.AS[1-9]$", ".+\\.DT[1-9]$"),
+                          ...) {
 
   # Input assertions
   stopifnot(is.character(genes), length(genes) > 0,
@@ -1015,7 +1018,7 @@ filterNcGenes <- function(genes, pattern_NC = c("^AC[0-9].", "^AL[0-9].",
   # Filter the genes
   combined_pattern <- paste(pattern_NC, collapse = "|")
   genes_discarded <- genes[stringr::str_detect(genes, combined_pattern)]
-  iprint("Example discarded", head(genes_discarded))
+  iprint("Example discarded", CodeAndRoll2::trail(genes_discarded))
 
   genes_kept <- genes[stringr::str_detect(genes, combined_pattern, negate = TRUE)]
 
