@@ -4,7 +4,13 @@
 \alias{.parseBasicObjStats}
 \title{Parse basic obj stats}
 \usage{
-.parseBasicObjStats(obj, sep = " ", simple = FALSE, suffix = NULL)
+.parseBasicObjStats(
+  obj,
+  sep = " ",
+  assay = DefaultAssay(obj),
+  simple = FALSE,
+  suffix = NULL
+)
 }
 \arguments{
 \item{obj}{An object to extract information from.}

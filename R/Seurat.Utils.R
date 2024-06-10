@@ -983,6 +983,61 @@ calc.q99.Expression.and.set.all.genes <- function(
 }
 
 
+
+# _________________________________________________________________________________________________
+#' @title Filter Coding Gene Symbols (or any matching input Patterns)
+#'
+#' @description This function filters out gene names that match specified patterns. It reports
+#' the original and final number of gene symbols and the percentage remaining after filtering.
+#' It filters out non-coding gene symbols by default.
+#'
+#' @param genes A character vector of gene symbols.
+#' @param pattern_NC A character vector of patterns to filter out non-coding gene symbols.
+#' Default: c("^AC.", "^AL.", "^c[1-9]orf", "\\.AS[1-9]$").
+#'
+#' @return A character vector of filtered gene symbols.
+#'
+#' @examples
+#' genes <- c("AC123", "AL456", "c1orf7", "TP53", "BRCA1", "X1.AS1", "MYC")
+#' genes_kept <- filterNcGenes(genes)
+#' print(genes_kept)
+#'
+#' @importFrom stringr str_detect
+#' @export
+filterNcGenes <- function(genes, pattern_NC = c("^AC[0-9].", "^AL[0-9].",
+                                                  "^c[1-9]orf", "\\.AS[1-9]$")) {
+
+  # Input assertions
+  stopifnot(is.character(genes), length(genes) > 0,
+            is.character(pattern_NC), length(pattern_NC) > 0
+  )
+
+  # Filter the genes
+  combined_pattern <- paste(pattern_NC, collapse = "|")
+  genes_discarded <- genes[stringr::str_detect(genes, combined_pattern)]
+  iprint("Example discarded", head(genes_discarded))
+
+  genes_kept <- genes[stringr::str_detect(genes, combined_pattern, negate = TRUE)]
+
+  # Report original and final list sizes and percentage remaining
+  original_length <- length(genes)
+  filtered_length <- length(genes_kept)
+  percentage_remaining <- (filtered_length / original_length) * 100
+
+  message("Original number of gene symbols: ", original_length)
+  message("Filtered number of gene symbols: ", filtered_length)
+  message("Percentage remaining: ", round(percentage_remaining, 2), "%")
+
+  # Output assertions
+  stopifnot(is.character(genes_kept), length(genes_kept) <= original_length)
+
+  return(genes_kept)
+}
+
+
+
+
+
 # _________________________________________________________________________________________________
 # Clustering ______________________________ ----
 # _________________________________________________________________________________________________

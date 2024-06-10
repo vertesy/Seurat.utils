@@ -11,7 +11,8 @@ check.genes(
   HGNC.lookup = FALSE,
   obj = combined.obj,
   assay.slot = c("RNA", "integrated")[1],
-  dataslot = c("counts", "data")[2]
+  data.slot = c("counts", "data")[2],
+  ...
 )
 }
 \arguments{
@@ -28,7 +29,7 @@ verify their existence; Default: \code{FALSE}.}
 
 \item{assay.slot}{Assay slot of the Seurat object to check for gene names; Default: \code{'RNA'}.}
 
-\item{dataslot}{Data slot of the assay to check for gene names; Default: \code{'data'}.}
+\item{data.slot}{Data slot of the assay to check for gene names; Default: \code{'data'}.}
 }
 \description{
 Verifies the presence of specified gene names within a Seurat object or
