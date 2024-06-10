@@ -3222,6 +3222,65 @@ scBarplotEnrichr <- function(df.enrichment,
   return(pobj)
 }
 
+# ________________________________________________________________________
+#' @title Filter GO Enrichment Results
+#'
+#' @description This function filters GO enrichment results based on adjusted p-value and q-value
+#' cutoffs, and retrieves the descriptions of the filtered results.
+#'
+#' @param df.enrichments An object of class `enrichResult` containing the GO enrichment results.
+#' @param colname Character. The name of the column containing the GO-term names, or else.
+#' @param pvalueCutoff Numeric. The p-value cutoff for filtering the results. Default: NULL, meaning
+#' that the default cutoff of the input object is used. It is stored in `df.enrichments@pvalueCutoff`.
+#' @param qvalueCutoff Numeric. The q-value cutoff for filtering the results. Default: NULL,
+#' meaning that the default cutoff of the input object is used. It is stored in `df.enrichments@qvalueCutoff`.
+#'
+#' @return A character vector of descriptions of the filtered GO enrichment results.
+#'
+#' @examples
+#' # Assuming GO.Enriched.DL.Ctrl is an object of class `enrichResult` created by clusterprofiler or equivalent
+#' descriptions <- filterGoEnrichment(GO.Enriched.DL.Ctrl)
+#' print(descriptions)
+#'
+#' @importFrom dplyr filter pull
+#' @importFrom magrittr %>%
+#' @export
+filterGoEnrichment <- function(df.enrichments,
+                               pvalueCutoff = NULL,
+                               qvalueCutoff = NULL,
+                               colname = 'Description') {
+  # Input assertions
+  stopifnot(
+    "enrichResult" %in% class(df.enrichments),
+    !is.null(df.enrichments@result),
+    !is.null(df.enrichments@pvalueCutoff),
+    !is.null(df.enrichments@qvalueCutoff)
+  )
+
+  pvalueCutoff <- if(is.null(pvalueCutoff)) df.enrichments@pvalueCutoff else pvalueCutoff
+  qvalueCutoff <- if(is.null(qvalueCutoff)) df.enrichments@qvalueCutoff else qvalueCutoff
+
+  message(paste("Filtering GO enrichment results with \np-value cutoff",
+                pvalueCutoff, "and q-value cutoff", qvalueCutoff))
+
+  # Filter and retrieve GO
+  descriptions <- df.enrichments@result %>%
+    dplyr::filter(p.adjust < pvalueCutoff) %>%
+    dplyr::filter(qvalue < qvalueCutoff) %>%
+    dplyr::pull(!!sym(colname))
+
+  # Output assertions
+  stopifnot(is.character(descriptions))
+  message("\nNr of enriched terms: ", length(descriptions))
+
+  return(descriptions)
+}
+
+# Example usage
+# Assuming GO.Enriched.DL.Ctrl is an object of class `enrichResult`
+# descriptions <- filterGoEnrichment(GO.Enriched.DL.Ctrl)
+# print(descriptions)
+
 
 # ________________________________________________________________________
 #' @title Count Enriched and Depleted Genes

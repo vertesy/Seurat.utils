@@ -14,7 +14,7 @@ scGOEnrichment(
   pvalueCutoff = 0.05,
   qvalueCutoff = 0.2,
   save = TRUE,
-  suffix = "GO.Enrichments",
+  suffix = NULL,
   ...
 )
 }
