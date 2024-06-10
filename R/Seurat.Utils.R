@@ -5533,13 +5533,14 @@ compareVarFeaturesAndRanks <- function(
 #' @param obj An object to extract information from.
 #' @return A character string summarizing the key parameters.
 #'
-.parseBasicObjStats <- function(obj, sep = " ", simple = FALSE, suffix = NULL) {
-  n.cells <- format(ncol(obj), big.mark = sep, scientific = FALSE)
-  n.feat <- format(nrow(obj), big.mark = sep, scientific = FALSE)
+.parseBasicObjStats <- function(obj, sep = " ", assay = DefaultAssay(obj),
+                                simple = FALSE, suffix = NULL) {
+  n.cells <- format(length(Cells(obj)), big.mark = sep, scientific = FALSE)
+  n.feat <- format(length(Features(obj, assay = assay)), big.mark = sep, scientific = FALSE)
   if (simple) {
     return(paste(n.cells, "cells.", suffix))
   } else {
-    return(paste(n.cells, "cells,", n.feat, "features.", suffix))
+    return(paste(n.cells, "cells,", n.feat, assay, "features.", suffix))
   }
 }
 
