@@ -247,11 +247,12 @@ runDGEA <- function(obj,
     message("cl.annotation: ", if(reorder.clusters) paste("ordered:", reorder.dimension) else "no")
     message("test: ", param.list$"test")
     message("only.pos: ", param.list$"only.pos")
+    message("---------------------------------")
     message("return.thresh: ", param.list$"return.thresh")
+    message("logfc.threshold: ", param.list$"logfc.threshold")
     message("min.pct: ", param.list$"min.pct")
     message("min.diff.pct: ", param.list$"min.diff.pct")
     message("min.cells.group: ", param.list$"min.cells.group")
-    message("logfc.threshold: ", param.list$"logfc.threshold")
     message("max.cells.per.ident: ", param.list$"max.cells.per.ident")
   }
 
@@ -330,19 +331,7 @@ runDGEA <- function(obj,
       Idents(obj) <- Idents.for.DEG[[i]]
 
       # Perform differential expression analysis
-      tic()
-      message(
-        'logfc.threshold: ',  param.list$"logfc.threshold",
-        'max.p_adj (return.thresh): ', param.list$"return.thresh",
-        'min.pct: ', param.list$"min.pct",
-        'min.diff.pct: ', param.list$"min.diff.pct",
-        'min.cells.group: ', param.list$"min.cells.group",
-        'max.cells.per.ident: ', param.list$"max.cells.per.ident",
-        'test: ', param.list$"test",
-        'only.pos: ', param.list$"only.pos"
-        )
-
-      df.markers <- Seurat::FindAllMarkers(obj,
+      tic(); df.markers <- Seurat::FindAllMarkers(obj,
                                            verbose = TRUE,
                                            test.use = param.list$"test",
 
