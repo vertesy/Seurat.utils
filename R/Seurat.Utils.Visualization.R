@@ -2975,6 +2975,7 @@ scEnhancedVolcano <- function(
     caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
     selectLab = trail(lab, 10),
     min.p = 1e-50,
+    max.l2fc = Inf,
     min.pct.cells = 0.1,
     pCutoffCol = "p_val_adj",
     pCutoff =  1e-3,
@@ -2998,6 +2999,14 @@ scEnhancedVolcano <- function(
   # Clip p-values.
   toptable[["p_val_adj"]] <-
     clip.at.fixed.value(distribution = toptable[["p_val_adj"]], thr = min.p, high = F)
+
+  # Clip log2FC.
+  if (max.l2fc < Inf) {
+    toptable[["avg_log2FC"]] <-
+      clip.at.fixed.value(distribution = toptable[["avg_log2FC"]], thr = -max.l2fc, high = F)
+    toptable[["avg_log2FC"]] <-
+      clip.at.fixed.value(distribution = toptable[["avg_log2FC"]], thr = max.l2fc, high = T)
+  }
 
   # Add statistical information to the subtitle.
   if (count_stats) {
@@ -3242,6 +3251,7 @@ scBarplotEnrichr <- function(df.enrichment,
 
   return(pobj)
 }
+
 
 # ________________________________________________________________________
 #' @title Filter GO Enrichment Results
