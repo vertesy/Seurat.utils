@@ -2971,8 +2971,8 @@ scEnhancedVolcano <- function(
     lab = rownames(toptable),
     suffix = "",
     title = paste("DGEA"),
-    caption = paste("Minimum Fold Change in datset:", .estMinimumFC(toptable)),
-    caption2 = paste("min p cutoff (from top of Y axis):", min.p),
+    caption = paste("Min. Fold Change in Input:", .estMinimumFC(toptable)),
+    caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
     selectLab = trail(lab, 10),
     min.p = 1e-50,
     min.pct.cells = 0.1,
@@ -2984,13 +2984,17 @@ scEnhancedVolcano <- function(
     h = 9, w = h,
     ...) {
   #
-  message("\nMin. log2fc: ", FCcutoff, "Max. p-adj: ", pCutoff,
+  message("\nMin. log2fc: ", FCcutoff, "\nMax. p-adj: ", pCutoff,
           "\nMin. p-adj (trim high y-axis): ", min.p,
           "\nMin. pct cells expressing: ", min.pct.cells)
   stopifnot(nrow(toptable) >5)
 
   # Filter min. cells expressing.
   toptable <- toptable %>% filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
+
+  # calculate true min pct cells expressing (maybe input prefiltered above thr. already).
+  min.pct.cells <- df.Markers.TSC.vs.Ctrl.objENlineage %>% select(pct.1, pct.2) %>% rowMax() %>% min()
+
   # Clip p-values.
   toptable[["p_val_adj"]] <-
     clip.at.fixed.value(distribution = toptable[["p_val_adj"]], thr = min.p, high = F)
@@ -3001,7 +3005,8 @@ scEnhancedVolcano <- function(
                                                  logfc_cutoff = FCcutoff, pval_cutoff = pCutoff))
     stat_info <- kppws("Genes", intermingle2vec(names(enr_stats), enr_stats),"(red)")
     subtitle <- paste0(stat_info, "\n",
-                       paste("max p-Cutoff: ", pCutoff, "log2FC-cutoff: ", FCcutoff))
+                       paste("Cutoffs: max.p_adj: ", pCutoff, " |  min.log2FC: ", FCcutoff,
+                             " |  min.pct.cells: ", min.pct.cells))
   }
 
   caption <- paste0(caption, "\n", caption2)
