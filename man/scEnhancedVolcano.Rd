@@ -6,15 +6,16 @@
 \usage{
 scEnhancedVolcano(
   toptable,
+  x = "avg_log2FC",
+  y = "p_val_adj",
   lab = rownames(toptable),
-  min.p = 1e-50,
   suffix = "",
   title = paste("DGEA"),
   caption = paste("Minimum Fold Change in datset:", .estMinimumFC(toptable)),
   caption2 = paste("min p cutoff (from top of Y axis):", min.p),
-  x = "avg_log2FC",
-  y = "p_val_adj",
   selectLab = trail(lab, 10),
+  min.p = 1e-50,
+  min.pct.cells = 0.1,
   pCutoffCol = "p_val_adj",
   pCutoff = 0.001,
   FCcutoff = 1,
@@ -29,17 +30,33 @@ scEnhancedVolcano(
 \arguments{
 \item{toptable}{A data frame with the results of differential gene expression analysis.}
 
+\item{x}{The x-axis, which is typically the average log2 fold change.}
+
+\item{y}{The y-axis, which is typically the adjusted p-value.}
+
 \item{lab}{A vector of gene symbols to label on the plot.}
 
 \item{suffix}{A string to append to the title of the plot.}
 
 \item{title}{The title of the plot.}
 
-\item{x}{The x-axis, which is typically the average log2 fold change.}
-
-\item{y}{The y-axis, which is typically the adjusted p-value.}
-
 \item{selectLab}{A vector of gene symbols to select for labeling.}
+
+\item{min.p}{The minimum p-value, to trim high values on the Y-axis.}
+
+\item{min.pct.cells}{The minimum percentage of cells in which a gene must be expressed to be included in the plot.}
+
+\item{pCutoffCol}{The column in the toptable that contains the p-value cutoff.}
+
+\item{pCutoff}{The p-value cutoff.}
+
+\item{FCcutoff}{The fold change cutoff.}
+
+\item{count_stats}{Logical. Calculates a data frame with the count statistics.}
+
+\item{drawConnectors}{Whether to draw connectors between the labels and the points.}
+
+\item{max.overlaps}{The maximum number of labels that can overlap.}
 
 \item{h}{The height of the plot.}
 

@@ -2946,25 +2946,36 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 #' @param x The x-axis, which is typically the average log2 fold change.
 #' @param y The y-axis, which is typically the adjusted p-value.
 #' @param selectLab A vector of gene symbols to select for labeling.
+#' @param min.pct.cells The minimum percentage of cells in which a gene must be expressed to be included in the plot.
+#' @param pCutoffCol The column in the toptable that contains the p-value cutoff.
+#' @param pCutoff The p-value cutoff.
+#' @param FCcutoff The fold change cutoff.
+#' @param count_stats Logical. Calculates a data frame with the count statistics.
+#' @param drawConnectors Whether to draw connectors between the labels and the points.
+#' @param max.overlaps The maximum number of labels that can overlap.
+#' @param min.p The minimum p-value, to trim high values on the Y-axis.
 #' @param h The height of the plot.
 #' @param w The width of the plot.
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
+#'
 #' @return A ggplot object.
+#'
 #' @importFrom EnhancedVolcano EnhancedVolcano
 #'
 #' @export
 
 scEnhancedVolcano <- function(
     toptable,
+    x = "avg_log2FC",
+    y = "p_val_adj",
     lab = rownames(toptable),
-    min.p = 1e-50,
     suffix = "",
     title = paste("DGEA"),
-    # title = paste("DGEA", substitute(toptable)),
     caption = paste("Minimum Fold Change in datset:", .estMinimumFC(toptable)),
     caption2 = paste("min p cutoff (from top of Y axis):", min.p),
-    x = "avg_log2FC", y = "p_val_adj",
     selectLab = trail(lab, 10),
+    min.p = 1e-50,
+    min.pct.cells = 0.1,
     pCutoffCol = "p_val_adj",
     pCutoff =  1e-3,
     FCcutoff = 1,
@@ -2972,10 +2983,14 @@ scEnhancedVolcano <- function(
     drawConnectors = T, max.overlaps = Inf,
     h = 9, w = h,
     ...) {
-
+  #
+  message("\nMin. log2fc: ", FCcutoff, "Max. p-adj: ", pCutoff,
+          "\nMin. p-adj (trim high y-axis): ", min.p,
+          "\nMin. pct cells expressing: ", min.pct.cells)
   stopifnot(nrow(toptable) >5)
 
-  # browser()
+  # Filter min. cells expressing.
+  toptable <- toptable %>% filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
   # Clip p-values.
   toptable[["p_val_adj"]] <-
     clip.at.fixed.value(distribution = toptable[["p_val_adj"]], thr = min.p, high = F)
