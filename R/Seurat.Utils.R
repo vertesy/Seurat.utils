@@ -331,20 +331,32 @@ runDGEA <- function(obj,
 
       # Perform differential expression analysis
       tic()
+      message(
+        'logfc.threshold: ',  param.list$"logfc.threshold",
+        'max.p_adj (return.thresh): ', param.list$"return.thresh",
+        'min.pct: ', param.list$"min.pct",
+        'min.diff.pct: ', param.list$"min.diff.pct",
+        'min.cells.group: ', param.list$"min.cells.group",
+        'max.cells.per.ident: ', param.list$"max.cells.per.ident",
+        'test: ', param.list$"test",
+        'only.pos: ', param.list$"only.pos"
+        )
+
       df.markers <- Seurat::FindAllMarkers(obj,
                                            verbose = TRUE,
                                            test.use = param.list$"test",
-                                           only.pos = param.list$"only.pos",
+
+                                           logfc.threshold = param.list$"logfc.threshold",
                                            return.thresh = param.list$"return.thresh",
                                            min.pct = param.list$"min.pct",
                                            min.diff.pct = param.list$"min.diff.pct",
                                            min.cells.group = param.list$"min.cells.group",
-                                           logfc.threshold = param.list$"logfc.threshold",
-                                           max.cells.per.ident = param.list$"max.cells.per.ident"
-      )
-      cat(222)
+                                           max.cells.per.ident = param.list$"max.cells.per.ident",
+                                           only.pos = param.list$"only.pos",
 
-      toc()
+      ); toc()
+
+
       Stringendo::stopif(is.null(df.markers))
       # order df.markers by logFC
       df.markers <- df.markers[order(df.markers$"avg_log2FC", decreasing = TRUE), ]
