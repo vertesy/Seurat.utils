@@ -505,7 +505,51 @@ Convert10Xfolders.old <- function(
 }
 
 
+
 # _________________________________________________________________________________________________
+# Layer Removal ----
+# _________________________________________________________________________________________________
+
+# _________________________________________________________________________________________________
+#' @title Remove Scale Data from Seurat Objects
+#'
+#' @param ls.obj A list of Seurat objects.
+#' @return A list of Seurat objects with `scale.data` slot removed from RNA assays.
+#' @examples
+#' # Assuming `seuratList` is a list of Seurat objects
+#' seuratList <- removeScaleData(seuratList)
+#' @export
+removeScaleData <- function(ls.obj) {
+  lapply(ls.obj, function(x) {
+    x@assays$RNA@layers$scale.data <- NULL
+    x
+  })
+}
+
+
+# _________________________________________________________________________________________________
+#' @title Remove Layers from Seurat Object by Pattern
+#'
+#' @description This function removes layers from a Seurat object's RNA assay based on a specified regular expression pattern.
+#' It first backs up the object before removing layers that match the pattern.
+#'
+#' @param seuratObj A Seurat object.
+#' @param pattern A regular expression pattern to match layer names.
+#'
+#' @importFrom CodeAndRoll2 grepv
+#' @return A Seurat object with specified layers removed.
+#' @export
+removeLayersByPattern <- function(obj, pattern = "sc[0-9][0-9]_", perl = TRUE) {
+  message(paste("pattern: ", pattern))
+  stopifnot("obj must be a Seurat object" = inherits(obj, "Seurat"))
+
+  layerNames <- Layers(obj)
+  layersToRemove <- CodeAndRoll2::grepv(pattern, x = layerNames, perl = perl)
+  message(paste(length(layersToRemove), "form", length(layerNames), "layers are removed."))
+  obj@assays$RNA@layers[layersToRemove] <- NULL
+  return(obj)
+}
+
 # _________________________________________________________________________________________________
 # Deprecated ----
 # _________________________________________________________________________________________________
@@ -852,8 +896,8 @@ regress_out_and_recalculate_seurat <- function(
 #
 #   try(setwd(OutDir), silent = TRUE)
 #
-#   df.meta %>%
-#     dplyr::group_by_(splitby) %>%
+#   df.meta |>
+#     dplyr::group_by_(splitby) |>
 #     summarise()
 #
 #   categ.per.cluster <- ggbarplot(obj@meta.data,
@@ -909,8 +953,8 @@ regress_out_and_recalculate_seurat <- function(
 #
 #   try(setwd(OutDir), silent = TRUE)
 #
-#   df.meta %>%
-#     dplyr::group_by_(splitby) %>%
+#   df.meta |>
+#     dplyr::group_by_(splitby) |>
 #     summarise()
 #
 #   categ.per.cluster <- ggbarplot(obj@meta.data,

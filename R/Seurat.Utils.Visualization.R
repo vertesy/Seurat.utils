@@ -747,23 +747,23 @@ scBarplot.CellFractions <- function(
 
   if (show.total.cells) {
     # First, calculate the total counts per group
-    totals <- META %>%
-      group_by(!!sym(group.by)) %>%
-      summarise(Total = n()) %>%
+    totals <- META |>
+      group_by(!!sym(group.by)) |>
+      summarise(Total = n()) |>
       ungroup()
 
     # Merge totals back with the original data for labeling
     group_by_column <- group.by
-    META <- META %>%
+    META <- META |>
       left_join(totals, by = setNames(nm = group_by_column, group_by_column))
   }
 
 
   if (draw_plot) {
     # calculate the proportions and add up small fractions
-    prop_table <- META %>%
-      group_by(!!as.name(fill.by)) %>%
-      summarise(proportion = n() / nrow(META)) %>%
+    prop_table <- META |>
+      group_by(!!as.name(fill.by)) |>
+      summarise(proportion = n() / nrow(META)) |>
       mutate("category" = ifelse(proportion < min_frequency, "Other", as.character(!!as.name(fill.by))))
 
     categories <- unique(prop_table$"category")
@@ -779,12 +779,12 @@ scBarplot.CellFractions <- function(
     if (downsample) {
       # Downsample the data
       META <-
-        META %>%
-        group_by(!!sym(fill.by)) %>%
+        META |>
+        group_by(!!sym(fill.by)) |>
         sample_n(
           size = max(n_smallest_group, min.nr.sampled.cells),
           replace = dsample.to.repl.thr
-        ) %>%
+        ) |>
         ungroup()
 
       contingency.table <- table(META[[group.by]], META[[fill.by]])
@@ -793,8 +793,8 @@ scBarplot.CellFractions <- function(
     }
 
     # Plot the data
-    pl <- META %>%
-      group_by(!!sym(group.by)) %>%
+    pl <- META |>
+      group_by(!!sym(group.by)) |>
       ggplot(aes(fill = category, x = !!sym(group.by))) +
       geom_hline(yintercept = hlines, lwd = 1.5) +
       geom_bar(position = "fill") +
@@ -1056,11 +1056,11 @@ scBarplot.FractionAboveThr <- function(
   stopifnot(value.col %in% colnames(obj@meta.data))
 
   meta <- obj@meta.data
-  metacol <- meta %>%
+  metacol <- meta |>
     dplyr::select(c(id.col, value.col))
 
-  (df_cells_above <- metacol %>%
-    dplyr::group_by(!!sym(id.col)) %>%
+  (df_cells_above <- metacol |>
+    dplyr::group_by(!!sym(id.col)) |>
     summarize(
       n_cells = n(),
       n_cells_above = sum(!!sym(value.col) > thrX),
@@ -1299,9 +1299,9 @@ scBarplotStackedMetaCateg_List <- function(
   }))
 
   # Summarizing to get counts of cells per category for each sample
-  df <- df %>%
-    dplyr::group_by(Sample, Category) %>%
-    dplyr::summarise(Cells = n(), .groups = "drop") %>%
+  df <- df |>
+    dplyr::group_by(Sample, Category) |>
+    dplyr::summarise(Cells = n(), .groups = "drop") |>
     dplyr::select(Sample, Cells, Category)
 
   TTL <- paste(meta.col, "per object")
@@ -2991,10 +2991,10 @@ scEnhancedVolcano <- function(
   stopifnot(nrow(toptable) >5)
 
   # Filter min. cells expressing.
-  toptable <- toptable %>% filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
+  toptable <- toptable |> filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
 
   # calculate true min pct cells expressing (maybe input prefiltered above thr. already).
-  min.pct.cells <- df.Markers.TSC.vs.Ctrl.objENlineage %>% select(pct.1, pct.2) %>% rowMax() %>% min()
+  min.pct.cells <- df.Markers.TSC.vs.Ctrl.objENlineage |> select(pct.1, pct.2) |> rowMax() |> min()
 
   # Clip p-values.
   toptable[["p_val_adj"]] <-
@@ -3100,15 +3100,15 @@ countRelevantEnrichments <- function(df,
             is.numeric(pval_cutoff),
             is.numeric(logfc_cutoff))
 
-  relevant_genes <- df %>%
+  relevant_genes <- df |>
     filter(!!sym(pval_col) <= pval_cutoff)
 
-  enriched_count <- relevant_genes %>%
-    filter(!!sym(logfc_col) >= logfc_cutoff) %>%
+  enriched_count <- relevant_genes |>
+    filter(!!sym(logfc_col) >= logfc_cutoff) |>
     nrow()
 
-  depleted_count <- relevant_genes %>%
-    filter(!!sym(logfc_col) <= -logfc_cutoff) %>%
+  depleted_count <- relevant_genes |>
+    filter(!!sym(logfc_col) <= -logfc_cutoff) |>
     nrow()
 
   return(list(enriched = enriched_count, depleted = depleted_count))
@@ -3274,7 +3274,7 @@ scBarplotEnrichr <- function(df.enrichment,
 #' print(descriptions)
 #'
 #' @importFrom dplyr filter pull
-#' @importFrom magrittr %>%
+#'
 #' @export
 filterGoEnrichment <- function(df.enrichments,
                                pvalueCutoff = NULL,
@@ -3295,9 +3295,9 @@ filterGoEnrichment <- function(df.enrichments,
                 pvalueCutoff, "and q-value cutoff", qvalueCutoff))
 
   # Filter and retrieve GO
-  descriptions <- df.enrichments@result %>%
-    dplyr::filter(p.adjust < pvalueCutoff) %>%
-    dplyr::filter(qvalue < qvalueCutoff) %>%
+  descriptions <- df.enrichments@result |>
+    dplyr::filter(p.adjust < pvalueCutoff) |>
+    dplyr::filter(qvalue < qvalueCutoff) |>
     dplyr::pull(!!sym(colname))
 
   # Output assertions
@@ -3729,7 +3729,7 @@ plot3D.umap.gene <- function(
     , colorscale = "Viridis"
     # , hoverinfo="text"
     , ...
-  ) %>%
+  ) |>
     plotly::layout(title = gene, scene = list(annotations = ls.ann.auto))
 
   SavePlotlyAsHtml(plt, category. = gene, suffix. = suffix)
@@ -3815,7 +3815,7 @@ plot3D.umap <- function(
     colors = gg_color_hue(length(unique(plotting.data$"category")))
     # , hoverinfo="text"
     , ...
-  ) %>%
+  ) |>
     plotly::layout(title = category, scene = list(annotations = ls.ann.auto))
 
   SavePlotlyAsHtml(plt, category. = category, suffix. = suffix)
@@ -3981,8 +3981,8 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
 
   plotting.data.$"annot" <- Seurat::FetchData(object = obj, vars = c(annotation.category))[, 1]
   auto_annot <-
-    plotting.data. %>%
-    group_by(annot) %>%
+    plotting.data. |>
+    group_by(annot) |>
     summarise(
       showarrow = FALSE,
       xanchor = "left",

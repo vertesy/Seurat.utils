@@ -15,6 +15,7 @@ scEnhancedVolcano(
   caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
   selectLab = trail(lab, 10),
   min.p = 1e-50,
+  max.l2fc = Inf,
   min.pct.cells = 0.1,
   pCutoffCol = "p_val_adj",
   pCutoff = 0.001,

@@ -222,8 +222,8 @@ calculateAverageMetaData <- function(
 
   # Calculate metrics for each meta.feature within each ident category
   for (m in names(metrics)) {
-    results[[m]] <- obj@meta.data %>%
-      group_by(!!sym(ident)) %>%
+    results[[m]] <- obj@meta.data |>
+      group_by(!!sym(ident)) |>
       summarise(across(all_of(meta.features), metrics[[m]], na.rm = TRUE), .groups = "drop")
   }
 
@@ -1136,8 +1136,8 @@ heatmap_calc_clust_median <- function(
   stopifnot(all(variables %in% colnames(meta)))
 
   # Group by 'ident' and calculate median for each variable
-  df_cluster_medians <- meta %>%
-    group_by(meta[[ident]]) %>%
+  df_cluster_medians <- meta |>
+    group_by(meta[[ident]]) |>
     summarize_at(vars(variables), median, na.rm = TRUE)
   df_cluster_medians <- ReadWriter::FirstCol2RowNames(df_cluster_medians)
 
@@ -1213,8 +1213,8 @@ plotMetadataMedianFractionBarplot <- function(
   stopifnot(group.by %in% colnames(meta.data))
   columns.found <- intersect(colnames(meta.data), c(group.by, columns))
 
-  (mat.cluster.medians1 <- meta.data[, columns.found] %>%
-    group_by_at(group.by) %>%
+  (mat.cluster.medians1 <- meta.data[, columns.found] |>
+    group_by_at(group.by) |>
     dplyr::summarize_all(median)
   )
   if (min.thr > 0) {
@@ -1227,7 +1227,7 @@ plotMetadataMedianFractionBarplot <- function(
   }
 
 
-  mat.cluster.medians <- mat.cluster.medians1 %>%
+  mat.cluster.medians <- mat.cluster.medians1 |>
     reshape2::melt(id.vars = c(group.by), value.name = "Fraction")
 
 
@@ -1678,10 +1678,10 @@ matchBestIdentity <- function(
   imessage(length(cat_ref), "reference categories in", ref_col, ":", head(cat_ref), "...")
 
   # Create a table of the most frequent reference values for each query category
-  replacement_table <- df %>%
-    dplyr::group_by(!!sym(query_col), !!sym(ref_col)) %>%
-    dplyr::summarise(n = n(), .groups = "drop") %>%
-    dplyr::arrange(!!sym(query_col), desc(n)) %>%
+  replacement_table <- df |>
+    dplyr::group_by(!!sym(query_col), !!sym(ref_col)) |>
+    dplyr::summarise(n = n(), .groups = "drop") |>
+    dplyr::arrange(!!sym(query_col), desc(n)) |>
     dplyr::filter(!duplicated(!!sym(query_col)))
 
   replacement_table[[ref_col]] <- make.unique(replacement_table[[ref_col]])

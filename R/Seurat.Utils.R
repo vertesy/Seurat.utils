@@ -434,19 +434,19 @@ runDGEA <- function(obj,
         message('Plotting per-cluster enriched gene counts.')
 
         # Filter genes with avg_log2FC > 2
-        lfc2_hiSig_genes <- df.markers %>%
-          filter(avg_log2FC > 1, p_val_adj < 0.05) %>%
-          group_by(cluster) %>%
+        lfc2_hiSig_genes <- df.markers |>
+          filter(avg_log2FC > 1, p_val_adj < 0.05) |>
+          group_by(cluster) |>
           arrange(cluster, desc(avg_log2FC))
 
-        top_genes <- lfc2_hiSig_genes %>%
-          top_n(1, avg_log2FC) %>%
+        top_genes <- lfc2_hiSig_genes |>
+          top_n(1, avg_log2FC) |>
           pull(gene)
 
         # Get the number of genes per cluster
-        (NrOfHighlySignLFC2_genes <- lfc2_hiSig_genes %>%
-            summarise(n = n()) %>%
-            deframe() %>%
+        (NrOfHighlySignLFC2_genes <- lfc2_hiSig_genes |>
+            summarise(n = n()) |>
+            deframe() |>
             sortbyitsnames())
 
         qbarplot(NrOfHighlySignLFC2_genes, label = NrOfHighlySignLFC2_genes,
@@ -458,10 +458,10 @@ runDGEA <- function(obj,
         # Write out gene lists per cluster ________________________________________
         {
           # Get the genes in a list per cluster
-          genes_list <- lfc2_hiSig_genes %>%
-            group_by(cluster) %>%
-            summarise(genes = list(gene)) %>%
-            select(genes) %>%
+          genes_list <- lfc2_hiSig_genes |>
+            group_by(cluster) |>
+            summarise(genes = list(gene)) |>
+            select(genes) |>
             deframe()
 
           names(genes_list) <- unique(lfc2_hiSig_genes$"cluster")
@@ -1340,9 +1340,9 @@ calc.cluster.averages <- function(
   if (plot.UMAP.too) qUMAP(obj = obj, feature = col_name)
 
   df.summary <-
-    obj@meta.data %>%
-    select_at(c(col_name, split_by)) %>%
-    group_by_at(split_by) %>%
+    obj@meta.data |>
+    select_at(c(col_name, split_by)) |>
+    group_by_at(split_by) |>
     summarize(
       "nr.cells" = n(),
       "mean" = mean(!!sym(col_name), na.rm = TRUE),
@@ -2594,17 +2594,16 @@ Add.DE.combined.score <- function(
 #' @export
 #' @importFrom Seurat FindAllMarkers
 #' @importFrom dplyr group_by top_n select arrange
-#' @importFrom magrittr `%>%`
 
 StoreTop25Markers <- function(
     obj = combined.obj,
     df_markers = df.markers, res = 0.5) {
   top25.markers <-
-    df_markers %>%
-    group_by(cluster) %>%
-    top_n(n = 25, wt = avg_2logFC) %>%
-    dplyr::select(gene) %>%
-    col2named.vec.tbl() %>%
+    df_markers |>
+    group_by(cluster) |>
+    top_n(n = 25, wt = avg_2logFC) |>
+    dplyr::select(gene) |>
+    col2named.vec.tbl() |>
     splitbyitsnames()
 
   obj@misc$"top25.markers"[[ppp("res", res)]] <- top25.markers
@@ -2670,7 +2669,7 @@ StoreAllMarkers <- function(
 #'
 #' @export
 #' @importFrom dplyr arrange group_by slice select filter
-# #' @importFrom magrittr `%>%`
+
 GetTopMarkersDF <- function(
     dfDE = df.markers # Get the vector of N most diff. exp. genes.
     , n = p$"n.markers", order.by = c("avg_log2FC", "p_val_adj")[1],
@@ -2687,10 +2686,10 @@ GetTopMarkersDF <- function(
     dplyr::slice(1:n) |>
     dplyr::select(cluster, gene, avg_log2FC)
 
-  # TopMarkers <- dfDE %>%
-  #   arrange(desc(!!as.name(order.by))) %>%
-  #   group_by(cluster) %>%
-  #   dplyr::slice(1:n) %>%
+  # TopMarkers <- dfDE |>
+  #   arrange(desc(!!as.name(order.by))) |>
+  #   group_by(cluster) |>
+  #   dplyr::slice(1:n) |>
   #   dplyr::select(gene)
 
   return(TopMarkers)
@@ -2719,7 +2718,7 @@ GetTopMarkersDF <- function(
 #'
 #' @export
 #' @importFrom dplyr arrange group_by slice select
-# #' @importFrom magrittr `%>%`
+
 GetTopMarkers <- function(dfDE = df.markers,
                           n = p$"n.markers",
                           order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]) {
@@ -2731,11 +2730,11 @@ GetTopMarkers <- function(dfDE = df.markers,
     dplyr::select(gene) |>
     col2named.vec.tbl()
 
-  # TopMarkers <- dfDE %>%
-  #   arrange(desc(!!as.name(order.by))) %>%
-  #   group_by(cluster) %>%
-  #   dplyr::slice(1:n) %>%
-  #   dplyr::select(gene) %>%
+  # TopMarkers <- dfDE |>
+  #   arrange(desc(!!as.name(order.by))) |>
+  #   group_by(cluster) |>
+  #   dplyr::slice(1:n) |>
+  #   dplyr::select(gene) |>
   #   col2named.vec.tbl()
 
   return(TopMarkers)
@@ -2892,22 +2891,22 @@ AutoLabel.KnownMarkers <- function(
 
 
   matching.clusters <-
-    df_markers %>%
-    dplyr::select(keep) %>%
-    arrange(desc(!!as.name(order.by))) %>%
-    filter(gene %in% KnownMarkers) %>%
-    group_by(gene) %>%
-    dplyr::slice(1:topN) %>%
-    arrange(desc(!!as.name(order.by))) %>%
-    # top_n(n = 1, wt = avg_log2FC) %>% # Select the top cluster for each gene
+    df_markers |>
+    dplyr::select(keep) |>
+    arrange(desc(!!as.name(order.by))) |>
+    filter(gene %in% KnownMarkers) |>
+    group_by(gene) |>
+    dplyr::slice(1:topN) |>
+    arrange(desc(!!as.name(order.by))) |>
+    # top_n(n = 1, wt = avg_log2FC) |> # Select the top cluster for each gene
     arrange(cluster)
 
   print(matching.clusters)
 
   unique.matches <-
-    matching.clusters %>%
-    group_by(cluster) %>% # Select rows with unique values based on column "cluster"
-    distinct(cluster, .keep_all = TRUE) %>%
+    matching.clusters |>
+    group_by(cluster) |> # Select rows with unique values based on column "cluster"
+    distinct(cluster, .keep_all = TRUE) |>
     dplyr::select(gene)
 
   print("Best matches:")
@@ -2921,15 +2920,15 @@ AutoLabel.KnownMarkers <- function(
   "Error Here"
 
   top.markers.df <- GetTopMarkersDF(dfDE = df_markers, order.by = lfcCOL, n = 1)
-  top.markers <- top.markers.df %>% col2named.vec.tbl()
+  top.markers <- top.markers.df |> col2named.vec.tbl()
 
   missing.annotations <-
-    top.markers.df %>%
+    top.markers.df |>
     filter(!cluster %in% unique.matches$cluster) # filter for clusters that do not have a unique label already
 
   named.annotations <-
-    rbind(unique.matches, missing.annotations) %>% # merge the 2 df's
-    arrange(cluster) %>%
+    rbind(unique.matches, missing.annotations) |> # merge the 2 df's
+    arrange(cluster) |>
     CodeAndRoll2::col2named.vec.tbl()
 
   (top.markers.ID <- ppp(names(named.annotations), named.annotations))
@@ -5206,10 +5205,10 @@ jPairwiseJaccardIndexList <- function(lsG = ls_genes) {
 #' }
 #' @export
 jPresenceMatrix <- function(string_list = lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4)) {
-  df.presence <- string_list %>%
-    enframe() %>%
-    unnest(cols = "value") %>%
-    count(name, value) %>%
+  df.presence <- string_list |>
+    enframe() |>
+    unnest(cols = "value") |>
+    count(name, value) |>
     spread(value, n, fill = 0)
   df.presence2 <- FirstCol2RowNames(df.presence)
   return(t(df.presence2))
@@ -5621,48 +5620,7 @@ compareVarFeaturesAndRanks <- function(
 
 
 
-
-
 # _________________________________________________________________________________________________
 # Temp _____________________________ ------
 # _________________________________________________________________________________________________
 
-# _________________________________________________________________________________________________
-#' @title Remove Scale Data from Seurat Objects
-#'
-#' @param ls.obj A list of Seurat objects.
-#' @return A list of Seurat objects with `scale.data` slot removed from RNA assays.
-#' @examples
-#' # Assuming `seuratList` is a list of Seurat objects
-#' seuratList <- removeScaleData(seuratList)
-#' @export
-removeScaleData <- function(ls.obj) {
-  lapply(ls.obj, function(x) {
-    x@assays$RNA@layers$scale.data <- NULL
-    x
-  })
-}
-
-
-# _________________________________________________________________________________________________
-#' @title Remove Layers from Seurat Object by Pattern
-#'
-#' @description This function removes layers from a Seurat object's RNA assay based on a specified regular expression pattern.
-#' It first backs up the object before removing layers that match the pattern.
-#'
-#' @param seuratObj A Seurat object.
-#' @param pattern A regular expression pattern to match layer names.
-#'
-#' @importFrom CodeAndRoll2 grepv
-#' @return A Seurat object with specified layers removed.
-#' @export
-removeLayersByPattern <- function(obj, pattern = "sc[0-9][0-9]_", perl = TRUE) {
-  message(paste("pattern: ", pattern))
-  stopifnot("obj must be a Seurat object" = inherits(obj, "Seurat"))
-
-  layerNames <- Layers(obj)
-  layersToRemove <- CodeAndRoll2::grepv(pattern, x = layerNames, perl = perl)
-  message(paste(length(layersToRemove), "form", length(layerNames), "layers are removed."))
-  obj@assays$RNA@layers[layersToRemove] <- NULL
-  return(obj)
-}
