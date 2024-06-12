@@ -2636,7 +2636,7 @@ PlotTopGenesPerCluster <- function(
   message(" > Running PlotTopGenesPerCluster...")
 
   topX.markers <- GetTopMarkers(
-    df = df_markers, n = nrGenes,
+    dfDE = df_markers, n = nrGenes,
     order.by = order.by
   )
 
@@ -4214,8 +4214,6 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
     )
   }
 }
-
-
 
 
 

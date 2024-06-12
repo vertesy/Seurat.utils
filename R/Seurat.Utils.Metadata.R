@@ -1083,7 +1083,7 @@ plotMetadataCorHeatmap <- function(
       cutree_rows = n_cutree, cutree_cols = n_cutree
     )
     wplot_save_pheatmap(
-      x = pl, width = w, ,
+      x = pl, width = w,
       plotname = FixPlotName(make.names(main), suffix, "pdf")
     )
   }
@@ -1160,7 +1160,7 @@ heatmap_calc_clust_median <- function(
       ...
     )
     wplot_save_pheatmap(
-      x = pl, width = w, ,
+      x = pl, width = w,
       plotname = FixPlotName(make.names(plot_name), suffix, "pdf")
     )
   }
