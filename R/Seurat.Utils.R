@@ -435,7 +435,7 @@ runDGEA <- function(obj,
 
         # Filter genes with avg_log2FC > 2
         lfc2_hiSig_genes <- df.markers |>
-          filter(avg_log2FC > 1, p_val_adj < 0.05) |>
+          dplyr::filter(avg_log2FC > 1, p_val_adj < 0.05) |>
           group_by(cluster) |>
           arrange(cluster, desc(avg_log2FC))
 
@@ -2680,7 +2680,7 @@ GetTopMarkersDF <- function(
 
   # browser()
   TopMarkers <- dfDE |>
-    filter(!grepl(exclude, gene, perl = TRUE)) |>
+    dplyr::filter(!grepl(exclude, gene, perl = TRUE)) |>
     arrange(desc(!!as.name(order.by))) |>
     dplyr::group_by(cluster) |>
     dplyr::slice(1:n) |>
@@ -2894,7 +2894,7 @@ AutoLabel.KnownMarkers <- function(
     df_markers |>
     dplyr::select(keep) |>
     arrange(desc(!!as.name(order.by))) |>
-    filter(gene %in% KnownMarkers) |>
+    dplyr::filter(gene %in% KnownMarkers) |>
     group_by(gene) |>
     dplyr::slice(1:topN) |>
     arrange(desc(!!as.name(order.by))) |>
@@ -2924,7 +2924,7 @@ AutoLabel.KnownMarkers <- function(
 
   missing.annotations <-
     top.markers.df |>
-    filter(!cluster %in% unique.matches$cluster) # filter for clusters that do not have a unique label already
+    dplyr::filter(!cluster %in% unique.matches$cluster) # filter for clusters that do not have a unique label already
 
   named.annotations <-
     rbind(unique.matches, missing.annotations) |> # merge the 2 df's

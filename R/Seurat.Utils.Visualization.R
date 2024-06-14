@@ -2990,16 +2990,19 @@ scEnhancedVolcano <- function(
           "\nMin. pct cells expressing: ", min.pct.cells)
   stopifnot(nrow(toptable) >5)
 
+  cat(1)
+  # browser()
+
   # Filter min. cells expressing.
-  toptable <- toptable |> filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
+  toptable <- toptable |> dplyr::filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
 
   # calculate true min pct cells expressing (maybe input prefiltered above thr. already).
-  min.pct.cells <- df.Markers.TSC.vs.Ctrl.objENlineage |> select(pct.1, pct.2) |> rowMax() |> min()
+  min.pct.cells <- toptable |> select(pct.1, pct.2) |> as.matrix() |> rowMax() |> min()
 
   # Clip p-values.
   toptable[["p_val_adj"]] <-
     clip.at.fixed.value(distribution = toptable[["p_val_adj"]], thr = min.p, high = F)
-
+  cat(1)
   # Clip log2FC.
   if (max.l2fc < Inf) {
     toptable[["avg_log2FC"]] <-
@@ -3007,7 +3010,7 @@ scEnhancedVolcano <- function(
     toptable[["avg_log2FC"]] <-
       clip.at.fixed.value(distribution = toptable[["avg_log2FC"]], thr = max.l2fc, high = T)
   }
-
+  cat(3)
   # Add statistical information to the subtitle.
   if (count_stats) {
     enr_stats <- unlist(countRelevantEnrichments(df = toptable, logfc_col = x, pval_col = y,
@@ -3017,24 +3020,25 @@ scEnhancedVolcano <- function(
                        paste("Cutoffs: max.p_adj: ", pCutoff, " |  min.log2FC: ", FCcutoff,
                              " |  min.pct.cells: ", min.pct.cells))
   }
-
   caption <- paste0(caption, "\n", caption2)
+  cat(4)
 
   # Create an enhanced volcano plot.
+  # try.dev.off();
   pobj <- EnhancedVolcano::EnhancedVolcano(
-    toptable = toptable,
-    x = x, y = y,
-    title = title, subtitle = subtitle,
-    lab = lab, selectLab = selectLab,
-    caption = caption,
-    pCutoffCol = pCutoffCol,
-    pCutoff = pCutoff,
-    FCcutoff = FCcutoff,
-    drawConnectors=drawConnectors,
-    max.overlaps = max.overlaps,
-    ...)
+    toptable = toptable
+    , x = x, y = y
+    , title = title, subtitle = subtitle
+    , lab = lab, selectLab = selectLab
+    , caption = caption
+    , pCutoffCol = pCutoffCol
+    , pCutoff = pCutoff
+    , FCcutoff = FCcutoff
+    , drawConnectors=drawConnectors
+    , max.overlaps = max.overlaps
+    , ...)
+  cat(5)
   print(pobj)
-
   # Save the plot.
   qqSave(ggobj = pobj, title = paste0("Volcano.", make.names(title)), h = h, w = w)
   return(pobj)
@@ -3101,14 +3105,14 @@ countRelevantEnrichments <- function(df,
             is.numeric(logfc_cutoff))
 
   relevant_genes <- df |>
-    filter(!!sym(pval_col) <= pval_cutoff)
+    dplyr::filter(!!sym(pval_col) <= pval_cutoff)
 
   enriched_count <- relevant_genes |>
-    filter(!!sym(logfc_col) >= logfc_cutoff) |>
+    dplyr::filter(!!sym(logfc_col) >= logfc_cutoff) |>
     nrow()
 
   depleted_count <- relevant_genes |>
-    filter(!!sym(logfc_col) <= -logfc_cutoff) |>
+    dplyr::filter(!!sym(logfc_col) <= -logfc_cutoff) |>
     nrow()
 
   return(list(enriched = enriched_count, depleted = depleted_count))
