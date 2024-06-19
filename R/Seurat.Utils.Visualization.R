@@ -3251,7 +3251,7 @@ scBarplotEnrichr <- function(df.enrichment,
   nr_input_genes <- length(df.enrichment@'gene')
 
   pobj <-
-  if(nrow(df.enrichment) < 1) {
+  if(nrow(df.enrichment) < 1 | is.null (df.enrichment)) {
     warning("No enriched terms input!", immediate. = TRUE)
     ggplot() + theme_void() + annotate("text", x = 1, y = 1, label = "NO ENRICHMENT",
                                        size = 8, color = "red", hjust = 0.5, vjust = 0.5)
