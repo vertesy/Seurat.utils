@@ -3136,6 +3136,7 @@ countRelevantEnrichments <- function(df,
 #' @param qvalueCutoff Numeric. Q-value cutoff for significance. Default: 0.2.
 #' @param save Logical. Save the results as a data frame. Default: TRUE.
 #' @param suffix Character. Suffix to append to the output file name. Default: 'GO.Enrichments'.
+#' @param check.gene.symbols Logical. Check gene symbols for validity. Default: TRUE.
 #' @importFrom clusterProfiler enrichGO
 #'
 #' @return A data frame with GO enrichment results.
@@ -3154,6 +3155,7 @@ scGOEnrichment <- function(genes, universe = NULL,
                            pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.2,
                            save = TRUE,
                            suffix = NULL,
+                           check.gene.symbols = TRUE,
                            ...) {
   # Load required library
   if (!requireNamespace("clusterProfiler", quietly = TRUE)) {
@@ -3162,15 +3164,22 @@ scGOEnrichment <- function(genes, universe = NULL,
 
   # Input assertions
   stopifnot(
-    is.character(genes), length(genes) > 10,
+    is.character(genes) | is.null(genes),
     (is.character(universe) | is.null(universe)),
     (length(universe) > 100  | is.null(universe)),
     is.character(org_db), is.character(key_type), is.character(ont),
     is.character(ont)
   )
 
+  # check.gene.symbols
+  if (check.gene.symbols) {
+    x <- checkGeneSymbols(genes, species = "human")
+    genes <- x[x[ , "Approved"] , 1]
+  }
+
+
   message("Performing enrichGO() analysis...")
-  message(length(genes), " genes of interest, in ", length(universe), " background genes.")
+  message(length(genes), " approved genes of interest, in ", length(universe), " background genes.")
 
   go_results <- clusterProfiler::enrichGO(
     gene = genes,
@@ -3238,13 +3247,19 @@ scBarplotEnrichr <- function(df.enrichment,
                              ...) {
 
   if(tag == "...") warning("Please provide a tag describing where are the enrichments.", immediate. = TRUE)
+  nr_input_genes <- length(df.enrichment@'gene')
 
   pobj <-
   if(nrow(df.enrichment) < 1) {
     warning("No enriched terms input!", immediate. = TRUE)
     ggplot() + theme_void() + annotate("text", x = 1, y = 1, label = "NO ENRICHMENT",
                                        size = 8, color = "red", hjust = 0.5, vjust = 0.5)
-  } else {
+    } else if (nr_input_genes < 5) {
+      warning("Very few inputs for GOENR", immediate. = TRUE)
+      ggplot() + theme_void() + annotate("text", x = 1, y = 1, label = "TOO FEW GENES (<5)",
+                                         size = 8, color = "red", hjust = 0.5, vjust = 0.5)
+
+    } else {
     enrichplot:::barplot.enrichResult(df.enrichment, showCategory = 20)
   }
   pobj <- pobj + ggplot2::labs(title = title, subtitle = subtitle, caption = caption)
