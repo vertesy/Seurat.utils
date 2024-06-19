@@ -3171,12 +3171,13 @@ scGOEnrichment <- function(genes, universe = NULL,
     is.character(ont)
   )
 
+  if ( is.null(genes) | length(genes) == 0 ) return(NULL)
+
   # check.gene.symbols
   if (check.gene.symbols) {
     x <- checkGeneSymbols(genes, species = "human")
     genes <- x[x[ , "Approved"] , 1]
   }
-
 
   message("Performing enrichGO() analysis...")
   message(length(genes), " approved genes of interest, in ", length(universe), " background genes.")
