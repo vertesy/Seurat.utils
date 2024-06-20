@@ -59,22 +59,18 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
                                 ...) {
   #
   warning("Make sure you cleaned up the memory!", immediate. = TRUE)
-  tic()
   stopifnot(require(tictoc))
-  message("nfeatures: ", nfeatures)
-
+  tic()
 
   # Assertions to check input types _________________________________________________
   stopifnot(
     "Seurat" %in% class(obj),
     is.list(param.list),
     all(c("n.PC", "snn_res") %in% names(param.list)),
-    is.numeric(n.PC),
-    is.numeric(resolutions),
-    is.character(variables.2.regress) | is.null(variables.2.regress)
-  )
-
-  .checkListElements(param_list = p, elements = c("variables.2.regress.combined", "n.PC", "snn_res"))
+    is.numeric(n.PC), is.numeric(resolutions),
+    is.character(variables.2.regress) | is.null(variables.2.regress),
+    "variables.2.regress is not found in @meta" = variables.2.regress %in% colnames(obj@meta.data)
+    )
 
   iprint("nfeatures:", nfeatures)
   iprint("n.PC:", n.PC)
@@ -86,6 +82,8 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
   param.list$"variables.2.regress.combined" <- variables.2.regress
   param.list$"n.PC" <- n.PC
   param.list$"snn_res" <- resolutions
+
+  # .checkListElements(param_list = param.list, elements = c("variables.2.regress.combined", "n.PC", "snn_res"))
 
   obj@misc$"p" <- param.list # overwrite previous parameters
 
@@ -5450,7 +5448,7 @@ compareVarFeaturesAndRanks <- function(
     if (is.null(param_list[[element]])) {
       warning(sprintf("`%s` is not defined", element), immediate. = TRUE, call. = FALSE)
     } else {
-      message(sprintf("`%s` is: %s", element, param_list[[element]]))
+      message(sprintf("`%s` is: %s", element, param_list[[element]]) )
     }
   }, USE.NAMES = FALSE)
 
