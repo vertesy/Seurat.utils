@@ -2001,7 +2001,7 @@ subsetSeuObjByIdent <- function(
   PCT <- percentage_formatter(length(cellz) / ncol(obj))
   message(
     PCT, " or ", length(cellz), " cells are selected from ", ncol(obj),
-    ", using values: ", paste(identGroupKeep), ", from ", ident, "."
+    ", using values (max 20): ", kppc(head(identGroupKeep, 20)), ", from ", ident, "."
   )
 
   x <- subset(x = obj, cells = cellz)
