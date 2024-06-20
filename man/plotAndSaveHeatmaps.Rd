@@ -53,6 +53,7 @@ The file names will start with the provided \code{file.prefix}, followed by the 
 }
 \examples{
 # Assuming `results` is the output from `calculateAverageMetaData`:
+results <- calculateAverageMetaData(obj = combined.obj)
 plotAndSaveHeatmaps(results, path = "path/to/save/heatmaps", file.prefix = "myData_")
 
 }

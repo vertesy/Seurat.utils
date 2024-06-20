@@ -15,6 +15,7 @@ scGOEnrichment(
   qvalueCutoff = 0.2,
   save = TRUE,
   suffix = NULL,
+  check.gene.symbols = TRUE,
   ...
 )
 }
@@ -38,6 +39,8 @@ scGOEnrichment(
 \item{save}{Logical. Save the results as a data frame. Default: TRUE.}
 
 \item{suffix}{Character. Suffix to append to the output file name. Default: 'GO.Enrichments'.}
+
+\item{check.gene.symbols}{Logical. Check gene symbols for validity. Default: TRUE.}
 }
 \value{
 A data frame with GO enrichment results.

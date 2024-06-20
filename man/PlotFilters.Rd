@@ -59,11 +59,16 @@ PlotFilters(
 \description{
 This function plots the filtering thresholds and distributions for Seurat objects,
 using four panels to highlight the relationship between gene- and UMI-counts, and the
-ribosomal- and mitochondrial-content.
+ribosomal- and mitochondrial-content.  !! Default arguments assume that \code{p} is a list of
+parameters, present in the global environment, with elements \code{thr.lp.mito}, \code{thr.hp.mito},
+\code{thr.lp.ribo}, \code{thr.hp.ribo}, \code{thr.lp.nFeature_RNA}, and \code{thr.hp.nFeature_RNA}.
 }
 \examples{
 \dontrun{
 if (interactive()) {
+  # !! Default arguments assume that `p` is a list of parameters, present in the global
+  environment, with elements `thr.lp.mito`, `thr.hp.mito`, `thr.lp.ribo`, `thr.hp.ribo`,
+  `thr.lp.nFeature_RNA`, and `thr.hp.nFeature_RNA`.
   PlotFilters(ls.Seurat)
 }
 }

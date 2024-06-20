@@ -11,7 +11,9 @@
 #'
 #' @description This function plots the filtering thresholds and distributions for Seurat objects,
 #' using four panels to highlight the relationship between gene- and UMI-counts, and the
-#' ribosomal- and mitochondrial-content.
+#' ribosomal- and mitochondrial-content.  !! Default arguments assume that `p` is a list of
+#' parameters, present in the global environment, with elements `thr.lp.mito`, `thr.hp.mito`,
+#' `thr.lp.ribo`, `thr.hp.ribo`, `thr.lp.nFeature_RNA`, and `thr.hp.nFeature_RNA`.
 #'
 #' @param ls.obj A list of Seurat objects to be analyzed. Default: `ls.Seurat`.
 #' @param parentdir The parent directory where the plots will be stored. Default: `OutDirOrig`.
@@ -32,6 +34,9 @@
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
+#'   # !! Default arguments assume that `p` is a list of parameters, present in the global
+#'   environment, with elements `thr.lp.mito`, `thr.hp.mito`, `thr.lp.ribo`, `thr.hp.ribo`,
+#'   `thr.lp.nFeature_RNA`, and `thr.hp.nFeature_RNA`.
 #'   PlotFilters(ls.Seurat)
 #' }
 #' }
@@ -1608,6 +1613,7 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = FA
 #'
 #' @examples
 #' # Assuming `results` is the output from `calculateAverageMetaData`:
+#' results <- calculateAverageMetaData(obj = combined.obj)
 #' plotAndSaveHeatmaps(results, path = "path/to/save/heatmaps", file.prefix = "myData_")
 #'
 #' @return Invisible. The function primarily generates and saves files without returning data.
@@ -1761,6 +1767,9 @@ qSeuViolin <- function(
     is.character(feature),
     feature %in% colnames(obj@meta.data) || feature %in% rownames(obj)
   )
+
+  if(!is.null("idents")) warning("Use arg. ident instead of idents!\n", immediate. = TRUE)
+  if(!is.null("features")) warning("Use arg. feature instead of features!\n", immediate. = TRUE)
 
   ttl <- if (suffix.2.title) {
     paste(feature, "|", suffix)
@@ -2143,14 +2152,17 @@ umapHiLightSel <- function(obj = combined.obj,
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   DimPlot.ClusterNames()
+#'   DimPlot.ClusterNames(obj = combined.obj)
 #' }
 #' }
 #' @export
 DimPlot.ClusterNames <- function(
     obj = combined.obj,
-    ident = "cl.names.top.gene.res.0.5",
-    reduction = "umap", title = ident, ...) {
+    ident = GetNamedClusteringRuns(obj)[1],
+    reduction = "umap",
+    title = ident,
+    ...) {
+  #
   Seurat::DimPlot(
     object = obj, reduction = reduction, group.by = ident,
     label = TRUE, repel = TRUE, ...
@@ -2919,7 +2931,8 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 
   obj[[NewMetaCol]] <- NewMeta
   if (plot) {
-    clUMAP(obj, ident = NewMetaCol)
+    x <- clUMAP(obj, ident = NewMetaCol)
+    print(x)
   }
   return(obj)
 }
@@ -3783,8 +3796,8 @@ plot3D.umap.gene <- function(
 #' @export
 
 plot3D.umap <- function(
-    category,
     obj = combined.obj,
+    category = GetNamedClusteringRuns(obj)[1],
     annotate.by = category,
     suffix = NULL,
     dotsize = 1.25,

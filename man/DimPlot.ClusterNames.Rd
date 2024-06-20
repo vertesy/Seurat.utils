@@ -6,7 +6,7 @@
 \usage{
 DimPlot.ClusterNames(
   obj = combined.obj,
-  ident = "cl.names.top.gene.res.0.5",
+  ident = GetNamedClusteringRuns(obj)[1],
   reduction = "umap",
   title = ident,
   ...
@@ -29,7 +29,7 @@ Plot UMAP with Cluster names.
 \examples{
 \dontrun{
 if (interactive()) {
-  DimPlot.ClusterNames()
+  DimPlot.ClusterNames(obj = combined.obj)
 }
 }
 }

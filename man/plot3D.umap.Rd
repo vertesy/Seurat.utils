@@ -5,8 +5,8 @@
 \title{plot3D.umap}
 \usage{
 plot3D.umap(
-  category,
   obj = combined.obj,
+  category = GetNamedClusteringRuns(obj)[1],
   annotate.by = category,
   suffix = NULL,
   dotsize = 1.25,
@@ -15,10 +15,10 @@ plot3D.umap(
 )
 }
 \arguments{
+\item{obj}{The Seurat object for which the 3D umap plot will be generated. Default: combined.obj}
+
 \item{category}{The metadata column based on which the 3D UMAP will be plotted.
 Default: First returned result from GetNamedClusteringRuns(obj) function.}
-
-\item{obj}{The Seurat object for which the 3D umap plot will be generated. Default: combined.obj}
 
 \item{annotate.by}{The cluster or grouping to be used for automatic annotation.
 Default: First returned result from GetNamedClusteringRuns(obj) function.}
