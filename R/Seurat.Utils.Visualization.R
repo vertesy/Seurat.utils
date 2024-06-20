@@ -1718,11 +1718,14 @@ qFeatureScatter <- function(
 #' @param split.by A character string specifying the grouping variable for splitting the plot.
 #' @param replace.na A logical indicating whether NA values should be replaced.
 #' @param pt.size The size of the individual datapoints in the plot. Set to 0 to get a clean violin plot.
+#' @param sub Subtitle of the plot. Default is feature by ident.
 #' @param suffix An optional string to append to the title of the plot.
 #' @param suffix.2.title A logical indicating whether to append the suffix to the plot title.
 #' @param logY A logical indicating whether to use a logarithmic scale for the y-axis.
 #' @param hline A numeric or logical value; if numeric, the value where a horizontal line should be drawn.
 #' @param caption A character string or logical for the plot caption. If FALSE, no caption is displayed.
+#' @param ylab Y-axis label. Default is "Expression".
+#' @param ylimit A numeric vector specifying the limits of the y-axis.
 #' @param show_plot A logical indicating whether to display the plot.
 #' @param w Width of the plot.
 #' @param h Height of the plot.
@@ -1749,8 +1752,8 @@ qSeuViolin <- function(
     logY = TRUE,
     hline = FALSE,
     ylab = "Expression",
-    show_plot = TRUE,
     ylimit = NULL,
+    show_plot = TRUE,
     w = 9, h = 5,
     ...) {
   #
@@ -1798,7 +1801,7 @@ qSeuViolin <- function(
 
   # Save the plot.
   TTL <- ppp(as.character(feature), suffix, flag.nameiftrue(logY))
-  qqSave(p, title = TTL, w = w, h = h)
+  qqSave(p, title = TTL, suffix = ppp("by.", ident), w = w, h = h)
   if (show_plot) p
 }
 
