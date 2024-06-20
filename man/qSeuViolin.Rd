@@ -18,8 +18,8 @@ qSeuViolin(
   logY = TRUE,
   hline = FALSE,
   ylab = "Expression",
-  show_plot = TRUE,
   ylimit = NULL,
+  show_plot = TRUE,
   w = 9,
   h = 5,
   ...
@@ -38,6 +38,8 @@ qSeuViolin(
 
 \item{pt.size}{The size of the individual datapoints in the plot. Set to 0 to get a clean violin plot.}
 
+\item{sub}{Subtitle of the plot. Default is feature by ident.}
+
 \item{suffix}{An optional string to append to the title of the plot.}
 
 \item{suffix.2.title}{A logical indicating whether to append the suffix to the plot title.}
@@ -47,6 +49,10 @@ qSeuViolin(
 \item{logY}{A logical indicating whether to use a logarithmic scale for the y-axis.}
 
 \item{hline}{A numeric or logical value; if numeric, the value where a horizontal line should be drawn.}
+
+\item{ylab}{Y-axis label. Default is "Expression".}
+
+\item{ylimit}{A numeric vector specifying the limits of the y-axis.}
 
 \item{show_plot}{A logical indicating whether to display the plot.}
 
