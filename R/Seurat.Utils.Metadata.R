@@ -816,6 +816,9 @@ saveLsSeuratMetadata <- function(ls.obj, suffix) {
 #' number and percentage of matching cells between objects, and unique cells in each object.
 #' @param overwrite Logical, indicating whether to overwrite the column in the destination object
 #' if it already exists. Defaults to FALSE.
+#' @param plotUMAP Logical, indicating whether to plot UMAPs of the destination object with
+#' the new identity.
+#' @param ... Additional arguments to be passed to `transferMetadata`.
 #'
 #' @return Returns the destination Seurat object (`to`) with the new metadata columns added.
 #'
@@ -838,7 +841,10 @@ transferMetadata <- function(from, to,
                              colname_from,
                              colname_to = colname_from,
                              verbose = TRUE,
-                             overwrite = FALSE) {
+                             overwrite = FALSE,
+                             plotUMAP = TRUE,
+                             ...) {
+  #
   stopifnot(
     is(from, "Seurat"), is(to, "Seurat"),
     is.character(colname_from), is.character(colname_to),
@@ -855,24 +861,25 @@ transferMetadata <- function(from, to,
   nr.cells.from <- length(cells_only_in_from)
   nr.cells.to <- length(cells_only_in_to)
 
+
+  # Print cell overlap information  _______________________________________________________
   if (verbose) {
-    if (verbose) {
-      cat(
-        "Cells matching between objects:", nr.cells.both,
-        "(", sprintf("%.2f%%", nr.cells.both / length(colnames(from)) * 100), "of from and",
-        sprintf("%.2f%%", nr.cells.both / length(colnames(to)) * 100), "of to)\n"
-      )
-      cat(
-        "Cells only in obj1 (from):", length(cells_only_in_from),
-        "(", sprintf("%.2f%%", nr.cells.from / length(colnames(from)) * 100), ")\n"
-      )
-      cat(
-        "Cells only in obj2 (to):", nr.cells.to,
-        "(", sprintf("%.2f%%", nr.cells.to / length(colnames(to)) * 100), ")\n"
-      )
-    }
+    cat(
+      "Cells matching between objects:", nr.cells.both,
+      "(", sprintf("%.2f%%", nr.cells.both / length(colnames(from)) * 100), "of from and",
+      sprintf("%.2f%%", nr.cells.both / length(colnames(to)) * 100), "of to)\n"
+    )
+    cat(
+      "Cells only in obj1 (from):", length(cells_only_in_from),
+      "(", sprintf("%.2f%%", nr.cells.from / length(colnames(from)) * 100), ")\n"
+    )
+    cat(
+      "Cells only in obj2 (to):", nr.cells.to,
+      "(", sprintf("%.2f%%", nr.cells.to / length(colnames(to)) * 100), ")\n"
+    )
   }
 
+  # Transfer metadata columns _______________________________________________________
   for (i in seq_along(colname_from)) {
     if (!(colname_to[i] %in% colnames(to@meta.data)) || overwrite) {
       if (colname_from[i] %in% colnames(from@meta.data)) {
@@ -890,9 +897,12 @@ transferMetadata <- function(from, to,
     }
   }
 
-  qSeuViolin(feature = 'Major_Celltypes.tr.score', ident = 'Major_Celltypes.tr',
-             sub = Seurat.utils:::.parseBasicObjStats(to),
-             pt.size = 0, obj = to)
+  # Plot umap _______________________________________________________
+  if (plotUMAP) {
+    x <- clUMAP(obj = to, ident = colname_to, suffix = "transferred.ident", ...)
+    print(x)
+  }
+
   return(to)
 }
 

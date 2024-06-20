@@ -139,7 +139,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
     # multi_clUMAP.A4(obj = obj)
 
     # res.ident <- paste0(DefaultAssay(obj), "_snn_res.", resolutions)[1:4]
-    try(qClusteringUMAPS(obj = obj, idents = res.ident), silent = TRUE)
+    try(qClusteringUMAPS(obj = obj), silent = TRUE) # , idents = res.ident
 
     if (ncol(obj) < 50000) try(qMarkerCheck.BrainOrg(obj = obj), silent = TRUE)
 

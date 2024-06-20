@@ -10,7 +10,9 @@ transferMetadata(
   colname_from,
   colname_to = colname_from,
   verbose = TRUE,
-  overwrite = FALSE
+  overwrite = FALSE,
+  plotUMAP = TRUE,
+  ...
 )
 }
 \arguments{
@@ -29,6 +31,11 @@ number and percentage of matching cells between objects, and unique cells in eac
 
 \item{overwrite}{Logical, indicating whether to overwrite the column in the destination object
 if it already exists. Defaults to FALSE.}
+
+\item{plotUMAP}{Logical, indicating whether to plot UMAPs of the destination object with
+the new identity.}
+
+\item{...}{Additional arguments to be passed to \code{transferMetadata}.}
 }
 \value{
 Returns the destination Seurat object (\code{to}) with the new metadata columns added.
