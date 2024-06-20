@@ -482,6 +482,8 @@ create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.inters
 #' @param obj Seurat object to which the new metadata column will be added. Default: ls.Seurat[[1]]
 #' @param col.name Name of the new metadata column to be added. Default: 'percent.mito'
 #' @param gene.symbol.pattern Regular expression pattern to match gene symbols. Default: c("^MT\\.|^MT-", FALSE)[1]
+#' @param assay Name of the assay to be used. Default: 'RNA'
+#' @param layer Name of the layer to be used. Default: 'data'
 #' @param gene.set A set of gene symbols. If specified, it will be used instead of gene.symbol.pattern. Default: FALSE
 #' @param verbose Logical indicating whether to display detailed messages (TRUE) or not (FALSE). Default: TRUE
 #' @examples
@@ -512,10 +514,12 @@ addMetaFraction <- function(
     col.name = "percent.mito",
     gene.symbol.pattern = c("^MT\\.|^MT-", FALSE)[1],
     assay = "RNA",
+    layer = "data",
     gene.set = FALSE,
     verbose = TRUE) {
   message("Should rather use the default `Seurat::PercentageFeatureSet`")
   message("Assay: ", assay)
+  message("Layer: ", layer)
 
   # browser()
   stopif(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
@@ -531,10 +535,10 @@ addMetaFraction <- function(
     CodeAndRoll2::grepv(pattern = gene.symbol.pattern, x = all.genes)
   }
 
-  genes.expr <- GetAssayData(object = obj, assay = assay)[genes.matching, ]
+  genes.expr <- GetAssayData(object = obj, assay = assay, layer = layer)[genes.matching, ]
   target_expr <- if (length(genes.matching) > 1) Matrix::colSums(genes.expr) else genes.expr
 
-  iprint(length(genes.matching), "genes found, :", head(genes.matching))
+  iprint(length(genes.matching), "genes found, eg:", sample(genes.matching, 10))
 
   obj <- AddMetaData(object = obj, metadata = target_expr / total_expr, col.name = col.name)
   colnames(obj@meta.data)

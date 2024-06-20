@@ -9,6 +9,7 @@ addMetaFraction(
   col.name = "percent.mito",
   gene.symbol.pattern = c("^MT\\\\.|^MT-", FALSE)[1],
   assay = "RNA",
+  layer = "data",
   gene.set = FALSE,
   verbose = TRUE
 )
@@ -19,6 +20,10 @@ addMetaFraction(
 \item{col.name}{Name of the new metadata column to be added. Default: 'percent.mito'}
 
 \item{gene.symbol.pattern}{Regular expression pattern to match gene symbols. Default: c("^MT\\.|^MT-", FALSE)\link{1}}
+
+\item{assay}{Name of the assay to be used. Default: 'RNA'}
+
+\item{layer}{Name of the layer to be used. Default: 'data'}
 
 \item{gene.set}{A set of gene symbols. If specified, it will be used instead of gene.symbol.pattern. Default: FALSE}
 
