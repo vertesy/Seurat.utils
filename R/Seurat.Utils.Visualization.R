@@ -2122,10 +2122,12 @@ clUMAP <- function(
     prefix = NULL,
     suffix = make.names(sub),
     label.cex = 7,
-    h = 7, w = NULL, nr.cols = NULL,
+    h = 7, w = NULL,
+    nr.cols = NULL,
     plotname = ppp(toupper(reduction), ident),
     cols = NULL,
     palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
+    max.cols.for.std.palette = 7,
     highlight.clusters = NULL, cells.highlight = NULL,
     label = TRUE, repel = TRUE,
     legend = !label,
@@ -2188,7 +2190,7 @@ clUMAP <- function(
 
   if (is.null(cols)) {
     # browser()
-    cols <- if (NtCategs > 7) {
+    cols <- if (NtCategs > max.cols.for.std.palette) {
       getDiscretePaletteObj(
         ident.used = ident, palette.used = palette,
         obj = obj, show.colors = FALSE
@@ -2209,6 +2211,7 @@ clUMAP <- function(
           cols = cols,
           reduction = reduction, split.by = splitby,
           ncol = nr.cols, cells.highlight = highlight.these,
+
           label = label, repel = repel, label.size = label.cex, ...
         ) +
         ggtitle(label = title, subtitle = sub) +
