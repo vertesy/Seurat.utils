@@ -542,6 +542,75 @@ plotGeneExprHistAcrossCells <- function(
 }
 
 
+
+# _________________________________________________________________________________________________
+#' @title Percentage of Cells Above Threshold
+#'
+#' @description This function calculates the percentage of cells above a specified threshold for a given
+#' feature in a Seurat object. It can subset the data based on a specified identity and values.
+#'
+#' @param obj A Seurat object. Default: combined.obj.
+#' @param feature The feature to evaluate.
+#' @param ident The identity class to split the data by. Default: GetNamedClusteringRuns(obj)[1].
+#' @param threshold The threshold value to evaluate the feature against. Default: 2.
+#' @param subset_ident The identity class to subset the data by. Default: NULL.
+#' @param subset_values The values of the identity class to keep in the subset. Default: NULL.
+#' @param omit.na Logical value indicating whether to omit NA values. Default: TRUE.
+#' @param assay The assay to use for feature extraction. Default: 'RNA'.
+#' @param plot Logical value indicating whether to plot the results. Default: TRUE.
+#' @param ylab The label for the y-axis of the plot. Default: "% cells above threshold".
+#' @param ... Additional parameters to pass to the plotting function.
+#'
+#' @return A named vector with the percentage of cells above the threshold for each identity class.
+#'
+#' @examples
+#' \dontrun{
+#' PctCellsAboveX(obj = seurat_object, feature = 'GeneA', ident = 'CellType', threshold = 1.5)
+#' }
+
+PctCellsAboveX <- function(obj = combined.obj,
+                           feature = "TOP2A",
+                           ident = GetNamedClusteringRuns(obj)[1],
+                           threshold = 2,
+                           subset_ident = NULL,
+                           subset_values = NULL,
+                           omit.na = TRUE,
+                           assay = 'RNA',
+                           plot = TRUE,
+                           ylab = "% cells above threshold",
+                           # color = NULL,
+                           ...) {
+  stopifnot(
+    is(obj, "Seurat"),
+    feature %in% colnames(obj@meta.data) | feature %in% Features(obj, assay = assay),
+    ident %in% colnames(obj@meta.data),
+    is.null(subset_ident) | subset_ident %in% colnames(obj@meta.data),
+    is.null(subset_values) | subset_values %in% unique(obj@meta.data[ ,subset_ident])
+  )
+
+  if (!is.null(subset_ident)) {
+    obj <- subsetSeuObjByIdent(obj, ident = subset_ident, identGroupKeep = subset_values)
+  }
+
+  ls_feat <- split(obj@meta.data[, feature], f = obj@meta.data[, ident])
+  if (omit.na) ls_feat <- lapply(ls_feat, na.omit.strip)
+  Fraction.of.Cells.Above.Threshold <- sapply(ls_feat, function(x) sum(x >= threshold) / length(x))
+
+  if(plot){
+    CPT <- pc_TRUE(is.na(Fraction.of.Cells.Above.Threshold), suffix = "of idents yielded NA/NaN. Exluded from plot.")
+    Fraction.of.Cells.Above.Threshold <- na.omit.strip(Fraction.of.Cells.Above.Threshold)
+    pobj <- qbarplot(Fraction.of.Cells.Above.Threshold, label = percentage_formatter(Fraction.of.Cells.Above.Threshold),
+                     ylab = ylab, xlab = ident,
+                     # col = color,
+                     caption = CPT,
+                     ...)
+    print(pobj)
+  }
+
+  return(Fraction.of.Cells.Above.Threshold)
+}
+
+
 # _________________________________________________________________________________________________
 #' @title Proportion of Cells Expressing Given Genes
 #'
@@ -550,6 +619,7 @@ plotGeneExprHistAcrossCells <- function(
 #' @param genes Character vector of gene names of interest.
 #' @param group.by Optional grouping variable for analysis (e.g., cell type). Default: 'all'.
 #' @param obj Seurat object to analyze. Default: `combined.obj`.
+#' @param ... Additional arguments.
 #'
 #' @return Data frame with genes and their cell expression proportion, optionally grouped.
 #'
@@ -561,8 +631,15 @@ plotGeneExprHistAcrossCells <- function(
 #' @source Adapted from Ryan-Zhu on GitHub.
 #'
 #' @export
-PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj) {
-  stopifnot("Some genes not foun!." = all(genes %in% row.names(obj)))
+PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj,
+                                ...) {
+  .Deprecated("Unclear")
+  #
+  nf <- setdiff(genes, c(Features(obj, assay = 'RNA'), colnames(obj@m@data)))
+
+  if(length(nf) > 0) message("Some genes/ features not found: ", nf)
+
+  stopifnot("Some genes not foun!." = all(genes %in% Features(obj)))
 
   if (group.by == "all") {
     prct <- 1:length(genes)
@@ -570,9 +647,11 @@ PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj) {
     result <- data.frame("Markers" = genes, "Cell_proportion" = prct)
     return(result)
   } else {
-    list <- Seurat::SplitObject(object = obj, split.by = group.by)
-    factors <- names(list)
-    results <- lapply(list, PrctCellExpringGene, genes = genes)
+    ls.Seurat <- Seurat::SplitObject(object = obj, split.by = group.by)
+    factors <- names(ls.Seurat)
+
+    # This is a self referencing function, how does this supposed to even work??
+    results <- lapply(ls.Seurat, PrctCellExpringGene, genes = genes)
     for (i in 1:length(factors)) {
       results[[i]]$Feature <- factors[i]
     }
@@ -3734,13 +3813,14 @@ plot3D.umap.gene <- function(
     alpha = .5,
     dotsize = 1.25,
     col.names = c("umap_1", "umap_2", "umap_3"),
+    assay = 'RNA',
     ...) {
   # Input assertions ____________________________________
 
   stopifnot(
     is(obj, "Seurat"),
     is.character(gene),
-    "gene or feature not found in obj" = (gene %in% Features(obj) | gene %in% colnames(obj@meta.data)),
+    "gene or feature not found in obj" = (gene %in% Features(obj, assay = assay) | gene %in% colnames(obj@meta.data)),
     "annotate.by not found in @meta" = (annotate.by %in% colnames(obj@meta.data) | annotate.by == FALSE),
     "reductions.backup is missing from @misc" = is.list(obj@misc$"reductions.backup"),
     "umap3d is missing from @misc$reductions.backup" = is(obj@misc$reductions.backup$"umap3d", class2 = "DimReduc"),
