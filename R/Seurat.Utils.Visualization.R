@@ -1759,7 +1759,7 @@ qSeuViolin <- function(
     legend = TRUE,
     legend.pos = NULL, # c("top", "bottom", "left", "right", "none")[2],
     show_plot = TRUE,
-    w = 9, h = 5,
+    w = NULL, h = 5,
     ...) {
   #
   stopifnot(
@@ -1776,8 +1776,14 @@ qSeuViolin <- function(
     feature %in% colnames(obj@meta.data) || feature %in% rownames(obj)
   )
 
-  if(!is.null("idents")) warning("Use arg. ident instead of idents!\n", immediate. = TRUE)
-  if(!is.null("features")) warning("Use arg. feature instead of features!\n", immediate. = TRUE)
+  if(exists('idents')) warning("Use arg. ident instead of idents!\n", immediate. = TRUE)
+  if(exists('features')) warning("Use arg. feature instead of features!\n", immediate. = TRUE)
+
+  split_col <- unlist(obj[[ident]])
+  # browser()
+  if(is.null(w)) w <- ceiling(length(unique(split_col))/6) + 6
+  message("Plot width: ", w)
+
 
   ttl <- if (suffix.2.title) {
     paste(feature, "|", suffix)
@@ -1795,7 +1801,6 @@ qSeuViolin <- function(
   if (!is.null(colors)) {
     stopifnot(colors %in% colnames(obj@meta.data))
     col_long <- as.factor(unlist(obj[[colors]]))
-    split_col <- unlist(obj[[ident]])
     colors <- as.factor.numeric(sapply(split(col_long, split_col), unique))
     stopifnot("colors cannot be uniquely split by ident. Set colors = NULL!" = length(colors) == length(unique(split_col)))
   }
@@ -1821,7 +1826,7 @@ qSeuViolin <- function(
 
   # Save the plot.
   TTL <- ppp(as.character(feature), suffix, flag.nameiftrue(logY))
-  qqSave(p.obj, title = TTL, suffix = ppp("by.", ident), w = w, h = h)
+  qqSave(p.obj, title = TTL, suffix = ppp("by.", ident), w = w, h = h, limitsize = FALSE)
   if (show_plot) p.obj
 }
 
