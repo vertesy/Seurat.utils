@@ -594,12 +594,16 @@ PctCellsAboveX <- function(obj = combined.obj,
 
   ls_feat <- split(obj@meta.data[, feature], f = obj@meta.data[, ident])
   if (omit.na) ls_feat <- lapply(ls_feat, na.omit.strip)
-  Fraction.of.Cells.Above.Threshold <- sapply(ls_feat, function(x) sum(x >= threshold) / length(x))
+  Fraction.of.Cells.Above.Threshold <- sapply(ls_feat, function(x) sum(x > threshold) / length(x))
 
   if(plot){
-    CPT <- pc_TRUE(is.na(Fraction.of.Cells.Above.Threshold), suffix = "of idents yielded NA/NaN. Exluded from plot.")
+    CPT <- pc_TRUE(is.na(Fraction.of.Cells.Above.Threshold), suffix = "of idents yielded NA/NaN & exluded from plot.")
     Fraction.of.Cells.Above.Threshold <- na.omit.strip(Fraction.of.Cells.Above.Threshold)
+
     pobj <- qbarplot(Fraction.of.Cells.Above.Threshold, label = percentage_formatter(Fraction.of.Cells.Above.Threshold),
+                     plotname = paste("Percentage of Cells Above Threshold for", feature),
+                     subtitle = paste("Cells above threshold for", feature, "above", threshold),
+                     suffix = ppp(feature, "by", ident, "thr", threshold, "subset_ident", subset_ident),
                      ylab = ylab, xlab = ident,
                      # col = color,
                      caption = CPT,
