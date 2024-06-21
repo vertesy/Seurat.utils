@@ -14,6 +14,7 @@ plot3D.umap.gene(
   alpha = 0.5,
   dotsize = 1.25,
   col.names = c("umap_1", "umap_2", "umap_3"),
+  assay = "RNA",
   ...
 )
 }

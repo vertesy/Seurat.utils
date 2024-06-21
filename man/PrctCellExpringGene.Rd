@@ -7,7 +7,7 @@
 Adapted from Ryan-Zhu on GitHub.
 }
 \usage{
-PrctCellExpringGene(genes, group.by = "all", obj = combined.obj)
+PrctCellExpringGene(genes, group.by = "all", obj = combined.obj, ...)
 }
 \arguments{
 \item{genes}{Character vector of gene names of interest.}
@@ -15,6 +15,8 @@ PrctCellExpringGene(genes, group.by = "all", obj = combined.obj)
 \item{group.by}{Optional grouping variable for analysis (e.g., cell type). Default: 'all'.}
 
 \item{obj}{Seurat object to analyze. Default: \code{combined.obj}.}
+
+\item{...}{Additional arguments.}
 }
 \value{
 Data frame with genes and their cell expression proportion, optionally grouped.
