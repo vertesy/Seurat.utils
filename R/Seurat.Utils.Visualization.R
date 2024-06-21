@@ -1726,6 +1726,8 @@ qFeatureScatter <- function(
 #' @param caption A character string or logical for the plot caption. If FALSE, no caption is displayed.
 #' @param ylab Y-axis label. Default is "Expression".
 #' @param ylimit A numeric vector specifying the limits of the y-axis.
+#' @param legend Show legend; Default: opposite of `label`.
+#' @param legend.pos Position of legend; Default: 'NULL'.
 #' @param show_plot A logical indicating whether to display the plot.
 #' @param w Width of the plot.
 #' @param h Height of the plot.
@@ -1743,6 +1745,7 @@ qSeuViolin <- function(
     feature = "nFeature_RNA",
     ident = GetNamedClusteringRuns(obj)[1],
     split.by = NULL,
+    colors = NULL,
     replace.na = FALSE,
     pt.size = 0.5,
     sub = NULL,
@@ -1753,6 +1756,8 @@ qSeuViolin <- function(
     hline = FALSE,
     ylab = "Expression",
     ylimit = NULL,
+    legend = TRUE,
+    legend.pos = NULL, # c("top", "bottom", "left", "right", "none")[2],
     show_plot = TRUE,
     w = 9, h = 5,
     ...) {
@@ -1787,22 +1792,37 @@ qSeuViolin <- function(
     obj@meta.data[[feature]] <- na.replace(x = obj@meta.data[[feature]], replace = 0)
   }
 
-  p <- VlnPlot(object = obj, features = feature, split.by = split.by, group.by = ident,
+  if (!is.null(colors)) {
+    stopifnot(colors %in% colnames(obj@meta.data))
+    col_long <- as.factor(unlist(obj[[colors]]))
+    split_col <- unlist(obj[[ident]])
+    colors <- as.factor.numeric(sapply(split(col_long, split_col), unique))
+    stopifnot("colors cannot be uniquely split by ident. Set colors = NULL!" = length(colors) == length(unique(split_col)))
+  }
+
+  p.obj <- Seurat::VlnPlot(object = obj,
+                           features = feature, group.by = ident,
+                           cols = colors, split.by = split.by,
                pt.size = pt.size, ...) +
     theme(axis.title.x = element_blank()) +
     labs(y = ylab) +
-    ggtitle(label = ttl, subtitle = subt )
+    ggtitle(label = ttl, subtitle = subt ) +
+    if (!legend) NoLegend() else NULL
+
 
   # Add additional customization, if needed..
-  if (!is.null(ylimit)) p <- p + ylim(ylimit[1], ylimit[2])
-  if (logY) p <- p + ggplot2::scale_y_log10()
-  if (hline) p <- p + ggplot2::geom_hline(yintercept = hline)
-  if (!isFALSE(caption)) p <- p + ggplot2::labs(caption = caption)
+  if (!is.null(ylimit)) p.obj <- p.obj + ylim(ylimit[1], ylimit[2])
+  if (logY) p.obj <- p.obj + ggplot2::scale_y_log10()
+  if (hline) p.obj <- p.obj + ggplot2::geom_hline(yintercept = hline)
+  if (!isFALSE(caption)) p.obj <- p.obj + ggplot2::labs(caption = caption)
+  if (!is.null(legend.pos)) p.obj <- p.obj + theme(legend.position = legend.pos)
+
+
 
   # Save the plot.
   TTL <- ppp(as.character(feature), suffix, flag.nameiftrue(logY))
-  qqSave(p, title = TTL, suffix = ppp("by.", ident), w = w, h = h)
-  if (show_plot) p
+  qqSave(p.obj, title = TTL, suffix = ppp("by.", ident), w = w, h = h)
+  if (show_plot) p.obj
 }
 
 
