@@ -552,6 +552,9 @@ plotGeneExprHistAcrossCells <- function(
 #' @param obj A Seurat object. Default: combined.obj.
 #' @param feature The feature to evaluate.
 #' @param ident The identity class to split the data by. Default: GetNamedClusteringRuns(obj)[1].
+#' @param box Logical value indicating whether to plot the boxplot. Default: TRUE.
+#' @param box.ident The identity class to split the data by for individual dots in the boxplot.
+#' Ident will be used for the boxes displayed (matching the barplot).  Default: NULL.
 #' @param threshold The threshold value to evaluate the feature against. Default: 2.
 #' @param subset_ident The identity class to subset the data by. Default: NULL.
 #' @param subset_values The values of the identity class to keep in the subset. Default: NULL.
@@ -572,6 +575,9 @@ PctCellsAboveX <- function(obj = combined.obj,
                            feature = "TOP2A",
                            ident = GetNamedClusteringRuns(obj)[1],
                            threshold = 2,
+                           suffix = ppp(substitute(obj), ncol(obj), "thr", threshold),
+                           box = FALSE,
+                           ident.box = NULL,
                            subset_ident = NULL,
                            subset_values = NULL,
                            omit.na = TRUE,
@@ -580,6 +586,7 @@ PctCellsAboveX <- function(obj = combined.obj,
                            ylab = "% cells above threshold",
                            # color = NULL,
                            ...) {
+
   stopifnot(
     is(obj, "Seurat"),
     feature %in% colnames(obj@meta.data) | feature %in% Features(obj, assay = assay),
@@ -590,24 +597,57 @@ PctCellsAboveX <- function(obj = combined.obj,
 
   if (!is.null(subset_ident)) {
     obj <- subsetSeuObjByIdent(obj, ident = subset_ident, identGroupKeep = subset_values)
+    if (omit.na) ls_feat <- lapply(ls_feat, na.omit.strip)
   }
 
-  ls_feat <- split(obj@meta.data[, feature], f = obj@meta.data[, ident])
+  split_ident <- if(box) ident.box else ident
+  ls_feat <- split(obj@meta.data[, feature], f = obj@meta.data[, split_ident])
   if (omit.na) ls_feat <- lapply(ls_feat, na.omit.strip)
+
+  # Calculate the percentage of cells above the threshold for each split_ident
   Fraction.of.Cells.Above.Threshold <- sapply(ls_feat, function(x) sum(x > threshold) / length(x))
+  # browser()
+
+  if(box) {
+
+    # Arrange ident.box to categories of ident
+    ls.from_to <- lapply(split(obj@meta.data[, ident.box], f = obj@meta.data[, ident]), unique)
+    from_to <- list.2.replicated.name.vec(ls.from_to)
+
+    stopifnot(all( names(from_to) %in% names(Fraction.of.Cells.Above.Threshold) ))
+
+    from_to <- from_to[names(Fraction.of.Cells.Above.Threshold)]
+
+    # Split Fraction
+    ls.Fraction.of.Cells.Above.Threshold <- split(Fraction.of.Cells.Above.Threshold, f = from_to)
+  }
+
 
   if(plot){
     CPT <- pc_TRUE(is.na(Fraction.of.Cells.Above.Threshold), suffix = "of idents yielded NA/NaN & exluded from plot.")
+    TTL <- paste("Percentage of Cells Above Threshold for", feature)
+    STL <- paste("Cells above threshold for", feature, "above", threshold)
+    SFX <- ppp(feature, "by", ident, "thr", threshold, "subset_ident", subset_ident, suffix)
+
     Fraction.of.Cells.Above.Threshold <- na.omit.strip(Fraction.of.Cells.Above.Threshold)
 
-    pobj <- qbarplot(Fraction.of.Cells.Above.Threshold, label = percentage_formatter(Fraction.of.Cells.Above.Threshold),
-                     plotname = paste("Percentage of Cells Above Threshold for", feature),
-                     subtitle = paste("Cells above threshold for", feature, "above", threshold),
-                     suffix = ppp(feature, "by", ident, "thr", threshold, "subset_ident", subset_ident),
-                     ylab = ylab, xlab = ident,
-                     # col = color,
-                     caption = CPT,
-                     ...)
+    if(box) {
+      pobj <- qboxplot(ls.Fraction.of.Cells.Above.Threshold,
+                       plotname = TTL, subtitle = STL, caption = CPT, suffix = SFX,
+                       add = "dotplot", xlab.angle = 45,
+                       hide.legend = TRUE,
+                       # ,ylab = ylab, xlab = ident,
+                       ...)
+
+    } else { "barplot"
+      pobj <- qbarplot(Fraction.of.Cells.Above.Threshold, label = percentage_formatter(Fraction.of.Cells.Above.Threshold),
+                       plotname = TTL, subtitle = STL, caption = CPT, suffix = SFX,
+                       ylab = ylab, xlab = ident,
+                       ...)
+    }
+
+
+
     print(pobj)
   }
 

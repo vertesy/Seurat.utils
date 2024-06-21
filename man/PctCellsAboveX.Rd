@@ -9,6 +9,9 @@ PctCellsAboveX(
   feature = "TOP2A",
   ident = GetNamedClusteringRuns(obj)[1],
   threshold = 2,
+  suffix = ppp(substitute(obj), ncol(obj), "thr", threshold),
+  box = FALSE,
+  ident.box = NULL,
   subset_ident = NULL,
   subset_values = NULL,
   omit.na = TRUE,
@@ -27,6 +30,8 @@ PctCellsAboveX(
 
 \item{threshold}{The threshold value to evaluate the feature against. Default: 2.}
 
+\item{box}{Logical value indicating whether to plot the boxplot. Default: TRUE.}
+
 \item{subset_ident}{The identity class to subset the data by. Default: NULL.}
 
 \item{subset_values}{The values of the identity class to keep in the subset. Default: NULL.}
@@ -40,6 +45,9 @@ PctCellsAboveX(
 \item{ylab}{The label for the y-axis of the plot. Default: "\% cells above threshold".}
 
 \item{...}{Additional parameters to pass to the plotting function.}
+
+\item{box.ident}{The identity class to split the data by for individual dots in the boxplot.
+Ident will be used for the boxes displayed (matching the barplot).  Default: NULL.}
 }
 \value{
 A named vector with the percentage of cells above the threshold for each identity class.
