@@ -1780,7 +1780,6 @@ qSeuViolin <- function(
   if(exists('features')) warning("Use arg. feature instead of features!\n", immediate. = TRUE)
 
   split_col <- unlist(obj[[ident]])
-  # browser()
   if(is.null(w)) w <- ceiling(length(unique(split_col))/6) + 6
   message("Plot width: ", w)
 

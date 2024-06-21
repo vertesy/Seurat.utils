@@ -9,6 +9,7 @@ qSeuViolin(
   feature = "nFeature_RNA",
   ident = GetNamedClusteringRuns(obj)[1],
   split.by = NULL,
+  colors = NULL,
   replace.na = FALSE,
   pt.size = 0.5,
   sub = NULL,
@@ -19,8 +20,10 @@ qSeuViolin(
   hline = FALSE,
   ylab = "Expression",
   ylimit = NULL,
+  legend = TRUE,
+  legend.pos = NULL,
   show_plot = TRUE,
-  w = 9,
+  w = NULL,
   h = 5,
   ...
 )
@@ -53,6 +56,10 @@ qSeuViolin(
 \item{ylab}{Y-axis label. Default is "Expression".}
 
 \item{ylimit}{A numeric vector specifying the limits of the y-axis.}
+
+\item{legend}{Show legend; Default: opposite of \code{label}.}
+
+\item{legend.pos}{Position of legend; Default: 'NULL'.}
 
 \item{show_plot}{A logical indicating whether to display the plot.}
 
