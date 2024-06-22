@@ -20,6 +20,7 @@ clUMAP(
   plotname = ppp(toupper(reduction), ident),
   cols = NULL,
   palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
+  max.cols.for.std.palette = 7,
   highlight.clusters = NULL,
   cells.highlight = NULL,
   label = TRUE,

@@ -7,7 +7,7 @@
 plot3D.umap.gene(
   gene = "TOP2A",
   obj = combined.obj,
-  annotate.by = GetNamedClusteringRuns(obj)[1],
+  annotate.by = GetNamedClusteringRuns(obj = obj, v = F)[1],
   quantileCutoff = 0.99,
   def.assay = c("integrated", "RNA")[2],
   suffix = NULL,

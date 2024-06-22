@@ -6,7 +6,7 @@
 \usage{
 DimPlot.ClusterNames(
   obj = combined.obj,
-  ident = GetNamedClusteringRuns(obj)[1],
+  ident = GetNamedClusteringRuns(obj = obj, v = F)[1],
   reduction = "umap",
   title = ident,
   ...

@@ -9,7 +9,8 @@ GetNamedClusteringRuns(
   res = list(FALSE, 0.5)[[1]],
   topgene = FALSE,
   pat = c("^cl.names.*[0-9]\\\\.[0-9]", "Name|name")[2],
-  find.alternatives = TRUE
+  find.alternatives = TRUE,
+  v = TRUE
 )
 }
 \arguments{
@@ -22,6 +23,9 @@ GetNamedClusteringRuns(
 \item{pat}{Pattern to match, Default: '^cl.names.Known.*\link{0,1}\.\link{0-9}$'}
 
 \item{find.alternatives}{If TRUE, tries to find alternative clustering runs with
+the same resolution, Default: TRUE}
+
+\item{v}{Verbose output, Default: TRUE
 simple GetClusteringRuns(), Default: TRUE}
 }
 \description{

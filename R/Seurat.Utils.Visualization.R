@@ -573,7 +573,7 @@ plotGeneExprHistAcrossCells <- function(
 
 PctCellsAboveX <- function(obj = combined.obj,
                            feature = "TOP2A",
-                           ident = GetNamedClusteringRuns(obj)[1],
+                           ident = GetNamedClusteringRuns(obj = obj, v = F)[1],
                            threshold = 2,
                            suffix = ppp(substitute(obj), ncol(obj), "thr", threshold),
                            box = FALSE,
@@ -1866,7 +1866,7 @@ qFeatureScatter <- function(
 qSeuViolin <- function(
     obj,
     feature = "nFeature_RNA",
-    ident = GetNamedClusteringRuns(obj)[1],
+    ident = GetNamedClusteringRuns(obj = obj, v = F)[1],
     split.by = NULL,
     colors = NULL,
     replace.na = FALSE,
@@ -2144,7 +2144,7 @@ clUMAP <- function(
   #
 
   if (is.null(ident)) {
-    ident <- GetNamedClusteringRuns(obj = obj)[1]
+    ident <- GetNamedClusteringRuns(obj = obj, v = F)[1]
     message("Identity not provided. Plotting: ", ident)
   }
 
@@ -2311,7 +2311,7 @@ umapHiLightSel <- function(obj = combined.obj,
 #' @export
 DimPlot.ClusterNames <- function(
     obj = combined.obj,
-    ident = GetNamedClusteringRuns(obj)[1],
+    ident = GetNamedClusteringRuns(obj = obj, v = F)[1],
     reduction = "umap",
     title = ident,
     ...) {
@@ -3853,7 +3853,7 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 plot3D.umap.gene <- function(
     gene = "TOP2A",
     obj = combined.obj,
-    annotate.by = GetNamedClusteringRuns(obj)[1],
+    annotate.by = GetNamedClusteringRuns(obj = obj, v = F)[1],
     quantileCutoff = .99,
     def.assay = c("integrated", "RNA")[2],
     suffix = NULL,
@@ -3951,7 +3951,7 @@ plot3D.umap.gene <- function(
 
 plot3D.umap <- function(
     obj = combined.obj,
-    category = GetNamedClusteringRuns(obj)[1],
+    category = GetNamedClusteringRuns(obj = obj, v = F)[1],
     annotate.by = category,
     suffix = NULL,
     dotsize = 1.25,

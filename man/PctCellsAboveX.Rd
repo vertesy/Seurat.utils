@@ -7,7 +7,7 @@
 PctCellsAboveX(
   obj = combined.obj,
   feature = "TOP2A",
-  ident = GetNamedClusteringRuns(obj)[1],
+  ident = GetNamedClusteringRuns(obj = obj, v = F)[1],
   threshold = 2,
   suffix = ppp(substitute(obj), ncol(obj), "thr", threshold),
   box = FALSE,

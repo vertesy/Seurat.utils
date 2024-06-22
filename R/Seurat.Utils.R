@@ -1165,6 +1165,9 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #' @param obj Seurat object, Default: combined.obj
 #' @param res Clustering resoluton to use, Default: FALSE
 #' @param pat Pattern to match, Default: `*snn_res.*[0-9]$`
+#' @param v
+#'
+#' @return Prints and returns the sorted unique cluster names as a character vector.
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -1172,13 +1175,22 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #' }
 #' }
 #' @export
-GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.[0-9].[0-9]+$") { # OLD: '*snn_res.*[0-9]$'
+GetClusteringRuns <- function(obj = combined.obj,
+                              res = FALSE, pat = "*snn_res.[0-9].[0-9]+$",
+                              v = TRUE) {
+
   if (!isFALSE(res)) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
 
   clustering.results <- sort(CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat))
+
   if (identical(clustering.results, character(0))) warning("No matching (simple) clustering column found!", immediate. = TRUE)
-  message("Clustering runs found:")
-  dput(clustering.results)
+
+  if(v) {
+    message("Clustering runs found:")
+    dput(clustering.results)
+  }
+
+
   return(clustering.results)
 }
 
@@ -1193,6 +1205,8 @@ GetClusteringRuns <- function(obj = combined.obj, res = FALSE, pat = "*snn_res.[
 #' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: FALSE
 #' @param pat Pattern to match, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
 #' @param find.alternatives If TRUE, tries to find alternative clustering runs with
+#' the same resolution, Default: TRUE
+#' @param v Verbose output, Default: TRUE
 #' simple GetClusteringRuns(), Default: TRUE
 #' @examples
 #' \dontrun{
@@ -1205,7 +1219,8 @@ GetNamedClusteringRuns <- function(
     obj = combined.obj,
     res = list(FALSE, 0.5)[[1]], topgene = FALSE,
     pat = c("^cl.names.*[0-9]\\.[0-9]", "Name|name")[2],
-    find.alternatives = TRUE) {
+    find.alternatives = TRUE,
+    v = TRUE) {
 
   if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
   if (topgene) pat <- gsub(x = pat, pattern = "Known", replacement = "top")
@@ -1215,10 +1230,11 @@ GetNamedClusteringRuns <- function(
     warning("No matching (named) clustering column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)",
       immediate. = TRUE )
     if (find.alternatives) clustering.results <-
-        GetClusteringRuns(obj = obj, res = FALSE, pat = "*_res.*[0,1]\\.[0-9]$")
+        GetClusteringRuns(obj = obj, res = FALSE, pat = "*_res.*[0,1]\\.[0-9]$", v = F)
   }
 
-  dput(clustering.results)
+  if(v) dput(clustering.results)
+
   return(clustering.results)
 }
 

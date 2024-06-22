@@ -7,7 +7,8 @@
 GetClusteringRuns(
   obj = combined.obj,
   res = FALSE,
-  pat = "*snn_res.[0-9].[0-9]+$"
+  pat = "*snn_res.[0-9].[0-9]+$",
+  v = TRUE
 )
 }
 \arguments{
@@ -16,6 +17,11 @@ GetClusteringRuns(
 \item{res}{Clustering resoluton to use, Default: FALSE}
 
 \item{pat}{Pattern to match, Default: \verb{*snn_res.*[0-9]$}}
+
+\item{v}{}
+}
+\value{
+Prints and returns the sorted unique cluster names as a character vector.
 }
 \description{
 The \code{GetClusteringRuns} function retrieves metadata column names associated with

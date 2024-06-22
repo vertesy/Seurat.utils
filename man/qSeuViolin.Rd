@@ -7,7 +7,7 @@
 qSeuViolin(
   obj,
   feature = "nFeature_RNA",
-  ident = GetNamedClusteringRuns(obj)[1],
+  ident = GetNamedClusteringRuns(obj = obj, v = F)[1],
   split.by = NULL,
   colors = NULL,
   replace.na = FALSE,
