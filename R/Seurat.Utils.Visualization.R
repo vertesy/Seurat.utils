@@ -483,7 +483,7 @@ plotGeneExprHistAcrossCells <- function(
     slot_ %in% c("data", "counts")
   )
 
-  # browser()
+
   # Aggregate genes if necessary
   aggregate <- length(genes) > 1
   SummedExpressionPerCell <- colSums(GetAssayData(object = obj, assay = assay,
@@ -606,7 +606,7 @@ PctCellsAboveX <- function(obj = combined.obj,
 
   # Calculate the percentage of cells above the threshold for each split_ident
   Fraction.of.Cells.Above.Threshold <- sapply(ls_feat, function(x) sum(x > threshold) / length(x))
-  # browser()
+
 
   if(box) {
 
@@ -1531,7 +1531,7 @@ getDiscretePaletteObj <- function(ident.used,
   )
 
   n.clusters <- CodeAndRoll2::nr.unique(obj[[ident.used]])
-  # browser()
+
   colorz <- DiscretePaletteSafe(
     n = n.clusters,
     palette.used = palette.used,
@@ -2189,7 +2189,7 @@ clUMAP <- function(
   } # overwrite, if directly defined
 
   if (is.null(cols)) {
-    # browser()
+
     cols <- if (NtCategs > max.cols.for.std.palette) {
       getDiscretePaletteObj(
         ident.used = ident, palette.used = palette,
@@ -2854,7 +2854,7 @@ qQC.plots.BrainOrg <- function(
   message(kppws(n.found, " found: ", QC.Features.Found))
   stopifnot(n.found > 1)
 
-  # browser()
+
   # Count the number of NAs in specified columns
   na_counts <- sapply(X = obj@meta.data[, QC.Features.Found], function(x) sum(is.na(x)))
 
@@ -3157,7 +3157,7 @@ scEnhancedVolcano <- function(
   stopifnot(nrow(toptable) >5)
 
   cat(1)
-  # browser()
+
 
   # Filter min. cells expressing.
   toptable <- toptable |> dplyr::filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
@@ -3168,7 +3168,7 @@ scEnhancedVolcano <- function(
   # Clip p-values.
   toptable[["p_val_adj"]] <-
     clip.at.fixed.value(distribution = toptable[["p_val_adj"]], thr = min.p, high = F)
-  cat(1)
+  cat(2)
   # Clip log2FC.
   if (max.l2fc < Inf) {
     toptable[["avg_log2FC"]] <-
@@ -3176,7 +3176,7 @@ scEnhancedVolcano <- function(
     toptable[["avg_log2FC"]] <-
       clip.at.fixed.value(distribution = toptable[["avg_log2FC"]], thr = max.l2fc, high = T)
   }
-  cat(3)
+
   # Add statistical information to the subtitle.
   if (count_stats) {
     enr_stats <- unlist(countRelevantEnrichments(df = toptable, logfc_col = x, pval_col = y,
@@ -3885,7 +3885,7 @@ plot3D.umap.gene <- function(
   plotting.data <- obj@misc$reductions.backup$"umap3d"@cell.embeddings
   colnames(plotting.data) <- toupper(col.names)
 
-  # browser()
+
   Expression <- Seurat::FetchData(object = obj, vars = gene)
   plotting.data <- cbind(plotting.data, Expression)
 
@@ -3893,7 +3893,7 @@ plot3D.umap.gene <- function(
     expr.vec = plotting.data[, gene],
     quantileCutoffX = quantileCutoff, min.cells.expressing = 10
   )
-  # browser()
+
   # CodeAndRoll2::clip.outliers.at.percentile(plotting.data[, gene], probs = c(1 - quantileCutoff, quantileCutoff))
   plotting.data$"label" <- paste(rownames(plotting.data), " - ", plotting.data[, gene], sep = "")
 
@@ -3961,7 +3961,7 @@ plot3D.umap <- function(
   message("category: ", category)
   message("annotate.by: ", annotate.by)
 
-  # browser()
+
 
   # Input assertions ____________________________________
   stopifnot(
@@ -4372,14 +4372,12 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
 
   obj.name <- deparse(substitute(obj))
 
-  cat("1", "\n")
-  # browser()
   plot1 <- Seurat::VariableFeaturePlot(obj, assay = assay) +
     theme(panel.background = element_rect(fill = "white")) +
     labs(title = "Variable Genes",
          subtitle = kppws(obj.name, suffix),
          caption = paste("Assay:", assay, "|", idate()))
-  cat("2", "\n")
+
 
   # Assuming LabelPoints is defined elsewhere and available for use.
   TopVarGenes <- VariableFeatures(obj, assay = assay)[1:NrVarGenes]
@@ -4387,10 +4385,10 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
     plot = plot1, points = TopVarGenes, repel = repel,
     xnudge = 0, ynudge = 0, max.overlaps = 15
   )
-  cat("3", "\n")
+
   print(labeledPlot)
   filename <- ppp("Var.genes", obj.name, suffix, idate(), "png")
-  cat("4", "\n")
+
   # if (save) ggplot2::ggsave(plot = labeledPlot, filename = filename, width = plotWidth, height = plotHeight)
   if (save) {
     qqSave(

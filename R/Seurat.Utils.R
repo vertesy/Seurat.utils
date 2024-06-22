@@ -1183,13 +1183,12 @@ GetClusteringRuns <- function(obj = combined.obj,
 
   clustering.results <- sort(CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat))
 
-  if (identical(clustering.results, character(0))) warning("No matching (simple) clustering column found!", immediate. = TRUE)
+  if (identical(clustering.results, character(0))) if(v) warning("No matching (simple) clustering column found!", immediate. = TRUE)
 
   if(v) {
     message("Clustering runs found:")
     dput(clustering.results)
   }
-
 
   return(clustering.results)
 }
@@ -1227,8 +1226,7 @@ GetNamedClusteringRuns <- function(
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
 
   if (identical(clustering.results, character(0))) {
-    warning("No matching (named) clustering column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)",
-      immediate. = TRUE )
+    if(v) warning("No matching (named) clustering column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)", immediate. = TRUE )
     if (find.alternatives) clustering.results <-
         GetClusteringRuns(obj = obj, res = FALSE, pat = "*_res.*[0,1]\\.[0-9]$", v = F)
   }
