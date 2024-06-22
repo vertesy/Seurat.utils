@@ -2129,7 +2129,8 @@ clUMAP <- function(
     palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
     max.cols.for.std.palette = 7,
     highlight.clusters = NULL, cells.highlight = NULL,
-    cols.highlight = "red", sizes.highlight = 1,
+    cols.highlight = "red",
+    sizes.highlight = 1,
     label = TRUE, repel = TRUE,
     legend = !label,
     legend.pos = NULL, # c("top", "bottom", "left", "right", "none")[2],
@@ -2188,7 +2189,9 @@ clUMAP <- function(
   if (!missing(cells.highlight)) {
     highlight.these <- cells.highlight
     message("Highlighting ", length(highlight.these), " cells, e.g.: ", head(highlight.these))
-    message("cols.highlight: ", cols.highlight, " | sizes.highlight: ", sizes.highlight)
+    message("cols.highlight: ", cols.highlight
+            ," | sizes.highlight: ", sizes.highlight
+            )
   } # overwrite, if directly defined
 
   if (is.null(cols)) {
@@ -2215,10 +2218,9 @@ clUMAP <- function(
           ncol = nr.cols,
           cells.highlight = highlight.these,
           cols.highlight = cols.highlight,
-          pt.size = 0.1,
           sizes.highlight = sizes.highlight,
-          label = label, repel = repel, label.size = label.cex, ...
-        ) +
+          label = label, repel = repel, label.size = label.cex,
+          ...) +
         ggtitle(label = title, subtitle = sub) +
         if (!legend) NoLegend() else NULL
     }
