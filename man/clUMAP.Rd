@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{clUMAP}
 \alias{clUMAP}
-\title{Quick Visualization of Clustering Results with UMAP and automatically save the plot}
+\title{clUMAP - Quick Visualization of Clustering Results with UMAP and automatically save the plot}
 \usage{
 clUMAP(
   ident = NULL,
@@ -23,6 +23,8 @@ clUMAP(
   max.cols.for.std.palette = 7,
   highlight.clusters = NULL,
   cells.highlight = NULL,
+  cols.highlight = "red",
+  sizes.highlight = 1,
   label = TRUE,
   repel = TRUE,
   legend = !label,
