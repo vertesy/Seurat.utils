@@ -1372,7 +1372,7 @@ scBarplot.CellsPerObject <- function(
     "Should be run on a list of Seu. objects" = all(sapply(ls.obj, is, "Seurat"))
   )
 
-  cellCounts <- unlapply(ls.obj, ncol)
+  cellCounts <- sapply(ls.obj, ncol)
   names(cellCounts) <- if (length(names) == length(ls.obj)) names else names(ls.obj)
   ggExpress::qbarplot(cellCounts,
     plotname = plotname,
@@ -3059,7 +3059,7 @@ FlipReductionCoordinates <- function(
 #' }
 #'
 #' @export
-#' @importFrom CodeAndRoll2 as.named.vector.df unlapply translate
+#' @importFrom CodeAndRoll2 translate
 #' @importFrom Stringendo kpp kppu iprint
 #' @importFrom Seurat FetchData
 AutoNumber.by.UMAP <- function(obj = combined.obj,

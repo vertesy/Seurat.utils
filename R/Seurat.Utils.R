@@ -2118,7 +2118,7 @@ downsampleSeuObj.and.Save <- function(
 #' # Assuming `seuratObj` is a Seurat object with identities stored in its metadata
 #' sampledSeuratObj <- downsampleSeuObjByIdentAndMaxcells(obj = seuratObj, ident = "cellType", max.cells = 100)
 #'
-#' @importFrom CodeAndRoll2 as.named.vector.df
+#' @importFrom CodeAndRoll2 df.col.2.named.vector
 #'
 #' @export
 #'
@@ -2137,7 +2137,7 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
     max.cells < ncol(obj)
   )
 
-  data <- CodeAndRoll2::as.named.vector.df(obj[[ident]])
+  data <- CodeAndRoll2::df.col.2.named.vector(obj[[ident]])
   uniqueCategories <- unique(data)
 
   set.seed(seed)
@@ -2470,8 +2470,8 @@ downsampleListSeuObjsNCells <- function(
   } # else
   tictoc::toc()
 
-  print(head(unlapply(ls.obj, ncol)))
-  print(head(unlapply(ls.obj.downsampled, ncol)))
+  print(head(sapply(ls.obj, ncol)))
+  print(head(sapply(ls.obj.downsampled, ncol)))
 
   if (save_object) {
     isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = TRUE)
@@ -2532,10 +2532,10 @@ downsampleListSeuObjsPercent <- function(
   }
   tictoc::toc() # else
 
-  NrCells <- sum(unlapply(ls.obj, ncol))
+  NrCells <- sum(sapply(ls.obj, ncol))
 
-  print(head(unlapply(ls.obj, ncol)))
-  print(head(unlapply(ls.obj.downsampled, ncol)))
+  print(head(sapply(ls.obj, ncol)))
+  print(head(sapply(ls.obj.downsampled, ncol)))
   if (save_object) {
     isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = TRUE)
   } else {
@@ -3541,7 +3541,7 @@ CalculateFractionInTrome <- function(
 AddNewAnnotation <- function(
     obj = obj,
     source = "RNA_snn_res.0.5", named.list.of.identities = ls.Subset.ClusterLists) {
-  NewID <- as.named.vector.df(obj[[source]])
+  NewID <- df.col.2.named.vector(obj[[source]])
 
   for (i in 1:length(named.list.of.identities)) {
     lx <- as.character(named.list.of.identities[[i]])
@@ -3582,13 +3582,13 @@ whitelist.subset.ls.Seurat <- function(
     ls.obj = ls.Seurat,
     metadir = p$"cellWhiteList" #  '~/Dropbox/Abel.IMBA/MetadataD/POL.meta/cell.lists/'
     , whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv") {
-  cells.before <- unlapply(ls.obj, ncol)
+  cells.before <- sapply(ls.obj, ncol)
   # Find file
   df.cell.whitelist <- ReadWriter::read.simple.tsv(metadir, whitelist.file)
   dsets <- table(df.cell.whitelist[, 1])
 
   ls.orig.idents <- lapply(lapply(ls.Seurat, getMetadataColumn, ColName.metadata = "orig.ident"), unique)
-  stopif(any(unlapply(ls.orig.idents, l) == length(ls.Seurat)), message = "Some ls.Seurat objects have 1+ orig identity.")
+  stopif(any(sapply(ls.orig.idents, l) == length(ls.Seurat)), message = "Some ls.Seurat objects have 1+ orig identity.")
 
   dsets.in.lsSeu <- unlist(ls.orig.idents)
   isMathced <- all(dsets.in.lsSeu == names(dsets)) # Stop if either ls.Seurat OR the metadata has identities not found in the other, in the same order.
@@ -3613,7 +3613,7 @@ whitelist.subset.ls.Seurat <- function(
     # Extract and process cellIDs
     ls.obj[[i]] <- subset(x = ls.obj[[i]], cells = cell.whitelist)
   }
-  cells.after <- unlapply(ls.obj, ncol)
+  cells.after <- sapply(ls.obj, ncol)
   iprint("cells.before", cells.before, "cells.after", cells.after)
   return(ls.obj)
 }

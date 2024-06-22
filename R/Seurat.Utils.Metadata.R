@@ -131,7 +131,7 @@ metaColnameExists <- function(col_name, obj = combined.obj) {
 getMetadataColumn <- function(ColName.metadata = "batch", obj = combined.obj, as_numeric = FALSE) {
   stopifnot(ColName.metadata %in% colnames(obj@meta.data))
 
-  x <- as.named.vector.df(obj@meta.data[, ColName.metadata, drop = FALSE])
+  x <- df.col.2.named.vector(obj@meta.data[, ColName.metadata, drop = FALSE])
   if (as_numeric) {
     as.numeric.wNames(x) + 1
   } else {
@@ -692,7 +692,7 @@ seu.map.and.add.new.ident.to.meta <- function(
   # identities should match
   {
     Idents(obj) <- orig.ident
-    ident.vec <- as.named.vector.df(ident.table)
+    ident.vec <- df.col.2.named.vector(ident.table)
     ident.X <- names(ident.vec)
     ident.Y <- as.character(ident.vec)
     ident.Seu <- gtools::mixedsort(levels(Idents(obj)))
@@ -795,7 +795,7 @@ saveLsSeuratMetadata <- function(ls.obj, suffix) {
   message(length(ls.obj), " objects")
   ls.meta <- setNames(lapply(ls.obj, function(x) x@meta.data), names(ls.obj))
 
-  ncolz <- unique(unlapply(ls.meta, ncol))
+  ncolz <- unique(sapply(ls.meta, ncol))
   message(ncolz, " columns in meta.data")
   if (length(ncolz) > 1) warning("Different column counts across meta.data!", immediate. = TRUE)
   xsave(ls.meta, suffix = suffix)
