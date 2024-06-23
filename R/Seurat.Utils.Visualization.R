@@ -805,6 +805,7 @@ scBarplot.CellFractions <- function(
     sub_title = suffix,
     hlines = c(.25, .5, .75),
     return_table = FALSE,
+    save_table = TRUE,
     save_plot = TRUE,
     also.pdf = FALSE,
     seedNr = 1989,
@@ -939,13 +940,22 @@ scBarplot.CellFractions <- function(
 
     # Apply custom color palette if specified
     if (!isFALSE(custom_col_palette)) {
-      palette_x <- color_scale[seq(categories)]
-      message("palette: ", kppc(palette_x))
-      pl <- pl + scale_fill_manual(values = palette_x)
+      stopifnot("Length(custom_col_palette) should be >= nr. categories displayed." = length(custom_col_palette) >= n.categories)
+
+      all_categs_have_a_col <- all(categories %in% names(custom_col_palette))
+      if(all_categs_have_a_col) {
+        colz_manual <- custom_col_palette[categories]
+      } else {
+        colz_manual <- custom_col_palette[seq(categories)]
+      } # end if all_categs_have_a_col
+      pl <- pl + scale_fill_manual(values = colz_manual)
+
     } else if (rnd_colors) {
-      colzz <- sample(rainbow(n.categories))
-      pl <- pl + scale_fill_manual(values = colzz)
-    }
+      colz_manual <- sample(rainbow(n.categories))
+      pl <- pl + scale_fill_manual(values = colz_manual)
+    } # end if custom_col_palette / rnd_colors
+
+
 
     if (show_numbers) {
       pl <- pl + geom_text(aes(label = ..count..),
@@ -980,17 +990,23 @@ scBarplot.CellFractions <- function(
     } # save_plot
   } # draw_plot
 
+  # Compile contingency table and its frequencies
+  CT_freq_sc <- list(
+    "values" = contingency.table,
+    "percentages" = CodeAndRoll2::rowDivide(mat = contingency.table, vec = rowSums(contingency.table))
+  )
+
+  if (save_table) {
+    ReadWriter::write.simple.xlsx(CT_freq_sc, suffix = sppp(sfx, "fr.barplot"))
+  }
+
   # Return contingency table or plot based on return_table flag
   if (return_table) {
-    ls.tables <- list(
-      "values" = contingency.table,
-      "percentages" = CodeAndRoll2::rowDivide(mat = contingency.table, vec = rowSums(contingency.table))
-    )
-    return(ls.tables)
+    print(pl)
+    return(CT_freq_sc)
   } else {
-    # if(show_plot)
     return(pl)
-  } # else barplot
+  } # end if return_table
 }
 
 
