@@ -10,6 +10,7 @@ xread(
   loadParamsAndAllGenes = TRUE,
   overwriteParams = FALSE,
   overwriteAllGenes = FALSE,
+  set_m = TRUE,
   ...
 )
 }
@@ -17,6 +18,16 @@ xread(
 \item{file}{A character string specifying the path to the file where the R object is saved.}
 
 \item{nthreads}{The number of threads to use when reading the object, defaults to 4.}
+
+\item{loadParamsAndAllGenes}{Logical; if TRUE and if the object is a Seurat object, additional parameters
+are loaded from within it.}
+
+\item{overwriteParams}{Logical; if TRUE and if the object is a Seurat object, the parameters are overwritten.}
+
+\item{overwriteAllGenes}{Logical; if TRUE and if the object is a Seurat object, the all genes are overwritten.}
+
+\item{set_m}{Logical; if TRUE, the variable 'm', a list of @meta.data colnames, is assigned to
+the global environment.}
 
 \item{...}{Further arguments passed on to the 'qs::qread' function.}
 }

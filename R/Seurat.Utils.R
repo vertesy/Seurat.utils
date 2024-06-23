@@ -4640,14 +4640,21 @@ xsave <- function(
 #'
 #' @param file A character string specifying the path to the file where the R object is saved.
 #' @param nthreads The number of threads to use when reading the object, defaults to 4.
+#' @param loadParamsAndAllGenes Logical; if TRUE and if the object is a Seurat object, additional parameters
+#' are loaded from within it.
+#' @param overwriteParams Logical; if TRUE and if the object is a Seurat object, the parameters are overwritten.
+#' @param overwriteAllGenes Logical; if TRUE and if the object is a Seurat object, the all genes are overwritten.
+#' @param set_m Logical; if TRUE, the variable 'm', a list of @meta.data colnames, is assigned to
+#' the global environment.
 #' @param ... Further arguments passed on to the 'qs::qread' function.
+#'
 #' @return The R object that was saved in the specified file.
 #' @note The function uses the 'qs' package for fast and efficient deserialization of objects
 #' and includes a timing feature from the 'tictoc' package.
+#'
 #' @seealso \code{\link[qs]{qread}} for the underlying read function used.
 #' @importFrom qs qread
 #' @importFrom tictoc tic toc
-#' @importFrom job job
 #' @importFrom rstudioapi isAvailable
 #'
 #' @export
@@ -4655,27 +4662,14 @@ xread <- function(file, nthreads = 4,
                   loadParamsAndAllGenes = TRUE,
                   overwriteParams = FALSE,
                   overwriteAllGenes = FALSE,
+                  set_m = TRUE,
                   ...) {
   stopifnot(file.exists(file))
 
   message(nthreads, " threads.")
   try(tictoc::tic(), silent = TRUE)
 
-
-  # if (background_job & rstudioapi::isAvailable()) {
-  #   "This part is not debugged yet!"
-  #   "This part is not debugged yet!"
-  #
-  #   message("Started reading in as background job.")
-  #   job::job(
-  #     {
-  #       qs::qread(file = file, nthreads = nthreads, ...)
-  #     },
-  #     import = c("file", "nthreads")
-  #   )
-  # } else {
   obj <- qs::qread(file = file, nthreads = nthreads, ...)
-  # }
 
   report <- if (is(obj, "Seurat")) {
     kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "meta colums.")
@@ -4702,8 +4696,18 @@ xread <- function(file, nthreads = 4,
       } else {
         recall.all.genes(obj = obj, overwrite = overwriteAllGenes)
       }
-    }
-  }
+    } # loadParamsAndAllGenes
+
+    if (set_m) {
+      # if (!exists("m")) {
+        m <- list.fromNames(colnames(obj@meta.data))
+        assign("m", m, envir = .GlobalEnv)
+        message("Variable 'm', a list of @meta.data colnames, is now defined in the global environment.")
+      # } else {
+      #   message("Variable 'm' already exists in the global environment, not overwritten")
+      # } # exists("m")
+    } # set_m
+  } # Seurat
 
 
   iprint(is(obj)[1], report)
