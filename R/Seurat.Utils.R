@@ -4701,9 +4701,9 @@ xread <- function(file, nthreads = 4,
     if (set_m) {
       # if (!exists("m")) {
         # m <- list.fromNames(colnames(obj@meta.data))
-        m <- lapply(data.frame(obj@meta.data), function(x) head(unique(x), 100))
+        m <- lapply(data.frame(obj@meta.data), function(x) head(unique(x), 50))
         assign("m", m, envir = .GlobalEnv)
-        message("Variable 'm', a list of @meta.data colnames and first 100 uq values, is now defined in the global environment.")
+        message("Variable 'm', a list of @meta.data colnames and first 50 uq values, is now defined in the global environment.")
       # } else {
       #   message("Variable 'm' already exists in the global environment, not overwritten")
       # } # exists("m")

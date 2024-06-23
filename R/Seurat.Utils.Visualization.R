@@ -937,9 +937,8 @@ scBarplot.CellFractions <- function(
       scale_y_continuous(limits = c(0, 1), expand = expansion(mult = c(0, 0.1))) +
       theme(axis.text.x = element_text(angle = xlab.angle, hjust = 1))
 
-
     # Apply custom color palette if specified
-    if (custom_col_palette) {
+    if (!isFALSE(custom_col_palette)) {
       palette_x <- color_scale[seq(categories)]
       message("palette: ", kppc(palette_x))
       pl <- pl + scale_fill_manual(values = palette_x)
@@ -1530,7 +1529,8 @@ getDiscretePaletteObj <- function(ident.used,
     is.character(palette.used), is.logical(show.colors), is.numeric(seed)
   )
 
-  n.clusters <- CodeAndRoll2::nr.unique(obj[[ident.used]])
+  categs <- unique(unlist(obj[[ident.used]]))
+  n.clusters <- length(categs)
 
   colorz <- DiscretePaletteSafe(
     n = n.clusters,
@@ -1538,6 +1538,7 @@ getDiscretePaletteObj <- function(ident.used,
     show.colors = show.colors,
     seed = seed
   )
+  names(colorz) <- categs
 
   return(colorz)
 }
