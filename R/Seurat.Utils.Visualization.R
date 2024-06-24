@@ -583,6 +583,7 @@ PctCellsAboveX <- function(obj = combined.obj,
                            omit.na = TRUE,
                            assay = 'RNA',
                            plot = TRUE,
+                           caption = NULL,
                            ylab = "% cells above threshold",
                            # color = NULL,
                            ...) {
@@ -592,7 +593,8 @@ PctCellsAboveX <- function(obj = combined.obj,
     feature %in% colnames(obj@meta.data) | feature %in% Features(obj, assay = assay),
     ident %in% colnames(obj@meta.data),
     is.null(subset_ident) | subset_ident %in% colnames(obj@meta.data),
-    is.null(subset_values) | subset_values %in% unique(obj@meta.data[ ,subset_ident])
+    is.null(subset_values) | subset_values %in% unique(obj@meta.data[ ,subset_ident]),
+    !box & is.null(ident.box) | box
   )
 
   if (!is.null(subset_ident)) {
@@ -606,7 +608,6 @@ PctCellsAboveX <- function(obj = combined.obj,
 
   # Calculate the percentage of cells above the threshold for each split_ident
   Fraction.of.Cells.Above.Threshold <- sapply(ls_feat, function(x) sum(x > threshold) / length(x))
-
 
   if(box) {
 
@@ -624,7 +625,8 @@ PctCellsAboveX <- function(obj = combined.obj,
 
 
   if(plot){
-    CPT <- pc_TRUE(is.na(Fraction.of.Cells.Above.Threshold), suffix = "of idents yielded NA/NaN & exluded from plot.")
+    if(is.null(caption)) caption <- pc_TRUE(is.na(Fraction.of.Cells.Above.Threshold),
+                                            suffix = "of idents yielded NA/NaN & exluded from plot.")
     TTL <- paste("Percentage of Cells Above Threshold for", feature)
     STL <- paste("Cells above threshold for", feature, "above", threshold)
     SFX <- ppp(feature, "by", ident, "thr", threshold, "subset_ident", subset_ident, suffix)
@@ -632,18 +634,21 @@ PctCellsAboveX <- function(obj = combined.obj,
     Fraction.of.Cells.Above.Threshold <- na.omit.strip(Fraction.of.Cells.Above.Threshold)
 
     if(box) {
+
       pobj <- qboxplot(ls.Fraction.of.Cells.Above.Threshold,
-                       plotname = TTL, subtitle = STL, caption = CPT, suffix = SFX,
-                       add = "dotplot", xlab.angle = 45,
-                       hide.legend = TRUE,
-                       # ,ylab = ylab, xlab = ident,
-                       ...)
+                       , plotname = TTL, subtitle = STL, caption = caption, suffix = SFX
+                       , add = "dotplot", xlab.angle = 45
+                       , hide.legend = TRUE,
+                       , ylab = ylab
+                       # , xlab = ident
+                       , ...)
 
     } else { "barplot"
       pobj <- qbarplot(Fraction.of.Cells.Above.Threshold, label = percentage_formatter(Fraction.of.Cells.Above.Threshold),
-                       plotname = TTL, subtitle = STL, caption = CPT, suffix = SFX,
-                       ylab = ylab, xlab = ident,
-                       ...)
+                       plotname = TTL, subtitle = STL, caption = caption, suffix = SFX,
+                       ylab = ylab
+                       # , xlab = ident
+                       , ...)
     }
 
 
@@ -3130,7 +3135,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 #'
 #' @param toptable A data frame with the results of differential gene expression analysis.
 #' @param lab A vector of gene symbols to label on the plot.
-#' @param suffix A string to append to the title of the plot.
+#' @param suffix A string to append to the filename/title of the plot.
 #' @param title The title of the plot.
 #' @param subtitle The subtitle of the plot.
 #' @param x The x-axis, which is typically the average log2 fold change.
@@ -3159,7 +3164,7 @@ scEnhancedVolcano <- function(
     x = "avg_log2FC",
     y = "p_val_adj",
     lab = rownames(toptable),
-    suffix = "",
+    suffix = NULL,
     title = paste("DGEA"),
     caption = paste("Min. Fold Change in Input:", .estMinimumFC(toptable)),
     caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
@@ -3180,8 +3185,6 @@ scEnhancedVolcano <- function(
           "\nMin. pct cells expressing: ", min.pct.cells)
   stopifnot(nrow(toptable) >5)
 
-  cat(1)
-
 
   # Filter min. cells expressing.
   toptable <- toptable |> dplyr::filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
@@ -3192,7 +3195,7 @@ scEnhancedVolcano <- function(
   # Clip p-values.
   toptable[["p_val_adj"]] <-
     clip.at.fixed.value(distribution = toptable[["p_val_adj"]], thr = min.p, high = F)
-  cat(2)
+
   # Clip log2FC.
   if (max.l2fc < Inf) {
     toptable[["avg_log2FC"]] <-
@@ -3211,7 +3214,6 @@ scEnhancedVolcano <- function(
                              " |  min.pct.cells: ", min.pct.cells))
   }
   caption <- paste0(caption, "\n", caption2)
-  cat(4)
 
   # Create an enhanced volcano plot.
   # try.dev.off();
@@ -3227,10 +3229,11 @@ scEnhancedVolcano <- function(
     , drawConnectors=drawConnectors
     , max.overlaps = max.overlaps
     , ...)
-  cat(5)
+
   print(pobj)
   # Save the plot.
-  qqSave(ggobj = pobj, title = paste0("Volcano.", make.names(title)), h = h, w = w)
+  qqSave(ggobj = pobj, title = paste0("Volcano.", make.names(title), suffix),
+         h = h, w = w)
   return(pobj)
 }
 
@@ -3428,13 +3431,14 @@ scGOEnrichment <- function(genes, universe = NULL,
 scBarplotEnrichr <- function(df.enrichment,
                              tag = "...",
                              universe = NULL,
-                             title = paste(tag, "GO Enrichment Analysis"),
+                             title = paste("GO Enriched Terms", tag),
                              subtitle = kppws("Input: ", substitute(df.enrichment)),
                              caption = paste0("Input genes: ", length(df.enrichment@'gene'),
                                               " | Enriched terms: ", nrow(df.enrichment),
                                               " | background genes: ", length(universe) ),
                              save = TRUE,
-                             w = 12, h = 8,
+                             w = 10, h = 10,
+                             also.pdf = F,
                              ...) {
 
   if(tag == "...") warning("Please provide a tag describing where are the enrichments.", immediate. = TRUE)
@@ -3456,7 +3460,7 @@ scBarplotEnrichr <- function(df.enrichment,
   pobj <- pobj + ggplot2::labs(title = title, subtitle = subtitle, caption = caption)
 
   if (save) {
-    qqSave(pobj, title = title, w = w, h = h)
+    qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf)
   }
 
   return(pobj)
