@@ -4,10 +4,19 @@
 \alias{.getRegressionVariablesForScaleData}
 \title{Parse regression variables for name tagging}
 \usage{
-.getRegressionVariablesForScaleData(obj, assay = DefaultAssay(obj), ...)
+.getRegressionVariablesForScaleData(
+  obj,
+  assay = Seurat::DefaultAssay(obj),
+  v = TRUE,
+  ...
+)
 }
 \arguments{
 \item{obj}{A Seurat object}
+
+\item{assay}{The name of the assay to search for scaled data. Default: \code{DefaultAssay()}.}
+
+\item{v}{Verbose? Default: \code{TRUE}.}
 }
 \value{
 Integer representing the number of principal components

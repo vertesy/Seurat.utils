@@ -5481,21 +5481,29 @@ compareVarFeaturesAndRanks <- function(
 #'
 #' @param obj A Seurat object containing scaled data in  `obj@assays$RNA@scale.data`.
 #' @param assay The name of the assay to search for scaled data. Default: `RNA`.
+#' @param v Verbose? Default: `TRUE`.
 #'
 #' @return Integer representing the number of scaled features
-.getNrScaledFeatures <- function(obj, assay = Seurat::DefaultAssay(obj)) {
+.getNrScaledFeatures <- function(obj, assay = Seurat::DefaultAssay(obj), v = TRUE) {
   message(" > Running .getNrScaledFeatures...")
   message("Seurat version: ", obj@version, " | Assay searched: ", assay)
 
-  # !!! Below may have been necessary bc of a bug in version 5.0.0
-  if (obj@version >= 5) {
-    if ("scale.data" %in% Layers(obj, assay = assay) ) {
-      mx.scale.data <- LayerData(obj, assay = "RNA", layer = "scale.data")
-      nrow(mx.scale.data)
+  layers.found <- Layers(obj, assay = assay)
+  if("scale.data" %in% layers.found) {
+    # !!! Below may have been necessary bc of a bug in version 5.0.0
+    if (obj@version >= 5) {
+      if ("scale.data" %in% Layers(obj, assay = assay) ) {
+        mx.scale.data <- LayerData(obj, assay = "RNA", layer = "scale.data")
+        res <- nrow(mx.scale.data)
+      }
+    } else {
+      res <- nrow(obj@assays[[assay]]@"scale.data")
     }
   } else {
-    nrow(obj@assays[[assay]]@"scale.data")
+    if(v) warning("No scaled data found in object.", immediate. = TRUE)
+    res <- NA
   }
+
 }
 
 
@@ -5503,9 +5511,16 @@ compareVarFeaturesAndRanks <- function(
 #' @title Get number of principal components
 #'
 #' @param obj A Seurat object containing PCA cell embeddings in `reductions$pca@cell.embeddings`
+#' @param v Verbose? Default: `TRUE`.
 #' @return Integer representing the number of principal components
-.getNrPCs <- function(obj) {
-  ncol(obj@reductions$pca@"cell.embeddings")
+#'
+.getNrPCs <- function(obj, v = TRUE) {
+  if("pca" %in% names(obj@reductions)) {
+    ncol(obj@reductions$pca@"cell.embeddings")
+  } else {
+    if(v) warning("No PCA cell embeddings found in object.", immediate. = TRUE)
+    NA
+  }
 }
 
 # _________________________________________________________________________________________________
@@ -5514,41 +5529,54 @@ compareVarFeaturesAndRanks <- function(
 #' @description This function extracts the regression variables from the `@commands` slot of a Seurat object.
 #' If no regression variables are found, a message is printed.
 #' @param obj A Seurat object
-# #' @param element element to extract from the list
-# #' @param p list of parameters
-
+#' @param assay The name of the assay to search for scaled data. Default: `DefaultAssay()`.
+#' @param v Verbose? Default: `TRUE`.
+#'
 #' @return Integer representing the number of principal components
-.getRegressionVariablesForScaleData <- function(obj, assay = DefaultAssay(obj),
+.getRegressionVariablesForScaleData <- function(obj, assay = Seurat::DefaultAssay(obj),
+                                                v = TRUE,
                                                 # element = "variables.2.regress.combined", par.list = p
                                                 ...) {
-  stopifnot(is(obj, "Seurat"))
 
-  func_slot <- grepv(x = names(obj@commands), pattern = "^ScaleData")
-  message("Slot: ", paste(func_slot))
+  if(v) message(" > Running ..getRegressionVariablesForScaleData...")
+  stopifnot(
+    is(obj, "Seurat"),
+    is.character(assay)
+    )
 
-  if(is.null(func_slot)) {
-    message("No ScaleData slot found in @commands")
-    stop()
-  } else if(length(func_slot) > 1) {
-    func_slot <- grepv(x = func_slot, pattern = assay)
-    message("Multiple ScaleData slots found in @commands.")
-  }
-  message("Searching for parameters is command: ", func_slot[length(func_slot)])
-
-  # Extract regression variables
-  regressionVariables <- obj@commands[[func_slot]]$'vars.to.regress'
-
-  if (is.null(regressionVariables)) {
-    message("No regression variables found in @commands")
+  if(!"commands" %in% slotNames(obj)) {
+    if(v) warning("No commands slot found in object.", immediate. = TRUE)
+    return(NULL)
   } else {
-    message("regressionVariables found in @commands:", regressionVariables)
-  }
+    commands.found <- names(obj@commands)
+    if(is.null(commands.found)) {
+      if(v) warning("Commands slot in object is empty.", immediate. = TRUE)
+      return(NULL)
+    } else {
+      func_slot <- CodeAndRoll2::grepv(x = names(obj@commands), pattern = "^ScaleData")
+      if(v) message("Function: ", paste(func_slot))
 
-  return(regressionVariables)
+      if(is.null(func_slot)) {
+        message("No ScaleData slot found in @commands")
+        stop()
+      } else if(length(func_slot) > 1) {
+        func_slot <- grepv(x = func_slot, pattern = assay)
+        if(v) message("Multiple ScaleData slots found in @commands.")
+      }
+      if(v) message("Searching for parameters is command: ", func_slot[length(func_slot)])
 
-  # (regV <- par.list[[element]])
-  # txt <- if (is.null(regV)) "No.Regr" else kpp("Regr", regV)
-  # return(txt)
+      # Extract regression variables
+      regressionVariables <- obj@commands[[func_slot]]$'vars.to.regress'
+
+      if (is.null(regressionVariables)) {
+        if(v) message("No regression variables found in @commands")
+      } else {
+        if(v) message("regressionVariables found in @commands:", regressionVariables)
+      }
+
+      return(regressionVariables)
+    } # end if is.null(commands.found)
+  } # end if slotNames
 }
 
 
@@ -5575,10 +5603,11 @@ compareVarFeaturesAndRanks <- function(
                             assay = Seurat::DefaultAssay(obj),
                             suffix = NULL) {
   #
+  # browser()
   message(" > Running .parseKeyParams...")
   scaledFeatures <- .getNrScaledFeatures(obj, assay)
 
-  if (is.null(regressionVariables)) regressionVariables <- .getRegressionVariablesForScaleData(obj)
+  if (is.null(regressionVariables)) regressionVariables <- .getRegressionVariablesForScaleData(obj = obj, assay = assay)
 
   if (!is.null(nrVarFeatures)) {
     if (nrVarFeatures != scaledFeatures) {
@@ -5596,7 +5625,6 @@ compareVarFeaturesAndRanks <- function(
   } else {
     tag <- paste0(scaledFeatures, " ScaledFeatures | ", pcs, " PCs | ", reg, " ", suffix)
   }
-
   return(tag)
 }
 

@@ -17,6 +17,7 @@ PctCellsAboveX(
   omit.na = TRUE,
   assay = "RNA",
   plot = TRUE,
+  caption = NULL,
   ylab = "\% cells above threshold",
   ...
 )

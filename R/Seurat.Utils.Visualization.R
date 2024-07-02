@@ -2162,10 +2162,16 @@ clUMAP <- function(
     save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     check_for_2D = TRUE,
-    caption = .parseKeyParams(obj = obj),
+    caption = try(.parseKeyParams(obj = obj), silent = T),
     # caption = NULL,
     ...) {
   #
+
+  stopifnot(
+    is.character(caption),
+    is.logical(save.plot),
+    is.character(suffix)
+    )
 
   if (is.null(ident)) {
     ident <- GetNamedClusteringRuns(obj = obj, v = F)[1]
@@ -2185,7 +2191,6 @@ clUMAP <- function(
   identity <- obj[[ident]]
   NtCategs <- length(unique(identity[, 1]))
   if (NtCategs > 1000) warning("More than 1000 levels! qUMAP?", immediate. = TRUE)
-
 
   if (!missing(highlight.clusters)) {
     if (!(all(highlight.clusters %in% identity[, 1]))) {
@@ -2208,6 +2213,7 @@ clUMAP <- function(
   } else {
     highlight.these <- NULL
   }
+
   if (!missing(cells.highlight)) {
     highlight.these <- cells.highlight
     message("Highlighting ", length(highlight.these), " cells, e.g.: ", head(highlight.these))
@@ -2247,9 +2253,9 @@ clUMAP <- function(
         if (!legend) NoLegend() else NULL
     }
 
-    if (is.null(axes)) gg.obj <- gg.obj + NoAxes()
-    if (!is.null(caption)) gg.obj <- gg.obj + labs(caption = caption)
-    if (!is.null(legend.pos)) gg.obj <- gg.obj + theme(legend.position = legend.pos)
+    if (is.null(axes)) gg.obj <- gg.obj + Seurat::NoAxes()
+    if (!is.null(caption)) gg.obj <- gg.obj + ggplot2::labs(caption = caption)
+    if (!is.null(legend.pos)) gg.obj <- gg.obj + ggplot2::theme(legend.position = legend.pos)
     if (aspect.ratio) gg.obj <- gg.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
     if (legend) suffix <- paste0(suffix, ".lgnd")
 

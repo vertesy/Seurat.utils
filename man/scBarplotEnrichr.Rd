@@ -8,13 +8,14 @@ scBarplotEnrichr(
   df.enrichment,
   tag = "...",
   universe = NULL,
-  title = paste(tag, "GO Enrichment Analysis"),
+  title = paste("GO Enriched Terms", tag),
   subtitle = kppws("Input: ", substitute(df.enrichment)),
   caption = paste0("Input genes: ", length(df.enrichment@gene), " | Enriched terms: ",
     nrow(df.enrichment), " | background genes: ", length(universe)),
   save = TRUE,
-  w = 12,
-  h = 8,
+  w = 10,
+  h = 10,
+  also.pdf = F,
   ...
 )
 }

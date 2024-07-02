@@ -16,6 +16,7 @@ scBarplot.CellFractions(
   sub_title = suffix,
   hlines = c(0.25, 0.5, 0.75),
   return_table = FALSE,
+  save_table = TRUE,
   save_plot = TRUE,
   also.pdf = FALSE,
   seedNr = 1989,

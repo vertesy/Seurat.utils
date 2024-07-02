@@ -4,10 +4,12 @@
 \alias{.getNrPCs}
 \title{Get number of principal components}
 \usage{
-.getNrPCs(obj)
+.getNrPCs(obj, v = TRUE)
 }
 \arguments{
 \item{obj}{A Seurat object containing PCA cell embeddings in \code{reductions$pca@cell.embeddings}}
+
+\item{v}{Verbose? Default: \code{TRUE}.}
 }
 \value{
 Integer representing the number of principal components

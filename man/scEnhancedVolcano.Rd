@@ -9,7 +9,7 @@ scEnhancedVolcano(
   x = "avg_log2FC",
   y = "p_val_adj",
   lab = rownames(toptable),
-  suffix = "",
+  suffix = NULL,
   title = paste("DGEA"),
   caption = paste("Min. Fold Change in Input:", .estMinimumFC(toptable)),
   caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
@@ -37,7 +37,7 @@ scEnhancedVolcano(
 
 \item{lab}{A vector of gene symbols to label on the plot.}
 
-\item{suffix}{A string to append to the title of the plot.}
+\item{suffix}{A string to append to the filename/title of the plot.}
 
 \item{title}{The title of the plot.}
 
