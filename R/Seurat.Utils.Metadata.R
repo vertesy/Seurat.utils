@@ -46,19 +46,11 @@ addTranslatedMetadata <- function(obj = combined.obj,
 
   # Translate metadata
   obj@meta.data[[new_col_name]] <- CodeAndRoll2::translate(vec = as.character(obj@meta.data[[orig.ident]]),
-                                   oldvalues = names(translation_as_named_vec),
-                                   newvalues = translation_as_named_vec)
-  # Output assertions
-  # stopifnot(is(obj, "Seurat")
-  #           # new_col_name %in% colnames(obj@meta.data)
-  #           )
+                                   to = names(translation_as_named_vec),
+                                   from = translation_as_named_vec)
 
-  # Generate UMAP plots
   # message("new_col_name: ", new_col_name)
   # clUMAP(ident = new_col_name, obj = obj, caption = NULL, ...)
-  # clUMAP(ident = new_col_name, obj = obj, caption = NULL, ...)
-  # cat(3)
-
   return(obj)
 }
 
@@ -716,7 +708,7 @@ seu.map.and.add.new.ident.to.meta <- function(
   }
   # identity mapping
   {
-    new.ident <- translate(vec = as.character(Idents(obj)), oldvalues = ident.X, newvalues = ident.Y)
+    new.ident <- translate(vec = as.character(Idents(obj)), to = ident.X, from = ident.Y)
     obj@meta.data[[metaD.colname]] <- new.ident
     iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:")
     cat(paste0("\t", ident.Y, "\n"))

@@ -1720,8 +1720,8 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = FA
   } else {
     translate(
       vec = as.character(ident.vec),
-      oldvalues = levels(ident.vec),
-      newvalues = colorlevels
+      to = levels(ident.vec),
+      from = colorlevels
     )
   }
 }
@@ -2170,7 +2170,7 @@ clUMAP <- function(
   stopifnot(
     is.character(caption),
     is.logical(save.plot),
-    is.character(suffix)
+    is.character(suffix) | is.null(suffix)
     )
 
   if (is.null(ident)) {
@@ -3113,7 +3113,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 
   OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
   NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
-  NewMeta <- translate(vec = identX, oldvalues = OldLabel, newvalues = NewLabel)
+  NewMeta <- translate(vec = identX, to = OldLabel, from = NewLabel)
   NewMetaCol <- kpp(ident, "ordered")
   iprint("NewMetaCol:", NewMetaCol)
 

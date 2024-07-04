@@ -1075,8 +1075,8 @@ RenameClustering <- function(
 
   NewX <- translate(
     vec = as.character(obj@meta.data[, orig.ident]),
-    oldvalues = names(namedVector),
-    newvalues = namedVector
+    to = names(namedVector),
+    from = namedVector
   )
 
   obj <- AddMetaData(object = obj, metadata = NewX, col.name = new.ident)
@@ -3546,7 +3546,7 @@ AddNewAnnotation <- function(
   for (i in 1:length(named.list.of.identities)) {
     lx <- as.character(named.list.of.identities[[i]])
     name.lx <- names(named.list.of.identities)[i]
-    NewID <- translate(vec = NewID, oldvalues = lx, newvalues = name.lx)
+    NewID <- translate(vec = NewID, to = lx, from = name.lx)
   }
   print(table(NewID))
   return(NewID)
@@ -5538,7 +5538,7 @@ compareVarFeaturesAndRanks <- function(
                                                 # element = "variables.2.regress.combined", par.list = p
                                                 ...) {
 
-  if(v) message(" > Running ..getRegressionVariablesForScaleData...")
+  if(v) message(" > Running .getRegressionVariablesForScaleData...")
   stopifnot(
     is(obj, "Seurat"),
     is.character(assay)
