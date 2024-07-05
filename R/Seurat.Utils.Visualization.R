@@ -1718,10 +1718,10 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = FA
   if (simple) {
     colorlevels
   } else {
-    translate(
+    CodeAndRoll2::translate(
       vec = as.character(ident.vec),
-      to = levels(ident.vec),
-      from = colorlevels
+      old = levels(ident.vec),
+      new = colorlevels
     )
   }
 }
@@ -3113,7 +3113,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 
   OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
   NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
-  NewMeta <- translate(vec = identX, to = OldLabel, from = NewLabel)
+  NewMeta <- CodeAndRoll2::translate(vec = identX, old = OldLabel, new = NewLabel)
   NewMetaCol <- kpp(ident, "ordered")
   iprint("NewMetaCol:", NewMetaCol)
 

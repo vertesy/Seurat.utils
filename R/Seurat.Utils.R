@@ -266,7 +266,7 @@ runDGEA <- function(obj,
 
   if (clean.misc.slot) {
     message("Erasing up the misc slot: df.markers and top.markers.resX")
-    obj@misc$'df.markers' <- NULL
+    # obj@misc$'df.markers' <- NULL
     topMslots <- grepv("top.markers.res", names(obj@misc))
     obj@misc[topMslots] <- NULL
   }
@@ -1073,10 +1073,10 @@ RenameClustering <- function(
     plot_umaps = TRUE,
     ...) {
 
-  NewX <- translate(
+  NewX <- CodeAndRoll2::translate(
     vec = as.character(obj@meta.data[, orig.ident]),
-    to = names(namedVector),
-    from = namedVector
+    old = names(namedVector),
+    new = namedVector
   )
 
   obj <- AddMetaData(object = obj, metadata = NewX, col.name = new.ident)
@@ -3546,7 +3546,7 @@ AddNewAnnotation <- function(
   for (i in 1:length(named.list.of.identities)) {
     lx <- as.character(named.list.of.identities[[i]])
     name.lx <- names(named.list.of.identities)[i]
-    NewID <- translate(vec = NewID, to = lx, from = name.lx)
+    NewID <- CodeAndRoll2::translate(vec = NewID, old = lx, new = name.lx)
   }
   print(table(NewID))
   return(NewID)
