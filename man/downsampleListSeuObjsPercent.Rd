@@ -7,6 +7,7 @@
 downsampleListSeuObjsPercent(
   ls.obj = ls.Seurat,
   fraction = 0.1,
+  seed = 1989,
   save_object = FALSE
 )
 }

@@ -2506,7 +2506,9 @@ downsampleListSeuObjsNCells <- function(
 #' @importFrom foreach foreach %dopar% getDoParRegistered
 #'
 downsampleListSeuObjsPercent <- function(
-    ls.obj = ls.Seurat, fraction = 0.1,
+    ls.obj = ls.Seurat,
+    fraction = 0.1,
+    seed = 1989,
     save_object = FALSE) {
   # Check if 'ls_obj' is a list of Seurat objects and 'obj_IDs' is a character vector of the same length
   if (!is.list(ls.obj) & inherits(ls.obj, "Seurat")) ls.obj <- list(ls.obj)
@@ -2527,7 +2529,7 @@ downsampleListSeuObjsPercent <- function(
     for (i in 1:n.datasets) {
       cells <- round(ncol(ls.obj[[1]]) * fraction)
       iprint(names(ls.obj)[i], cells, "cells=", Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
-      ls.obj.downsampled[[i]] <- downsampleSeuObj(obj = ls.obj[[i]], fractionCells = fraction)
+      ls.obj.downsampled[[i]] <- downsampleSeuObj(obj = ls.obj[[i]], fractionCells = fraction, seed = seed)
     }
   }
   tictoc::toc() # else

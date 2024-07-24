@@ -52,27 +52,45 @@
 #' @export
 PlotFilters <- function(
     ls.obj = ls.Seurat,
+    par.ls = p,
     parentdir = OutDirOrig,
     suffices = names(ls.obj),
     filetype = ".png",
-    below.mito = p$"thr.lp.mito",
-    above.mito = p$"thr.hp.mito",
-    below.ribo = p$"thr.lp.ribo",
-    above.ribo = p$"thr.hp.ribo",
-    below.nFeature_RNA = if ("quantile.thr.lp.nFeature_RNA" %in% names(p)) p$"quantile.thr.lp.nFeature_RNA" else p$"thr.lp.nFeature_RNA",
-    above.nFeature_RNA = p$"thr.hp.nFeature_RNA",
+    below.mito = par.ls$"thr.lp.mito",
+    above.mito = par.ls$"thr.hp.mito",
+    below.ribo = par.ls$"thr.lp.ribo",
+    above.ribo = par.ls$"thr.hp.ribo",
+    below.nFeature_RNA = if ("quantile.thr.lp.nFeature_RNA" %in% names(par.ls)) par.ls$"quantile.thr.lp.nFeature_RNA" else par.ls$"thr.lp.nFeature_RNA",
+    above.nFeature_RNA = par.ls$"thr.hp.nFeature_RNA",
     subdir = Stringendo::FixPlotName(
       "Filtering.plots",
-      "mito", p$"thr.hp.mito", p$"thr.lp.mito",
-      "ribo", p$"thr.hp.ribo", p$"thr.lp.ribo",
-      "nFeature", p$"thr.hp.nFeature_RNA", below.nFeature_RNA
+      "mito", par.ls$"thr.hp.mito", par.ls$"thr.lp.mito",
+      "ribo", par.ls$"thr.hp.ribo", par.ls$"thr.lp.ribo",
+      "nFeature", below.nFeature_RNA, above.nFeature_RNA
     ),
     transparency = 0.25,
     cex = 0.75,
     theme.used = theme_bw(base_size = 18),
     LabelDistFromTop = 200 # for barplot_label
     ) {
-  stopif(is.null(below.nFeature_RNA))
+  message("Expects a list of Seurat objects, `ls.obj` with names, and a list of parameters, `par.ls` with a defined structure.")
+
+  # Create names based on the Seurat objects, catenating "dataset" and numbers 1:n
+  if(is.null(suffices)) {
+    suffices <- paste0("obj_", 1:length(ls.obj))
+    message("Provide suffixes unique to each dataset, ideally as names of the list of Seu objects!")
+  }
+
+  stopifnot(
+    is.list(ls.obj), is.list(par.ls) | is.null(par.ls),
+    is.numeric(above.nFeature_RNA), is.numeric(below.nFeature_RNA),
+    (below.nFeature_RNA > above.nFeature_RNA) | below.nFeature_RNA < 1, # either an absolute feature count or a quantile
+    is.numeric(above.mito), is.numeric(below.mito), below.mito > above.mito,
+    is.numeric(above.ribo), is.numeric(below.ribo), below.ribo > above.ribo,
+    is.character(parentdir), is.character(subdir), is.character(filetype), is.numeric(transparency), is.numeric(cex),
+    is.character(suffices), length(suffices) == length(ls.obj)
+    )
+
   MarkdownHelpers::llprint(
     "We filtered for high quality cells based on the number of genes detected [", above.nFeature_RNA, ";", below.nFeature_RNA,
     "] and the fraction of mitochondrial [", Stringendo::percentage_formatter(above.mito), ";", Stringendo::percentage_formatter(below.mito),
@@ -81,9 +99,9 @@ PlotFilters <- function(
 
   theme_set(theme.used)
   OutDir <- Stringendo::FixPath(parentdir, subdir)
-  # print(OutDir)
+
   print(subdir)
-  # stop()
+
   MarkdownReports::create_set_OutDir(OutDir)
   stopifnot(length(suffices) == length(ls.obj))
 
@@ -124,15 +142,17 @@ PlotFilters <- function(
 
     A <- ggplot(data = mm, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
       geom_histogram(binwidth = 100) +
-      ggtitle(paste("Cells between", above.nFeature_RNA, "and", below.nFeature_RNA, " UMIs are selected (", pc_TRUE(filt.nFeature_RNA), ")")) +
+      ggtitle(paste("Cells between", above.nFeature_RNA, "and", below.nFeature_RNA,
+                    " UMIs are selected \n(", pc_TRUE(filt.nFeature_RNA), ")")) +
       geom_vline(xintercept = below.nFeature_RNA) +
-      geom_vline(xintercept = above.nFeature_RNA)
+      geom_vline(xintercept = above.nFeature_RNA) +
+      theme(legend.position = "top")
     # A
 
     B <- ggplot2::ggplot(mm, aes(x = nFeature_RNA, y = percent.mito)) +
       ggplot2::ggtitle(paste(
         "Cells below", Stringendo::percentage_formatter(below.mito),
-        "mito reads are selected (with A:", pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")"
+        "mito reads are selected \n(with A:", pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")"
       )) +
       ggplot2::geom_point(
         alpha = transparency, size = cex, show.legend = FALSE,
@@ -149,7 +169,7 @@ PlotFilters <- function(
     C <- ggplot(mm, aes(x = nFeature_RNA, y = percent.ribo)) +
       ggtitle(paste(
         "Cells below", Stringendo::percentage_formatter(below.ribo),
-        "ribo reads are selected (with A:",
+        "ribo reads are selected \n(with A:",
         pc_TRUE(filt.nFeature_RNA & filt.below.ribo), ")"
       )) +
       geom_point(
@@ -166,7 +186,7 @@ PlotFilters <- function(
 
     D <- ggplot(mm, aes(x = percent.ribo, y = percent.mito)) +
       ggtitle(paste(
-        "Cells w/o extremes selected (with A,B,C:",
+        "Cells w/o extremes selected \n(with A,B,C:",
         pc_TRUE(filt.nFeature_RNA & filt.below.mito & filt.below.ribo), ")"
       )) +
       geom_point(
@@ -183,14 +203,15 @@ PlotFilters <- function(
     # D
 
     plot_list <- list(A, B, C, D)
-    px <- cowplot::plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:4])
+    px <- cowplot::plot_grid(plotlist = plot_list, nrow = 2, ncol = 2,
+                             labels = LETTERS[1:4], label_size = 20)
     fname <- kpps(OutDir, FixPlotName("Filtering.thresholds", suffices[i], filetype))
-    # print(fname)
-    cowplot::save_plot(filename = fname, plot = px, base_height = 12, ncol = 1, nrow = 1) # Figure 2
+
+    cowplot::save_plot(filename = fname, plot = px, base_height = 14, ncol = 1, nrow = 1) # Figure 2
     stopifnot(file.exists(fname))
   } # for
   # _________________________________________________________________________________________________
-  create_set_Original_OutDir()
+  create_set_OutDir(parentdir)
 }
 
 
