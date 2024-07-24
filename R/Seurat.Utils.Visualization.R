@@ -2,6 +2,7 @@
 # Seurat.Utils.Visualization.R ----
 # ____________________________________________________________________
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
+# source("~/GitHub/Packages/Seurat.utils/R/Seurat.utils.less.used.R")
 # devtools::load_all("~/GitHub/Packages/Seurat.utils")
 # devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
 
@@ -682,85 +683,135 @@ PctCellsAboveX <- function(obj = combined.obj,
 
 
 # _________________________________________________________________________________________________
-#' @title Proportion of Cells Expressing Given Genes
+#' @title PctCellsExpressingGenes
 #'
-#' @description Calculates the proportion of cells expressing one or more specified genes.
+#' @description Calculates the proportion of cells expressing one or more specified genes using a Seurat
+#' object as input.
 #'
-#' @param genes Character vector of gene names of interest.
-#' @param group.by Optional grouping variable for analysis (e.g., cell type). Default: 'all'.
-#' @param obj Seurat object to analyze. Default: `combined.obj`.
-#' @param ... Additional arguments.
+#' @param genes A character vector specifying the genes of interest. Must be a non-empty character vector.
+#' @param obj A Seurat object containing single-cell data.
+#' @param assay The assay to use for expression data. Default: "RNA".
+#' @param min.expr The minimum expression level to consider a gene as "expressed". Default: 1.
+#' @param ident A categorical variable from the metadata of the Seurat object. If NULL, returns overall
+#' proportions. Default: NULL.
+#' @param max.idents Maximum number of unique values allowed in the `ident` variable. Default: 100.
 #'
-#' @return Data frame with genes and their cell expression proportion, optionally grouped.
-#'
-#' @examples
-#' \dontrun{
-#' PrctCellExpringGene(genes = c("LTB", "GNLY"), obj = combined.obj)
-#' }
-#'
-#' @source Adapted from Ryan-Zhu on GitHub.
-#'
-#' @export
-PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj,
-                                ...) {
-  .Deprecated("Unclear")
-  #
-  nf <- setdiff(genes, c(Features(obj, assay = 'RNA'), colnames(obj@m@data)))
-
-  if(length(nf) > 0) message("Some genes/ features not found: ", nf)
-
-  stopifnot("Some genes not foun!." = all(genes %in% Features(obj)))
-
-  if (group.by == "all") {
-    prct <- 1:length(genes)
-    for (i in seq(prct)) prct[i] <- ww.calc_helper(genes = genes[1], obj = obj)
-    result <- data.frame("Markers" = genes, "Cell_proportion" = prct)
-    return(result)
-  } else {
-    ls.Seurat <- Seurat::SplitObject(object = obj, split.by = group.by)
-    factors <- names(ls.Seurat)
-
-    # This is a self referencing function, how does this supposed to even work??
-    results <- lapply(ls.Seurat, PrctCellExpringGene, genes = genes)
-    for (i in 1:length(factors)) {
-      results[[i]]$Feature <- factors[i]
-    }
-    combined <- do.call("rbind", results)
-    return(combined)
-  }
-}
-
-
-# _________________________________________________________________________________________________
-#' @title Helper to calculate Cell Expression Proportion for Gene
-#'
-#' @description Computes the proportion of cells expressing a specific gene within a Seurat object.
-#'
-#' @param obj Seurat object with cell data.
-#' @param genes Single gene name as a character string.
-#' @param slot Slot to use for the analysis. Default: 'RNA'.
-#'
-#' @return Proportion of cells expressing the gene. Returns `NA` if the gene is not found.
+#' @return A named vector if `ident` is NULL, containing the proportion of cells co-expressing all genes
+#' (AND), the proportion expressing any gene (OR), and the proportion expressing each gene individually.
+#' If `ident` is provided, returns a matrix with rows representing categories and columns representing
+#' expression proportions.
 #'
 #' @examples
 #' \dontrun{
-#' ww.calc_helper(obj = seurat_object, genes = "Gene1")
+#' # Load the Seurat object (example)
+#' library(Seurat)
+#' combined.obj <- readRDS("path/to/your/seurat_object.rds")
+#'
+#' # Define genes of interest
+#' # Define genes of interest
+#' genes <- c("TOP2A", "MAP2")
+#' # Call the function
+#' PctCellsExpressingGenes(genes = genes, obj = combined.obj)
+#' # Call the function with ident
+#' #' PctCellsExpressingGenes(genes = genes, obj = combined.obj, ident = "cluster")
 #' }
 #'
-#' @source Adapted from Ryan-Zhu on GitHub.
-#'
+#' @importFrom Seurat GetAssayData
 #' @export
-ww.calc_helper <- function(obj, genes, slot = "RNA") {
-  # stopifnot("Some genes not found!." = all(genes %in% row.names(obj)))
-  counts <- obj[[slot]]@counts
-  ncells <- ncol(counts)
-  if (genes %in% row.names(counts)) {
-    sum(counts[genes, ] > 0) / ncells
-  } else {
-    return(NA)
-  }
-}
 
+PctCellsExpressingGenes <- function(genes, obj, assay = "RNA", min.expr = 1,
+                                    ident = NULL, max.idents = 100) {
+  # Input assertions
+  stopifnot(
+    is.character(genes) && length(genes) > 0,       # genes must be a non-empty character vector
+    inherits(obj, "Seurat"),                        # obj must be a Seurat object
+    is.character(assay) && length(assay) == 1,      # assay must be a single character string
+    is.numeric(min.expr) && length(min.expr) == 1,  # min.expr must be a single numeric value
+    is.null(ident) || (is.character(ident) && length(ident) == 1),  # ident must be NULL or a single character string
+    is.numeric(max.idents) && length(max.idents) == 1 && max.idents > 0  # max.idents must be a single positive numeric value
+  )
+
+  # Message parameters to console
+  message("Parameters:")
+  message("  genes: ", paste(genes, collapse = ", "))
+  message("  assay: ", assay)
+  message("  min.expr: ", min.expr)
+  message("  ident: ", ifelse(is.null(ident), "NULL", paste(ident, lenght(ident), "-", head(ident))))
+  message("  max.idents: ", max.idents)
+
+  # Get the expression data
+  expr.data <- Seurat::GetAssayData(obj, assay = assay, slot = "data")
+
+  # Check if the genes are in the expression data
+  genes <- intersect(genes, rownames(expr.data))
+  if (length(genes) == 0) {
+    stop("None of the specified genes are present in the expression data.")
+  }
+
+  # Define a function to calculate proportions
+  calc_proportions <- function(expr.data, genes, min.expr) {
+    # Calculate the proportion of cells expressing each gene
+    expr.prop <- sapply(genes, function(gene) {
+      sum(expr.data[gene, ] >= min.expr) / ncol(expr.data)
+    })
+
+    # Calculate the proportion of cells co-expressing all genes (AND)
+    coexpr.prop <- sum(apply(expr.data[genes, ] >= min.expr, 2, all)) / ncol(expr.data)
+
+    # Calculate the proportion of cells expressing any gene (OR)
+    orexpr.prop <- sum(apply(expr.data[genes, ] >= min.expr, 2, any)) / ncol(expr.data)
+
+    # Return the proportions
+    return(c(coexpr.prop, orexpr.prop, expr.prop))
+  }
+
+  # Calculate proportions
+  proportions <- calc_proportions(expr.data, genes, min.expr)
+
+  # Message to console
+  message(sprintf("Percentage of cells co-expressing all genes (AND): %.2f%%", proportions[1] * 100))
+  message(sprintf("Percentage of cells expressing any gene (OR): %.2f%%", proportions[2] * 100))
+  for (i in seq_along(genes)) {
+    message("gene: ", genes[i], " ...")
+    message(sprintf("Percentage of cells expressing %s: %.2f%%", genes[i], proportions[2 + i] * 100))
+  }
+
+  # If ident is NULL, return the proportions vector
+  if (is.null(ident)) {
+    names(proportions) <- c("Expr.ALL", "Expr.ANY", genes)
+    return(proportions)
+  }
+
+  # Check ident
+  ident_vals <- obj@meta.data[[ident]]
+  if (is.null(ident_vals)) {
+    stop(sprintf("The ident '%s' is not present in the metadata.", ident))
+  }
+
+  if (length(unique(ident_vals)) > max.idents) {
+    stop(sprintf("The number of unique values in ident '%s' exceeds max.idents.", ident))
+  }
+
+  # Message ident details
+  message("Ident details:")
+  message("  Length of idents: ", length(unique(ident_vals)))
+  message("  Head of ident values: ", paste(head(unique(ident_vals)), collapse = ", "))
+
+  # Calculate proportions per ident
+  idents <- unique(ident_vals)
+  result_matrix <- matrix(NA, nrow = length(idents), ncol = length(proportions))
+  rownames(result_matrix) <- idents
+  colnames(result_matrix) <- c("Expr.ALL", "Expr.ANY", genes)
+
+  for (ident_value in idents) {
+    message("Cluster: ", ident_value)
+    cells_in_ident <- which(ident_vals == ident_value)
+    expr.data_subset <- expr.data[, cells_in_ident, drop = FALSE]
+    result_matrix[ident_value, ] <- calc_proportions(expr.data_subset, genes, min.expr)
+  }
+
+  return(result_matrix)
+}
 
 
 # _________________________________________________________________________________________________

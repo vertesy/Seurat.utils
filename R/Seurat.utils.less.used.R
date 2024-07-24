@@ -712,6 +712,88 @@ regress_out_and_recalculate_seurat <- function(
 }
 
 
+# _________________________________________________________________________________________________
+#' @title Proportion of Cells Expressing Given Genes
+#'
+#' @description Calculates the proportion of cells expressing one or more specified genes.
+#'
+#' @param genes Character vector of gene names of interest.
+#' @param group.by Optional grouping variable for analysis (e.g., cell type). Default: 'all'.
+#' @param obj Seurat object to analyze. Default: `combined.obj`.
+#' @param ... Additional arguments.
+#'
+#' @return Data frame with genes and their cell expression proportion, optionally grouped.
+#'
+#' @examples
+#' \dontrun{
+#' PrctCellExpringGene(genes = c("LTB", "GNLY"), obj = combined.obj)
+#' }
+#'
+#' @source Adapted from Ryan-Zhu on GitHub.
+#'
+#' @export
+PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj,
+                                ...) {
+  .Deprecated("PctCellsExpressingGenes")
+  #
+  nf <- setdiff(genes, c(Features(obj, assay = 'RNA'), colnames(obj@m@data)))
+
+  if(length(nf) > 0) message("Some genes/ features not found: ", nf)
+
+  stopifnot("Some genes not foun!." = all(genes %in% Features(obj)))
+
+  if (group.by == "all") {
+    prct <- 1:length(genes)
+    for (i in seq(prct)) prct[i] <- ww.calc_helper(genes = genes[1], obj = obj)
+    result <- data.frame("Markers" = genes, "Cell_proportion" = prct)
+    return(result)
+  } else {
+    ls.Seurat <- Seurat::SplitObject(object = obj, split.by = group.by)
+    factors <- names(ls.Seurat)
+
+    # This is a self referencing function, how does this supposed to even work??
+    results <- lapply(ls.Seurat, PrctCellExpringGene, genes = genes)
+    for (i in 1:length(factors)) {
+      results[[i]]$Feature <- factors[i]
+    }
+    combined <- do.call("rbind", results)
+    return(combined)
+  }
+}
+
+
+# _________________________________________________________________________________________________
+#' @title Helper to calculate Cell Expression Proportion for Gene
+#'
+#' @description Computes the proportion of cells expressing a specific gene within a Seurat object.
+#'
+#' @param obj Seurat object with cell data.
+#' @param genes Single gene name as a character string.
+#' @param slot Slot to use for the analysis. Default: 'RNA'.
+#'
+#' @return Proportion of cells expressing the gene. Returns `NA` if the gene is not found.
+#'
+#' @examples
+#' \dontrun{
+#' ww.calc_helper(obj = seurat_object, genes = "Gene1")
+#' }
+#'
+#' @source Adapted from Ryan-Zhu on GitHub.
+#'
+#' @export
+ww.calc_helper <- function(obj, genes, slot = "RNA") {
+  .Deprecated("Unused function.")
+  # stopifnot("Some genes not found!." = all(genes %in% row.names(obj)))
+  counts <- obj[[slot]]@counts
+  ncells <- ncol(counts)
+  if (genes %in% row.names(counts)) {
+    sum(counts[genes, ] > 0) / ncells
+  } else {
+    return(NA)
+  }
+}
+
+
 # # _________________________________________________________________________________________________
 # sparse.cor4 <- function(x){
 #   n <- nrow(x)
