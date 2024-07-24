@@ -13,6 +13,7 @@ plotAndSaveHeatmaps(
   display_numbers = TRUE,
   show_rownames = TRUE,
   show_colnames = TRUE,
+  rowname_column = 1,
   ...
 )
 }

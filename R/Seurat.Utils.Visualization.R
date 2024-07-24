@@ -1771,12 +1771,19 @@ plotAndSaveHeatmaps <- function(results, path = getwd(),
                                 display_numbers = TRUE,
                                 show_rownames = TRUE,
                                 show_colnames = TRUE,
+                                rowname_column = 1,
                                 ...) {
-  stopifnot(is.list(results), is.character(file.prefix), is.character(path))
+  stopifnot(is.list(results), is.character(file.prefix), is.character(path) )
 
   for (mt in names(results)) {
+    res <- results[[mt]]
+    stopifnot( !anyNA(res[[rowname_column]]),
+               !anyNaN(res[[rowname_column]])
+               )
+
     # Generate heatmap plot
-    pobj <- pheatmap::pheatmap(ReadWriter::column.2.row.names(results[[mt]]),
+    x <- ReadWriter::column.2.row.names(results[[mt]], rowname_column = rowname_column )
+    pobj <- pheatmap::pheatmap(mat = x,
       main = paste("Heatmap of", mt, "values"),
       scale = "column",
       cluster_rows = cluster_rows,
@@ -1790,7 +1797,8 @@ plotAndSaveHeatmaps <- function(results, path = getwd(),
     file_path <- file.path(path, file_name)
 
     # Save plot
-    MarkdownReports::wplot_save_pheatmap(x = pobj, plotname = file_name, png = TRUE, pdf = FALSE, ...)
+    MarkdownReports::wplot_save_pheatmap(x = pobj, data = x, plotname = file_name,
+                                         png = TRUE, pdf = FALSE, ...)
     cat("Saved heatmap for", mt, "to", file_path, "\n")
   } # for
 }
