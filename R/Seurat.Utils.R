@@ -2005,7 +2005,7 @@ subsetSeuObjByIdent <- function(
     identGroupKeep
   }
   message(
-    "ident: ", ident, " | ", length(identGroupKeep), " ID-groups selected: ", paste(head(identGroupKeep)),
+    "ident: ", ident, " | ", length(identGroupKeep), " ID-groups selected: ", kppc(head(identGroupKeep)),
     "... | invert: ", invert, "\n"
   )
 
