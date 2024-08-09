@@ -786,6 +786,8 @@ addToMiscOrToolsSlot <- function(obj, pocket_name = "misc",
                                  sub_slot_value = NULL,
                                  sub_slot_name = deparse(substitute(sub_slot_value)),
                                  overwrite = FALSE) {
+  message("Running addToMiscOrToolsSlot()...")
+
   stopifnot(is(obj, "Seurat"),
     pocket_name %in% c("misc", "tools"),
     is.character(slot_name), length(slot_name) == 1,
