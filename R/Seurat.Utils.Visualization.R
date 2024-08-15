@@ -1984,7 +1984,7 @@ qSeuViolin <- function(
     legend = TRUE,
     legend.pos = NULL, # c("top", "bottom", "left", "right", "none")[2],
     show_plot = TRUE,
-    w = NULL, h = 5,
+    w = NULL, h = 7,
     ...) {
   #
   stopifnot(
