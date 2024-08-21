@@ -24,7 +24,7 @@ qSeuViolin(
   legend.pos = NULL,
   show_plot = TRUE,
   w = NULL,
-  h = 5,
+  h = 7,
   ...
 )
 }

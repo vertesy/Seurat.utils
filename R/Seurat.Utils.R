@@ -1152,7 +1152,7 @@ shorten_clustering_names <- function(str) {
 #' @return Prints and returns the sorted unique cluster names as a character vector.
 #' @export
 getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
-  print(GetClusteringRuns(obj))
+  iprint("ident used:", ident)
   clz <- as.character(sort(deframe(unique(obj[[ident]]))))
   cat(dput(clz))
 }
@@ -2688,26 +2688,21 @@ StoreAllMarkers <- function(
 #' @importFrom dplyr arrange group_by slice select filter
 
 GetTopMarkersDF <- function(
-    dfDE = df.markers # Get the vector of N most diff. exp. genes.
-    , n = p$"n.markers", order.by = c("avg_log2FC", "p_val_adj")[1],
-    exclude = c("^AL*|^AC*|^LINC*")) {
+    dfDE = df.markers,
+    n = p$"n.markers", order.by = c("avg_log2FC", "p_val_adj")[1],
+    exclude = c("^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
+                "^LINC0[0-9]{4}", "^C[1-9]+orf[1-9]+",
+                "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
+                "^MIR[1-9]", "^SNHG[1-9]")
+    ) {
   "Works on active Idents() -> thus we call cluster"
 
-  library(dplyr)
-
-  # browser()
   TopMarkers <- dfDE |>
     dplyr::filter(!grepl(exclude, gene, perl = TRUE)) |>
     arrange(desc(!!as.name(order.by))) |>
     dplyr::group_by(cluster) |>
     dplyr::slice(1:n) |>
     dplyr::select(cluster, gene, avg_log2FC)
-
-  # TopMarkers <- dfDE |>
-  #   arrange(desc(!!as.name(order.by))) |>
-  #   group_by(cluster) |>
-  #   dplyr::slice(1:n) |>
-  #   dplyr::select(gene)
 
   return(TopMarkers)
 }
@@ -2797,13 +2792,15 @@ AutoLabelTop.logFC <- function(
     plot.top.genes = TRUE,
     suffix = res,
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2],
-    exclude = c("^AL*|^AC*|^LINC*|^C[0-9]+orf[0-9]*"),
+    exclude = c("^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
+                "^LINC0[0-9]{4}", "^C[1-9]+orf[1-9]+",
+                "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
+                "^MIR[1-9]", "^SNHG[1-9]"),
     df_markers = obj@misc$"df.markers"[[paste0("res.", res)]],
     plotEnrichment = TRUE) {
 
   message(group.by)
   message(" > Running AutoLabelTop.logFC...")
-  # browser()
 
   stopifnot(
     !is.null("df_markers"),
@@ -2829,7 +2826,6 @@ AutoLabelTop.logFC <- function(
 
   obj@misc[[ppp("top.markers.res", res)]] <- top.markers
 
-  # group.by <- 'RNA_snn_res.0.08'
   ids_CBC <- deframe(obj[[group.by]])
   ids <- unique(ids_CBC)
 
@@ -2855,7 +2851,6 @@ AutoLabelTop.logFC <- function(
 
   return(obj)
 }
-
 
 
 
