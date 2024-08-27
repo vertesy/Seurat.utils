@@ -10,6 +10,7 @@ qSeuViolin(
   ident = GetNamedClusteringRuns(obj = obj, v = F)[1],
   split.by = NULL,
   colors = NULL,
+  clip.outliers = TRUE,
   replace.na = FALSE,
   pt.size = 0.5,
   sub = NULL,

@@ -1971,6 +1971,7 @@ qSeuViolin <- function(
     ident = GetNamedClusteringRuns(obj = obj, v = F)[1],
     split.by = NULL,
     colors = NULL,
+    clip.outliers = TRUE,
     replace.na = FALSE,
     pt.size = 0.5,
     sub = NULL,
@@ -2022,6 +2023,12 @@ qSeuViolin <- function(
     obj@meta.data[[feature]] <- na.replace(x = obj@meta.data[[feature]], replace = 0)
   }
 
+  if (clip.outliers) {
+    warning("Outliers are clipped at percentiles 0.5% and 99.5%", immediate. = TRUE)
+    obj@meta.data[[feature]] <- CodeAndRoll2::clip.outliers.at.percentile(
+      x = obj@meta.data[[feature]], percentiles = c(.005, .995) )
+  }
+
   if (!is.null(colors)) {
     stopifnot(colors %in% colnames(obj@meta.data))
     col_long <- as.factor(unlist(obj[[colors]]))
@@ -2042,7 +2049,7 @@ qSeuViolin <- function(
   # Add additional customization, if needed..
   if (!is.null(ylimit)) p.obj <- p.obj + ylim(ylimit[1], ylimit[2])
   if (logY) p.obj <- p.obj + ggplot2::scale_y_log10()
-  if (hline) p.obj <- p.obj + ggplot2::geom_hline(yintercept = hline)
+  if (hline[1]) p.obj <- p.obj + ggplot2::geom_hline(yintercept = hline)
   if (!isFALSE(caption)) p.obj <- p.obj + ggplot2::labs(caption = caption)
   if (!is.null(legend.pos)) p.obj <- p.obj + theme(legend.position = legend.pos)
 
