@@ -204,7 +204,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj # Relabel cluster numbers alon
   MedianClusterCoordinate <- unlapply(ls.perCl, median)
   OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
   NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
-  NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
+  NewMeta <- translate(vec = obj[[res]], old = OldLabel, new = NewLabel)
   NewMetaCol <- kpp(res,"ordered")
   iprint("NewMetaCol:",NewMetaCol)
   obj[[NewMetaCol]] <- NewMeta
@@ -235,7 +235,7 @@ AutoNumber.by.PrinCurve <- function(obj = combined.obj # Relabel cluster numbers
   MedianClusterCoordinate <- unlapply(ls.perCl, median)
   OldLabel <- names(sort(MedianClusterCoordinate))
   NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
-  NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
+  NewMeta <- translate(vec = obj[[res]], old = OldLabel, new = NewLabel)
   NewMetaCol <- kpp(res,"prin.curve")
   iprint("NewMetaCol:",NewMetaCol)
   obj[[NewMetaCol]] <- NewMeta
@@ -762,7 +762,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
   stopif (l(OnlyInSeuratIdents), message = msg.Seu)
 
   # identity mapping ----------------
-  new.ident <- translate(vec = as.character(Idents(obj)), oldvalues = ident.X, newvalues = ident.Y)
+  new.ident <- translate(vec = as.character(Idents(obj)), old = ident.X, new = ident.Y)
   obj@meta.data[[metaD.colname]] = new.ident
   iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:"); cat(paste0("\t", ident.Y, "\n"))
 }
@@ -1101,8 +1101,8 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F)
   colorlevels <- scales::hue_pal()(length(levels(ident.vec)))
   if (plot.colors) color_check(colorlevels)
   translate(vec = as.character(ident.vec)
-            , oldvalues = levels(ident.vec)
-            , newvalues = colorlevels)
+            , old = levels(ident.vec)
+            , new = colorlevels)
 }
 # SeuratColorVector()
 # SeuratColorVector(ident = GetNamedClusteringRuns()[2], plot.colors = T)
@@ -3097,7 +3097,7 @@ AddNewAnnotation <- function(obj = obj # Create a new metadata column based on a
   for (i in 1:length(named.list.of.identities)) {
     lx <- as.character(named.list.of.identities[[i]])
     name.lx <- names(named.list.of.identities)[i]
-    NewID <- translate(vec = NewID, oldvalues = lx, newvalues = name.lx)
+    NewID <- translate(vec = NewID, old = lx, new = name.lx)
   }
   print(table(NewID))
   return(NewID)

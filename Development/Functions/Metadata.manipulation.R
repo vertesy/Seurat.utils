@@ -189,7 +189,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
   stopif (l(OnlyInSeuratIdents), message = msg.Seu)
 
   # identity mapping ----------------
-  new.ident <- translate(vec = as.character(Idents(obj)), oldvalues = ident.X, newvalues = ident.Y)
+  new.ident <- translate(vec = as.character(Idents(obj)), old = ident.X, new = ident.Y)
   obj@meta.data[[metaD.colname]] = new.ident
   iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:"); cat(paste0("\t", ident.Y, "\n"))
 }
@@ -528,8 +528,8 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = F)
   colorlevels <- scales::hue_pal()(length(levels(ident.vec)))
   if (plot.colors) color_check(colorlevels)
   translate(vec = as.character(ident.vec)
-            , oldvalues = levels(ident.vec)
-            , newvalues = colorlevels)
+            , old = levels(ident.vec)
+            , new = colorlevels)
 }
 # SeuratColorVector()
 # SeuratColorVector(ident = GetNamedClusteringRuns()[2], plot.colors = T)

@@ -103,7 +103,7 @@ AddNewAnnotation <- function(obj = obj # Create a new metadata column based on a
   for (i in 1:length(named.list.of.identities)) {
     lx <- as.character(named.list.of.identities[[i]])
     name.lx <- names(named.list.of.identities)[i]
-    NewID <- translate(vec = NewID, oldvalues = lx, newvalues = name.lx)
+    NewID <- translate(vec = NewID, old = lx, new = name.lx)
   }
   print(table(NewID))
   return(NewID)

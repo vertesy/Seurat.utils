@@ -274,7 +274,7 @@ AutoNumber.by.PrinCurve <- function(
   MedianClusterCoordinate <- unlapply(ls.perCl, median)
   OldLabel <- names(sort(MedianClusterCoordinate))
   NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
-  NewMeta <- translate(vec = obj[[res]], oldvalues = OldLabel, newvalues = NewLabel)
+  NewMeta <- translate(vec = obj[[res]], old = OldLabel, new = NewLabel)
   NewMetaCol <- kpp(res, "prin.curve")
   iprint("NewMetaCol:", NewMetaCol)
   obj[[NewMetaCol]] <- NewMeta
