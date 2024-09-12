@@ -23,6 +23,7 @@ qSeuViolin(
   ylimit = NULL,
   legend = TRUE,
   legend.pos = NULL,
+  legend.title = NULL,
   show_plot = TRUE,
   w = NULL,
   h = 7,
@@ -37,6 +38,8 @@ qSeuViolin(
 \item{ident}{A character vector specifying the identities to be used in the plot.}
 
 \item{split.by}{A character string specifying the grouping variable for splitting the plot.}
+
+\item{colors}{A character vector specifying the colors to use for the plot.}
 
 \item{replace.na}{A logical indicating whether NA values should be replaced.}
 
@@ -61,6 +64,8 @@ qSeuViolin(
 \item{legend}{Show legend; Default: opposite of \code{label}.}
 
 \item{legend.pos}{Position of legend; Default: 'NULL'.}
+
+\item{legend.title}{Title of legend; Default: 'split.by'.}
 
 \item{show_plot}{A logical indicating whether to display the plot.}
 

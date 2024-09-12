@@ -497,6 +497,7 @@ plotGeneExprHistAcrossCells <- function(
     thr_expr = 10,
     suffix = NULL,
     prefix = NULL,
+    plotname = c("Summed Gene-set Expression -", "Expression of"),
     xlab = paste0("Expression -log10(Summed UMIs @", layerX, ")"),
     return_cells_passing = TRUE,
     clip_count_qtl_thr = 0.99,
@@ -533,9 +534,10 @@ plotGeneExprHistAcrossCells <- function(
 
   if (aggregate) {
     SUBT <- paste0(SUBT, "\n", length(genes), "genes summed up, e.g: ", kppc(head(genes)))
-    TTL <- paste(prefix, "Summed Gene-set Expression -", suffix)
+    TTL <- kppd(prefix, plotname[1], suffix)
+
   } else {
-    TTL <- trimws(paste(prefix, "Expression of", paste(genes), suffix))
+    TTL <- trimws(paste(prefix, plotname[length(plotname)], paste(genes), suffix))
   }
 
   # Create the plot
@@ -1948,6 +1950,7 @@ qFeatureScatter <- function(
 #' @param feature A character string specifying the name of the feature to plot.
 #' @param ident A character vector specifying the identities to be used in the plot.
 #' @param split.by A character string specifying the grouping variable for splitting the plot.
+#' @param colors A character vector specifying the colors to use for the plot.
 #' @param replace.na A logical indicating whether NA values should be replaced.
 #' @param pt.size The size of the individual datapoints in the plot. Set to 0 to get a clean violin plot.
 #' @param sub Subtitle of the plot. Default is feature by ident.
@@ -1960,6 +1963,7 @@ qFeatureScatter <- function(
 #' @param ylimit A numeric vector specifying the limits of the y-axis.
 #' @param legend Show legend; Default: opposite of `label`.
 #' @param legend.pos Position of legend; Default: 'NULL'.
+#' @param legend.title Title of legend; Default: 'split.by'.
 #' @param show_plot A logical indicating whether to display the plot.
 #' @param w Width of the plot.
 #' @param h Height of the plot.
@@ -1991,6 +1995,7 @@ qSeuViolin <- function(
     ylimit = NULL,
     legend = TRUE,
     legend.pos = NULL, # c("top", "bottom", "left", "right", "none")[2],
+    legend.title = NULL,
     show_plot = TRUE,
     w = NULL, h = 7,
     ...) {
@@ -2050,8 +2055,8 @@ qSeuViolin <- function(
     theme(axis.title.x = element_blank()) +
     labs(y = ylab) +
     ggtitle(label = ttl, subtitle = subt ) +
-    if (!legend) NoLegend() else NULL
-
+    if (!is.null(legend.title)) guides(fill = guide_legend(legend.title)) else NULL +
+    if (!legend) NoLegend() else NULL +
 
   # Add additional customization, if needed..
   if (!is.null(ylimit)) p.obj <- p.obj + ylim(ylimit[1], ylimit[2])

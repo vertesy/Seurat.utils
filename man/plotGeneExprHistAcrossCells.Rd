@@ -12,6 +12,7 @@ plotGeneExprHistAcrossCells(
   thr_expr = 10,
   suffix = NULL,
   prefix = NULL,
+  plotname = c("Summed Gene-set Expression -", "Expression of"),
   xlab = paste0("Expression -log10(Summed UMIs @", layerX, ")"),
   return_cells_passing = TRUE,
   clip_count_qtl_thr = 0.99,
