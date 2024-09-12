@@ -25,7 +25,6 @@
 # One-stop-shop functions for entire pipelines _____________________________ ------
 # _________________________________________________________________________________________________
 
-
 #' @title Process Seurat Objects in Parallel
 #'
 #' @description Applies a series of Seurat processing steps to each Seurat object in a list.

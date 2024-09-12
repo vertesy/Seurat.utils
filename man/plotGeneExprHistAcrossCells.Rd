@@ -8,12 +8,13 @@ plotGeneExprHistAcrossCells(
   genes = c("MALAT1", "MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN"),
   obj = combined.obj,
   assay = "RNA",
-  slot_ = "data",
+  layerX = "data",
   thr_expr = 10,
   suffix = NULL,
-  xlab = paste0("Expression -log10(Summed UMI count @", slot_, ")"),
+  xlab = paste0("Expression -log10(Summed UMI count @", layerX, ")"),
   return_cells_passing = TRUE,
-  quantile_thr = 0.95,
+  clip_count_qtl_thr = 0.99,
+  log10_counts = TRUE,
   return_quantile,
   w = 9,
   h = 5,
@@ -28,8 +29,6 @@ plotGeneExprHistAcrossCells(
 
 \item{assay}{Assay to use from the Seurat object; Default: "RNA".}
 
-\item{slot_}{Data slot to use ('data' or 'counts'); Default: "data".}
-
 \item{thr_expr}{Expression threshold for highlighting in the plot; Default: 10.}
 
 \item{suffix}{Additional text to append to the plot title; Default: NULL.}
@@ -38,7 +37,10 @@ plotGeneExprHistAcrossCells(
 
 \item{return_cells_passing}{If TRUE, returns count of cells exceeding the expression threshold; Default: TRUE.}
 
-\item{quantile_thr}{Quantile threshold for clipping count data; Default: 0.95.}
+\item{clip_count_qtl_thr}{Quantile threshold for clipping if using count data; Default: 0.95.
+Needed for visualization (to avoid x axis compression).}
+
+\item{log10_counts}{If TRUE, log10-transforms the COUNT expression values; Default: TRUE.}
 
 \item{return_quantile}{If TRUE, returns cell count exceeding the quantile threshold; Default: FALSE.}
 
@@ -49,6 +51,8 @@ plotGeneExprHistAcrossCells(
 \item{show_plot}{If TRUE, displays the generated plot; Default: TRUE.}
 
 \item{...}{Additional arguments for customization.}
+
+\item{slot_}{Data slot to use ('data' or 'counts'); Default: "data".}
 }
 \value{
 Depending on the parameters, can return a ggplot object, the number of cells passing

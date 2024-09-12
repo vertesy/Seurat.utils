@@ -464,7 +464,9 @@ plotGeneExpressionInBackgroundHist <- function(
 #' @param suffix Additional text to append to the plot title; Default: NULL.
 #' @param xlab Label for the x-axis; Default: "log10(Summed UMI count @data)".
 #' @param return_cells_passing If TRUE, returns count of cells exceeding the expression threshold; Default: TRUE.
-#' @param quantile_thr Quantile threshold for clipping count data; Default: 0.95.
+#' @param clip_count_qtl_thr Quantile threshold for clipping if using count data; Default: 0.95.
+#' Needed for visualization (to avoid x axis compression).
+#' @param log10_counts If TRUE, log10-transforms the COUNT expression values; Default: TRUE.
 #' @param return_quantile If TRUE, returns cell count exceeding the quantile threshold; Default: FALSE.
 #' @param w Width of the plot in inches; Default: 9.
 #' @param h Height of the plot in inches; Default: 5.
@@ -490,38 +492,40 @@ plotGeneExpressionInBackgroundHist <- function(
 plotGeneExprHistAcrossCells <- function(
     genes = c("MALAT1", "MT-CO1", "MT-CO2", "MT-CYB", "TMSB4X", "KAZN"),
     obj = combined.obj,
-    assay = "RNA", slot_ = "data",
+    assay = "RNA", layerX = "data",
     thr_expr = 10,
     suffix = NULL,
-    xlab = paste0("Expression -log10(Summed UMI count @", slot_, ")"),
+    xlab = paste0("Expression -log10(Summed UMI count @", layerX, ")"),
     return_cells_passing = TRUE,
-    quantile_thr = 0.95,
+    clip_count_qtl_thr = 0.99,
+    log10_counts = TRUE,
     return_quantile,
     w = 9, h = 5,
     show_plot = TRUE,
     ...) {
+  #
   stopifnot(
     length(genes) > 0,
-    slot_ %in% c("data", "counts")
+    layerX %in% c("data", "counts")
   )
-
 
   # Aggregate genes if necessary
   aggregate <- length(genes) > 1
-  SummedExpressionPerCell <- colSums(GetAssayData(object = obj, assay = assay,
-                                                  slot = slot_)[genes, , drop = F])
+  SummedExpressionPerCell <- colSums(LayerData(object = obj, assay = assay,
+                                                  layer = layerX)[genes, , drop = F])
   head(SummedExpressionPerCell)
 
   # Clip counts if necessary
-  if (slot_ == "counts") {
+  if (layerX == "counts") {
     SummedExpressionPerCell <- CodeAndRoll2::clip.at.fixed.value(
-      distribution = SummedExpressionPerCell,
-      thr = quantile(SummedExpressionPerCell, probs = .95)
+      x = SummedExpressionPerCell,
+      thr = quantile(SummedExpressionPerCell, probs = clip_count_qtl_thr)
     )
+    if (log10_counts) SummedExpressionPerCell <- log10(SummedExpressionPerCell + 1)
   }
 
   # Create annotation
-  CPT <- paste("slot:", slot_, "| assay:", assay, "| cutoff at", iround(thr_expr))
+  CPT <- paste("slot:", layerX, "| assay:", assay, "| cutoff at", iround(thr_expr))
 
   # Add a subtitle with the number of genes and the expression threshold
   SUBT <- filter_HP(SummedExpressionPerCell, threshold = thr_expr, return_conclusion = TRUE, plot.hist = FALSE)
