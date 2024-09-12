@@ -11,7 +11,8 @@ plotGeneExprHistAcrossCells(
   layerX = "data",
   thr_expr = 10,
   suffix = NULL,
-  xlab = paste0("Expression -log10(Summed UMI count @", layerX, ")"),
+  prefix = NULL,
+  xlab = paste0("Expression -log10(Summed UMIs @", layerX, ")"),
   return_cells_passing = TRUE,
   clip_count_qtl_thr = 0.99,
   log10_counts = TRUE,
@@ -32,6 +33,8 @@ plotGeneExprHistAcrossCells(
 \item{thr_expr}{Expression threshold for highlighting in the plot; Default: 10.}
 
 \item{suffix}{Additional text to append to the plot title; Default: NULL.}
+
+\item{prefix}{Additional text to prepend to the plot title; Default: NULL.}
 
 \item{xlab}{Label for the x-axis; Default: "log10(Summed UMI count @data)".}
 

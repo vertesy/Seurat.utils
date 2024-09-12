@@ -462,6 +462,7 @@ plotGeneExpressionInBackgroundHist <- function(
 #' @param slot_ Data slot to use ('data' or 'counts'); Default: "data".
 #' @param thr_expr Expression threshold for highlighting in the plot; Default: 10.
 #' @param suffix Additional text to append to the plot title; Default: NULL.
+#' @param prefix Additional text to prepend to the plot title; Default: NULL.
 #' @param xlab Label for the x-axis; Default: "log10(Summed UMI count @data)".
 #' @param return_cells_passing If TRUE, returns count of cells exceeding the expression threshold; Default: TRUE.
 #' @param clip_count_qtl_thr Quantile threshold for clipping if using count data; Default: 0.95.
@@ -495,7 +496,8 @@ plotGeneExprHistAcrossCells <- function(
     assay = "RNA", layerX = "data",
     thr_expr = 10,
     suffix = NULL,
-    xlab = paste0("Expression -log10(Summed UMI count @", layerX, ")"),
+    prefix = NULL,
+    xlab = paste0("Expression -log10(Summed UMIs @", layerX, ")"),
     return_cells_passing = TRUE,
     clip_count_qtl_thr = 0.99,
     log10_counts = TRUE,
@@ -513,7 +515,6 @@ plotGeneExprHistAcrossCells <- function(
   aggregate <- length(genes) > 1
   SummedExpressionPerCell <- colSums(LayerData(object = obj, assay = assay,
                                                   layer = layerX)[genes, , drop = F])
-  head(SummedExpressionPerCell)
 
   # Clip counts if necessary
   if (layerX == "counts") {
@@ -525,15 +526,16 @@ plotGeneExprHistAcrossCells <- function(
   }
 
   # Create annotation
-  CPT <- paste("slot:", layerX, "| assay:", assay, "| cutoff at", iround(thr_expr))
+  CPT <- paste("layer:", layerX, "| assay:", assay, "| cutoff at", iround(thr_expr))
 
   # Add a subtitle with the number of genes and the expression threshold
   SUBT <- filter_HP(SummedExpressionPerCell, threshold = thr_expr, return_conclusion = TRUE, plot.hist = FALSE)
+
   if (aggregate) {
-    SUBT <- paste(SUBT, "\n", length(genes), "genes summed up, \n e.g:", kppc(head(genes)))
-    TTL <- paste("Summed Gene-set Expression -", suffix)
+    SUBT <- paste0(SUBT, "\n", length(genes), "genes summed up, e.g: ", kppc(head(genes)))
+    TTL <- paste(prefix, "Summed Gene-set Expression -", suffix)
   } else {
-    TTL <- trimws(paste("Gene Expression -", paste(genes), suffix))
+    TTL <- trimws(paste(prefix, "Expression of", paste(genes), suffix))
   }
 
   # Create the plot
@@ -541,6 +543,7 @@ plotGeneExprHistAcrossCells <- function(
     plotname = TTL,
     subtitle = SUBT,
     caption = CPT,
+    prefix = prefix,
     suffix = suffix,
     vline = thr_expr[1], filtercol = -1,
     xlab = xlab,
