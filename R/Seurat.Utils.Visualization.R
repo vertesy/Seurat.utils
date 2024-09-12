@@ -2054,9 +2054,9 @@ qSeuViolin <- function(
                pt.size = pt.size, ...) +
     theme(axis.title.x = element_blank()) +
     labs(y = ylab) +
-    ggtitle(label = ttl, subtitle = subt ) +
-    if (!is.null(legend.title)) guides(fill = guide_legend(legend.title)) else NULL +
-    if (!legend) NoLegend() else NULL +
+    ggtitle(label = ttl, subtitle = subt )
+    if (!legend) p.obj <- p.obj + NoLegend()
+    if (!is.null(legend.title)) p.obj <- p.obj + guides(fill = guide_legend(legend.title)) else NULL
 
   # Add additional customization, if needed..
   if (!is.null(ylimit)) p.obj <- p.obj + ylim(ylimit[1], ylimit[2])
