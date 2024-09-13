@@ -14,9 +14,9 @@ xsave(
   dir = if (exists("OutDir")) OutDir else getwd(),
   backgroundJob = FALSE,
   showMemObject = TRUE,
-  saveParams = TRUE,
-  paramList = p,
-  allGenes = all.genes,
+  paramList = if (exists("p")) p else NULL,
+  saveParams = if (exists("p")) TRUE else FALSE,
+  allGenes = if (exists("all.genes")) all.genes else NULL,
   saveLocation = TRUE
 )
 }
@@ -39,10 +39,10 @@ xsave(
 
 \item{showMemObject}{Logical; if TRUE, displays the memory size of the largest objects.}
 
+\item{paramList}{Optional; a list of parameters to save within the Seurat object.}
+
 \item{saveParams}{Logical; if TRUE and if the object is a Seurat object, additional parameters
 are saved within it.}
-
-\item{paramList}{Optional; a list of parameters to save within the Seurat object.}
 
 \item{allGenes}{Optional; a list of all genes to save within the Seurat object.}
 

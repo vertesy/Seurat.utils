@@ -4580,9 +4580,9 @@ xsave <- function(
     dir = if (exists("OutDir")) OutDir else getwd(),
     backgroundJob = FALSE,
     showMemObject = TRUE,
-    saveParams = TRUE,
-    paramList = p,
-    allGenes = all.genes,
+    paramList = if (exists("p")) p else NULL,
+    saveParams = if (exists("p")) TRUE else FALSE,
+    allGenes = if (exists("all.genes")) all.genes else NULL,
     saveLocation = TRUE) {
   #
   message(nthreads, " threads.\n-----------")
@@ -4613,15 +4613,15 @@ xsave <- function(
 
 
   if (backgroundJob & rstudioapi::isAvailable()) {
-    "This part is not debugged yet!"
-
-    message("Started saving as background job.")
-    job::job(
-      {
-        qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
-      },
-      import = c("obj", "FNN", "nthreads", "preset")
-    )
+    # "This part is not debugged yet!"
+    #
+    # message("Started saving as background job.")
+    # job::job(
+    #   {
+    #     qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
+    #   },
+    #   import = c("obj", "FNN", "nthreads", "preset")
+    # )
   } else {
     qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
   }
