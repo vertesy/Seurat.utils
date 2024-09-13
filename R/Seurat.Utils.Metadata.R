@@ -1283,15 +1283,23 @@ plotMetadataMedianFractionBarplot <- function(
 plotMetadataCategPie <- function(
     metacol = "Singlet.status",
     plot_name = paste(metacol, "distribution"),
-    obj = combined.obj, max.categs = 20, both_pc_and_value = TRUE,
-    subtitle = NULL, ...) {
+    obj = combined.obj,
+    max.categs = 20,
+    both_pc_and_value = TRUE,
+    subtitle = NULL,
+    labels = NULL,
+    LegendSide = FALSE,
+    ...) {
+  #
   categ_pivot <- table(obj[[metacol]])
   stopifnot(length(categ_pivot) < max.categs)
+
   qpie(categ_pivot,
     plotname = FixPlotName(make.names(plot_name)),
     both_pc_and_value = both_pc_and_value,
-    LegendSide = FALSE, labels = NULL, LegendTitle = "", subtitle = subtitle, ...
-  )
+    LegendSide = LegendSide, labels = labels,
+    LegendTitle = "", subtitle = subtitle,
+    ...)
 }
 
 

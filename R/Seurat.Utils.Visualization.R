@@ -2065,11 +2065,9 @@ qSeuViolin <- function(
   if (!isFALSE(caption)) p.obj <- p.obj + ggplot2::labs(caption = caption)
   if (!is.null(legend.pos)) p.obj <- p.obj + theme(legend.position = legend.pos)
 
-
-
   # Save the plot.
-  TTL <- ppp(as.character(feature), suffix, flag.nameiftrue(logY))
-  qqSave(p.obj, title = TTL, suffix = ppp("by.", ident), w = w, h = h, limitsize = FALSE)
+  TTL <- ppp(as.character(feature), "by", ident, suffix)
+  qqSave(p.obj, title = TTL, suffix = ppp(flag.nameiftrue(logY), "violin"), w = w, h = h, limitsize = FALSE)
   if (show_plot) p.obj
 }
 
@@ -4533,5 +4531,9 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
   }
 }
 
+
+# Notes --------------------------------------------------------------------------------------------
+
+# plotMetadataCategPie() is in Seurat.Utils.Metadata.R
 
 
