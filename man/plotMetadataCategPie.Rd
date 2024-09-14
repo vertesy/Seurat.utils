@@ -11,6 +11,8 @@ plotMetadataCategPie(
   max.categs = 20,
   both_pc_and_value = TRUE,
   subtitle = NULL,
+  labels = NULL,
+  LegendSide = FALSE,
   ...
 )
 }
