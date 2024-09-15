@@ -1478,7 +1478,7 @@ transferLabelsSeurat <- function(
     predictions_col = "predicted.id",
     predictions_score = sppp(new_ident, "score"),
     save_anchors = TRUE,
-    reference_suffix = "reference",
+    reference_suffix = "REFERENCE.obj",
     plot_suffix = NULL,
     plot_reference = TRUE,
     w = 12, h = 9,
@@ -1549,8 +1549,6 @@ transferLabelsSeurat <- function(
     feature = predictions_score, obj = query_obj, suffix = plot_suffix,
     w = w, h = h, ...
   )
-
-  "HERE"
 
   return(query_obj)
 }
