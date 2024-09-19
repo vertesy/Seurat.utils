@@ -2035,6 +2035,7 @@ qSeuViolin <- function(
     obj@meta.data[[feature]] <- na.replace(x = obj@meta.data[[feature]], replace = 0)
   }
 
+  # browser()
   if (clip.outliers) {
     warning("Outliers are clipped at percentiles 0.5% and 99.5%", immediate. = TRUE)
     obj@meta.data[[feature]] <- CodeAndRoll2::clip.outliers.at.percentile(
@@ -3297,14 +3298,14 @@ scEnhancedVolcano <- function(
 
   # Clip p-values.
   toptable[["p_val_adj"]] <-
-    clip.at.fixed.value(distribution = toptable[["p_val_adj"]], thr = min.p, high = F)
+    clip.at.fixed.value(x = toptable[["p_val_adj"]], thr = min.p, high = F)
 
   # Clip log2FC.
   if (max.l2fc < Inf) {
     toptable[["avg_log2FC"]] <-
-      clip.at.fixed.value(distribution = toptable[["avg_log2FC"]], thr = -max.l2fc, high = F)
+      clip.at.fixed.value(x = toptable[["avg_log2FC"]], thr = -max.l2fc, high = F)
     toptable[["avg_log2FC"]] <-
-      clip.at.fixed.value(distribution = toptable[["avg_log2FC"]], thr = max.l2fc, high = T)
+      clip.at.fixed.value(x = toptable[["avg_log2FC"]], thr = max.l2fc, high = T)
   }
 
   # Add statistical information to the subtitle.
