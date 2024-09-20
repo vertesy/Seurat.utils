@@ -365,24 +365,24 @@ getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],
 #' @param metadata The metadata to be added.
 #' @param col.name The name of the new metadata column.
 #' @param overwrite Logical; if TRUE, overwrites the existing column.
+#' @param verbose Logical; if TRUE, prints additional information.
 #'
 #' @return Modified Seurat object with additional metadata.
 #' @importFrom Seurat AddMetaData
 #' @export
-addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE) {
+addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose = F) {
 
   message("Running addMetaDataSafe...")
   # browser()
   stopifnot(
     is(obj, "Seurat"), is.vector(metadata), is.character(col.name), is.logical(overwrite),
     "Column already exists" = ((!col.name %in% colnames(obj@meta.data)) | overwrite),
-    "Metadata shorter than object" = (length(metadata) < ncol(obj)),
-    "Metadata longer than object" = (length(metadata) > ncol(obj))
+    "Metadata or object too short" = (length(metadata) == ncol(obj))
   )
 
   if (!is.null(names(metadata))) {
-    print(head(names(metadata)))
-    print(head(colnames(obj)))
+    if(verbose) print(head(names(metadata)))
+    if(verbose) print(head(colnames(obj)))
     stopifnot(names(metadata) == colnames(obj))
   } else {
     message("No CBCs associated with new metadata. Assuming exact match.")
@@ -402,7 +402,6 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE) {
 
   return(obj)
 }
-
 
 
 
