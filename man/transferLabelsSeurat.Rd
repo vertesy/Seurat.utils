@@ -14,7 +14,7 @@ transferLabelsSeurat(
   predictions_col = "predicted.id",
   predictions_score = sppp(new_ident, "score"),
   save_anchors = TRUE,
-  reference_suffix = "reference",
+  reference_suffix = "REFERENCE.obj",
   plot_suffix = NULL,
   plot_reference = TRUE,
   w = 12,

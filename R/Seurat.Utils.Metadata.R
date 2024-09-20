@@ -940,6 +940,52 @@ sampleNpc <- function(metaDF = MetaData[which(Pass), ], pc = 0.1) {
 # Combine metadata ______________________________ ----
 # _________________________________________________________________________________________________
 
+#' @title Merge Seurat Metadata
+#' @description Merges the `@metadata` from a list of Seurat objects, binds them by row, and applies optional inclusion/exclusion of columns.
+#' @param ls_obj A list of Seurat objects.
+#' @param include_cols A character vector of column names to include (default NULL for all columns).
+#' @param exclude_cols A character vector of column names to exclude (default NULL for no exclusions).
+#' @return A merged dataframe of metadata from all Seurat objects.
+#' @importFrom dplyr bind_rows select
+#' @export
+merge_seurat_metadata <- function(ls_obj, include_cols = NULL, exclude_cols = NULL) {
+
+  # Assert that ls_obj is a list and all elements are Seurat objects
+  stopifnot(is.list(ls_obj), length(ls_obj) > 0,
+            all(sapply(ls_obj, function(x) inherits(x, "Seurat"))))  # Ensure all are Seurat objects
+
+  # Extract metadata from each Seurat object
+  metadata_list <- lapply(ls_obj, function(seurat_obj) seurat_obj@meta.data)
+
+  # Assert that the number of columns are the same in all metadata
+  col_counts <- sapply(metadata_list, ncol)
+  stopifnot(length(unique(col_counts)) == 1)  # Ensure all metadata have the same number of columns
+
+  # Assert that rownames (cell names) are unique across all metadata
+  cell_names <- unlist(lapply(metadata_list, rownames))
+  stopifnot(length(unique(cell_names)) == length(cell_names))  # Ensure all cell names are unique
+
+  # Optionally select columns to include or exclude
+  if (!is.null(include_cols)) {
+    metadata_list <- lapply(metadata_list, function(md) dplyr::select(md, all_of(include_cols)))
+  } else if (!is.null(exclude_cols)) {
+    metadata_list <- lapply(metadata_list, function(md) dplyr::select(md, -all_of(exclude_cols)))
+  }
+
+  # Bind the metadata by row
+  merged_metadata <- dplyr::bind_rows(metadata_list)
+
+  # Message all column names to console
+  message("Columns: ", kppc(colnames(merged_metadata)), "\n")
+  message(length(merged_metadata), " merged columns and ", nrow(merged_metadata), " cells from ", length(ls_obj), " objects.")
+
+  return(merged_metadata)
+}
+
+# Example usage:
+# merged_metadata <- merge_seurat_metadata(ls_obj, include_cols = c("nFeature_RNA", "nCount_RNA"))
+
+
 
 #' @title Combine Metadata from a list of Seurat objects and Write to TSV
 #'
