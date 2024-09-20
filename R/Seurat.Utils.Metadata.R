@@ -2,6 +2,8 @@
 # Seurat.Utils.Metadata ----
 # ____________________________________________________________________
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Metadata.R")
+# source("~/GitHub/Packages/Seurat.utils/R/Seurat.utils.less.used.R")
+
 # devtools::load_all(path = '~/GitHub/Packages/Seurat.utils');
 # devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.R")
@@ -372,12 +374,10 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE) {
   message("Running addMetaDataSafe...")
   # browser()
   stopifnot(
-    is(obj, "Seurat"),
-    is.vector(metadata),
-    is.character(col.name),
-    is.logical(overwrite),
+    is(obj, "Seurat"), is.vector(metadata), is.character(col.name), is.logical(overwrite),
     "Column already exists" = ((!col.name %in% colnames(obj@meta.data)) | overwrite),
-    "Check length" = (length(metadata) == ncol(obj))
+    "Metadata shorter than object" = (length(metadata) < ncol(obj)),
+    "Metadata longer than object" = (length(metadata) > ncol(obj))
   )
 
   if (!is.null(names(metadata))) {
@@ -404,32 +404,6 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE) {
 }
 
 
-# _________________________________________________________________________________________________
-#' @title seu.add.meta.from.vector
-#'
-#' @description Adds a new metadata column to a Seurat object.
-#' @param obj A Seurat object to which the new metadata column will be added. Default: combined.obj.
-#' @param metaD.colname A string specifying the name of the new metadata column. Default: metaD.colname.labeled.
-#' @param Label.per.cell A vector of labels for each cell, to be added as new metadata. Default: Cl.Label.per.cell.
-#' @return A Seurat object with the new metadata column added.
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   # Example usage:
-#'   combined.obj <- seu.add.meta.from.vector(
-#'     obj = combined.obj,
-#'     metaD.colname = metaD.colname.labeled,
-#'     Label.per.cell = Cl.Label.per.cell
-#'   )
-#' }
-#' }
-#' @export
-seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell = Cl.Label.per.cell) { # Add a new metadata column to a Seurat  object
-  obj@meta.data[, metaD.colname] <- Label.per.cell
-  iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
-  return(obj)
-}
-
 
 
 # _________________________________________________________________________________________________
@@ -437,31 +411,41 @@ seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.c
 #'
 #' @description This function creates a metadata vector from an input vector and a Seurat object.
 #' The resulting vector contains values from 'vec' for the intersecting cell names between 'vec' and 'obj'.
-#' It also checks if the intersection between the cell names in 'vec' and 'obj' is more than a minimum intersection size.
-#' @param vec A named vector where the names represent cell IDs. This vector should have partial overlap with the cells in a Seurat object. Default is 'All.UVI'.
-#' @param obj A Seurat object that contains cell IDs which partially overlap with 'vec'. Default is 'combined.obj'.
-#' @param min.intersect The minimum number of cells to find in both 'vec' and 'obj'. The function will stop if the intersection is less than this number. Default is 100.
-#' @return A named vector of length equal to the number of cells in 'obj', with names from 'obj' and values from 'vec' for intersecting cell names.
+#' It also checks if the intersection between the cell names in 'vec' and 'obj' is more than a
+#' minimum intersection size.
+#' @param vec A named vector where the names represent cell IDs. This vector should have partial
+#' overlap with the cells in a Seurat object.
+#' @param obj A Seurat object that contains cell IDs which partially overlap with 'vec'.
+#' @param fill The value to fill for non-intersecting cell names in 'obj'. Default is NA.
+#' @param min.intersect The minimum number of cells to find in both 'vec' and 'obj'.
+#' The function will stop if the intersection is less than this number. Default is 100.
+#' @return A named vector of length equal to the number of cells in 'obj', with names from 'obj' and
+#' values from 'vec' for intersecting cell names.
 #' @examples
 #' \dontrun{
 #' create.metadata.vector(vec = my_vector, obj = my_seurat_object, min.intersect = 50)
 #' }
 #' @export
-create.metadata.vector <- function(vec = All.UVI, obj = combined.obj, min.intersect = 100) {
+create.metadata.vector <- function(vec, obj = combined.obj, fill = NA,
+                                   min.intersect = min(length(vec), ncol(obj), 100)) {
+
+  stopifnot(is.vector(vec), is(obj, "Seurat"),
+            is.character(names(vec)), is.character(colnames(obj)),
+            length(intersect(names(vec), colnames(obj))) > min.intersect
+            )
+
   cells.vec <- names(vec)
   cells.obj <- colnames(obj)
   cells.in.both <- intersect(cells.vec, cells.obj)
 
-  # iprint("intersect:", length(cells.in.both), head(cells.in.both))
   iprint(
     length(cells.in.both), "cells in both;",
     length(cells.vec), "cells in vec;",
     length(cells.obj), "cells in obj",
     "intersect, e.g.:", head(cells.in.both, 5)
   )
-  stopifnot(length(cells.in.both) > min.intersect)
 
-  new_assignment <- vec.fromNames(cells.obj)
+  new_assignment <- CodeAndRoll2::vec.fromNames(cells.obj, fill = fill)
   new_assignment[cells.in.both] <- vec[cells.in.both]
   return(new_assignment)
 }

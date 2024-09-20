@@ -563,6 +563,7 @@ multiFeatureHeatmap.A4 <- function(...) .Deprecated("No longer provided.")
 Annotate4Plotly3D <- function(...) .Deprecated(".Annotate4Plotly3D() - with dot/invisible.")
 Percent.in.Trome <- function(...) .Deprecated("PercentInTranscriptome()")
 .parseRegressionVariablesForScaleData  <- function(...) .Deprecated(".getRegressionVariablesForScaleData()")
+seu.add.meta.from.vector <- function(...) .Deprecated("addMetaDataSafe()")
 
 # _________________________________________________________________________________________________
 # Main script / functions
@@ -793,6 +794,36 @@ ww.calc_helper <- function(obj, genes, slot = "RNA") {
   }
 }
 
+
+
+#' # _________________________________________________________________________________________________
+#' #' @title seu.add.meta.from.vector
+#' #'
+#' #' @description Adds a new metadata column to a Seurat object.
+#' #' @param obj A Seurat object to which the new metadata column will be added. Default: combined.obj.
+#' #' @param metaD.colname A string specifying the name of the new metadata column. Default: metaD.colname.labeled.
+#' #' @param Label.per.cell A vector of labels for each cell, to be added as new metadata. Default: Cl.Label.per.cell.
+#' #' @return A Seurat object with the new metadata column added.
+#' #' @examples
+#' #' \dontrun{
+#' #' if (interactive()) {
+#' #'   # Example usage:
+#' #'   combined.obj <- seu.add.meta.from.vector(
+#' #'     obj = combined.obj,
+#' #'     metaD.colname = metaD.colname.labeled,
+#' #'     Label.per.cell = Cl.Label.per.cell
+#' #'   )
+#' #' }
+#' #' }
+#' #' @export
+#' seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname, Label.per.cell = Cl.Label.per.cell) {
+#'   .Deprecated("addMetaDataSafe")
+#'   obj@meta.data[, metaD.colname] <- Label.per.cell
+#'   iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
+#'   return(obj)
+#' }
+#'
+#'
 
 # # _________________________________________________________________________________________________
 # sparse.cor4 <- function(x){

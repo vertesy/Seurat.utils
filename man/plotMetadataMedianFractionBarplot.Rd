@@ -39,7 +39,7 @@ plotMetadataMedianFractionBarplot(
 
 \item{ylab}{Label for the y-axis. Default: "Fraction of transcriptome (\%)".}
 
-\item{percentify}{Logical; if TRUE, multiplies the fraction by 100. Default: TRUE.}
+\item{percentify}{Logical. If TRUE, multiplies the fraction by 100. Default: TRUE.}
 
 \item{subt}{Subtitle for the plot. Default: NULL.}
 
