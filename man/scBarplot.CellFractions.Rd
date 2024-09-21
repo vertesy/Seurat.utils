@@ -10,7 +10,7 @@ scBarplot.CellFractions(
   obj = combined.obj,
   downsample = FALSE,
   min.nr.sampled.cells = 200,
-  plotname = kpp(toTitleCase(fill.by), "proportions.by", group.by),
+  plotname = kppws("Cell proportions of", fill.by, "by", group.by),
   suffix = NULL,
   prefix = NULL,
   sub_title = suffix,
@@ -34,6 +34,7 @@ scBarplot.CellFractions(
   show.total.cells = TRUE,
   cex.total = 2,
   xlab.angle = 45,
+  show_plot = TRUE,
   ...
 )
 }

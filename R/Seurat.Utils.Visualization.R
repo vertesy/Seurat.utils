@@ -885,7 +885,7 @@ scBarplot.CellFractions <- function(
     obj = combined.obj,
     downsample = FALSE,
     min.nr.sampled.cells = 200,
-    plotname = kpp(toTitleCase(fill.by), "proportions.by", group.by),
+    plotname = kppws("Cell proportions of", fill.by, "by", group.by),
     suffix = NULL,
     prefix = NULL,
     sub_title = suffix,
@@ -1067,11 +1067,11 @@ scBarplot.CellFractions <- function(
     }
 
     if (save_plot) {
-      sfx <- shorten_clustering_names(group.by)
-      if (!is.null(suffix)) sfx <- sppp(sfx, suffix)
+      # sfx <- shorten_clustering_names(group.by)
+      if (!is.null(suffix)) sfx <- suffix
       if (min_frequency) sfx <- sppp(sfx, min_frequency)
       qqSave(
-        ggobj = pl, title = plotname, also.pdf = also.pdf, w = w, h = h,
+        ggobj = pl, title = FixPlotName(plotname), also.pdf = also.pdf, w = w, h = h,
         suffix = sppp(sfx, "fr.barplot")
         # , ...
       )
@@ -1085,7 +1085,9 @@ scBarplot.CellFractions <- function(
   )
 
   if (save_table) {
-    ReadWriter::write.simple.xlsx(CT_freq_sc, suffix = sppp(sfx, "fr.barplot"))
+    ReadWriter::write.simple.xlsx(CT_freq_sc, filename =  sppp(FixPlotName(plotname), suffix, "fr.barplot")
+                                  # suffix = sppp(FixPlotName(plotname), "fr.barplot")
+                                  )
   }
 
   # Return contingency table or plot based on return_table flag

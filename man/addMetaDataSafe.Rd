@@ -4,7 +4,7 @@
 \alias{addMetaDataSafe}
 \title{Add Metadata to a Seurat object, safely with Checks}
 \usage{
-addMetaDataSafe(obj, metadata, col.name, overwrite = FALSE)
+addMetaDataSafe(obj, metadata, col.name, overwrite = FALSE, verbose = F)
 }
 \arguments{
 \item{obj}{Seurat object to which metadata will be added.}
@@ -14,6 +14,8 @@ addMetaDataSafe(obj, metadata, col.name, overwrite = FALSE)
 \item{col.name}{The name of the new metadata column.}
 
 \item{overwrite}{Logical; if TRUE, overwrites the existing column.}
+
+\item{verbose}{Logical; if TRUE, prints additional information.}
 }
 \value{
 Modified Seurat object with additional metadata.
