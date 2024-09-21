@@ -372,7 +372,7 @@ getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],
 #' @export
 addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose = F) {
 
-  message("Running addMetaDataSafe...")
+  if (verbose) message("Running addMetaDataSafe...")
   # browser()
   stopifnot(
     is(obj, "Seurat"), is.vector(metadata), is.character(col.name), is.logical(overwrite),
@@ -389,15 +389,15 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
     names(metadata) <- colnames(obj)
   }
 
-
   # Perform the operation
   obj <- Seurat::AddMetaData(object = obj, metadata = metadata, col.name = col.name)
 
+  prefix <- paste("New column", col.name)
   # Check for NA or NaN values
   if (all(is.na(metadata) | is.nan(metadata))) {
-    warning("New metadata column contains only NA or NaN values.")
+    warning(paste(prefix, "contains only NA or NaN values."))
   } else if (any(is.na(metadata) | is.nan(metadata))) {
-    message("New metadata column contains NA or NaN values.")
+    message(paste(prefix, "contains NA or NaN values."))
   }
 
   return(obj)
