@@ -1528,7 +1528,7 @@ transferLabelsSeurat <- function(
   # Visualize reference object
   if (plot_reference) {
     clUMAP(
-      obj = reference_obj, ident = reference_ident,
+      obj = reference_obj, ident = reference_ident, label = F,
       suffix = reference_suffix, sub = reference_suffix,
       w = w, h = h, ...
     )
@@ -1571,11 +1571,11 @@ transferLabelsSeurat <- function(
 
   # Visualize combined object
   clUMAP(
-    ident = new_ident, obj = query_obj, suffix = plot_suffix,
+    ident = new_ident, obj = query_obj, suffix = plot_suffix, label = F,
     w = w, h = h, ...
   )
   qUMAP(
-    feature = predictions_score, obj = query_obj, suffix = plot_suffix,
+    feature = predictions_score, obj = query_obj, suffix = plot_suffix, label = F,
     w = w, h = h, ...
   )
 

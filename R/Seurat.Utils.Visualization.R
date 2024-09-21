@@ -907,6 +907,7 @@ scBarplot.CellFractions <- function(
     show.total.cells = TRUE,
     cex.total = 2,
     xlab.angle = 45,
+    show_plot = TRUE,
     ...) {
   # Input assertions
   stopifnot(
@@ -1071,7 +1072,8 @@ scBarplot.CellFractions <- function(
       if (min_frequency) sfx <- sppp(sfx, min_frequency)
       qqSave(
         ggobj = pl, title = plotname, also.pdf = also.pdf, w = w, h = h,
-        suffix = sppp(sfx, "fr.barplot"), ...
+        suffix = sppp(sfx, "fr.barplot")
+        # , ...
       )
     } # save_plot
   } # draw_plot
@@ -1087,11 +1089,12 @@ scBarplot.CellFractions <- function(
   }
 
   # Return contingency table or plot based on return_table flag
+  if(show_plot) print(pl)
+
   if (return_table) {
-    print(pl)
     return(CT_freq_sc)
   } else {
-    return(pl)
+    invisible(pl)
   } # end if return_table
 }
 
