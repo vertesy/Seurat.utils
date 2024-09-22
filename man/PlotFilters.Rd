@@ -17,9 +17,9 @@ PlotFilters(
   below.nFeature_RNA = if ("quantile.thr.lp.nFeature_RNA" \%in\% names(par.ls))
     par.ls$quantile.thr.lp.nFeature_RNA else par.ls$thr.lp.nFeature_RNA,
   above.nFeature_RNA = par.ls$thr.hp.nFeature_RNA,
-  subdir = Stringendo::FixPlotName("Filtering.plots", "mito", par.ls$thr.hp.mito,
-    par.ls$thr.lp.mito, "ribo", par.ls$thr.hp.ribo, par.ls$thr.lp.ribo, "nFeature",
-    below.nFeature_RNA, above.nFeature_RNA),
+  subdir = FixPlotName("Filtering.plots", "mito", par.ls$thr.hp.mito, par.ls$thr.lp.mito,
+    "ribo", par.ls$thr.hp.ribo, par.ls$thr.lp.ribo, "nFeature", below.nFeature_RNA,
+    above.nFeature_RNA),
   transparency = 0.25,
   cex = 0.75,
   theme.used = theme_bw(base_size = 18),

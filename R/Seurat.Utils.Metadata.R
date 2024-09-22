@@ -428,10 +428,20 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
 create.metadata.vector <- function(vec, obj = combined.obj, fill = NA,
                                    min.intersect = min(length(vec), ncol(obj), 100)) {
 
-  stopifnot(is.vector(vec), is(obj, "Seurat"),
-            is.character(names(vec)), is.character(colnames(obj)),
-            length(intersect(names(vec), colnames(obj))) > min.intersect
-            )
+  stopifnot(is.vector(vec), is(obj, "Seurat") )
+  cells_in_obj <- colnames(obj)
+  cells_in_vec <- names(vec)
+  stopifnot(is.character(cells_in_obj), is.character(cells_in_vec))
+
+  cells_in_both <- length(intersect(cells_in_vec, cells_in_obj))
+  if(cells_in_both < min.intersect) {
+    message(ncol(obj), " cells in obj: ", kppc(cells_in_obj[1:3]) ,"\n",
+            length(vec), " cells in vec: ", kppc(cells_in_vec[1:3]) ,"\n",
+            cells_in_both, " cells in both.\n"
+    )
+    stop("Intersection between vec and obj is less than min.intersect.")
+  }
+
 
   cells.vec <- names(vec)
   cells.obj <- colnames(obj)
