@@ -63,7 +63,7 @@ PlotFilters <- function(
     above.ribo = par.ls$"thr.hp.ribo",
     below.nFeature_RNA = if ("quantile.thr.lp.nFeature_RNA" %in% names(par.ls)) par.ls$"quantile.thr.lp.nFeature_RNA" else par.ls$"thr.lp.nFeature_RNA",
     above.nFeature_RNA = par.ls$"thr.hp.nFeature_RNA",
-    subdir = Stringendo::FixPlotName(
+    subdir = FixPlotName(
       "Filtering.plots",
       "mito", par.ls$"thr.hp.mito", par.ls$"thr.lp.mito",
       "ribo", par.ls$"thr.hp.ribo", par.ls$"thr.lp.ribo",
@@ -94,12 +94,12 @@ PlotFilters <- function(
 
   MarkdownHelpers::llprint(
     "We filtered for high quality cells based on the number of genes detected [", above.nFeature_RNA, ";", below.nFeature_RNA,
-    "] and the fraction of mitochondrial [", Stringendo::percentage_formatter(above.mito), ";", Stringendo::percentage_formatter(below.mito),
-    "] and ribosomal [", Stringendo::percentage_formatter(above.ribo), ";", Stringendo::percentage_formatter(below.ribo), "] reads."
+    "] and the fraction of mitochondrial [", percentage_formatter(above.mito), ";", percentage_formatter(below.mito),
+    "] and ribosomal [", percentage_formatter(above.ribo), ";", percentage_formatter(below.ribo), "] reads."
   )
 
   theme_set(theme.used)
-  OutDir <- Stringendo::FixPath(parentdir, subdir)
+  OutDir <- FixPath(parentdir, subdir)
 
   print(subdir)
 
@@ -152,7 +152,7 @@ PlotFilters <- function(
 
     B <- ggplot2::ggplot(mm, aes(x = nFeature_RNA, y = percent.mito)) +
       ggplot2::ggtitle(paste(
-        "Cells below", Stringendo::percentage_formatter(below.mito),
+        "Cells below", percentage_formatter(below.mito),
         "mito reads are selected \n(with A:", pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")"
       )) +
       ggplot2::geom_point(
@@ -169,7 +169,7 @@ PlotFilters <- function(
 
     C <- ggplot(mm, aes(x = nFeature_RNA, y = percent.ribo)) +
       ggtitle(paste(
-        "Cells below", Stringendo::percentage_formatter(below.ribo),
+        "Cells below", percentage_formatter(below.ribo),
         "ribo reads are selected \n(with A:",
         pc_TRUE(filt.nFeature_RNA & filt.below.ribo), ")"
       )) +
@@ -1223,7 +1223,7 @@ plotClustSizeDistr <- function(
   psubtitle <- paste(
     "Nr.clusters:", length(clust.size.distr),
     "| median size:", median(clust.size.distr),
-    "| CV:", Stringendo::percentage_formatter(cv(clust.size.distr))
+    "| CV:", percentage_formatter(cv(clust.size.distr))
   )
   xlb <- "Cluster size (cells)"
   ylb <- "Nr of Clusters"
@@ -2182,7 +2182,7 @@ qUMAP <- function(
   if (!isFALSE(caption)) gg.obj <- gg.obj + ggplot2::labs(caption = caption)
 
   if (save.plot) {
-    fname <- ww.FnP_parser(Stringendo::sppp(prefix, toupper(reduction), feature, assay, paste0(ncol(obj),"c"), suffix), if (PNG) "png" else "pdf")
+    fname <- ww.FnP_parser(sppp(prefix, toupper(reduction), feature, assay, paste0(ncol(obj),"c"), suffix), if (PNG) "png" else "pdf")
     try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
   }
   return(gg.obj)
@@ -2363,7 +2363,7 @@ clUMAP <- function(
     if (legend) suffix <- paste0(suffix, ".lgnd")
 
     if (save.plot) {
-      pname <- Stringendo::sppp(prefix, plotname, paste0(ncol(obj),"c"), suffix, sppp(highlight.clusters))
+      pname <- sppp(prefix, plotname, paste0(ncol(obj),"c"), suffix, sppp(highlight.clusters))
       fname <- ww.FnP_parser(pname, if (PNG) "png" else "pdf")
       try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
     }
@@ -3802,7 +3802,7 @@ save2plots.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 1,
     h = 11.69 * scale, w = 8.27 * scale, ...) {
-  if (pname == FALSE) pname <- Stringendo::sppp(substitute(plot_list), suffix)
+  if (pname == FALSE) pname <- sppp(substitute(plot_list), suffix)
   p1 <- cowplot::plot_grid(
     plotlist = plot_list, nrow = nrow, ncol = ncol,
     labels = LETTERS[1:length(plot_list)], ...
@@ -3852,7 +3852,7 @@ save4plots.A4 <- function(
     nrow = 2, ncol = 2,
     h = 8.27 * scale, w = 11.69 * scale,
     ...) {
-  if (pname == FALSE) pname <- Stringendo::sppp(substitute(plot_list), suffix)
+  if (pname == FALSE) pname <- sppp(substitute(plot_list), suffix)
   p1 <- cowplot::plot_grid(
     plotlist = plot_list, nrow = nrow, ncol = ncol,
     labels = LETTERS[1:length(plot_list)], ...
