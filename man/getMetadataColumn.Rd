@@ -4,14 +4,10 @@
 \alias{getMetadataColumn}
 \title{getMetadataColumn}
 \usage{
-getMetadataColumn(
-  ColName.metadata = "batch",
-  obj = combined.obj,
-  as_numeric = FALSE
-)
+getMetadataColumn(col = "batch", obj = combined.obj, as_numeric = FALSE)
 }
 \arguments{
-\item{ColName.metadata}{A string specifying the name of the metadata column to be retrieved. Default: 'batch'.}
+\item{col}{A string specifying the name of the metadata column to be retrieved. Default: 'batch'.}
 
 \item{obj}{A Seurat object from which the metadata column will be retrieved. Default: combined.obj.}
 
@@ -27,7 +23,7 @@ Retrieves a specified metadata column from a Seurat object and returns it as a n
 \dontrun{
 if (interactive()) {
   # Example usage:
-  batch_metadata <- getMetadataColumn(ColName.metadata = "batch", obj = combined.obj, as_numeric = TRUE)
+  batch_metadata <- getMetadataColumn(col = "batch", obj = combined.obj, as_numeric = TRUE)
 }
 }
 }

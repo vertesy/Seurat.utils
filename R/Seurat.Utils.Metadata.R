@@ -89,7 +89,7 @@ getMetaColnames <- function(obj = combined.obj,
   }
 
   dput(matchedColnames)
-  return(matchedColnames)
+  invisible(matchedColnames)
 }
 
 
@@ -110,7 +110,7 @@ metaColnameExists <- function(col_name, obj = combined.obj) {
 #' @title getMetadataColumn
 #'
 #' @description Retrieves a specified metadata column from a Seurat object and returns it as a named vector.
-#' @param ColName.metadata A string specifying the name of the metadata column to be retrieved. Default: 'batch'.
+#' @param col A string specifying the name of the metadata column to be retrieved. Default: 'batch'.
 #' @param obj A Seurat object from which the metadata column will be retrieved. Default: combined.obj.
 #' @param as_numeric A logical flag indicating whether the returned values should be converted to numeric format. Default: FALSE (FALSE).
 #' @return A named vector containing the values from the specified metadata column. If 'as_numeric' is TRUE, the values are converted to numeric format.
@@ -118,14 +118,14 @@ metaColnameExists <- function(col_name, obj = combined.obj) {
 #' \dontrun{
 #' if (interactive()) {
 #'   # Example usage:
-#'   batch_metadata <- getMetadataColumn(ColName.metadata = "batch", obj = combined.obj, as_numeric = TRUE)
+#'   batch_metadata <- getMetadataColumn(col = "batch", obj = combined.obj, as_numeric = TRUE)
 #' }
 #' }
 #' @export
-getMetadataColumn <- function(ColName.metadata = "batch", obj = combined.obj, as_numeric = FALSE) {
-  stopifnot(ColName.metadata %in% colnames(obj@meta.data))
+getMetadataColumn <- function(col = "batch", obj = combined.obj, as_numeric = FALSE) {
+  stopifnot(col %in% colnames(obj@meta.data))
 
-  x <- df.col.2.named.vector(obj@meta.data[, ColName.metadata, drop = FALSE])
+  x <- df.col.2.named.vector(df = obj@meta.data, col = col)
   if (as_numeric) {
     as.numeric.wNames(x) + 1
   } else {
