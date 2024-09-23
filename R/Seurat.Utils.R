@@ -4550,7 +4550,6 @@ isave.RDS <- function(
 #' @param preset Compression preset, defaults to 'high'.
 #' @param project The project name to be included in the filename, defaults to the result of `getProject()`.
 #' @param dir Output Directory
-#' @param backgroundJob Logical; if TRUE save runs as "background job"
 #' @param showMemObject Logical; if TRUE, displays the memory size of the largest objects.
 #' @param saveParams Logical; if TRUE and if the object is a Seurat object, additional parameters
 #' are saved within it.
@@ -4580,20 +4579,30 @@ xsave <- function(
     dir = if (exists("OutDir")) OutDir else getwd(),
     backgroundJob = FALSE,
     showMemObject = TRUE,
+    saveParams = if (exists("p")) TRUE else FALSE, # save allGenes and paramList
     paramList = if (exists("p")) p else NULL,
-    saveParams = if (exists("p")) TRUE else FALSE,
     allGenes = if (exists("all.genes")) all.genes else NULL,
     saveLocation = TRUE) {
   #
   message(nthreads, " threads.\n-----------")
   message("project: ", project)
-  if(!isFALSE(saveParams)) message("paramList: ", if (exists("paramList") & saveParams) paste(substitute(paramList), length(paramList), "elements.") else "not provided.")
-  if(!isFALSE(allGenes)) message("allGenes: ", if (exists("allGenes") & saveParams) substitute(allGenes) else "not", " provided.")
+
+  # check if the object is a Seurat object
+  obj_is_seurat <- inherits(obj, "Seurat")
+  if (obj_is_seurat) {
+    annot.suffix <- kpp(ncol(obj), "cells")
+  } else {
+    saveParams <- FALSE
+    annot.suffix <- if (is.list(obj)) kppd("ls", length(obj)) else NULL
+  }
+
+  if(!isFALSE(saveParams)) message("paramList: ", if (exists("paramList")) paste(substitute(paramList), length(paramList), " elements.") else " not provided.")
+  if(!isFALSE(saveParams)) message("allGenes: ", if (exists("allGenes")) substitute(allGenes) else " not provided.")
 
   try(tictoc::tic(), silent = TRUE)
   if (showMemObject) try(memory.biggest.objects(), silent = TRUE)
 
-  annot.suffix <- if (inherits(obj, "Seurat")) kpp(ncol(obj), "cells") else if (is.list(obj)) kppd("ls", length(obj)) else NULL
+
   fnameBase <- trimws(kppu(
     prefix, substitute(obj), annot.suffix, suffix, project,
     idate(Format = "%Y.%m.%d_%H.%M")
@@ -4611,20 +4620,7 @@ xsave <- function(
     if (saveLocation) try(obj@misc$"file.location" <- CMND, silent = TRUE)
   }
 
-
-  if (backgroundJob & rstudioapi::isAvailable()) {
-    # "This part is not debugged yet!"
-    #
-    # message("Started saving as background job.")
-    # job::job(
-    #   {
-    #     qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
-    #   },
-    #   import = c("obj", "FNN", "nthreads", "preset")
-    # )
-  } else {
-    qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
-  }
+  qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
 
   try(tictoc::toc(), silent = TRUE)
 }
