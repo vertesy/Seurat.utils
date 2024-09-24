@@ -1192,7 +1192,7 @@ GetClusteringRuns <- function(obj = combined.obj,
 
     # Filter clustering.results based on the numeric vector res
     clustering.results <- clustering.results[clustering.res.found.numeric %in% res]
-    if(length(filtered.results) == 0) warning("No clustering matches `res`!", immediate. = TRUE)
+    if(length(clustering.results) == 0) warning("No clustering matches `res`!", immediate. = TRUE)
 
   }
 

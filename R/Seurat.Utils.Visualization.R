@@ -1068,7 +1068,7 @@ scBarplot.CellFractions <- function(
 
     if (save_plot) {
       # sfx <- shorten_clustering_names(group.by)
-      if (!is.null(suffix)) sfx <- suffix
+      sfx <- if (!is.null(suffix)) suffix else NULL
       if (min_frequency) sfx <- sppp(sfx, min_frequency)
       qqSave(
         ggobj = pl, title = FixPlotName(plotname), also.pdf = also.pdf, w = w, h = h,
