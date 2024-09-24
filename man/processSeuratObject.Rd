@@ -15,6 +15,7 @@ processSeuratObject(
   variables.2.regress = param.list$variables.2.regress.combined,
   n.PC = param.list$n.PC,
   resolutions = param.list$snn_res,
+  reduction_input = "pca",
   ...
 )
 }
@@ -38,6 +39,8 @@ processSeuratObject(
 \item{n.PC}{The number of principal components to use. Default: 30.}
 
 \item{resolutions}{A list of resolutions to use for clustering. Default: c(0.1, 0.2, 0.3, 0.4, 0.5).}
+
+\item{reduction_input}{The reduction method to use as input for clustering & UMAP. Default: "pca".}
 }
 \value{
 A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and clustering.

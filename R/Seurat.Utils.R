@@ -41,6 +41,7 @@
 #' @param variables.2.regress A list of variables to regress out. Default: NULL.
 #' @param n.PC The number of principal components to use. Default: 30.
 #' @param resolutions A list of resolutions to use for clustering. Default: c(0.1, 0.2, 0.3, 0.4, 0.5).
+#' @param reduction_input The reduction method to use as input for clustering & UMAP. Default: "pca".
 #' @return A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and clustering.
 #' @examples
 #' # Assuming ls.Seurat is a list of Seurat objects and params is a list of parameters
@@ -55,6 +56,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
                                 variables.2.regress = param.list$"variables.2.regress.combined",
                                 n.PC = param.list$"n.PC",
                                 resolutions = param.list$"snn_res",
+                                reduction_input = "pca",
                                 ...) {
   #
   warning("Make sure you cleaned up the memory!", immediate. = TRUE)
@@ -110,11 +112,12 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
     tic()
     obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE); toc()
 
-    obj <- SetupReductionsNtoKdimensions(obj, nPCs = n.PC, reduction = "umap", dimensions = 3:2)
+    obj <- SetupReductionsNtoKdimensions(obj, nPCs = n.PC, reduction_output = "umap",
+                                         reduction_input = reduction_input, dimensions = 3:2)
 
     message("------------------- FindNeighbors & Clusters -------------------")
     tic()
-    obj <- FindNeighbors(obj, reduction = "pca", dims = 1:n.PC); toc()
+    obj <- FindNeighbors(obj, reduction = reduction_input, dims = 1:n.PC); toc()
 
     tic()
     obj <- FindClusters(obj, resolution = resolutions); toc()
@@ -1531,8 +1534,10 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
 #' @param obj A Seurat object. Default: combined.obj
 #' @param nPCs A numeric value representing the number of principal components to use. Default: p$n.PC
 #' @param dimensions A numeric vector specifying the dimensions to use for the dimensionality reductions. Default: 3:2
-#' @param reduction A character string specifying the type of dimensionality reduction to perform.
-#' Can be "umap", "tsne", or "pca". Default: 'umap'
+#' @param reduction_input The type of dimensionality reduction to use as input. Can be "pca", or
+#' some correctionn results, like harmony pca.
+#' @param reduction_output Te type of dimensionality reduction to perform.  Can be "umap", "tsne",
+#' or "pca". Default: 'umap'
 #' @return The input Seurat object with computed dimensionality reductions and backups of these reductions.
 #' @examples
 #' \dontrun{
@@ -1544,19 +1549,19 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
 #'
 #' @export
 SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", dimensions = 3:2,
-                                          reduction = "umap", ...) {
+                                          reduction_input = "pca", reduction_output = "umap", ...) {
   tictoc::tic()
   red <- reduction
   for (d in dimensions) {
     iprint(d, "dimensional", red, "is calculated")
-    obj <- if (reduction == "umap") {
-      RunUMAP(obj, dims = 1:nPCs, n.components = d, ...)
-    } else if (reduction == "tsne") {
-      RunTSNE(obj, dims = 1:nPCs, n.components = d, ...)
-    } else if (reduction == "pca") {
+    obj <- if (reduction_output == "umap") {
+      RunUMAP(obj, dims = 1:nPCs, reduction = reduction_input, n.components = d, ...)
+    } else if (reduction_output == "tsne") {
+      RunTSNE(obj, dims = 1:nPCs, reduction = reduction_input, n.components = d, ...)
+    } else if (reduction_output == "pca") {
       RunPCA(obj, dims = 1:nPCs, n.components = d, ...)
     }
-    obj <- BackupReduction(obj = obj, dim = d, reduction = red)
+    obj <- BackupReduction(obj = obj, dim = d, reduction = reduction_output)
   }
 
   tictoc::toc()

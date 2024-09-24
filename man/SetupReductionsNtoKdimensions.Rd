@@ -30,6 +30,12 @@ SetupReductionsNtoKdimensions(
 \item{reduction}{Type of dimensionality reduction to apply ('umap', 'tsne', or 'pca'); Default: 'umap'.}
 
 \item{...}{Additional parameters to pass to the dimensionality reduction functions.}
+
+\item{reduction_input}{The type of dimensionality reduction to use as input. Can be "pca", or
+some correctionn results, like harmony pca.}
+
+\item{reduction_output}{Te type of dimensionality reduction to perform.  Can be "umap", "tsne",
+or "pca". Default: 'umap'}
 }
 \value{
 The input Seurat object with computed dimensionality reductions and backups of these reductions.
