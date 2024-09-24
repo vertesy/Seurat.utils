@@ -884,13 +884,15 @@ transferMetadata <- function(from, to,
         colname_to[i]
       ), immediate. = TRUE)
     }
-  }
 
-  # Plot umap _______________________________________________________
-  if (plotUMAP) {
-    x <- clUMAP(obj = to, ident = colname_to, suffix = "transferred.ident", ...)
-    print(x)
-  }
+    # Plot umap _______________________________________________________
+    if (plotUMAP) {
+      # browser()
+      x <- clUMAP(obj = to, ident = colname_to[i], suffix = "transferred.ident", ...)
+      print(x)
+    }
+
+  } # for
 
   return(to)
 }
