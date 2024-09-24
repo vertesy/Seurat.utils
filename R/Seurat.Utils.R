@@ -1180,11 +1180,21 @@ GetClusteringRuns <- function(obj = combined.obj,
                               res = FALSE, pat = "*snn_res.[0-9].[0-9]+$",
                               v = TRUE) {
 
-  if (!isFALSE(res)) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
-
+  # Get clustering results
   clustering.results <- sort(CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat))
 
+  # Check if no clustering results were found
   if (identical(clustering.results, character(0))) if(v) warning("No matching (simple) clustering column found!", immediate. = TRUE)
+
+  if (!isFALSE(res)) {
+    # Extract numeric values from clustering.results
+    clustering.res.found.numeric <- as.numeric(sub(".+_snn_res.", "", clustering.results))
+
+    # Filter clustering.results based on the numeric vector res
+    clustering.results <- clustering.results[clustering.res.found.numeric %in% res]
+    if(length(filtered.results) == 0) warning("No clustering matches `res`!", immediate. = TRUE)
+
+  }
 
   if(v) {
     message("Clustering runs found:")
@@ -1193,7 +1203,6 @@ GetClusteringRuns <- function(obj = combined.obj,
 
   return(clustering.results)
 }
-
 
 # _________________________________________________________________________________________________
 #' @title GetNamedClusteringRuns

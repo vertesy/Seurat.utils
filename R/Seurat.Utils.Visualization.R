@@ -2271,13 +2271,13 @@ clUMAP <- function(
   #
 
   stopifnot(
-    is.character(caption),
+    is.character(caption) | is.null(caption),
     is.logical(save.plot),
     is.character(suffix) | is.null(suffix)
     )
 
   if (is.null(ident)) {
-    ident <- GetNamedClusteringRuns(obj = obj, v = F)[1]
+    ident <- GetNamedClusteringRuns(obj, v = F)[1]
     message("Identity not provided. Plotting: ", ident)
   }
 
