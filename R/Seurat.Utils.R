@@ -204,6 +204,9 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 #' clustering results. Default: TRUE.
 #' @param clean.meta.data Logical indicating whether to clean the metadata slots of
 #' previous clustering results. Default: TRUE.
+#' @param n.cores Integer specifying the number of cores to use for parallel processing (multisession).
+#'       Default: 1.
+#' @param presto Logical indicating whether to use presto for DE analysis. Default: TRUE.
 #'
 #' @return Modified Seurat object and markers list.
 #' @examples
@@ -219,9 +222,9 @@ runDGEA <- function(obj,
                     reorder.dimension = 1,
                     # ordering = if(any(!testNumericCompatible(res.analyzed.DE))) "no" else "ordered", # param.list$"cl.annotation"
                     # ordering = "ordered", # param.list$"cl.annotation"
-                    directory = OutDir,
+                    directory,
                     dir_suffix,
-                    subdirectory = ppp("DGEA_res", idate("%Y.%m.%d_%H.%M")),
+                    subdirectory = ppp("DGEA_res", idate()),
                     add.combined.score = TRUE,
                     save.obj = TRUE,
                     calculate.DGEA = TRUE,
@@ -231,8 +234,11 @@ runDGEA <- function(obj,
                     auto.cluster.naming = TRUE,
                     clean.misc.slot = TRUE,
                     clean.meta.data = TRUE,
-                    ...) {
+                    n.cores = 1,
+                    presto = TRUE
+                    ) {
 
+  if(presto) require(presto)
   # Assertions for input parameters
   stopifnot(
     is(obj, "Seurat"),
@@ -243,6 +249,7 @@ runDGEA <- function(obj,
   )
 
   create_set_OutDir(directory, subdirectory, newName = "dir_DGEA")
+  dir_DGEA <- OutDir
 
   # Log utilized parameters from param.list
   {
@@ -310,15 +317,19 @@ runDGEA <- function(obj,
         ident
       } else {
         if (reorder.clusters) {
-          GetOrderedClusteringRuns(res = res, obj = obj)[1]
+          GetOrderedClusteringRuns(res = res.analyzed.DE[i], obj = obj)[1]
         } else {
-          GetClusteringRuns(res = res, obj = obj)[1]
+          GetClusteringRuns(res = res.analyzed.DE[i], obj = obj)[1]
         }
       } # end if is.null(ident)
     stopifnot(Idents.for.DEG[[i]] %in% names(obj@meta.data))
   } # end for loop
 
+
+
   # Loop through each resolution setting to find markers ________________________________________
+  if (n.cores>1) plan("multisession", workers = n.cores)
+
   if (calculate.DGEA) {
     message("Calclulating ----------------------------------------")
     for (i in 1:length(res.analyzed.DE)) {
@@ -336,7 +347,6 @@ runDGEA <- function(obj,
       tic(); df.markers <- Seurat::FindAllMarkers(obj,
                                            verbose = TRUE,
                                            test.use = param.list$"test",
-
                                            logfc.threshold = param.list$"logfc.threshold",
                                            return.thresh = param.list$"return.thresh",
                                            min.pct = param.list$"min.pct",
@@ -349,6 +359,7 @@ runDGEA <- function(obj,
 
 
       Stringendo::stopif(is.null(df.markers))
+
       # order df.markers by logFC
       df.markers <- df.markers[order(df.markers$"avg_log2FC", decreasing = TRUE), ]
 
@@ -405,9 +416,9 @@ runDGEA <- function(obj,
         message('Automatic cluster labeling by top gene.')
 
         obj <- StoreAllMarkers(df_markers = df.markers, res = res, obj = obj)
-        obj <- AutoLabelTop.logFC(group.by = Idents.for.DEG[[i]], res = res, obj = obj)
+        obj <- AutoLabelTop.logFC(group.by = Idents.for.DEG[[i]], obj = obj, plot.top.genes = FALSE) # already plotted above
 
-        clUMAP(ident = ppp("cl.names.top.gene.res", res), obj = obj)
+        clUMAP(ident = ppp("cl.names.top.gene", Idents.for.DEG[[i]]), obj = obj, caption = "")
       } # end if auto.cluster.naming
 
       # Plot per-cluster gene enrichment histogram ________________________________________
@@ -869,7 +880,7 @@ showToolsSlots <- function(obj, max.level = 1, subslot = NULL, ...) {
 #' @description See `showToolsSlots` for details. Prints the names of slots in the `@misc` of a given object.
 #' It specifically targets list elements, skipping over data frames and other non-list objects.
 #'
-#' @param obj An object whose `@misc` slot needs to be examined.
+#' @param obj An object whose `@misc` slot needs to be examined. Default: combined.obj
 #' @param max.level Max depth to dive into sub-elements.
 #' @param subslot A subslot within `@misc`.
 #' @param ... ...
@@ -877,7 +888,7 @@ showToolsSlots <- function(obj, max.level = 1, subslot = NULL, ...) {
 #' @examples showToolsSlots(obj)
 #'
 #' @export
-showMiscSlots <- function(obj, max.level = 1, subslot = NULL,
+showMiscSlots <- function(obj = combined.obj, max.level = 1, subslot = NULL,
                           ...) {
   slotX <- if (is.null(subslot)) obj@misc else obj@misc[[subslot]]
   str(slotX, max.level = max.level, ...)
@@ -999,6 +1010,9 @@ calc.q99.Expression.and.set.all.genes <- function(
 #' @param genes A character vector of gene symbols.
 #' @param pattern_NC A character vector of patterns to filter out non-coding gene symbols.
 #' Default: c("^AC.", "^AL.", "^c[1-9]orf", "\\.AS[1-9]$").
+#' @param v "verbose" Whether to print the number of genes before and after filtering.
+#' @param unique Whether to return unique gene symbols. Default: TRUE.
+#' @param ... Additional arguments to pass to \code{\link[stringr]{str_detect}}.
 #'
 #' @return A character vector of filtered gene symbols.
 #'
@@ -1014,7 +1028,7 @@ filterNcGenes <- function(genes, pattern_NC = c("^A[CFLP][0-9]{6}", "^Z[0-9]{5}"
                                                 "^LINC0[0-9]{4}", "^C[1-9]+orf[1-9]+",
                                                 "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
                                                 "^MIR[1-9]", "^SNHG[1-9]"),
-                          unique = TRUE, ...) {
+                          v = TRUE, unique = TRUE, ...) {
 
   # Input assertions
   stopifnot(is.character(genes), length(genes) > 0,
@@ -1029,13 +1043,15 @@ filterNcGenes <- function(genes, pattern_NC = c("^A[CFLP][0-9]{6}", "^Z[0-9]{5}"
   genes_kept <- genes[stringr::str_detect(genes, combined_pattern, negate = TRUE)]
 
   # Report original and final list sizes and percentage remaining
-  original_length <- length(genes)
-  filtered_length <- length(genes_kept)
-  percentage_remaining <- (filtered_length / original_length) * 100
+  if(v) {
+    original_length <- length(genes)
+    filtered_length <- length(genes_kept)
+    percentage_remaining <- (filtered_length / original_length) * 100
 
-  message("Original number of gene symbols: ", original_length)
-  message("Filtered number of gene symbols: ", filtered_length)
-  message("Percentage remaining: ", round(percentage_remaining, 2), "%")
+    message("Original number of gene symbols: ", original_length)
+    message("Filtered number of gene symbols: ", filtered_length)
+    message("Percentage remaining: ", round(percentage_remaining, 2), "%")
+  }
 
   # Output assertions
   stopifnot(is.character(genes_kept), length(genes_kept) <= original_length)
@@ -2111,7 +2127,7 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
 
 
 # _________________________________________________________________________________________________
-#' @title Remove Residual Small Clusters from Seurat Object
+#' @title Remove Residual Small Clusters from a Seurat Object
 #'
 #' @description Removes clusters containing fewer cells than specified by `max.cells`
 #' from a Seurat object. This function is particularly useful after subsetting a dataset,
@@ -2137,6 +2153,7 @@ removeResidualSmallClusters <- function(
     identitites = GetClusteringRuns(obj, pat = "*snn_res.[0-9].[0-9]$")[1:5],
     max.cells = max(round((ncol(obj)) / 2000), 5),
     plot.removed = TRUE) {
+  #
   META <- obj@meta.data
   all.cells <- rownames(META)
 
@@ -2227,7 +2244,7 @@ dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE, also.character 
 
 
 # ____________________________________________________________________
-#' @title Remove Clusters and Drop Levels
+#' @title Remove Clusters and Drop Levels from a List of Seurat Objects
 #'
 #' @description This function removes residual small clusters from specified Seurat objects and
 #' drops levels in factor-like metadata.
@@ -2250,9 +2267,10 @@ dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE, also.character 
 #' }
 #'
 #' @export
-removeClustersAndDropLevels <- function(
-    ls_obj, object_names = names(ls_obj),
-    indices = 2:3, ...) {
+removeClustersAndDropLevels <- function(ls_obj,
+                                        object_names = names(ls_obj),
+                                        indices = 2:3, ...) {
+  #
   for (index in indices) {
     dataset_name <- object_names[index]
     obj <- ls_obj[[dataset_name]]
@@ -2612,9 +2630,10 @@ GetTopMarkersDF <- function(
                 "^MIR[1-9]", "^SNHG[1-9]")
     ) {
   "Works on active Idents() -> thus we call cluster"
+  combined_pattern <- paste(exclude, collapse = "|")
 
   TopMarkers <- dfDE |>
-    dplyr::filter(!grepl(exclude, gene, perl = TRUE)) |>
+    dplyr::filter(!grepl(combined_pattern, gene, perl = TRUE)) |>
     arrange(desc(!!as.name(order.by))) |>
     dplyr::group_by(cluster) |>
     dplyr::slice(1:n) |>
@@ -2652,18 +2671,11 @@ GetTopMarkers <- function(dfDE = df.markers,
                           order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2]) {
   message("Works on active Idents()") # thus we call cluster
   TopMarkers <- dfDE |>
-    arrange(desc(!!as.name(order.by))) |>
-    group_by(cluster) |>
+    dplyr::arrange(desc(!!as.name(order.by))) |>
+    dplyr::group_by(cluster) |>
     dplyr::slice(1:n) |>
     dplyr::select(gene) |>
-    col2named.vec.tbl()
-
-  # TopMarkers <- dfDE |>
-  #   arrange(desc(!!as.name(order.by))) |>
-  #   group_by(cluster) |>
-  #   dplyr::slice(1:n) |>
-  #   dplyr::select(gene) |>
-  #   col2named.vec.tbl()
+    CodeAndRoll2::col2named.vec.tbl()
 
   return(TopMarkers)
 }
@@ -2760,7 +2772,7 @@ AutoLabelTop.logFC <- function(
 
   # Check if the clustering was ordered _____________________________________________________
   sfx.ord <- ifelse(grepl("ordered", group.by), group.by, "")
-  namedIDslot <- sppp("cl.names.top.gene.", sfx.ord, "res", res)
+  namedIDslot <- sppp("cl.names.top.gene.", sfx.ord)
 
   obj <- addMetaDataSafe(obj = obj, metadata = as.character(named.group.by), col.name = namedIDslot, overwrite = TRUE)
   if (plot.top.genes) multiFeaturePlot.A4(list.of.genes = top.markers, suffix = suffix, obj = obj)
@@ -3323,11 +3335,13 @@ gene.name.check <- function(Seu.obj) {
 #' @importFrom Stringendo percentage_formatter
 #'
 check.genes <- function(
-    list.of.genes = ClassicMarkers, makeuppercase = FALSE, verbose = TRUE, HGNC.lookup = FALSE,
+    list.of.genes = ClassicMarkers, makeuppercase = FALSE, HGNC.lookup = FALSE,
     obj = combined.obj,
     assay.slot = c("RNA", "integrated")[1],
     data.slot = c("counts", "data")[2],
+    verbose = TRUE,
     ...) {
+  tictoc::tic()
   message(" > Running check.genes...")
   message("assay: ", assay.slot, ", data.slot: ", data.slot)
 
@@ -3350,6 +3364,7 @@ check.genes <- function(
       }
     }
   }
+  tictoc::toc()
   intersect(list.of.genes, all_genes)
 }
 

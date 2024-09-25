@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{removeClustersAndDropLevels}
 \alias{removeClustersAndDropLevels}
-\title{Remove Clusters and Drop Levels}
+\title{Remove Clusters and Drop Levels from a List of Seurat Objects}
 \usage{
 removeClustersAndDropLevels(
   ls_obj,

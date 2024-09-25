@@ -2473,6 +2473,7 @@ DimPlot.ClusterNames <- function(
 #' @description Save multiple FeaturePlots, as jpeg, on A4 for each gene, which are stored as a list of gene names.
 #' @param list.of.genes List of gene names for which the plots are to be generated. No default.
 #' @param obj Seurat object, Default: combined.obj
+#' @param subdir Should plots be saved in a sub-directory? Default: TRUE
 #' @param foldername Folder name to save the generated plots. Default: The name of the list of genes.
 #' @param plot.reduction Dimension reduction technique to use for plots. Default: 'umap'
 #' @param intersectionAssay The assay to intersect with, either 'RNA' or 'integrated'. Default: 'RNA'
@@ -2483,7 +2484,6 @@ DimPlot.ClusterNames <- function(
 #' @param cex Point size in the plot. Default: round(0.1/(nr.Col * nr.Row), digits = 2)
 #' @param gene.min.exp Minimum gene expression level for plotting. Default: 'q01'
 #' @param gene.max.exp Maximum gene expression level for plotting. Default: 'q99'
-#' @param subdir Should plots be saved in a sub-directory? Default: TRUE
 #' @param prefix Prefix for the plot filenames. Default: NULL
 #' @param suffix Suffix for the plot filenames. Default: NULL
 #' @param background_col Background color of the plots. Default: "white"
@@ -2505,7 +2505,9 @@ DimPlot.ClusterNames <- function(
 multiFeaturePlot.A4 <- function(
     list.of.genes,
     obj = combined.obj,
-    foldername = substitute(list.of.genes), plot.reduction = "umap",
+    subdir = TRUE,
+    foldername = substitute(list.of.genes),
+    plot.reduction = "umap",
     intersectionAssay = c("RNA", "integrated")[1],
     layout = c("tall", "wide", FALSE)[2],
     colors = c("grey", "red"),
@@ -2513,7 +2515,7 @@ multiFeaturePlot.A4 <- function(
     raster = if (ncol(obj) > 1e5) TRUE else FALSE,
     cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
     cex.min = if (raster) TRUE else FALSE,
-    gene.min.exp = "q01", gene.max.exp = "q99", subdir = TRUE,
+    gene.min.exp = "q01", gene.max.exp = "q99",
     prefix = NULL, suffix = NULL,
     background_col = "white",
     aspect.ratio = c(FALSE, 0.6)[2],
@@ -2946,7 +2948,7 @@ PlotTopGenesPerCluster <- function(
   ls.topMarkers <- splitbyitsnames(topX.markers)
   for (i in 1:length(ls.topMarkers)) {
     multiFeaturePlot.A4(
-      list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = FALSE,
+      list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = T, foldername = ppp('TopGenes.umaps'),
       prefix = ppp("DEG.markers.res", cl_res, "cluster", names(ls.topMarkers)[i])
     )
   }

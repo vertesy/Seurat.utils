@@ -8,6 +8,7 @@ filterNcGenes(
   genes,
   pattern_NC = c("^A[CFLP][0-9]{6}", "^Z[0-9]{5}", "^LINC0[0-9]{4}", "^C[1-9]+orf[1-9]+",
     "[-|\\\\.]AS[1-9]*$", "[-|\\\\.]DT[1-9]*$", "^MIR[1-9]", "^SNHG[1-9]"),
+  v = TRUE,
   unique = TRUE,
   ...
 )
@@ -17,6 +18,12 @@ filterNcGenes(
 
 \item{pattern_NC}{A character vector of patterns to filter out non-coding gene symbols.
 Default: c("^AC.", "^AL.", "^c\link{1-9}orf", "\\.AS\link{1-9}$").}
+
+\item{v}{"verbose" Whether to print the number of genes before and after filtering.}
+
+\item{unique}{Whether to return unique gene symbols. Default: TRUE.}
+
+\item{...}{Additional arguments to pass to \code{\link[stringr]{str_detect}}.}
 }
 \value{
 A character vector of filtered gene symbols.

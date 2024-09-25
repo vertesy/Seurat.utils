@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{removeResidualSmallClusters}
 \alias{removeResidualSmallClusters}
-\title{Remove Residual Small Clusters from Seurat Object}
+\title{Remove Residual Small Clusters from a Seurat Object}
 \usage{
 removeResidualSmallClusters(
   obj = combined.obj,

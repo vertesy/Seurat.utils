@@ -7,6 +7,7 @@
 multiFeaturePlot.A4(
   list.of.genes,
   obj = combined.obj,
+  subdir = TRUE,
   foldername = substitute(list.of.genes),
   plot.reduction = "umap",
   intersectionAssay = c("RNA", "integrated")[1],
@@ -19,7 +20,6 @@ multiFeaturePlot.A4(
   cex.min = if (raster) TRUE else FALSE,
   gene.min.exp = "q01",
   gene.max.exp = "q99",
-  subdir = TRUE,
   prefix = NULL,
   suffix = NULL,
   background_col = "white",
@@ -36,6 +36,8 @@ multiFeaturePlot.A4(
 \item{list.of.genes}{List of gene names for which the plots are to be generated. No default.}
 
 \item{obj}{Seurat object, Default: combined.obj}
+
+\item{subdir}{Should plots be saved in a sub-directory? Default: TRUE}
 
 \item{foldername}{Folder name to save the generated plots. Default: The name of the list of genes.}
 
@@ -56,8 +58,6 @@ multiFeaturePlot.A4(
 \item{gene.min.exp}{Minimum gene expression level for plotting. Default: 'q01'}
 
 \item{gene.max.exp}{Maximum gene expression level for plotting. Default: 'q99'}
-
-\item{subdir}{Should plots be saved in a sub-directory? Default: TRUE}
 
 \item{prefix}{Prefix for the plot filenames. Default: NULL}
 

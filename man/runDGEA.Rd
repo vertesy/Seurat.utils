@@ -11,9 +11,9 @@ runDGEA(
   res.analyzed.DE = if (is.null(ident)) c(0.1) else ident,
   reorder.clusters = if (is.null(ident)) TRUE else FALSE,
   reorder.dimension = 1,
-  directory = OutDir,
+  directory,
   dir_suffix,
-  subdirectory = ppp("DGEA_res", idate("\%Y.\%m.\%d_\%H.\%M")),
+  subdirectory = ppp("DGEA_res", idate()),
   add.combined.score = TRUE,
   save.obj = TRUE,
   calculate.DGEA = TRUE,
@@ -23,7 +23,8 @@ runDGEA(
   auto.cluster.naming = TRUE,
   clean.misc.slot = TRUE,
   clean.meta.data = TRUE,
-  ...
+  n.cores = 1,
+  presto = TRUE
 )
 }
 \arguments{
@@ -76,6 +77,11 @@ clustering results. Default: TRUE.}
 
 \item{clean.meta.data}{Logical indicating whether to clean the metadata slots of
 previous clustering results. Default: TRUE.}
+
+\item{n.cores}{Integer specifying the number of cores to use for parallel processing (multisession).
+Default: 1.}
+
+\item{presto}{Logical indicating whether to use presto for DE analysis. Default: TRUE.}
 }
 \value{
 Modified Seurat object and markers list.

@@ -4,10 +4,10 @@
 \alias{showMiscSlots}
 \title{Display Slots in the @misc of an Seurat Object}
 \usage{
-showMiscSlots(obj, max.level = 1, subslot = NULL, ...)
+showMiscSlots(obj = combined.obj, max.level = 1, subslot = NULL, ...)
 }
 \arguments{
-\item{obj}{An object whose \verb{@misc} slot needs to be examined.}
+\item{obj}{An object whose \verb{@misc} slot needs to be examined. Default: combined.obj}
 
 \item{max.level}{Max depth to dive into sub-elements.}
 
