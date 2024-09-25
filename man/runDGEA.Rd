@@ -18,6 +18,7 @@ runDGEA(
   save.obj = TRUE,
   calculate.DGEA = TRUE,
   plot.DGEA = TRUE,
+  umap_caption = "",
   plot.av.enrichment.hist = TRUE,
   plot.log.top.gene.stats = TRUE,
   auto.cluster.naming = TRUE,
@@ -63,6 +64,8 @@ Default: TRUE.}
 
 \item{plot.DGEA}{Logical determining if results should be plotted.
 Default: TRUE.}
+
+\item{umap_caption}{Character string specifying the caption for the UMAP plot. Default: "".}
 
 \item{plot.av.enrichment.hist}{Logical indicating whether to plot the average enrichment histogram.
 Default: TRUE.}

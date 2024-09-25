@@ -801,12 +801,13 @@ saveLsSeuratMetadata <- function(ls.obj, suffix) {
 #' @param colname_to Vector of names for the columns in the destination object's metadata.
 #' Defaults to the same names as `colname_from`. Must be the same length as `colname_from` unless
 #' it is the same as `colname_from`.
-#' @param verbose Logical, indicating whether to print details about the transfer, including the
-#' number and percentage of matching cells between objects, and unique cells in each object.
 #' @param overwrite Logical, indicating whether to overwrite the column in the destination object
 #' if it already exists. Defaults to FALSE.
 #' @param plotUMAP Logical, indicating whether to plot UMAPs of the destination object with
 #' the new identity.
+#' @param strict Logical, indicating whether to fail if the destination object have cells not found in the source object.
+#' @param verbose Logical, indicating whether to print details about the transfer, including the
+#' number and percentage of matching cells between objects, and unique cells in each object.
 #' @param ... Additional arguments to be passed to `transferMetadata`.
 #'
 #' @return Returns the destination Seurat object (`to`) with the new metadata columns added.
@@ -829,9 +830,10 @@ saveLsSeuratMetadata <- function(ls.obj, suffix) {
 transferMetadata <- function(from, to,
                              colname_from,
                              colname_to = colname_from,
-                             verbose = TRUE,
                              overwrite = FALSE,
                              plotUMAP = TRUE,
+                             strict = TRUE,
+                             verbose = TRUE,
                              ...) {
   #
   stopifnot(
@@ -847,8 +849,9 @@ transferMetadata <- function(from, to,
   cells_only_in_from <- setdiff(colnames(from), colnames(to))
   cells_only_in_to <- setdiff(colnames(to), colnames(from))
   nr.cells.both <- length(cells_in_both)
-  nr.cells.from <- length(cells_only_in_from)
-  nr.cells.to <- length(cells_only_in_to)
+  nr.cells.only.from <- length(cells_only_in_from)
+  nr.cells.only.to <- length(cells_only_in_to)
+
 
 
   # Print cell overlap information  _______________________________________________________
@@ -860,20 +863,38 @@ transferMetadata <- function(from, to,
     )
     cat(
       "Cells only in obj1 (from):", length(cells_only_in_from),
-      "(", sprintf("%.2f%%", nr.cells.from / length(colnames(from)) * 100), ")\n"
+      "(", sprintf("%.2f%%", nr.cells.only.from / length(colnames(from)) * 100), ")\n"
     )
     cat(
-      "Cells only in obj2 (to):", nr.cells.to,
-      "(", sprintf("%.2f%%", nr.cells.to / length(colnames(to)) * 100), ")\n"
+      "Cells only in obj2 (to):", nr.cells.only.to,
+      "(", sprintf("%.2f%%", nr.cells.only.to / length(colnames(to)) * 100), ")\n"
     )
   }
 
+  if(strict) {
+    stopifnot("There are cells ONLY present in the destination object. Cannot transfer metadata." = (nr.cells.only.to == 0)  )
+  } else {
+    warning("There are cells ONLY present in the destination object. Filled with NA", immediate. = TRUE)
+  }
+
+  if(nr.cells.only.from > 0 & verbose) warning("There are cells ONLY present in the FROM object. These will be ignored.", immediate. = TRUE)
+
+
   # Transfer metadata columns _______________________________________________________
   for (i in seq_along(colname_from)) {
+
+    # Check if to-column exists in destination object OR you overwrite anyway
     if (!(colname_to[i] %in% colnames(to@meta.data)) || overwrite) {
+
+      # Check if column exists in source object
       if (colname_from[i] %in% colnames(from@meta.data)) {
+
         # Transfer the metadata column
-        to[[colname_to[i]]] <- from[[colname_from[i]]]
+        # to[[colname_to[i]]] <- from[[colname_from[i]]]
+
+        metadata_from <- getMetadataColumn(obj = from, col = colname_from[i])
+        to <- addMetaDataSafe(obj = to, col.name = colname_to[i], metadata = metadata_from[colnames(to)])
+
         message(sprintf("Transferred '%s' to '%s'.", colname_from[i], colname_to[i]))
       } else {
         warning(sprintf("Column '%s' not found in source object.", colname_from[i]), immediate. = TRUE)
@@ -887,7 +908,6 @@ transferMetadata <- function(from, to,
 
     # Plot umap _______________________________________________________
     if (plotUMAP) {
-      # browser()
       x <- clUMAP(obj = to, ident = colname_to[i], suffix = "transferred.ident", ...)
       print(x)
     }

@@ -9,9 +9,10 @@ transferMetadata(
   to,
   colname_from,
   colname_to = colname_from,
-  verbose = TRUE,
   overwrite = FALSE,
   plotUMAP = TRUE,
+  strict = TRUE,
+  verbose = TRUE,
   ...
 )
 }
@@ -26,14 +27,16 @@ transferMetadata(
 Defaults to the same names as \code{colname_from}. Must be the same length as \code{colname_from} unless
 it is the same as \code{colname_from}.}
 
-\item{verbose}{Logical, indicating whether to print details about the transfer, including the
-number and percentage of matching cells between objects, and unique cells in each object.}
-
 \item{overwrite}{Logical, indicating whether to overwrite the column in the destination object
 if it already exists. Defaults to FALSE.}
 
 \item{plotUMAP}{Logical, indicating whether to plot UMAPs of the destination object with
 the new identity.}
+
+\item{strict}{Logical, indicating whether to fail if the destination object have cells not found in the source object.}
+
+\item{verbose}{Logical, indicating whether to print details about the transfer, including the
+number and percentage of matching cells between objects, and unique cells in each object.}
 
 \item{...}{Additional arguments to be passed to \code{transferMetadata}.}
 }

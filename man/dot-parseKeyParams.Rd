@@ -10,7 +10,8 @@
   nrVarFeatures = NULL,
   return.as.name = FALSE,
   assay = Seurat::DefaultAssay(obj),
-  suffix = NULL
+  suffix = NULL,
+  v = T
 )
 }
 \arguments{

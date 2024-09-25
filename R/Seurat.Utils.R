@@ -5412,9 +5412,10 @@ compareVarFeaturesAndRanks <- function(
 #' @param v Verbose? Default: `TRUE`.
 #'
 #' @return Integer representing the number of scaled features
-.getNrScaledFeatures <- function(obj, assay = Seurat::DefaultAssay(obj), v = TRUE) {
-  message(" > Running .getNrScaledFeatures...")
-  message("Seurat version: ", obj@version, " | Assay searched: ", assay)
+.getNrScaledFeatures <- function(obj, assay = Seurat::DefaultAssay(obj),
+                                 v = TRUE) {
+  if(v) message(" > Running .getNrScaledFeatures...")
+  if(v) message("Seurat version: ", obj@version, " | Assay searched: ", assay)
 
   layers.found <- Layers(obj, assay = assay)
   if("scale.data" %in% layers.found) {
@@ -5529,13 +5530,14 @@ compareVarFeaturesAndRanks <- function(
                             nrVarFeatures = NULL,
                             return.as.name = FALSE,
                             assay = Seurat::DefaultAssay(obj),
-                            suffix = NULL) {
+                            suffix = NULL,
+                            v = T) {
   #
   # browser()
-  message(" > Running .parseKeyParams...")
-  scaledFeatures <- .getNrScaledFeatures(obj, assay)
+  if(v) message(" > Running .parseKeyParams...")
+  scaledFeatures <- .getNrScaledFeatures(obj, assay, v= F)
 
-  if (is.null(regressionVariables)) regressionVariables <- .getRegressionVariablesForScaleData(obj = obj, assay = assay)
+  if (is.null(regressionVariables)) regressionVariables <- .getRegressionVariablesForScaleData(obj = obj, assay = assay, v = F)
 
   if (!is.null(nrVarFeatures)) {
     if (nrVarFeatures != scaledFeatures) {

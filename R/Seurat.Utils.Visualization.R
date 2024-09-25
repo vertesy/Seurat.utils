@@ -2312,7 +2312,7 @@ clUMAP <- function(
     PCT <- percentage_formatter(length(highlight.these) / ncol(obj), suffix = "or")
     if (is.null(sub)) sub <- paste(PCT, length(highlight.these), "cells in ", ident)
 
-    title <- kppc(highlight.clusters)
+    title <- kpipe(ident, kppc(highlight.clusters))
   } else {
     highlight.these <- NULL
   }

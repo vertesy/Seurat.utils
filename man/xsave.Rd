@@ -17,7 +17,8 @@ xsave(
   saveParams = if (exists("p")) TRUE else FALSE,
   paramList = if (exists("p")) p else NULL,
   allGenes = if (exists("all.genes")) all.genes else NULL,
-  saveLocation = TRUE
+  saveLocation = TRUE,
+  v = TRUE
 )
 }
 \arguments{
