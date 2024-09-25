@@ -187,9 +187,10 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 #' @param save.obj Logical indicating whether to save the modified Seurat object.
 #'        Default: TRUE.
 #' @param directory Character string specifying the base directory for saving results.
-#'        Default: OutDirOrig.
+#'        Default: OutDir
+#' @param dir_suffix Character string specifying the suffix for the subdirecotry directory.
 #' @param subdirectory Character string specifying the subdirectory for saving outputs within
-#'        the base directory. Default: "DGEA".
+#'        the base directory. Default: "DGEA + date".
 #' @param calculate.DGEA Logical determining if the DE analysis should be calculated.
 #'        Default: TRUE.
 #' @param plot.DGEA Logical determining if results should be plotted.
@@ -218,8 +219,9 @@ runDGEA <- function(obj,
                     reorder.dimension = 1,
                     # ordering = if(any(!testNumericCompatible(res.analyzed.DE))) "no" else "ordered", # param.list$"cl.annotation"
                     # ordering = "ordered", # param.list$"cl.annotation"
-                    directory = OutDirOrig,
-                    subdirectory = "DGEA_res",
+                    directory = OutDir,
+                    dir_suffix,
+                    subdirectory = ppp("DGEA_res", idate("%Y.%m.%d_%H.%M")),
                     add.combined.score = TRUE,
                     save.obj = TRUE,
                     calculate.DGEA = TRUE,

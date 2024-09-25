@@ -11,8 +11,9 @@ runDGEA(
   res.analyzed.DE = if (is.null(ident)) c(0.1) else ident,
   reorder.clusters = if (is.null(ident)) TRUE else FALSE,
   reorder.dimension = 1,
-  directory = OutDirOrig,
-  subdirectory = "DGEA_res",
+  directory = OutDir,
+  dir_suffix,
+  subdirectory = ppp("DGEA_res", idate("\%Y.\%m.\%d_\%H.\%M")),
   add.combined.score = TRUE,
   save.obj = TRUE,
   calculate.DGEA = TRUE,
@@ -43,10 +44,12 @@ Default: TRUE.}
 Default: 1.}
 
 \item{directory}{Character string specifying the base directory for saving results.
-Default: OutDirOrig.}
+Default: OutDir}
+
+\item{dir_suffix}{Character string specifying the suffix for the subdirecotry directory.}
 
 \item{subdirectory}{Character string specifying the subdirectory for saving outputs within
-the base directory. Default: "DGEA".}
+the base directory. Default: "DGEA + date".}
 
 \item{add.combined.score}{Logical indicating whether to add a combined score to the markers.
 Default: TRUE.}
