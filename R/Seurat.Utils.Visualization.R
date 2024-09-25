@@ -2241,11 +2241,11 @@ qUMAP <- function(
 clUMAP <- function(
     ident = NULL,
     obj = combined.obj,
-    reduction = "umap", splitby = NULL,
     title = ident,
     sub = NULL,
     prefix = NULL,
     suffix = make.names(sub),
+    reduction = "umap", splitby = NULL,
     label.cex = 7,
     h = 7, w = NULL,
     nr.cols = NULL,
@@ -2295,6 +2295,8 @@ clUMAP <- function(
   NtCategs <- length(unique(identity[, 1]))
   if (NtCategs > 1000) warning("More than 1000 levels! qUMAP?", immediate. = TRUE)
 
+
+  # Highlight specific clusters if provided _____________________________________________________
   if (!missing(highlight.clusters)) {
     if (!(all(highlight.clusters %in% identity[, 1]))) {
       MSG <- paste(
@@ -2310,20 +2312,23 @@ clUMAP <- function(
 
     highlight.these <- rownames(identity)[idx.ok]
     PCT <- percentage_formatter(length(highlight.these) / ncol(obj), suffix = "or")
-    if (is.null(sub)) sub <- paste(PCT, length(highlight.these), "cells in ", ident)
 
-    title <- kpipe(ident, kppc(highlight.clusters))
+    # Annotation to subtitle _________________________________________________________________
+    sub2 <- paste(PCT, length(highlight.these), "cells in", ident, "are highlighted")
+    sub3 <- paste("Highlighted clusters:", kppc(highlight.clusters))
+    sub <- if (is.null(sub)) pnl(sub2, sub3) else pnl(sub, sub2, sub3)
+
+    # title <- kpipe(ident, )
   } else {
     highlight.these <- NULL
   }
 
+  # Message if highlighting cells _____________________________________________________________
   if (!missing(cells.highlight)) {
     highlight.these <- cells.highlight
     message("Highlighting ", length(highlight.these), " cells, e.g.: ", head(highlight.these))
-    message("cols.highlight: ", cols.highlight
-            ," | sizes.highlight: ", sizes.highlight
-            )
-  } # overwrite, if directly defined
+    message("cols.highlight: ", cols.highlight ," | sizes.highlight: ", sizes.highlight)
+  }
 
   if (is.null(cols)) {
     cols <- if (NtCategs > max.cols.for.std.palette) {
@@ -2337,6 +2342,7 @@ clUMAP <- function(
     cols <- "lightgrey"
   }
 
+  # Plot _________________________________________________________________________________________
   if (NtCategs > MaxCategThrHP) {
     iprint("Too many categories (", NtCategs, ") in ", ident, "- use qUMAP for continous variables.")
   } else {
@@ -2356,12 +2362,14 @@ clUMAP <- function(
         if (!legend) NoLegend() else NULL
     }
 
+    # Additional options ___________________________________________________
     if (is.null(axes)) gg.obj <- gg.obj + Seurat::NoAxes()
     if (!is.null(caption)) gg.obj <- gg.obj + ggplot2::labs(caption = caption)
     if (!is.null(legend.pos)) gg.obj <- gg.obj + ggplot2::theme(legend.position = legend.pos)
     if (aspect.ratio) gg.obj <- gg.obj + ggplot2::coord_fixed(ratio = aspect.ratio)
     if (legend) suffix <- paste0(suffix, ".lgnd")
 
+    # Save plot ___________________________________________________________
     if (save.plot) {
       pname <- sppp(prefix, plotname, paste0(ncol(obj),"c"), suffix, sppp(highlight.clusters))
       fname <- ww.FnP_parser(pname, if (PNG) "png" else "pdf")
