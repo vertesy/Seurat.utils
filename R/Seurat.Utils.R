@@ -371,9 +371,10 @@ runDGEA <- function(obj,
 
       # Save results to disk
       fname <- ppp("df.markers", res)
-      ReadWriter::write.simple.tsv(df.markers, filename = fname)
+      ReadWriter::write.simple.tsv(df.markers, filename = fname, v = F)
       df.markers.all[[i]] <- df.markers
-      xsave(df.markers, suffix = df.slot)
+      xsave(df.markers, suffix = df.slot, v = F)
+
     } # end for loop
 
     # Save final results to disk
@@ -486,9 +487,7 @@ runDGEA <- function(obj,
           # write out the gene list, each element to a txt file.
           create_set_OutDir(p0(dir_DGEA, ppp("res", res), "/top_genes"))
           for (i in 1:l(genes_list)) {
-            write.simple.vec(input_vec = genes_list[[i]],
-                             filename = names(genes_list)[i]
-            )
+            write.simple.vec(input_vec = genes_list[[i]], filename = names(genes_list)[i], v = F )
           } # for cluster
         }
       } # end if plot.log.top.gene.stats
@@ -4516,10 +4515,11 @@ xsave <- function(
     saveParams = if (exists("p")) TRUE else FALSE, # save allGenes and paramList
     paramList = if (exists("p")) p else NULL,
     allGenes = if (exists("all.genes")) all.genes else NULL,
-    saveLocation = TRUE) {
+    saveLocation = TRUE,
+    v = TRUE) {
   #
-  message(nthreads, " threads.\n-----------")
-  message("project: ", project)
+  if (v) message(nthreads, " threads.\n-----------")
+  if (v) message("project: ", project)
 
   # check if the object is a Seurat object
   obj_is_seurat <- inherits(obj, "Seurat")
@@ -4534,7 +4534,7 @@ xsave <- function(
   if(!isFALSE(saveParams)) message("allGenes: ", if (exists("allGenes")) substitute(allGenes) else " not provided.")
 
   try(tictoc::tic(), silent = TRUE)
-  if (showMemObject) try(memory.biggest.objects(), silent = TRUE)
+  if (showMemObject & v) try(memory.biggest.objects(), silent = TRUE)
 
 
   fnameBase <- trimws(kppu(
@@ -4544,7 +4544,7 @@ xsave <- function(
 
   FNN <- paste0(dir, fnameBase, ".qs")
   CMND <- paste0(substitute(obj), " <- xread('", FNN, "')")
-  message(CMND)
+  if (v) message(CMND)
 
   if ("Seurat" %in% is(obj)) {
     if (saveParams) {
