@@ -4228,9 +4228,8 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { #
 SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", dimensions = 3:2,
                                           reduction_input = "pca", reduction_output = "umap", ...) {
   tictoc::tic()
-  red <- reduction
   for (d in dimensions) {
-    iprint(d, "dimensional", red, "is calculated")
+    iprint(d, "dimensional", reduction_output, "is calculated")
     obj <- if (reduction_output == "umap") {
       RunUMAP(obj, dims = 1:nPCs, reduction = reduction_input, n.components = d, ...)
     } else if (reduction_output == "tsne") {
