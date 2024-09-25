@@ -2527,7 +2527,7 @@ multiFeaturePlot.A4 <- function(
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- "genes"
   final.foldername <- FixPlotName(paste0(foldername, "-", plot.reduction, suffix))
-  if (subdir) create_set_SubDir(final.foldername, "/")
+  if (subdir) create_set_SubDir(final.foldername, "/", verbose = FALSE)
 
   list.of.genes.found <- check.genes(
     list.of.genes = list.of.genes, obj = obj,
@@ -2579,7 +2579,7 @@ multiFeaturePlot.A4 <- function(
     )
   }
 
-  if (subdir) MarkdownReports::create_set_OutDir(ParentDir)
+  if (subdir) MarkdownReports::create_set_OutDir(ParentDir, verbose = FALSE)
   if (saveGeneList) {
     if (is.null(obj@misc$gene.lists)) obj@misc$gene.lists <- list()
     obj@misc$gene.lists[[substitute(list.of.genes)]] <- list.of.genes.found
@@ -2657,7 +2657,7 @@ multiSingleClusterHighlightPlots.A4 <- function(
   tictoc::tic()
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- "clusters"
-  if (subdir) create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
+  if (subdir) MarkdownReports::create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
 
   clusters <- unique(obj@meta.data[[ident]])
 

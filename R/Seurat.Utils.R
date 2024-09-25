@@ -195,6 +195,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 #'        Default: TRUE.
 #' @param plot.DGEA Logical determining if results should be plotted.
 #'        Default: TRUE.
+#' @param umap_caption Character string specifying the caption for the UMAP plot. Default: "".
 #' @param plot.av.enrichment.hist Logical indicating whether to plot the average enrichment histogram.
 #'       Default: TRUE.
 #' @param plot.log.top.gene.stats Logical indicating whether to plot the log top gene statistics.
@@ -229,6 +230,7 @@ runDGEA <- function(obj,
                     save.obj = TRUE,
                     calculate.DGEA = TRUE,
                     plot.DGEA = TRUE,
+                    umap_caption = "",
                     plot.av.enrichment.hist = TRUE,
                     plot.log.top.gene.stats = TRUE,
                     auto.cluster.naming = TRUE,
@@ -275,9 +277,9 @@ runDGEA <- function(obj,
   message("Resolutions analyzed:")
   df.markers.all <- Idents.for.DEG <- list.fromNames(x = res.analyzed.DE)
 
+  # browser()
   if (clean.misc.slot) {
     message("Erasing up the misc slot: df.markers and top.markers.resX")
-    # obj@misc$'df.markers' <- NULL
     topMslots <- grepv("top.markers.res", names(obj@misc))
     obj@misc[topMslots] <- NULL
   }
@@ -285,11 +287,11 @@ runDGEA <- function(obj,
   if (clean.meta.data) {
     message("Erasing up the meta.data clustering columns.")
     topMslots <- grepv("top.markers.res", names(obj@meta.data))
-
     cl.ordered <- GetOrderedClusteringRuns(obj = obj)
-    cl.names <- GetNamedClusteringRuns(obj = obj, pat = "^cl.names.*[0-1]\\.[0-9]",
-                                       find.alternatives = FALSE)
-    obj@meta.data[, c(cl.ordered, cl.names)] <- NULL
+    obj@meta.data[, cl.ordered ] <- NULL
+    # cl.names <- GetNamedClusteringRuns(obj = obj, pat = "^cl.names.*[0-1]\\.[0-9]",
+    #                                    find.alternatives = FALSE)
+    # obj@meta.data[, c(cl.ordered, cl.names)] <- NULL
   }
 
   # Loop through each resolution setting to find markers ________________________________________
@@ -418,7 +420,7 @@ runDGEA <- function(obj,
         obj <- StoreAllMarkers(df_markers = df.markers, res = res, obj = obj)
         obj <- AutoLabelTop.logFC(group.by = Idents.for.DEG[[i]], obj = obj, plot.top.genes = FALSE) # already plotted above
 
-        clUMAP(ident = ppp("cl.names.top.gene", Idents.for.DEG[[i]]), obj = obj, caption = "")
+        clUMAP(ident = ppp("cl.names.top.gene", Idents.for.DEG[[i]]), obj = obj, caption = umap_caption)
       } # end if auto.cluster.naming
 
       # Plot per-cluster gene enrichment histogram ________________________________________
