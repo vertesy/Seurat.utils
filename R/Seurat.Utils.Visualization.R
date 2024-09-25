@@ -4202,47 +4202,46 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { #
 }
 
 
+
 # _________________________________________________________________________________________________
-#' @title Compute and Backup Dimensionality Reductions
+#' @title SetupReductionsNtoKdimensions
 #'
-#' @description Executes specified dimensionality reduction (UMAP, tSNE, or PCA) over a range of dimensions
-#' and backs up the results within a Seurat object. This function allows for exploration of data structure
-#' at varying levels of granularity and ensures that reduction results are preserved for future reference.
-#'
-#' @param obj Seurat object to process; Default: `combined.obj`.
-#' @param nPCs Number of principal components to consider in the reduction; Default: `p$n.PC`.
-#' @param dimensions Numeric vector specifying target dimensions for the reductions; Default: `3:2`.
-#' @param reduction Type of dimensionality reduction to apply ('umap', 'tsne', or 'pca'); Default: 'umap'.
-#' @param ... Additional parameters to pass to the dimensionality reduction functions.
-#'
-#' @return Modified Seurat object with added dimensionality reduction data and backups.
-#'
+#' @description Function to calculate N-to-K dimensional umaps (default = 2:3); and back them up to
+#' slots `obj@misc$reductions.backup` from @reductions$umap
+#' @param obj A Seurat object. Default: combined.obj
+#' @param nPCs A numeric value representing the number of principal components to use. Default: p$n.PC
+#' @param dimensions A numeric vector specifying the dimensions to use for the dimensionality reductions. Default: 3:2
+#' @param reduction_input The type of dimensionality reduction to use as input. Can be "pca", or
+#' some correctionn results, like harmony pca.
+#' @param reduction_output Te type of dimensionality reduction to perform.  Can be "umap", "tsne",
+#' or "pca". Default: 'umap'
+#' @return The input Seurat object with computed dimensionality reductions and backups of these reductions.
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   combined.obj <- SetupReductionsNtoKdimensions(
-#'     obj = combined.obj, nPCs = 10,
-#'     dimensions = 2:3, reduction = "umap"
-#'   )
+#'   combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction = "umap")
 #' }
 #' }
+#' @importFrom tictoc tic toc
 #'
 #' @export
-#' @importFrom Seurat RunUMAP RunTSNE RunPCA
 SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", dimensions = 3:2,
-                                          reduction = "umap", ...) {
+                                          reduction_input = "pca", reduction_output = "umap", ...) {
+  tictoc::tic()
   red <- reduction
   for (d in dimensions) {
     iprint(d, "dimensional", red, "is calculated")
-    obj <- if (reduction == "umap") {
-      RunUMAP(obj, dims = 1:nPCs, n.components = d, ...)
-    } else if (reduction == "tsne") {
-      RunTSNE(obj, dims = 1:nPCs, n.components = d, ...)
-    } else if (reduction == "pca") {
+    obj <- if (reduction_output == "umap") {
+      RunUMAP(obj, dims = 1:nPCs, reduction = reduction_input, n.components = d, ...)
+    } else if (reduction_output == "tsne") {
+      RunTSNE(obj, dims = 1:nPCs, reduction = reduction_input, n.components = d, ...)
+    } else if (reduction_output == "pca") {
       RunPCA(obj, dims = 1:nPCs, n.components = d, ...)
     }
-    obj <- BackupReduction(obj = obj, dim = d, reduction = red)
+    obj <- BackupReduction(obj = obj, dim = d, reduction = reduction_output)
   }
+
+  tictoc::toc()
   return(obj)
 }
 
