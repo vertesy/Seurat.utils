@@ -7,12 +7,13 @@
 clUMAP(
   ident = NULL,
   obj = combined.obj,
-  reduction = "umap",
-  splitby = NULL,
   title = ident,
   sub = NULL,
   prefix = NULL,
   suffix = make.names(sub),
+  caption = NULL,
+  reduction = "umap",
+  splitby = NULL,
   label.cex = 7,
   h = 7,
   w = NULL,
@@ -35,7 +36,6 @@ clUMAP(
   save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
   PNG = TRUE,
   check_for_2D = TRUE,
-  caption = try(.parseKeyParams(obj = obj), silent = T),
   ...
 )
 }
@@ -44,10 +44,6 @@ clUMAP(
 
 \item{obj}{Seurat object containing single-cell data; Default: \code{combined.obj}.}
 
-\item{reduction}{Dimension reduction method ('umap', 'tsne', 'pca'); Default: 'umap'.}
-
-\item{splitby}{Metadata column to split cells by; optional; Default: NULL.}
-
 \item{title}{Main title of the plot; Default: \code{ident}.}
 
 \item{sub}{Subtitle of the plot; optional; Default: NULL.}
@@ -55,6 +51,12 @@ clUMAP(
 \item{prefix}{Prefix for saved filename; optional; Default: NULL.}
 
 \item{suffix}{Suffix for saved filename; defaults to plot subtitle; Default: NULL.}
+
+\item{caption}{Plot caption; optional; Default: dynamically generated from \code{obj}.}
+
+\item{reduction}{Dimension reduction method ('umap', 'tsne', 'pca'); Default: 'umap'.}
+
+\item{splitby}{Metadata column to split cells by; optional; Default: NULL.}
 
 \item{label.cex}{Size of cluster labels; Default: 7.}
 
@@ -93,8 +95,6 @@ clUMAP(
 \item{PNG}{Save as PNG (TRUE) or PDF (FALSE); Default: TRUE.}
 
 \item{check_for_2D}{Ensure UMAP is 2D; Default: TRUE.}
-
-\item{caption}{Plot caption; optional; Default: dynamically generated from \code{obj}.}
 
 \item{...}{Additional parameters for \code{DimPlot}.}
 }

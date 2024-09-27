@@ -1238,7 +1238,7 @@ GetClusteringRuns <- function(obj = combined.obj,
 #' @param find.alternatives If TRUE, tries to find alternative clustering runs with
 #' the same resolution, Default: TRUE
 #' @param v Verbose output, Default: TRUE
-#' simple GetClusteringRuns(), Default: TRUE
+#'
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -2085,8 +2085,6 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
     message(msg)
   }
 
-
-
   # Sample cells from each identity class
   sampledNames <- lapply(uniqueCategories, function(category) {
     namesInCategory <- names(data[data == category])
@@ -2125,6 +2123,70 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
   return(obj2)
 }
 
+# _________________________________________________________________________________________________
+#' @title Relabel Small Categories / Clusters
+#'
+#' @description
+#' Relabels small categories in a specified metadata column of a Seurat object. Categories with
+#' cell counts less than a minimum count are relabeled to a specified label. The function adds
+#' a new metadata column with the updated labels.
+#'
+#' @param obj Seurat object. The Seurat object containing the metadata.
+#' @param col_in Character string. Name of the metadata column to process.
+#' @param backup_col_name Character string. Name of the new metadata column where to backup the original values.
+#'   Default: `ppp(col_in, "orig")`.
+#' @param min_count Numeric. Minimum number of cells required for a category to be retained.
+#'   Categories with counts less than this number will be relabeled. Default: 100
+#' @param small_label Character string. Label to assign to small categories. Default: "Other".
+#' @param v Logical. If `TRUE`, prints verbose output. Default: `TRUE`.
+#'
+#' @return Seurat object. The modified Seurat object with the new metadata column added.
+#'
+#' @examples
+#' # Assuming 'seurat_obj' is your Seurat object
+#' seurat_obj <- RelabelSmallCategories(
+#'   obj = seurat_obj,
+#'   col_in = "cell_type",
+#'   min_count = 50,
+#'   small_label = "MinorType",
+#'   v = TRUE
+#' )
+#'
+
+RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "orig"), min_count = 100, small_label = "Other", v = T) {
+  # Input assertions
+  stopifnot(
+    inherits(obj, "Seurat"),                                  # Check if obj is a Seurat object
+    is.character(col_in), length(col_in) == 1,                # col_in is a single string
+    col_in %in% colnames(obj@meta.data),                      # col_in exists in metadata
+    is.character(backup_col_name), length(backup_col_name) == 1,    # backup_col_name is a single string
+    is.numeric(min_count), min_count > 0,                     # min_count is a positive number
+    is.character(small_label), length(small_label) == 1,      # small_label is a single string
+    is.logical(v), length(v) == 1                             # v is a single logical value
+  )
+
+  message('backup_col_name: ', backup_col_name)
+
+  categories <- obj@meta.data[[backup_col_name]] <- obj@meta.data[[col_in]] # Extract the specified metadata column
+  category_counts <- table(categories)                                    # Count occurrences of each category
+  small_categories <- names(category_counts[category_counts < min_count]) # Identify small categories
+  new_categories <- as.character(categories)                              # Copy original categories
+  new_categories[new_categories %in% small_categories] <- small_label     # Relabel small categories
+  obj@meta.data[[col_in]] <- new_categories                      # Add new column to metadata
+
+  if (v) {  # Verbose output
+    total_cells <- length(categories)
+    num_small_categories <- length(small_categories)
+    num_large_categories <- length(category_counts) - num_small_categories
+    percent_small_cells <- sum(category_counts[small_categories]) / total_cells * 100
+    message(total_cells, " Total cells.")
+    message(num_small_categories, " Categories relabeled to ", small_label)
+    message(num_large_categories, " of ", length(category_counts), " Categories retained.")
+    message(sprintf("Cells in relabeled categories: %d (%.2f%% of total)", sum(category_counts[small_categories]), percent_small_cells))
+  }
+
+  return(obj)  # Return the modified Seurat object
+}
 
 
 # _________________________________________________________________________________________________
@@ -5414,26 +5476,27 @@ compareVarFeaturesAndRanks <- function(
 #' @return Integer representing the number of scaled features
 .getNrScaledFeatures <- function(obj, assay = Seurat::DefaultAssay(obj),
                                  v = TRUE) {
-  if(v) message(" > Running .getNrScaledFeatures...")
-  if(v) message("Seurat version: ", obj@version, " | Assay searched: ", assay)
+  res <- NA
+  if (v) message(" > Running .getNrScaledFeatures...")
+  if (v) message("Seurat version: ", obj@version, " | Assay searched: ", assay)
 
-  layers.found <- Layers(obj, assay = assay)
-  if("scale.data" %in% layers.found) {
-    # !!! Below may have been necessary bc of a bug in version 5.0.0
-    if (obj@version >= 5) {
-      if ("scale.data" %in% Layers(obj, assay = assay) ) {
-        mx.scale.data <- LayerData(obj, assay = "RNA", layer = "scale.data")
-        res <- nrow(mx.scale.data)
-      }
+
+  if (obj@version >= 5) { # Check if Seurat version is 5 or higher
+    if ("scale.data" %in% names(obj@assays[[assay]]@layers)) {
+      res <- nrow(obj@assays[[assay]]@layers[["scale.data"]])
     } else {
-      res <- nrow(obj@assays[[assay]]@"scale.data")
+      if (v) warning("No scaled data found in object.", immediate. = TRUE)
     }
-  } else {
-    if(v) warning("No scaled data found in object.", immediate. = TRUE)
-    res <- NA
+  } else { # For Seurat versions below 5
+    if ("scale.data" %in% names(obj@assays[[assay]])) {
+      res <- nrow(obj@assays[[assay]][["scale.data"]])
+    } else {
+      if (v) warning("No scaled data found in object.", immediate. = TRUE)
+    }
   }
-
+  return(res)
 }
+
 
 
 # _________________________________________________________________________________________________
@@ -5443,9 +5506,9 @@ compareVarFeaturesAndRanks <- function(
 #' @param v Verbose? Default: `TRUE`.
 #' @return Integer representing the number of principal components
 #'
-.getNrPCs <- function(obj, v = TRUE) {
+.getNrPCs <- function(obj, v = TRUE, reduc = "pca") {
   if("pca" %in% names(obj@reductions)) {
-    ncol(obj@reductions$pca@"cell.embeddings")
+    ncol(obj@reductions[[reduc]]@"cell.embeddings")
   } else {
     if(v) warning("No PCA cell embeddings found in object.", immediate. = TRUE)
     NA
@@ -5462,50 +5525,35 @@ compareVarFeaturesAndRanks <- function(
 #' @param v Verbose? Default: `TRUE`.
 #'
 #' @return Integer representing the number of principal components
-.getRegressionVariablesForScaleData <- function(obj, assay = Seurat::DefaultAssay(obj),
-                                                v = TRUE,
-                                                # element = "variables.2.regress.combined", par.list = p
-                                                ...) {
+.getRegressionVariablesForScaleData <- function(obj, assay = Seurat::DefaultAssay(obj), v = TRUE, ...) {
+  if (v) message(" > Running .getRegressionVariablesForScaleData...")
 
-  if(v) message(" > Running .getRegressionVariablesForScaleData...")
-  stopifnot(
-    is(obj, "Seurat"),
-    is.character(assay)
-    )
+  # Input assertions
+  stopifnot(is(obj, "Seurat"), is.character(assay))
 
-  if(!"commands" %in% slotNames(obj)) {
-    if(v) warning("No commands slot found in object.", immediate. = TRUE)
+  # Check if the "commands" slot exists in the object
+  if (!"commands" %in% slotNames(obj)) {
+    if (v) warning("No commands slot found in object.", immediate. = TRUE)
     return(NULL)
+  }
+
+  # Find the ScaleData command using the helper function
+  func_slot <- .FindCommandInObject(obj, pattern = paste0("^ScaleData.", assay))
+
+  if (is.null(func_slot)) {
+    if (v) message("No ScaleData command found in @commands.")
+    return(NULL)
+  }
+
+  # Extract regression variables
+  regressionVariables <- func_slot$'vars.to.regress'
+  if (is.null(regressionVariables)) {
+    if (v) message("No regression variables found in @commands")
   } else {
-    commands.found <- names(obj@commands)
-    if(is.null(commands.found)) {
-      if(v) warning("Commands slot in object is empty.", immediate. = TRUE)
-      return(NULL)
-    } else {
-      func_slot <- CodeAndRoll2::grepv(x = names(obj@commands), pattern = "^ScaleData")
-      if(v) message("Function: ", paste(func_slot))
+    if (v) message("Regression variables found in @commands: ", paste(regressionVariables, collapse = ", "))
+  }
 
-      if(is.null(func_slot)) {
-        message("No ScaleData slot found in @commands")
-        stop()
-      } else if(length(func_slot) > 1) {
-        func_slot <- grepv(x = func_slot, pattern = assay)
-        if(v) message("Multiple ScaleData slots found in @commands.")
-      }
-      if(v) message("Searching for parameters is command: ", func_slot[length(func_slot)])
-
-      # Extract regression variables
-      regressionVariables <- obj@commands[[func_slot]]$'vars.to.regress'
-
-      if (is.null(regressionVariables)) {
-        if(v) message("No regression variables found in @commands")
-      } else {
-        if(v) message("regressionVariables found in @commands:", regressionVariables)
-      }
-
-      return(regressionVariables)
-    } # end if is.null(commands.found)
-  } # end if slotNames
+  return(regressionVariables)
 }
 
 
@@ -5534,9 +5582,11 @@ compareVarFeaturesAndRanks <- function(
                             v = T) {
   #
   # browser()
+  tictoc::tic()
   if(v) message(" > Running .parseKeyParams...")
+  # tictoc::tic()
   scaledFeatures <- .getNrScaledFeatures(obj, assay, v= F)
-
+  # tictoc::toc()
   if (is.null(regressionVariables)) regressionVariables <- .getRegressionVariablesForScaleData(obj = obj, assay = assay, v = F)
 
   if (!is.null(nrVarFeatures)) {
@@ -5555,8 +5605,51 @@ compareVarFeaturesAndRanks <- function(
   } else {
     tag <- paste0(scaledFeatures, " ScaledFeatures | ", pcs, " PCs | ", reg, " ", suffix)
   }
+  tictoc::toc()
   return(tag)
 }
+
+
+# _________________________________________________________________________________________________
+#' @title Find Command in Seurat Object by Partial Match
+#'
+#' @description
+#' This function searches for commands in a list within a Seurat object using a partial match
+#' (e.g., pattern matching) on the command names. It returns the content of the first match if only
+#' one match is found. If multiple matches are found, it outputs the number of hits and their names.
+#'
+#' @param obj A Seurat object. **Default:** None.
+#' @param pattern A character string representing the pattern to match command names. **Default:** None.
+#'
+#' @return If exactly one match is found, the function returns the content of the first match. If
+#' multiple matches are found, it returns `NULL` after displaying the number of matches and their names.
+#'
+#' @examples
+#' # Assuming 'combined.obj' is your Seurat object
+#' result <- FindCommandInObject(combined.obj, "^FindVariable")
+#'
+#' @importFrom checkmate assert_class assert_character assert_string
+
+.FindCommandInObject <- function(obj, pattern, perl = TRUE) {
+
+  command_names <- names(obj@commands) # Get all command names
+
+  # Find matches using partial pattern matching
+  matches <- grep(pattern, command_names, value = TRUE, perl = perl)
+
+  # Check the number of matches
+  if (length(matches) == 0) {
+    stop("No matching commands found.")
+  } else {
+    if (length(matches) > 1) {
+      # Multiple matches found, print the number of hits and their names
+      message(length(matches), " matches found: ", paste(matches, collapse = ", "))
+    }
+    # Return the content of the last match
+    return(obj@commands[[matches[length(matches)]]])
+  }
+}
+
 
 
 

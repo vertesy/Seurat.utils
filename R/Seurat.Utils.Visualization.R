@@ -895,7 +895,8 @@ scBarplot.CellFractions <- function(
     save_plot = TRUE,
     also.pdf = FALSE,
     seedNr = 1989,
-    w = 10, h = ceiling(0.7 * w),
+    w = NULL,
+    h = 6,
     draw_plot = TRUE,
     show_numbers = FALSE,
     min.pct = 0.05,
@@ -909,15 +910,23 @@ scBarplot.CellFractions <- function(
     xlab.angle = 45,
     show_plot = TRUE,
     ...) {
+
   # Input assertions
   stopifnot(
     inherits(obj, "Seurat"), # obj must be a Seurat object
     is.numeric(min_frequency) && length(min_frequency) == 1 && min_frequency >= 0 && min_frequency < 1, # min_frequency must be between 0 and 1
     group.by %in% colnames(obj@meta.data), # group.by must be a valid column in the meta.data slot of the Seurat object
-    fill.by %in% colnames(obj@meta.data) # fill.by must be a valid column in the meta.data slot of the Seurat object
+    fill.by %in% colnames(obj@meta.data), # fill.by must be a valid column in the meta.data slot of the Seurat object
+    "To many categories for X axis (group.by)" = nr.unique(obj@meta.data[, group.by]) < 100
   )
 
   META <- obj@meta.data
+
+  if (is.null(w)) {
+    categ_X <- nr.unique(META[, group.by])
+    categ_Y <- nr.unique(META[, fill.by])
+    w <- ceiling(max(6, categ_Y/4, categ_X/2))
+  }
 
   set.seed(seedNr)
   pname.suffix <- capt.suffix <- NULL
@@ -1136,7 +1145,7 @@ scBarplot.CellsPerCluster <- function(
     obj = combined.obj,
     ident = GetOrderedClusteringRuns(obj = obj)[1],
     sort = FALSE,
-    title = "Cells per Identity Group",
+    plotname = "Cells per Identity Group",
     sub = ident,
     label = list(TRUE, "percent")[[1]],
     suffix = if (label == "percent") "percent" else NULL,
@@ -1160,16 +1169,17 @@ scBarplot.CellsPerCluster <- function(
     label
   }
 
-  imessage("min cell thr:", min.cells)
+  min.PCT.cells <- min.cells / ncol(obj)
+  message("min cell thr: ", min.cells, " corresponding to min: ", percentage_formatter(min.PCT.cells))
   n.clusters <- length(cell.per.cluster)
   nr.cells.per.cl <- table(obj[[ident]][, 1])
-  SBT <- pc_TRUE(nr.cells.per.cl < min.cells,
-    NumberAndPC = TRUE,
-    suffix = paste("of identites are < 1% (below min.cells:", min.cells, ")")
+
+  SBT <- pc_TRUE(nr.cells.per.cl < min.cells, NumberAndPC = TRUE,
+    suffix = paste("of identites are below:", min.cells, "cells, or", percentage_formatter(min.PCT.cells), "of all cells." )
   )
 
   pl <- ggExpress::qbarplot(cell.per.cluster,
-    plotname = title,
+    plotname = plotname,
     subtitle = paste0(sub, "\n", SBT),
     suffix = kpp(ident, ncol(obj),"c", suffix),
     col = 1:n.clusters,
@@ -1938,7 +1948,7 @@ qFeatureScatter <- function(
   if (logX) p <- p + scale_x_log10()
   if (logY) p <- p + scale_y_log10()
 
-  fname <- kpp("FeatureScatter", plotname)
+  # fname <- kpp("FeatureScatter", plotname)
   ggExpress::qqSave(ggobj = p, title = plotname, ext = ext, w = 8, h = 5)
   if (plot) p
 }
@@ -2205,6 +2215,7 @@ qUMAP <- function(
 #' @param sub Subtitle of the plot; optional; Default: NULL.
 #' @param prefix Prefix for saved filename; optional; Default: NULL.
 #' @param suffix Suffix for saved filename; defaults to plot subtitle; Default: NULL.
+#' @param caption Plot caption; optional; Default: dynamically generated from `obj`.
 #' @param label.cex Size of cluster labels; Default: 7.
 #' @param h Height of plot in inches; Default: 7.
 #' @param w Width of plot in inches; optional; Default: NULL.
@@ -2224,7 +2235,6 @@ qUMAP <- function(
 #' @param save.plot Save plot to file; Default: TRUE.
 #' @param PNG Save as PNG (TRUE) or PDF (FALSE); Default: TRUE.
 #' @param check_for_2D Ensure UMAP is 2D; Default: TRUE.
-#' @param caption Plot caption; optional; Default: dynamically generated from `obj`.
 #' @param ... Additional parameters for `DimPlot`.
 #'
 #' @examples
@@ -2245,6 +2255,7 @@ clUMAP <- function(
     sub = NULL,
     prefix = NULL,
     suffix = make.names(sub),
+    caption = NULL, # try(.parseKeyParams(obj = obj), silent = T),
     reduction = "umap", splitby = NULL,
     label.cex = 7,
     h = 7, w = NULL,
@@ -2265,8 +2276,6 @@ clUMAP <- function(
     save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     check_for_2D = TRUE,
-    caption = try(.parseKeyParams(obj = obj), silent = T),
-    # caption = NULL,
     ...) {
   #
 
@@ -2275,6 +2284,7 @@ clUMAP <- function(
     is.logical(save.plot),
     is.character(suffix) | is.null(suffix)
     )
+  tictoc::tic()
 
   if (is.null(ident)) {
     ident <- GetNamedClusteringRuns(obj, v = F)[1]
@@ -2375,6 +2385,7 @@ clUMAP <- function(
       fname <- ww.FnP_parser(pname, if (PNG) "png" else "pdf")
       try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
     }
+    tictoc::toc()
     return(gg.obj)
   } # if not too many categories
 }
@@ -2783,7 +2794,7 @@ qClusteringUMAPS <- function(
     "A" = clUMAP(ident = idents[1], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
     "B" = clUMAP(ident = idents[2], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
     "C" = clUMAP(ident = idents[3], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
-    "D" = clUMAP(ident = idents[4], save.plot = FALSE, obj = obj, ...) + NoAxes()
+    "D" = clUMAP(ident = idents[4], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes()
   )
 
   ggExpress::qA4_grid_plot(

@@ -4,7 +4,7 @@
 \alias{.getNrPCs}
 \title{Get number of principal components}
 \usage{
-.getNrPCs(obj, v = TRUE)
+.getNrPCs(obj, v = TRUE, reduc = "pca")
 }
 \arguments{
 \item{obj}{A Seurat object containing PCA cell embeddings in \code{reductions$pca@cell.embeddings}}

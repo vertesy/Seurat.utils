@@ -8,7 +8,7 @@ scBarplot.CellsPerCluster(
   obj = combined.obj,
   ident = GetOrderedClusteringRuns(obj = obj)[1],
   sort = FALSE,
-  title = "Cells per Identity Group",
+  plotname = "Cells per Identity Group",
   sub = ident,
   label = list(TRUE, "percent")[[1]],
   suffix = if (label == "percent") "percent" else NULL,
@@ -27,8 +27,6 @@ Default: First entry from ordered clustering runs.}
 
 \item{sort}{If TRUE, sorts clusters by size. Default: FALSE.}
 
-\item{title}{Title for the plot. Default: "Cells per Identity Group".}
-
 \item{sub}{Subtitle for the plot. Default: "identity".}
 
 \item{label}{If TRUE, shows cell count or percentage based on the label vector. Default: TRUE.}
@@ -44,6 +42,8 @@ Default: First entry from ordered clustering runs.}
 \item{min.cells}{Minimum cell count threshold for categories. Adjusted by data size.}
 
 \item{...}{Additional parameters for internal function calls.}
+
+\item{title}{Title for the plot. Default: "Cells per Identity Group".}
 }
 \description{
 Visualizes the fraction of cells within each cluster through a barplot.

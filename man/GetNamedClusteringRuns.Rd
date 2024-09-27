@@ -25,8 +25,7 @@ GetNamedClusteringRuns(
 \item{find.alternatives}{If TRUE, tries to find alternative clustering runs with
 the same resolution, Default: TRUE}
 
-\item{v}{Verbose output, Default: TRUE
-simple GetClusteringRuns(), Default: TRUE}
+\item{v}{Verbose output, Default: TRUE}
 }
 \description{
 The \code{GetNamedClusteringRuns} function retrieves metadata column names associated with
