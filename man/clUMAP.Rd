@@ -11,7 +11,7 @@ clUMAP(
   sub = NULL,
   prefix = NULL,
   suffix = make.names(sub),
-  caption = NULL,
+  caption = .parseBasicObjStats(obj, simple = TRUE),
   reduction = "umap",
   splitby = NULL,
   label.cex = 7,

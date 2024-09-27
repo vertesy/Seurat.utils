@@ -534,7 +534,7 @@ UpdateSeuratObjectProperly <- function(obj, update.gene.symbols = TRUE) {
   message("Input obj. version: ", obj@version)
 
   # Update Object Structure (not Assays, etc.) _________
-  if (obj@version < 5) {
+  if (obj@version < "5") {
     obj <- SeuratObject::UpdateSeuratObject(obj)
   } else {
     message("Object already updated to version 5. Skipping 'UpdateSeuratObject()'.")
@@ -3790,7 +3790,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
       length(Features(obj, assay = assay)) == length(newnames)
   )
 
-  if (obj@version < 5) warning("obj@version < 5. Old versions are not supported. Update the obj!", immediate. = TRUE)
+  if (obj@version < "5") warning("obj@version < 5. Old versions are not supported. Update the obj!", immediate. = TRUE)
 
   if ("scale.data" %in% slots) {
     n_genes_sc_dta <- nrow(obj@assays[[assay]]$"scale.data")
@@ -5481,7 +5481,7 @@ compareVarFeaturesAndRanks <- function(
   if (v) message("Seurat version: ", obj@version, " | Assay searched: ", assay)
 
 
-  if (obj@version >= 5) { # Check if Seurat version is 5 or higher
+  if (obj@version >= "5") { # Check if Seurat version is 5 or higher
     if ("scale.data" %in% names(obj@assays[[assay]]@layers)) {
       res <- nrow(obj@assays[[assay]]@layers[["scale.data"]])
     } else {

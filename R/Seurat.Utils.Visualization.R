@@ -3220,7 +3220,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
                                ident = GetClusteringRuns(obj = obj)[1],
                                plot = TRUE) {
   dim_name <- kppu(reduction, dim)
-  if (obj@version < 5) dim_name <- toupper(dim_name)
+  if (obj@version < "5") dim_name <- toupper(dim_name)
   message("Obj. version: ", obj@version, " \ndimension name: ", dim_name)
   message("Resolution: ", ident)
 
@@ -4033,7 +4033,7 @@ plot3D.umap.gene <- function(
     "3D reduction has >/< cells than object" = (ncol(obj) == nrow(obj@misc$reductions.backup$"umap3d"@cell.embeddings))
   )
 
-  if (obj@version < 5) col.names <- toupper(col.names)
+  if (obj@version < "5") col.names <- toupper(col.names)
   message("Obj. version: ", obj@version, " \ndim names: ", kppc(col.names))
 
   DefaultAssay(object = obj) <- def.assay
@@ -4132,7 +4132,7 @@ plot3D.umap <- function(
     "3D reduction has >/< cells than object" = (ncol(obj) == nrow(obj@misc$reductions.backup$"umap3d"@cell.embeddings))
   )
 
-  if (obj@version < 5) col.names <- toupper(col.names)
+  if (obj@version < "5") col.names <- toupper(col.names)
   message("Obj. version: ", obj@version, " \ndim names: ", kppc(col.names))
 
   # Get and format 3D plotting data ____________________________________
