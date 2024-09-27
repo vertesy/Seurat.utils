@@ -366,26 +366,32 @@ getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],
 #' @param col.name The name of the new metadata column.
 #' @param overwrite Logical; if TRUE, overwrites the existing column.
 #' @param verbose Logical; if TRUE, prints additional information.
+#' @param strict ...
 #'
 #' @return Modified Seurat object with additional metadata.
 #' @importFrom Seurat AddMetaData
 #' @export
-addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose = F) {
+addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose = F,
+                            strict = TRUE) {
 
   if (verbose) message("Running addMetaDataSafe...")
   # browser()
   stopifnot(
     is(obj, "Seurat"), is.vector(metadata), is.character(col.name), is.logical(overwrite),
-    "Column already exists" = ((!col.name %in% colnames(obj@meta.data)) | overwrite),
-    "Metadata or object too short" = (length(metadata) == ncol(obj))
+    "Column already exists" = ((!col.name %in% colnames(obj@meta.data)) | overwrite)
   )
+  equal_length <- length(metadata) == ncol(obj)
+  iprint('strict', strict)
+  if(strict) stopifnot("Metadata or object too short" = equal_length)
+
 
   if (!is.null(names(metadata))) {
     if(verbose) print(head(names(metadata)))
     if(verbose) print(head(colnames(obj)))
-    stopifnot(names(metadata) == colnames(obj))
+    if(strict) stopifnot(names(metadata) == colnames(obj))
   } else {
     message("No CBCs associated with new metadata. Assuming exact match.")
+    if (!equal_length) stop("Not equal lenght, no CBCs")
     names(metadata) <- colnames(obj)
   }
 
@@ -893,7 +899,8 @@ transferMetadata <- function(from, to,
         # to[[colname_to[i]]] <- from[[colname_from[i]]]
 
         metadata_from <- getMetadataColumn(obj = from, col = colname_from[i])
-        to <- addMetaDataSafe(obj = to, col.name = colname_to[i], metadata = metadata_from[colnames(to)])
+        to <- addMetaDataSafe(obj = to, col.name = colname_to[i], metadata = metadata_from[colnames(to)],
+                              strict = strict)
 
         message(sprintf("Transferred '%s' to '%s'.", colname_from[i], colname_to[i]))
       } else {
