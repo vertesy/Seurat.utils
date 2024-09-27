@@ -2255,7 +2255,7 @@ clUMAP <- function(
     sub = NULL,
     prefix = NULL,
     suffix = make.names(sub),
-    caption = NULL, # try(.parseKeyParams(obj = obj), silent = T),
+    caption = .parseBasicObjStats(obj, simple = TRUE), # try(.parseKeyParams(obj = obj), silent = T),
     reduction = "umap", splitby = NULL,
     label.cex = 7,
     h = 7, w = NULL,
