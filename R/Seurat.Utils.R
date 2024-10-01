@@ -5430,14 +5430,16 @@ compareVarFeaturesAndRanks <- function(
 #'
 #' # Assuming CBE.params exists and has a `cpus` entry of 4
 #' getCPUsCBE() # returns 3
+#'
 .getNrCores <- function(n.cpus.def = 8) {
   # Check if 'CBE.params' exists and contains 'cpus'
-  if (exists("CBE.params") && is.list(CBE.params) &&
-      is.numeric(CBE.params$"cpus") && CBE.params$"cpus" > 0) {
-    max(CBE.params$"cpus" - 1, 1)
-  } else {
-    return(n.cpus.def)
-  }
+  # if (exists("CBE.params") && is.list(CBE.params) &&
+  #     is.numeric(CBE.params$"cpus") && CBE.params$"cpus" > 0) {
+  #   max(CBE.params$"cpus" - 1, 1)
+  # } else {
+  n_cores_detected <- as.numeric(system("nproc", intern = TRUE))
+    return(max(min(n_cores_detected-1, n.cpus.def),1))
+  # }
 }
 
 
