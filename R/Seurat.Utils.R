@@ -4597,12 +4597,14 @@ xsave <- function(
   }
 
   if(!isFALSE(saveParams)) message("paramList: ", if (exists("paramList")) paste(substitute(paramList), length(paramList), " elements.") else " not provided.")
-  if(!isFALSE(saveParams)) message("allGenes: ", if (exists("allGenes")) substitute(allGenes) else " not provided.")
+  if(!isFALSE(saveParams)) message("allGenes: ", if (exists("allGenes")) " found as global variable." else " not provided.")
 
   try(tictoc::tic(), silent = TRUE)
   if (showMemObject & v) try(memory.biggest.objects(), silent = TRUE)
 
 
+  message(11)
+  # browser()
   fnameBase <- trimws(kppu(
     prefix, substitute(obj), annot.suffix, suffix, project,
     idate(Format = "%Y.%m.%d_%H.%M")
@@ -4612,6 +4614,7 @@ xsave <- function(
   CMND <- paste0(substitute(obj), " <- xread('", FNN, "')")
   if (v) message(CMND)
 
+  message(1111)
   if ("Seurat" %in% is(obj)) {
     if (saveParams) {
       if (exists("paramList")) try(obj@misc$"p" <- paramList, silent = TRUE)
