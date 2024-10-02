@@ -8,7 +8,7 @@ GetNamedClusteringRuns(
   obj = combined.obj,
   res = list(FALSE, 0.5)[[1]],
   topgene = FALSE,
-  pat = c("^cl.names.*[0-9]\\\\.[0-9]", "Name|name")[2],
+  pat = c("^cl.names.top.gene.+[0-9]\\\\.[0-9]", "Name|name")[2],
   find.alternatives = TRUE,
   v = TRUE
 )

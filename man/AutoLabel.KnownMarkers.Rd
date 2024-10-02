@@ -8,8 +8,12 @@ AutoLabel.KnownMarkers(
   obj = combined.obj,
   topN = 1,
   res = 0.5,
-  KnownMarkers = c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1",
-    "SALL4", "DDIT4", "PDK1", "SATB2", "FEZF2"),
+  KnownMarkers = c(`dl-EN` = "KAZN", `ul-EN` = "SATB2", `Immature neurons` = "SLA",
+    Interneurons = "DLX6-AS1", Interneurons = "ERBB4", InterN_CGE = "SCGN",
+    `Intermediate progenitor` = "EOMES", `S-phase` = "TOP2A", `G2M-phase` = "H4C3", oRG =
+    "HOPX", Astrocyte = "S100B", `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1",
+    Choroid.Plexus = "TTR", `Low-Quality` = "POLR2A", Mesenchyme = "DCN", Choroid.Plexus
+    = "TTR"),
   order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1],
   df_markers = obj@misc$df.markers[[paste0("res.", res)]]
 )

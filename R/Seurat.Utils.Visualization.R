@@ -2584,9 +2584,10 @@ multiFeaturePlot.A4 <- function(
       pt.size = cex, ...
     )
 
-    for (i in 1:length(plot.list)) {
-      plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
-      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + ggplot2::coord_fixed(ratio = aspect.ratio)
+    # Remove the legend and axes
+    for (j in 1:length(plot.list)) {
+      plot.list[[j]] <- plot.list[[j]] + NoLegend() + NoAxes()
+      if (aspect.ratio) plot.list[[j]] <- plot.list[[j]] + ggplot2::coord_fixed(ratio = aspect.ratio)
     }
 
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
@@ -2690,6 +2691,7 @@ multiSingleClusterHighlightPlots.A4 <- function(
     nr.Row <- 4
     message("tall layout active, nr.Col ignored.")
   }
+
   if (layout == "wide") {
     w <- 11.69 * scaling
     h <- 8.27 * scaling
@@ -2706,25 +2708,24 @@ multiSingleClusterHighlightPlots.A4 <- function(
     (plotname <- kpp(c(prefix, plot.reduction, i, "clusters", ls.Clust[[i]], suffix, format)))
 
     plot.list <- list()
-    for (i in seq(clusters_on_this_page)) {
-      cl <- clusters_on_this_page[i]
+    for (j in seq(clusters_on_this_page)) {
+      cl <- clusters_on_this_page[j]
       message(cl)
-      plot.list[[i]] <- clUMAP(
+      plot.list[[j]] <- clUMAP(
         ident = ident, obj = obj,
         highlight.clusters = cl, label = FALSE, legend = FALSE, save.plot = FALSE,
         plotname = plotname, cols = colors, h = h, w = w, ...
       )
-    }
+    } # for j
 
     # Customize plot appearance
-    for (i in 1:length(plot.list)) {
-      plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
+    for (j in 1:length(plot.list)) {
+      plot.list[[j]] <- plot.list[[j]] + NoLegend() + NoAxes()
       if (aspect.ratio) {
-        plot.list[[i]] <- plot.list[[i]] +
+        plot.list[[j]] <- plot.list[[j]] +
           ggplot2::coord_fixed(ratio = aspect.ratio)
       }
-    } # for i
-
+    } # for j2
 
     # Save plots
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
