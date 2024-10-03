@@ -2351,6 +2351,9 @@ clUMAP <- function(
       )
     }
   }
+
+  # if (F) cols <- adjustcolor(cols, alpha.f = alpha)
+
   if (!is.null(highlight.these)) {
     cols <- "lightgrey"
   }
