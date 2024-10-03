@@ -2012,6 +2012,7 @@ qSeuViolin <- function(
     legend.pos = NULL, # c("top", "bottom", "left", "right", "none")[2],
     legend.title = NULL,
     show_plot = TRUE,
+    grid = TRUE,
     w = NULL, h = 7,
     ...) {
   #
@@ -2071,8 +2072,10 @@ qSeuViolin <- function(
     theme(axis.title.x = element_blank()) +
     labs(y = ylab) +
     ggtitle(label = ttl, subtitle = subt )
-    if (!legend) p.obj <- p.obj + NoLegend()
-    if (!is.null(legend.title)) p.obj <- p.obj + guides(fill = guide_legend(legend.title)) else NULL
+
+  if (!legend) p.obj <- p.obj + NoLegend()
+  if (!is.null(legend.title)) p.obj <- p.obj + guides(fill = guide_legend(legend.title)) else NULL
+  if (grid) p.obj <- p.obj + ggpubr::grids(axis = "y")
 
   # Add additional customization, if needed..
   if (!is.null(ylimit)) p.obj <- p.obj + ylim(ylimit[1], ylimit[2])

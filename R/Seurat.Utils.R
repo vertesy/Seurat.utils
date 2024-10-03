@@ -4602,9 +4602,6 @@ xsave <- function(
   try(tictoc::tic(), silent = TRUE)
   if (showMemObject & v) try(memory.biggest.objects(), silent = TRUE)
 
-
-  message(11)
-  # browser()
   fnameBase <- trimws(kppu(
     prefix, substitute(obj), annot.suffix, suffix, project,
     idate(Format = "%Y.%m.%d_%H.%M")
@@ -4614,7 +4611,6 @@ xsave <- function(
   CMND <- paste0(substitute(obj), " <- xread('", FNN, "')")
   if (v) message(CMND)
 
-  message(1111)
   if ("Seurat" %in% is(obj)) {
     if (saveParams) {
       if (exists("paramList")) try(obj@misc$"p" <- paramList, silent = TRUE)
@@ -5425,6 +5421,7 @@ compareVarFeaturesAndRanks <- function(
 #' returns `CBE.params$cpus - 1`, ensuring at least 1 CPU is returned. Otherwise, returns `n.cpus.def`.
 #'
 #' @examples
+#' @export
 #' # Assuming CBE.params does not exist or does not have a `cpus` entry
 #' getCPUsCBE() # returns 8 by default
 #'
@@ -5432,14 +5429,9 @@ compareVarFeaturesAndRanks <- function(
 #' getCPUsCBE() # returns 3
 #'
 .getNrCores <- function(n.cpus.def = 8) {
-  # Check if 'CBE.params' exists and contains 'cpus'
-  # if (exists("CBE.params") && is.list(CBE.params) &&
-  #     is.numeric(CBE.params$"cpus") && CBE.params$"cpus" > 0) {
-  #   max(CBE.params$"cpus" - 1, 1)
-  # } else {
   n_cores_detected <- as.numeric(system("nproc", intern = TRUE))
-    return(max(min(n_cores_detected-1, n.cpus.def),1))
-  # }
+  n_cores_avail <- min(n_cores_detected-1, n.cpus.def) # Minus 1 is necessary, bc nproc returns one more..
+  return(max(n_cores_avail, 1) )
 }
 
 
