@@ -209,6 +209,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 #'       Default: 1.
 #' @param presto Logical indicating whether to use presto for DE analysis. Default: TRUE.
 #'
+#' @importFrom future plan
 #' @return Modified Seurat object and markers list.
 #' @examples
 #' runDGEA(obj = mySeuratObject, param.list = myListParams, directory = "Results/MyAnalysis")
@@ -330,7 +331,7 @@ runDGEA <- function(obj,
 
 
   # Loop through each resolution setting to find markers ________________________________________
-  if (n.cores>1) plan("multisession", workers = n.cores)
+  if (n.cores>1) future::plan("multisession", workers = n.cores)
 
   if (calculate.DGEA) {
     message("Calclulating ----------------------------------------")
