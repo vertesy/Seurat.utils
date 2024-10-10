@@ -73,7 +73,7 @@ PlotFilters <- function(
     cex = 0.75,
     theme.used = theme_bw(base_size = 18),
     LabelDistFromTop = 200 # for barplot_label
-    ) {
+) {
   message("Expects a list of Seurat objects, `ls.obj` with names, and a list of parameters, `par.ls` with a defined structure.")
 
   # Create names based on the Seurat objects, catenating "dataset" and numbers 1:n
@@ -90,7 +90,7 @@ PlotFilters <- function(
     is.numeric(above.ribo), is.numeric(below.ribo), below.ribo > above.ribo,
     is.character(parentdir), is.character(subdir), is.character(filetype), is.numeric(transparency), is.numeric(cex),
     is.character(suffices), length(suffices) == length(ls.obj)
-    )
+  )
 
   MarkdownHelpers::llprint(
     "We filtered for high quality cells based on the number of genes detected [", above.nFeature_RNA, ";", below.nFeature_RNA,
@@ -133,12 +133,12 @@ PlotFilters <- function(
     mm <- cbind(mm, filt.nFeature_RNA, filt.below.mito, filt.below.ribo)
 
     mm$colour.thr.nFeature <- cut(mm$"nFeature_RNA",
-      breaks = c(-Inf, above.nFeature_RNA, below.nFeature_RNA, Inf),
-      labels = c(
-        paste0("LQ (<", above.nFeature_RNA, ")"),
-        paste0("HQ (", above.nFeature_RNA, "< X <", below.nFeature_RNA, ")"),
-        paste0("Dbl/Outlier (>", below.nFeature_RNA, ")")
-      )
+                                  breaks = c(-Inf, above.nFeature_RNA, below.nFeature_RNA, Inf),
+                                  labels = c(
+                                    paste0("LQ (<", above.nFeature_RNA, ")"),
+                                    paste0("HQ (", above.nFeature_RNA, "< X <", below.nFeature_RNA, ")"),
+                                    paste0("Dbl/Outlier (>", below.nFeature_RNA, ")")
+                                  )
     )
 
     A <- ggplot(data = mm, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
@@ -371,24 +371,24 @@ PercentInTranscriptome <- function(
   Relative.of.Total.Gene.Expression <- relative.total.Expr * 100
 
   qhistogram(Relative.of.Total.Gene.Expression,
-    logX = FALSE, logY = TRUE,
-    plotname = "Gene expression as fraction of all UMI's",
-    subtitle = "Percentage in RNA-counts",
-    xlab = "Percent in Transcriptome (total per gene)",
-    ylab = "Number of genes",
-    xlab.angle = 45,
-    w = 7, h = 5,
-    ...)
+             logX = FALSE, logY = TRUE,
+             plotname = "Gene expression as fraction of all UMI's",
+             subtitle = "Percentage in RNA-counts",
+             xlab = "Percent in Transcriptome (total per gene)",
+             ylab = "Number of genes",
+             xlab.angle = 45,
+             w = 7, h = 5,
+             ...)
 
   Highest.Expressed.Genes <- head(iround(100 * relative.total.Expr), n = n.genes.barplot)
   qbarplot(Highest.Expressed.Genes,
-    plotname = "Percentage of highest expressed genes",
-    subtitle = "Total, in RNA-counts",
-    xlab = "",
-    ylab = "Gene expression as percent of all UMI's",
-    xlab.angle = 45,
-    w = width.barplot,  h = 5,
-    ...)
+           plotname = "Percentage of highest expressed genes",
+           subtitle = "Total, in RNA-counts",
+           xlab = "",
+           ylab = "Gene expression as percent of all UMI's",
+           xlab.angle = 45,
+           w = width.barplot,  h = 5,
+           ...)
 
   message("!!! \nTotalReadFraction is now stored under combined.obj@misc$'TotalReadFraction'.")
 
@@ -439,10 +439,10 @@ plotGeneExpressionInBackgroundHist <- function(
   (pname <- paste(gene, "and the", suffx, "transcript count distribution"))
 
   ggExpress::qhistogram(GEX.Counts.total,
-    vline = genes.expression, logX = TRUE, w = w, h = h,
-    subtitle = paste("It belong to the top", pc_TRUE(GEX.Counts.total > genes.expression), "of genes (black line). Mean expr:", mean.expr),
-    plotname = pname, xlab = "Total Transcripts in Dataset", ylab = "Number of Genes",
-    ...
+                        vline = genes.expression, logX = TRUE, w = w, h = h,
+                        subtitle = paste("It belong to the top", pc_TRUE(GEX.Counts.total > genes.expression), "of genes (black line). Mean expr:", mean.expr),
+                        plotname = pname, xlab = "Total Transcripts in Dataset", ylab = "Number of Genes",
+                        ...
   )
 }
 
@@ -515,7 +515,7 @@ plotGeneExprHistAcrossCells <- function(
   # Aggregate genes if necessary
   aggregate <- length(genes) > 1
   SummedExpressionPerCell <- colSums(LayerData(object = obj, assay = assay,
-                                                  layer = layerX)[genes, , drop = F])
+                                               layer = layerX)[genes, , drop = F])
 
   # Clip counts if necessary
   if (layerX == "counts") {
@@ -542,16 +542,16 @@ plotGeneExprHistAcrossCells <- function(
 
   # Create the plot
   pobj <- ggExpress::qhistogram(SummedExpressionPerCell,
-    plotname = TTL,
-    subtitle = SUBT,
-    caption = CPT,
-    prefix = prefix,
-    suffix = suffix,
-    vline = thr_expr[1], filtercol = -1,
-    xlab = xlab,
-    ylab = "# of cells",
-    w = w, h = h,
-    ...
+                                plotname = TTL,
+                                subtitle = SUBT,
+                                caption = CPT,
+                                prefix = prefix,
+                                suffix = suffix,
+                                vline = thr_expr[1], filtercol = -1,
+                                xlab = xlab,
+                                ylab = "# of cells",
+                                w = w, h = h,
+                                ...
   )
 
   # draw additional vlines if needed
@@ -1055,13 +1055,13 @@ scBarplot.CellFractions <- function(
 
     if (show_numbers) {
       pl <- pl + geom_text(aes(label = ..count..),
-        stat = "count", position = position_fill(vjust = 0.5)
+                           stat = "count", position = position_fill(vjust = 0.5)
       )
     } else {
       pl <- pl + geom_text(
         aes(label = ifelse((..count.. / tapply(..count.., ..x.., sum)[..x..]) >= min.pct,
-          scales::percent(..count.. / tapply(..count.., ..x.., sum)[..x..], accuracy = 1),
-          ""
+                           scales::percent(..count.. / tapply(..count.., ..x.., sum)[..x..], accuracy = 1),
+                           ""
         )),
         stat = "count", position = position_fill(vjust = 0.5),
         size = cex.pct
@@ -1096,7 +1096,7 @@ scBarplot.CellFractions <- function(
   if (save_table) {
     ReadWriter::write.simple.xlsx(CT_freq_sc, filename =  sppp(FixPlotName(plotname), suffix, "fr.barplot")
                                   # suffix = sppp(FixPlotName(plotname), "fr.barplot")
-                                  )
+    )
   }
 
   # Return contingency table or plot based on return_table flag
@@ -1175,21 +1175,21 @@ scBarplot.CellsPerCluster <- function(
   nr.cells.per.cl <- table(obj[[ident]][, 1])
 
   SBT <- pc_TRUE(nr.cells.per.cl < min.cells, NumberAndPC = TRUE,
-    suffix = paste("of identites are below:", min.cells, "cells, or", percentage_formatter(min.PCT.cells), "of all cells." )
+                 suffix = paste("of identites are below:", min.cells, "cells, or", percentage_formatter(min.PCT.cells), "of all cells." )
   )
 
   pl <- ggExpress::qbarplot(cell.per.cluster,
-    plotname = plotname,
-    subtitle = paste0(sub, "\n", SBT),
-    suffix = kpp(ident, ncol(obj),"c", suffix),
-    col = 1:n.clusters,
-    caption = .parseBasicObjStats(obj = obj),
-    xlab.angle = 45,
-    ylim = c(0, ylab_adj * max(cell.per.cluster)),
-    label = lbl,
-    ylab = "Cells",
-    palette_use = DiscretePaletteSafe(n = n.clusters, palette.used = palette),
-    ...
+                            plotname = plotname,
+                            subtitle = paste0(sub, "\n", SBT),
+                            suffix = kpp(ident, ncol(obj),"c", suffix),
+                            col = 1:n.clusters,
+                            caption = .parseBasicObjStats(obj = obj),
+                            xlab.angle = 45,
+                            ylim = c(0, ylab_adj * max(cell.per.cluster)),
+                            label = lbl,
+                            ylab = "Cells",
+                            palette_use = DiscretePaletteSafe(n = n.clusters, palette.used = palette),
+                            ...
   )
 
   if (return_table) {
@@ -1242,8 +1242,8 @@ plotClustSizeDistr <- function(
   if (plot) {
     if (length(clust.size.distr) < thr.hist) {
       ggExpress::qbarplot(clust.size.distr,
-        plotname = ptitle, subtitle = psubtitle,
-        label = clust.size.distr, xlab = "Clusters", ylab = xlb, ...
+                          plotname = ptitle, subtitle = psubtitle,
+                          label = clust.size.distr, xlab = "Clusters", ylab = xlb, ...
       )
     } else {
       ggExpress::qhistogram(
@@ -1304,13 +1304,13 @@ scBarplot.FractionAboveThr <- function(
     dplyr::select(c(id.col, value.col))
 
   (df_cells_above <- metacol |>
-    dplyr::group_by(!!sym(id.col)) |>
-    summarize(
-      n_cells = n(),
-      n_cells_above = sum(!!sym(value.col) > thrX),
-      fr_n_cells_above = n_cells_above / n_cells,
-      fr_n_cells_below = 1 - fr_n_cells_above
-    )
+      dplyr::group_by(!!sym(id.col)) |>
+      summarize(
+        n_cells = n(),
+        n_cells_above = sum(!!sym(value.col) > thrX),
+        fr_n_cells_above = n_cells_above / n_cells,
+        fr_n_cells_below = 1 - fr_n_cells_above
+      )
   )
 
 
@@ -1337,21 +1337,21 @@ scBarplot.FractionAboveThr <- function(
 
   pname <- paste("Pc. cells", tag, value.col, "of", thrX)
   ggobj <- ggExpress::qbarplot(v.fr_n_cells_above,
-    label = label,
-    plotname = pname,
-    filename = FixPlotName(kpp(pname, id.col, ".pdf")),
-    suffix = suffix,
-    subtitle = subtitle,
-    caption = paste(
-      "Overall average (black line):", iround(total_average), "% |",
-      substitute(obj)
-    ),
-    xlab.angle = 45,
-    xlab = "Clusters",
-    ylab = paste("% Cells", tag, "thr. (", value.col, ")"),
-    ylim = ylim,
-    hline = total_average,
-    ...
+                               label = label,
+                               plotname = pname,
+                               filename = FixPlotName(kpp(pname, id.col, ".pdf")),
+                               suffix = suffix,
+                               subtitle = subtitle,
+                               caption = paste(
+                                 "Overall average (black line):", iround(total_average), "% |",
+                                 substitute(obj)
+                               ),
+                               xlab.angle = 45,
+                               xlab = "Clusters",
+                               ylab = paste("% Cells", tag, "thr. (", value.col, ")"),
+                               ylim = ylim,
+                               hline = total_average,
+                               ...
   )
   print(ggobj)
   if (return.df) {
@@ -1491,12 +1491,12 @@ scBarplot.CellsPerObject <- function(
   cellCounts <- sapply(ls.obj, ncol)
   names(cellCounts) <- if (length(names) == length(ls.obj)) names else names(ls.obj)
   ggExpress::qbarplot(cellCounts,
-    plotname = plotname,
-    subtitle = paste(sum(cellCounts), "cells in total"),
-    label = cellCounts,
-    xlab.angle = xlab.angle,
-    ylab = "Cells",
-    ...
+                      plotname = plotname,
+                      subtitle = paste(sum(cellCounts), "cells in total"),
+                      label = cellCounts,
+                      xlab.angle = xlab.angle,
+                      ylab = "Cells",
+                      ...
   )
 }
 
@@ -1550,9 +1550,9 @@ scBarplotStackedMetaCateg_List <- function(
 
   TTL <- paste(meta.col, "per object")
   p <- ggExpress::qbarplot.df(df,
-    plotname = TTL,
-    scale = TRUE, hide.legend = FALSE,
-    ...
+                              plotname = TTL,
+                              scale = TRUE, hide.legend = FALSE,
+                              ...
   )
   print(p)
   return(df)
@@ -1875,17 +1875,17 @@ plotAndSaveHeatmaps <- function(results, path = getwd(),
     res <- results[[mt]]
     stopifnot( !anyNA(res[[rowname_column]]),
                !anyNaN(res[[rowname_column]])
-               )
+    )
 
     # Generate heatmap plot
     x <- ReadWriter::column.2.row.names(results[[mt]], rowname_column = rowname_column )
     pobj <- pheatmap::pheatmap(mat = x,
-      main = paste("Heatmap of", mt, "values"),
-      scale = "column",
-      cluster_rows = cluster_rows,
-      display_numbers = display_numbers,
-      show_rownames = show_rownames,
-      show_colnames = show_colnames
+                               main = paste("Heatmap of", mt, "values"),
+                               scale = "column",
+                               cluster_rows = cluster_rows,
+                               display_numbers = display_numbers,
+                               show_rownames = show_rownames,
+                               show_colnames = show_colnames
     )
 
     # Construct file name
@@ -2068,7 +2068,7 @@ qSeuViolin <- function(
   p.obj <- Seurat::VlnPlot(object = obj,
                            features = feature, group.by = ident,
                            cols = colors, split.by = split.by,
-               pt.size = pt.size, ...) +
+                           pt.size = pt.size, ...) +
     theme(axis.title.x = element_blank()) +
     labs(y = ylab) +
     ggtitle(label = ttl, subtitle = subt )
@@ -2181,12 +2181,12 @@ qUMAP <- function(
 
   DefaultAssay(obj) <- assay
   gg.obj <- Seurat::FeaturePlot(obj,
-    features = feature,
-    reduction = reduction,
-    min.cutoff = qlow, max.cutoff = qhigh,
-    ncol = nr.cols,
-    split.by = splitby,
-    ...
+                                features = feature,
+                                reduction = reduction,
+                                min.cutoff = qlow, max.cutoff = qhigh,
+                                ncol = nr.cols,
+                                split.by = splitby,
+                                ...
   ) +
     ggtitle(label = title, subtitle = sub) +
     if (!axes) NoAxes() else NULL
@@ -2286,7 +2286,7 @@ clUMAP <- function(
     is.character(caption) | is.null(caption),
     is.logical(save.plot),
     is.character(suffix) | is.null(suffix)
-    )
+  )
   tictoc::tic()
 
   if (is.null(ident)) {
@@ -2438,15 +2438,15 @@ umapHiLightSel <- function(obj = combined.obj,
   stopifnot(is(obj, "Seurat"),
             "Ident no found the object!" =ident %in% colnames(obj@meta.data),
             "Not all clusters in COI are found the object!" = all(COI %in% unique(obj@meta.data[[ident]]))
-            )
+  )
 
   cellsSel <- getCellIDs.from.meta(ident = ident, ident_values = COI, obj = obj)
   pl <- Seurat::DimPlot(obj,
-    reduction = "umap",
-    group.by = ident,
-    label = TRUE,
-    cells.highlight = cellsSel,
-    ...
+                        reduction = "umap",
+                        group.by = ident,
+                        label = TRUE,
+                        cells.highlight = cellsSel,
+                        ...
   )
   if(show_plot) print(pl)
 
@@ -2500,6 +2500,8 @@ DimPlot.ClusterNames <- function(
 #' @param obj Seurat object, Default: combined.obj
 #' @param subdir Should plots be saved in a sub-directory? Default: TRUE
 #' @param foldername Folder name to save the generated plots. Default: The name of the list of genes.
+#' @param subtitle.from.names Should the subtitle be extracted from the names of the gene symbols,
+#' eg: `c("Astrocytes" = "AQP4")` ? Default: TRUE
 #' @param plot.reduction Dimension reduction technique to use for plots. Default: 'umap'
 #' @param intersectionAssay The assay to intersect with, either 'RNA' or 'integrated'. Default: 'RNA'
 #' @param layout Layout orientation of the plot. Default: 'wide'
@@ -2532,6 +2534,7 @@ multiFeaturePlot.A4 <- function(
     obj = combined.obj,
     subdir = TRUE,
     foldername = substitute(list.of.genes),
+    subtitle.from.names = TRUE,
     plot.reduction = "umap",
     intersectionAssay = c("RNA", "integrated")[1],
     layout = c("tall", "wide", FALSE)[2],
@@ -2554,10 +2557,13 @@ multiFeaturePlot.A4 <- function(
   final.foldername <- FixPlotName(paste0(foldername, "-", plot.reduction, suffix))
   if (subdir) create_set_SubDir(final.foldername, "/", verbose = FALSE)
 
+  if(is.null(names(list.of.genes))) subtitle.from.names <- FALSE
+
   list.of.genes.found <- check.genes(
     list.of.genes = list.of.genes, obj = obj,
     assay.slot = intersectionAssay, makeuppercase = FALSE
   )
+  if(subtitle.from.names) names(list.of.genes.found) <- as.character(flip_value2name(list.of.genes)[list.of.genes.found])
   DefaultAssay(obj) <- intersectionAssay
 
   if (!is.null(cex.min)) cex <- max(cex.min, cex)
@@ -2594,7 +2600,9 @@ multiFeaturePlot.A4 <- function(
     for (j in 1:length(plot.list)) {
       plot.list[[j]] <- plot.list[[j]] + NoLegend() + NoAxes()
       if (aspect.ratio) plot.list[[j]] <- plot.list[[j]] + ggplot2::coord_fixed(ratio = aspect.ratio)
+      if (subtitle.from.names) plot.list[[j]] <- plot.list[[j]] + ggplot2::ggtitle(label = genes[j], subtitle = names(genes)[j] )
     }
+    # browser()
 
     pltGrid <- cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
     # cowplot::ggsave2(filename = plotname, width = w, height = h, bg = background_col, plot = pltGrid)
@@ -3027,7 +3035,7 @@ qQC.plots.BrainOrg <- function(
   # Raise a warning if there are any NAs
   if (sum(na_counts) > 0) {
     warning(sprintf("There are %d NA values found\n", na_counts),
-      immediate. = TRUE
+            immediate. = TRUE
     )
   }
 
@@ -3130,8 +3138,8 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
 PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = "expr.q99") {
   message("Using obj@misc$", exp.slot)
   stopifnot(inherits(obj, "Seurat"),
-    "Requires calling calc.q99.Expression.and.set.all.genes before. " =
-      exp.slot %in% names(obj@misc)
+            "Requires calling calc.q99.Expression.and.set.all.genes before. " =
+              exp.slot %in% names(obj@misc)
   )
 
   Highest.Expressed.Genes <- names(head(sort(obj@misc[[exp.slot]], decreasing = TRUE), n = n))
@@ -3582,18 +3590,18 @@ scBarplotEnrichr <- function(df.enrichment,
   nr_input_genes <- length(df.enrichment@'gene')
 
   pobj <-
-  if(nrow(df.enrichment) < 1 | is.null (df.enrichment)) {
-    warning("No enriched terms input!", immediate. = TRUE)
-    ggplot() + theme_void() + annotate("text", x = 1, y = 1, label = "NO ENRICHMENT",
-                                       size = 8, color = "red", hjust = 0.5, vjust = 0.5)
+    if(nrow(df.enrichment) < 1 | is.null (df.enrichment)) {
+      warning("No enriched terms input!", immediate. = TRUE)
+      ggplot() + theme_void() + annotate("text", x = 1, y = 1, label = "NO ENRICHMENT",
+                                         size = 8, color = "red", hjust = 0.5, vjust = 0.5)
     } else if (nr_input_genes < 5) {
       warning("Very few inputs for GOENR", immediate. = TRUE)
       ggplot() + theme_void() + annotate("text", x = 1, y = 1, label = "TOO FEW GENES (<5)",
                                          size = 8, color = "red", hjust = 0.5, vjust = 0.5)
 
     } else {
-    enrichplot:::barplot.enrichResult(df.enrichment, showCategory = 20)
-  }
+      enrichplot:::barplot.enrichResult(df.enrichment, showCategory = 20)
+    }
   pobj <- pobj + ggplot2::labs(title = title, subtitle = subtitle, caption = caption)
 
   if (save) {
@@ -3700,7 +3708,7 @@ filterGoEnrichment <- function(df.enrichments,
 
 countEnrichedDepletedGenes <- function(df, min_padj = 0.01, min_logFC = 0.5,
                                        # genes = rownames(df),
-                                        colname.p = 'p_val_adj', colname.lFC = 'avg_log2FC') {
+                                       colname.p = 'p_val_adj', colname.lFC = 'avg_log2FC') {
 
   stopifnot(min_padj > 0,
             min_logFC > 0,
@@ -4486,9 +4494,9 @@ panelCorPearson <- function(x, y, digits = 2, prefix = "", cex.cor = 2, method =
 
   test <- cor.test(x, y, method = method)
   Signif <- symnum(test$p.value,
-    corr = FALSE, na = FALSE,
-    cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
-    symbols = c("***", "**", "*", ".", " ")
+                   corr = FALSE, na = FALSE,
+                   cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
+                   symbols = c("***", "**", "*", ".", " ")
   )
 
   cex <- ifelse(missing(cex.cor), 0.8 / strwidth(txt), cex.cor)
