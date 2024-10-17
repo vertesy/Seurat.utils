@@ -25,5 +25,4 @@ getCPUsCBE() # returns 8 by default
 
 # Assuming CBE.params exists and has a `cpus` entry of 4
 getCPUsCBE() # returns 3
-
 }

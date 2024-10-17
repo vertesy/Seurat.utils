@@ -25,6 +25,7 @@ qSeuViolin(
   legend.pos = NULL,
   legend.title = NULL,
   show_plot = TRUE,
+  grid = TRUE,
   w = NULL,
   h = 7,
   ...

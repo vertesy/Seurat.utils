@@ -4139,19 +4139,23 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' @title Convert10Xfolders
 #'
 #' @description This function takes a parent directory with a number of subfolders, each
-#' containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices,
-#' (2) converts them to Seurat objects, and (3) saves them as .RDS files.
+#' containing the standard output of 10X Cell Ranger. It (1) loads the (filtered) data matrices,
+#' (2) converts them to Seurat objects, and (3) saves them as .qs files
+#'
 #' @param InputDir A character string specifying the input directory.
 #' @param regex A logical value. If TRUE, the folderPattern is treated as a regular expression. Default is FALSE.
 #' @param folderPattern A character vector specifying the pattern of folder names to be searched. Default is 'filtered_feature'.
+#' @param suffix A character string specifying the suffix of the files saved.
 #' @param min.cells An integer value specifying the minimum number of cells. Default is 5.
 #' @param min.features An integer value specifying the minimum number of features. Default is 200.
 #' @param updateHGNC A logical value indicating whether to update the HGNC. Default is TRUE.
+#' @param save Save .qs object? Default: TRUE.
 #' @param ShowStats A logical value indicating whether to show statistics. Default is TRUE.
 #' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default is TRUE.
 #' @param depth An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default is 2.
-#' @param sample.barcoding A logical value indicating whether Cell Ranger was run with sample barcoding. Default is FALSE.
 #' @param sort_alphanumeric sort files alphanumeric? Default: TRUE.
+#' @param save_empty_droplets save empty droplets? Default: TRUE.
+#'
 #' @examples
 #' \dontrun{
 #' if (interactive()) Convert10Xfolders(InputDir)
@@ -4160,23 +4164,30 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 Convert10Xfolders <- function(
     InputDir,
     regex = FALSE,
-    folderPattern = c("filtered_feature", "SoupX_decont")[1],
+    folderPattern = c("filtered_feature", "raw_feature", "SoupX_decont")[1],
+    suffix = strsplit(folderPattern, "_")[[1]][1],
     depth = 4,
     min.cells = 5, min.features = 200,
     updateHGNC = TRUE, ShowStats = TRUE,
     writeCBCtable = TRUE,
-    sample.barcoding = FALSE,
     nthreads = .getNrCores(),
     preset = "high",
     ext = "qs",
     sort_alphanumeric = TRUE,
+    save_empty_droplets = TRUE,
     ...) {
-  warning("Since v2.5.0, the output is saved in the more effcient qs format! See qs package.", immediate. = TRUE)
+
+  stopifnot(
+    is.character(InputDir), dir.exists(InputDir),
+    is.logical(regex), is.character(folderPattern), is.character(suffix), is.numeric(depth),
+    is.numeric(min.cells), is.numeric(min.features), is.logical(updateHGNC), is.logical(ShowStats), is.logical(writeCBCtable),
+    is.logical(sort_alphanumeric)
+  )
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
 
-  iprint(length(fin), "samples found.")
+  message(length(fin), " samples found.")
 
   samples <- basename(list.dirs(InputDir, recursive = FALSE))
   if (sort_alphanumeric) samples <- gtools::mixedsort(samples)
@@ -4188,41 +4199,22 @@ Convert10Xfolders <- function(
 
   for (i in 1:length(fin)) {
     print(i)
-    pathIN <- Stringendo::FixPath(fin[i])
-    print(pathIN)
+    pathIN = Stringendo::FixPath(fin[i]); message(pathIN)
+    fnameIN = basename(dirname(dirname(pathIN))); message(fnameIN)
 
-    # sample.barcoding --- --- ---
-    fnameIN <- if (sample.barcoding) {
-      samples[i]
-    } else {
-      basename(dirname(dirname(pathIN)))
-    }
-    print("")
-    print(fnameIN)
-
-    count_matrix <- Read10X(pathIN)
+    count_matrix <- Read10X(pathIN )
     if (!is.list(count_matrix) | length(count_matrix) == 1) {
       seu <- CreateSeuratObject(
         counts = count_matrix, project = fnameIN,
         min.cells = min.cells, min.features = min.features
       )
-    } else if (is.list(count_matrix) & length(count_matrix) == 2) {
-      seu <- CreateSeuratObject(
-        counts = count_matrix[[1]], project = fnameIN,
-        min.cells = min.cells, min.features = min.features
-      )
-
-      # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
-      LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
-      LSBnameOUT <- ppp(paste0(InputDir, "/LSB.", fnameIN), "Rds")
-      qs::qsave(x = LSB, file = LSBnameOUT)
     } else {
-      print("More than 2 elements in the list of matrices")
+      ( stop('length(count_matrix) != 1') )
     }
 
     ncells <- ncol(seu)
     fname_X <- Stringendo::sppp(
-      fnameIN, "min.cells", min.cells, "min.features", min.features,
+      fnameIN, suffix, "min.cells", min.cells, "min.features", min.features,
       "cells", ncells
     )
     print(fname_X)
@@ -4234,14 +4226,54 @@ Convert10Xfolders <- function(
     if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
 
     # write out --- --- ---
-    qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)
+    if (save) qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)
 
     # write cellIDs ---  --- ---
     if (writeCBCtable) {
       CBCs <- t(t(colnames(seu)))
       colnames(CBCs) <- "CBC"
-      ReadWriter::write.simple.tsv(input_df = CBCs, manual_file_name = sppp(fnameIN, "CBC"), manual_directory = InputDir)
+      ReadWriter::write.simple.tsv(input_df = CBCs, manual_file_name = sppp(fnameIN, suffix, "CBC"), manual_directory = InputDir)
     }
+
+    if(save_empty_droplets & suffix == "raw") {
+      # Select and save empty droplets (the Soup)
+
+      path_filtered <- gsub(x = pathIN, pattern = "/raw_feature_", replacement = "/filtered_feature_")
+      fnp_filtered <- spps(path_filtered, "barcodes.tsv.gz")
+
+
+      if (file.exists(fnp_filtered)) {
+        SoupDir <- spps(InputDir, "Soup")
+        dir.create(SoupDir)
+
+        CBCs_HQ <- read.simple.vec(fnp_filtered)
+
+        CBC_empty_drops <- setdiff(colnames(seu), CBCs_HQ)
+        nr.empty.droplets <- length(CBC_empty_drops)
+        umi_per_CBC <- colSums(seu@assays$RNA@layers$counts)
+        pct.empty.droplets.max10umis <- pc_TRUE(umi_per_CBC<11)
+        message("We have ", nr.empty.droplets, " empty droplets, ", pct.empty.droplets.max10umis, " of which have max 10 umis." )
+        FNM <- sppp("nr.empty.droplets", fnameIN, nr.empty.droplets)
+        ReadWriter::write.simple.vec(nr.empty.droplets, manual_file_name = FNM, manual_directory = SoupDir)
+
+        obj_empty_drops <- subset(seu, cells = CBC_empty_drops)
+
+        f_path_out_ED <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("obj.empty.droplets", fnameIN, nr.empty.droplets), extension = ext)
+        qs::qsave(x = obj_empty_drops, file = f_path_out_ED, nthreads = nthreads, preset = preset)
+
+        # save the bulk RNA counts of the empty droplets
+        Soup.Bulk.RNA <- rowSums(count_matrix[, CBC_empty_drops])
+        f_path_out_Bulk <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("Soup.Bulk.RNA", fnameIN), extension = 'qs')
+        qs::qsave(x = Soup.Bulk.RNA, file = f_path_out_Bulk, nthreads = nthreads, preset = preset)
+        ReadWriter::write.simple.tsv(Soup.Bulk.RNA, suffix = fnameIN, manual_directory = SoupDir)
+
+      }
+    } else {
+      message("No empty droplets saved. suffix ", suffix)
+    }
+
+
+
   } # for
 }
 
@@ -4861,12 +4893,18 @@ make10Xcellname <- function(cellnames, suffix = "_1") {
 #' @title plotTheSoup
 #'
 #' @description Plot stats about the ambient RNA content in a 10X experiment.
+#'
 #' @param CellRanger_outs_Dir CellRanger 'outs' (output) directory, Default: '~/Data/114593/114593'
 #' @param SeqRun Aka SampleName (the folder above 'outs;). Default: str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)").
+#' @param out_dir_prefix Prefix for the output directory. Default: 'SoupStatistics'
+#' @param add_custom_class Add a custom class of genes, matched by apattern in gene symbol. Default: TRUE
+#' @param pattern_custom The pattern to match in gene symbol. Default: NA
+#'
 #' @seealso
 #'  \code{\link[Matrix]{colSums}}
 #'  \code{\link[tibble]{rownames}}
 #'  \code{\link[ggrepel]{geom_label_repel}}
+#'
 #' @importFrom Matrix rowSums
 #' @importFrom tibble rownames_to_column
 #' @importFrom ggrepel geom_text_repel
@@ -4878,7 +4916,18 @@ make10Xcellname <- function(cellnames, suffix = "_1") {
 #' @export
 plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
                         SeqRun = str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)"),
+                        out_dir_prefix = 'SoupStatistics',
+                        add_custom_class = F, pattern_custom = "\\.RabV$",
                         ls.Alpha = 1) {
+
+  stopifnot( # Check input
+    is.character(CellRanger_outs_Dir), dir.exists(CellRanger_outs_Dir),
+    nchar(SeqRun) > 4, is.character(out_dir_prefix), nchar(out_dir_prefix) > 0,
+    is.numeric(ls.Alpha)
+  )
+  iprint("SeqRun:", SeqRun)
+  if(add_custom_class) iprint("pattern_custom:", pattern_custom)
+
   # The regular expression `[[:alnum:]_]+(?=/outs/)` matches one or more alphanumeric characters or
   # underscores that are followed by the `/outs/` portion in the string. It ensures that the desired
   # substring is captured, but it does not include the `/outs/` in the matched result.
@@ -4890,10 +4939,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   # `/outs/` is present immediately after. It doesn't consume any characters from the string; it
   # just checks for the presence of `/outs/` after the matched substring.
 
-  # Check the directory exists and SeqRun ID is longer than 4
-  stopifnot(dir.exists(CellRanger_outs_Dir))
-  iprint("SeqRun", SeqRun)
-  stopifnot(nchar(SeqRun) > 4)
+
   Subfolders_10X_outs <- list.dirs(CellRanger_outs_Dir, full.names = FALSE, recursive = FALSE)
   stopifnot(length(Subfolders_10X_outs) > 0)
 
@@ -4904,7 +4950,8 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 
   # Adapter for Markdownreports background variable "OutDir"
   OutDirBac <- if (exists("OutDir")) OutDir else getwd()
-  OutDir <- file.path(CellRanger_outs_Dir, paste0(kpp("SoupStatistics", SeqRun)))
+  OutDir <- file.path(CellRanger_outs_Dir, paste0(kpp(out_dir_prefix, SeqRun)))
+
   MarkdownReports::create_set_OutDir(OutDir)
   MarkdownHelpers::ww.assign_to_global("OutDir", OutDir, 1)
 
@@ -4914,11 +4961,14 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   if (length(CR.matrices$"raw") == 2) {
     CR.matrices$"raw" <- CR.matrices$"raw"[[1]]
   } # Maybe AB table is present too at slot 2!
+
+
   print("Reading filtered CellRanger output matrices")
   CR.matrices$"filt" <- Seurat::Read10X(path.filt)
   if (length(CR.matrices$"filt") == 2) {
     CR.matrices$"filt" <- CR.matrices$"filt"[[1]]
   } # Maybe AB table is present too at slot 2!
+
 
   # Profiling the soup ___________________________________
   print("Profiling the soup")
@@ -4964,9 +5014,11 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Class[grep("^LINC", HGNC)] <- "LINC"
   Class[grep("^AC", HGNC)] <- "AC"
   Class[grep("^AL", HGNC)] <- "AL"
-  Fraction.of.Geneclasses <- table(Class)
-  ggExpress::qpie(Fraction.of.Geneclasses)
-  # wpie(Fraction.of.Geneclasses)
+  if (pattern_custom) Class[grep(pattern_custom, HGNC)] <- ReplaceSpecialCharacters(pattern_custom, remove_dots = T)
+  Nr.of.Genes.per.Class <- table(Class)
+
+
+  ggExpress::qpie(Nr.of.Genes.per.Class)
   Soup.VS.Cells.Av.Exp.gg$Class <- Class
 
   fname <- kpp("Soup.VS.Cells.Av.Exp.GeneClasses", SeqRun, "pdf")
@@ -4982,7 +5034,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
     ylab(paste(axl.pfx, "Cells", axl.sfx)) +
     ggtitle("Soup VS. Cells | gene classes")
 
-  ggsave(pgg, filename = file.path(OutDir, fname))
+  ggsave(pgg, filename = file.path(OutDir, fname), width = 7, height = 7)
 
   # ggplot ___________________________________
   quantiles <- c(0.025, 0.01, 0.0025)
@@ -5009,8 +5061,6 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
       Outlier <- Outlier & rowSums(Soup.VS.Cells.Av.Exp) > HP.thr.mod
     }
 
-
-
     pgg <-
       ggplot(Soup.VS.Cells.Av.Exp.gg, aes(
         x = Soup, y = Cells, label = gene,
@@ -5024,8 +5074,10 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
       ggrepel::geom_text_repel(aes(label = ifelse(Outlier,
         as.character(gene), ""
       )))
-    ggsave(pgg, filename = file.path(OutDir, fname))
-  }
+    ggsave(pgg, filename = file.path(OutDir, fname), width = 7, height = 7)
+
+
+  } # for
 
 
   # Per Gene ___________________________________
@@ -5422,12 +5474,12 @@ compareVarFeaturesAndRanks <- function(
 #' returns `CBE.params$cpus - 1`, ensuring at least 1 CPU is returned. Otherwise, returns `n.cpus.def`.
 #'
 #' @examples
-#' @export
 #' # Assuming CBE.params does not exist or does not have a `cpus` entry
 #' getCPUsCBE() # returns 8 by default
 #'
 #' # Assuming CBE.params exists and has a `cpus` entry of 4
 #' getCPUsCBE() # returns 3
+#' @export
 #'
 .getNrCores <- function(n.cpus.def = 8) {
   n_cores_detected <- as.numeric(system("nproc", intern = TRUE))

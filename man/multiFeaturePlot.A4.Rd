@@ -9,6 +9,7 @@ multiFeaturePlot.A4(
   obj = combined.obj,
   subdir = TRUE,
   foldername = substitute(list.of.genes),
+  subtitle.from.names = TRUE,
   plot.reduction = "umap",
   intersectionAssay = c("RNA", "integrated")[1],
   layout = c("tall", "wide", FALSE)[2],
@@ -40,6 +41,9 @@ multiFeaturePlot.A4(
 \item{subdir}{Should plots be saved in a sub-directory? Default: TRUE}
 
 \item{foldername}{Folder name to save the generated plots. Default: The name of the list of genes.}
+
+\item{subtitle.from.names}{Should the subtitle be extracted from the names of the gene symbols,
+eg: \code{c("Astrocytes" = "AQP4")} ? Default: TRUE}
 
 \item{plot.reduction}{Dimension reduction technique to use for plots. Default: 'umap'}
 

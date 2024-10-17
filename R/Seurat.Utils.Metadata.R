@@ -1205,15 +1205,18 @@ heatmap_calc_clust_median <- function(
     w = ceiling(length(variables) / 2),
     ...) {
   # Ensure that 'meta' is a dataframe, 'ident' is a column in 'meta', and 'variables' are columns in 'meta'
-  stopifnot(is.data.frame(meta))
-  stopifnot(ident %in% colnames(meta))
-  stopifnot(all(variables %in% colnames(meta)))
+  stopifnot(is.data.frame(meta),
+            is.character(ident),
+            is.character(variables),
+            ident %in% colnames(meta),
+            all(variables %in% colnames(meta))
+            )
 
   # Group by 'ident' and calculate median for each variable
   df_cluster_medians <- meta |>
     group_by(meta[[ident]]) |>
     summarize_at(vars(variables), median, na.rm = TRUE)
-  df_cluster_medians <- ReadWriter::FirstCol2RowNames(df_cluster_medians)
+  df_cluster_medians <- ReadWriter::column.2.row.names(df_cluster_medians)
 
   if (!isFALSE(subset_ident_levels)) {
     stopifnot(all(subset_ident_levels %in% rownames(df_cluster_medians)))
@@ -1221,7 +1224,10 @@ heatmap_calc_clust_median <- function(
     df_cluster_medians <- df_cluster_medians[subset_ident_levels, ]
   }
 
-  df_cluster_medians <- scale(df_cluster_medians)
+  if (scale) {
+    df_cluster_medians <- scale(df_cluster_medians)
+    suffix <- sppp(suffix, "scaled")
+  }
 
   if (return_matrix) {
     return(df_cluster_medians)
@@ -1237,6 +1243,22 @@ heatmap_calc_clust_median <- function(
       x = pl, width = w,
       plotname = FixPlotName(make.names(plot_name), suffix, "pdf")
     )
+
+    # Now plot correlation heatmap between the identites
+    corX <- cor(t(df_cluster_medians), method = "spearman")
+    pl <- pheatmap::pheatmap(corX,
+      main = paste0("Correlation between ", plot_name),
+      treeheight_row = 2, treeheight_col = 2,
+      # cluster_cols = F, cluster_rows = F,
+      cutree_rows = n_cut_row, cutree_cols = n_cut_col
+    )
+
+    wplot_save_pheatmap(
+      x = pl, width = w,
+      plotname = FixPlotName(make.names(plot_name), suffix, "correlation.pdf")
+    )
+
+
   }
 }
 

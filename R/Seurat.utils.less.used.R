@@ -1,7 +1,121 @@
 # ____________________________________________________________________
 # Seurat.utils.less.used.R ----
 # ____________________________________________________________________
-# source("~/GitHub/Packages/Seurat.utils/R/Seurat.utils.less.used.R")
+# file.edit("~/GitHub/Packages/Seurat.utils/R/Seurat.utils.less.used.R")
+
+
+
+# _________________________________________________________________________________________________
+#' @title Convert10Xfolders - legacy version
+#'
+#' @description This function takes a parent directory with a number of subfolders, each
+#' containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices,
+#' (2) converts them to Seurat objects, and (3) saves them as .RDS files.
+#' @param InputDir A character string specifying the input directory.
+#' @param regex A logical value. If TRUE, the folderPattern is treated as a regular expression. Default is FALSE.
+#' @param folderPattern A character vector specifying the pattern of folder names to be searched. Default is 'filtered_feature'.
+#' @param min.cells An integer value specifying the minimum number of cells. Default is 5.
+#' @param min.features An integer value specifying the minimum number of features. Default is 200.
+#' @param updateHGNC A logical value indicating whether to update the HGNC. Default is TRUE.
+#' @param ShowStats A logical value indicating whether to show statistics. Default is TRUE.
+#' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default is TRUE.
+#' @param depth An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default is 2.
+#' @param sample.barcoding A logical value indicating whether Cell Ranger was run with sample barcoding. Default is FALSE.
+#' @param sort_alphanumeric sort files alphanumeric? Default: TRUE.
+#' @examples
+#' \dontrun{
+#' if (interactive()) Convert10Xfolders(InputDir)
+#' }
+#' @export
+Convert10Xfolders_v1 <- function(
+    InputDir,
+    regex = FALSE,
+    folderPattern = c("filtered_feature", "raw_feature", "SoupX_decont")[1],
+    depth = 4,
+    min.cells = 5, min.features = 200,
+    updateHGNC = TRUE, ShowStats = TRUE,
+    writeCBCtable = TRUE,
+    sample.barcoding = FALSE,
+    nthreads = .getNrCores(),
+    preset = "high",
+    ext = "qs",
+    sort_alphanumeric = TRUE,
+    ...) {
+  warning("Since v2.5.0, the output is saved in the more effcient qs format! See qs package.", immediate. = TRUE)
+
+  finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
+  fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
+
+  iprint(length(fin), "samples found.")
+
+  samples <- basename(list.dirs(InputDir, recursive = FALSE))
+  if (sort_alphanumeric) samples <- gtools::mixedsort(samples)
+  iprint("Samples:", samples)
+
+  if (!length(fin) > 0) {
+    stop(paste("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3]))
+  }
+
+  for (i in 1:length(fin)) {
+    print(i)
+    pathIN <- Stringendo::FixPath(fin[i])
+    print(pathIN)
+
+    # sample.barcoding --- --- ---
+    fnameIN <- if (sample.barcoding) {
+      samples[i]
+    } else {
+      basename(dirname(dirname(pathIN)))
+    }
+    print("")
+    print(fnameIN)
+
+    count_matrix <- Read10X(pathIN )
+    if (!is.list(count_matrix) | length(count_matrix) == 1) {
+      seu <- CreateSeuratObject(
+        counts = count_matrix, project = fnameIN,
+        min.cells = min.cells, min.features = min.features
+      )
+    } else if (is.list(count_matrix) & length(count_matrix) == 2) {
+      seu <- CreateSeuratObject(
+        counts = count_matrix[[1]], project = fnameIN,
+        min.cells = min.cells, min.features = min.features
+      )
+
+      # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
+      LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
+
+      LSBnameOUT <- ppp(paste0(InputDir, "/LSB.", fnameIN), "qs")
+      qs::qsave(x = LSB, file = LSBnameOUT)
+    } else {
+      print("More than 2 elements in the list of matrices")
+    }
+
+    ncells <- ncol(seu)
+    fname_X <- Stringendo::sppp(
+      fnameIN, "min.cells", min.cells, "min.features", min.features,
+      "cells", ncells
+    )
+    print(fname_X)
+
+    f.path.out <- Stringendo::ParseFullFilePath(path = InputDir, file_name = fname_X, extension = ext)
+    message(f.path.out)
+
+    # update --- --- ---
+    if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
+
+    # write out --- --- ---
+    qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)
+
+    # write cellIDs ---  --- ---
+    if (writeCBCtable) {
+      CBCs <- t(t(colnames(seu)))
+      colnames(CBCs) <- "CBC"
+      ReadWriter::write.simple.tsv(input_df = CBCs, manual_file_name = sppp(fnameIN, "CBC"), manual_directory = InputDir)
+    }
+  } # for
+}
+
 
 
 

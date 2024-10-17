@@ -1,8 +1,8 @@
 # ____________________________________________________________________
 # Seurat.Utils.Visualization.R ----
 # ____________________________________________________________________
-# source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
-# source("~/GitHub/Packages/Seurat.utils/R/Seurat.utils.less.used.R")
+# file.edit("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
+# file.edit("~/GitHub/Packages/Seurat.utils/R/Seurat.utils.less.used.R")
 # devtools::load_all("~/GitHub/Packages/Seurat.utils")
 # devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
 
@@ -1154,8 +1154,14 @@ scBarplot.CellsPerCluster <- function(
     ylab_adj = 1.1,
     min.cells = round(ncol(obj) / 100),
     ...) {
-  stopifnot(ident %in% colnames(obj@meta.data))
 
+  stopifnot(
+    inherits(obj, "Seurat"), is.character(ident), is.logical(sort), is.character(plotname), is.character(sub),
+    is.logical(label),  is.character(suffix) | is.null(suffix), is.character(palette), is.logical(return_table),
+    is.numeric(ylab_adj), is.numeric(min.cells), ident %in% colnames(obj@meta.data)
+  )
+
+  cat(0)
   cell.per.cl <- obj[[ident]][, 1]
   cell.per.cluster <- (table(cell.per.cl))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
@@ -1171,6 +1177,7 @@ scBarplot.CellsPerCluster <- function(
 
   min.PCT.cells <- min.cells / ncol(obj)
   message("min cell thr: ", min.cells, " corresponding to min: ", percentage_formatter(min.PCT.cells))
+
   n.clusters <- length(cell.per.cluster)
   nr.cells.per.cl <- table(obj[[ident]][, 1])
 
@@ -1193,6 +1200,7 @@ scBarplot.CellsPerCluster <- function(
   )
 
   if (return_table) {
+    print(pl)
     return(cell.per.cluster)
   } else {
     return(pl)

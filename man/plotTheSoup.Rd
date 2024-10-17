@@ -7,6 +7,9 @@
 plotTheSoup(
   CellRanger_outs_Dir = "~/Data/114593/114593",
   SeqRun = str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)"),
+  out_dir_prefix = "SoupStatistics",
+  add_custom_class = F,
+  pattern_custom = "\\\\.RabV$",
   ls.Alpha = 1
 )
 }
@@ -14,6 +17,12 @@ plotTheSoup(
 \item{CellRanger_outs_Dir}{CellRanger 'outs' (output) directory, Default: '~/Data/114593/114593'}
 
 \item{SeqRun}{Aka SampleName (the folder above 'outs;). Default: str_extract(CellRanger_outs_Dir, "[\link{:alnum:}_]+(?=/outs/)").}
+
+\item{out_dir_prefix}{Prefix for the output directory. Default: 'SoupStatistics'}
+
+\item{add_custom_class}{Add a custom class of genes, matched by apattern in gene symbol. Default: TRUE}
+
+\item{pattern_custom}{The pattern to match in gene symbol. Default: NA}
 }
 \description{
 Plot stats about the ambient RNA content in a 10X experiment.
