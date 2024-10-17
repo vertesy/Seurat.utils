@@ -4895,7 +4895,7 @@ make10Xcellname <- function(cellnames, suffix = "_1") {
 #' @description Plot stats about the ambient RNA content in a 10X experiment.
 #'
 #' @param CellRanger_outs_Dir CellRanger 'outs' (output) directory, Default: '~/Data/114593/114593'
-#' @param SeqRun Aka SampleName (the folder above 'outs;). Default: str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)").
+#' @param library_name Aka SampleName (the folder above 'outs;).
 #' @param out_dir_prefix Prefix for the output directory. Default: 'SoupStatistics'
 #' @param add_custom_class Add a custom class of genes, matched by apattern in gene symbol. Default: TRUE
 #' @param pattern_custom The pattern to match in gene symbol. Default: NA
@@ -4915,17 +4915,20 @@ make10Xcellname <- function(cellnames, suffix = "_1") {
 #'
 #' @export
 plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
-                        SeqRun = str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)"),
+                        # library_name = str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)"),
+                        library_name = basename(gsub("/outs","",CellRanger_outs_Dir)),
                         out_dir_prefix = 'SoupStatistics',
                         add_custom_class = F, pattern_custom = "\\.RabV$",
                         ls.Alpha = 1) {
 
+  iprint("library_name:", library_name)
+
   stopifnot( # Check input
     is.character(CellRanger_outs_Dir), dir.exists(CellRanger_outs_Dir),
-    nchar(SeqRun) > 4, is.character(out_dir_prefix), nchar(out_dir_prefix) > 0,
+    nchar(library_name) > 4, is.character(out_dir_prefix), nchar(out_dir_prefix) > 0,
     is.numeric(ls.Alpha)
   )
-  iprint("SeqRun:", SeqRun)
+
   if(add_custom_class) iprint("pattern_custom:", pattern_custom)
 
   # The regular expression `[[:alnum:]_]+(?=/outs/)` matches one or more alphanumeric characters or
@@ -4950,7 +4953,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 
   # Adapter for Markdownreports background variable "OutDir"
   OutDirBac <- if (exists("OutDir")) OutDir else getwd()
-  OutDir <- file.path(CellRanger_outs_Dir, paste0(kpp(out_dir_prefix, SeqRun)))
+  OutDir <- file.path(CellRanger_outs_Dir, paste0(kpp(out_dir_prefix, library_name)))
 
   MarkdownReports::create_set_OutDir(OutDir)
   MarkdownHelpers::ww.assign_to_global("OutDir", OutDir, 1)
@@ -5014,14 +5017,14 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Class[grep("^LINC", HGNC)] <- "LINC"
   Class[grep("^AC", HGNC)] <- "AC"
   Class[grep("^AL", HGNC)] <- "AL"
-  if (pattern_custom) Class[grep(pattern_custom, HGNC)] <- ReplaceSpecialCharacters(pattern_custom, remove_dots = T)
+  if (add_custom_class) Class[grep(pattern_custom, HGNC)] <- ReplaceSpecialCharacters(pattern_custom, remove_dots = T)
   Nr.of.Genes.per.Class <- table(Class)
 
 
   ggExpress::qpie(Nr.of.Genes.per.Class)
   Soup.VS.Cells.Av.Exp.gg$Class <- Class
 
-  fname <- kpp("Soup.VS.Cells.Av.Exp.GeneClasses", SeqRun, "pdf")
+  fname <- kpp("Soup.VS.Cells.Av.Exp.GeneClasses", library_name, "pdf")
   pgg <-
     ggplot(
       Soup.VS.Cells.Av.Exp.gg |>
@@ -5047,7 +5050,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
     idx.HE2 <- rowSums(Soup.VS.Cells.Av.Exp) > HP.thr
     pc_TRUE(idx.HE2)
 
-    fname <- kpp("Soup.VS.Cells.Av.Exp.quantile", pr, SeqRun, "pdf")
+    fname <- kpp("Soup.VS.Cells.Av.Exp.quantile", pr, library_name, "pdf")
 
     Outlier <- idx.HE2 &
       (cell.rate < quantile(cell.rate, probs = pr) |
@@ -5084,7 +5087,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   PC.mRNA.in.Soup <- sum(CR.matrices$"soup") / sum(CR.matrices$"raw")
   PC.mRNA.in.Cells <- 100 * sum(CR.matrices$"filt") / sum(CR.matrices$"raw")
   MarkdownReports::wbarplot(
-    variable = PC.mRNA.in.Cells, col = "seagreen", plotname = kppd("PC.mRNA.in.Cells", SeqRun),
+    variable = PC.mRNA.in.Cells, col = "seagreen", plotname = kppd("PC.mRNA.in.Cells", library_name),
     ylim = c(0, 100), ylab = "% mRNA in cells",
     sub = "% mRNA is more meaningful than % reads reported by CR"
   )
@@ -5099,9 +5102,9 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes <- 100 * head(sort(CR.matrices$"soup.rel.RC", decreasing = TRUE), n = 20)
 
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes,
-    plotname = kppd("Soup.GEMs.top.Genes", SeqRun),
+    plotname = kppd("Soup.GEMs.top.Genes", library_name),
     ylab = "% mRNA in the Soup",
-    sub = paste("Within the", SeqRun, "dataset"),
+    sub = paste("Within the", library_name, "dataset"),
     tilted_text = TRUE,
     ylim = c(0, max(Soup.GEMs.top.Genes) * 1.5)
   )
@@ -5143,9 +5146,9 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes.summarized <- 100 * soupProfile.summarized[1:NrColumns2Show] / CR.matrices$"soup.total.sum"
   maxx <- max(Soup.GEMs.top.Genes.summarized)
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes.summarized,
-    plotname = kppd("Soup.GEMs.top.Genes.summarized", SeqRun),
+    plotname = kppd("Soup.GEMs.top.Genes.summarized", library_name),
     ylab = "% mRNA in the Soup", ylim = c(0, maxx + 3),
-    sub = paste("Within the", SeqRun, "dataset"),
+    sub = paste("Within the", library_name, "dataset"),
     tilted_text = TRUE, col = ccc
   )
   barplot_label(
@@ -5159,9 +5162,9 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 
   maxx <- max(Absolute.fraction.soupProfile.summarized)
   MarkdownReports::wbarplot(Absolute.fraction.soupProfile.summarized,
-    plotname = kppd("Absolute.fraction.soupProfile.summarized", SeqRun),
+    plotname = kppd("Absolute.fraction.soupProfile.summarized", library_name),
     ylab = "% of mRNA in cells", ylim = c(0, maxx * 1.33),
-    sub = paste(Stringendo::percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", SeqRun),
+    sub = paste(Stringendo::percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", library_name),
     tilted_text = TRUE, col = ccc
   )
   barplot_label(
@@ -5175,9 +5178,9 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes.non.summarized <- 100 * sort(genes.non.Above, decreasing = TRUE)[1:20] / CR.matrices$"soup.total.sum"
   maxx <- max(Soup.GEMs.top.Genes.non.summarized)
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes.non.summarized,
-    plotname = kppd("Soup.GEMs.top.Genes.non.summarized", SeqRun),
+    plotname = kppd("Soup.GEMs.top.Genes.non.summarized", library_name),
     ylab = "% mRNA in the Soup",
-    sub = paste("Within the", SeqRun, "dataset"),
+    sub = paste("Within the", library_name, "dataset"),
     tilted_text = TRUE, col = "#BF3100",
     ylim = c(0, maxx * 1.5)
   )
