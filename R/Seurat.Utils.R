@@ -4605,7 +4605,7 @@ xsave <- function(
     obj,
     suffix = NULL,
     prefix = NULL,
-    nthreads = .getNrCores(12),
+    nthreads = if (object.size(obj) < 1e7) 1 else .getNrCores(12),
     preset = "high",
     project = getProject(),
     dir = if (exists("OutDir")) OutDir else getwd(),
@@ -4684,7 +4684,8 @@ xsave <- function(
 #' @importFrom rstudioapi isAvailable
 #'
 #' @export
-xread <- function(file, nthreads = 4,
+xread <- function(file,
+                  nthreads = if (file.size(file) < 1e7) 1 else 4,
                   loadParamsAndAllGenes = TRUE,
                   overwriteParams = FALSE,
                   overwriteAllGenes = FALSE,

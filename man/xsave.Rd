@@ -8,7 +8,7 @@ xsave(
   obj,
   suffix = NULL,
   prefix = NULL,
-  nthreads = .getNrCores(12),
+  nthreads = if (object.size(obj) < 1e+07) 1 else .getNrCores(12),
   preset = "high",
   project = getProject(),
   dir = if (exists("OutDir")) OutDir else getwd(),
