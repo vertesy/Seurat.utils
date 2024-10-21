@@ -6,7 +6,7 @@
 \usage{
 xread(
   file,
-  nthreads = 4,
+  nthreads = if (file.size(file) < 1e+07) 1 else 4,
   loadParamsAndAllGenes = TRUE,
   overwriteParams = FALSE,
   overwriteAllGenes = FALSE,

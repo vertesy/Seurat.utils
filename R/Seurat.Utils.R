@@ -5486,7 +5486,8 @@ compareVarFeaturesAndRanks <- function(
 #' @export
 #'
 .getNrCores <- function(n.cpus.def = 8) {
-  n_cores_detected <- as.numeric(system("nproc", intern = TRUE))
+  # n_cores_detected <- as.numeric(system("nproc", intern = TRUE))
+  n_cores_detected <- as.numeric(system("echo $SLURM_CPUS_PER_TASK", intern = TRUE))
   n_cores_avail <- min(n_cores_detected-1, n.cpus.def) # Minus 1 is necessary, bc nproc returns one more..
   return(max(n_cores_avail, 1) )
 }
