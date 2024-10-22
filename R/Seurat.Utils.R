@@ -42,12 +42,17 @@
 #' @param n.PC The number of principal components to use. Default: 30.
 #' @param resolutions A list of resolutions to use for clustering. Default: c(0.1, 0.2, 0.3, 0.4, 0.5).
 #' @param reduction_input The reduction method to use as input for clustering & UMAP. Default: "pca".
+#' @param WorkingDir The working directory to save the results. Default: getwd().
+#'
 #' @return A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and clustering.
+#'
 #' @examples
 #' # Assuming ls.Seurat is a list of Seurat objects and params is a list of parameters
 #' # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
+#'
 #' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
 #' @importFrom tictoc tic toc
+#'
 #' @export
 processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
                                 compute = TRUE,
@@ -57,12 +62,15 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
                                 n.PC = param.list$"n.PC",
                                 resolutions = param.list$"snn_res",
                                 reduction_input = "pca",
+                                WorkingDir = getwd(),
                                 ...) {
   #
   warning("Make sure you cleaned up the memory!", immediate. = TRUE)
+  message("\nWorkingDir: ", WorkingDir)
   if (reduction_input == "harmony") message("Harmony integration is attempted, but it is experimental.")
   stopifnot(require(tictoc))
-  tic()
+
+  tictoc::tic("processSeuratObject")
 
   # Assertions to check input types _________________________________________________
   stopifnot(
@@ -98,16 +106,16 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 
   if (compute) {
     message("------------------- FindVariableFeatures -------------------")
-    tic()
+    tic("FindVariableFeatures")
     obj <- FindVariableFeatures(obj, mean.function = "FastExpMean",
-                                dispersion.function = "FastLogVMR", nfeatures = nfeatures); toc("FindVariableFeatures")
+                                dispersion.function = "FastLogVMR", nfeatures = nfeatures); toc()
 
-    tic()
-    obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc("calc.q99.Expression.and.set.all.genes")
+    tic('calc.q99.Expression.and.set.all.genes')
+    obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc()
 
     message("------------------- ScaleData -------------------")
-    tic()
-    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress); toc("ScaleData")
+    tic('ScaleData')
+    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress); toc()
 
 
     if (reduction_input == "harmony") {
@@ -132,15 +140,15 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
       nr_new_layers <- nr.unique(combined.obj$'regress_out')
       nr_existing_layers <- (length(Layers(combined.obj))-1)/2
       if( nr_existing_layers != nr_new_layers) {
-        tic()
-        combined.obj[["RNA"]] <- split(combined.obj[["RNA"]], f = combined.obj$'regress_out'); toc("Layers split by regress_out")
+        tic("Split layers by regress_out")
+        combined.obj[["RNA"]] <- split(combined.obj[["RNA"]], f = combined.obj$'regress_out'); toc()
       }
 
-      tic()
-      obj <- harmony::RunHarmony(object = obj, group.by.vars = "regress_out", dims.use = 1:nPCs, plot_convergence = F); toc("Harmony ran")
+      tic("RunHarmony")
+      obj <- harmony::RunHarmony(object = obj, group.by.vars = "regress_out", dims.use = 1:nPCs, plot_convergence = F); toc()
 
-      tic()
-      obj <- JoinLayers(obj,  assay = "RNA"); toc("Layers joined")
+      tic("JoinLayers")
+      obj <- JoinLayers(obj,  assay = "RNA"); toc()
       obj@misc$'harmony.params' <- c( "nPCs" = nPCs, "regress" = variables.2.regress)
 
     }
@@ -148,23 +156,24 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 
 
     message("------------------- PCA /UMAP -------------------")
-    tic()
-    obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE); toc("PCA")
-    tic()
+    tic("PCA")
+    obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE); toc()
+    tic("UMAP")
     obj <- SetupReductionsNtoKdimensions(obj, nPCs = n.PC, reduction_output = "umap",
-                                         reduction_input = reduction_input, dimensions = 3:2); toc("UMAP")
+                                         reduction_input = reduction_input, dimensions = 3:2); toc()
 
     message("------------------- FindNeighbors & Clusters -------------------")
-    tic()
-    obj <- FindNeighbors(obj, reduction = reduction_input, dims = 1:n.PC); toc("FindNeighbors")
+    tic("FindNeighbors")
+    obj <- FindNeighbors(obj, reduction = reduction_input, dims = 1:n.PC); toc()
 
-    tic()
-    obj <- FindClusters(obj, resolution = resolutions); toc("FindClusters")
+    tic("FindClusters")
+    obj <- FindClusters(obj, resolution = resolutions); toc()
   }
 
 
   if (save) {
     message("------------------- Saving -------------------")
+    create_set_OutDir(WorkingDir)
     xsave(obj, suffix = "reprocessed", paramList = param.list)
   }
 
@@ -247,6 +256,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 #' @param n.cores Integer specifying the number of cores to use for parallel processing (multisession).
 #'       Default: 1.
 #' @param presto Logical indicating whether to use presto for DE analysis. Default: TRUE.
+#' @param WorkingDir Character string specifying the working directory. Default: getwd().
 #'
 #' @importFrom future plan
 #' @return Modified Seurat object and markers list.
@@ -277,10 +287,13 @@ runDGEA <- function(obj,
                     clean.misc.slot = TRUE,
                     clean.meta.data = TRUE,
                     n.cores = 1,
-                    presto = TRUE
+                    presto = TRUE,
+                    WorkingDir = getwd()
                     ) {
 
   if(presto) require(presto)
+  message("\nWorkingDir: ", WorkingDir)
+
   # Assertions for input parameters
   stopifnot(
     is(obj, "Seurat"),
@@ -386,7 +399,8 @@ runDGEA <- function(obj,
       Idents(obj) <- Idents.for.DEG[[i]]
 
       # Perform differential expression analysis
-      tic(); df.markers <- Seurat::FindAllMarkers(obj,
+      tic("FindAllMarkers")
+      df.markers <- Seurat::FindAllMarkers(obj,
                                            verbose = TRUE,
                                            test.use = param.list$"test",
                                            logfc.threshold = param.list$"logfc.threshold",
@@ -426,6 +440,7 @@ runDGEA <- function(obj,
 
 
     if (save.obj) {
+      create_set_OutDir(WorkingDir)
       tag <- if(is.null(ident)) kpp("res", res.analyzed.DE) else ident
       xsave(obj, suffix = kpp("w.DGEA", tag))
     }
@@ -988,7 +1003,7 @@ calc.q99.Expression.and.set.all.genes <- function(
     plot = TRUE,
     show = TRUE) {
   #
-  tictoc::tic()
+  tictoc::tic("calc.q99.Expression.and.set.all.genes")
   x <- GetAssayData(object = obj, assay = assay, slot = slot)
   if (ncol(x) > max.cells) {
     dsampled <- sample(x = 1:ncol(x), size = max.cells)
@@ -1965,8 +1980,8 @@ subsetSeuObjByIdent <- function(
     ident = GetClusteringRuns()[1],
     identGroupKeep,
     invert = FALSE) {
-  tic()
 
+  tic("subsetSeuObjByIdent")
   # Input checks
   stopifnot(
     "obj must be a Seurat object" = inherits(obj, "Seurat"),
@@ -2493,7 +2508,8 @@ downsampleListSeuObjsNCells <- function(
   names.ls <- names(ls.obj)
   n.datasets <- length(ls.obj)
   iprint(NrCells, "cells")
-  tictoc::tic()
+
+  tictoc::tic("downsampleListSeuObjsNCells")
   if (foreach::getDoParRegistered()) {
     ls.obj.downsampled <- foreach::foreach(i = 1:n.datasets) %dopar% {
       iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
@@ -2557,7 +2573,7 @@ downsampleListSeuObjsPercent <- function(
   n.datasets <- length(ls.obj)
   iprint(fraction, "fraction")
 
-  tictoc::tic()
+  tictoc::tic("downsampleListSeuObjsPercent")
   if (foreach::getDoParRegistered()) {
     ls.obj.downsampled <- foreach::foreach(i = 1:n.datasets) %dopar% {
       downsampleSeuObj(obj = ls.obj[[i]], fractionCells = fraction)
@@ -3072,9 +3088,8 @@ Calc.Cor.Seurat <- function(
   }
   genes.HE <- which_names(obj@misc[[quantile_name]] > 0)
   iprint("Pearson correlation is calculated for", length(genes.HE), "HE genes with expr.", qname, ": > 0.")
-  tictoc::tic()
-  ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use]))
-  tictoc::toc()
+  tictoc::tic("sparse.cor")
+  ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); tictoc::toc()
   ls.cor <- lapply(ls.cor, round, digits = 2)
 
   slot__name <- kpp(slot.use, assay.use, quantile_name)
@@ -3448,7 +3463,7 @@ check.genes <- function(
     data.slot = c("counts", "data")[2],
     verbose = TRUE,
     ...) {
-  tictoc::tic()
+  tictoc::tic("check.genes")
   message(" > Running check.genes...")
   message("assay: ", assay.slot, ", data.slot: ", data.slot)
 
@@ -3684,8 +3699,10 @@ whitelist.subset.ls.Seurat <- function(
 FindCorrelatedGenes <- function(
     gene = "TOP2A", obj = combined.obj, assay = "RNA", slot = "data",
     HEonly = FALSE, minExpr = 1, minCells = 1000,
-    trailingNgenes = 1000) {
-  tictoc::tic()
+    trailingNgenes = 1000
+    ) {
+
+  tictoc::tic("FindCorrelatedGenes")
   AssayData <- GetAssayData(object = obj, assay = assay, slot = slot)
   matrix_mod <- iround(as.matrix(AssayData))
   if (HEonly) {
@@ -4430,8 +4447,9 @@ LoadAllSeurats <- function(
     string.remove1 = list(FALSE, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[[2]],
     string.replace1 = "",
     string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]],
-    sort_alphanumeric = TRUE) {
-  tictoc::tic()
+    sort_alphanumeric = TRUE
+    ) {
+  tictoc::tic("LoadAllSeurats")
   InputDir <- FixPath(InputDir)
 
   print(file.pattern)
@@ -4507,7 +4525,7 @@ LoadAllSeurats <- function(
 #'
 #' @export
 read10x <- function(dir) {
-  tictoc::tic()
+  tictoc::tic("read10x")
   names <- c("barcodes.tsv", "features.tsv", "matrix.mtx")
   for (i in 1:length(names)) {
     R.utils::gunzip(paste0(dir, "/", names[i], ".gz"))
@@ -4537,7 +4555,7 @@ read10x <- function(dir) {
 #'  \code{\link[tictoc]{tic}}
 #' @importFrom tictoc tic toc
 .saveRDS.compress.in.BG <- function(obj, compr = FALSE, fname, compress_internally = FALSE, ...) {
-  try(tictoc::tic(), silent = TRUE)
+  try(tictoc::tic(".saveRDS.compress.in.BG"), silent = TRUE)
   saveRDS(object = obj, compress = compress_internally, file = fname, ...)
   try(tictoc::toc(), silent = TRUE)
   if (compr) system(command = paste0("gzip '", fname, "'"), wait = FALSE) # execute in the background
@@ -4628,6 +4646,8 @@ isave.RDS <- function(
 #' @param allGenes Optional; a list of all genes to save within the Seurat object.
 #' @param saveLocation Logical; if TRUE and if the object is a Seurat object, file location is saved
 #' into misc slot.
+#' @param backgroundJob NOT IMPLEMENTED. Logical; if TRUE, the compression is done in the background.
+#' @param v Verbose output.
 #'
 #' @return Invisible; The function is called for its side effects (saving a file) and does not return anything.
 #'
@@ -4648,12 +4668,12 @@ xsave <- function(
     preset = "high",
     project = getProject(),
     dir = if (exists("OutDir")) OutDir else getwd(),
-    backgroundJob = FALSE,
     showMemObject = TRUE,
     saveParams = if (exists("p")) TRUE else FALSE, # save allGenes and paramList
     paramList = if (exists("p")) p else NULL,
     allGenes = if (exists("all.genes")) all.genes else NULL,
     saveLocation = TRUE,
+    backgroundJob = FALSE,
     v = TRUE) {
   #
   if (v) message(nthreads, " threads.\n-----------")
@@ -4671,7 +4691,7 @@ xsave <- function(
   if(!isFALSE(saveParams)) message("paramList: ", if (exists("paramList")) paste(substitute(paramList), length(paramList), " elements.") else " not provided.")
   if(!isFALSE(saveParams)) message("allGenes: ", if (exists("allGenes")) " found as global variable." else " not provided.")
 
-  try(tictoc::tic(), silent = TRUE)
+  try(tictoc::tic("xsave"), silent = TRUE)
   if (showMemObject & v) try(memory.biggest.objects(), silent = TRUE)
 
   fnameBase <- trimws(kppu(
@@ -4733,7 +4753,7 @@ xread <- function(file,
   stopifnot(file.exists(file))
 
   message(nthreads, " threads.")
-  try(tictoc::tic(), silent = TRUE)
+  try(tictoc::tic("xread"), silent = TRUE)
 
   obj <- qs::qread(file = file, nthreads = nthreads, ...)
 
@@ -4836,11 +4856,13 @@ isave.image <- function(
 #' @export
 #' @importFrom Stringendo kollapse iprint
 #' @importFrom tictoc tic toc
-qsave.image <- function(..., showMemObject = TRUE, options = c("--force", NULL)[1]) {
+qsave.image <- function(..., showMemObject = TRUE, options = c("--force", NULL)[1]
+                        ) {
+  tictoc::tic("qsave.image")
+
   fname <- Stringendo::kollapse(getwd(), "/", basename(OutDir), idate(), ..., ".Rdata")
   print(fname)
   if (nchar(fname) > 2000) stop()
-  tictoc::tic()
   save.image(file = fname, compress = FALSE)
   iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname), wait = FALSE) # execute in the background
@@ -5669,6 +5691,7 @@ compareVarFeaturesAndRanks <- function(
 #' @param return.as.name If TRUE, returns the name of the object. Default: FALSE.
 #' @param assay The assay to extract scaled features from. Default: "RNA".
 #' @param suffix A suffix string to add.
+#' @param v Verbose? Default: `TRUE`.
 #' @return A character string summarizing the key parameters.
 
 .parseKeyParams <- function(obj,
@@ -5677,14 +5700,14 @@ compareVarFeaturesAndRanks <- function(
                             return.as.name = FALSE,
                             assay = Seurat::DefaultAssay(obj),
                             suffix = NULL,
-                            v = T) {
-  #
-  # browser()
-  tictoc::tic()
+                            v = T
+                            ) {
+
+  tictoc::tic('.parseKeyParams')
+
   if(v) message(" > Running .parseKeyParams...")
-  # tictoc::tic()
   scaledFeatures <- .getNrScaledFeatures(obj, assay, v= F)
-  # tictoc::toc()
+
   if (is.null(regressionVariables)) regressionVariables <- .getRegressionVariablesForScaleData(obj = obj, assay = assay, v = F)
 
   if (!is.null(nrVarFeatures)) {

@@ -12,12 +12,12 @@ xsave(
   preset = "high",
   project = getProject(),
   dir = if (exists("OutDir")) OutDir else getwd(),
-  backgroundJob = FALSE,
   showMemObject = TRUE,
   saveParams = if (exists("p")) TRUE else FALSE,
   paramList = if (exists("p")) p else NULL,
   allGenes = if (exists("all.genes")) all.genes else NULL,
   saveLocation = TRUE,
+  backgroundJob = FALSE,
   v = TRUE
 )
 }
@@ -47,6 +47,10 @@ are saved within it.}
 
 \item{saveLocation}{Logical; if TRUE and if the object is a Seurat object, file location is saved
 into misc slot.}
+
+\item{backgroundJob}{NOT IMPLEMENTED. Logical; if TRUE, the compression is done in the background.}
+
+\item{v}{Verbose output.}
 }
 \value{
 Invisible; The function is called for its side effects (saving a file) and does not return anything.

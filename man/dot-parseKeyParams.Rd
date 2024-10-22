@@ -27,6 +27,8 @@ If NULL, the function will attempt to extract the variables from the \code{objec
 \item{assay}{The assay to extract scaled features from. Default: "RNA".}
 
 \item{suffix}{A suffix string to add.}
+
+\item{v}{Verbose? Default: \code{TRUE}.}
 }
 \value{
 A character string summarizing the key parameters.

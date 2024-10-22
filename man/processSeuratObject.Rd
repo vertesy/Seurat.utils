@@ -16,6 +16,7 @@ processSeuratObject(
   n.PC = param.list$n.PC,
   resolutions = param.list$snn_res,
   reduction_input = "pca",
+  WorkingDir = getwd(),
   ...
 )
 }
@@ -41,6 +42,8 @@ processSeuratObject(
 \item{resolutions}{A list of resolutions to use for clustering. Default: c(0.1, 0.2, 0.3, 0.4, 0.5).}
 
 \item{reduction_input}{The reduction method to use as input for clustering & UMAP. Default: "pca".}
+
+\item{WorkingDir}{The working directory to save the results. Default: getwd().}
 }
 \value{
 A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and clustering.
@@ -53,4 +56,5 @@ This is done in parallel using multiple cores.
 \examples{
 # Assuming ls.Seurat is a list of Seurat objects and params is a list of parameters
 # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
+
 }

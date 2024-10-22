@@ -25,7 +25,8 @@ runDGEA(
   clean.misc.slot = TRUE,
   clean.meta.data = TRUE,
   n.cores = 1,
-  presto = TRUE
+  presto = TRUE,
+  WorkingDir = getwd()
 )
 }
 \arguments{
@@ -85,6 +86,8 @@ previous clustering results. Default: TRUE.}
 Default: 1.}
 
 \item{presto}{Logical indicating whether to use presto for DE analysis. Default: TRUE.}
+
+\item{WorkingDir}{Character string specifying the working directory. Default: getwd().}
 }
 \value{
 Modified Seurat object and markers list.
