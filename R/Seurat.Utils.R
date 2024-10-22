@@ -60,6 +60,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
                                 ...) {
   #
   warning("Make sure you cleaned up the memory!", immediate. = TRUE)
+  if (reduction_input == "harmony") message("Harmony integration is attempted, but it is experimental.")
   stopifnot(require(tictoc))
   tic()
 
@@ -92,35 +93,73 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 
   if (add.meta.fractions) {
     message("Adding meta data for gene-class fractions, eg. percent.mito, etc.")
-    obj <- add_gene_class_fractions(obj)
-
+    obj <- addGeneClassFractions(obj)
   } # end if add.meta.fractions
 
   if (compute) {
     message("------------------- FindVariableFeatures -------------------")
     tic()
     obj <- FindVariableFeatures(obj, mean.function = "FastExpMean",
-                                dispersion.function = "FastLogVMR", nfeatures = nfeatures); toc()
+                                dispersion.function = "FastLogVMR", nfeatures = nfeatures); toc("FindVariableFeatures")
 
-    obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
+    tic()
+    obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc("calc.q99.Expression.and.set.all.genes")
 
     message("------------------- ScaleData -------------------")
     tic()
-    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress); toc()
+    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress); toc("ScaleData")
+
+
+    if (reduction_input == "harmony") {
+      message("------------------- Harmony - EXPERIMENTAL -------------------")
+
+      m.REGR <- obj@meta.data[, variables.2.regress, drop=F]
+      any_regr_col_numeric <- sapply(m.REGR, is.numeric)
+      if(any(any_regr_col_numeric)){
+        print("Some of the regression variables are numeric:")
+        print(any_regr_col_numeric)
+        stop("harmony cannot regress numeric variables")
+      }
+
+      obj$'regress_out' <- apply(m.REGR,1, kppu)
+      if (nr.unique(obj$'regress_out') > 25) {
+        warning("The number of regress_out categories is too many (>25), consider serially calling harmony on each variable.", immediate. = TRUE)
+      }
+      if (min(table(obj$'regress_out')) < 5) {
+        warning("The number of cells in some regress_out categories is too few (<5), consider serially calling harmony on each variable.", immediate. = TRUE)
+      }
+
+      nr_new_layers <- nr.unique(combined.obj$'regress_out')
+      nr_existing_layers <- (length(Layers(combined.obj))-1)/2
+      if( nr_existing_layers != nr_new_layers) {
+        tic()
+        combined.obj[["RNA"]] <- split(combined.obj[["RNA"]], f = combined.obj$'regress_out'); toc("Layers split by regress_out")
+      }
+
+      tic()
+      obj <- harmony::RunHarmony(object = obj, group.by.vars = "regress_out", dims.use = 1:nPCs, plot_convergence = F); toc("Harmony ran")
+
+      tic()
+      obj <- JoinLayers(obj,  assay = "RNA"); toc("Layers joined")
+      obj@misc$'harmony.params' <- c( "nPCs" = nPCs, "regress" = variables.2.regress)
+
+    }
+
+
 
     message("------------------- PCA /UMAP -------------------")
     tic()
-    obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE); toc()
-
+    obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE); toc("PCA")
+    tic()
     obj <- SetupReductionsNtoKdimensions(obj, nPCs = n.PC, reduction_output = "umap",
-                                         reduction_input = reduction_input, dimensions = 3:2)
+                                         reduction_input = reduction_input, dimensions = 3:2); toc("UMAP")
 
     message("------------------- FindNeighbors & Clusters -------------------")
     tic()
-    obj <- FindNeighbors(obj, reduction = reduction_input, dims = 1:n.PC); toc()
+    obj <- FindNeighbors(obj, reduction = reduction_input, dims = 1:n.PC); toc("FindNeighbors")
 
     tic()
-    obj <- FindClusters(obj, resolution = resolutions); toc()
+    obj <- FindClusters(obj, resolution = resolutions); toc("FindClusters")
   }
 
 
