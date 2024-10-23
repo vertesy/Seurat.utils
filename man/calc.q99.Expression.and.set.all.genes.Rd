@@ -9,10 +9,10 @@ calc.q99.Expression.and.set.all.genes(
   quantileX = 0.99,
   max.cells = 1e+05,
   slot = "data",
-  assay = c("RNA", "integrated")[1],
+  assay = c("RNA", "integrated", "SCT")[1],
   set.misc = TRUE,
   assign_to_global_env = TRUE,
-  suffix = substitute(obj),
+  suffix = as.character(substitute(obj)),
   plot = TRUE,
   show = TRUE
 )

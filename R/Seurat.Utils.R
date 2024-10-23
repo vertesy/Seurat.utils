@@ -996,29 +996,69 @@ calc.q99.Expression.and.set.all.genes <- function(
     obj = combined.obj,
     quantileX = 0.99, max.cells = 1e5,
     slot = "data",
-    assay = c("RNA", "integrated")[1],
+    assay = c("RNA", "integrated", "SCT")[1],
     set.misc = TRUE,
     assign_to_global_env = TRUE,
-    suffix = substitute(obj),
+    suffix = as.character(substitute(obj)),
     plot = TRUE,
     show = TRUE) {
-  #
+  message("slot: ", slot, " assay: ", assay, ".\n")
+
   tictoc::tic("calc.q99.Expression.and.set.all.genes")
-  x <- GetAssayData(object = obj, assay = assay, slot = slot)
-  if (ncol(x) > max.cells) {
-    dsampled <- sample(x = 1:ncol(x), size = max.cells)
-    x <- x[, dsampled]
+  stopifnot(
+    is(obj, "Seurat"),
+    quantileX > 0 & quantileX < 1,
+    max.cells > 1e3, max.cells < 1e6,
+    is.logical(set.misc), is.logical(assign_to_global_env), is.logical(plot), is.logical(show),
+    is.character(suffix)
+  )
+
+  warnifnot(
+    slot %in% c("data", "scale.data", "counts"),
+    assay %in% c("RNA", "integrated")
+  )
+
+  # Calculate the number of cells in the top quantile (e.g.: 99th quantile) that is
+  # required to for gene expression to be >0
+  nr.cells <- max.cells * (1 - quantileX)
+  message("Each gene has to be expressed in min. ", nr.cells, " cells, to have >0 quantile-expression\n",
+          "quantileX: ", quantileX, " max.cells: ", max.cells)
+
+
+  # Get the data matrix
+  assay_data <- obj@assays[[assay]]
+  if (obj@version >= "5") {
+    if(assay == "RNA") {
+      layers <- assay_data@layers
+      message(length(layers), " layers in RNA assay")
+      stopifnot(slot %in% names(layers))
+      data_mtx <- layers[[slot]]
+    } else {
+      data_mtx <- slot(assay_data, slot)
+    }
+  } else {
+    data_mtx <- assay_data[[slot]]
   }
+
+  # Downsample if the number of cells is too high
+  if (ncol(data_mtx) > max.cells) {
+    dsampled <- sample(x = 1:ncol(data_mtx), size = max.cells)
+    data_mtx <- data_mtx[, dsampled]
+    message("Downsampled from ", ncol(obj), "to ", max.cells, " cells")
+  }
+
   qname <- paste0("q", quantileX * 100)
   slot_name <- kpp("expr", qname)
 
   print("Calculating Gene Quantiles")
-  expr.q99.df <- sparseMatrixStats::rowQuantiles(x, probs = quantileX)
+  expr.q99.df <- sparseMatrixStats::rowQuantiles(data_mtx, probs = quantileX)
   expr.q99 <- iround(expr.q99.df)
 
   log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q99 + 1)) # strip names
   n.cells <- floor(ncol(obj) * (1 - quantileX))
   qnameP <- paste0(100 * quantileX, "th quantile")
+
+  # Plot the distribution of gene expression in the 99th quantile
   if(plot){
     pobj <- ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile,
                                   ext = "pdf", breaks = 30,
