@@ -1001,7 +1001,8 @@ calc.q99.Expression.and.set.all.genes <- function(
     assign_to_global_env = TRUE,
     suffix = as.character(substitute(obj)),
     plot = TRUE,
-    show = TRUE) {
+    show = TRUE
+    ) {
   message("slot: ", slot, " assay: ", assay, ".\n")
 
   tictoc::tic("calc.q99.Expression.and.set.all.genes")
@@ -1018,14 +1019,7 @@ calc.q99.Expression.and.set.all.genes <- function(
     assay %in% c("RNA", "integrated")
   )
 
-  # Calculate the number of cells in the top quantile (e.g.: 99th quantile) that is
-  # required to for gene expression to be >0
-  nr.cells <- max.cells * (1 - quantileX)
-  message("Each gene has to be expressed in min. ", nr.cells, " cells, to have >0 quantile-expression\n",
-          "quantileX: ", quantileX, " max.cells: ", max.cells)
-
-
-  # Get the data matrix
+  # Get the data matrix ____________________________________________________________
   assay_data <- obj@assays[[assay]]
   if (obj@version >= "5") {
     if(assay == "RNA") {
@@ -1040,13 +1034,20 @@ calc.q99.Expression.and.set.all.genes <- function(
     data_mtx <- assay_data[[slot]]
   }
 
-  # Downsample if the number of cells is too high
+  # Downsample if the number of cells is too high _________________________________________________
   if (ncol(data_mtx) > max.cells) {
     dsampled <- sample(x = 1:ncol(data_mtx), size = max.cells)
     data_mtx <- data_mtx[, dsampled]
     message("Downsampled from ", ncol(obj), "to ", max.cells, " cells")
   }
 
+  # Calculate the number of cells in the top quantile (e.g.: 99th quantile) that is
+  # required to for gene expression to be >0
+  n.cells <- floor(ncol(data_mtx) * (1 - quantileX))
+  message("Each gene has to be expressed in min. ", n.cells, " cells, to have >0 quantile-expression\n",
+          "quantileX: ", quantileX, " max.cells: ", max.cells)
+
+  # Prepare for plotting ____________________________________________________________
   qname <- paste0("q", quantileX * 100)
   slot_name <- kpp("expr", qname)
 
@@ -1055,16 +1056,15 @@ calc.q99.Expression.and.set.all.genes <- function(
   expr.q99 <- iround(expr.q99.df)
 
   log2.gene.expr.of.the.90th.quantile <- as.numeric(log2(expr.q99 + 1)) # strip names
-  n.cells <- floor(ncol(obj) * (1 - quantileX))
   qnameP <- paste0(100 * quantileX, "th quantile")
 
-  # Plot the distribution of gene expression in the 99th quantile
+  # Plot the distribution of gene expression in the 99th quantile _________________________________
   if(plot){
     pobj <- ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile,
+                                  plotname = paste("Gene expression in the", qnameP, " in", suffix),
                                   ext = "pdf", breaks = 30,
-                                  plotname = paste("Gene expression in the", qnameP, suffix),
-                                  subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0."),
-                                  caption = paste(n.cells, "cells in", qnameP),
+                                  subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", n.cells, " cells)."),
+                                  caption = paste(n.cells, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object."),
                                   suffix = suffix,
                                   xlab = paste0("log2(expr. in the ", qnameP, "quantile+1) [UMI]"),
                                   ylab = "Nr. of genes",
