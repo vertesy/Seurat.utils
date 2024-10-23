@@ -7,7 +7,7 @@
 recall.all.genes(obj = combined.obj, overwrite = FALSE)
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object, Default: \code{combined.obj}}
 }
 \description{
 all.genes set by calc.q99.Expression.and.set.all.genes() #

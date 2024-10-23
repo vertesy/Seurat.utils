@@ -21,7 +21,7 @@ Default: c("^AC.", "^AL.", "^c\link{1-9}orf", "\\.AS\link{1-9}$").}
 
 \item{v}{"verbose" Whether to print the number of genes before and after filtering.}
 
-\item{unique}{Whether to return unique gene symbols. Default: TRUE.}
+\item{unique}{Whether to return unique gene symbols. Default: \code{TRUE}.}
 
 \item{...}{Additional arguments to pass to \code{\link[stringr]{str_detect}}.}
 }

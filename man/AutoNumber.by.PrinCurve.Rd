@@ -18,7 +18,7 @@ AutoNumber.by.PrinCurve(
 
 \item{dim}{Dimensions to use, Default: 1:2}
 
-\item{plotit}{Plot results (& show it), Default: TRUE}
+\item{plotit}{Plot results (& show it), Default: \code{TRUE}.}
 
 \item{swap}{Swap Lambda paramter (multiplied with this) , Default: -1}
 

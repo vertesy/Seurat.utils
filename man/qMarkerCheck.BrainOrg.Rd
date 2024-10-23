@@ -10,7 +10,7 @@ qMarkerCheck.BrainOrg(obj = combined.obj, custom.genes = FALSE, suffix = "")
 \item{obj}{Seurat object for visualization; Default: \code{combined.obj}.}
 
 \item{custom.genes}{Logical indicating whether to use a custom set of genes.
-If FALSE, a predefined list of key brain organoid markers is used; Default: FALSE.}
+If FALSE, a predefined list of key brain organoid markers is used; Default: \code{FALSE}.}
 
 \item{suffix}{Suffix for the folder name where the plots are saved; Default: "".}
 }

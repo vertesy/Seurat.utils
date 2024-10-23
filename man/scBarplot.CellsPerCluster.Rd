@@ -25,17 +25,17 @@ scBarplot.CellsPerCluster(
 \item{ident}{Cluster identity. Used to specify which clustering results to visualize.
 Default: First entry from ordered clustering runs.}
 
-\item{sort}{If TRUE, sorts clusters by size. Default: FALSE.}
+\item{sort}{If TRUE, sorts clusters by size. Default: \code{FALSE}.}
 
 \item{sub}{Subtitle for the plot. Default: "identity".}
 
-\item{label}{If TRUE, shows cell count or percentage based on the label vector. Default: TRUE.}
+\item{label}{If TRUE, shows cell count or percentage based on the label vector. Default: \code{TRUE}.}
 
 \item{suffix}{Optional suffix for file naming. Used in conjunction with \code{kpp}.}
 
 \item{palette}{Color palette for the barplot. Default: 'glasbey'.}
 
-\item{return_table}{If TRUE, returns the data used for plotting instead of the plot itself. Default: FALSE.}
+\item{return_table}{If TRUE, returns the data used for plotting instead of the plot itself. Default: \code{FALSE}.}
 
 \item{ylab_adj}{Adjustment factor for y-axis label positioning. Default: 1.1.}
 

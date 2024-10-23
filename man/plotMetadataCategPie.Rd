@@ -31,6 +31,8 @@ and the count of each category. If \code{FALSE}, only the percentage is shown.}
 
 \item{subtitle}{Optional subtitle for the pie chart.}
 
+\item{labels}{Optional labels for the pie chart.}
+
 \item{...}{Additional arguments to pass to the pie chart plotting function.}
 }
 \value{

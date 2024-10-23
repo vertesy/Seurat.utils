@@ -11,9 +11,9 @@ GetOrderedClusteringRuns(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj.}
+\item{obj}{Seurat object, Default: \code{combined.obj}.}
 
-\item{res}{Clustering resoluton to use, Default: FALSE}
+\item{res}{Clustering resoluton to use, Default: \code{FALSE}.}
 
 \item{pat}{Pattern to match, Default: '\emph{snn_res.}\link{0,1}\.\link{0-9}\.ordered$'}
 }

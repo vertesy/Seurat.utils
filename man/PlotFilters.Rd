@@ -47,7 +47,7 @@ PlotFilters(
 
 \item{above.nFeature_RNA}{Upper bound of RNA features. Default: \code{p$thr.hp.nFeature_RNA}.}
 
-\item{subdir}{Subdirectory within \code{parentdir} where plots will be stored. Default is generated using a call to \code{kpp()}.}
+\item{subdir}{Subdirectory within \code{parentdir} where plots will be stored. Default: generated using a call to \code{kpp()}.}
 
 \item{transparency}{Point transparency on scatter plots. Default: 0.25.}
 
@@ -68,8 +68,8 @@ parameters, present in the global environment, with elements \code{thr.lp.mito},
 \dontrun{
 if (interactive()) {
   # !! Default arguments assume that `p` is a list of parameters, present in the global
-  environment, with elements `thr.lp.mito`, `thr.hp.mito`, `thr.lp.ribo`, `thr.hp.ribo`,
-  `thr.lp.nFeature_RNA`, and `thr.hp.nFeature_RNA`.
+  # environment, with elements `thr.lp.mito`, `thr.hp.mito`, `thr.lp.ribo`, `thr.hp.ribo`,
+  # `thr.lp.nFeature_RNA`, and `thr.hp.nFeature_RNA`.
   PlotFilters(ls.Seurat)
 }
 }

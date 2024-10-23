@@ -17,7 +17,7 @@ DiscretePaletteSafe(
 \item{palette.used}{Palette name to use for generating colors. Options include "alphabet",
 "alphabet2", "glasbey", "polychrome", "stepped". Default: "alphabet2".}
 
-\item{show.colors}{If TRUE, displays the generated color palette. Default: FALSE.}
+\item{show.colors}{If TRUE, displays the generated color palette. Default: \code{FALSE}.}
 
 \item{seed}{Seed value for reproducibility, especially when random color generation is involved.
 Default: 1989.}

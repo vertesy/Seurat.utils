@@ -15,7 +15,7 @@ scBarplotEnrichr(
   save = TRUE,
   w = 10,
   h = 10,
-  also.pdf = F,
+  also.pdf = FALSE,
   ...
 )
 }
@@ -32,7 +32,13 @@ scBarplotEnrichr(
 
 \item{caption}{Character. Caption of the plot. Default: constructed from input parameters.}
 
-\item{save}{Logical. Whether to save the plot to a file. Default: TRUE.}
+\item{save}{Logical. Whether to save the plot to a file. Default: \code{TRUE}.}
+
+\item{w}{Width of the plot canvas, calculated as the width of an A4 page times \code{scale}; Default: \code{11.69 * scale}.}
+
+\item{h}{Height of the plot canvas, calculated as the height of an A4 page times \code{scale}; Default: \code{8.27 * scale}.}
+
+\item{also.pdf}{Save plot in both png and pdf formats.}
 
 \item{...}{Additional arguments passed to \code{enrichplot::barplot.enrichResult}.}
 }

@@ -15,11 +15,11 @@
 \arguments{
 \item{obj}{Seurat object.}
 
-\item{compr}{Compress at all? Default: TRUE}
+\item{compr}{Compress at all? Default: \code{TRUE}.}
 
 \item{fname}{File name}
 
-\item{compress_internally}{Compress by R? Default: FALSE (still compressed in background via CLI).}
+\item{compress_internally}{Compress by R? Default: \code{FALSE}. (still compressed in background via CLI).}
 
 \item{...}{Additional parameters passed to saveRDS() function.}
 }

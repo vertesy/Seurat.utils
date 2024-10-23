@@ -16,7 +16,7 @@ getClusterColors(
 \item{obj}{Seurat object containing clustering information.}
 
 \item{use_new_palettes}{Logical indicating whether to use custom palettes defined in
-\code{DiscretePalette} function. Default: TRUE.}
+\code{DiscretePalette} function. Default: \code{TRUE}.}
 
 \item{palette}{Name of the color palette to use if \code{use_new_palettes} is TRUE.
 Options: "alphabet", "alphabet2", "glasbey", "polychrome", "stepped". Default: "glasbey".}
@@ -24,7 +24,7 @@ Options: "alphabet", "alphabet2", "glasbey", "polychrome", "stepped". Default: "
 \item{ident}{Clustering identity to use for coloring. Retrieved from the first entry
 of \code{GetClusteringRuns()} by default.}
 
-\item{show}{If TRUE, displays a plot showing the color mapping for each cluster. Default: TRUE.}
+\item{show}{If TRUE, displays a plot showing the color mapping for each cluster. Default: \code{TRUE}.}
 }
 \description{
 Regenerate and optionally displays the color scheme associated with the clusters

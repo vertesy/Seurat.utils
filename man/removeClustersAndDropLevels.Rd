@@ -15,7 +15,7 @@ removeClustersAndDropLevels(
 \item{ls_obj}{A list of Seurat objects.}
 
 \item{object_names}{A character vector containing the names of the Seurat objects to process.
-Default is names of all objects in the \code{ls_obj}.}
+Default: names of all objects in the \code{ls_obj}.}
 
 \item{indices}{A numeric vector indicating which datasets to process by their position in
 the \code{object_names} vector. By default, it processes the second and third datasets.}

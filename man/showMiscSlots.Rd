@@ -7,7 +7,7 @@
 showMiscSlots(obj = combined.obj, max.level = 1, subslot = NULL, ...)
 }
 \arguments{
-\item{obj}{An object whose \verb{@misc} slot needs to be examined. Default: combined.obj}
+\item{obj}{An object whose \verb{@misc} slot needs to be examined. Default: \code{combined.obj}}
 
 \item{max.level}{Max depth to dive into sub-elements.}
 

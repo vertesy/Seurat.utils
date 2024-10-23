@@ -9,7 +9,7 @@ make10Xcellname(cellnames, suffix = "_1")
 \arguments{
 \item{cellnames}{A vector of cell names without numeric suffixes.}
 
-\item{suffix}{The suffix to add to each cell name. Default is '_1'.}
+\item{suffix}{The suffix to add to each cell name. Default: '_1'.}
 }
 \value{
 A vector of cell names with the specified suffix appended.

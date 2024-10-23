@@ -25,7 +25,7 @@ Default: c("AAV.detected.min2", "AAV.detected").}
 \item{match.values}{A named vector where names correspond to \code{meta.features} and values are
 the strings to match against. Default: c("AAV.detected.min2" = "AAV", "AAV.detected" = "AAV").}
 
-\item{verbose}{A logical value indicating whether to print detailed output. Default: TRUE.}
+\item{verbose}{A logical value indicating whether to print detailed output. Default: \code{TRUE}.}
 
 \item{max.categ}{The maximum number of categories allowed before stopping. Default: 30.}
 }

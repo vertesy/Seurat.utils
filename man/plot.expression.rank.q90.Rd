@@ -7,11 +7,11 @@
 \method{plot}{expression.rank.q90}(obj = combined.obj, gene = "ACTB", filterZero = TRUE)
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object, Default: \code{combined.obj}}
 
 \item{gene}{gene of interest, Default: 'ACTB'}
 
-\item{filterZero}{Remove genes whose quantile-90 expression in 0? Default: TRUE}
+\item{filterZero}{Remove genes whose quantile-90 expression in 0? Default: \code{TRUE}.}
 }
 \description{
 Plot gene expression based on the expression at the 90th quantile

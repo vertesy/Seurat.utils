@@ -19,22 +19,22 @@ load10Xv3(
 This directory should include subdirectories for raw and filtered data, typically named starting with
 \code{raw_} and \code{filt_}, respectively.}
 
-\item{cellIDs}{An optional vector of cell IDs to include in the loaded data. Default is \code{NULL},
+\item{cellIDs}{An optional vector of cell IDs to include in the loaded data. Default: \code{NULL},
 indicating that all available cells will be included. This is useful for subsetting the data based
 on specific cell IDs.}
 
 \item{channelName}{An optional string specifying the channel name for the data being loaded.
-This can be used to label the data according to the experimental condition or sample name. Default is \code{NULL}.}
+This can be used to label the data according to the experimental condition or sample name. Default: \code{NULL}.}
 
 \item{readArgs}{A list of additional arguments to pass to the internal \code{Read10X} function used for
-loading the data. Default is an empty list.}
+loading the data. Default: an empty list.}
 
 \item{includeFeatures}{A character vector specifying which features to include in the loaded data.
 Common values include "Gene Expression", "Antibody Capture", and "CRISPR Guide Capture".
-Default is \code{c("Gene Expression")}.}
+Default: \code{c("Gene Expression")}.}
 
 \item{verbose}{A logical flag indicating whether to print progress messages and status updates as the
-data is loaded. Default is \code{TRUE}.}
+data is loaded. Default: \code{TRUE}.}
 
 \item{...}{Additional arguments passed to other internally called functions, if applicable.}
 }

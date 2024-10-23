@@ -18,7 +18,7 @@ calc.q99.Expression.and.set.all.genes(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object, Default: \code{combined.obj}}
 
 \item{quantileX}{Quantile level, Default: 0.9}
 
@@ -28,13 +28,13 @@ calc.q99.Expression.and.set.all.genes(
 
 \item{assay}{RNA or integrated assay, Default: c("RNA", "integrated")\link{1}}
 
-\item{set.misc}{Create the "all.genes" variable in @misc? Default: TRUE}
+\item{set.misc}{Create the "all.genes" variable in @misc? Default: \code{TRUE}.}
 
-\item{assign_to_global_env}{Create the "all.genes" variable in the global env?, Default: TRUE}
+\item{assign_to_global_env}{Create the "all.genes" variable in the global env?, Default: \code{TRUE}.}
 
-\item{plot}{Plot the expression distribution? Default: TRUE}
+\item{plot}{Plot the expression distribution? Default: \code{TRUE}.}
 
-\item{show}{Show the distribution plot? Default: TRUE}
+\item{show}{Show the distribution plot? Default: \code{TRUE}.}
 }
 \description{
 Calculate the gene expression of the e.g.: 99th quantile (expression in the top 1\% cells).

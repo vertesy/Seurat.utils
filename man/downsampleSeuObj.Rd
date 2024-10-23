@@ -17,7 +17,7 @@ downsampleSeuObj(
 \item{fractionCells}{The fraction of the object's data to keep. Default: 0.25.}
 
 \item{nCells}{If set to a number greater than 1, indicates the absolute number of cells to keep.
-If FALSE, the function uses 'fractionCells' to determine the number of cells. Default: FALSE.}
+If FALSE, the function uses 'fractionCells' to determine the number of cells. Default: \code{FALSE}.}
 
 \item{seed}{A seed for random number generation to ensure reproducible results. Default: 1989.}
 }

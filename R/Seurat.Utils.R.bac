@@ -27,10 +27,10 @@
 #'
 #' @param obj A Seurat object to be processed.
 #' @param param.list A list of parameters used in the processing steps.
-#' @param add.meta.fractions A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: `FALSE`.
-#' @param compute A boolean indicating whether to compute the results. Default: `TRUE`.
-#' @param save A boolean indicating whether to save the results. Default: `TRUE`.
-#' @param plot A boolean indicating whether to plot the results. Default: `TRUE`.
+#' @param add.meta.fractions A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: `FALSE`..
+#' @param compute A boolean indicating whether to compute the results. Default: `TRUE`..
+#' @param save A boolean indicating whether to save the results. Default: `TRUE`..
+#' @param plot A boolean indicating whether to plot the results. Default: `TRUE`..
 #' @param nfeatures The number of variable genes to use. Default: 2000.
 #' @param variables.2.regress A list of variables to regress out. Default: NULL.
 #' @param n.PC The number of principal components to use. Default: 30.
@@ -76,7 +76,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
     is.numeric(n.PC), is.numeric(resolutions),
     is.character(variables.2.regress) | is.null(variables.2.regress),
     "variables.2.regress is not found in @meta" = variables.2.regress %in% colnames(obj@meta.data)
-  )
+    )
 
   iprint("nfeatures:", nfeatures)
   iprint("n.PC:", n.PC)
@@ -103,80 +103,67 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
   if (compute) {
     message("------------------- FindVariableFeatures -------------------")
     tic("FindVariableFeatures")
-    obj <- FindVariableFeatures(obj,
-      mean.function = "FastExpMean",
-      dispersion.function = "FastLogVMR", nfeatures = nfeatures
-    )
-    toc()
+    obj <- FindVariableFeatures(obj, mean.function = "FastExpMean",
+                                dispersion.function = "FastLogVMR", nfeatures = nfeatures); toc()
 
-    tic("calc.q99.Expression.and.set.all.genes")
-    obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
-    toc()
+    tic('calc.q99.Expression.and.set.all.genes')
+    obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99); toc()
 
     message("------------------- ScaleData -------------------")
-    tic("ScaleData")
-    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress, ...)
-    toc()
+    tic('ScaleData')
+    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress, ...); toc()
 
 
     if (reduction_input == "harmony") {
       message("------------------- Harmony - EXPERIMENTAL -------------------")
 
-      m.REGR <- obj@meta.data[, variables.2.regress, drop = FALSE]
+      m.REGR <- obj@meta.data[, variables.2.regress, drop=F]
       any_regr_col_numeric <- sapply(m.REGR, is.numeric)
-      if (any(any_regr_col_numeric)) {
+      if(any(any_regr_col_numeric)){
         print("Some of the regression variables are numeric:")
         print(any_regr_col_numeric)
         stop("harmony cannot regress numeric variables")
       }
 
-      obj$"regress_out" <- apply(m.REGR, 1, kppu)
-      if (nr.unique(obj$"regress_out") > 25) {
+      obj$'regress_out' <- apply(m.REGR,1, kppu)
+      if (nr.unique(obj$'regress_out') > 25) {
         warning("The number of regress_out categories is too many (>25), consider serially calling harmony on each variable.", immediate. = TRUE)
       }
-      if (min(table(obj$"regress_out")) < 5) {
+      if (min(table(obj$'regress_out')) < 5) {
         warning("The number of cells in some regress_out categories is too few (<5), consider serially calling harmony on each variable.", immediate. = TRUE)
       }
 
-      nr_new_layers <- nr.unique(combined.obj$"regress_out")
-      nr_existing_layers <- (length(Layers(combined.obj)) - 1) / 2
-      if (nr_existing_layers != nr_new_layers) {
+      nr_new_layers <- nr.unique(combined.obj$'regress_out')
+      nr_existing_layers <- (length(Layers(combined.obj))-1)/2
+      if( nr_existing_layers != nr_new_layers) {
         tic("Split layers by regress_out")
-        combined.obj[["RNA"]] <- split(combined.obj[["RNA"]], f = combined.obj$"regress_out")
-        toc()
+        combined.obj[["RNA"]] <- split(combined.obj[["RNA"]], f = combined.obj$'regress_out'); toc()
       }
 
       tic("RunHarmony")
-      obj <- harmony::RunHarmony(object = obj, group.by.vars = "regress_out", dims.use = 1:nPCs, plot_convergence = FALSE)
-      toc()
+      obj <- harmony::RunHarmony(object = obj, group.by.vars = "regress_out", dims.use = 1:nPCs, plot_convergence = F); toc()
 
       tic("JoinLayers")
-      obj <- JoinLayers(obj, assay = "RNA")
-      toc()
-      obj@misc$"harmony.params" <- c("nPCs" = nPCs, "regress" = variables.2.regress)
+      obj <- JoinLayers(obj,  assay = "RNA"); toc()
+      obj@misc$'harmony.params' <- c( "nPCs" = nPCs, "regress" = variables.2.regress)
+
     }
 
 
 
     message("------------------- PCA /UMAP -------------------")
     tic("PCA")
-    obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE)
-    toc()
+    obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE); toc()
     tic("UMAP")
-    obj <- SetupReductionsNtoKdimensions(obj,
-      nPCs = n.PC, reduction_output = "umap",
-      reduction_input = reduction_input, dimensions = 3:2
-    )
-    toc()
+    obj <- SetupReductionsNtoKdimensions(obj, nPCs = n.PC, reduction_output = "umap",
+                                         reduction_input = reduction_input, dimensions = 3:2); toc()
 
     message("------------------- FindNeighbors & Clusters -------------------")
     tic("FindNeighbors")
-    obj <- FindNeighbors(obj, reduction = reduction_input, dims = 1:n.PC)
-    toc()
+    obj <- FindNeighbors(obj, reduction = reduction_input, dims = 1:n.PC); toc()
 
     tic("FindClusters")
-    obj <- FindClusters(obj, resolution = resolutions)
-    toc()
+    obj <- FindClusters(obj, resolution = resolutions); toc()
   }
 
 
@@ -236,35 +223,35 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 #' @param ident Use this to specify a non-standard cluster identity, such as named clusters.
 #' `runDGEA` will use this ident explicitly for the DE analysis. Default: NULL.
 #' @param reorder.clusters Logical indicating whether to reorder clusters based on dimension.
-#'        Default: `TRUE`.
+#'        Default: `TRUE`..
 #' @param reorder.dimension Integer specifying the dimension for reordering (1 for x, -1 for y).
 #'        Default: 1.
 #' @param add.combined.score Logical indicating whether to add a combined score to the markers.
-#'        Default: `TRUE`.
+#'        Default: `TRUE`..
 #' @param save.obj Logical indicating whether to save the modified Seurat object.
-#'        Default: `TRUE`.
+#'        Default: `TRUE`..
 #' @param directory Character string specifying the base directory for saving results.
 #'        Default: OutDir
 #' @param dir_suffix Character string specifying the suffix for the subdirecotry directory.
 #' @param subdirectory Character string specifying the subdirectory for saving outputs within
 #'        the base directory. Default: "DGEA + date".
 #' @param calculate.DGEA Logical determining if the DE analysis should be calculated.
-#'        Default: `TRUE`.
+#'        Default: `TRUE`..
 #' @param plot.DGEA Logical determining if results should be plotted.
-#'        Default: `TRUE`.
+#'        Default: `TRUE`..
 #' @param umap_caption Character string specifying the caption for the UMAP plot. Default: "".
 #' @param plot.av.enrichment.hist Logical indicating whether to plot the average enrichment histogram.
-#'       Default: `TRUE`.
+#'       Default: `TRUE`..
 #' @param plot.log.top.gene.stats Logical indicating whether to plot the log top gene statistics.
 #' @param auto.cluster.naming Logical indicating automatic labeling of clusters.
-#'        Default: `TRUE`.
+#'        Default: `TRUE`..
 #' @param clean.misc.slot Logical indicating whether to clean the misc slots of previous
-#' clustering results. Default: `TRUE`.
+#' clustering results. Default: `TRUE`..
 #' @param clean.meta.data Logical indicating whether to clean the metadata slots of
-#' previous clustering results. Default: `TRUE`.
+#' previous clustering results. Default: `TRUE`..
 #' @param n.cores Integer specifying the number of cores to use for parallel processing (multisession).
 #'       Default: 1.
-#' @param presto Logical indicating whether to use presto for DE analysis. Default: `TRUE`.
+#' @param presto Logical indicating whether to use presto for DE analysis. Default: `TRUE`..
 #' @param WorkingDir Character string specifying the working directory. Default: getwd().
 #'
 #' @importFrom future plan
@@ -277,8 +264,8 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 runDGEA <- function(obj,
                     param.list = p,
                     ident = NULL,
-                    res.analyzed.DE = if (is.null(ident)) c(.1) else ident, # param.list$'res.analyzed.DE'
-                    reorder.clusters = if (is.null(ident)) TRUE else FALSE,
+                    res.analyzed.DE = if(is.null(ident)) c(.1) else ident, # param.list$'res.analyzed.DE'
+                    reorder.clusters = if(is.null(ident)) TRUE else FALSE,
                     reorder.dimension = 1,
                     # ordering = if(any(!testNumericCompatible(res.analyzed.DE))) "no" else "ordered", # param.list$"cl.annotation"
                     # ordering = "ordered", # param.list$"cl.annotation"
@@ -297,8 +284,10 @@ runDGEA <- function(obj,
                     clean.meta.data = TRUE,
                     n.cores = 1,
                     presto = TRUE,
-                    WorkingDir = getwd()) {
-  if (presto) require(presto)
+                    WorkingDir = getwd()
+                    ) {
+
+  if(presto) require(presto)
   message("\nWorkingDir: ", WorkingDir)
 
   # Assertions for input parameters
@@ -315,7 +304,7 @@ runDGEA <- function(obj,
 
   # Log utilized parameters from param.list
   {
-    message("cl.annotation: ", if (reorder.clusters) paste("ordered:", reorder.dimension) else "no")
+    message("cl.annotation: ", if(reorder.clusters) paste("ordered:", reorder.dimension) else "no")
     message("test: ", param.list$"test")
     message("only.pos: ", param.list$"only.pos")
     message("---------------------------------")
@@ -328,12 +317,10 @@ runDGEA <- function(obj,
   }
 
   # Record changes in @misc$p
-  obj@misc$p$"res.analyzed.DE" <- if (is.null(ident)) res.analyzed.DE else ident
-  obj@misc$p$"cl.annotation" <- if (is.null(ident)) {
-    if (reorder.clusters) reorder.dimension else "no"
-  } else {
-    "character"
-  }
+  obj@misc$p$"res.analyzed.DE" <- if(is.null(ident)) res.analyzed.DE else ident
+  obj@misc$p$"cl.annotation" <-  if(is.null(ident)) {
+    if(reorder.clusters) reorder.dimension else "no"
+  } else "character"
 
   # Retrieve analyzed DE resolutions
   message("Resolutions analyzed:")
@@ -350,7 +337,7 @@ runDGEA <- function(obj,
     message("Erasing up the meta.data clustering columns.")
     topMslots <- grepv("top.markers.res", names(obj@meta.data))
     cl.ordered <- GetOrderedClusteringRuns(obj = obj)
-    obj@meta.data[, cl.ordered] <- NULL
+    obj@meta.data[, cl.ordered ] <- NULL
     # cl.names <- GetNamedClusteringRuns(obj = obj, pat = "^cl.names.*[0-1]\\.[0-9]",
     #                                    find.alternatives = FALSE)
     # obj@meta.data[, c(cl.ordered, cl.names)] <- NULL
@@ -361,16 +348,15 @@ runDGEA <- function(obj,
     message("Renumbering ----------------------------------------")
     for (i in 1:length(res.analyzed.DE)) {
       res <- res.analyzed.DE[i]
-      create_set_OutDir(paste0(dir_DGEA, ppp("res", res)))
+      create_set_OutDir(p0(dir_DGEA, ppp("res", res)))
       message(i)
 
       # Reorder clusters based on average expression of markers
       message("Reordering clusters along dimension: ", sign(reorder.dimension), "*", if (abs(reorder.dimension) == 1) "x" else "y")
-      obj <- AutoNumber.by.UMAP(
-        obj = obj,
-        ident = GetClusteringRuns(res = res, obj = obj)[1],
-        dim = abs(reorder.dimension), reduction = "umap",
-        swap = (reorder.dimension < 0), plot = TRUE
+      obj <- AutoNumber.by.UMAP(obj = obj,
+                                ident = GetClusteringRuns(res = res, obj = obj)[1],
+                                dim = abs(reorder.dimension), reduction = "umap",
+                                swap = (reorder.dimension < 0), plot = TRUE
       )
     } # end for loop
   } # end if reorder.clusters
@@ -393,17 +379,17 @@ runDGEA <- function(obj,
 
 
   # Loop through each resolution setting to find markers ________________________________________
-  if (n.cores > 1) future::plan("multisession", workers = n.cores)
+  if (n.cores>1) future::plan("multisession", workers = n.cores)
 
   if (calculate.DGEA) {
     message("Calclulating ----------------------------------------")
     for (i in 1:length(res.analyzed.DE)) {
       res <- res.analyzed.DE[i]
       tag.res <- ppp("res", res)
-      df.slot <- if (!is.null(ident)) ident else tag.res
+      df.slot <- if(!is.null(ident)) ident else tag.res
 
       message("Resolution: ", res, " -----------")
-      create_set_OutDir(paste0(dir_DGEA, tag.res))
+      create_set_OutDir(p0(dir_DGEA, tag.res))
 
       message("Ident.for.DEG: ", Idents.for.DEG[[i]])
       Idents(obj) <- Idents.for.DEG[[i]]
@@ -411,17 +397,17 @@ runDGEA <- function(obj,
       # Perform differential expression analysis
       tic("FindAllMarkers")
       df.markers <- Seurat::FindAllMarkers(obj,
-        verbose = TRUE,
-        test.use = param.list$"test",
-        logfc.threshold = param.list$"logfc.threshold",
-        return.thresh = param.list$"return.thresh",
-        min.pct = param.list$"min.pct",
-        min.diff.pct = param.list$"min.diff.pct",
-        min.cells.group = param.list$"min.cells.group",
-        max.cells.per.ident = param.list$"max.cells.per.ident",
-        only.pos = param.list$"only.pos",
-      )
-      toc()
+                                           verbose = TRUE,
+                                           test.use = param.list$"test",
+                                           logfc.threshold = param.list$"logfc.threshold",
+                                           return.thresh = param.list$"return.thresh",
+                                           min.pct = param.list$"min.pct",
+                                           min.diff.pct = param.list$"min.diff.pct",
+                                           min.cells.group = param.list$"min.cells.group",
+                                           max.cells.per.ident = param.list$"max.cells.per.ident",
+                                           only.pos = param.list$"only.pos",
+
+      ); toc()
 
 
       Stringendo::stopif(is.null(df.markers))
@@ -435,9 +421,10 @@ runDGEA <- function(obj,
 
       # Save results to disk
       fname <- ppp("df.markers", res)
-      ReadWriter::write.simple.tsv(df.markers, filename = fname, v = FALSE)
+      ReadWriter::write.simple.tsv(df.markers, filename = fname, v = F)
       df.markers.all[[i]] <- df.markers
-      xsave(df.markers, suffix = df.slot, v = FALSE)
+      xsave(df.markers, suffix = df.slot, v = F)
+
     } # end for loop
 
     # Save final results to disk
@@ -450,22 +437,22 @@ runDGEA <- function(obj,
 
     if (save.obj) {
       create_set_OutDir(WorkingDir)
-      tag <- if (is.null(ident)) kpp("res", res.analyzed.DE) else ident
+      tag <- if(is.null(ident)) kpp("res", res.analyzed.DE) else ident
       xsave(obj, suffix = kpp("w.DGEA", tag))
     }
   } # end if calculate.DGEA
 
   # Loop through each resolution setting to find markers ________________________________________
   if (plot.DGEA) {
-    message("Plotting results -----------------")
+    message('Plotting results -----------------')
 
     for (i in 1:length(res.analyzed.DE)) {
       res <- res.analyzed.DE[i]
-      message("Resolution: ", res)
+      message('Resolution: ', res)
       tag.res <- ppp("res", res)
       df.slot <- if (!is.null(ident)) ident else tag.res
 
-      create_set_OutDir(paste0(dir_DGEA, df.slot))
+      create_set_OutDir(p0(dir_DGEA, df.slot))
 
       df.markers <- obj@misc$"df.markers"[[df.slot]]
       Stringendo::stopif(is.null(df.markers))
@@ -480,7 +467,7 @@ runDGEA <- function(obj,
 
       # Automatic cluster labeling by top gene ________________________________________
       if (auto.cluster.naming) {
-        message("Automatic cluster labeling by top gene.")
+        message('Automatic cluster labeling by top gene.')
 
         obj <- StoreAllMarkers(df_markers = df.markers, res = res, obj = obj)
         obj <- AutoLabelTop.logFC(group.by = Idents.for.DEG[[i]], obj = obj, plot.top.genes = FALSE) # already plotted above
@@ -490,30 +477,28 @@ runDGEA <- function(obj,
 
       # Plot per-cluster gene enrichment histogram ________________________________________
       if (plot.av.enrichment.hist) {
-        message("Plotting per-cluster gene enrichment histogram.")
+        message('Plotting per-cluster gene enrichment histogram.')
         # create_set_OutDir(directory, subdirectory)
 
         df.markers.tbl <- as_tibble(df.markers)
-        df.markers.tbl$"cluster" <- as.character(df.markers.tbl$"cluster")
-        p.deg.hist <- ggpubr::gghistogram(df.markers.tbl,
-          x = "avg_log2FC",
-          title = "Number of enriched genes per cluster",
-          subtitle = "Binned by Log2(FC)",
-          caption = paste(res, "| vertical line at FC of 2."),
-          rug = TRUE,
-          color = "cluster", fill = "cluster",
-          facet.by = "cluster", xlim = c(0, 3),
-          ylab = "Nr. D.E. Genes"
-        ) +
+        df.markers.tbl$'cluster' <- as.character(df.markers.tbl$'cluster')
+        p.deg.hist <- ggpubr::gghistogram(df.markers.tbl, x = "avg_log2FC",
+                                          title =  "Number of enriched genes per cluster",
+                                          subtitle =  "Binned by Log2(FC)",
+                                          caption =  paste(res, "| vertical line at FC of 2."),
+                                          rug = TRUE,
+                                          color = "cluster", fill = "cluster",
+                                          facet.by = 'cluster', xlim = c(0,3),
+                                          ylab = "Nr. D.E. Genes") +
           geom_vline(xintercept = 1) +
           theme_linedraw()
 
-        qqSave(ggobj = p.deg.hist, w = 10, h = 6, title = ppp("Enrichment log2FC per cluster", res))
+        qqSave(ggobj = p.deg.hist, w = 10, h = 6, title = ppp("Enrichment log2FC per cluster",res))
       }
 
       # Plot per-cluster enriched gene counts ________________________________________
       if (plot.log.top.gene.stats) {
-        message("Plotting per-cluster enriched gene counts.")
+        message('Plotting per-cluster enriched gene counts.')
 
         # Filter genes with avg_log2FC > 2
         lfc2_hiSig_genes <- df.markers |>
@@ -527,15 +512,14 @@ runDGEA <- function(obj,
 
         # Get the number of genes per cluster
         (NrOfHighlySignLFC2_genes <- lfc2_hiSig_genes |>
-          summarise(n = n()) |>
-          deframe() |>
-          sortbyitsnames())
+            summarise(n = n()) |>
+            deframe() |>
+            sortbyitsnames())
 
-        qbarplot(NrOfHighlySignLFC2_genes,
-          label = NrOfHighlySignLFC2_genes,
-          plotname = "Number of diff. genes per cluster",
-          sub = "Genes with avg_log2FC > 1 and p_val_adj < 0.05",
-          xlab = "Clusters", ylab = "Number of diff. genes"
+        qbarplot(NrOfHighlySignLFC2_genes, label = NrOfHighlySignLFC2_genes,
+                 plotname = "Number of diff. genes per cluster",
+                 sub = 'Genes with avg_log2FC > 1 and p_val_adj < 0.05',
+                 xlab = "Clusters", ylab = "Number of diff. genes"
         )
 
         # Write out gene lists per cluster ________________________________________
@@ -549,12 +533,12 @@ runDGEA <- function(obj,
 
           names(genes_list) <- unique(lfc2_hiSig_genes$"cluster")
           genes_list <- sortbyitsnames(genes_list)
-          names(genes_list) <- ppp("cl", names(genes_list), top_genes, "DGs")
+          names(genes_list) <- ppp("cl", names(genes_list), top_genes,"DGs")
 
           # write out the gene list, each element to a txt file.
-          create_set_OutDir(paste0(dir_DGEA, ppp("res", res), "/top_genes"))
-          for (i in 1:length(genes_list)) {
-            write.simple.vec(input_vec = genes_list[[i]], filename = names(genes_list)[i], v = FALSE)
+          create_set_OutDir(p0(dir_DGEA, ppp("res", res), "/top_genes"))
+          for (i in 1:l(genes_list)) {
+            write.simple.vec(input_vec = genes_list[[i]], filename = names(genes_list)[i], v = F )
           } # for cluster
         }
       } # end if plot.log.top.gene.stats
@@ -680,7 +664,7 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
 #' @param genes A vector of gene names to be intersected with the Seurat object.
 #' @param obj A Seurat object containing gene expression data.
 #' @param n_genes_shown Number of missing genes to be printed. Default: 10.
-#' @param strict All genes to be present in the Seurat object?  Default: `TRUE`.
+#' @param strict All genes to be present in the Seurat object?  Default: `TRUE`..
 #' @param verbose verbose
 #' @return A vector of gene names that are found both in the input 'genes' vector and the
 #'         Seurat object.
@@ -754,7 +738,7 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
 #' @param above The expression level threshold above which genes are considered noticeably
 #' expressed. Default: 0.
 #' @param sort A logical flag indicating whether to sort the filtered genes by their expression
-#' levels in decreasing order. Default: `FALSE`.
+#' levels in decreasing order. Default: `FALSE`..
 #' @return A vector of gene names that are found both in the input 'genes' vector and the Seurat
 #' object, and have expression levels above the specified 'above' threshold. If `sort` is TRUE,
 #' these genes are returned in decreasing order of their expression levels.
@@ -1015,7 +999,8 @@ calc.q99.Expression.and.set.all.genes <- function(
     assign_to_global_env = TRUE,
     suffix = as.character(substitute(obj)),
     plot = TRUE,
-    show = TRUE) {
+    show = TRUE
+    ) {
   message("slot: ", slot, " assay: ", assay, ".\n")
 
   tictoc::tic("calc.q99.Expression.and.set.all.genes")
@@ -1035,7 +1020,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   # Get the data matrix ____________________________________________________________
   assay_data <- obj@assays[[assay]]
   if (obj@version >= "5") {
-    if (assay == "RNA") {
+    if(assay == "RNA") {
       layers <- assay_data@layers
       message(length(layers), " layers in RNA assay")
       stopifnot(slot %in% names(layers))
@@ -1057,10 +1042,8 @@ calc.q99.Expression.and.set.all.genes <- function(
   # Calculate the number of cells in the top quantile (e.g.: 99th quantile) that is
   # required to for gene expression to be >0
   n.cells <- floor(ncol(data_mtx) * (1 - quantileX))
-  message(
-    "Each gene has to be expressed in min. ", n.cells, " cells, to have >0 quantile-expression\n",
-    "quantileX: ", quantileX, " max.cells: ", max.cells
-  )
+  message("Each gene has to be expressed in min. ", n.cells, " cells, to have >0 quantile-expression\n",
+          "quantileX: ", quantileX, " max.cells: ", max.cells)
 
   # Prepare for plotting ____________________________________________________________
   qname <- paste0("q", quantileX * 100)
@@ -1074,22 +1057,22 @@ calc.q99.Expression.and.set.all.genes <- function(
   qnameP <- paste0(100 * quantileX, "th quantile")
 
   # Plot the distribution of gene expression in the 99th quantile _________________________________
-  if (plot) {
+  if(plot){
     pobj <- ggExpress::qhistogram(log2.gene.expr.of.the.90th.quantile,
-      plotname = paste("Gene expression in the", qnameP, " in", suffix),
-      ext = "pdf", breaks = 30,
-      subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", n.cells, " cells)."),
-      caption = paste(n.cells, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object."),
-      suffix = suffix,
-      xlab = paste0("log2(expr. in the ", qnameP, "quantile+1) [UMI]"),
-      ylab = "Nr. of genes",
-      plot = TRUE, save = TRUE,
-      vline = .15,
-      filtercol = TRUE,
-      palette_use = "npg"
+                                  plotname = paste("Gene expression in the", qnameP, " in", suffix),
+                                  ext = "pdf", breaks = 30,
+                                  subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", n.cells, " cells)."),
+                                  caption = paste(n.cells, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object."),
+                                  suffix = suffix,
+                                  xlab = paste0("log2(expr. in the ", qnameP, "quantile+1) [UMI]"),
+                                  ylab = "Nr. of genes",
+                                  plot = T, save = TRUE,
+                                  vline = .15,
+                                  filtercol = TRUE,
+                                  palette_use = "npg"
     )
     tictoc::toc()
-    if (show) print(pobj)
+    if(show) print(pobj)
   }
 
 
@@ -1122,7 +1105,7 @@ calc.q99.Expression.and.set.all.genes <- function(
 #' @param pattern_NC A character vector of patterns to filter out non-coding gene symbols.
 #' Default: c("^AC.", "^AL.", "^c[1-9]orf", "\\.AS[1-9]$").
 #' @param v "verbose" Whether to print the number of genes before and after filtering.
-#' @param unique Whether to return unique gene symbols. Default: `TRUE`.
+#' @param unique Whether to return unique gene symbols. Default: `TRUE`..
 #' @param ... Additional arguments to pass to \code{\link[stringr]{str_detect}}.
 #'
 #' @return A character vector of filtered gene symbols.
@@ -1135,17 +1118,15 @@ calc.q99.Expression.and.set.all.genes <- function(
 #' @importFrom stringr str_detect
 #' @export
 #'
-filterNcGenes <- function(genes, pattern_NC = c(
-                            "^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
-                            "^LINC0[0-9]{4}", "^C[1-9]+orf[1-9]+",
-                            "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
-                            "^MIR[1-9]", "^SNHG[1-9]"
-                          ),
+filterNcGenes <- function(genes, pattern_NC = c("^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
+                                                "^LINC0[0-9]{4}", "^C[1-9]+orf[1-9]+",
+                                                "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
+                                                "^MIR[1-9]", "^SNHG[1-9]"),
                           v = TRUE, unique = TRUE, ...) {
+
   # Input assertions
-  stopifnot(
-    is.character(genes), length(genes) > 0,
-    is.character(pattern_NC), length(pattern_NC) > 0
+  stopifnot(is.character(genes), length(genes) > 0,
+            is.character(pattern_NC), length(pattern_NC) > 0
   )
 
   # Filter the genes
@@ -1156,7 +1137,7 @@ filterNcGenes <- function(genes, pattern_NC = c(
   genes_kept <- genes[stringr::str_detect(genes, combined_pattern, negate = TRUE)]
 
   # Report original and final list sizes and percentage remaining
-  if (v) {
+  if(v) {
     original_length <- length(genes)
     filtered_length <- length(genes_kept)
     percentage_remaining <- (filtered_length / original_length) * 100
@@ -1169,7 +1150,7 @@ filterNcGenes <- function(genes, pattern_NC = c(
   # Output assertions
   stopifnot(is.character(genes_kept), length(genes_kept) <= original_length)
 
-  if (unique) genes_kept <- unique(genes_kept)
+  if(unique) genes_kept <- unique(genes_kept)
 
   return(genes_kept)
 }
@@ -1207,6 +1188,7 @@ RenameClustering <- function(
     suffix.plot = "",
     plot_umaps = TRUE,
     ...) {
+
   NewX <- CodeAndRoll2::translate(
     vec = as.character(obj@meta.data[, orig.ident]),
     old = names(namedVector),
@@ -1223,7 +1205,7 @@ RenameClustering <- function(
     suffix.plot <- if (nchar(suffix.plot)) make.names(suffix.plot)
     print(clUMAP(orig.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
     print(clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
-    clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, label = FALSE, obj = obj, ...)
+    clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, label = F, obj = obj, ...)
   } else {
     iprint("New ident:", new.ident)
   }
@@ -1312,11 +1294,12 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 GetClusteringRuns <- function(obj = combined.obj,
                               res = FALSE, pat = "*snn_res.[0-9].[0-9]+$",
                               v = TRUE) {
+
   # Get clustering results
   clustering.results <- sort(CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat))
 
   # Check if no clustering results were found
-  if (identical(clustering.results, character(0))) if (v) warning("No matching (simple) clustering column found!", immediate. = TRUE)
+  if (identical(clustering.results, character(0))) if(v) warning("No matching (simple) clustering column found!", immediate. = TRUE)
 
   if (!isFALSE(res)) {
     # Extract numeric values from clustering.results
@@ -1324,10 +1307,11 @@ GetClusteringRuns <- function(obj = combined.obj,
 
     # Filter clustering.results based on the numeric vector res
     clustering.results <- clustering.results[clustering.res.found.numeric %in% res]
-    if (length(clustering.results) == 0) warning("No clustering matches `res`!", immediate. = TRUE)
+    if(length(clustering.results) == 0) warning("No clustering matches `res`!", immediate. = TRUE)
+
   }
 
-  if (v) {
+  if(v) {
     message("Clustering runs found:")
     dput(clustering.results)
   }
@@ -1361,19 +1345,18 @@ GetNamedClusteringRuns <- function(
     pat = c("^cl.names.top.gene.+[0-9]\\.[0-9]", "Name|name")[2],
     find.alternatives = TRUE,
     v = TRUE) {
+
   if (res) pat <- gsub(x = pat, pattern = "\\[.*\\]", replacement = res)
   if (topgene) pat <- gsub(x = pat, pattern = "Known", replacement = "top")
   clustering.results <- CodeAndRoll2::grepv(x = colnames(obj@meta.data), pattern = pat)
 
   if (identical(clustering.results, character(0))) {
-    if (v) warning("No matching (named) clustering column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)", immediate. = TRUE)
-    if (find.alternatives) {
-      clustering.results <-
-        GetClusteringRuns(obj = obj, res = FALSE, pat = "*_res.*[0,1]\\.[0-9]$", v = FALSE)
-    }
+    if(v) warning("No matching (named) clustering column found! Trying GetClusteringRuns(..., pat = '*_res.*[0,1]\\.[0-9]$)", immediate. = TRUE )
+    if (find.alternatives) clustering.results <-
+        GetClusteringRuns(obj = obj, res = FALSE, pat = "*_res.*[0,1]\\.[0-9]$", v = F)
   }
 
-  if (v) dput(clustering.results)
+  if(v) dput(clustering.results)
 
   return(clustering.results)
 }
@@ -1432,20 +1415,20 @@ GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
 #'
 #' @description Calculates the average of a metadata column (numeric) per cluster.
 #' @param col_name The name of the column for which the average is calculated. Default: 'Score.GO.0006096'.
-#' @param plot.UMAP.too Whether to plot a UMAP as well. Default: `TRUE`.
-#' @param return.plot Whether to return the plot. Default: `FALSE`.
+#' @param plot.UMAP.too Whether to plot a UMAP as well. Default: `TRUE`..
+#' @param return.plot Whether to return the plot. Default: `FALSE`..
 #' @param obj The main Seurat object used for calculations. Default: `combined.obj`.
 #' @param split_by Cluster to split by. Default: First entry of GetNamedClusteringRuns().
-#' @param scale.zscore Whether to scale z-scores. Default: `FALSE`.
-#' @param simplify Whether to simplify the result. Default: `TRUE`.
-#' @param plotit Whether to plot the results. Default: `TRUE`.
-#' @param histogram Whether to produce a histogram. Default: `FALSE`.
+#' @param scale.zscore Whether to scale z-scores. Default: `FALSE`..
+#' @param simplify Whether to simplify the result. Default: `TRUE`..
+#' @param plotit Whether to plot the results. Default: `TRUE`..
+#' @param histogram Whether to produce a histogram. Default: `FALSE`..
 #' @param nbins The number of bins for the histogram. Default: 50.
 #' @param suffix Suffix added to the filename. Default: NULL.
 #' @param stat Statistical method applied, "mean" or "median". Default: "median".
 #' @param quantile.thr The threshold for quantiles. Default: 0.9.
-#' @param absolute.thr Absolute threshold used in computations. Default: `FALSE`.
-#' @param filter The filter mode: 'above', 'below', or FALSE. Default: `FALSE`.
+#' @param absolute.thr Absolute threshold used in computations. Default: `FALSE`..
+#' @param filter The filter mode: 'above', 'below', or FALSE. Default: `FALSE`..
 #' @param ylab.text Text for the y-axis label. Default: "Cluster" followed by the statistical method and "score".
 #' @param title Title for the plot. Default: "Cluster" followed by the statistical method and column name.
 #' @param subtitle The subtitle for the plot. Default: NULL.
@@ -1787,7 +1770,7 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
     if (p_found) message("  ->   Variable 'p' exits in the global namespace.")
 
     if (!p_found | (p_found & overwrite == TRUE)) {
-      MarkdownHelpers::ww.assign_to_global(name = "p", value = obj@misc$"p", verbose = FALSE)
+      MarkdownHelpers::ww.assign_to_global(name = "p", value = obj@misc$"p", verbose = F)
       message("p is now (re)defined in the global environment.")
     } else {
       message("p not overwritten.")
@@ -1842,7 +1825,7 @@ recall.genes.ls <- function(obj = combined.obj, overwrite = FALSE) { # genes.ls
 #'
 #' @param obj Seurat object to update; Default: `combined.obj`.
 #' @param params List of parameters to save; Default: `p`.
-#' @param overwrite Logical indicating if existing parameters should be overwritten; Default: `TRUE`.
+#' @param overwrite Logical indicating if existing parameters should be overwritten; Default: `TRUE`..
 #'
 #' @examples
 #' \dontrun{
@@ -2035,6 +2018,7 @@ subsetSeuObjByIdent <- function(
     ident = GetClusteringRuns()[1],
     identGroupKeep,
     invert = FALSE) {
+
   tic("subsetSeuObjByIdent")
   # Input checks
   stopifnot(
@@ -2075,7 +2059,7 @@ subsetSeuObjByIdent <- function(
 #' @param obj A Seurat object to subset. Default: the i-th element of the list 'ls.Seurat'.
 #' @param fractionCells The fraction of the object's data to keep. Default: 0.25.
 #' @param nCells If set to a number greater than 1, indicates the absolute number of cells to keep.
-#' If FALSE, the function uses 'fractionCells' to determine the number of cells. Default: `FALSE`.
+#' If FALSE, the function uses 'fractionCells' to determine the number of cells. Default: `FALSE`..
 #' @param seed A seed for random number generation to ensure reproducible results. Default: 1989.
 #' @export
 #' @importFrom Stringendo percentage_formatter
@@ -2261,28 +2245,29 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
 #'   v = TRUE
 #' )
 #'
-RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "orig"), min_count = 100, small_label = "Other", v = TRUE) {
+
+RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "orig"), min_count = 100, small_label = "Other", v = T) {
   # Input assertions
   stopifnot(
-    inherits(obj, "Seurat"), # Check if obj is a Seurat object
-    is.character(col_in), length(col_in) == 1, # col_in is a single string
-    col_in %in% colnames(obj@meta.data), # col_in exists in metadata
-    is.character(backup_col_name), length(backup_col_name) == 1, # backup_col_name is a single string
-    is.numeric(min_count), min_count > 0, # min_count is a positive number
-    is.character(small_label), length(small_label) == 1, # small_label is a single string
-    is.logical(v), length(v) == 1 # v is a single logical value
+    inherits(obj, "Seurat"),                                  # Check if obj is a Seurat object
+    is.character(col_in), length(col_in) == 1,                # col_in is a single string
+    col_in %in% colnames(obj@meta.data),                      # col_in exists in metadata
+    is.character(backup_col_name), length(backup_col_name) == 1,    # backup_col_name is a single string
+    is.numeric(min_count), min_count > 0,                     # min_count is a positive number
+    is.character(small_label), length(small_label) == 1,      # small_label is a single string
+    is.logical(v), length(v) == 1                             # v is a single logical value
   )
 
-  message("backup_col_name: ", backup_col_name)
+  message('backup_col_name: ', backup_col_name)
 
   categories <- obj@meta.data[[backup_col_name]] <- obj@meta.data[[col_in]] # Extract the specified metadata column
-  category_counts <- table(categories) # Count occurrences of each category
+  category_counts <- table(categories)                                    # Count occurrences of each category
   small_categories <- names(category_counts[category_counts < min_count]) # Identify small categories
-  new_categories <- as.character(categories) # Copy original categories
-  new_categories[new_categories %in% small_categories] <- small_label # Relabel small categories
-  obj@meta.data[[col_in]] <- new_categories # Add new column to metadata
+  new_categories <- as.character(categories)                              # Copy original categories
+  new_categories[new_categories %in% small_categories] <- small_label     # Relabel small categories
+  obj@meta.data[[col_in]] <- new_categories                      # Add new column to metadata
 
-  if (v) { # Verbose output
+  if (v) {  # Verbose output
     total_cells <- length(categories)
     num_small_categories <- length(small_categories)
     num_large_categories <- length(category_counts) - num_small_categories
@@ -2293,7 +2278,7 @@ RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "o
     message(sprintf("Cells in relabeled categories: %d (%.2f%% of total)", sum(category_counts[small_categories]), percent_small_cells))
   }
 
-  return(obj) # Return the modified Seurat object
+  return(obj)  # Return the modified Seurat object
 }
 
 
@@ -2384,15 +2369,15 @@ removeResidualSmallClusters <- function(
 #' @export
 dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE, also.character = FALSE,
                              only = NULL, exclude = NULL) {
+
   stopifnot(is(obj, "Seurat"))
   META <- obj@meta.data
   names.meta <- colnames(obj@meta.data)
 
-  stopifnot(
-    is.logical(verbose),
-    is.logical(also.character),
-    is.null(only) | only %in% names.meta,
-    is.null(exclude) | exclude %in% names.meta
+  stopifnot(is.logical(verbose),
+            is.logical(also.character),
+            is.null(only) | only %in% names.meta,
+            is.null(exclude) | exclude %in% names.meta
   )
 
   colclasses <- sapply(META, class)
@@ -2401,12 +2386,8 @@ dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE, also.character 
   if (!is.null(only)) drop_in_these <- only
   if (!is.null(exclude)) drop_in_these <- setdiff(drop_in_these, exclude)
 
-  if (verbose) {
-    message(
-      "Dropping levels in ", length(drop_in_these), " identities:\n",
-      kppc(drop_in_these)
-    )
-  }
+  if (verbose) message("Dropping levels in ", length(drop_in_these), " identities:\n",
+                       kppc(drop_in_these))
 
   for (i in 1:length(drop_in_these)) {
     colX <- drop_in_these[i]
@@ -2470,7 +2451,7 @@ removeClustersAndDropLevels <- function(ls_obj,
 #' @param obj A Seurat object. Default: 'combined.obj'.
 #' @param cutoff A numerical value indicating the cutoff value for the specified dimension. Default: 0.
 #' @param cut_below A logical value indicating whether to remove cells below (TRUE) or
-#' above (FALSE) the cutoff line. Default: `TRUE`.
+#' above (FALSE) the cutoff line. Default: `TRUE`..
 #' @param only_plot_cutoff Simulate and plot cutoff only.
 #' @param ... Any other parameters to be passed to internally called functions.
 #' @return A Seurat object with cells removed according to the specified cutoff.
@@ -2537,7 +2518,7 @@ removeCellsByUmap <- function(
 #' @param ls.obj List of Seurat objects to be downsampled; Default: `ls.Seurat`.
 #' @param NrCells Target number of cells to downsample each Seurat object to.
 #' @param save_object Logical indicating whether to save the downsampled Seurat objects using `isaveRDS`
-#' or to return them; Default: `FALSE`.
+#' or to return them; Default: `FALSE`..
 #'
 #' @examples
 #' \dontrun{
@@ -2603,7 +2584,7 @@ downsampleListSeuObjsNCells <- function(
 #' @param ls.obj List of Seurat objects to be downsampled; Default: `ls.Seurat`.
 #' @param fraction Fraction of cells to retain in each Seurat object; Default: 0.1.
 #' @param save_object Logical indicating whether to save the downsampled Seurat objects using
-#' `isaveRDS` or return them; Default: `FALSE`.
+#' `isaveRDS` or return them; Default: `FALSE`..
 #'
 #' @examples
 #' \dontrun{
@@ -2800,12 +2781,11 @@ StoreAllMarkers <- function(
 GetTopMarkersDF <- function(
     dfDE = df.markers,
     n = p$"n.markers", order.by = c("avg_log2FC", "p_val_adj")[1],
-    exclude = c(
-      "^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
-      "^LINC0[0-9]{4}", "^C[1-9]+orf[1-9]+",
-      "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
-      "^MIR[1-9]", "^SNHG[1-9]"
-    )) {
+    exclude = c("^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
+                "^LINC0[0-9]{4}", "^C[1-9]+orf[1-9]+",
+                "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
+                "^MIR[1-9]", "^SNHG[1-9]")
+    ) {
   "Works on active Idents() -> thus we call cluster"
   combined_pattern <- paste(exclude, collapse = "|")
 
@@ -2897,14 +2877,13 @@ AutoLabelTop.logFC <- function(
     plot.top.genes = TRUE,
     suffix = res,
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[2],
-    exclude = c(
-      "^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
-      "^LINC0[0-9]{4}", "^C[1-9]+orf[1-9]+",
-      "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
-      "^MIR[1-9]", "^SNHG[1-9]"
-    ),
+    exclude = c("^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
+                "^LINC0[0-9]{4}", "^C[1-9]+orf[1-9]+",
+                "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
+                "^MIR[1-9]", "^SNHG[1-9]"),
     df_markers = obj@misc$"df.markers"[[paste0("res.", res)]],
     plotEnrichment = TRUE) {
+
   message(group.by)
   message(" > Running AutoLabelTop.logFC...")
 
@@ -2919,13 +2898,12 @@ AutoLabelTop.logFC <- function(
   if (plotEnrichment) {
     top_log2FC <- df.top.markers$"avg_log2FC"
     names(top_log2FC) <- ppp(df.top.markers$"cluster", df.top.markers$"gene")
-    ggExpress::qbarplot(top_log2FC,
-      plotname = "The strongest fold change by cluster",
-      label = iround(top_log2FC),
-      subtitle = group.by,
-      ylab = "avg_log2FC", xlab = "clusters",
-      hline = 2,
-      suffix = group.by
+    ggExpress::qbarplot(top_log2FC, plotname = "The strongest fold change by cluster",
+                        label = iround(top_log2FC),
+                        subtitle = group.by,
+                        ylab = "avg_log2FC", xlab = "clusters",
+                        hline = 2,
+                        suffix = group.by
     )
   }
 
@@ -2997,15 +2975,14 @@ AutoLabelTop.logFC <- function(
 #' @importFrom dplyr select slice
 AutoLabel.KnownMarkers <- function(
     obj = combined.obj, topN = 1, res = 0.5,
-    KnownMarkers = c(
-      `dl-EN` = "KAZN", `ul-EN` = "SATB2", `Immature neurons` = "SLA",
-      Interneurons = "DLX6-AS1", Interneurons = "ERBB4", InterN_CGE = "SCGN",
-      `Intermediate progenitor` = "EOMES",
-      `S-phase` = "TOP2A", `G2M-phase` = "H4C3" # formerly: HIST1H4C
-      , `oRG` = "HOPX", Astrocyte = "S100B",
-      `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1",
-      `Choroid.Plexus` = "TTR", `Low-Quality` = "POLR2A",
-      `Mesenchyme` = "DCN", `Choroid.Plexus` = "TTR"
+    KnownMarkers = c( `dl-EN` = "KAZN", `ul-EN` = "SATB2", `Immature neurons` = "SLA"
+      , Interneurons = "DLX6-AS1", Interneurons = "ERBB4", InterN_CGE = "SCGN"
+      , `Intermediate progenitor` = "EOMES"
+      , `S-phase` = "TOP2A", `G2M-phase` = "H4C3" # formerly: HIST1H4C
+      , `oRG` = "HOPX" , Astrocyte = "S100B"
+      , `Hypoxia/Stress` = "DDIT4", Glycolytic = "PDK1"
+      , `Choroid.Plexus` = "TTR", `Low-Quality` = "POLR2A"
+      , `Mesenchyme` = "DCN", `Choroid.Plexus` = "TTR"
     ),
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1],
     df_markers = obj@misc$"df.markers"[[paste0("res.", res)]]) {
@@ -3151,8 +3128,7 @@ Calc.Cor.Seurat <- function(
   genes.HE <- which_names(obj@misc[[quantile_name]] > 0)
   iprint("Pearson correlation is calculated for", length(genes.HE), "HE genes with expr.", qname, ": > 0.")
   tictoc::tic("sparse.cor")
-  ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use]))
-  tictoc::toc()
+  ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use])); tictoc::toc()
   ls.cor <- lapply(ls.cor, round, digits = 2)
 
   slot__name <- kpp(slot.use, assay.use, quantile_name)
@@ -3515,6 +3491,7 @@ gene.name.check <- function(Seu.obj) {
 #' @seealso \code{\link[Seurat]{GetAssayData}}, \code{\link[DatabaseLinke.R]{qHGNC}}
 #'
 #' @export
+#' @importFrom DatabaseLinke.R qHGNC
 #' @importFrom Seurat GetAssayData
 #' @importFrom Stringendo percentage_formatter
 #'
@@ -3535,16 +3512,17 @@ check.genes <- function(
   missingGenes <- setdiff(list.of.genes, all_genes)
   if (length(missingGenes) > 0) {
     if (verbose) {
-      message(
-        "\n", length(missingGenes), " or ",
-        Stringendo::percentage_formatter(length(missingGenes) / length(list.of.genes)),
-        " genes not found in the data, e.g: ", kppc(head(missingGenes, n = 10))
+      message( "\n", length(missingGenes), " or ",
+               Stringendo::percentage_formatter(length(missingGenes) / length(list.of.genes)),
+               " genes not found in the data, e.g: ", kppc(head(missingGenes, n = 10))
       )
     }
-
     if (HGNC.lookup) {
-      stopifnot("Package 'DatabaseLinke.R' must be installed to use the 'HGNC.lookup' option." = require("DatabaseLinke.R"))
-      DatabaseLinke.R::qHGNC(missingGenes, Open = FALSE)
+      if (exists("qHGNC", mode = "function")) {
+        try(DatabaseLinke.R::qHGNC(missingGenes, Open = F))
+      } else {
+        warning("DatabaseLinke.R's qHGNC() function is needed, please install from github.", immediate. = TRUE)
+      }
     }
   }
   tictoc::toc()
@@ -3760,7 +3738,9 @@ whitelist.subset.ls.Seurat <- function(
 FindCorrelatedGenes <- function(
     gene = "TOP2A", obj = combined.obj, assay = "RNA", slot = "data",
     HEonly = FALSE, minExpr = 1, minCells = 1000,
-    trailingNgenes = 1000) {
+    trailingNgenes = 1000
+    ) {
+
   tictoc::tic("FindCorrelatedGenes")
   AssayData <- GetAssayData(object = obj, assay = assay, slot = slot)
   matrix_mod <- iround(as.matrix(AssayData))
@@ -3837,6 +3817,7 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", assay = 
                               EnforceUnique = TRUE, ShowStats = FALSE) {
   assays.present <- Assays(obj)
   for (assay in assays.present) {
+
     message("Renaming in assay: ", assay, "...")
 
     all.genes <- Features(obj, assay = assay)
@@ -3848,6 +3829,7 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", assay = 
     }
 
     obj <- RenameGenesSeurat(obj, newnames = HGNC.updated$"Suggested.Symbol", assay = assay)
+
   }
   return(obj)
 }
@@ -4256,18 +4238,18 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' (2) converts them to Seurat objects, and (3) saves them as .qs files
 #'
 #' @param InputDir A character string specifying the input directory.
-#' @param regex A logical value. If TRUE, the folderPattern is treated as a regular expression. Default: `FALSE`.
+#' @param regex A logical value. If TRUE, the folderPattern is treated as a regular expression. Default: `FALSE`..
 #' @param folderPattern A character vector specifying the pattern of folder names to be searched. Default: 'filtered_feature'.
 #' @param suffix A character string specifying the suffix of the files saved.
 #' @param min.cells An integer value specifying the minimum number of cells. Default: 5.
 #' @param min.features An integer value specifying the minimum number of features. Default: 200.
-#' @param updateHGNC A logical value indicating whether to update the HGNC. Default: `TRUE`.
-#' @param save Save .qs object? Default: `TRUE`.
-#' @param ShowStats A logical value indicating whether to show statistics. Default: `TRUE`.
-#' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: `TRUE`.
+#' @param updateHGNC A logical value indicating whether to update the HGNC. Default: `TRUE`..
+#' @param save Save .qs object? Default: `TRUE`..
+#' @param ShowStats A logical value indicating whether to show statistics. Default: `TRUE`..
+#' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: `TRUE`..
 #' @param depth An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default: 2.
-#' @param sort_alphanumeric sort files alphanumeric? Default: `TRUE`.
-#' @param save_empty_droplets save empty droplets? Default: `TRUE`.
+#' @param sort_alphanumeric sort files alphanumeric? Default: `TRUE`..
+#' @param save_empty_droplets save empty droplets? Default: `TRUE`..
 #'
 #' @examples
 #' \dontrun{
@@ -4289,6 +4271,7 @@ Convert10Xfolders <- function(
     sort_alphanumeric = TRUE,
     save_empty_droplets = TRUE,
     ...) {
+
   stopifnot(
     is.character(InputDir), dir.exists(InputDir),
     is.logical(regex), is.character(folderPattern), is.character(suffix), is.numeric(depth),
@@ -4311,19 +4294,17 @@ Convert10Xfolders <- function(
 
   for (i in 1:length(fin)) {
     print(i)
-    pathIN <- Stringendo::FixPath(fin[i])
-    message(pathIN)
-    fnameIN <- basename(dirname(dirname(pathIN)))
-    message(fnameIN)
+    pathIN = Stringendo::FixPath(fin[i]); message(pathIN)
+    fnameIN = basename(dirname(dirname(pathIN))); message(fnameIN)
 
-    count_matrix <- Read10X(pathIN)
+    count_matrix <- Read10X(pathIN )
     if (!is.list(count_matrix) | length(count_matrix) == 1) {
       seu <- CreateSeuratObject(
         counts = count_matrix, project = fnameIN,
         min.cells = min.cells, min.features = min.features
       )
     } else {
-      (stop("length(count_matrix) != 1"))
+      ( stop('length(count_matrix) != 1') )
     }
 
     ncells <- ncol(seu)
@@ -4349,7 +4330,7 @@ Convert10Xfolders <- function(
       ReadWriter::write.simple.tsv(input_df = CBCs, manual_file_name = sppp(fnameIN, suffix, "CBC"), manual_directory = InputDir)
     }
 
-    if (save_empty_droplets & suffix == "raw") {
+    if(save_empty_droplets & suffix == "raw") {
       # Select and save empty droplets (the Soup)
 
       path_filtered <- gsub(x = pathIN, pattern = "/raw_feature_", replacement = "/filtered_feature_")
@@ -4365,8 +4346,8 @@ Convert10Xfolders <- function(
         CBC_empty_drops <- setdiff(colnames(seu), CBCs_HQ)
         nr.empty.droplets <- length(CBC_empty_drops)
         umi_per_CBC <- colSums(seu@assays$RNA@layers$counts)
-        pct.empty.droplets.max10umis <- pc_TRUE(umi_per_CBC < 11)
-        message("We have ", nr.empty.droplets, " empty droplets, ", pct.empty.droplets.max10umis, " of which have max 10 umis.")
+        pct.empty.droplets.max10umis <- pc_TRUE(umi_per_CBC<11)
+        message("We have ", nr.empty.droplets, " empty droplets, ", pct.empty.droplets.max10umis, " of which have max 10 umis." )
         FNM <- sppp("nr.empty.droplets", fnameIN, nr.empty.droplets)
         ReadWriter::write.simple.vec(nr.empty.droplets, manual_file_name = FNM, manual_directory = SoupDir)
 
@@ -4377,13 +4358,17 @@ Convert10Xfolders <- function(
 
         # save the bulk RNA counts of the empty droplets
         Soup.Bulk.RNA <- rowSums(count_matrix[, CBC_empty_drops])
-        f_path_out_Bulk <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("Soup.Bulk.RNA", fnameIN), extension = "qs")
+        f_path_out_Bulk <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("Soup.Bulk.RNA", fnameIN), extension = 'qs')
         qs::qsave(x = Soup.Bulk.RNA, file = f_path_out_Bulk, nthreads = nthreads, preset = preset)
         ReadWriter::write.simple.tsv(Soup.Bulk.RNA, suffix = fnameIN, manual_directory = SoupDir)
+
       }
     } else {
       message("No empty droplets saved. suffix ", suffix)
     }
+
+
+
   } # for
 }
 
@@ -4398,14 +4383,14 @@ Convert10Xfolders <- function(
 #' @param InputDir A character string specifying the input directory.
 #' @param folderPattern A character string specifying the pattern of folder names to be searched. Default: 'SRR*'.
 #' @param filePattern A character string specifying the pattern of file names to be searched. Default: 'expression.tsv.gz'.
-#' @param useVroom A logical value indicating whether to use vroom. Default: `TRUE`.
+#' @param useVroom A logical value indicating whether to use vroom. Default: `TRUE`..
 #' @param col_types.vroom A list defining column types for vroom. Default: list("GENE" = "c", .default = "d").
 #' @param min.cells An integer value specifying the minimum number of cells. Default: 10.
 #' @param min.features An integer value specifying the minimum number of features. Default: 200.
-#' @param updateHGNC A logical value indicating whether to update the HGNC. Default: `TRUE`.
-#' @param ShowStats A logical value indicating whether to show statistics. Default: `TRUE`.
+#' @param updateHGNC A logical value indicating whether to update the HGNC. Default: `TRUE`..
+#' @param ShowStats A logical value indicating whether to show statistics. Default: `TRUE`..
 #' @param minDimension An integer value specifying the minimum dimension. Default: 10.
-#' @param overwrite A logical value indicating whether to overwrite files. Default: `FALSE`.
+#' @param overwrite A logical value indicating whether to overwrite files. Default: `FALSE`..
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -4415,9 +4400,9 @@ Convert10Xfolders <- function(
 #' @seealso
 #'  \code{\link[vroom]{vroom}}
 #'  \code{\link[readr]{read_delim}}
-#' @importFrom readr read_tsv
-#'
 #' @export
+#' @importFrom vroom vroom
+#' @importFrom readr read_tsv
 ConvertDropSeqfolders <- function(
     InputDir,
     folderPattern = "SRR*", filePattern = "expression.tsv.gz",
@@ -4447,7 +4432,6 @@ ConvertDropSeqfolders <- function(
     CountTable <- list.files(subdir, pattern = filePattern, recursive = FALSE)
     stopifnot(length(CountTable) == 1)
     count_matrix <- if (useVroom) {
-      stopifnot("Package 'vroom' must be installed to use this function." = require("vroom"))
       vroom::vroom(file = kpps(subdir, CountTable), col_types = col_types.vroom)
     } else {
       readr::read_tsv(file = kpps(subdir, CountTable))
@@ -4487,7 +4471,7 @@ ConvertDropSeqfolders <- function(
 #' @param string.replace1 A character string of the new text instead of "string.remove1".
 #' @param string.remove2 A character string or FALSE. If a string is provided, it is removed from
 #' file names. Default: ".min.cells.10.min.features.200.Rds".
-#' @param sort_alphanumeric sort files alphanumeric? Default: `TRUE`.
+#' @param sort_alphanumeric sort files alphanumeric? Default: `TRUE`..
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -4502,7 +4486,8 @@ LoadAllSeurats <- function(
     string.remove1 = list(FALSE, "filtered_feature_bc_matrix.", "raw_feature_bc_matrix.")[[2]],
     string.replace1 = "",
     string.remove2 = list(FALSE, ".min.cells.10.min.features.200.Rds")[[2]],
-    sort_alphanumeric = TRUE) {
+    sort_alphanumeric = TRUE
+    ) {
   tictoc::tic("LoadAllSeurats")
   InputDir <- FixPath(InputDir)
 
@@ -4636,10 +4621,10 @@ read10x <- function(dir) {
 #' appended with the basename of OutDir.
 #' @param homepath A string representing the homepath. Will be replaced by '~' in the file path. Default: '~/'.
 #' @param showMemObject A boolean flag, if TRUE the function will print out the memory size of the
-#' largest objects in the workspace. Default: `TRUE`.
+#' largest objects in the workspace. Default: `TRUE`..
 #' @param saveParams A boolean flag, if TRUE the parameters 'p' and 'all.genes' are added to the
-#' 'misc' slot of the Seurat object if the object is of class Seurat. Default: `TRUE`.
-#' @param compress Compress .Rds file after writing? Default: `TRUE`.
+#' 'misc' slot of the Seurat object if the object is of class Seurat. Default: `TRUE`..
+#' @param compress Compress .Rds file after writing? Default: `TRUE`..
 #' @param test_read Provide command to test validity by reading in the object just written.
 #' @examples
 #' \dontrun{
@@ -4710,6 +4695,7 @@ isave.RDS <- function(
 #' @seealso \code{\link[qs]{qsave}} for the underlying save function used.
 #' @importFrom qs qsave
 #' @importFrom tictoc tic toc
+#' @importFrom job job
 #' @importFrom rstudioapi isAvailable
 #'
 #' @export
@@ -4741,8 +4727,8 @@ xsave <- function(
     annot.suffix <- if (is.list(obj)) kppd("ls", length(obj)) else NULL
   }
 
-  if (!isFALSE(saveParams)) message("paramList: ", if (exists("paramList")) paste(substitute(paramList), length(paramList), " elements.") else " not provided.")
-  if (!isFALSE(saveParams)) message("allGenes: ", if (exists("allGenes")) " found as global variable." else " not provided.")
+  if(!isFALSE(saveParams)) message("paramList: ", if (exists("paramList")) paste(substitute(paramList), length(paramList), " elements.") else " not provided.")
+  if(!isFALSE(saveParams)) message("allGenes: ", if (exists("allGenes")) " found as global variable." else " not provided.")
 
   try(tictoc::tic("xsave"), silent = TRUE)
   if (showMemObject & v) try(memory.biggest.objects(), silent = TRUE)
@@ -4839,10 +4825,10 @@ xread <- function(file,
 
     if (set_m) {
       # if (!exists("m")) {
-      # m <- list.fromNames(colnames(obj@meta.data))
-      m <- lapply(data.frame(obj@meta.data), function(x) head(unique(x), 50))
-      assign("m", m, envir = .GlobalEnv)
-      message("Variable 'm', a list of @meta.data colnames and first 50 uq values, is now defined in the global environment.")
+        # m <- list.fromNames(colnames(obj@meta.data))
+        m <- lapply(data.frame(obj@meta.data), function(x) head(unique(x), 50))
+        assign("m", m, envir = .GlobalEnv)
+        message("Variable 'm', a list of @meta.data colnames and first 50 uq values, is now defined in the global environment.")
       # } else {
       #   message("Variable 'm' already exists in the global environment, not overwritten")
       # } # exists("m")
@@ -4870,7 +4856,7 @@ xread <- function(file,
 #' @param path_rdata A string that specifies the path for storing the image of the workspace.
 #' Default: "~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/" appended with the basename of OutDir.
 #' @param showMemObject A boolean flag, if TRUE the function will print out the memory size of the
-#' largest objects in the workspace. Default: `TRUE`.
+#' largest objects in the workspace. Default: `TRUE`..
 #' @param options A string for gzip options. Default: "--force".
 #' @examples
 #' \dontrun{
@@ -4904,16 +4890,16 @@ isave.image <- function(
 #' Seemingly quite CPU hungry and not very efficient compression. #
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @param showMemObject Logical; if TRUE, the function will print out the memory size of the largest
-#' objects in the workspace. Default: `TRUE`.
+#' objects in the workspace. Default: `TRUE`..
 #' @param options Options passed on to gzip, via CLI. Default: `c("--force", NULL)[1]`
 #' @seealso
 #'  \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
 #' @export
 #' @importFrom Stringendo kollapse iprint
 #' @importFrom tictoc tic toc
-qsave.image <- function(
-    ..., showMemObject = TRUE,
-    options = c("--force", NULL)[1]) {
+qsave.image <- function(..., showMemObject = TRUE
+                        , options = c("--force", NULL)[1]
+                        ) {
   tictoc::tic("qsave.image")
 
   fname <- Stringendo::kollapse(getwd(), "/", basename(OutDir), idate(), ..., ".Rdata")
@@ -5035,10 +5021,11 @@ make10Xcellname <- function(cellnames, suffix = "_1") {
 #' @export
 plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
                         # library_name = str_extract(CellRanger_outs_Dir, "[[:alnum:]_]+(?=/outs/)"),
-                        library_name = basename(gsub("/outs", "", CellRanger_outs_Dir)),
-                        out_dir_prefix = "SoupStatistics",
-                        add_custom_class = FALSE, pattern_custom = "\\.RabV$",
+                        library_name = basename(gsub("/outs","",CellRanger_outs_Dir)),
+                        out_dir_prefix = 'SoupStatistics',
+                        add_custom_class = F, pattern_custom = "\\.RabV$",
                         ls.Alpha = 1) {
+
   iprint("library_name:", library_name)
 
   stopifnot( # Check input
@@ -5047,7 +5034,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
     is.numeric(ls.Alpha)
   )
 
-  if (add_custom_class) iprint("pattern_custom:", pattern_custom)
+  if(add_custom_class) iprint("pattern_custom:", pattern_custom)
 
   # The regular expression `[[:alnum:]_]+(?=/outs/)` matches one or more alphanumeric characters or
   # underscores that are followed by the `/outs/` portion in the string. It ensures that the desired
@@ -5135,7 +5122,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Class[grep("^LINC", HGNC)] <- "LINC"
   Class[grep("^AC", HGNC)] <- "AC"
   Class[grep("^AL", HGNC)] <- "AL"
-  if (add_custom_class) Class[grep(pattern_custom, HGNC)] <- ReplaceSpecialCharacters(pattern_custom, remove_dots = TRUE)
+  if (add_custom_class) Class[grep(pattern_custom, HGNC)] <- ReplaceSpecialCharacters(pattern_custom, remove_dots = T)
   Nr.of.Genes.per.Class <- table(Class)
 
 
@@ -5196,6 +5183,8 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
         as.character(gene), ""
       )))
     ggsave(pgg, filename = file.path(OutDir, fname), width = 7, height = 7)
+
+
   } # for
 
 
@@ -5476,7 +5465,7 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) {
 #' @param obj1 The first Seurat object for comparison. Default: NULL.
 #' @param obj2 The second Seurat object for comparison. Default: NULL.
 #' @param cor.plot An optional boolean indicating whether to generate a scatterplot of the ranks
-#'   of common genes. Default: `FALSE`.
+#'   of common genes. Default: `FALSE`..
 #' @param plot_venn plot_venn
 #' @param suffix suffix
 #' @param save.plot save.plot
@@ -5604,7 +5593,7 @@ compareVarFeaturesAndRanks <- function(
   # n_cores_detected <- as.numeric(system("nproc", intern = TRUE))
   n_cores_detected <- as.numeric(system("echo $SLURM_CPUS_PER_TASK", intern = TRUE))
   n_cores_avail <- min(n_cores_detected, n.cpus.def)
-  return(max(n_cores_avail, 1))
+  return(max(n_cores_avail, 1) )
 }
 
 
@@ -5632,7 +5621,7 @@ compareVarFeaturesAndRanks <- function(
     if (is.null(param_list[[element]])) {
       warning(sprintf("`%s` is not defined", element), immediate. = TRUE, call. = FALSE)
     } else {
-      message(sprintf("`%s` is: %s", element, param_list[[element]]))
+      message(sprintf("`%s` is: %s", element, param_list[[element]]) )
     }
   }, USE.NAMES = FALSE)
 
@@ -5681,10 +5670,10 @@ compareVarFeaturesAndRanks <- function(
 #' @return Integer representing the number of principal components
 #'
 .getNrPCs <- function(obj, v = TRUE, reduc = "pca") {
-  if ("pca" %in% names(obj@reductions)) {
+  if("pca" %in% names(obj@reductions)) {
     ncol(obj@reductions[[reduc]]@"cell.embeddings")
   } else {
-    if (v) warning("No PCA cell embeddings found in object.", immediate. = TRUE)
+    if(v) warning("No PCA cell embeddings found in object.", immediate. = TRUE)
     NA
   }
 }
@@ -5720,7 +5709,7 @@ compareVarFeaturesAndRanks <- function(
   }
 
   # Extract regression variables
-  regressionVariables <- func_slot$"vars.to.regress"
+  regressionVariables <- func_slot$'vars.to.regress'
   if (is.null(regressionVariables)) {
     if (v) message("No regression variables found in @commands")
   } else {
@@ -5742,7 +5731,7 @@ compareVarFeaturesAndRanks <- function(
 #' @param regressionVariables A list or vector containing variables for regression. Default: NULL.
 #' If NULL, the function will attempt to extract the variables from the `object@commands$ScaleData`.
 #' @param nrVarFeatures You can provide this number manually. Default: NULL.
-#' @param return.as.name If TRUE, returns the name of the object. Default: `FALSE`.
+#' @param return.as.name If TRUE, returns the name of the object. Default: `FALSE`..
 #' @param assay The assay to extract scaled features from. Default: "RNA".
 #' @param suffix A suffix string to add.
 #' @param v Verbose? Default: `TRUE`.
@@ -5754,13 +5743,15 @@ compareVarFeaturesAndRanks <- function(
                             return.as.name = FALSE,
                             assay = Seurat::DefaultAssay(obj),
                             suffix = NULL,
-                            v = TRUE) {
-  tictoc::tic(".parseKeyParams")
+                            v = T
+                            ) {
 
-  if (v) message(" > Running .parseKeyParams...")
-  scaledFeatures <- .getNrScaledFeatures(obj, assay, v = FALSE)
+  tictoc::tic('.parseKeyParams')
 
-  if (is.null(regressionVariables)) regressionVariables <- .getRegressionVariablesForScaleData(obj = obj, assay = assay, v = FALSE)
+  if(v) message(" > Running .parseKeyParams...")
+  scaledFeatures <- .getNrScaledFeatures(obj, assay, v= F)
+
+  if (is.null(regressionVariables)) regressionVariables <- .getRegressionVariablesForScaleData(obj = obj, assay = assay, v = F)
 
   if (!is.null(nrVarFeatures)) {
     if (nrVarFeatures != scaledFeatures) {
@@ -5804,6 +5795,7 @@ compareVarFeaturesAndRanks <- function(
 #' @importFrom checkmate assert_class assert_character assert_string
 
 .FindCommandInObject <- function(obj, pattern, perl = TRUE) {
+
   command_names <- names(obj@commands) # Get all command names
 
   # Find matches using partial pattern matching
@@ -5864,3 +5856,4 @@ compareVarFeaturesAndRanks <- function(
 # _________________________________________________________________________________________________
 # Temp _____________________________ ------
 # _________________________________________________________________________________________________
+

@@ -14,11 +14,11 @@ getCellIDs.from.meta(
 \arguments{
 \item{ident}{A string specifying the name of the metadata column from which to retrieve cell IDs. Default: 'res.0.6'.}
 
-\item{ident_values}{A vector of values to match in the metadata column. Default: NA.}
+\item{ident_values}{A vector of values to match in the metadata column. Default: \code{NA}.}
 
 \item{obj}{The Seurat object from which to retrieve the cell IDs. Default: combined.obj.}
 
-\item{inverse}{A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of ident_values. Default: FALSE.}
+\item{inverse}{A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of ident_values. Default: \code{FALSE}.}
 }
 \value{
 A vector of cell IDs that match (or don't match, if \code{inverse = TRUE}) the provided list of values.

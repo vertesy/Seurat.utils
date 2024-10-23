@@ -20,8 +20,6 @@ scBarplot.CellFractions(
   save_plot = TRUE,
   also.pdf = FALSE,
   seedNr = 1989,
-  w = NULL,
-  h = 6,
   draw_plot = TRUE,
   show_numbers = FALSE,
   min.pct = 0.05,
@@ -35,6 +33,8 @@ scBarplot.CellFractions(
   cex.total = 2,
   xlab.angle = 45,
   show_plot = TRUE,
+  w = NULL,
+  h = 6,
   ...
 )
 }
@@ -42,6 +42,8 @@ scBarplot.CellFractions(
 \item{fill.by}{The variable to fill by for the bar plot.}
 
 \item{group.by}{The variable to group by for the bar plot.}
+
+\item{obj}{A Seurat object.}
 
 \item{downsample}{Logical indicating whether to downsample data to equalize group sizes.}
 
@@ -51,21 +53,21 @@ scBarplot.CellFractions(
 
 \item{suffix}{Optional suffix for the plot title.}
 
+\item{prefix}{Optional prefix for the plot title.}
+
 \item{sub_title}{Optional subtitle for the plot.}
 
 \item{hlines}{Numeric vector specifying y-intercepts of horizontal lines to add to the plot.}
 
 \item{return_table}{Logical; if TRUE, returns a contingency table instead of plotting.}
 
+\item{save_table}{Logical; if TRUE, saves the table behind the plot.}
+
 \item{save_plot}{Logical; if TRUE, saves the generated plot.}
 
 \item{also.pdf}{Save plot in both png and pdf formats.}
 
 \item{seedNr}{Seed for random number generation to ensure reproducibility.}
-
-\item{w}{Width of the plot in inches.}
-
-\item{h}{Height of the plot in inches.}
 
 \item{draw_plot}{Logical; if FALSE, suppresses plotting (useful if only the table is desired).}
 
@@ -86,9 +88,15 @@ are aggregated into an "Other" category.}
 
 \item{cex.total}{Label size for total cells}
 
-\item{...}{Additional parameters passed to internally called functions.}
+\item{xlab.angle}{Angle of x-axis labels.}
 
-\item{dsample.to.repl.thr}{Logical indicating if sampling should be done with replacement. Defaults to FALSE.}
+\item{show_plot}{Logical; if TRUE, shows the plot.}
+
+\item{w}{Width of the plot in inches. Default: \code{NULL}}
+
+\item{h}{Height of the plot in inches. Default: \code{6}}
+
+\item{...}{Additional parameters passed to internally called functions.}
 }
 \value{
 Depending on the value of \code{return_table}, either returns a ggplot object or a list

@@ -10,7 +10,7 @@ RelabelSmallCategories(
   backup_col_name = ppp(col_in, "orig"),
   min_count = 100,
   small_label = "Other",
-  v = T
+  v = TRUE
 )
 }
 \arguments{

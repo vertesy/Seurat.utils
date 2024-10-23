@@ -12,13 +12,13 @@ GetClusteringRuns(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object, Default: \code{combined.obj}}
 
-\item{res}{Clustering resoluton to use, Default: FALSE}
+\item{res}{Clustering resoluton to use, Default: \code{FALSE}.}
 
 \item{pat}{Pattern to match, Default: \verb{*snn_res.*[0-9]$}}
 
-\item{v}{}
+\item{v}{verbose, Default: \code{TRUE}.}
 }
 \value{
 Prints and returns the sorted unique cluster names as a character vector.

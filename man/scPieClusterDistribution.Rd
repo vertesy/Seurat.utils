@@ -27,6 +27,6 @@ identity in a single-cell RNA-seq object.
 }
 \examples{
 \dontrun{
-scPieClusterDistribution(obj = combined.obj, ident = 'cluster_identity')
+scPieClusterDistribution(obj = combined.obj, ident = "cluster_identity")
 }
 }

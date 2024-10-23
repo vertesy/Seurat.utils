@@ -11,7 +11,7 @@ save.parameters(obj = combined.obj, params = p, overwrite = TRUE)
 
 \item{params}{List of parameters to save; Default: \code{p}.}
 
-\item{overwrite}{Logical indicating if existing parameters should be overwritten; Default: TRUE.}
+\item{overwrite}{Logical indicating if existing parameters should be overwritten; Default: \code{TRUE}.}
 }
 \description{
 Stores a list of parameters within the \verb{@misc$p} slot of a Seurat object,

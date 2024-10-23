@@ -42,21 +42,21 @@ calc.cluster.averages(
 \arguments{
 \item{col_name}{The name of the column for which the average is calculated. Default: 'Score.GO.0006096'.}
 
-\item{plot.UMAP.too}{Whether to plot a UMAP as well. Default: TRUE.}
+\item{plot.UMAP.too}{Whether to plot a UMAP as well. Default: \code{TRUE}.}
 
-\item{return.plot}{Whether to return the plot. Default: FALSE.}
+\item{return.plot}{Whether to return the plot. Default: \code{FALSE}.}
 
-\item{obj}{The main Seurat object used for calculations. Default: combined.obj.}
+\item{obj}{The main Seurat object used for calculations. Default: \code{combined.obj}.}
 
 \item{split_by}{Cluster to split by. Default: First entry of GetNamedClusteringRuns().}
 
-\item{scale.zscore}{Whether to scale z-scores. Default: FALSE.}
+\item{scale.zscore}{Whether to scale z-scores. Default: \code{FALSE}.}
 
-\item{simplify}{Whether to simplify the result. Default: TRUE.}
+\item{simplify}{Whether to simplify the result. Default: \code{TRUE}.}
 
-\item{plotit}{Whether to plot the results. Default: TRUE.}
+\item{plotit}{Whether to plot the results. Default: \code{TRUE}.}
 
-\item{histogram}{Whether to produce a histogram. Default: FALSE.}
+\item{histogram}{Whether to produce a histogram. Default: \code{FALSE}.}
 
 \item{nbins}{The number of bins for the histogram. Default: 50.}
 
@@ -66,9 +66,9 @@ calc.cluster.averages(
 
 \item{quantile.thr}{The threshold for quantiles. Default: 0.9.}
 
-\item{absolute.thr}{Absolute threshold used in computations. Default: FALSE.}
+\item{absolute.thr}{Absolute threshold used in computations. Default: \code{FALSE}.}
 
-\item{filter}{The filter mode: 'above', 'below', or FALSE. Default: FALSE.}
+\item{filter}{The filter mode: 'above', 'below', or FALSE. Default: \code{FALSE}.}
 
 \item{ylab.text}{Text for the y-axis label. Default: "Cluster" followed by the statistical method and "score".}
 
@@ -84,7 +84,7 @@ calc.cluster.averages(
 
 \item{xlb}{The label for the x-axis. Default depends on the 'absolute.thr' parameter.}
 
-\item{fname}{The filename for the plot. Default is based on column name and split_by value.}
+\item{fname}{The filename for the plot. Default: based on column name and split_by value.}
 }
 \description{
 Calculates the average of a metadata column (numeric) per cluster.

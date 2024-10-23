@@ -11,7 +11,7 @@
   return.as.name = FALSE,
   assay = Seurat::DefaultAssay(obj),
   suffix = NULL,
-  v = T
+  v = TRUE
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ If NULL, the function will attempt to extract the variables from the \code{objec
 
 \item{nrVarFeatures}{You can provide this number manually. Default: NULL.}
 
-\item{return.as.name}{If TRUE, returns the name of the object. Default: FALSE.}
+\item{return.as.name}{If TRUE, returns the name of the object. Default: \code{FALSE}.}
 
 \item{assay}{The assay to extract scaled features from. Default: "RNA".}
 

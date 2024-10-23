@@ -8,8 +8,8 @@ scPlotPCAvarExplained(
   obj = combined.obj,
   plotname = "Variance Explained by Principal Components",
   sub = paste(ncol(obj), "cells, ", nrow(obj), "features."),
-  use.MarkdownReports = FALSE,
   caption = "hline at 1\%",
+  use.MarkdownReports = FALSE,
   ...
 )
 }
@@ -24,8 +24,12 @@ Components".}
 features analyzed. Default: A string generated from \code{obj} stating the number of cells and
 features.}
 
+\item{caption}{A caption for the plot. Default: "hline at 1\%".}
+
 \item{use.MarkdownReports}{Boolean indicating whether to use \code{MarkdownReports} for plotting.
 If \code{FALSE}, \code{ggExpress} is used. Default: \code{FALSE}.}
+
+\item{...}{Additional arguments to be passed to \code{ggExpress::qbarplot} or \code{MarkdownReports::wbarplot}.}
 }
 \value{
 Generates a plot showing the percent of variation each PC accounts for. This function

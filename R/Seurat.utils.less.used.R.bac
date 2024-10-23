@@ -2,7 +2,6 @@
 # Seurat.utils.less.used.R ----
 # ____________________________________________________________________
 # file.edit("~/GitHub/Packages/Seurat.utils/R/Seurat.utils.less.used.R")
-# setwd("~/GitHub/Packages/Seurat.utils")
 
 
 
@@ -13,16 +12,16 @@
 #' containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices,
 #' (2) converts them to Seurat objects, and (3) saves them as .RDS files.
 #' @param InputDir A character string specifying the input directory.
-#' @param regex A logical value. If TRUE, the folderPattern is treated as a regular expression. Default: `FALSE`.
+#' @param regex A logical value. If TRUE, the folderPattern is treated as a regular expression. Default: `FALSE`..
 #' @param folderPattern A character vector specifying the pattern of folder names to be searched. Default: 'filtered_feature'.
 #' @param min.cells An integer value specifying the minimum number of cells. Default: 5.
 #' @param min.features An integer value specifying the minimum number of features. Default: 200.
-#' @param updateHGNC A logical value indicating whether to update the HGNC. Default: `TRUE`.
-#' @param ShowStats A logical value indicating whether to show statistics. Default: `TRUE`.
-#' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: `TRUE`.
+#' @param updateHGNC A logical value indicating whether to update the HGNC. Default: `TRUE`..
+#' @param ShowStats A logical value indicating whether to show statistics. Default: `TRUE`..
+#' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: `TRUE`..
 #' @param depth An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default: 2.
-#' @param sample.barcoding A logical value indicating whether Cell Ranger was run with sample barcoding. Default: `FALSE`.
-#' @param sort_alphanumeric sort files alphanumeric? Default: `TRUE`.
+#' @param sample.barcoding A logical value indicating whether Cell Ranger was run with sample barcoding. Default: `FALSE`..
+#' @param sort_alphanumeric sort files alphanumeric? Default: `TRUE`..
 #' @examples
 #' \dontrun{
 #' if (interactive()) Convert10Xfolders(InputDir)
@@ -71,7 +70,7 @@ Convert10Xfolders_v1 <- function(
     print("")
     print(fnameIN)
 
-    count_matrix <- Read10X(pathIN)
+    count_matrix <- Read10X(pathIN )
     if (!is.list(count_matrix) | length(count_matrix) == 1) {
       seu <- CreateSeuratObject(
         counts = count_matrix, project = fnameIN,
@@ -446,6 +445,7 @@ AutoNumber.by.PrinCurve <- function(
 #' @seealso \code{\link[SoupX]{SoupChannel}} for the structure and utilities of the `SoupChannel` class.
 #'
 #' @export
+#' @importFrom SoupX SoupChannel
 load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = list(),
                       includeFeatures = c("Gene Expression"), verbose = TRUE,
                       ...) {
@@ -543,7 +543,7 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
     )
   }
 
-  stopifnot("Package 'SoupX' must be installed to use this function." = require("SoupX"))
+  "Maybe the one below should be within the above if statement?"
   channel <- SoupX::SoupChannel(
     tod = dat, toc = datCells, metaData = mDat,
     channelName = channelName, dataDir = dataDir, dataType = "10X",
@@ -551,8 +551,6 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
   )
   return(channel)
 }
-
-
 
 
 
@@ -565,8 +563,8 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #' @param folderPattern A character vector specifying the pattern of folder names to be searched. Default: 'filtered'.
 #' @param min.cells An integer value specifying the minimum number of cells. Default: 10.
 #' @param min.features An integer value specifying the minimum number of features. Default: 200.
-#' @param updateHGNC A logical value indicating whether to update the HGNC. Default: `TRUE`.
-#' @param ShowStats A logical value indicating whether to show statistics. Default: `TRUE`.
+#' @param updateHGNC A logical value indicating whether to update the HGNC. Default: `TRUE`..
+#' @param ShowStats A logical value indicating whether to show statistics. Default: `TRUE`..
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -680,7 +678,7 @@ get.clustercomposition <- function(...) .Deprecated("No longer provided.")
 multiFeatureHeatmap.A4 <- function(...) .Deprecated("No longer provided.")
 Annotate4Plotly3D <- function(...) .Deprecated(".Annotate4Plotly3D() - with dot/invisible.")
 Percent.in.Trome <- function(...) .Deprecated("PercentInTranscriptome()")
-.parseRegressionVariablesForScaleData <- function(...) .Deprecated(".getRegressionVariablesForScaleData()")
+.parseRegressionVariablesForScaleData  <- function(...) .Deprecated(".getRegressionVariablesForScaleData()")
 seu.add.meta.from.vector <- function(...) .Deprecated("addMetaDataSafe()")
 
 # _________________________________________________________________________________________________
@@ -730,14 +728,14 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 #'
 #' @param obj The Seurat object.
 #' @param n.var.features The number of variable features to use. Default: the 'n.var.genes' element from a list 'p'.
-#' @param features.scale A logical value indicating whether to scale the data. Default: `TRUE`.
+#' @param features.scale A logical value indicating whether to scale the data. Default: `TRUE`..
 #' @param vars.to.regress A vector of variable names to be regressed out.
 #' @param suffix A character string to be used as a suffix when saving the object.
 #' @param nPCs The number of principal components to use. Default: the 'n.PC' element from a list 'p'.
 #' @param clust_resolutions The resolution for clustering. Default: the 'snn_res' element from a list 'p'.
-#' @param calc_tSNE Logical, if TRUE, t-SNE will be performed. Default: `FALSE`.
-#' @param plot_umaps Logical, if TRUE, UMAP plots will be generated. Default: `TRUE`.
-#' @param save_obj Logical, if TRUE, the object will be saved. Default: `TRUE`.
+#' @param calc_tSNE Logical, if TRUE, t-SNE will be performed. Default: `FALSE`..
+#' @param plot_umaps Logical, if TRUE, UMAP plots will be generated. Default: `TRUE`..
+#' @param save_obj Logical, if TRUE, the object will be saved. Default: `TRUE`..
 #' @param assayX The assay to be used in scaling data. Default: 'RNA'.
 #' @return Seurat object after calculations and manipulations.
 #' @importFrom Seurat FindVariableFeatures ScaleData RunPCA FindNeighbors FindClusters RunTSNE
@@ -855,9 +853,9 @@ PrctCellExpringGene <- function(genes, group.by = "all", obj = combined.obj,
                                 ...) {
   .Deprecated("PctCellsExpressingGenes")
   #
-  nf <- setdiff(genes, c(Features(obj, assay = "RNA"), colnames(obj@m@data)))
+  nf <- setdiff(genes, c(Features(obj, assay = 'RNA'), colnames(obj@m@data)))
 
-  if (length(nf) > 0) message("Some genes/ features not found: ", nf)
+  if(length(nf) > 0) message("Some genes/ features not found: ", nf)
 
   stopifnot("Some genes not foun!." = all(genes %in% Features(obj)))
 
@@ -1099,8 +1097,8 @@ ww.calc_helper <- function(obj, genes, slot = "RNA") {
 # #' @param splitby Variable to split the data by, typically a project or dataset identifier.
 # #' Default: 'ShortNames'.
 # #' @param color Bar color. Default: as defined by `splitby`.
-# #' @param plot Whether to display the plot. Default: `TRUE`.
-# #' @param ScaleTo100pc Whether to scale Y axis to 100%. Default: `TRUE`.
+# #' @param plot Whether to display the plot. Default: `TRUE`..
+# #' @param ScaleTo100pc Whether to scale Y axis to 100%. Default: `TRUE`..
 # #' @param ... Additional parameters for plotting functions.
 # #'
 # #' @return If `plot` is TRUE, displays a bar plot showing the composition of each cluster. Otherwise,
@@ -1156,8 +1154,8 @@ ww.calc_helper <- function(obj, genes, slot = "RNA") {
 # #' @param splitby Variable to split the data by, typically a project or dataset identifier.
 # #' Default: 'ShortNames'.
 # #' @param color Bar color. Default: as defined by `splitby`.
-# #' @param plot Whether to display the plot. Default: `TRUE`.
-# #' @param ScaleTo100pc Whether to scale Y axis to 100%. Default: `TRUE`.
+# #' @param plot Whether to display the plot. Default: `TRUE`..
+# #' @param ScaleTo100pc Whether to scale Y axis to 100%. Default: `TRUE`..
 # #' @param ... Additional parameters for plotting functions.
 # #'
 # #' @return If `plot` is TRUE, displays a bar plot showing the composition of each cluster. Otherwise,

@@ -15,12 +15,12 @@ isave.image(
 \item{...}{Additional parameters passed to the idate() function in the creation of the file name.}
 
 \item{path_rdata}{A string that specifies the path for storing the image of the workspace.
-Default is "~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/" appended with the basename of OutDir.}
+Default: "~/Dropbox/Abel.IMBA/AnalysisD/_Rdata.files/" appended with the basename of OutDir.}
 
 \item{showMemObject}{A boolean flag, if TRUE the function will print out the memory size of the
-largest objects in the workspace. Default is TRUE.}
+largest objects in the workspace. Default: \code{TRUE}.}
 
-\item{options}{A string for gzip options. Default is "--force".}
+\item{options}{A string for gzip options. Default: "--force".}
 }
 \description{
 Save an image of the current workspace using a faster and efficient compression

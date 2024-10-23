@@ -8,7 +8,7 @@ plotTheSoup(
   CellRanger_outs_Dir = "~/Data/114593/114593",
   library_name = basename(gsub("/outs", "", CellRanger_outs_Dir)),
   out_dir_prefix = "SoupStatistics",
-  add_custom_class = F,
+  add_custom_class = FALSE,
   pattern_custom = "\\\\.RabV$",
   ls.Alpha = 1
 )
@@ -20,9 +20,11 @@ plotTheSoup(
 
 \item{out_dir_prefix}{Prefix for the output directory. Default: 'SoupStatistics'}
 
-\item{add_custom_class}{Add a custom class of genes, matched by apattern in gene symbol. Default: TRUE}
+\item{add_custom_class}{Add a custom class of genes, matched by apattern in gene symbol. Default: \code{TRUE}.}
 
-\item{pattern_custom}{The pattern to match in gene symbol. Default: NA}
+\item{pattern_custom}{The pattern to match in gene symbol. Default: \code{NA}.}
+
+\item{ls.Alpha}{The alpha value for the label text. Default: 0.5.}
 }
 \description{
 Plot stats about the ambient RNA content in a 10X experiment.

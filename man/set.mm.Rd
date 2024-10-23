@@ -7,7 +7,7 @@
 set.mm(obj = combined.obj)
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object, Default: \code{combined.obj}}
 }
 \description{
 Helps to find metadata columns. It creates a list with the names of of 'obj@meta.data'.

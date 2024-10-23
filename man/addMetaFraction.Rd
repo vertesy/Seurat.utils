@@ -25,9 +25,9 @@ addMetaFraction(
 
 \item{layer}{Name of the layer to be used. Default: 'data'}
 
-\item{gene.set}{A set of gene symbols. If specified, it will be used instead of gene.symbol.pattern. Default: FALSE}
+\item{gene.set}{A set of gene symbols. If specified, it will be used instead of gene.symbol.pattern. Default: \code{FALSE}.}
 
-\item{verbose}{Logical indicating whether to display detailed messages (TRUE) or not (FALSE). Default: TRUE}
+\item{verbose}{Logical indicating whether to display detailed messages (TRUE) or not (FALSE). Default: \code{TRUE}.}
 }
 \description{
 Add a new metadata column to a Seurat object, representing the fraction of a gene set in the transcriptome (expressed as a percentage).

@@ -10,7 +10,7 @@ umapHiLightSel(
   ident = GetClusteringRuns()[1],
   h = 7,
   w = 5,
-  show_plot = T,
+  show_plot = TRUE,
   ...
 )
 }
@@ -21,7 +21,16 @@ umapHiLightSel(
 Default: \code{c("0", "2", "4")}.}
 
 \item{ident}{Name of the metadata column containing cluster IDs;
-Default: 'integrated_snn_res.0.3'.}
+Default: \code{GetClusteringRuns()[1]}.}
+
+\item{h}{Height of the plot; Default: \code{7}.}
+
+\item{w}{Width of the plot; Default: \code{5}.}
+
+\item{show_plot}{Logical; if \code{TRUE}, the plot will be displayed in the RStudio viewer;
+Default: \code{TRUE}.}
+
+\item{...}{Additional arguments to be passed to the \code{DimPlot} function.#'}
 }
 \value{
 Saves a UMAP plot highlighting specified clusters to the current working directory.

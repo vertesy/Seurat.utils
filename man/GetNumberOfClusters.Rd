@@ -7,7 +7,7 @@
 GetNumberOfClusters(obj = combined.obj)
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object, Default: \code{combined.obj}}
 }
 \description{
 Get Number Of Clusters #

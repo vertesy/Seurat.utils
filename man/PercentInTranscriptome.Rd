@@ -16,10 +16,10 @@ PercentInTranscriptome(
 \item{obj}{A Seurat object containing gene expression data.}
 
 \item{n.genes.barplot}{The number of top genes to be displayed in the final barplot, showing
-their expression as a percentage of the total UMIs. Default is 25.}
+their expression as a percentage of the total UMIs. Default: 25.}
 
 \item{width.barplot}{The width of the barplot that visualizes the highest expressed genes.
-Default is a quarter of \code{n.genes.barplot}.}
+Default: a quarter of \code{n.genes.barplot}.}
 }
 \value{
 The same Seurat object passed as input, but with an additional list in the \verb{@misc} slot

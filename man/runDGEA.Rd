@@ -41,7 +41,7 @@ runDGEA(
 Default: c(0.1).}
 
 \item{reorder.clusters}{Logical indicating whether to reorder clusters based on dimension.
-Default: TRUE.}
+Default: \code{TRUE}.}
 
 \item{reorder.dimension}{Integer specifying the dimension for reordering (1 for x, -1 for y).
 Default: 1.}
@@ -55,37 +55,37 @@ Default: OutDir}
 the base directory. Default: "DGEA + date".}
 
 \item{add.combined.score}{Logical indicating whether to add a combined score to the markers.
-Default: TRUE.}
+Default: \code{TRUE}.}
 
 \item{save.obj}{Logical indicating whether to save the modified Seurat object.
-Default: TRUE.}
+Default: \code{TRUE}.}
 
 \item{calculate.DGEA}{Logical determining if the DE analysis should be calculated.
-Default: TRUE.}
+Default: \code{TRUE}.}
 
 \item{plot.DGEA}{Logical determining if results should be plotted.
-Default: TRUE.}
+Default: \code{TRUE}.}
 
 \item{umap_caption}{Character string specifying the caption for the UMAP plot. Default: "".}
 
 \item{plot.av.enrichment.hist}{Logical indicating whether to plot the average enrichment histogram.
-Default: TRUE.}
+Default: \code{TRUE}.}
 
 \item{plot.log.top.gene.stats}{Logical indicating whether to plot the log top gene statistics.}
 
 \item{auto.cluster.naming}{Logical indicating automatic labeling of clusters.
-Default: TRUE.}
+Default: \code{TRUE}.}
 
 \item{clean.misc.slot}{Logical indicating whether to clean the misc slots of previous
-clustering results. Default: TRUE.}
+clustering results. Default: \code{TRUE}.}
 
 \item{clean.meta.data}{Logical indicating whether to clean the metadata slots of
-previous clustering results. Default: TRUE.}
+previous clustering results. Default: \code{TRUE}.}
 
 \item{n.cores}{Integer specifying the number of cores to use for parallel processing (multisession).
 Default: 1.}
 
-\item{presto}{Logical indicating whether to use presto for DE analysis. Default: TRUE.}
+\item{presto}{Logical indicating whether to use presto for DE analysis. Default: \code{TRUE}.}
 
 \item{WorkingDir}{Character string specifying the working directory. Default: getwd().}
 }

@@ -1,7 +1,8 @@
 ######################################################################################################
 # Create_the_Seurat.utils_Package.R
 ######################################################################################################
-# source("~/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.R")
+# file.edit("~/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.R")
+
 # rm(list = ls(all.names = TRUE));
 try(dev.off(), silent = TRUE)
 
@@ -20,8 +21,11 @@ file.edit(config.path)
 source(config.path)
 package.name <- DESCRIPTION$'package.name'
 
+
+
 PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
 'git add commit push to remote'
+file.edit("DESCRIPTION")
 
 # Install your package ------------------------------------------------
 "disable rprofile by"
@@ -47,11 +51,13 @@ devtools::install_github(repo = "vertesy/Seurat.utils", upgrade = F)
 # BiocManager::install("MatrixGenerics")
 
 # CMD CHECK ------------------------------------------------
+devtools::check_man(repository.dir)
 checkres <- devtools::check(repository.dir, cran = FALSE)
 
 
 # Automated Codebase linting to tidyverse style ------------------------------------------------
 styler::style_pkg(repository.dir)
+# styler::style_file("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
 
 
 # Extract package dependencies ------------------------------------------------
@@ -69,7 +75,7 @@ PackageTools::extract_package_dependencies(repository.dir)
 
 # Try to find and add missing @importFrom statements------------------------------------------------
 devtools::load_all("~/GitHub/Packages/PackageTools/")
-(ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T))
+(ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T, pattern = ".R$"))
 if (F) {
   (excluded.packages <- unlist(strsplit(DESCRIPTION$'depends', split = ", ")))
   for (scriptX in ls.scripts.full.path) {
@@ -78,6 +84,7 @@ if (F) {
 }
 
 # Replaces T with TRUE and F with FALSE ------------------------------------------------
+(ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T, pattern = ".R$"))
 for (scriptX in ls.scripts.full.path) {
   PackageTools::replace_tf_with_true_false(scriptX, strict_mode = F)
   PackageTools::replace_short_calls(scriptX, strict_mode = F)

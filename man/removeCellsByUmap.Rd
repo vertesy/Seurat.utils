@@ -16,16 +16,16 @@ removeCellsByUmap(
 }
 \arguments{
 \item{reduction}{A string specifying the dimension reduction technique to be used
-('umap', 'pca', or 'tsne'). Default is 'umap'.}
+('umap', 'pca', or 'tsne'). Default: 'umap'.}
 
-\item{umap_dim}{An integer specifying which dimension (axis) to apply the cutoff. Default is 1.}
+\item{umap_dim}{An integer specifying which dimension (axis) to apply the cutoff. Default: 1.}
 
-\item{obj}{A Seurat object. Default is 'combined.obj'.}
+\item{obj}{A Seurat object. Default: 'combined.obj'.}
 
-\item{cutoff}{A numerical value indicating the cutoff value for the specified dimension. Default is 0.}
+\item{cutoff}{A numerical value indicating the cutoff value for the specified dimension. Default: 0.}
 
 \item{cut_below}{A logical value indicating whether to remove cells below (TRUE) or
-above (FALSE) the cutoff line. Default is TRUE.}
+above (FALSE) the cutoff line. Default: \code{TRUE}.}
 
 \item{only_plot_cutoff}{Simulate and plot cutoff only.}
 

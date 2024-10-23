@@ -20,7 +20,7 @@ scBarplot.CellsPerObject(
 \item{xlab.angle}{Angle for x-axis labels, enhancing readability. Default: 45.}
 
 \item{names}{Optionally provide custom names for x-axis labels. If FALSE, uses object names
-from \code{ls.obj}. Default: FALSE.}
+from \code{ls.obj}. Default: \code{FALSE}.}
 
 \item{...}{Extra parameters passed to \code{qbarplot}.}
 }

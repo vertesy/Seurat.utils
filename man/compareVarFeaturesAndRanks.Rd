@@ -20,7 +20,7 @@ compareVarFeaturesAndRanks(
 \item{obj2}{The second Seurat object for comparison. Default: NULL.}
 
 \item{cor.plot}{An optional boolean indicating whether to generate a scatterplot of the ranks
-of common genes. Default: FALSE.}
+of common genes. Default: \code{FALSE}.}
 
 \item{save.plot}{save.plot}
 

@@ -14,18 +14,18 @@ GetNamedClusteringRuns(
 )
 }
 \arguments{
-\item{obj}{Seurat object, Default: combined.obj}
+\item{obj}{Seurat object, Default: \code{combined.obj}}
 
 \item{res}{Clustering resoluton to use, Default: c(FALSE, 0.5)\link{1}}
 
-\item{topgene}{Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: FALSE}
+\item{topgene}{Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: \code{FALSE}.}
 
 \item{pat}{Pattern to match, Default: '^cl.names.Known.*\link{0,1}\.\link{0-9}$'}
 
 \item{find.alternatives}{If TRUE, tries to find alternative clustering runs with
-the same resolution, Default: TRUE}
+the same resolution, Default: \code{TRUE}.}
 
-\item{v}{Verbose output, Default: TRUE}
+\item{v}{Verbose output, Default: \code{TRUE}.}
 }
 \description{
 The \code{GetNamedClusteringRuns} function retrieves metadata column names associated with

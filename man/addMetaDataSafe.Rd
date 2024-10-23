@@ -9,7 +9,7 @@ addMetaDataSafe(
   metadata,
   col.name,
   overwrite = FALSE,
-  verbose = F,
+  verbose = FALSE,
   strict = TRUE
 )
 }

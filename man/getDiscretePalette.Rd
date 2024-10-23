@@ -14,7 +14,7 @@ getDiscretePalette()
 \item{palette.used}{The name of the palette to use, Default: c("alphabet", "alphabet2",
 "glasbey", "polychrome", "stepped")\link{1}}
 
-\item{show.colors}{Whether to display the colors in the palette, Default: FALSE}
+\item{show.colors}{Whether to display the colors in the palette, Default: \code{FALSE}.}
 }
 \description{
 Safe wrapper around Seurat's DiscretePalette(), which returns NA's if too many
@@ -26,4 +26,5 @@ if (interactive()) {
   getDiscretePalette()
 }
 }
+
 }

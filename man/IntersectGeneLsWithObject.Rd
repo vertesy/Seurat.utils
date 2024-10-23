@@ -22,7 +22,7 @@ IntersectGeneLsWithObject(
 
 \item{n_genes_shown}{Number of missing genes to be printed. Default: 10.}
 
-\item{strict}{All genes to be present in the Seurat object?  Default: TRUE.}
+\item{strict}{All genes to be present in the Seurat object?  Default: \code{TRUE}.}
 
 \item{verbose}{verbose}
 }

@@ -10,6 +10,8 @@ scBarplotStackedMetaCateg_List(ls.obj, meta.col, ...)
 \item{ls.obj}{List of Seurat objects.}
 
 \item{meta.col}{The metadata column name to be used for the barplot.}
+
+\item{...}{Additional arguments passed to \code{ggExpress::qbarplot.df}.}
 }
 \value{
 A ggplot object representing the stacked barplot.

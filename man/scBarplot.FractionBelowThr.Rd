@@ -24,7 +24,7 @@ scBarplot.FractionBelowThr(
 
 \item{obj}{Seurat object with cell data. Default: \code{combined.obj}.}
 
-\item{return.df}{If TRUE, returns the data frame instead of the plot. Default: FALSE.}
+\item{return.df}{If TRUE, returns the data frame instead of the plot. Default: \code{FALSE}.}
 }
 \description{
 Generates a bar plot to visualize the percentage of cells within each cluster that

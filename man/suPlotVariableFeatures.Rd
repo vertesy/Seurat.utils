@@ -21,17 +21,19 @@ suPlotVariableFeatures(
 
 \item{NrVarGenes}{A vector containing the top 20 variable genes for the Seurat object.}
 
-\item{repel}{A logical value indicating whether to repel the labels to avoid overlap. Default: TRUE.}
+\item{repel}{A logical value indicating whether to repel the labels to avoid overlap. Default: \code{TRUE}.}
 
 \item{plotWidth}{Numeric value specifying the width of the plot when saved. Default: 7.}
 
 \item{plotHeight}{Numeric value specifying the height of the plot when saved. Default: 5.}
 
-\item{sampleName}{A string specifying the sample name, used to generate the filename for saving
-the plot.}
+\item{save}{A logical value indicating whether to save the plot to a PDF file. Default: \code{TRUE}.}
 
-\item{ppp}{A function for constructing the path and filename for saving the plot. It takes three
-arguments: a prefix for the filename, a sample name, and the file extension ('pdf').}
+\item{assay}{The assay to use for the plot. Default: DefaultAssay(obj).}
+
+\item{suffix}{A string suffix to append to the plot filename. Default: NULL.}
+
+\item{...}{Additional arguments to pass to the Seurat::VariableFeaturePlot function.}
 }
 \description{
 Generates a Variable Feature Plot for a specified Seurat object, labels points with

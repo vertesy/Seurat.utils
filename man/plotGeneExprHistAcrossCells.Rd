@@ -31,6 +31,8 @@ plotGeneExprHistAcrossCells(
 
 \item{assay}{Assay to use from the Seurat object; Default: "RNA".}
 
+\item{layerX}{Data slot to use ('data' or 'counts'); Default: "data".}
+
 \item{thr_expr}{Expression threshold for highlighting in the plot; Default: 10.}
 
 \item{suffix}{Additional text to append to the plot title; Default: NULL.}
@@ -39,24 +41,22 @@ plotGeneExprHistAcrossCells(
 
 \item{xlab}{Label for the x-axis; Default: "log10(Summed UMI count @data)".}
 
-\item{return_cells_passing}{If TRUE, returns count of cells exceeding the expression threshold; Default: TRUE.}
+\item{return_cells_passing}{If TRUE, returns count of cells exceeding the expression threshold; Default: \code{TRUE}.}
 
 \item{clip_count_qtl_thr}{Quantile threshold for clipping if using count data; Default: 0.95.
 Needed for visualization (to avoid x axis compression).}
 
-\item{log10_counts}{If TRUE, log10-transforms the COUNT expression values; Default: TRUE.}
+\item{log10_counts}{If TRUE, log10-transforms the COUNT expression values; Default: \code{TRUE}.}
 
-\item{return_quantile}{If TRUE, returns cell count exceeding the quantile threshold; Default: FALSE.}
+\item{return_quantile}{If TRUE, returns cell count exceeding the quantile threshold; Default: \code{FALSE}.}
 
 \item{w}{Width of the plot in inches; Default: 9.}
 
 \item{h}{Height of the plot in inches; Default: 5.}
 
-\item{show_plot}{If TRUE, displays the generated plot; Default: TRUE.}
+\item{show_plot}{If TRUE, displays the generated plot; Default: \code{TRUE}.}
 
 \item{...}{Additional arguments for customization.}
-
-\item{slot_}{Data slot to use ('data' or 'counts'); Default: "data".}
 }
 \value{
 Depending on the parameters, can return a ggplot object, the number of cells passing

@@ -18,13 +18,13 @@ FindCorrelatedGenes(
 \arguments{
 \item{gene}{Gene of interest. Default: 'TOP2A'}
 
-\item{obj}{Seurat object to find the correlated genes from. Default: combined.obj}
+\item{obj}{Seurat object to find the correlated genes from. Default: \code{combined.obj}}
 
 \item{assay}{Assay to be used from the Seurat object. Default: 'RNA'}
 
 \item{slot}{Slot to be used from the specified assay in the Seurat object. Default: 'data'}
 
-\item{HEonly}{Logical, if TRUE, filters matrix to high-expressing genes only. Default: FALSE}
+\item{HEonly}{Logical, if TRUE, filters matrix to high-expressing genes only. Default: \code{FALSE}.}
 
 \item{minExpr}{Minimum expression level for a gene to be considered. Default: 1}
 

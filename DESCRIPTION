@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
-Version: 2.8.0
+Version: 2.8.5
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <av@imba.oeaw.ac.at> [aut, cre]
@@ -14,21 +14,26 @@ BugReports: https://github.com/vertesy/Seurat.utils/issues
 Depends: 
     CodeAndRoll2,
     ggExpress,
-    ggplot2,
     magrittr,
     Seurat,
-    Stringendo
+    Stringendo,
+    tidyverse
 Imports: 
+    checkmate,
     cowplot,
     dplyr,
+    EnhancedVolcano,
     foreach,
+    fs,
+    future,
     ggcorrplot,
+    ggplot2,
     ggpubr,
     ggrepel,
-    grDevices,
+    gplots,
+    harmony,
     HGNChelper,
     htmlwidgets,
-    job,
     MarkdownHelpers,
     MarkdownReports,
     Matrix,
@@ -38,27 +43,24 @@ Imports:
     princurve,
     qs,
     R.utils,
+    RColorBrewer,
     readr,
     ReadWriter,
     reshape2,
     rstudioapi,
     scales,
+    SeuratObject,
     SoupX,
     sparseMatrixStats,
     stringr,
     tibble,
-    tictoc,
-    tidyverse,
-    vroom
+    tictoc
 Suggests: 
+    clusterProfiler,
     DatabaseLinke.R,
-    EnhancedVolcano,
-    fs,
-    gplots,
-    princurve,
-    RColorBrewer,
-    SoupX
+    enrichplot,
+    vroom
 Encoding: UTF-8
-Packaged: 2024-06-21 12:31:42.585143
+Packaged: 2024-10-23 22:59:23.332565
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1

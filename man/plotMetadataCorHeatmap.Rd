@@ -31,13 +31,13 @@ Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo").}
 
 \item{main}{The main title for the plot. Default: "Metadata correlations" followed by the correlation method.}
 
-\item{show_numbers}{Logical, determines if correlation values should be displayed on the plot. Default: FALSE.}
+\item{show_numbers}{Logical, determines if correlation values should be displayed on the plot. Default: \code{FALSE}.}
 
 \item{digits}{The number of decimal places for displayed correlation values. Default: 1.}
 
 \item{suffix}{A suffix added to the output filename. Default: NULL.}
 
-\item{add_PCA}{Logical, determines if PCA values should be included in the correlation calculation. Default: TRUE.}
+\item{add_PCA}{Logical, determines if PCA values should be included in the correlation calculation. Default: \code{TRUE}.}
 
 \item{n_PCs}{The number of PCA components to be included if 'add_PCA' is TRUE. Default: 8.}
 
@@ -45,7 +45,7 @@ Default: c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo").}
 
 \item{h}{The height of the plot in inches. Default: the value of w.}
 
-\item{use_ggcorrplot}{Logical, determines if the ggcorrplot package should be used for plotting. Default: FALSE.}
+\item{use_ggcorrplot}{Logical, determines if the ggcorrplot package should be used for plotting. Default: \code{FALSE}.}
 
 \item{n_cutree}{The number of clusters to be used in hierarchical clustering. Default: the number of PCs.}
 

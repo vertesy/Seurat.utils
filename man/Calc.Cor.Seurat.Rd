@@ -19,15 +19,15 @@ Calc.Cor.Seurat(
 
 \item{slot.use}{The slot to use from the assay in the Seurat object. Default: 'data'}
 
-\item{quantileX}{The quantile level for the calculation. Default: 0.95}
+\item{quantileX}{The quantile level for the calculation. Default: \code{0.95}}
 
-\item{max.cells}{Maximum number of cells to be used in the calculation. Default: 40000}
+\item{max.cells}{Maximum number of cells to be used in the calculation. Default: \code{40000}}
 
-\item{seed}{The random seed used for the calculation. Default: p$seed}
+\item{seed}{The random seed used for the calculation. Default: \code{p$seed}}
 
-\item{digits}{The number of decimal places to round the correlation and covariance values. Default: 2}
+\item{digits}{The number of decimal places to round the correlation and covariance values. Default: \code{2}}
 
-\item{obj}{The Seurat object to perform calculations on. Default: combined.obj}
+\item{obj}{The Seurat object to perform calculations on. Default: \code{combined.obj}}
 }
 \description{
 Calculate gene correlation on a Seurat object.

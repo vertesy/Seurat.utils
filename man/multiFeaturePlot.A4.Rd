@@ -38,12 +38,12 @@ multiFeaturePlot.A4(
 
 \item{obj}{Seurat object, Default: combined.obj}
 
-\item{subdir}{Should plots be saved in a sub-directory? Default: TRUE}
+\item{subdir}{Should plots be saved in a sub-directory? Default: \code{TRUE}.}
 
 \item{foldername}{Folder name to save the generated plots. Default: The name of the list of genes.}
 
 \item{subtitle.from.names}{Should the subtitle be extracted from the names of the gene symbols,
-eg: \code{c("Astrocytes" = "AQP4")} ? Default: TRUE}
+eg: \code{c("Astrocytes" = "AQP4")} ? Default: \code{TRUE}.}
 
 \item{plot.reduction}{Dimension reduction technique to use for plots. Default: 'umap'}
 
@@ -71,7 +71,7 @@ eg: \code{c("Astrocytes" = "AQP4")} ? Default: TRUE}
 
 \item{aspect.ratio}{Should the aspect ratio be fixed? Default: Yes, at 0.6}
 
-\item{saveGeneList}{Should the list of genes be saved? Default: FALSE}
+\item{saveGeneList}{Should the list of genes be saved? Default: \code{FALSE}.}
 
 \item{w}{Width of the plot. Default: 8.27}
 

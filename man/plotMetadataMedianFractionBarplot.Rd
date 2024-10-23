@@ -33,13 +33,13 @@ plotMetadataMedianFractionBarplot(
 
 \item{min.thr}{Minimum threshold percentage for a cluster. Default: 2.5.}
 
-\item{return.matrix}{Logical; if TRUE, returns a matrix. Default: FALSE.}
+\item{return.matrix}{Logical; if TRUE, returns a matrix. Default: \code{FALSE}.}
 
 \item{main}{Main title for the plot. Default: "read fractions per transcript class and cluster" followed by the method and suffix.}
 
 \item{ylab}{Label for the y-axis. Default: "Fraction of transcriptome (\%)".}
 
-\item{percentify}{Logical. If TRUE, multiplies the fraction by 100. Default: TRUE.}
+\item{percentify}{Logical. If TRUE, multiplies the fraction by 100. Default: \code{TRUE}.}
 
 \item{subt}{Subtitle for the plot. Default: NULL.}
 

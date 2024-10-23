@@ -21,25 +21,25 @@ regress_out_and_recalculate_seurat(
 \arguments{
 \item{obj}{The Seurat object.}
 
-\item{n.var.features}{The number of variable features to use. Default is the 'n.var.genes' element from a list 'p'.}
+\item{n.var.features}{The number of variable features to use. Default: the 'n.var.genes' element from a list 'p'.}
 
-\item{features.scale}{A logical value indicating whether to scale the data. Default is TRUE.}
+\item{features.scale}{A logical value indicating whether to scale the data. Default: \code{TRUE}.}
 
 \item{vars.to.regress}{A vector of variable names to be regressed out.}
 
 \item{suffix}{A character string to be used as a suffix when saving the object.}
 
-\item{nPCs}{The number of principal components to use. Default is the 'n.PC' element from a list 'p'.}
+\item{nPCs}{The number of principal components to use. Default: the 'n.PC' element from a list 'p'.}
 
-\item{clust_resolutions}{The resolution for clustering. Default is the 'snn_res' element from a list 'p'.}
+\item{clust_resolutions}{The resolution for clustering. Default: the 'snn_res' element from a list 'p'.}
 
-\item{calc_tSNE}{Logical, if TRUE, t-SNE will be performed. Default is FALSE.}
+\item{calc_tSNE}{Logical, if TRUE, t-SNE will be performed. Default: \code{FALSE}.}
 
-\item{plot_umaps}{Logical, if TRUE, UMAP plots will be generated. Default is TRUE.}
+\item{plot_umaps}{Logical, if TRUE, UMAP plots will be generated. Default: \code{TRUE}.}
 
-\item{save_obj}{Logical, if TRUE, the object will be saved. Default is TRUE.}
+\item{save_obj}{Logical, if TRUE, the object will be saved. Default: \code{TRUE}.}
 
-\item{assayX}{The assay to be used in scaling data. Default is 'RNA'.}
+\item{assayX}{The assay to be used in scaling data. Default: 'RNA'.}
 }
 \value{
 Seurat object after calculations and manipulations.

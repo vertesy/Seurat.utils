@@ -19,11 +19,11 @@ If NULL, the active identity in \code{obj} is used. Default: NULL.}
 Default: \code{combined.obj}.}
 
 \item{plot.colors}{If TRUE, visually displays the color scheme.
-Default: FALSE.}
+Default: \code{FALSE}.}
 
 \item{simple}{If TRUE, returns only the unique set of colors used.
 If FALSE, returns a named vector mapping cluster identities to colors.
-Default: FALSE.}
+Default: \code{FALSE}.}
 }
 \description{
 Extracts and optionally displays the color scheme assigned to cluster identities

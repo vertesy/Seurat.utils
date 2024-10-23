@@ -21,7 +21,7 @@ SelectHighlyExpressedGenesq99(
 expressed. Default: 0.}
 
 \item{sort}{A logical flag indicating whether to sort the filtered genes by their expression
-levels in decreasing order. Default: FALSE.}
+levels in decreasing order. Default: \code{FALSE}.}
 }
 \value{
 A vector of gene names that are found both in the input 'genes' vector and the Seurat

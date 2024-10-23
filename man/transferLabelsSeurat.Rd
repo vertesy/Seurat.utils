@@ -25,27 +25,41 @@ transferLabelsSeurat(
 \arguments{
 \item{query_obj}{A Seurat object for which the labels are to be transferred.}
 
-\item{reference_obj}{Alternative to \code{reference_path}. If provided, the path is not used to load the reference data.}
+\item{reference_obj}{Alternative to \code{reference_path}. If provided, the path is not used to load
+the reference data.}
 
-\item{reference_path}{A character string indicating the file path to the reference Seurat object. The path must exist.}
+\item{reference_path}{A character string indicating the file path to the reference Seurat object.
+The path must exist.}
 
-\item{new_ident}{A character string specifying the name of the new identity class to be created in the query Seurat object. Default is obtained by replacing 'ordered' with 'transferred' in named_ident.}
+\item{reference_ident}{A character string specifying the name of the identity class to be used
+from the reference Seurat object. Default is 'RNA_snn_res.0.3.ordered.ManualNames'.}
 
-\item{predictions_col}{A character string specifying the column in the metadata of the transferred Seurat object containing the transferred labels. Default is 'predicted.id'.}
+\item{anchors}{A list of anchors obtained from the FindTransferAnchors function. If NULL, the}
 
-\item{save_anchors}{save anchors as RDS file.}
+\item{new_ident}{A character string specifying the name of the new identity class to be
+created in the query Seurat object. Default is obtained by replacing 'ordered' with
+'transferred' in reference_ident.}
 
-\item{plot_suffix}{A string to added to the UMAP with the new identity.}
+\item{predictions_col}{A character string specifying the column in the metadata of the transferred
+Seurat object containing the transferred labels. Default is 'predicted.id'.}
 
-\item{w}{Width for the saved image. Default: 9}
+\item{predictions_score}{A character string specifying the column in the metadata of the transferred
+Seurat object containing the scores of the transferred labels. Default is 'transferred.score'.}
 
-\item{h}{Height for the saved image. Default: 12}
+\item{save_anchors}{A logical indicating whether to save the anchors as an RDS file. Default is TRUE.}
 
-\item{...}{Additional arguments passed to the Seurat.utils::clUMAP function.}
+\item{reference_suffix}{A character string to be used as in the subtitle of the reference UMAP plot.
+Default is 'REFERENCE.obj'.}
 
-\item{named_ident}{A character string specifying the name of the identity class to be used from the reference Seurat object. Default is 'RNA_snn_res.0.3.ordered.ManualNames'.}
+\item{plot_suffix}{A character string to be added to the UMAP with the new identity. Default is NULL.}
 
-\item{suffix}{A character string to be used as a suffix in the visualization. Default is 'NEW'.}
+\item{plot_reference}{A logical indicating whether to plot the reference UMAP. Default is TRUE.}
+
+\item{w}{Width for the saved image. Default: \code{9}}
+
+\item{h}{Height for the saved image. Default: \code{12}}
+
+\item{...}{Additional arguments passed to the \code{Seurat.utils::clUMAP} function.}
 }
 \value{
 The modified query Seurat object with the transferred labels as a new identity class.
@@ -56,7 +70,7 @@ using anchoring and transfer data methods from the Seurat package. It then visua
 reference and the combined objects using Uniform Manifold Approximation and Projection (UMAP).
 }
 \examples{
-# combined.objX <- transferLabelsSeurat(named_ident = 'RNA_snn_res.0.3.ordered.ManualNames',
+# combined.objX <- transferLabelsSeurat(reference_ident = 'RNA_snn_res.0.3.ordered.ManualNames',
 #                                     reference_obj = reference_obj,
 #                                     query_obj = combined.obj)
 

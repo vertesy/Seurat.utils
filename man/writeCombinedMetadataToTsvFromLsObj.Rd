@@ -17,6 +17,12 @@ writeCombinedMetadataToTsvFromLsObj(
 
 \item{cols.remove}{A character vector of column names to be removed from each metadata data frame.
 Default is an empty character vector, meaning no columns will be removed.}
+
+\item{save_as_qs}{A logical indicating whether to save the merged metadata as a .qs object.}
+
+\item{save_as_tsv}{A logical indicating whether to save the merged metadata as a .tsv file.}
+
+\item{...}{Additional arguments to be passed to \code{write.table}.}
 }
 \value{
 A large data frame that is the row-wise merge of all \verb{@meta.data} data frames.

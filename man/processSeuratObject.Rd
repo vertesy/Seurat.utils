@@ -25,13 +25,13 @@ processSeuratObject(
 
 \item{param.list}{A list of parameters used in the processing steps.}
 
-\item{add.meta.fractions}{A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: FALSE.}
+\item{add.meta.fractions}{A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: \code{FALSE}.}
 
-\item{compute}{A boolean indicating whether to compute the results. Default: TRUE.}
+\item{compute}{A boolean indicating whether to compute the results. Default: \code{TRUE}.}
 
-\item{save}{A boolean indicating whether to save the results. Default: TRUE.}
+\item{save}{A boolean indicating whether to save the results. Default: \code{TRUE}.}
 
-\item{plot}{A boolean indicating whether to plot the results. Default: TRUE.}
+\item{plot}{A boolean indicating whether to plot the results. Default: \code{TRUE}.}
 
 \item{nfeatures}{The number of variable genes to use. Default: 2000.}
 
@@ -44,6 +44,8 @@ processSeuratObject(
 \item{reduction_input}{The reduction method to use as input for clustering & UMAP. Default: "pca".}
 
 \item{WorkingDir}{The working directory to save the results. Default: getwd().}
+
+\item{...}{Additional parameters to be passed to \code{ScaleData()}.}
 }
 \value{
 A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and clustering.

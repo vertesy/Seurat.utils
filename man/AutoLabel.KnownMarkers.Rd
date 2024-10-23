@@ -19,22 +19,22 @@ AutoLabel.KnownMarkers(
 )
 }
 \arguments{
-\item{obj}{A Seurat object to work with. Default: combined.obj.}
+\item{obj}{A Seurat object to work with. Default: \code{combined.obj}.}
 
 \item{topN}{The top 'N' genes to consider. Default: 1.}
 
 \item{res}{The clustering resolution to use. Default: 0.5.}
 
 \item{KnownMarkers}{A character vector containing known marker genes to be used for annotation.
-Default: c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1", "SALL4", "DDIT4",
-"PDK1", "SATB2", "FEZF2").}
+Default: \verb{c("TOP2A", "EOMES", "SLA", "HOPX", "S100B", "DLX6-AS1", "POU5F1", "SALL4", "DDIT4",}
+\verb{"PDK1", "SATB2", "FEZF2")}.}
 
 \item{order.by}{Specifies the column to sort the output tibble by.
 Default: 'combined.score' (First among "combined.score", "avg_log2FC", "p_val_adj").}
 
 \item{df_markers}{The data frame of markers. By default, it is stored under
 \verb{@misc$df.markers$res...} in the provided Seurat object.
-Default: combined.obj@misc$df.markers[\link{paste0("res.", res)}].}
+Default: \code{combined.obj@misc$df.markers[[paste0("res.", res)]]}.}
 }
 \description{
 Creates a new "named identity" column in the metadata of a Seurat object,

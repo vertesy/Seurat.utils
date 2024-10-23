@@ -7,9 +7,12 @@
 removeLayersByPattern(obj, pattern = "sc[0-9][0-9]_", perl = TRUE)
 }
 \arguments{
+\item{obj}{A Seurat object.}
+
 \item{pattern}{A regular expression pattern to match layer names.}
 
-\item{seuratObj}{A Seurat object.}
+\item{perl}{A logical value indicating whether to use Perl-compatible regular expressions.
+Default: \code{TRUE}.}
 }
 \value{
 A Seurat object with specified layers removed.

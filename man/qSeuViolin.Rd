@@ -7,7 +7,7 @@
 qSeuViolin(
   obj,
   feature = "nFeature_RNA",
-  ident = GetNamedClusteringRuns(obj = obj, v = F)[1],
+  ident = GetNamedClusteringRuns(obj = obj, v = FALSE)[1],
   split.by = NULL,
   colors = NULL,
   clip.outliers = TRUE,
@@ -42,11 +42,13 @@ qSeuViolin(
 
 \item{colors}{A character vector specifying the colors to use for the plot.}
 
+\item{clip.outliers}{A logical indicating whether to clip outliers.}
+
 \item{replace.na}{A logical indicating whether NA values should be replaced.}
 
 \item{pt.size}{The size of the individual datapoints in the plot. Set to 0 to get a clean violin plot.}
 
-\item{sub}{Subtitle of the plot. Default is feature by ident.}
+\item{sub}{Subtitle of the plot. Default: feature by ident.}
 
 \item{suffix}{An optional string to append to the title of the plot.}
 
@@ -58,7 +60,7 @@ qSeuViolin(
 
 \item{hline}{A numeric or logical value; if numeric, the value where a horizontal line should be drawn.}
 
-\item{ylab}{Y-axis label. Default is "Expression".}
+\item{ylab}{Y-axis label. Default: "Expression".}
 
 \item{ylimit}{A numeric vector specifying the limits of the y-axis.}
 
@@ -69,6 +71,8 @@ qSeuViolin(
 \item{legend.title}{Title of legend; Default: 'split.by'.}
 
 \item{show_plot}{A logical indicating whether to display the plot.}
+
+\item{grid}{A logical indicating whether to display grid lines.}
 
 \item{w}{Width of the plot.}
 

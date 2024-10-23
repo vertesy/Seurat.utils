@@ -36,11 +36,13 @@ scGOEnrichment(
 
 \item{qvalueCutoff}{Numeric. Q-value cutoff for significance. Default: 0.2.}
 
-\item{save}{Logical. Save the results as a data frame. Default: TRUE.}
+\item{save}{Logical. Save the results as a data frame. Default: \code{TRUE}.}
 
 \item{suffix}{Character. Suffix to append to the output file name. Default: 'GO.Enrichments'.}
 
-\item{check.gene.symbols}{Logical. Check gene symbols for validity. Default: TRUE.}
+\item{check.gene.symbols}{Logical. Check gene symbols for validity. Default: \code{TRUE}.}
+
+\item{...}{Additional arguments to pass to \code{clusterProfiler::enrichGO}.}
 }
 \value{
 A data frame with GO enrichment results.

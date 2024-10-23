@@ -23,12 +23,12 @@ Default: 'umap'.}
 \item{dim}{Dimension along which to order clusters (1 for the first dimension, typically horizontal);
 Default: 1.}
 
-\item{swap}{If TRUE, reverses the ordering direction; Default: FALSE.}
+\item{swap}{If TRUE, reverses the ordering direction; Default: \code{FALSE}.}
 
 \item{ident}{Clustering resolution identifier used to fetch cluster labels from \code{obj} metadata;
 Default: 'integrated_snn_res.0.5'.}
 
-\item{plot}{If TRUE, plots the UMAP with new cluster names; Default: TRUE.}
+\item{plot}{If TRUE, plots the UMAP with new cluster names; Default: \code{TRUE}.}
 }
 \description{
 Automatically renumbers clusters based on their position along a specified dimension

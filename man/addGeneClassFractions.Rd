@@ -18,7 +18,7 @@ addGeneClassFractions(
 \item{gene_fractions}{A named list containing gene symbol patterns for each meta column name.
 Default: List of predefined gene fractions.}
 
-\item{add_hga}{A logical value indicating whether to add percent.HGA meta data. Default: TRUE.}
+\item{add_hga}{A logical value indicating whether to add percent.HGA meta data. Default: \code{TRUE}.}
 }
 \value{
 An updated Seurat object.

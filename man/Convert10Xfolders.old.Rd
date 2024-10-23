@@ -16,15 +16,15 @@ Convert10Xfolders.old(
 \arguments{
 \item{InputDir}{A character string specifying the input directory.}
 
-\item{folderPattern}{A character vector specifying the pattern of folder names to be searched. Default is 'filtered'.}
+\item{folderPattern}{A character vector specifying the pattern of folder names to be searched. Default: 'filtered'.}
 
-\item{min.cells}{An integer value specifying the minimum number of cells. Default is 10.}
+\item{min.cells}{An integer value specifying the minimum number of cells. Default: 10.}
 
-\item{min.features}{An integer value specifying the minimum number of features. Default is 200.}
+\item{min.features}{An integer value specifying the minimum number of features. Default: 200.}
 
-\item{updateHGNC}{A logical value indicating whether to update the HGNC. Default is TRUE.}
+\item{updateHGNC}{A logical value indicating whether to update the HGNC. Default: \code{TRUE}.}
 
-\item{ShowStats}{A logical value indicating whether to show statistics. Default is TRUE.}
+\item{ShowStats}{A logical value indicating whether to show statistics. Default: \code{TRUE}.}
 }
 \description{
 This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.

@@ -9,7 +9,10 @@ qsave.image(..., showMemObject = TRUE, options = c("--force", NULL)[1])
 \arguments{
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 
-\item{options}{Options passed on to gzip, via CLI. Default: c("--force", NULL)\link{1}}
+\item{showMemObject}{Logical; if TRUE, the function will print out the memory size of the largest
+objects in the workspace. Default: \code{TRUE}.}
+
+\item{options}{Options passed on to gzip, via CLI. Default: \code{c("--force", NULL)[1]}}
 }
 \description{
 Faster saving of workspace, and compression outside R, when it can run in the background.

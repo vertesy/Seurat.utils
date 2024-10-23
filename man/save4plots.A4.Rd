@@ -19,7 +19,7 @@ save4plots.A4(
 \arguments{
 \item{plot_list}{A list containing ggplot objects to be arranged and saved; each object represents one panel.}
 
-\item{pname}{Plot name; if FALSE, a name is generated automatically based on \code{plot_list} and \code{suffix}; Default: FALSE.}
+\item{pname}{Plot name; if FALSE, a name is generated automatically based on \code{plot_list} and \code{suffix}; Default: \code{FALSE}.}
 
 \item{suffix}{Suffix to be added to the filename; Default: NULL.}
 

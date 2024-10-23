@@ -20,7 +20,7 @@ save2plots.A4(
 \item{plot_list}{A list containing ggplot objects to be arranged and saved.}
 
 \item{pname}{Boolean indicating if the plot name should be automatically generated;
-if FALSE, the name is based on \code{plot_list} and \code{suffix}; Default: FALSE.}
+if FALSE, the name is based on \code{plot_list} and \code{suffix}; Default: \code{FALSE}.}
 
 \item{suffix}{Suffix to be added to the generated filename if \code{pname} is FALSE; Default: NULL.}
 

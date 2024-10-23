@@ -12,7 +12,7 @@ plotClustSizeDistr(obj = combined.obj, ident, plot = TRUE, thr.hist = 30, ...)
 \item{ident}{Clustering identity to base the plot on.
 Default: The second entry from \code{GetClusteringRuns()}.}
 
-\item{plot}{Whether to display the plot (TRUE) or return cluster sizes (FALSE). Default: TRUE.}
+\item{plot}{Whether to display the plot (TRUE) or return cluster sizes (FALSE). Default: \code{TRUE}.}
 
 \item{thr.hist}{Threshold for switching from a bar plot to a histogram based on the number of
 clusters. Default: 30.}

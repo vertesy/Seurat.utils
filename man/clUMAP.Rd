@@ -76,9 +76,9 @@ clUMAP(
 
 \item{cells.highlight}{Specific cells to be highlighted; optional; Default: NULL.}
 
-\item{label}{Show cluster labels; Default: TRUE.}
+\item{label}{Show cluster labels; Default: \code{TRUE}.}
 
-\item{repel}{Repel labels to avoid overlap; Default: TRUE.}
+\item{repel}{Repel labels to avoid overlap; Default: \code{TRUE}.}
 
 \item{legend}{Show legend; Default: opposite of \code{label}.}
 
@@ -86,15 +86,15 @@ clUMAP(
 
 \item{MaxCategThrHP}{Maximum number of categories before simplification; Default: 200.}
 
-\item{axes}{Show axes; Default: FALSE.}
+\item{axes}{Show axes; Default: \code{FALSE}.}
 
-\item{aspect.ratio}{Fixed aspect ratio for the plot; Default: TRUE.}
+\item{aspect.ratio}{Fixed aspect ratio for the plot; Default: \code{TRUE}.}
 
-\item{save.plot}{Save plot to file; Default: TRUE.}
+\item{save.plot}{Save plot to file; Default: \code{TRUE}.}
 
-\item{PNG}{Save as PNG (TRUE) or PDF (FALSE); Default: TRUE.}
+\item{PNG}{Save as PNG (TRUE) or PDF (FALSE); Default: \code{TRUE}.}
 
-\item{check_for_2D}{Ensure UMAP is 2D; Default: TRUE.}
+\item{check_for_2D}{Ensure UMAP is 2D; Default: \code{TRUE}.}
 
 \item{...}{Additional parameters for \code{DimPlot}.}
 }

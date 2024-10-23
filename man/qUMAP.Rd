@@ -47,9 +47,9 @@ qUMAP(
 
 \item{suffix}{Suffix added to the end of the filename; Default: \code{sub}.}
 
-\item{save.plot}{If TRUE, the plot is saved into a file; Default: TRUE.}
+\item{save.plot}{If TRUE, the plot is saved into a file; Default: \code{TRUE}.}
 
-\item{PNG}{If TRUE, the file is saved as a .png; Default: TRUE.}
+\item{PNG}{If TRUE, the file is saved as a .png; Default: \code{TRUE}.}
 
 \item{h}{Height of the plot in inches; Default: 7.}
 
@@ -59,15 +59,15 @@ qUMAP(
 
 \item{assay}{Which assay to use ('RNA' or 'integrated'); Default: 'RNA'.}
 
-\item{axes}{If TRUE, axes are shown on the plot; Default: FALSE.}
+\item{axes}{If TRUE, axes are shown on the plot; Default: \code{FALSE}.}
 
-\item{aspect.ratio}{Ratio of height to width. If TRUE, the ratio is fixed at 0.6; Default: FALSE.}
+\item{aspect.ratio}{Ratio of height to width. If TRUE, the ratio is fixed at 0.6; Default: \code{FALSE}.}
 
-\item{HGNC.lookup}{If TRUE, HGNC gene symbol lookup is performed; Default: TRUE.}
+\item{HGNC.lookup}{If TRUE, HGNC gene symbol lookup is performed; Default: \code{TRUE}.}
 
-\item{make.uppercase}{If TRUE, feature names are converted to uppercase; Default: FALSE.}
+\item{make.uppercase}{If TRUE, feature names are converted to uppercase; Default: \code{FALSE}.}
 
-\item{check_for_2D}{If TRUE, checks if UMAP is 2 dimensional; Default: TRUE.}
+\item{check_for_2D}{If TRUE, checks if UMAP is 2 dimensional; Default: \code{TRUE}.}
 
 \item{qlow}{Lower quantile for the color scale; Default: 'q10'.}
 

@@ -23,7 +23,7 @@ AutoLabelTop.logFC(
 \item{group.by}{The clustering group to be used, defaults to the first entry by
 \code{GetClusteringRuns()}.}
 
-\item{res}{Clustering resolution tag. Default is extracted from \code{group.by}.}
+\item{res}{Clustering resolution tag. Default: extracted from \code{group.by}.}
 
 \item{plot.top.genes}{Logical indicating whether to show a plot, default is \code{TRUE}.}
 

@@ -8,6 +8,12 @@ showToolsSlots(obj, max.level = 1, subslot = NULL, ...)
 }
 \arguments{
 \item{obj}{An object whose \verb{@tools} slot needs to be examined.}
+
+\item{max.level}{The maximum level of nesting to print.}
+
+\item{subslot}{The name of a sub-slot within the \verb{@tools} slot to examine.}
+
+\item{...}{Additional arguments to be passed to \code{str}.}
 }
 \description{
 \code{showToolsSlots} prints the names of slots in the \verb{@tools} of a given object.

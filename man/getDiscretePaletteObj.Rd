@@ -20,7 +20,7 @@ getDiscretePaletteObj(
 \item{palette.used}{The palette name to use for color generation. Options include "alphabet",
 "alphabet2", "glasbey", "polychrome", and "stepped". Default: "alphabet2".}
 
-\item{show.colors}{If TRUE, displays the generated colors. Default: FALSE.}
+\item{show.colors}{If TRUE, displays the generated colors. Default: \code{FALSE}.}
 
 \item{seed}{Seed for random color generation, ensuring reproducibility. Default: 1989.}
 }

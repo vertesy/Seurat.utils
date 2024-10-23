@@ -25,25 +25,25 @@ Convert10Xfolders_v1(
 \arguments{
 \item{InputDir}{A character string specifying the input directory.}
 
-\item{regex}{A logical value. If TRUE, the folderPattern is treated as a regular expression. Default is FALSE.}
+\item{regex}{A logical value. If TRUE, the folderPattern is treated as a regular expression. Default: \code{FALSE}.}
 
-\item{folderPattern}{A character vector specifying the pattern of folder names to be searched. Default is 'filtered_feature'.}
+\item{folderPattern}{A character vector specifying the pattern of folder names to be searched. Default: 'filtered_feature'.}
 
-\item{depth}{An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default is 2.}
+\item{depth}{An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default: 2.}
 
-\item{min.cells}{An integer value specifying the minimum number of cells. Default is 5.}
+\item{min.cells}{An integer value specifying the minimum number of cells. Default: 5.}
 
-\item{min.features}{An integer value specifying the minimum number of features. Default is 200.}
+\item{min.features}{An integer value specifying the minimum number of features. Default: 200.}
 
-\item{updateHGNC}{A logical value indicating whether to update the HGNC. Default is TRUE.}
+\item{updateHGNC}{A logical value indicating whether to update the HGNC. Default: \code{TRUE}.}
 
-\item{ShowStats}{A logical value indicating whether to show statistics. Default is TRUE.}
+\item{ShowStats}{A logical value indicating whether to show statistics. Default: \code{TRUE}.}
 
-\item{writeCBCtable}{A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default is TRUE.}
+\item{writeCBCtable}{A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: \code{TRUE}.}
 
-\item{sample.barcoding}{A logical value indicating whether Cell Ranger was run with sample barcoding. Default is FALSE.}
+\item{sample.barcoding}{A logical value indicating whether Cell Ranger was run with sample barcoding. Default: \code{FALSE}.}
 
-\item{sort_alphanumeric}{sort files alphanumeric? Default: TRUE.}
+\item{sort_alphanumeric}{sort files alphanumeric? Default: \code{TRUE}.}
 }
 \description{
 This function takes a parent directory with a number of subfolders, each

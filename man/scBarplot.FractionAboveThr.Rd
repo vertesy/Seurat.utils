@@ -29,13 +29,13 @@ scBarplot.FractionAboveThr(
 
 \item{subtitle}{Optional subtitle for the plot.}
 
-\item{return.df}{Whether to return the underlying data frame instead of the plot. Default: FALSE.}
+\item{return.df}{Whether to return the underlying data frame instead of the plot. Default: \code{FALSE}.}
 
 \item{label}{Whether to add labels to the bar plot. Default: NULL.}
 
 \item{suffix}{Suffix for the output file name.}
 
-\item{above}{Whether to calculate the fraction of cells above or below the threshold. Default: TRUE.}
+\item{above}{Whether to calculate the fraction of cells above or below the threshold. Default: \code{TRUE}.}
 
 \item{...}{Additional parameters for plotting functions.}
 }

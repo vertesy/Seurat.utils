@@ -40,18 +40,16 @@ addTranslatedMetadata <- function(obj = combined.obj,
                                   ...) {
   # Input assertions
   stopifnot(is(obj, "Seurat"),
-    is.character(orig.ident) && length(orig.ident) == 1,
-    is.character(suffix) | is.null(suffix),
-    "Not a named vec was provided!" = !is.null(names(translation_as_named_vec))
+            is.character(orig.ident) && length(orig.ident) == 1,
+            is.character(suffix) |  is.null(suffix),
+            "Not a named vec was provided!" = !is.null(names(translation_as_named_vec))
   )
   message("new_col_name: ", new_col_name)
 
   # Translate metadata
-  obj@meta.data[[new_col_name]] <- CodeAndRoll2::translate(
-    vec = as.character(obj@meta.data[[orig.ident]]),
-    old = names(translation_as_named_vec),
-    new = translation_as_named_vec
-  )
+  obj@meta.data[[new_col_name]] <- CodeAndRoll2::translate(vec = as.character(obj@meta.data[[orig.ident]]),
+                                   old = names(translation_as_named_vec),
+                                   new = translation_as_named_vec)
 
   # message("new_col_name: ", new_col_name)
   # clUMAP(ident = new_col_name, obj = obj, caption = NULL, ...)
@@ -246,7 +244,7 @@ calculateAverageMetaData <- function(
 #' Default: c("AAV.detected.min2", "AAV.detected").
 #' @param match.values A named vector where names correspond to `meta.features` and values are
 #' the strings to match against. Default: c("AAV.detected.min2" = "AAV", "AAV.detected" = "AAV").
-#' @param verbose A logical value indicating whether to print detailed output. Default: `TRUE`.
+#' @param verbose A logical value indicating whether to print detailed output. Default: `TRUE`..
 #' @param max.categ The maximum number of categories allowed before stopping. Default: 30.
 #'
 #' @return A data frame with the category as the first column and the subsequent columns showing
@@ -329,9 +327,9 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
 #'
 #' @description Retrieves cell IDs from a specified metadata column of a Seurat object, where the cell ID matches a provided list of values. The matching operation uses the `%in%` operator.
 #' @param ident A string specifying the name of the metadata column from which to retrieve cell IDs. Default: 'res.0.6'.
-#' @param ident_values A vector of values to match in the metadata column. Default: `NA`.
+#' @param ident_values A vector of values to match in the metadata column. Default: `NA`..
 #' @param obj The Seurat object from which to retrieve the cell IDs. Default: combined.obj.
-#' @param inverse A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of ident_values. Default: `FALSE`.
+#' @param inverse A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of ident_values. Default: `FALSE`..
 #' @return A vector of cell IDs that match (or don't match, if `inverse = TRUE`) the provided list of values.
 #' @examples
 #' \dontrun{
@@ -373,8 +371,9 @@ getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],
 #' @return Modified Seurat object with additional metadata.
 #' @importFrom Seurat AddMetaData
 #' @export
-addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose = FALSE,
+addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose = F,
                             strict = TRUE) {
+
   if (verbose) message("Running addMetaDataSafe...")
   # browser()
   stopifnot(
@@ -382,14 +381,14 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
     "Column already exists" = ((!col.name %in% colnames(obj@meta.data)) | overwrite)
   )
   equal_length <- length(metadata) == ncol(obj)
-  iprint("strict", strict)
-  if (strict) stopifnot("Metadata or object too short" = equal_length)
+  iprint('strict', strict)
+  if(strict) stopifnot("Metadata or object too short" = equal_length)
 
 
   if (!is.null(names(metadata))) {
-    if (verbose) print(head(names(metadata)))
-    if (verbose) print(head(colnames(obj)))
-    if (strict) stopifnot(names(metadata) == colnames(obj))
+    if(verbose) print(head(names(metadata)))
+    if(verbose) print(head(colnames(obj)))
+    if(strict) stopifnot(names(metadata) == colnames(obj))
   } else {
     message("No CBCs associated with new metadata. Assuming exact match.")
     if (!equal_length) stop("Not equal lenght, no CBCs")
@@ -434,17 +433,17 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
 #' @export
 create.metadata.vector <- function(vec, obj = combined.obj, fill = NA,
                                    min.intersect = min(length(vec), ncol(obj), 100)) {
-  stopifnot(is.vector(vec), is(obj, "Seurat"))
+
+  stopifnot(is.vector(vec), is(obj, "Seurat") )
   cells_in_obj <- colnames(obj)
   cells_in_vec <- names(vec)
   stopifnot(is.character(cells_in_obj), is.character(cells_in_vec))
 
   cells_in_both <- length(intersect(cells_in_vec, cells_in_obj))
-  if (cells_in_both < min.intersect) {
-    message(
-      ncol(obj), " cells in obj: ", kppc(cells_in_obj[1:3]), "\n",
-      length(vec), " cells in vec: ", kppc(cells_in_vec[1:3]), "\n",
-      cells_in_both, " cells in both.\n"
+  if(cells_in_both < min.intersect) {
+    message(ncol(obj), " cells in obj: ", kppc(cells_in_obj[1:3]) ,"\n",
+            length(vec), " cells in vec: ", kppc(cells_in_vec[1:3]) ,"\n",
+            cells_in_both, " cells in both.\n"
     )
     stop("Intersection between vec and obj is less than min.intersect.")
   }
@@ -550,7 +549,7 @@ addMetaFraction <- function(
 #' @param obj A Seurat object to be updated. Default: None.
 #' @param gene_fractions A named list containing gene symbol patterns for each meta column name.
 #'                       Default: List of predefined gene fractions.
-#' @param add_hga A logical value indicating whether to add percent.HGA meta data. Default: `TRUE`.
+#' @param add_hga A logical value indicating whether to add percent.HGA meta data. Default: `TRUE`..
 #'
 #' @return An updated Seurat object.
 #' @export
@@ -558,25 +557,23 @@ addMetaFraction <- function(
 #' @importFrom SeuratObject UpdateSeuratObject
 #'
 addGeneClassFractions <- function(obj,
-                                  gene_fractions = list(
-                                    "percent.mito" = "^MT\\.|^MT-",
-                                    "percent.ribo" = "^RPL|^RPS",
-                                    "percent.AC.GenBank" = "^AC[0-9]{6}\\.",
-                                    "percent.AL.EMBL" = "^AL[0-9]{6}\\.",
-                                    "percent.LINC" = "^LINC0",
-                                    "percent.MALAT1" = "^MALAT1"
-                                  ),
-                                  add_hga = TRUE) {
+                                     gene_fractions = list(
+                                       "percent.mito" = "^MT\\.|^MT-",
+                                       "percent.ribo" = "^RPL|^RPS",
+                                       "percent.AC.GenBank" = "^AC[0-9]{6}\\.",
+                                       "percent.AL.EMBL" = "^AL[0-9]{6}\\.",
+                                       "percent.LINC" = "^LINC0",
+                                       "percent.MALAT1" = "^MALAT1"
+                                     ),
+                                     add_hga = TRUE) {
   message("Adding meta data for gene-class fractions, e.g., percent.mito, etc.")
 
   for (col_name in names(gene_fractions)) {
     if (!metaColnameExists(col_name = col_name, obj = obj)) {
       gene_data <- gene_fractions[[col_name]]
       message("Adding ", col_name, "to  @meta.data...", gene_data)
-      obj <- addMetaFraction(
-        col.name = col_name, gene.symbol.pattern = gene_data, obj = obj,
-        assay = "RNA"
-      )
+      obj <- addMetaFraction(col.name = col_name, gene.symbol.pattern = gene_data, obj = obj,
+                             assay = "RNA")
     } else {
       message(paste(col_name, "already present."))
     }
@@ -880,29 +877,30 @@ transferMetadata <- function(from, to,
     )
   }
 
-  if (strict) {
-    stopifnot("There are cells ONLY present in the destination object. Cannot transfer metadata." = (nr.cells.only.to == 0))
+  if(strict) {
+    stopifnot("There are cells ONLY present in the destination object. Cannot transfer metadata." = (nr.cells.only.to == 0)  )
   } else {
     warning("There are cells ONLY present in the destination object. Filled with NA", immediate. = TRUE)
   }
 
-  if (nr.cells.only.from > 0 & verbose) warning("There are cells ONLY present in the FROM object. These will be ignored.", immediate. = TRUE)
+  if(nr.cells.only.from > 0 & verbose) warning("There are cells ONLY present in the FROM object. These will be ignored.", immediate. = TRUE)
 
 
   # Transfer metadata columns _______________________________________________________
   for (i in seq_along(colname_from)) {
+
     # Check if to-column exists in destination object OR you overwrite anyway
     if (!(colname_to[i] %in% colnames(to@meta.data)) || overwrite) {
+
       # Check if column exists in source object
       if (colname_from[i] %in% colnames(from@meta.data)) {
+
         # Transfer the metadata column
         # to[[colname_to[i]]] <- from[[colname_from[i]]]
 
         metadata_from <- getMetadataColumn(obj = from, col = colname_from[i])
-        to <- addMetaDataSafe(
-          obj = to, col.name = colname_to[i], metadata = metadata_from[colnames(to)],
-          strict = strict
-        )
+        to <- addMetaDataSafe(obj = to, col.name = colname_to[i], metadata = metadata_from[colnames(to)],
+                              strict = strict)
 
         message(sprintf("Transferred '%s' to '%s'.", colname_from[i], colname_to[i]))
       } else {
@@ -920,6 +918,7 @@ transferMetadata <- function(from, to,
       x <- clUMAP(obj = to, ident = colname_to[i], suffix = "transferred.ident", ...)
       print(x)
     }
+
   } # for
 
   return(to)
@@ -972,22 +971,21 @@ sampleNpc <- function(metaDF = MetaData[which(Pass), ], pc = 0.1) {
 #' @importFrom dplyr bind_rows select
 #' @export
 merge_seurat_metadata <- function(ls_obj, include_cols = NULL, exclude_cols = NULL) {
+
   # Assert that ls_obj is a list and all elements are Seurat objects
-  stopifnot(
-    is.list(ls_obj), length(ls_obj) > 0,
-    all(sapply(ls_obj, function(x) inherits(x, "Seurat")))
-  ) # Ensure all are Seurat objects
+  stopifnot(is.list(ls_obj), length(ls_obj) > 0,
+            all(sapply(ls_obj, function(x) inherits(x, "Seurat"))))  # Ensure all are Seurat objects
 
   # Extract metadata from each Seurat object
   metadata_list <- lapply(ls_obj, function(seurat_obj) seurat_obj@meta.data)
 
   # Assert that the number of columns are the same in all metadata
   col_counts <- sapply(metadata_list, ncol)
-  stopifnot(length(unique(col_counts)) == 1) # Ensure all metadata have the same number of columns
+  stopifnot(length(unique(col_counts)) == 1)  # Ensure all metadata have the same number of columns
 
   # Assert that rownames (cell names) are unique across all metadata
   cell_names <- unlist(lapply(metadata_list, rownames))
-  stopifnot(length(unique(cell_names)) == length(cell_names)) # Ensure all cell names are unique
+  stopifnot(length(unique(cell_names)) == length(cell_names))  # Ensure all cell names are unique
 
   # Optionally select columns to include or exclude
   if (!is.null(include_cols)) {
@@ -1098,14 +1096,14 @@ writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(
 #' @param obj The main Seurat object used for calculations. No default value.
 #' @param cormethod The method to calculate correlations. Can be either "pearson" or "spearman". Default: "pearson".
 #' @param main The main title for the plot. Default: "Metadata correlations" followed by the correlation method.
-#' @param show_numbers Logical, determines if correlation values should be displayed on the plot. Default: `FALSE`.
+#' @param show_numbers Logical, determines if correlation values should be displayed on the plot. Default: `FALSE`..
 #' @param digits The number of decimal places for displayed correlation values. Default: 1.
 #' @param suffix A suffix added to the output filename. Default: NULL.
-#' @param add_PCA Logical, determines if PCA values should be included in the correlation calculation. Default: `TRUE`.
+#' @param add_PCA Logical, determines if PCA values should be included in the correlation calculation. Default: `TRUE`..
 #' @param n_PCs The number of PCA components to be included if 'add_PCA' is TRUE. Default: 8.
 #' @param w The width of the plot in inches. Default: ceiling((length(columns)+n_PCs)/2).
 #' @param h The height of the plot in inches. Default: the value of w.
-#' @param use_ggcorrplot Logical, determines if the ggcorrplot package should be used for plotting. Default: `FALSE`.
+#' @param use_ggcorrplot Logical, determines if the ggcorrplot package should be used for plotting. Default: `FALSE`..
 #' @param n_cutree The number of clusters to be used in hierarchical clustering. Default: the number of PCs.
 #' @param ... Additional parameters passed to the internally called ggcorrplot function.
 #'
@@ -1210,13 +1208,12 @@ heatmap_calc_clust_median <- function(
     w = ceiling(length(variables) / 2),
     ...) {
   # Ensure that 'meta' is a dataframe, 'ident' is a column in 'meta', and 'variables' are columns in 'meta'
-  stopifnot(
-    is.data.frame(meta),
-    is.character(ident),
-    is.character(variables),
-    ident %in% colnames(meta),
-    all(variables %in% colnames(meta))
-  )
+  stopifnot(is.data.frame(meta),
+            is.character(ident),
+            is.character(variables),
+            ident %in% colnames(meta),
+            all(variables %in% colnames(meta))
+            )
 
   # Group by 'ident' and calculate median for each variable
   df_cluster_medians <- meta |>
@@ -1255,7 +1252,7 @@ heatmap_calc_clust_median <- function(
     pl <- pheatmap::pheatmap(corX,
       main = paste0("Correlation between ", plot_name),
       treeheight_row = 2, treeheight_col = 2,
-      # cluster_cols = FALSE, cluster_rows = FALSE,
+      # cluster_cols = F, cluster_rows = F,
       cutree_rows = n_cut_row, cutree_cols = n_cut_col
     )
 
@@ -1263,6 +1260,8 @@ heatmap_calc_clust_median <- function(
       x = pl, width = w,
       plotname = FixPlotName(make.names(plot_name), suffix, "correlation.pdf")
     )
+
+
   }
 }
 
@@ -1277,10 +1276,10 @@ heatmap_calc_clust_median <- function(
 #' @param group.by The variable to group by for calculations. Default: Second result of GetClusteringRuns(obj).
 #' @param method Method used for calculations, either "median" or "mean". Default: "median".
 #' @param min.thr Minimum threshold percentage for a cluster. Default: 2.5.
-#' @param return.matrix Logical; if TRUE, returns a matrix. Default: `FALSE`.
+#' @param return.matrix Logical; if TRUE, returns a matrix. Default: `FALSE`..
 #' @param main Main title for the plot. Default: "read fractions per transcript class and cluster" followed by the method and suffix.
 #' @param ylab Label for the y-axis. Default: "Fraction of transcriptome (%)".
-#' @param percentify Logical. If TRUE, multiplies the fraction by 100. Default: `TRUE`.
+#' @param percentify Logical. If TRUE, multiplies the fraction by 100. Default: `TRUE`..
 #' @param subt Subtitle for the plot. Default: NULL.
 #' @param position Position adjustment for geoms. Default: position_stack().
 #' @param w The width of the plot. Default: 10.
@@ -1395,8 +1394,7 @@ plotMetadataCategPie <- function(
     both_pc_and_value = both_pc_and_value,
     LegendSide = LegendSide, labels = labels,
     LegendTitle = "", subtitle = subtitle,
-    ...
-  )
+    ...)
 }
 
 
@@ -1606,7 +1604,7 @@ transferLabelsSeurat <- function(
   # Visualize reference object
   if (plot_reference) {
     clUMAP(
-      obj = reference_obj, ident = reference_ident, label = FALSE,
+      obj = reference_obj, ident = reference_ident, label = F,
       suffix = reference_suffix, sub = reference_suffix,
       w = w, h = h, ...
     )
@@ -1642,20 +1640,18 @@ transferLabelsSeurat <- function(
     col.name = predictions_score
   )
 
-  qSeuViolin(
-    feature = ppp(new_ident, "score"), ident = new_ident,
-    sub = Seurat.utils:::.parseBasicObjStats(query_obj),
-    pt.size = 0.0, obj = query_obj
-  )
+  qSeuViolin(feature = ppp(new_ident, 'score'), ident = new_ident,
+             sub = Seurat.utils:::.parseBasicObjStats(query_obj),
+             pt.size = 0.0, obj = query_obj)
 
 
   # Visualize combined object
   clUMAP(
-    ident = new_ident, obj = query_obj, suffix = plot_suffix, label = FALSE,
+    ident = new_ident, obj = query_obj, suffix = plot_suffix, label = F,
     w = w, h = h, ...
   )
   qUMAP(
-    feature = predictions_score, obj = query_obj, suffix = plot_suffix, label = FALSE,
+    feature = predictions_score, obj = query_obj, suffix = plot_suffix, label = F,
     w = w, h = h, ...
   )
 

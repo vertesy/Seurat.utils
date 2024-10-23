@@ -27,19 +27,19 @@
 
 \item{grouping}{Variable to group cells by. Default: 'res.0.6'}
 
-\item{no_legend}{Logical, whether to display legend. Default: FALSE}
+\item{no_legend}{Logical, whether to display legend. Default: \code{FALSE}.}
 
-\item{do_return}{Logical, whether to return plot object. Default: TRUE}
+\item{do_return}{Logical, whether to return plot object. Default: \code{TRUE}.}
 
-\item{do_label}{Logical, whether to display labels. Default: TRUE}
+\item{do_label}{Logical, whether to display labels. Default: \code{TRUE}.}
 
 \item{label_size}{Size of labels. Default: 10}
 
-\item{vector_friendly}{Logical, whether to optimize for vector outputs. Default: TRUE}
+\item{vector_friendly}{Logical, whether to optimize for vector outputs. Default: \code{TRUE}.}
 
 \item{cells_use}{A vector of cell names to use for the plot. Default: NULL}
 
-\item{no_axes}{Logical, whether to hide axes. Default: TRUE}
+\item{no_axes}{Logical, whether to hide axes. Default: \code{TRUE}.}
 
 \item{pt_size}{Size of points. Default: 0.5}
 

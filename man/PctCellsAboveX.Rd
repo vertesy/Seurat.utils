@@ -7,7 +7,7 @@
 PctCellsAboveX(
   obj = combined.obj,
   feature = "TOP2A",
-  ident = GetNamedClusteringRuns(obj = obj, v = F)[1],
+  ident = GetNamedClusteringRuns(obj = obj, v = FALSE)[1],
   threshold = 2,
   suffix = ppp(substitute(obj), ncol(obj), "thr", threshold),
   box = FALSE,
@@ -31,17 +31,17 @@ PctCellsAboveX(
 
 \item{threshold}{The threshold value to evaluate the feature against. Default: 2.}
 
-\item{box}{Logical value indicating whether to plot the boxplot. Default: TRUE.}
+\item{box}{Logical value indicating whether to plot the boxplot. Default: \code{TRUE}.}
 
 \item{subset_ident}{The identity class to subset the data by. Default: NULL.}
 
 \item{subset_values}{The values of the identity class to keep in the subset. Default: NULL.}
 
-\item{omit.na}{Logical value indicating whether to omit NA values. Default: TRUE.}
+\item{omit.na}{Logical value indicating whether to omit NA values. Default: \code{TRUE}.}
 
 \item{assay}{The assay to use for feature extraction. Default: 'RNA'.}
 
-\item{plot}{Logical value indicating whether to plot the results. Default: TRUE.}
+\item{plot}{Logical value indicating whether to plot the results. Default: \code{TRUE}.}
 
 \item{ylab}{The label for the y-axis of the plot. Default: "\% cells above threshold".}
 
@@ -59,6 +59,6 @@ feature in a Seurat object. It can subset the data based on a specified identity
 }
 \examples{
 \dontrun{
-PctCellsAboveX(obj = seurat_object, feature = 'GeneA', ident = 'CellType', threshold = 1.5)
+PctCellsAboveX(obj = seurat_object, feature = "GeneA", ident = "CellType", threshold = 1.5)
 }
 }

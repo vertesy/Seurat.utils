@@ -21,7 +21,7 @@ FlipReductionCoordinates(
 
 \item{flip}{Axis (or axes) to flip; can be 'x', 'y', or 'xy' to flip both; Default: "x".}
 
-\item{FlipReductionBackupToo}{Boolean indicating whether to also flip coordinates in the backup slot; Default: TRUE.}
+\item{FlipReductionBackupToo}{Boolean indicating whether to also flip coordinates in the backup slot; Default: \code{TRUE}.}
 }
 \description{
 Flips dimensionality reduction coordinates (such as UMAP or tSNE) vertically or

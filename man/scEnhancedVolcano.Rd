@@ -9,10 +9,7 @@ scEnhancedVolcano(
   x = "avg_log2FC",
   y = "p_val_adj",
   lab = rownames(toptable),
-  suffix = NULL,
   title = paste("DGEA"),
-  caption = paste("Min. Fold Change in Input:", .estMinimumFC(toptable)),
-  caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
   selectLab = trail(lab, 10),
   min.p = 1e-50,
   max.l2fc = Inf,
@@ -20,8 +17,11 @@ scEnhancedVolcano(
   pCutoffCol = "p_val_adj",
   pCutoff = 0.001,
   FCcutoff = 1,
+  suffix = NULL,
+  caption = paste("Min. Fold Change in Input:", .estMinimumFC(toptable)),
+  caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
   count_stats = TRUE,
-  drawConnectors = T,
+  drawConnectors = TRUE,
   max.overlaps = Inf,
   h = 9,
   w = h,
@@ -37,13 +37,13 @@ scEnhancedVolcano(
 
 \item{lab}{A vector of gene symbols to label on the plot.}
 
-\item{suffix}{A string to append to the filename/title of the plot.}
-
 \item{title}{The title of the plot.}
 
 \item{selectLab}{A vector of gene symbols to select for labeling.}
 
 \item{min.p}{The minimum p-value, to trim high values on the Y-axis.}
+
+\item{max.l2fc}{The maximum log2 fold change, to trim high values on the X-axis.}
 
 \item{min.pct.cells}{The minimum percentage of cells in which a gene must be expressed to be included in the plot.}
 
@@ -52,6 +52,12 @@ scEnhancedVolcano(
 \item{pCutoff}{The p-value cutoff.}
 
 \item{FCcutoff}{The fold change cutoff.}
+
+\item{suffix}{A string to append to the filename/title of the plot.}
+
+\item{caption}{The first line of caption of the plot.}
+
+\item{caption2}{The second line of caption of the plot.}
 
 \item{count_stats}{Logical. Calculates a data frame with the count statistics.}
 
@@ -63,9 +69,7 @@ scEnhancedVolcano(
 
 \item{w}{The width of the plot.}
 
-\item{...}{Pass any other parameter to the internally called functions (most of them should work).}
-
-\item{subtitle}{The subtitle of the plot.}
+\item{...}{Pass any other parameter to \code{EnhancedVolcano::EnhancedVolcano()}.}
 }
 \value{
 A ggplot object.
