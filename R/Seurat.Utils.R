@@ -7,17 +7,11 @@
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.utils.less.used.R")
 
 
+devtools::check_man("~/GitHub/Packages/Seurat.utils/UMAP.Major_Celltypes.128962c.reference.png")
 # devtools::load_all("~/GitHub/Packages/Seurat.utils")
 # devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
 
-# _________________________________________________________________________________________________
-# Cluster.Auto-naming.DE.R
-# _________________________________________________________________________________________________
-# source('~/GitHub/Packages/Seurat.utils/Functions/Cluster.Auto-naming.DE.R')
-# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Cluster.Auto-naming.DE.R"))
-
-# _________________________________________________________________________________________________
-# require(princurve) # only for AutoNumber.by.PrinCurve
+file.remove("~/GitHub/Packages/Seurat.utils/weight3.bar.png")
 
 
 
