@@ -2,8 +2,7 @@
 # Create_the_Seurat.utils_Package.R
 ######################################################################################################
 # file.edit("~/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.R")
-# rm(list = ls(all.names = TRUE));
-try(dev.off(), silent = TRUE)
+# rm(list = ls(all.names = TRUE)); try(dev.off(), silent = TRUE)
 
 
 # Functions ------------------------
