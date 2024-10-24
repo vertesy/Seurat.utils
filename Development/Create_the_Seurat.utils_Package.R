@@ -18,8 +18,6 @@ config.path <- file.path(repository.dir, "Development/config.R")
 "TAKE A LOOK AT"
 file.edit(config.path)
 source(config.path)
-package.name <- DESCRIPTION$'package.name'
-
 
 
 PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
@@ -94,7 +92,7 @@ for (scriptX in ls.scripts.full.path) {
   PackageTools::list_of_funs_to_markdown(scriptX)
 }
 file.edit(paste0(repository.dir, "R/list.of.functions.in.", package.name, ".det.md"))
-file.edit(paste0(repository.dir, "README.md"))
+file.edit(paste0(repository.dir, "/README.md"))
 file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".det.md"))
 
 r$PackageTools()
