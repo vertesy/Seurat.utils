@@ -1,4 +1,6 @@
 # Configuration for the Package
+# file.edit("~/GitHub/Packages/XXXXXXXXXX/Development/config.R")
+
 DESCRIPTION <- list(
   package.name = "Seurat.utils",
   version = "2.8.5",
