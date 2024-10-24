@@ -61,6 +61,11 @@ styler::style_pkg(repository.dir)
 
 # Extract package dependencies ------------------------------------------------
 PackageTools::extract_package_dependencies(repository.dir)
+# I have a list of functions where some are not properly separated at the bottom. Answer in text, not code.
+# I need the following:
+#   1. Generate a simple,unique, sorted list of function names, one function per line.
+# 2. Identify the packages that contain these functions and provide a list of the corresponding packages for each function. Also make an R vector of the package names.
+# 3. Acknowledge that some functions may not have an easily identifiable package.
 
 
 # Visualize function dependencies within the package------------------------------------------------
