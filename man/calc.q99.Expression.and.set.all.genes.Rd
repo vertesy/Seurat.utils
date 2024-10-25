@@ -14,7 +14,8 @@ calc.q99.Expression.and.set.all.genes(
   assign_to_global_env = TRUE,
   suffix = as.character(substitute(obj)),
   plot = TRUE,
-  show = TRUE
+  show = TRUE,
+  obj.version = obj@version
 )
 }
 \arguments{
@@ -35,6 +36,9 @@ calc.q99.Expression.and.set.all.genes(
 \item{plot}{Plot the expression distribution? Default: \code{TRUE}.}
 
 \item{show}{Show the distribution plot? Default: \code{TRUE}.}
+
+\item{obj.version}{Manuallyoverride the Version of the Seurat object. Useful when you used the
+problematic \code{SeuratObject::UpdateSeuratObject()}.Default: no override \code{obj@version}.}
 }
 \description{
 Calculate the gene expression of the e.g.: 99th quantile (expression in the top 1\% cells).

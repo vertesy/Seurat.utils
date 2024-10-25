@@ -4,7 +4,12 @@
 \alias{.getNrScaledFeatures}
 \title{Get number of scaled features}
 \usage{
-.getNrScaledFeatures(obj, assay = Seurat::DefaultAssay(obj), v = TRUE)
+.getNrScaledFeatures(
+  obj,
+  assay = Seurat::DefaultAssay(obj),
+  obj.version = obj@version,
+  v = TRUE
+)
 }
 \arguments{
 \item{obj}{A Seurat object containing scaled data in  \code{obj@assays$RNA@scale.data}.}

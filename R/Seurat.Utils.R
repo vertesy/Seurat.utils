@@ -985,6 +985,8 @@ showMiscSlots <- function(obj = combined.obj, max.level = 1, subslot = NULL,
 #' @param assign_to_global_env Create the "all.genes" variable in the global env?, Default: `TRUE`.
 #' @param plot Plot the expression distribution? Default: `TRUE`.
 #' @param show Show the distribution plot? Default: `TRUE`.
+#' @param obj.version Manuallyoverride the Version of the Seurat object. Useful when you used the
+#' problematic `SeuratObject::UpdateSeuratObject()`.Default: no override `obj@version`.
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -1015,7 +1017,9 @@ calc.q99.Expression.and.set.all.genes <- function(
     assign_to_global_env = TRUE,
     suffix = as.character(substitute(obj)),
     plot = TRUE,
-    show = TRUE) {
+    show = TRUE,
+    obj.version = obj@version
+    ) {
   message("slot: ", slot, " assay: ", assay, ".\n")
 
   tictoc::tic("calc.q99.Expression.and.set.all.genes")
@@ -1034,17 +1038,18 @@ calc.q99.Expression.and.set.all.genes <- function(
 
   # Get the data matrix ____________________________________________________________
   assay_data <- obj@assays[[assay]]
-  if (obj@version >= "5") {
+  if (obj.version >= "5") {
     if (assay == "RNA") {
       layers <- assay_data@layers
       message(length(layers), " layers in RNA assay")
       stopifnot(slot %in% names(layers))
       data_mtx <- layers[[slot]]
     } else {
+      browser()
       data_mtx <- slot(assay_data, slot)
     }
   } else {
-    data_mtx <- assay_data[[slot]]
+    data_mtx <- slot(assay_data, slot)
   }
 
   # Downsample if the number of cells is too high _________________________________________________
@@ -5649,13 +5654,13 @@ compareVarFeaturesAndRanks <- function(
 #'
 #' @return Integer representing the number of scaled features
 .getNrScaledFeatures <- function(obj, assay = Seurat::DefaultAssay(obj),
-                                 v = TRUE) {
+                                 obj.version = obj@version, v = TRUE) {
   res <- NA
   if (v) message(" > Running .getNrScaledFeatures...")
   if (v) message("Seurat version: ", obj@version, " | Assay searched: ", assay)
 
 
-  if (obj@version >= "5") { # Check if Seurat version is 5 or higher
+  if (obj.version >= "5") { # Check if Seurat version is 5 or higher
     if ("scale.data" %in% names(obj@assays[[assay]]@layers)) {
       res <- nrow(obj@assays[[assay]]@layers[["scale.data"]])
     } else {

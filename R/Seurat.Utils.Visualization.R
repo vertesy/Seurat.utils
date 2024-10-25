@@ -2322,7 +2322,7 @@ clUMAP <- function(
 
   if (is.null(ident)) {
     ident <- GetNamedClusteringRuns(obj, v = FALSE)[1]
-    message("Identity not provided. Plotting: ", ident)
+    message("Identity not provided. Plotting: ", ident, "\n")
   }
 
   if (check_for_2D) {
@@ -2333,7 +2333,7 @@ clUMAP <- function(
   IdentFound <- (ident %in% colnames(obj@meta.data))
   if (!IdentFound) {
     ident <- GetClusteringRuns(obj = obj, pat = "_res.*[0,1]\\.[0-9]$")[1]
-    iprint("Identity not found. Plotting", ident)
+    iprint("Identity not found. Plotting", ident, "\n")
   }
   identity <- obj[[ident]]
   NtCategs <- length(unique(identity[, 1]))
@@ -2421,7 +2421,7 @@ clUMAP <- function(
     if (save.plot) {
       pname <- sppp(prefix, plotname, paste0(ncol(obj), "c"), suffix, sppp(highlight.clusters))
       fname <- ww.FnP_parser(pname, if (PNG) "png" else "pdf")
-      try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
+      try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w))
     }
     tictoc::toc()
     return(gg.obj)
@@ -4122,7 +4122,7 @@ plot3D.umap.gene <- function(
     assay = "RNA",
     ...) {
   # Input assertions ____________________________________
-
+  # browser()
   stopifnot(
     is(obj, "Seurat"),
     is.character(gene),
@@ -4133,6 +4133,7 @@ plot3D.umap.gene <- function(
     "reductionn has 3 columns" = (ncol(obj@misc$reductions.backup$"umap3d") == 3),
     "3D reduction has >/< cells than object" = (ncol(obj) == nrow(obj@misc$reductions.backup$"umap3d"@cell.embeddings))
   )
+  # browser()
 
   if (obj@version < "5") col.names <- toupper(col.names)
   message("Obj. version: ", obj@version, " \ndim names: ", kppc(col.names))
@@ -4162,20 +4163,34 @@ plot3D.umap.gene <- function(
     NULL
   }
 
+  # plt <- plotly::plot_ly(
+  #   data = plotting.data,
+  #   x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3,
+  #   type = "scatter3d",
+  #   mode = "markers",
+  #   marker = list(size = dotsize),
+  #   text = ~label,
+  #   color = ~Expression,
+  #   opacity = alpha
+  #   # , colors = c('darkgrey', 'red')
+  #   , colorscale = "Viridis"
+  #   # , hoverinfo="text"
+  #   , ...
+  # )
   plt <- plotly::plot_ly(
     data = plotting.data,
     x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3,
     type = "scatter3d",
     mode = "markers",
-    marker = list(size = dotsize),
+    marker = list(
+      size = dotsize,
+      color = ~Expression,   # Map Expression to color
+      colorscale = "Viridis",
+      opacity = alpha
+    ),
     text = ~label,
-    color = ~Expression,
-    opacity = alpha
-    # , colors = c('darkgrey', 'red')
-    , colorscale = "Viridis"
-    # , hoverinfo="text"
-    , ...
-  ) |>
+    ...
+  )  |>
     plotly::layout(title = gene, scene = list(annotations = ls.ann.auto))
 
   SavePlotlyAsHtml(plt, category. = gene, suffix. = suffix)
@@ -4333,9 +4348,10 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { #
 #' @param nPCs A numeric value representing the number of principal components to use. Default: p$n.PC
 #' @param dimensions A numeric vector specifying the dimensions to use for the dimensionality reductions. Default: 3:2
 #' @param reduction_input The type of dimensionality reduction to use as input. Can be "pca", or
-#' some correctionn results, like harmony pca.
+#' some correction results, like harmony pca. Default: 'pca'
 #' @param reduction_output Te type of dimensionality reduction to perform.  Can be "umap", "tsne",
-#' or "pca". Default: 'umap'
+#' "pca", or some correctionn results, like harmony pca.  Default: 'umap'
+#' @param ... Additional arguments to pass to the dimensionality reduction function.
 #' @return The input Seurat object with computed dimensionality reductions and backups of these reductions.
 #' @examples
 #' \dontrun{
@@ -4347,23 +4363,28 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { #
 #'
 #' @export
 SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", dimensions = 3:2,
-                                          reduction_input = "pca", reduction_output = "umap", ...) {
+                                          reduction_input = "pca",
+                                          reduction_output = "umap", ...) {
+  cat("Starting dimensional reduction setup\n")
   tictoc::tic()
+
   for (d in dimensions) {
-    iprint(d, "dimensional", reduction_output, "is calculated")
-    obj <- if (reduction_output == "umap") {
-      RunUMAP(obj, dims = 1:nPCs, reduction = reduction_input, n.components = d, ...)
-    } else if (reduction_output == "tsne") {
-      RunTSNE(obj, dims = 1:nPCs, reduction = reduction_input, n.components = d, ...)
-    } else if (reduction_output == "pca") {
-      RunPCA(obj, dims = 1:nPCs, n.components = d, ...)
-    }
+    iprint("Calculating", d, "dimensional", reduction_output)
+
+    # Assign the reduction based on the output type
+    obj <- switch(reduction_output,
+                  umap = RunUMAP(obj, dims = 1:nPCs, reduction = reduction_input, n.components = d, ...),
+                  tsne = RunTSNE(obj, dims = 1:nPCs, reduction = reduction_input, n.components = d, ...),
+                  pca = RunPCA(obj, dims = 1:nPCs, n.components = d, ...)
+    )
+
     obj <- BackupReduction(obj = obj, dim = d, reduction = reduction_output)
   }
 
   tictoc::toc()
   return(obj)
 }
+
 
 
 # _________________________________________________________________________________________________
