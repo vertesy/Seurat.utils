@@ -12,12 +12,12 @@ downsampleListSeuObjsPercent(
 )
 }
 \arguments{
-\item{ls.obj}{List of Seurat objects to be downsampled; Default: \code{ls.Seurat}.}
+\item{ls.obj}{List of Seurat objects to be downsampled. Default: \code{ls.Seurat}.}
 
-\item{fraction}{Fraction of cells to retain in each Seurat object; Default: 0.1.}
+\item{fraction}{Fraction of cells to retain in each Seurat object. Default: 0.1.}
 
 \item{save_object}{Logical indicating whether to save the downsampled Seurat objects using
-\code{isaveRDS} or return them; Default: \code{FALSE}.}
+\code{isaveRDS} or return them. Default: \code{FALSE}.}
 }
 \description{
 Downsampling a list of Seurat objects to a specified fraction of their original size.

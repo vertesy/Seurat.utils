@@ -7,9 +7,9 @@
 fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
 }
 \arguments{
-\item{ColName.metadata}{The name of the metadata column containing zero-based cluster indices; Default: \code{'res.0.6'}.}
+\item{ColName.metadata}{The name of the metadata column containing zero-based cluster indices. Default: \code{'res.0.6'}.}
 
-\item{obj}{The Seurat object to be modified; Default: \code{org}.}
+\item{obj}{The Seurat object to be modified. Default: \code{org}.}
 }
 \value{
 The Seurat object with the specified metadata column's cluster indices adjusted to one-based indexing.

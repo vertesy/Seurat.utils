@@ -7,12 +7,12 @@
 StoreTop25Markers(obj = combined.obj, df_markers = df.markers, res = 0.5)
 }
 \arguments{
-\item{obj}{Seurat object to update with top 25 markers information; Default: \code{combined.obj}.}
+\item{obj}{Seurat object to update with top 25 markers information. Default: \code{combined.obj}.}
 
 \item{df_markers}{Data frame containing results from differential gene expression analysis
-via \code{FindAllMarkers()}, specifying significant markers across clusters; Default: \code{df.markers}.}
+via \code{FindAllMarkers()}, specifying significant markers across clusters. Default: \code{df.markers}.}
 
-\item{res}{Clustering resolution at which the markers were identified; Default: 0.5.}
+\item{res}{Clustering resolution at which the markers were identified. Default: 0.5.}
 }
 \description{
 Stores the top 25 markers for each cluster identified in a Seurat object, based on

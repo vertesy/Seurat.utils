@@ -12,7 +12,7 @@ removeResidualSmallClusters(
 )
 }
 \arguments{
-\item{obj}{Seurat object from which small clusters will be removed; Default: \code{combined.obj}.}
+\item{obj}{Seurat object from which small clusters will be removed. Default: \code{combined.obj}.}
 
 \item{identitites}{Vector of clustering identities to examine for small clusters;
 Default: \code{GetClusteringRuns(obj)}.}

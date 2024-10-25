@@ -11,12 +11,12 @@ GetTopMarkers(
 )
 }
 \arguments{
-\item{dfDE}{Data frame containing differential expression analysis results; Default: \code{df.markers}.}
+\item{dfDE}{Data frame containing differential expression analysis results. Default: \code{df.markers}.}
 
-\item{n}{Number of top markers to retrieve for each cluster; Default: \code{p$n.markers}.}
+\item{n}{Number of top markers to retrieve for each cluster. Default: \code{p$n.markers}.}
 
 \item{order.by}{Column by which to sort the markers before selection, typically prioritizing
-markers by significance or effect size; Default: \code{"avg_log2FC"}.}
+markers by significance or effect size. Default: \code{"avg_log2FC"}.}
 }
 \description{
 Retrieves the top N differentially expressed genes from the results of a differential

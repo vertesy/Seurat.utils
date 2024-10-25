@@ -10,7 +10,7 @@ GetMostVarGenes(obj, nGenes = p$nVarGenes)
 \item{obj}{A Seurat object containing gene expression data and,
 pre-computed highly variable gene information.}
 
-\item{nGenes}{The number of most variable genes to retrieve; Default: \code{p$nVarGenes}.}
+\item{nGenes}{The number of most variable genes to retrieve. Default: \code{p$nVarGenes}.}
 }
 \value{
 A vector containing the names of the most variable genes.

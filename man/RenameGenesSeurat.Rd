@@ -12,11 +12,11 @@ RenameGenesSeurat(
 )
 }
 \arguments{
-\item{obj}{A Seurat object containing the assay and slots to be updated; Default: \code{ls.Seurat[[i]]}
+\item{obj}{A Seurat object containing the assay and slots to be updated. Default: \code{ls.Seurat[[i]]}
 (replace \code{i} with the appropriate index).}
 
 \item{newnames}{A character vector containing the new gene names intended to replace the
-existing ones; Default: \code{HGNC.updated[[i]]$Suggested.Symbol}. Ensure this matches the order
+existing ones. Default: \code{HGNC.updated[[i]]$Suggested.Symbol}. Ensure this matches the order
 and length of the genes in the specified assay.}
 
 \item{assay}{The name of the assay within the Seurat object where gene names will be updated;

@@ -14,9 +14,9 @@ GetTopMarkersDF(
 }
 \arguments{
 \item{dfDE}{Data frame containing the results of differential gene expression analysis
-(e.g., output from \code{FindAllMarkers()}); Default: \code{df.markers}.}
+(e.g., output from \code{FindAllMarkers()}). Default: \code{df.markers}.}
 
-\item{n}{Number of top markers to retrieve per cluster; Default: \code{p$n.markers}.}
+\item{n}{Number of top markers to retrieve per cluster. Default: \code{p$n.markers}.}
 
 \item{order.by}{Priority column for sorting markers before selection, such as \code{"avg_log2FC"};
 Default: \code{"avg_log2FC"}.}

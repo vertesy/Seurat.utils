@@ -10,7 +10,8 @@ AutoNumber.by.UMAP(
   dim = 1,
   swap = FALSE,
   ident = GetClusteringRuns(obj = obj)[1],
-  plot = TRUE
+  plot = TRUE,
+  obj.version = obj@version
 )
 }
 \arguments{

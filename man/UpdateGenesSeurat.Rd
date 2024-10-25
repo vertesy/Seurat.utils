@@ -13,20 +13,20 @@ UpdateGenesSeurat(
 )
 }
 \arguments{
-\item{obj}{A Seurat object containing gene expression data; Default: \code{ls.Seurat[[i]]}
+\item{obj}{A Seurat object containing gene expression data. Default: \code{ls.Seurat[[i]]}
 (ensure to replace \code{i} with the actual index or variable referencing your Seurat object).}
 
 \item{species_}{The species for which the gene symbols are checked and updated,
-used to ensure the correct gene nomenclature is applied; Default: \code{'human'}.
+used to ensure the correct gene nomenclature is applied. Default: \code{'human'}.
 Supports \code{'human'}, \code{'mouse'}, etc., as specified in the \code{HGNChelper} package.}
 
 \item{EnforceUnique}{Logical flag indicating whether to enforce unique gene symbols
 within the Seurat object. When set to \code{TRUE}, it resolves issues with duplicated gene symbols
-by appending unique identifiers; Default: \code{TRUE}.}
+by appending unique identifiers. Default: \code{TRUE}.}
 
 \item{ShowStats}{Logical flag indicating whether to display statistics about the gene
 symbol update process. When set to \code{TRUE}, it prints detailed information on the console
-about the changes made; Default: \code{FALSE}.}
+about the changes made. Default: \code{FALSE}.}
 }
 \value{
 A modified Seurat object with updated gene symbols. The function directly modifies

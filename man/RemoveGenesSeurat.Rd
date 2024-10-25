@@ -7,7 +7,7 @@
 RemoveGenesSeurat(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 }
 \arguments{
-\item{obj}{A Seurat object; Default: \code{ls.Seurat[[i]]} (please ensure to replace \code{i} with the actual index or variable).}
+\item{obj}{A Seurat object. Default: \code{ls.Seurat[[i]]} (please ensure to replace \code{i} with the actual index or variable).}
 
 \item{symbols2remove}{A character vector specifying the genes to be removed from the Seurat object;
 Default: \code{c("TOP2A")}.}

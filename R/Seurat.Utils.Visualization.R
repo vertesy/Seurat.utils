@@ -3221,22 +3221,23 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
                                reduction = "umap",
                                dim = 1, swap = FALSE,
                                ident = GetClusteringRuns(obj = obj)[1],
-                               plot = TRUE) {
+                               plot = TRUE,
+                               obj.version = obj@version) {
   dim_name <- kppu(reduction, dim)
-  if (obj@version < "5") dim_name <- toupper(dim_name)
-  message("Obj. version: ", obj@version, " \ndimension name: ", dim_name)
+  if (obj.version < "5") dim_name <- toupper(dim_name)
+  message("Obj. version: ", obj.version, " \ndimension name: ", dim_name)
   message("Resolution: ", ident)
 
   stopifnot("Identity not found." = ident %in% colnames(obj@meta.data))
 
   coord.umap <- obj@reductions$umap@cell.embeddings[, dim_name]
 
-  # coord.umap <- round(coord.umap,digits = 2)
+  # Get cluster labels
   identX <- as.character(obj@meta.data[[ident]])
 
+  # Order clusters by median coordinate
   ls.perCl <- split(coord.umap, f = identX)
   MedianClusterCoordinate <- sapply(ls.perCl, median)
-  # sort(MedianClusterCoordinate)
 
   OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
   NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))

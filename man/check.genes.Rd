@@ -8,7 +8,7 @@ check.genes(
   list.of.genes = ClassicMarkers,
   makeuppercase = FALSE,
   HGNC.lookup = FALSE,
-  obj = combined.obj,
+  obj,
   assay.slot = c("RNA", "integrated")[1],
   data.slot = c("counts", "data")[2],
   verbose = TRUE,
@@ -16,20 +16,20 @@ check.genes(
 )
 }
 \arguments{
-\item{list.of.genes}{A vector of gene names to be checked; Default: \code{ClassicMarkers}.}
+\item{list.of.genes}{A vector of gene names to be checked. Default: \code{ClassicMarkers}.}
 
-\item{makeuppercase}{If \code{TRUE}, converts all gene names to uppercase before checking; Default: \code{FALSE}.}
+\item{makeuppercase}{If \code{TRUE}, converts all gene names to uppercase before checking. Default: \code{FALSE}.}
 
 \item{HGNC.lookup}{If \code{TRUE}, attempts to look up any missing genes in the HGNC database to
-verify their existence; Default: \code{FALSE}.}
+verify their existence. Default: \code{FALSE}.}
 
-\item{obj}{The Seurat object against which the gene names will be checked; Default: \code{combined.obj}.}
+\item{obj}{The Seurat object against which the gene names will be checked.}
 
-\item{assay.slot}{Assay slot of the Seurat object to check for gene names; Default: \code{'RNA'}.}
+\item{assay.slot}{Assay slot of the Seurat object to check for gene names. Default: \code{'RNA'}.}
 
-\item{data.slot}{Data slot of the assay to check for gene names; Default: \code{'data'}.}
+\item{data.slot}{Data slot of the assay to check for gene names. Default: \code{'data'}.}
 
-\item{verbose}{If \code{TRUE}, prints information about any missing genes; Default: \code{TRUE}.}
+\item{verbose}{If \code{TRUE}, prints information about any missing genes. Default: \code{TRUE}.}
 }
 \description{
 Verifies the presence of specified gene names within a Seurat object or

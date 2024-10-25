@@ -20,23 +20,23 @@
 \arguments{
 \item{genes}{Vector of gene symbols to include in the correlation analysis and heatmap.}
 
-\item{assay.use}{Assay from which to retrieve expression data within the Seurat object; Default: 'RNA'.}
+\item{assay.use}{Assay from which to retrieve expression data within the Seurat object. Default: 'RNA'.}
 
 \item{slot.use}{Specifies which slot of the assay to use for expression data \verb{('data', 'scale.data', 'data.imputed')};
 Default: first item \code{('data')}.}
 
-\item{quantileX}{Quantile level for calculating expression thresholds; Default: \code{0.95}.}
+\item{quantileX}{Quantile level for calculating expression thresholds. Default: \code{0.95}.}
 
-\item{min.g.cor}{Minimum absolute gene correlation value for inclusion in the heatmap; Default: \code{0.3}.}
+\item{min.g.cor}{Minimum absolute gene correlation value for inclusion in the heatmap. Default: \code{0.3}.}
 
-\item{calc.COR}{Logical flag to calculate correlation matrix if not found in \verb{@misc}; Default: \code{FALSE.}}
+\item{calc.COR}{Logical flag to calculate correlation matrix if not found in \verb{@misc}. Default: \code{FALSE.}}
 
-\item{cutRows}{Height at which to cut the dendrogram for rows, determining cluster formation; Default: \code{NULL.}}
+\item{cutRows}{Height at which to cut the dendrogram for rows, determining cluster formation. Default: \code{NULL.}}
 
 \item{cutCols}{Height at which to cut the dendrogram for columns, determining cluster formation.
 Default: same as \code{cutRows}.}
 
-\item{obj}{Seurat object containing the data; Default: \code{combined.obj}.}
+\item{obj}{Seurat object containing the data. Default: \code{combined.obj}.}
 
 \item{...}{Additional parameters passed to the internally called functions.}
 }

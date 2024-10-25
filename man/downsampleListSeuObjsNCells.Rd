@@ -11,12 +11,12 @@ downsampleListSeuObjsNCells(
 )
 }
 \arguments{
-\item{ls.obj}{List of Seurat objects to be downsampled; Default: \code{ls.Seurat}.}
+\item{ls.obj}{List of Seurat objects to be downsampled. Default: \code{ls.Seurat}.}
 
 \item{NrCells}{Target number of cells to downsample each Seurat object to.}
 
 \item{save_object}{Logical indicating whether to save the downsampled Seurat objects using \code{isaveRDS}
-or to return them; Default: \code{FALSE}.}
+or to return them. Default: \code{FALSE}.}
 }
 \description{
 Downsampling each Seurat object in a list to a specified number of cells. This function is

@@ -12,14 +12,14 @@ StoreAllMarkers(
 )
 }
 \arguments{
-\item{obj}{Seurat object to update with differential expression markers; Default: \code{combined.obj}.}
+\item{obj}{Seurat object to update with differential expression markers. Default: \code{combined.obj}.}
 
 \item{df_markers}{Data frame containing the results from differential gene expression analysis
-(\code{FindAllMarkers()} output); Default: \code{df.markers}.}
+(\code{FindAllMarkers()} output). Default: \code{df.markers}.}
 
-\item{res}{Clustering resolution identifier for storing and referencing the markers; Default: 0.5.}
+\item{res}{Clustering resolution identifier for storing and referencing the markers. Default: 0.5.}
 
-\item{digit}{Number of significant digits to retain in numerical values; Default: 3.}
+\item{digit}{Number of significant digits to retain in numerical values. Default: 3.}
 }
 \description{
 Saves the complete output table from \code{FindAllMarkers()} to a Seurat object, facilitating

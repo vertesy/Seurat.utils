@@ -7,11 +7,11 @@
 save.parameters(obj = combined.obj, params = p, overwrite = TRUE)
 }
 \arguments{
-\item{obj}{Seurat object to update; Default: \code{combined.obj}.}
+\item{obj}{Seurat object to update. Default: \code{combined.obj}.}
 
-\item{params}{List of parameters to save; Default: \code{p}.}
+\item{params}{List of parameters to save. Default: \code{p}.}
 
-\item{overwrite}{Logical indicating if existing parameters should be overwritten; Default: \code{TRUE}.}
+\item{overwrite}{Logical indicating if existing parameters should be overwritten. Default: \code{TRUE}.}
 }
 \description{
 Stores a list of parameters within the \verb{@misc$p} slot of a Seurat object,

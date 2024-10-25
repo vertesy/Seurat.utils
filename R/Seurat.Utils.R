@@ -1845,9 +1845,9 @@ recall.genes.ls <- function(obj = combined.obj, overwrite = FALSE) { # genes.ls
 #' @description Stores a list of parameters within the `@misc$p` slot of a Seurat object,
 #' allowing for easy reference and tracking of analysis parameters used.
 #'
-#' @param obj Seurat object to update; Default: `combined.obj`.
-#' @param params List of parameters to save; Default: `p`.
-#' @param overwrite Logical indicating if existing parameters should be overwritten; Default: `TRUE`.
+#' @param obj Seurat object to update. Default: `combined.obj`.
+#' @param params List of parameters to save. Default: `p`.
+#' @param overwrite Logical indicating if existing parameters should be overwritten. Default: `TRUE`.
 #'
 #' @examples
 #' \dontrun{
@@ -2309,7 +2309,7 @@ RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "o
 #' from a Seurat object. This function is particularly useful after subsetting a dataset,
 #' where small, possibly unrepresentative clusters may remain.
 #'
-#' @param obj Seurat object from which small clusters will be removed; Default: `combined.obj`.
+#' @param obj Seurat object from which small clusters will be removed. Default: `combined.obj`.
 #' @param identitites Vector of clustering identities to examine for small clusters;
 #' Default: `GetClusteringRuns(obj)`.
 #' @param max.cells Maximum number of cells a cluster can contain to still be considered for removal.
@@ -2539,10 +2539,10 @@ removeCellsByUmap <- function(
 #' particularly useful for creating smaller, more manageable subsets of large single-cell datasets for
 #' preliminary analyses or testing.
 #'
-#' @param ls.obj List of Seurat objects to be downsampled; Default: `ls.Seurat`.
+#' @param ls.obj List of Seurat objects to be downsampled. Default: `ls.Seurat`.
 #' @param NrCells Target number of cells to downsample each Seurat object to.
 #' @param save_object Logical indicating whether to save the downsampled Seurat objects using `isaveRDS`
-#' or to return them; Default: `FALSE`.
+#' or to return them. Default: `FALSE`.
 #'
 #' @examples
 #' \dontrun{
@@ -2605,10 +2605,10 @@ downsampleListSeuObjsNCells <- function(
 #' @description Downsampling a list of Seurat objects to a specified fraction of their original size.
 #' This is useful for reducing dataset size for quicker processing or testing workflows.
 #'
-#' @param ls.obj List of Seurat objects to be downsampled; Default: `ls.Seurat`.
-#' @param fraction Fraction of cells to retain in each Seurat object; Default: 0.1.
+#' @param ls.obj List of Seurat objects to be downsampled. Default: `ls.Seurat`.
+#' @param fraction Fraction of cells to retain in each Seurat object. Default: 0.1.
 #' @param save_object Logical indicating whether to save the downsampled Seurat objects using
-#' `isaveRDS` or return them; Default: `FALSE`.
+#' `isaveRDS` or return them. Default: `FALSE`.
 #'
 #' @examples
 #' \dontrun{
@@ -2709,10 +2709,10 @@ Add.DE.combined.score <- function(
 #' the `avg_log2FC` from the output table of `FindAllMarkers()`. The result is saved under `@misc$df.markers$res...`,
 #' rounding insignificant digits to three decimal places.
 #'
-#' @param obj Seurat object to update with top 25 markers information; Default: `combined.obj`.
+#' @param obj Seurat object to update with top 25 markers information. Default: `combined.obj`.
 #' @param df_markers Data frame containing results from differential gene expression analysis
-#' via `FindAllMarkers()`, specifying significant markers across clusters; Default: `df.markers`.
-#' @param res Clustering resolution at which the markers were identified; Default: 0.5.
+#' via `FindAllMarkers()`, specifying significant markers across clusters. Default: `df.markers`.
+#' @param res Clustering resolution at which the markers were identified. Default: 0.5.
 #'
 #' @examples
 #' \dontrun{
@@ -2750,11 +2750,11 @@ StoreTop25Markers <- function(
 #' easy access to differential expression analysis results. This function rounds numerical values to a
 #' specified number of digits to maintain readability and manage file sizes.
 #'
-#' @param obj Seurat object to update with differential expression markers; Default: `combined.obj`.
+#' @param obj Seurat object to update with differential expression markers. Default: `combined.obj`.
 #' @param df_markers Data frame containing the results from differential gene expression analysis
-#' (`FindAllMarkers()` output); Default: `df.markers`.
-#' @param res Clustering resolution identifier for storing and referencing the markers; Default: 0.5.
-#' @param digit Number of significant digits to retain in numerical values; Default: 3.
+#' (`FindAllMarkers()` output). Default: `df.markers`.
+#' @param res Clustering resolution identifier for storing and referencing the markers. Default: 0.5.
+#' @param digit Number of significant digits to retain in numerical values. Default: 3.
 #'
 #' @examples
 #' \dontrun{
@@ -2782,8 +2782,8 @@ StoreAllMarkers <- function(
 #' based on patterns.
 #'
 #' @param dfDE Data frame containing the results of differential gene expression analysis
-#' (e.g., output from `FindAllMarkers()`); Default: `df.markers`.
-#' @param n Number of top markers to retrieve per cluster; Default: `p$n.markers`.
+#' (e.g., output from `FindAllMarkers()`). Default: `df.markers`.
+#' @param n Number of top markers to retrieve per cluster. Default: `p$n.markers`.
 #' @param order.by Priority column for sorting markers before selection, such as `"avg_log2FC"`;
 #' Default: `"avg_log2FC"`.
 #' @param exclude Vector of regex patterns to exclude genes from the top markers list;
@@ -2831,10 +2831,10 @@ GetTopMarkersDF <- function(
 #' @description Retrieves the top N differentially expressed genes from the results of a differential
 #' gene expression analysis, such as that provided by `FindAllMarkers()`.
 #'
-#' @param dfDE Data frame containing differential expression analysis results; Default: `df.markers`.
-#' @param n Number of top markers to retrieve for each cluster; Default: `p$n.markers`.
+#' @param dfDE Data frame containing differential expression analysis results. Default: `df.markers`.
+#' @param n Number of top markers to retrieve for each cluster. Default: `p$n.markers`.
 #' @param order.by Column by which to sort the markers before selection, typically prioritizing
-#' markers by significance or effect size; Default: `"avg_log2FC"`.
+#' markers by significance or effect size. Default: `"avg_log2FC"`.
 #'
 #' @examples
 #' \dontrun{
@@ -3176,16 +3176,16 @@ Calc.Cor.Seurat <- function(
 #' or cell types in a Seurat object.
 #'
 #' @param genes Vector of gene symbols to include in the correlation analysis and heatmap.
-#' @param assay.use Assay from which to retrieve expression data within the Seurat object; Default: 'RNA'.
+#' @param assay.use Assay from which to retrieve expression data within the Seurat object. Default: 'RNA'.
 #' @param slot.use Specifies which slot of the assay to use for expression data `('data', 'scale.data', 'data.imputed')`;
 #' Default: first item `('data')`.
-#' @param quantileX Quantile level for calculating expression thresholds; Default: `0.95`.
-#' @param min.g.cor Minimum absolute gene correlation value for inclusion in the heatmap; Default: `0.3`.
-#' @param calc.COR Logical flag to calculate correlation matrix if not found in `@misc`; Default: `FALSE.`
-#' @param cutRows Height at which to cut the dendrogram for rows, determining cluster formation; Default: `NULL.`
+#' @param quantileX Quantile level for calculating expression thresholds. Default: `0.95`.
+#' @param min.g.cor Minimum absolute gene correlation value for inclusion in the heatmap. Default: `0.3`.
+#' @param calc.COR Logical flag to calculate correlation matrix if not found in `@misc`. Default: `FALSE.`
+#' @param cutRows Height at which to cut the dendrogram for rows, determining cluster formation. Default: `NULL.`
 #' @param cutCols Height at which to cut the dendrogram for columns, determining cluster formation.
 #' Default: same as `cutRows`.
-#' @param obj Seurat object containing the data; Default: `combined.obj`.
+#' @param obj Seurat object containing the data. Default: `combined.obj`.
 #' @param ... Additional parameters passed to the internally called functions.
 #'
 #' @examples
@@ -3418,7 +3418,7 @@ seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) {
 #'
 #' @param obj A Seurat object containing gene expression data and,
 #' pre-computed highly variable gene information.
-#' @param nGenes The number of most variable genes to retrieve; Default: `p$nVarGenes`.
+#' @param nGenes The number of most variable genes to retrieve. Default: `p$nVarGenes`.
 #'
 #' @return A vector containing the names of the most variable genes.
 #'
@@ -3497,14 +3497,14 @@ gene.name.check <- function(Seu.obj) {
 #' queries them against the HGNC database. This function is useful for ensuring gene names are
 #' correctly formatted and exist within the dataset or are recognized gene symbols.
 #'
-#' @param list.of.genes A vector of gene names to be checked; Default: `ClassicMarkers`.
-#' @param makeuppercase If `TRUE`, converts all gene names to uppercase before checking; Default: `FALSE`.
-#' @param verbose If `TRUE`, prints information about any missing genes; Default: `TRUE`.
+#' @param list.of.genes A vector of gene names to be checked. Default: `ClassicMarkers`.
+#' @param makeuppercase If `TRUE`, converts all gene names to uppercase before checking. Default: `FALSE`.
+#' @param verbose If `TRUE`, prints information about any missing genes. Default: `TRUE`.
 #' @param HGNC.lookup If `TRUE`, attempts to look up any missing genes in the HGNC database to
-#' verify their existence; Default: `FALSE`.
-#' @param obj The Seurat object against which the gene names will be checked; Default: `combined.obj`.
-#' @param assay.slot Assay slot of the Seurat object to check for gene names; Default: `'RNA'`.
-#' @param data.slot Data slot of the assay to check for gene names; Default: `'data'`.
+#' verify their existence. Default: `FALSE`.
+#' @param obj The Seurat object against which the gene names will be checked.
+#' @param assay.slot Assay slot of the Seurat object to check for gene names. Default: `'RNA'`.
+#' @param data.slot Data slot of the assay to check for gene names. Default: `'data'`.
 #'
 #' @examples
 #' \dontrun{
@@ -3525,7 +3525,7 @@ gene.name.check <- function(Seu.obj) {
 #'
 check.genes <- function(
     list.of.genes = ClassicMarkers, makeuppercase = FALSE, HGNC.lookup = FALSE,
-    obj = combined.obj,
+    obj,
     assay.slot = c("RNA", "integrated")[1],
     data.slot = c("counts", "data")[2],
     verbose = TRUE,
@@ -3564,8 +3564,8 @@ check.genes <- function(
 #' @description Adjusts Seurat object metadata to fix zero-based cluster indexing, converting it to one-based indexing.
 #' This function modifies a specified metadata column in the Seurat object to replace zero-indexed cluster names with one-based indexing.
 #'
-#' @param ColName.metadata The name of the metadata column containing zero-based cluster indices; Default: `'res.0.6'`.
-#' @param obj The Seurat object to be modified; Default: `org`.
+#' @param ColName.metadata The name of the metadata column containing zero-based cluster indices. Default: `'res.0.6'`.
+#' @param obj The Seurat object to be modified. Default: `org`.
 #'
 #' @return The Seurat object with the specified metadata column's cluster indices adjusted to one-based indexing.
 #'
@@ -3596,10 +3596,10 @@ fixZeroIndexing.seurat <- function(ColName.metadata = "res.0.6", obj = org) {
 #'
 #' @param geneset A character vector of gene symbols for which the fraction in the transcriptome will be calculated.
 #' Default: `c("MALAT1")`. The function will check for the existence of these genes in the Seurat object.
-#' @param obj A Seurat object containing gene expression data; Default: `combined.obj`.
+#' @param obj A Seurat object containing gene expression data. Default: `combined.obj`.
 #' The function extracts gene expression data from this object to calculate fractions.
 #' @param data.slot The data slot from which to extract expression data. This can be `"counts"`
-#' for raw counts or `"data"` for normalized data; Default: second element (`"data"`).
+#' for raw counts or `"data"` for normalized data. Default: second element (`"data"`).
 #'
 #' @return A numeric vector where each element represents the fraction of the specified geneset's expression
 #' relative to the total transcriptome of a cell, expressed as a percentage. The names of the vector correspond to cell IDs.
@@ -3805,17 +3805,17 @@ FindCorrelatedGenes <- function(
 #' latest approved versions,ensuring that gene annotations are current and consistent.
 #' The function optionally enforces unique gene symbols and provides statistics on the update process.
 #'
-#' @param obj A Seurat object containing gene expression data; Default: `ls.Seurat[[i]]`
+#' @param obj A Seurat object containing gene expression data. Default: `ls.Seurat[[i]]`
 #' (ensure to replace `i` with the actual index or variable referencing your Seurat object).
 #' @param species_ The species for which the gene symbols are checked and updated,
-#' used to ensure the correct gene nomenclature is applied; Default: `'human'`.
+#' used to ensure the correct gene nomenclature is applied. Default: `'human'`.
 #' Supports `'human'`, `'mouse'`, etc., as specified in the `HGNChelper` package.
 #' @param EnforceUnique Logical flag indicating whether to enforce unique gene symbols
 #' within the Seurat object. When set to `TRUE`, it resolves issues with duplicated gene symbols
-#' by appending unique identifiers; Default: `TRUE`.
+#' by appending unique identifiers. Default: `TRUE`.
 #' @param ShowStats Logical flag indicating whether to display statistics about the gene
 #' symbol update process. When set to `TRUE`, it prints detailed information on the console
-#' about the changes made; Default: `FALSE`.
+#' about the changes made. Default: `FALSE`.
 #'
 #' @return A modified Seurat object with updated gene symbols. The function directly modifies
 #' the input Seurat object, ensuring that gene symbols adhere to the latest nomenclature.
@@ -3866,10 +3866,10 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", assay = 
 #' processes. The function targets the `@counts`, `@data`, and `@meta.features` slots within
 #' the specified assay, ensuring consistency in gene nomenclature across the object.
 #'
-#' @param obj A Seurat object containing the assay and slots to be updated; Default: `ls.Seurat[[i]]`
+#' @param obj A Seurat object containing the assay and slots to be updated. Default: `ls.Seurat[[i]]`
 #' (replace `i` with the appropriate index).
 #' @param newnames A character vector containing the new gene names intended to replace the
-#' existing ones; Default: `HGNC.updated[[i]]$Suggested.Symbol`. Ensure this matches the order
+#' existing ones. Default: `HGNC.updated[[i]]$Suggested.Symbol`. Ensure this matches the order
 #' and length of the genes in the specified assay.
 #' @param assay The name of the assay within the Seurat object where gene names will be updated;
 #' Default: `"RNA"`. This function assumes simple objects containing only an RNA assay.
@@ -4032,7 +4032,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 #' This operation is typically performed prior to data integration to ensure that gene sets are consistent
 #' across multiple datasets. The function modifies the Seurat object in place.
 #'
-#' @param obj A Seurat object; Default: `ls.Seurat[[i]]` (please ensure to replace `i` with the actual index or variable).
+#' @param obj A Seurat object. Default: `ls.Seurat[[i]]` (please ensure to replace `i` with the actual index or variable).
 #' @param symbols2remove A character vector specifying the genes to be removed from the Seurat object;
 #' Default: `c("TOP2A")`.
 #'
