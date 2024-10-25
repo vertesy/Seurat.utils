@@ -914,6 +914,69 @@ ww.calc_helper <- function(obj, genes, slot = "RNA") {
 
 
 
+#' @title Cluster Size Distribution Plot (Barplot or Histogram)
+#'
+#' @description Generates a bar plot or histogram to visualize the size distribution of clusters
+#' within a Seurat object, based on the specified clustering identity.
+#'
+#' @param obj Seurat object for analysis. Default: `combined.obj`.
+#' @param ident Clustering identity to base the plot on.
+#' Default: The second entry from `GetClusteringRuns()`.
+#' @param plot Whether to display the plot (TRUE) or return cluster sizes (FALSE). Default: `TRUE`.
+#' @param thr.hist Threshold for switching from a bar plot to a histogram based on the number of
+#' clusters. Default: 30.
+#' @param ... Extra parameters for the plot.
+#'
+#' @examples
+#' \dontrun{
+#' plotClustSizeDistr()
+#' }
+#'
+#' @importFrom ggExpress qbarplot qhistogram
+#'
+# #' @export
+plotClustSizeDistr <- function(
+    obj = combined.obj, ident,
+    plot = TRUE, thr.hist = 30,
+    ...) {
+  .Deprecated("plotClusterSizeDistribution()")
+
+  stopifnot(ident %in% colnames(obj@meta.data))
+
+  clust.size.distr <- table(obj@meta.data[, ident])
+  print(clust.size.distr)
+  resX <- gsub(pattern = ".*res\\.", replacement = "", x = ident)
+  ptitle <- paste("Cluster sizes at ", ident)
+  psubtitle <- paste(
+    "Nr.clusters:", length(clust.size.distr),
+    "| median size:", median(clust.size.distr),
+    "| CV:", percentage_formatter(cv(clust.size.distr))
+  )
+  xlb <- "Cluster size (cells)"
+  ylb <- "Nr of Clusters"
+  xlim <- c(0, max(clust.size.distr))
+
+  if (plot) {
+    if (length(clust.size.distr) < thr.hist) {
+      ggExpress::qbarplot(clust.size.distr,
+                          plotname = ptitle, subtitle = psubtitle,
+                          label = clust.size.distr, xlab = "Clusters", ylab = xlb, ...
+      )
+    } else {
+      ggExpress::qhistogram(
+        vec = clust.size.distr, plotname = ptitle, subtitle = psubtitle,
+        xlab = xlb, ylab = ylb, xlim = xlim, ...
+      )
+    }
+  } else {
+    "return vector"
+    clust.size.distr
+  }
+}
+
+
+
+
 #' # _________________________________________________________________________________________________
 #' #' @title seu.add.meta.from.vector
 #' #'
