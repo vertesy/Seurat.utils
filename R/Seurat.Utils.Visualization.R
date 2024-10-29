@@ -1779,7 +1779,7 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = FA
   ident.vec <- as.factor(ident.vec)
   print(table(ident.vec))
   colorlevels <- scales::hue_pal()(length(levels(ident.vec)))
-  if (plot.colors) color_check(colorlevels)
+  if (plot.colors) MarkdownHelpers::color_check(colorlevels)
   if (simple) {
     colorlevels
   } else {
@@ -3130,7 +3130,8 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
 #'
 #' @export
 
-PlotTopGenes <- function(obj = combined.obj, n = 32, exp.slot = "expr.q99") {
+PlotTopGenes <- function(obj = combined.obj, n = 8
+                         , exp.slot = "expr.q99") {
   message("Using obj@misc$", exp.slot)
   stopifnot(inherits(obj, "Seurat"),
     "Requires calling calc.q99.Expression.and.set.all.genes before. " =

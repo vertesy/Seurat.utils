@@ -1,0 +1,359 @@
+# Vignette for 29 functions in Seurat.Utils.Metadata.R
+Updated: 2024/03/26 11:27
+
+Seurat.utils Is a collection of utility functions for Seurat single cell analysis.
+    Functions allow 3D plotting, visualisation of statistics & QC,
+    the automation / multiplexing of plotting, interaction with the Seurat object, etc.
+    Some functionalities require functions from CodeAndRoll and MarkdownReports libraries.> For details, please use the `help()` function, or browse the source code.
+
+#### 1. Get Metadata Column Names Matching Pattern: `getMetaColnames()`
+Retrieves column names from an object's metadata that match a specified pattern.
+
+```r
+ # Assuming `combined.obj` is an object with a meta.data slot
+ getMetaColnames()
+
+
+```
+<br>
+
+#### 2. Check if a Column Exists in the Metadata of an S4 Object: `metaColnameExists()`
+This function checks whether a given column exists in the meta.data of a Seurat object.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 3. getMetadataColumn: `getMetadataColumn()`
+Retrieves a specified metadata column from a Seurat object and returns it as a named vector.
+
+```r
+   # Example usage:
+   batch_metadata <- getMetadataColumn(ColName.metadata = "batch", obj = combined.obj, as_numeric = TRUE)
+
+```
+<br>
+
+#### 4. Get Unique Levels of a Seurat Object Ident Slot: `get_levels_seu()`
+This function extracts the unique levels present in the 'ident' slot of a Seurat object.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 5. Calculate Average Metadata for Seurat Object: `calculateAverageMetaData()`
+Computes specified metrics (e.g., median, mean) for given metadata features across each category
+
+```r
+ # Assuming `obj` is a Seurat object with relevant metadata columns:
+ results <- calculateAverageMetaData(
+   obj = obj,
+   meta.features = c("nFeature_RNA", "percent.ribo"),
+   ident = "ident_column_name",
+   metrics = list("median" = median, "mean" = mean),
+   verbose = TRUE
+ )
+ # This will return a list with data frames containing the median and mean
+ # of "nFeature_RNA" and "percent.ribo" for each category in "ident_column_name".
+
+
+```
+<br>
+
+#### 6. getMedianMetric.lsObj: `getMedianMetric.lsObj()`
+Get the median values of different columns in meta.data, can iterate over a list of Seurat objects.
+
+```r
+   ls.Seurat <- getMedianMetric.lsObj(
+     ls.obj = ls.Seurat, n.datasets = length(ls.Seurat),
+     mColname = "percent.mito"
+   )
+
+```
+<br>
+
+#### 7. getCellIDs.from.meta: `getCellIDs.from.meta()`
+Retrieves cell IDs from a specified metadata column of a Seurat object, where the cell ID matches a provided list of values. The matching operation uses the `%in%` operator.
+
+```r
+   # Example usage:
+   getCellIDs.from.meta()
+
+```
+<br>
+
+#### 8. Add Metadata to a Seurat object, safely with Checks: `addMetaDataSafe()`
+Wrapper function for `AddMetaData` that includes additional checks and assertions.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 9. seu.add.meta.from.vector: `seu.add.meta.from.vector()`
+Adds a new metadata column to a Seurat object.
+
+```r
+   # Example usage:
+   combined.obj <- seu.add.meta.from.vector(
+     obj = combined.obj,
+     metaD.colname = metaD.colname.labeled,
+     Label.per.cell = Cl.Label.per.cell
+   )
+
+```
+<br>
+
+#### 10. Create a Metadata Vector: `create.metadata.vector()`
+This function creates a metadata vector from an input vector and a Seurat object.
+
+```r
+ create.metadata.vector(vec = my_vector, obj = my_seurat_object, min.intersect = 50)
+
+```
+<br>
+
+#### 11. addMetaFraction: `addMetaFraction()`
+Add a new metadata column to a Seurat object, representing the fraction of a gene set in the transcriptome (expressed as a percentage).
+
+```r
+   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.mito", gene.symbol.pattern = "^MT\\.|^MT-")
+   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.ribo", gene.symbol.pattern = "^RPL|^RPS")
+   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.AC.GenBank", gene.symbol.pattern = "^AC[0-9]{6}\\.")
+   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.AL.EMBL", gene.symbol.pattern = "^AL[0-9]{6}\\.")
+   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.LINC", gene.symbol.pattern = "^LINC0")
+   ls.Seurat[[1]] <- addMetaFraction(col.name = "percent.MALAT1", gene.symbol.pattern = "^MALAT1")
+   colnames(ls.Seurat[[1]]@meta.data)
+   HGA_MarkerGenes <- c(
+     "ENO1", "IGFBP2", "WSB1", "DDIT4", "PGK1", "BNIP3", "FAM162A", "TPI1",
+     "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1", "NPAS4", "HK2", "BNIP3L",
+     "JUN", "ENO2", "GAPDH", "ANKRD37", "ALDOA", "GADD45G", "TXNIP"
+   )
+   sobj <- addMetaFraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj = sobj)
+
+```
+<br>
+
+#### 12. add.meta.tags: `add.meta.tags()`
+Add metadata tags to a Seurat object dataset.
+
+```r
+   ls.Seurat[[1]] <- add.meta.tags(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1)
+
+```
+<br>
+
+#### 13. seu.add.meta.from.table: `seu.add.meta.from.table()`
+Add multiple new metadata columns to a Seurat object from a table. #
+
+```r
+   combined.obj <- seu.add.meta.from.table()
+
+```
+<br>
+
+#### 14. seu.map.and.add.new.ident.to.meta: `seu.map.and.add.new.ident.to.meta()`
+Adds a new metadata column to a Seurat object based on an identity mapping table.
+
+```r
+   # Example usage:
+   combined.obj <- seu.map.and.add.new.ident.to.meta(
+     obj = combined.obj,
+     ident.table = clusterIDs.GO.process
+   )
+
+```
+<br>
+
+#### 15. fix.orig.ident: `fix.orig.ident()`
+Remove the string "filtered_feature_bc_matrix." from "orig.ident". Helper function.
+
+```r
+   merged.obj$orig.ident <- fix.orig.ident(obj = merged.obj)
+   table(merged.obj$orig.ident)
+
+```
+<br>
+
+#### 16. seu.RemoveMetadata: `seu.RemoveMetadata()`
+Remove specified metadata columns from a Seurat object.
+
+```r
+ combined.obj <- seu.RemoveMetadata(obj = combined.obj, cols_remove = c("column1", "column2"))
+
+```
+<br>
+
+#### 17. Save Metadata from a List of Seurat Objects: `saveLsSeuratMetadata()`
+This function takes a list of Seurat objects, extracts their metadata, and saves it to a file with a specified suffix.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 18. Transfer Multiple Metadata Columns Between Two Seurat Objects: `transferMetadata()`
+Transfers specified metadata columns from one Seurat object to another,
+
+```r
+ # Assuming `object1` and `object2` are Seurat objects, and you want to transfer
+ # metadata columns named 'patientID' and 'treatmentGroup' from `object1` to `object2`:
+ object2 <- transferMetadata(
+   from = object1, to = object2,
+   colname_from = c("patientID", "treatmentGroup")
+ )
+
+
+```
+<br>
+
+#### 19. Sample N % of a dataframe (obj@metadata), and return rownames (cell IDs).: `sampleNpc()`
+This function samples a specified percentage of a dataframe (specifically a subset
+
+```r
+   # Example usage:
+   # Suppose 'MetaData' is a dataframe and 'Pass' is a boolean vector with the same length.
+   # The following example will sample 10% of the rows of 'MetaData' where 'Pass' is TRUE.
+   sampleNpc(metaDF = MetaData[which(Pass), ], pc = 0.1)
+
+```
+<br>
+
+#### 20. Combine Metadata from a list of Seurat objects and Write to TSV: `writeCombinedMetadataToTsvFromLsObj()`
+
+
+```r
+ # Assuming a list of Seurat objects with meta.data
+ mergedMetaData <- writeMetadataToTsv(seuratObjectsList, cols.remove = c("column1", "column2"))
+
+
+```
+<br>
+
+#### 21. Plot Metadata Correlation Heatmap: `plotMetadataCorHeatmap()`
+This function plots a heatmap of metadata correlation values. It accepts a Seurat object
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 22. Calculate and plot heatmap of cluster medians: `heatmap_calc_clust_median()`
+This function calculates the median of specified variables in a dataframe,
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 23. plotMetadataMedianFractionBarplot: `plotMetadataMedianFractionBarplot()`
+Generates a barplot of metadata median values.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 24. Plot Metadata Category Pie Chart: `plotMetadataCategPie()`
+Generates a pie chart visualizing the distribution of categories within a specified
+
+```r
+ plotMetadataCategPie(metacol = "Singlet.status",
+                      plot_name = "Singlet Status Distribution",
+                      obj = combined.obj,
+                      max.categs = 20,
+                      both_pc_and_value = TRUE)
+
+
+```
+<br>
+
+#### 25. Rename Azimuth Columns in Seurat Object: `renameAzimuthColumns()`
+Dynamically renames specified metadata columns in a Seurat object, particularly those
+
+```r
+ # Assuming `obj` is a Seurat object with metadata columns following the "predicted." pattern:
+ obj <- renameAzimuthColumns(obj, ref = "humancortexref", prefix = "azi")
+ # This will rename columns like "predicted.class" to "azi.humancortex.class"
+ # and include "mapping.score" as "azi.humancortex.mapping.score"
+
+
+```
+<br>
+
+#### 26. Rename Small Categories in Seurat Object Metadata: `renameSmallCategories()`
+This function renames categories within a specified identity column of a
+
+```r
+ # Assuming obj is a Seurat object with identity columns "ident1" and "ident2":
+ idents <- c("ident1", "ident2")
+ obj <- renameSmallCategories(obj, idents = idents)
+
+
+```
+<br>
+
+#### 27. Transfer labels from a reference Seurat object to a query Seurat object: `transferLabelsSeurat()`
+Function to transfer labels from a reference Seurat object to a query Seurat object
+
+```r
+ # combined.objX <- transferLabelsSeurat(named_ident = 'RNA_snn_res.0.3.ordered.ManualNames',
+ #                                     reference_obj = reference_obj,
+ #                                     query_obj = combined.obj)
+
+
+```
+<br>
+
+#### 28. Extract meta.data Column Names Matching a Pattern: `.metaColnames()`
+This function matches the best identity from `ident_to_rename` to `reference_ident` in an object,
+
+```r
+ # Assuming 'df' is a dataframe with column names "azi.one", "azi.two", "other"
+ extract_matching_columns(df, "^azi\\.")
+
+```
+<br>
+
+#### 29. Match and Translate Best Identity: `matchBestIdentity()`
+Used for mapping identity columns across objects. This function replaces each
+
+```r
+ updated_obj <- matchBestIdentity(my_obj, "origin_identity", "target_identity")
+
+```
+<br>
+
+#### 30. Find Best Match: Replace Categories by the Most Frequent Match: `.replace_by_most_frequent_categories()`
+NA
+
+```r
+ .replace_by_most_frequent_categories(df = my_data)
+ (MXX <- as.tibble(structure(
+   c(
+     "Adjut", "Adjut", "Yearn", "Adjut", "Dwarf", "Adjut",
+     "Dwarf", "Adjut", "Dwarf", "Yearn", "Dwarf", "Dwarf", "Dwarf",
+     "Yearn", "Dwarf", "Dwarf", "Dwarf", "Zebra", "Yucca", "Plyer",
+     "Blaze", "Blaze", "Dazed", "Blaze", "Swept", "Bold", "Vixen",
+     "Bold", "Swept", "Dazed", "Mirth", "Witch", "Vixen", "Dazed",
+     "Swept", "Mirth", "Swept", "Vexed", "Query", "Yolk"
+   ),
+   .Dim = c(20L, 2L), .Dimnames =
+     list(NULL, c("RNA_snn_res.0.1.ordered", "RNA_snn_res.0.3.ordered"))
+ )))
+
+ z <- .replace_by_most_frequent_categories(df = MXX)
+ head(cbind(MXX[, 1], z[, 1]))
+
+```
+<br>
+

@@ -1,0 +1,1053 @@
+# Vignette for 100 functions in Seurat.Utils.R
+Updated: 2024/03/26 11:33
+
+Seurat.utils Is a collection of utility functions for Seurat single cell analysis.
+    Functions allow 3D plotting, visualisation of statistics & QC,
+    the automation / multiplexing of plotting, interaction with the Seurat object, etc.
+    Some functionalities require functions from CodeAndRoll and MarkdownReports libraries.> For details, please use the `help()` function, or browse the source code.
+
+#### 1. parallel.computing.by.future: `parallel.computing.by.future()`
+Run gc(), load multi-session computing and extend memory limits.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 2. Intersect Genes with Seurat Object: `IntersectGeneLsWithObject()`
+Intersects a set of gene names with those found in a Seurat object.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 3. Intersect Genes with the List of Noticeably Expressed Genes: `SelectHighlyExpressedGenesq99()`
+Intersects a vector of gene names with a Seurat object to find genes that are both
+
+```r
+ # Assuming `genes` is a vector of gene names and `
+
+
+```
+<br>
+
+#### 4. SmallestNonAboveX: `SmallestNonAboveX()`
+replace small values with the next smallest value found, which is >X.
+
+```r
+   SmallestNonZero(vec = df.markers$"p_val")
+
+```
+<br>
+
+#### 5. AreTheseCellNamesTheSame: `AreTheseCellNamesTheSame()`
+Assert and compare two character vectors (e.g.: cell IDs) how much they overlap and
+
+```r
+
+
+```
+<br>
+
+#### 6. Add to Misc or Tools Slot: `addToMiscOrToolsSlot()`
+This function creates and adds a sub-slot to either the 'misc' or 'tools' slot of a
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 7. Display Slots in the @tools of an Seurat Object: `showToolsSlots()`
+
+
+```r
+
+
+```
+<br>
+
+#### 8. Display Slots in the @misc of an Seurat Object: `showMiscSlots()`
+See `showToolsSlots` for details. Prints the names of slots in the `@misc` of a given object.
+
+```r
+
+
+```
+<br>
+
+#### 9. calc.q99.Expression.and.set.all.genes: `calc.q99.Expression.and.set.all.genes()`
+Calculate the gene expression of the e.g.: 99th quantile (expression in the top 1% cells).
+
+```r
+   combined.obj <- calc.q99.Expression.and.set.all.genes(
+     obj = combined.obj, quantileX = 0.9,
+     max.cells = 25000
+   )
+   head(sort(as.numeric.wNames(obj@misc$expr.q90), decreasing = TRUE))
+   combined.obj <- calc.q99.Expression.and.set.all.genes(
+     obj = combined.obj, quantileX = 0.95,
+     max.cells = 25000, set.all.genes = FALSE
+   )
+
+```
+<br>
+
+#### 10. RenameClustering: `RenameClustering()`
+Rename clustering in a Seurat object.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 11. Shorten Clustering Names: `shorten_clustering_names()`
+This function takes in a string representing a clustering name,
+
+```r
+ shorten_clustering_names("RNA_snn_res.0.5.ordered.ManualNames") # Returns 'RNA.0.5.ord.mNames'
+ shorten_clustering_names("RNA_snn_res.0.3.best.matching.names.ManualNames.long") # Returns 'RNA.0.3.bmatch.mNames.L'
+ shorten_clustering_names("RNA_snn_res.1.7.ordered.ManualNames.Simplest") # Returns 'RNA.1.7.ord.mNames.Simplest'
+ shorten_clustering_names("RNA_snn_res.0.5.ordered.ManualNames.Simpler") # Returns 'RNA.0.5.ord.mNames.Simpler'
+
+
+```
+<br>
+
+#### 12. Retrieve Cluster Names: `getClusterNames()`
+Extracts cluster names based on a specified identity class from a Seurat object.
+
+```r
+  getClusterNames(obj = combined.obj, ident = GetClusteringRuns(obj)[2])
+
+```
+<br>
+
+#### 13. GetClusteringRuns: `GetClusteringRuns()`
+Get Clustering Runs: metadata column names.
+
+```r
+  #'   GetClusteringRuns(obj = combined.obj, pat = `*snn_res.*[0-9]$`)
+
+```
+<br>
+
+#### 14. GetNamedClusteringRuns: `GetNamedClusteringRuns()`
+Get Clustering Runs: metadata column names
+
+```r
+   GetNamedClusteringRuns()
+
+```
+<br>
+
+#### 15. GetOrderedClusteringRuns: `GetOrderedClusteringRuns()`
+Get Clustering Runs: metadata column names.
+
+```r
+   GetOrderedClusteringRuns()
+   GetOrderedClusteringRuns(res = 0.5)
+
+```
+<br>
+
+#### 16. GetNumberOfClusters: `GetNumberOfClusters()`
+Get Number Of Clusters #
+
+```r
+   GetNumberOfClusters()
+
+```
+<br>
+
+#### 17. calc.cluster.averages: `calc.cluster.averages()`
+Calculates the average of a metadata column (numeric) per cluster.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 18. plot.expression.rank.q90: `plot.expression.rank.q90()`
+Plot gene expression based on the expression at the 90th quantile
+
+```r
+   plot.expression.rank.q90(gene = "SATB2")
+
+```
+<br>
+
+#### 19. BackupReduction: `BackupReduction()`
+Backup UMAP to `obj@misc$reductions.backup` from `obj@reductions$umap`. #
+
+```r
+   obj <- BackupReduction(obj = obj, dim = 2, reduction = "umap")
+
+```
+<br>
+
+#### 20. SetupReductionsNtoKdimensions: `SetupReductionsNtoKdimensions()`
+Function to calculate N-to-K dimensional umaps (default = 2:3); and back them up to
+
+```r
+   combined.obj <- SetupReductionsNtoKdimensions(obj = combined.obj, nPCs = 10, dimensions = 2:3, reduction = "umap")
+
+```
+<br>
+
+#### 21. RecallReduction: `RecallReduction()`
+Set active UMAP to `obj@reductions$umap` from `obj@misc$reductions.backup`.
+
+```r
+   combined.obj <- RecallReduction(obj = combined.obj, dim = 2, reduction = "umap")
+   qUMAP()
+   combined.obj <- RecallReduction(obj = combined.obj, dim = 3, reduction = "umap")
+   qUMAP()
+
+```
+<br>
+
+#### 22. set.mm: `set.mm()`
+Helps to find metadata columns. It creates a list with the names of of 'obj@meta.data'.
+
+```r
+   set.mm()
+   mm
+
+```
+<br>
+
+#### 23. Get the First Seurat Object from a List of Seurat Objects: `ww.get.1st.Seur.element()`
+#' If provided with a list of Seurat objects, this function returns the first
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 24. recallAllGenes: `recallAllGenes()`
+all.genes set by calc.q99.Expression.and.set.all.genes() #
+
+```r
+   recallAllGenes()
+   all.genes
+
+```
+<br>
+
+#### 25. recall.meta.tags.n.datasets: `recall.meta.tags.n.datasets()`
+Recall  meta.tags from obj@misc to "meta.tags" in the global environment.
+
+```r
+   recall.n.datasets()
+   n.datasets
+
+```
+<br>
+
+#### 26. recall.parameters: `recall.parameters()`
+Recall parameters from obj@misc to "p" in the global environment.
+
+```r
+   recall.parameters()
+   p
+
+```
+<br>
+
+#### 27. recall.genes.ls: `recall.genes.ls()`
+Recall genes.ls from obj@misc to "genes.ls" in the global environment.
+
+```r
+   recall.genes.ls()
+   genes.ls
+
+```
+<br>
+
+#### 28. Save Parameters to Seurat Object: `save.parameters()`
+Stores a list of parameters within the `@misc$p` slot of a Seurat object,
+
+```r
+   save.parameters(obj = combined.obj, params = p)
+
+
+```
+<br>
+
+#### 29. Create Single-Cell Metadata Object for a collection of Seurat Objects: `create_scCombinedMeta()`
+This function creates a metadata object to correspond to a list of
+
+```r
+ sc_meta <- create_scCombinedMeta(experiment = "Experiment1")
+
+```
+<br>
+
+#### 30. Copy Specified Elements from One Seurat Object's @misc to Another's: `copyMiscElements()`
+Copies specified elements from the `@misc` slot of one Seurat object to the `@misc` slot
+
+```r
+ # Assuming `obj1` and `obj2` are Seurat objects and you wish to copy specific elements
+ # from obj1 to obj2, possibly overwriting existing elements in obj2
+ obj2 <- copyMiscElements(obj1, obj2, c("element1", "element2"), overwrite = TRUE)
+
+
+```
+<br>
+
+#### 31. Copy Tools Slots from Multiple Seurat Objects: `copyCompleteToolsSlots()`
+This function copies the `@tools` slots from a list of Seurat objects into a new slot
+
+```r
+ # Assuming `ls.obj` is a list of Seurat objects and `obj.to` is a target Seurat object
+ obj.to <- copyCompleteToolsSlots(ls.obj, obj.to, overwrite = TRUE, new.slot = "per.experiment")
+
+```
+<br>
+
+#### 32. Subset a Seurat Object by Identity: `subsetSeuObjByIdent()`
+Subsets a Seurat object based on a specified identity column and values. It allows
+
+```r
+ # Assuming `seurat_obj` is your Seurat object and you want to subset based on cluster 1
+ subsetted_obj <- subsetSeuObjByIdent(
+   obj = seurat_obj, ident = "your_ident_column",
+   clusters = c(1), invert = FALSE
+ )
+
+
+```
+<br>
+
+#### 33. downsampleSeuObj: `downsampleSeuObj()`
+Subset a compressed Seurat object and save it in the working directory.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 34. downsampleSeuObj.and.Save: `downsampleSeuObj.and.Save()`
+Subset a compressed Seurat Obj and save it in wd. #
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 35. Sample Cells From Identifiers in Seurat Object: `downsampleSeuObjByIdentAndMaxcells()`
+This function samples a specified maximum number of cells from each identity class
+
+```r
+ # Assuming `seuratObj` is a Seurat object with identities stored in its metadata
+ sampledSeuratObj <- downsampleSeuObjByIdentAndMaxcells(obj = seuratObj, ident = "cellType", max.cells = 100)
+
+
+```
+<br>
+
+#### 36. Remove Residual Small Clusters from Seurat Object: `removeResidualSmallClusters()`
+Removes clusters containing fewer cells than specified by `max.cells`
+
+```r
+   combined.obj <- removeResidualSmallClusters(obj = combined.obj)
+
+
+```
+<br>
+
+#### 37. dropLevelsSeurat: `dropLevelsSeurat()`
+Drop unused levels from factor variables in a Seurat object.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 38. Remove Clusters and Drop Levels: `removeClustersAndDropLevels()`
+This function removes residual small clusters from specified Seurat objects and
+
+```r
+ # Process the 2nd and 3rd datasets
+ removeClustersAndDropLevels(ls_obj, indices = c(2, 3))
+
+
+```
+<br>
+
+#### 39. Remove Cells by Dimension Reduction: `removeCellsByUmap()`
+This function applies a cutoff in the specified dimension of a given
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 40. Downsample a List of Seurat Objects to a Specific Number of Cells: `downsampleListSeuObjsNCells()`
+Downsampling each Seurat object in a list to a specified number of cells. This function is
+
+```r
+   downsampledSeuratList <- downsampleListSeuObjsNCells(
+     ls.obj =
+       list(yourSeuratObj1, yourSeuratObj2), NrCells = 2000
+   )
+   downsampledSeuratList <- downsampleListSeuObjsNCells(NrCells = 200)
+
+
+```
+<br>
+
+#### 41. Downsample a List of Seurat Objects to a Fraction: `downsampleListSeuObjsPercent()`
+Downsampling a list of Seurat objects to a specified fraction of their original size.
+
+```r
+   downsampled_objs <- downsampleListSeuObjsPercent(ls.obj = yourListOfSeuratObjects, fraction = 0.1)
+
+
+```
+<br>
+
+#### 42. Add.DE.combined.score: `Add.DE.combined.score()`
+Add a combined score to differential expression (DE) results. The score is
+
+```r
+   df.markers <- Add.DE.combined.score(df.markers)
+
+```
+<br>
+
+#### 43. Save Top 25 Markers per Cluster: `StoreTop25Markers()`
+Stores the top 25 markers for each cluster identified in a Seurat object, based on
+
+```r
+   combined.obj <- StoreTop25Markers(obj = combined.obj, df_markers = df.markers, res = 0.5)
+
+
+```
+<br>
+
+#### 44. Store All Differential Expression Markers: `StoreAllMarkers()`
+Saves the complete output table from `FindAllMarkers()` to a Seurat object, facilitating
+
+```r
+   combined.obj <- StoreAllMarkers(obj = combined.obj, df_markers = df.markers, res = 0.5)
+
+
+```
+<br>
+
+#### 45. Get Top Differential Expression Genes Data Frame: `GetTopMarkersDF()`
+Retrieves a data frame of the top N differentially expressed genes from
+
+```r
+   topMarkersDF <- GetTopMarkersDF(dfDE = df.markers, n = 3)
+
+
+```
+<br>
+
+#### 46. Get Top Differential Expression Markers from DGEA Results: `GetTopMarkers()`
+Retrieves the top N differentially expressed genes from the results of a differential
+
+```r
+   topMarkers <- GetTopMarkers(df = df.markers, n = 3)
+
+
+```
+<br>
+
+#### 47. AutoLabelTop.logFC: `AutoLabelTop.logFC()`
+Create a new "named identity" column in the metadata of a Seurat object,
+
+```r
+   combined.obj <- AutoLabelTop.logFC()
+   combined.obj$"cl.names.top.gene.res.0.5"
+
+```
+<br>
+
+#### 48. AutoLabel.KnownMarkers: `AutoLabel.KnownMarkers()`
+Creates a new "named identity" column in the metadata of a Seurat object,
+
+```r
+   combined.obj <- AutoLabel.KnownMarkers()
+   DimPlot.ClusterNames(ident = "cl.names.KnownMarkers.0.5")
+
+```
+<br>
+
+#### 49. Calculate Sparse Correlation Matrix: `sparse.cor()`
+Computes a sparse correlation matrix from a given sparse matrix input. This function is
+
+```r
+ library(Matrix)
+ smat <- Matrix(rnorm(1000), nrow = 100, sparse = TRUE)
+ cor_res <- sparse.cor(smat)
+ print(cor_res$cor)
+
+
+```
+<br>
+
+#### 50. Calc.Cor.Seurat: `Calc.Cor.Seurat()`
+Calculate gene correlation on a Seurat object.
+
+```r
+   combined.obj <- calc.q99.Expression.and.set.all.genes(combined.obj, quantileX = 0.99, max.cells = 400000, set.all.genes = FALSE)
+   combined.obj <- Calc.Cor.Seurat(assay.use = "RNA", slot.use = "data", digits = 2, obj = combined.obj, quantile = 0.99, max.cells = 40000)
+
+```
+<br>
+
+#### 51. Plot Gene Correlation Heatmap: `plot.Gene.Cor.Heatmap()`
+Generates a heatmap visualization of gene correlations based on expression data.
+
+```r
+   plot.Gene.Cor.Heatmap(genes = c("Gene1", "Gene2", "Gene3"), obj = combined.obj)
+
+
+```
+<br>
+
+#### 52. Add Prefixes to Cell Names in Seurat Objects: `prefix_cells_seurat()`
+Adds prefixes derived from a vector of identifiers to cell names in a list of Seurat objects.
+
+```r
+ # Assuming seurat_obj1 and seurat_obj2 are Seurat objects
+ ls_obj <- list(seurat_obj1, seurat_obj2)
+ obj_IDs <- c("sample1", "sample2")
+ ls_obj_prefixed <- prefix_cells_seurat(ls_obj = ls_obj, obj_IDs = obj_IDs)
+ # Now each cell name in seurat_obj1 and seurat_obj2 will be prefixed with 'sample1_' and 'sample2_', respectively.
+
+
+```
+<br>
+
+#### 53. Check Prefix in Seurat Object Cell IDs: `find_prefix_in_cell_IDs()`
+This function checks if a prefix has been added to the standard
+
+```r
+ # Assuming 'obj' is your Seurat object
+ # prefix <- find_prefix_in_cell_IDs(obj)
+
+
+```
+<br>
+
+#### 54. Create Cluster Labels for Each Cell: `seu.Make.Cl.Label.per.cell()`
+Generates labels for each cell by combining gene names and cluster IDs. This function
+
+```r
+   # Assuming `TopGenes.Classic` is a named vector of top genes and cluster IDs,
+   # and `metaD.CL.colname` is a column in metadata with cluster IDs per cell
+   cellLabels <- seu.Make.Cl.Label.per.cell(
+     TopGenes = TopGenes.Classic,
+     clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname)
+   )
+   # `cellLabels` now contains labels for each cell in the format "GeneName.ClusterID"
+
+
+```
+<br>
+
+#### 55. Retrieve the Top Variable Genes from a Seurat Object: `GetMostVarGenes()`
+Retrieves the names of the most variable genes from a Seurat object,
+
+```r
+   # Assuming `combined.obj` is a Seurat object with computed variable genes
+   varGenes <- GetMostVarGenes(obj = combined.obj, nGenes = 100)
+
+
+```
+<br>
+
+#### 56. Check Gene Names in Seurat Object: `gene.name.check()`
+Examines gene names in a Seurat object for specific naming conventions,
+
+```r
+   # Assuming `combined.obj` is your Seurat object
+   gene.name.check(Seu.obj = combined.obj)
+   # This will print examples of gene names containing '-', '_', '.', and '.AS[1-9]'
+
+
+```
+<br>
+
+#### 57. Check if Gene Names exist in Seurat Object or HGNC Database: `check.genes()`
+Verifies the presence of specified gene names within a Seurat object or
+
+```r
+   # Check for the presence of a gene name in uppercase
+   check.genes(list.of.genes = "top2a", makeuppercase = TRUE, obj = combined.obj)
+
+   # Check for a gene name with verbose output and HGNC lookup
+   check.genes(list.of.genes = "VGLUT2", verbose = TRUE, HGNC.lookup = TRUE, obj = combined.obj)
+
+
+```
+<br>
+
+#### 58. Fix Zero Indexing in Seurat Clustering: `fixZeroIndexing.seurat()`
+Adjusts Seurat object metadata to fix zero-based cluster indexing, converting it to one-based indexing.
+
+```r
+   # Assuming `org` is a Seurat object with zero-based cluster indexing
+   org <- fixZeroIndexing.seurat(ColName.metadata = "res.0.6", obj = org)
+   # Now, `org` has its cluster indices in the 'res.0.6' metadata column adjusted to one-based indexing
+
+
+```
+<br>
+
+#### 59. Calculate Fraction of Genes in Transcriptome: `CalculateFractionInTrome()`
+Calculates the fraction of specified genes within the entire transcriptome of
+
+```r
+   # Assuming `combined.obj` is your Seurat object
+   fractionInTranscriptome <- CalculateFractionInTranscriptome(geneset = c("MALAT1", "GAPDH"), obj = combined.obj)
+   # This will return the fraction of MALAT1 and GAPDH in the transcriptome of each cell
+
+
+```
+<br>
+
+#### 60. AddNewAnnotation: `AddNewAnnotation()`
+This function creates a new metadata column based on an existing metadata column
+
+```r
+   ls.Subset.ClusterLists <- list("hESC.h9" = c("4", "10", "14"), "hESC.176" = c("0", "1", "2"))
+   AddNewAnnotation()
+
+```
+<br>
+
+#### 61. whitelist.subset.ls.Seurat: `whitelist.subset.ls.Seurat()`
+Subsets cells in a list of Seurat objects based on an externally provided list of cell IDs.
+
+```r
+   ls.Seurat.subset <- whitelist.subset.ls.Seurat(
+     ls.obj = ls.Seurat, metadir = p$"cellWhiteList",
+     whitelist.file = "NonStressedCellIDs.2020.10.21_18h.tsv"
+   )
+
+```
+<br>
+
+#### 62. FindCorrelatedGenes: `FindCorrelatedGenes()`
+Find correlated genes in a Seurat object
+
+```r
+   FindCorrelatedGenes(gene = "TOP2A", obj = combined.obj)
+   write_clip(names(head(topGenes[-(1:6)], n = 50)))
+
+```
+<br>
+
+#### 63. Update Gene Symbols in a Seurat Object: `UpdateGenesSeurat()`
+This function updates gene symbols in a Seurat object based on current gene
+
+```r
+   # Assuming `mySeuratObject` is your Seurat object
+   updatedSeuratObject <- UpdateGenesSeurat(
+     obj = mySeuratObject, species_ = "human",
+     EnforceUnique = TRUE, ShowStats = TRUE
+   )
+   # `updatedSeuratObject` now has updated gene symbols
+
+
+```
+<br>
+
+#### 64. Rename Gene Symbols in a Seurat Object: `RenameGenesSeurat()`
+This function replaces gene names across various slots within a specified assay
+
+```r
+   # Assuming `SeuratObj` is your Seurat object
+   # and `HGNC.updated.genes` contains the updated gene symbols
+   SeuratObj <- RenameGenesSeurat(
+     obj = SeuratObj,
+     newnames = HGNC.updated.genes$Suggested.Symbol
+   )
+   # `SeuratObj` now has updated gene symbols in the specified assay and slots
+
+
+```
+<br>
+
+#### 65. Check and Rename Gene Names in Seurat Assay Object: `.check_and_rename()`
+This function renames rows (genes) in a specified slot of a Seurat assay object.
+
+```r
+ # Assuming 'seurat_obj' is a Seurat object and 'new_gene_names' is a vector of gene names
+ updated_assay <- check_and_rename(
+   assayobj = seurat_obj[["RNA"]],
+   newnames = new_gene_names,
+   layer.name = "counts"
+ )
+
+```
+<br>
+
+#### 66. Remove Specific Genes from a Seurat Object: `RemoveGenesSeurat()`
+Removes specified genes from the metadata, counts, data, and scale.data slots of a Seurat object.
+
+```r
+   # Assuming `SeuratObj` is your Seurat object and you want to remove the gene "TOP2A"
+   updatedSeuratObj <- RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
+   # Now `updatedSeuratObj` does not contain "TOP2A" in the specified slots
+
+
+```
+<br>
+
+#### 67. Enforce Unique HGNC Gene Symbols: `HGNC.EnforceUnique()`
+Ensures that gene symbols are unique after being updated with HGNC symbols. This function
+
+```r
+   # Assuming `SymUpd` is your data frame of updated symbols from HGNChelper::checkGeneSymbols()
+   uniqueSymbols <- HGNC.EnforceUnique(updatedSymbols = SymUpd)
+   # `uniqueSymbols` now contains unique gene symbols in its third column
+
+
+```
+<br>
+
+#### 68. Gene Symbol Update Statistics: `GetUpdateStats()`
+Generates statistics on the gene symbol updates performed by `UpdateGenesSeurat()`.
+
+```r
+   # Assuming `HGNC.updated.genes` is your data frame containing the original and
+   # suggested gene symbols, as returned by `UpdateGenesSeurat()`
+   updateStats <- GetUpdateStats(genes = HGNC.updated.genes)
+   # `updateStats` now contains the update statistics, including percentage and count of updated genes
+
+
+```
+<br>
+
+#### 69. PlotUpdateStats: `PlotUpdateStats()`
+Creates a scatter plot of update statistics.
+
+```r
+   PlotUpdateStats(mat = result.of.GetUpdateStats)
+
+```
+<br>
+
+#### 70. Convert10Xfolders: `Convert10Xfolders()`
+This function takes a parent directory with a number of subfolders, each
+
+```r
+
+
+```
+<br>
+
+#### 71. ConvertDropSeqfolders: `ConvertDropSeqfolders()`
+This function takes a parent directory with a number of subfolders, each
+
+```r
+   ConvertDropSeqfolders(InputDir = InputDir)
+
+```
+<br>
+
+#### 72. LoadAllSeurats: `LoadAllSeurats()`
+This function loads all Seurat objects found in a directory. It also works with
+
+```r
+   ls.Seurat <- LoadAllSeurats(InputDir = InputDir)
+
+```
+<br>
+
+#### 73. Load 10X Genomics Data as Seurat Object: `read10x()`
+Reads 10X Genomics dataset files (gzipped) including matrix, features, and barcodes,
+
+```r
+   # Replace `path_to_10x_data` with the path to your 10X data directory
+   seuratObject <- read10x(dir = "path_to_10x_data")
+   # `seuratObject` is now a Seurat object containing the loaded 10X data
+
+
+```
+<br>
+
+#### 74. .saveRDS.compress.in.BG: `.saveRDS.compress.in.BG()`
+Save and RDS object and compress resulting file in the background using system(gzip). OS X or unix.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 75. isave.RDS: `isave.RDS()`
+Save an RDS object, using a faster and efficient compression method that runs in the background.
+
+```r
+   isave.RDS(my.R.object)
+
+```
+<br>
+
+#### 76. Save an R Object Using 'qs' Package for Fast Compressed Saving: `xsave()`
+This function saves an R object to a file in a quick and efficient format using the 'qs' package.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 77. Read an R Object Using 'qs' Package for Fast Decompression: `xread()`
+This function reads an R object from a file saved in a format specific to the 'qs' package,
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 78. Get the number of CPUs to use for CBE processing: `.getCPUsCBE()`
+This function checks for the presence of a global `CBE.params` list and,
+
+```r
+ # Assuming CBE.params does not exist or does not have a `cpus` entry
+ getCPUsCBE() # returns 8 by default
+
+ # Assuming CBE.params exists and has a `cpus` entry of 4
+ getCPUsCBE() # returns 3
+
+```
+<br>
+
+#### 79. isave.image: `isave.image()`
+Save an image of the current workspace using a faster and efficient compression
+
+```r
+   isave.image(my.R.image)
+
+```
+<br>
+
+#### 80. Save workspace - qsave.image: `qsave.image()`
+Faster saving of workspace, and compression outside R, when it can run in the background.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 81. Find 'Outs' Subdirectories in Specified Subdirectories: `find10XoutputFolders()`
+This function searches through specified subdirectories within a root directory
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 82. Find Specific Files in Specified Subdirectories: `# findBamFilesInSubdirs()`
+This function searches through specified subdirectories within a root directory
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 83. Clip Suffixes from 10X Cell Names: `clip10Xcellname()`
+Removes suffixes from cell names that are added by 10X technology and Seurat during data processing.
+
+```r
+ cellnames <- c("cell1_1", "cell2_2")
+ clip10Xcellname(cellnames)
+
+```
+<br>
+
+#### 84. Add Suffix to Cell Names (e.g. lane suffix: _1): `make10Xcellname()`
+Appends a specified suffix to cell names to mimic lane suffixes used in 10X datasets.
+
+```r
+ cellnames <- c("cell1", "cell2")
+ make10Xcellname(cellnames)
+
+```
+<br>
+
+#### 85. plotTheSoup: `plotTheSoup()`
+Plot stats about the ambient RNA content in a 10X experiment.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 86. jJaccardIndexVec: `jJaccardIndexVec()`
+Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 87. jPairwiseJaccardIndexList: `jPairwiseJaccardIndexList()`
+Create a pairwise jaccard similarity matrix across all combinations of columns in
+
+```r
+   jPairwiseJaccardIndexList(lsG = ls_genes)
+
+```
+<br>
+
+#### 88. jPresenceMatrix: `jPresenceMatrix()`
+Make a binary presence matrix from a list. Source:
+
+```r
+   df.presence <- jPresenceMatrix(string_list = lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4))
+
+```
+<br>
+
+#### 89. jJaccardIndexBinary: `jJaccardIndexBinary()`
+Calculate Jaccard Index. Modified from:
+
+```r
+   JaccardSimilarity <- jJaccardIndexBinary(
+     x = sample(x = 0:1, size = 100, replace = TRUE),
+     y = sample(x = 0:1, size = 100, replace = TRUE)
+   )
+
+```
+<br>
+
+#### 90. jPairwiseJaccardIndex: `jPairwiseJaccardIndex()`
+Create a pairwise jaccard similarity matrix across all combinations of columns in
+
+```r
+   PairwiseJaccardIndices <- jPairwiseJaccardIndex(binary.presence.matrix = df.presence)
+
+```
+<br>
+
+#### 91. Compare variable features and their ranks in two Seurat objects.: `compareVarFeaturesAndRanks()`
+This function compares variable features (genes) between two Seurat objects,
+
+```r
+ # Assuming obj1 and obj2 are Seurat objects
+ result <- compareVarFeaturesAndRanks(obj1, obj2, cor.plot = TRUE)
+
+```
+<br>
+
+#### 92. Process Seurat Objects in Parallel: `processSeuratObject()`
+Applies a series of Seurat processing steps to each Seurat object in a list.
+
+```r
+ # Assuming ls.Seurat is a list of Seurat objects and params is a list of parameters
+ # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
+
+```
+<br>
+
+#### 93. Regress Out and Recalculate Seurat: `regress_out_and_recalculate_seurat()`
+The function performs a series of calculations and manipulations on a Seurat object,
+
+```r
+ # Assuming 'seurat_obj' is a valid Seurat object and 'vars' is a vector of variable names to be regressed out.
+ result <- regress_out_and_recalculate_seurat(seurat_obj, vars, suffix = "_regressed")
+
+```
+<br>
+
+#### 94. Check List Elements: `.checkListElements()`
+Tests if list elements are defined and reports the value or issues a warning.
+
+```r
+ param_list <- list(a = 1, b = NULL)
+ elements <- c("a", "b", "c")
+ .checkListElements(param_list, elements)
+
+```
+<br>
+
+#### 95. Get number of scaled features: `.getNrScaledFeatures()`
+This function extracts the number of scaled features, the number of principal components,
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 96. Get number of principal components: `.getNrPCs()`
+Parse cell and feature count to a string.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 97. Parse regression variables for name tagging: `.parseRegressionVariablesForScaleData()`
+This function removes layers from a Seurat object's RNA assay based on a specified regular expression pattern.
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 98. Parse key parameters from an object and format as a string: `.parseKeyParams()`
+NA
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 99. Parse basic obj stats: `.parseBasicObjStats()`
+NA
+
+```r
+No examples found.
+
+```
+<br>
+
+#### 100. Remove Scale Data from Seurat Objects: `removeScaleData()`
+NA
+
+```r
+ # Assuming `seuratList` is a list of Seurat objects
+ seuratList <- removeScaleData(seuratList)
+
+```
+<br>
+
+#### 101. Remove Layers from Seurat Object by Pattern: `removeLayersByPattern()`
+NA
+
+```r
+No examples found.
+
+```
+<br>
+

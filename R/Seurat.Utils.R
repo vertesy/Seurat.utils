@@ -1108,7 +1108,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   if (set.misc) obj@misc[[slot_name]] <- expr.q99
 
   iprint(
-    "Quantile", quantileX, "is now stored under obj@misc$all.genes and $", slot_name,
+    "Quantile", quantileX, "is now stored under obj@misc$", slot_name,
     " Please execute all.genes <- obj@misc$all.genes."
   )
   return(obj)
