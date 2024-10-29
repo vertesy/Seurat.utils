@@ -12,7 +12,7 @@ calc.q99.Expression.and.set.all.genes(
   assay = c("RNA", "integrated", "SCT")[1],
   set.misc = TRUE,
   assign_to_global_env = TRUE,
-  suffix = as.character(substitute(obj)),
+  suffix = substitute(obj),
   plot = TRUE,
   show = TRUE,
   obj.version = obj@version

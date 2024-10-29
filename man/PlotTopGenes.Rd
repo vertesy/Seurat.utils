@@ -4,7 +4,7 @@
 \alias{PlotTopGenes}
 \title{Plot Top Genes}
 \usage{
-PlotTopGenes(obj = combined.obj, n = 32, exp.slot = "expr.q99")
+PlotTopGenes(obj = combined.obj, n = 8, exp.slot = "expr.q99")
 }
 \arguments{
 \item{obj}{A Seurat object containing the data for plotting. Default: combined.obj.}

@@ -825,7 +825,7 @@ AreTheseCellNamesTheSame <- function(
     names = c("Cells in Targ.Ampl", "Cells in GEX"),
     min.overlap = 0.33) {
   Cellname.Overlap <- list(vec1, vec2)
-  names(Cellname.Overlap) <- if (!isFALSE(names)) names else c(substitute(vec1), substitute(vec2))
+  names(Cellname.Overlap) <- if (!isFALSE(names)) names else c(substitute_deparse(vec1), substitute_deparse(vec2))
 
   cells.in.both <- intersect(vec1, vec2)
   sbb <- percentage_formatter(length(cells.in.both) / length(vec2), suffix = "of cells (GEX) in have a UVI assigned")
@@ -865,9 +865,9 @@ AreTheseCellNamesTheSame <- function(
 #' @export
 addToMiscOrToolsSlot <- function(obj, pocket_name = "misc",
                                  slot_value = NULL,
-                                 slot_name = deparse(substitute(slot_value)),
+                                 slot_name = substitute_deparse(slot_value),
                                  sub_slot_value = NULL,
-                                 sub_slot_name = deparse(substitute(sub_slot_value)),
+                                 sub_slot_name = substitute_deparse(sub_slot_value),
                                  overwrite = FALSE) {
   message("Running addToMiscOrToolsSlot()...")
 
@@ -965,7 +965,7 @@ showMiscSlots <- function(obj = combined.obj, max.level = 1, subslot = NULL,
 
   # Path to slot
   msg <- paste0(substitute(obj), "@misc")
-  if (!is.null(subslot)) msg <- paste0(msg, "$", substitute(subslot))
+  if (!is.null(subslot)) msg <- paste0(msg, "$", substitute_deparse(subslot))
   message(msg)
 }
 
@@ -1015,7 +1015,7 @@ calc.q99.Expression.and.set.all.genes <- function(
     assay = c("RNA", "integrated", "SCT")[1],
     set.misc = TRUE,
     assign_to_global_env = TRUE,
-    suffix = as.character(substitute(obj)),
+    suffix = substitute(obj),
     plot = TRUE,
     show = TRUE,
     obj.version = obj@version
@@ -2127,7 +2127,7 @@ downsampleSeuObj.and.Save <- function(
   obj_Xpc <- downsampleSeuObj(obj = obj, fractionCells = fraction, seed = seed)
   nr.cells.kept <- ncol(obj_Xpc)
 
-  # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute(obj)),
+  # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute_deparse(obj),
   # suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
   xsave(obj_Xpc,
     suffix = ppp(suffix, nr.cells.kept, "cells.with.min.features", min.features),
@@ -5508,8 +5508,8 @@ compareVarFeaturesAndRanks <- function(
   stopifnot(!is.null(obj1), !is.null(obj2))
   stopifnot(is(obj1, "Seurat"), is(obj2, "Seurat"))
 
-  name1 <- deparse(substitute(obj1))
-  name2 <- deparse(substitute(obj2))
+  name1 <- substitute_deparse(obj1)
+  name2 <- substitute_deparse(obj2)
 
   var.genes1 <- Seurat::VariableFeatures(obj1)
   var.genes2 <- Seurat::VariableFeatures(obj2)

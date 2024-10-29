@@ -614,7 +614,7 @@ PctCellsAboveX <- function(obj = combined.obj,
                            feature = "TOP2A",
                            ident = GetNamedClusteringRuns(obj = obj, v = FALSE)[1],
                            threshold = 2,
-                           suffix = ppp(substitute(obj), ncol(obj), "thr", threshold),
+                           suffix = ppp(substitute_deparse(obj), ncol(obj), "thr", threshold),
                            box = FALSE,
                            ident.box = NULL,
                            subset_ident = NULL,
@@ -1311,7 +1311,7 @@ scBarplot.FractionAboveThr <- function(
     subtitle = subtitle,
     caption = paste(
       "Overall average (black line):", iround(total_average), "% |",
-      substitute(obj)
+      substitute_deparse(obj),
     ),
     xlab.angle = 45,
     xlab = "Clusters",
@@ -2519,7 +2519,7 @@ multiFeaturePlot.A4 <- function(
     list.of.genes,
     obj = combined.obj,
     subdir = TRUE,
-    foldername = substitute(list.of.genes),
+    foldername = substitute_deparse(list.of.genes),
     subtitle.from.names = TRUE,
     plot.reduction = "umap",
     intersectionAssay = c("RNA", "integrated")[1],
@@ -2602,7 +2602,7 @@ multiFeaturePlot.A4 <- function(
   if (subdir) MarkdownReports::create_set_OutDir(ParentDir, verbose = FALSE)
   if (saveGeneList) {
     if (is.null(obj@misc$gene.lists)) obj@misc$gene.lists <- list()
-    obj@misc$gene.lists[[substitute(list.of.genes)]] <- list.of.genes.found
+    obj@misc$gene.lists[[substitute_deparse(list.of.genes)]] <- list.of.genes.found
     print("Genes saved under: obj@misc$gene.lists")
     return(obj)
   }
@@ -2915,7 +2915,7 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj,
   )
 
   ParentDir <- OutDir
-  if (is.null(foldername)) foldername <- deparse(substitute(genes))
+  if (is.null(foldername)) foldername <- substitute_deparse(genes)
 
   MarkdownReports::create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
 
@@ -4599,7 +4599,7 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
     is.numeric(plotWidth), is.numeric(plotHeight)
   )
 
-  obj.name <- deparse(substitute(obj))
+  obj.name <- substitute_deparse(obj)
 
   plot1 <- Seurat::VariableFeaturePlot(obj, assay = assay, ...) +
     theme(panel.background = element_rect(fill = "white")) +

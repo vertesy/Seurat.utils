@@ -10,6 +10,7 @@ addTranslatedMetadata(
   translation_as_named_vec,
   new_col_name = substitute(translation_as_named_vec),
   suffix = NULL,
+  plot = F,
   ...
 )
 }
@@ -21,6 +22,8 @@ addTranslatedMetadata(
 \item{translation_as_named_vec}{A named vector where names are old values and values are new translations. Default: None.}
 
 \item{suffix}{A character string specifying the suffix for the new metadata column name. Default: ".".}
+
+\item{plot}{A logical indicating whether to plot the UMAP for the new metadata. Default: FALSE.}
 }
 \value{
 An updated Seurat object.
