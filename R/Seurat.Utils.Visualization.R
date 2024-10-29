@@ -543,7 +543,7 @@ plotGeneExprHistAcrossCells <- function(
   SUBT <- filter_HP(SummedExpressionPerCell, threshold = thr_expr, return_conclusion = TRUE, plot.hist = FALSE)
 
   if (aggregate) {
-    SUBT <- paste0(SUBT, "\n", length(genes), "genes summed up, e.g: ", kppc(head(genes)))
+    SUBT <- paste0(SUBT, "\n", length(genes), " genes summed up, e.g: ", kppc(head(genes)))
     TTL <- kppd(prefix, plotname[1], suffix)
   } else {
     TTL <- trimws(paste(prefix, plotname[length(plotname)], paste(genes), suffix))
@@ -1236,6 +1236,7 @@ scBarplot.CellsPerCluster <- function(
 #' @param return.df Whether to return the underlying data frame instead of the plot. Default: `FALSE`.
 #' @param label Whether to add labels to the bar plot. Default: NULL.
 #' @param subtitle Optional subtitle for the plot.
+#' @param ext File extension for saving the plot. Default: '.png'.
 #' @param suffix Suffix for the output file name.
 #' @param above Whether to calculate the fraction of cells above or below the threshold. Default: `TRUE`.
 #' @param ... Additional parameters for plotting functions.
@@ -1256,6 +1257,7 @@ scBarplot.FractionAboveThr <- function(
     obj = combined.obj,
     id.col = GetClusteringRuns(obj)[1],
     subtitle = id.col,
+    ext = ".png",
     return.df = FALSE,
     label = NULL,
     suffix = NULL,
@@ -1304,7 +1306,7 @@ scBarplot.FractionAboveThr <- function(
   ggobj <- ggExpress::qbarplot(v.fr_n_cells_above,
     label = label,
     plotname = pname,
-    filename = FixPlotName(kpp(pname, id.col, ".pdf")),
+    filename = FixPlotName(kpp(pname, id.col, ext)),
     suffix = suffix,
     subtitle = subtitle,
     caption = paste(
@@ -1360,6 +1362,7 @@ scBarplot.FractionBelowThr <- function(
     subtitle = id.col,
     suffix = NULL,
     ...) {
+  #
   scBarplot.FractionAboveThr(
     thrX = thrX,
     value.col = value.col,
@@ -1368,7 +1371,8 @@ scBarplot.FractionBelowThr <- function(
     return.df = return.df,
     subtitle = subtitle,
     suffix = suffix,
-    above = FALSE # Set `above` argument to FALSE to get fraction below threshold
+    above = FALSE,  # Set `above` to FALSE to get fraction below threshold
+    ...
   )
 }
 
@@ -2668,6 +2672,7 @@ multiSingleClusterHighlightPlots.A4 <- function(
 
   NrCellsPerCluster <- sort(table(obj[[ident]]), decreasing = TRUE)
   stopifnot(
+    ident %in% colnames(obj@meta.data),
     "Some clusters too small (<20 cells). See: table(obj[[ident]]) | Try: removeResidualSmallClusters()" =
       all(NrCellsPerCluster > 20)
   )
@@ -2677,7 +2682,7 @@ multiSingleClusterHighlightPlots.A4 <- function(
   if (is.null(foldername)) foldername <- "clusters"
   if (subdir) MarkdownReports::create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
 
-  clusters <- unique(obj@meta.data[[ident]])
+  clusters <- sort(unique(obj@meta.data[[ident]]))
 
   DefaultAssay(obj) <- intersectionAssay
 
@@ -2700,13 +2705,15 @@ multiSingleClusterHighlightPlots.A4 <- function(
 
   # Split clusters into lists for plotting
   ls.Clust <- CodeAndRoll2::split_vec_to_list_by_N(1:length(clusters), by = nr.Row * nr.Col)
-  for (i in 1:length(ls.Clust)) {
-    clusters_on_this_page <- clusters[ls.Clust[[i]]]
+  # browser()
+  for (i in 1:length(ls.Clust)) { # for each page
+
+    clusters_on_this_page <- as.character(clusters[ls.Clust[[i]]])
     iprint("page:", i, "| clusters", kppc(clusters_on_this_page))
     (plotname <- kpp(c(prefix, plot.reduction, i, "clusters", ls.Clust[[i]], suffix, format)))
 
     plot.list <- list()
-    for (j in seq(clusters_on_this_page)) {
+    for (j in seq(clusters_on_this_page)) {  # for each cluster
       cl <- clusters_on_this_page[j]
       message(cl)
       plot.list[[j]] <- clUMAP(
