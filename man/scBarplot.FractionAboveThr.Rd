@@ -10,6 +10,7 @@ scBarplot.FractionAboveThr(
   obj = combined.obj,
   id.col = GetClusteringRuns(obj)[1],
   subtitle = id.col,
+  ext = ".png",
   return.df = FALSE,
   label = NULL,
   suffix = NULL,
@@ -28,6 +29,8 @@ scBarplot.FractionAboveThr(
 \item{id.col}{Cluster identity column in metadata. Default: 'cl.names.top.gene.res.0.3'.}
 
 \item{subtitle}{Optional subtitle for the plot.}
+
+\item{ext}{File extension for saving the plot. Default: '.png'.}
 
 \item{return.df}{Whether to return the underlying data frame instead of the plot. Default: \code{FALSE}.}
 
