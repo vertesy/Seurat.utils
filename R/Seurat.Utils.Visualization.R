@@ -378,7 +378,7 @@ PercentInTranscriptome <- function(
 
   qhistogram(Relative.of.Total.Gene.Expression,
     logX = FALSE, logY = TRUE,
-    plotname = "Gene expression as fraction of all UMI's",
+    plotname = "Gene expression as fraction of all transcripts *UMI's)",
     subtitle = "Percentage in RNA-counts",
     xlab = "Percent in Transcriptome (total per gene)",
     ylab = "Number of genes",
