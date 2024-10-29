@@ -3535,7 +3535,13 @@ check.genes <- function(
   message("assay: ", assay.slot, ", data.slot: ", data.slot)
 
   if (makeuppercase) list.of.genes <- toupper(list.of.genes)
-  all_genes <- rownames(GetAssayData(object = obj, assay = assay.slot, slot = data.slot))
+
+  all_genes <-
+    if (obj@version < "5") {
+      rownames(GetAssayData(object = obj, assay = assay.slot, slot = data.slot))
+    } else {
+      rownames(GetAssayData(object = obj, layer = data.slot))
+    }
 
   missingGenes <- setdiff(list.of.genes, all_genes)
   if (length(missingGenes) > 0) {

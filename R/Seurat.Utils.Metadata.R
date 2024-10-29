@@ -26,6 +26,7 @@
 #' @param orig.ident A character string specifying the original metadata to be translated. Default: "RNA_snn_res.0.4".
 #' @param translation_as_named_vec A named vector where names are old values and values are new translations. Default: None.
 #' @param suffix A character string specifying the suffix for the new metadata column name. Default: ".".
+#' @param plot A logical indicating whether to plot the UMAP for the new metadata. Default: FALSE.
 #'
 #' @return An updated Seurat object.
 #'
@@ -37,6 +38,7 @@ addTranslatedMetadata <- function(obj = combined.obj,
                                   translation_as_named_vec,
                                   new_col_name = substitute(translation_as_named_vec),
                                   suffix = NULL,
+                                  plot = F,
                                   ...) {
   # Input assertions
   stopifnot(is(obj, "Seurat"),
@@ -53,8 +55,7 @@ addTranslatedMetadata <- function(obj = combined.obj,
     new = translation_as_named_vec
   )
 
-  # message("new_col_name: ", new_col_name)
-  # clUMAP(ident = new_col_name, obj = obj, caption = NULL, ...)
+  if(plot) clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...)
   return(obj)
 }
 
