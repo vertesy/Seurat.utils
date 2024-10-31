@@ -9,7 +9,7 @@ scBarplotEnrichr(
   tag = "...",
   universe = NULL,
   title = paste("GO Enriched Terms", tag),
-  subtitle = kppws("Input: ", substitute(df.enrichment)),
+  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
   caption = paste0("Input genes: ", length(df.enrichment@gene), " | Enriched terms: ",
     nrow(df.enrichment), " | background genes: ", length(universe)),
   save = TRUE,

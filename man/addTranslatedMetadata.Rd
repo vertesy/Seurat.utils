@@ -8,7 +8,7 @@ addTranslatedMetadata(
   obj = combined.obj,
   orig.ident = "RNA_snn_res.0.4",
   translation_as_named_vec,
-  new_col_name = substitute(translation_as_named_vec),
+  new_col_name = substitute_deparse(translation_as_named_vec),
   suffix = NULL,
   plot = F,
   ...

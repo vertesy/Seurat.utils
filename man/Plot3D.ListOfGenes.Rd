@@ -11,7 +11,7 @@ Plot3D.ListOfGenes(
   cex = 1.25,
   default.assay = c("integrated", "RNA")[2],
   ListOfGenes = c("BCL11B", "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4"),
-  SubFolderName = ppp("plot3D", substitute(ListOfGenes))
+  SubFolderName = ppp("plot3D", substitute_deparse(ListOfGenes))
 )
 }
 \arguments{

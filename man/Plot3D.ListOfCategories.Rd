@@ -10,21 +10,25 @@ Plot3D.ListOfCategories(
   cex = 1.25,
   default.assay = c("integrated", "RNA")[2],
   ListOfCategories = c("v.project", "experiment", "Phase", "integrated_snn_res.0.7"),
-  SubFolderName = ppp("plot3D", substitute(ListOfCategories))
+  SubFolderName = ppp("plot3D", substitute_deparse(ListOfCategories))
 )
 }
 \arguments{
 \item{obj}{A Seurat object for which the plot is to be created. Default: 'combined.obj'.}
 
-\item{annotate.by}{Character vector specifying the metadata column to be used for annotating the plot. Default: 'integrated_snn_res.0.7'.}
+\item{annotate.by}{Character vector specifying the metadata column to be used for annotating
+the plot. Default: 'integrated_snn_res.0.7'.}
 
 \item{cex}{Numeric value specifying the point size on the plot. Default: 1.25.}
 
-\item{default.assay}{Character vector specifying the assay to be used. Default: 'RNA' (second element in the vector c("integrated", "RNA")).}
+\item{default.assay}{Character vector specifying the assay to be used. Default: 'RNA'
+(second element in the vector c("integrated", "RNA")).}
 
-\item{ListOfCategories}{Character vector specifying the categories to be included in the plot. Default categories are "v.project", "experiment", "Phase", "integrated_snn_res.0.7".}
+\item{ListOfCategories}{Character vector specifying the categories to be included in the plot.
+Default categories are "v.project", "experiment", "Phase", "integrated_snn_res.0.7".}
 
-\item{SubFolderName}{String specifying the name of the subfolder where the plots will be saved. By default, it's created using the function ppp("plot3D", substitute(ListOfCategories)).}
+\item{SubFolderName}{String specifying the name of the subfolder where the plots will be saved.
+By default, it's created using the function ppp("plot3D", substitute_deparse(ListOfCategories)).}
 }
 \description{
 This function plots and saves a list of 3D UMAP or tSNE plots using plotly.

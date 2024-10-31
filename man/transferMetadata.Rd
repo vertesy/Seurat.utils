@@ -7,8 +7,8 @@
 transferMetadata(
   from,
   to,
-  colname_from,
-  colname_to = colname_from,
+  colnames_from,
+  colnames_to = colnames_from,
   overwrite = FALSE,
   plotUMAP = TRUE,
   strict = TRUE,
@@ -21,11 +21,11 @@ transferMetadata(
 
 \item{to}{The destination Seurat object to which metadata will be added.}
 
-\item{colname_from}{Vector of names for the columns in the source object's metadata to transfer.}
+\item{colnames_from}{Vector of names for the columns in the source object's metadata to transfer.}
 
-\item{colname_to}{Vector of names for the columns in the destination object's metadata.
-Defaults to the same names as \code{colname_from}. Must be the same length as \code{colname_from} unless
-it is the same as \code{colname_from}.}
+\item{colnames_to}{Vector of names for the columns in the destination object's metadata.
+Defaults to the same names as \code{colnames_from}. Must be the same length as \code{colnames_from} unless
+it is the same as \code{colnames_from}.}
 
 \item{overwrite}{Logical, indicating whether to overwrite the column in the destination object
 if it already exists. Defaults to FALSE.}
@@ -60,7 +60,7 @@ the two objects, which can be useful for understanding the relationship between 
 # metadata columns named 'patientID' and 'treatmentGroup' from `object1` to `object2`:
 object2 <- transferMetadata(
   from = object1, to = object2,
-  colname_from = c("patientID", "treatmentGroup")
+  colnames_from = c("patientID", "treatmentGroup")
 )
 
 }

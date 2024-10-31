@@ -4770,7 +4770,7 @@ xsave <- function(
   if (showMemObject & v) try(memory.biggest.objects(), silent = TRUE)
 
   fnameBase <- trimws(kppu(
-    prefix, substitute_deparse(obj), annot.suffix, suffix, project,
+    prefix, as.character(substitute(obj)), annot.suffix, suffix, project,
     idate(Format = "%Y.%m.%d_%H.%M")
   ), whitespace = "_")
 
