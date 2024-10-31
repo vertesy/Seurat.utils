@@ -36,7 +36,7 @@
 addTranslatedMetadata <- function(obj = combined.obj,
                                   orig.ident = "RNA_snn_res.0.4",
                                   translation_as_named_vec,
-                                  new_col_name = substitute(translation_as_named_vec),
+                                  new_col_name = substitute_deparse(translation_as_named_vec),
                                   suffix = NULL,
                                   plot = F,
                                   ...) {
@@ -683,7 +683,7 @@ seu.add.meta.from.table <- function(obj = combined.obj, meta, suffix = ".fromMet
 seu.map.and.add.new.ident.to.meta <- function(
     obj = combined.obj, ident.table = clusterIDs.GO.process,
     orig.ident = Idents(obj),
-    metaD.colname = substitute(ident.table)) {
+    metaD.colname = substitute_deparse(ident.table)) {
   # identities should match
   {
     Idents(obj) <- orig.ident

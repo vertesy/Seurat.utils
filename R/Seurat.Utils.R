@@ -964,7 +964,7 @@ showMiscSlots <- function(obj = combined.obj, max.level = 1, subslot = NULL,
   str(slotX, max.level = max.level, ...)
 
   # Path to slot
-  msg <- paste0(substitute(obj), "@misc")
+  msg <- paste0(substitute_deparse(obj), "@misc")
   if (!is.null(subslot)) msg <- paste0(msg, "$", substitute_deparse(subslot))
   message(msg)
 }
@@ -1015,7 +1015,7 @@ calc.q99.Expression.and.set.all.genes <- function(
     assay = c("RNA", "integrated", "SCT")[1],
     set.misc = TRUE,
     assign_to_global_env = TRUE,
-    suffix = substitute(obj),
+    suffix = substitute_deparse(obj),
     plot = TRUE,
     show = TRUE,
     obj.version = obj@version
@@ -1494,7 +1494,7 @@ calc.cluster.averages <- function(
       )
     },
     fname = ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)) { # calc.cluster.averages of a m
-  iprint(substitute(obj), "split by", split_by)
+  iprint(substitute_deparse(obj), "split by", split_by)
   if (absolute.thr) iprint("In case of the absolute threshold, only the returned values are correct, the plot annotations are not!")
 
   if (plot.UMAP.too) qUMAP(obj = obj, feature = col_name)
@@ -2266,7 +2266,8 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
 #'   v = TRUE
 #' )
 #'
-RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "orig"), min_count = 100, small_label = "Other", v = TRUE) {
+RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "orig")
+                                   , min_count = 100, small_label = "Other", v = TRUE) {
   # Input assertions
   stopifnot(
     inherits(obj, "Seurat"), # Check if obj is a Seurat object
@@ -2280,12 +2281,22 @@ RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "o
 
   message("backup_col_name: ", backup_col_name)
 
-  categories <- obj@meta.data[[backup_col_name]] <- obj@meta.data[[col_in]] # Extract the specified metadata column
-  category_counts <- table(categories) # Count occurrences of each category
-  small_categories <- names(category_counts[category_counts < min_count]) # Identify small categories
+  # Extract the specified metadata column
+  categories <- obj@meta.data[[backup_col_name]] <- obj@meta.data[[col_in]]
+
+  # Count occurrences of each category
+  category_counts <- table(categories)
+
+  # Identify small categories
+  small_categories <- names(category_counts[category_counts < min_count])
+
   new_categories <- as.character(categories) # Copy original categories
-  new_categories[new_categories %in% small_categories] <- small_label # Relabel small categories
-  obj@meta.data[[col_in]] <- new_categories # Add new column to metadata
+
+  # Relabel small categories
+  new_categories[new_categories %in% small_categories] <- small_label
+
+  # Add new column to metadata
+  obj@meta.data[[col_in]] <- new_categories
 
   if (v) { # Verbose output
     total_cells <- length(categories)
@@ -3249,7 +3260,7 @@ plot.Gene.Cor.Heatmap <- function(
   )
   iprint(length(corgene.names), "genes are more (anti-)correlated than +/-:", min.g.cor)
 
-  pname <- paste0("Pearson correlations of ", substitute(genes), "\n min.cor:", min.g.cor, " | ", assay.use, ".", slot.use)
+  pname <- paste0("Pearson correlations of ", substitute_deparse(genes), "\n min.cor:", min.g.cor, " | ", assay.use, ".", slot.use)
   o.heatmap <- pheatmap::pheatmap(cor.mat[corgene.names, corgene.names], main = pname, cutree_rows = cutRows, cutree_cols = cutCols, ...)
   MarkdownReports::wplot_save_pheatmap(o.heatmap, plotname = make.names(pname))
 
@@ -4678,7 +4689,7 @@ isave.RDS <- function(
     try(obj@misc$p <- p, silent = TRUE)
     try(obj@misc$all.genes <- all.genes, silent = TRUE)
   }
-  fnameBase <- kppu(prefix, substitute(obj), project, suffix, idate(Format = "%Y.%m.%d_%H.%M"))
+  fnameBase <- kppu(prefix, substitute_deparse(obj), project, suffix, idate(Format = "%Y.%m.%d_%H.%M"))
   fnameBase <- trimws(fnameBase, whitespace = "_")
   FNN <- paste0(path_rdata, fnameBase, ".Rds")
   FNN <- gsub(pattern = "~/", replacement = homepath, x = FNN)
@@ -4752,19 +4763,19 @@ xsave <- function(
     annot.suffix <- if (is.list(obj)) kppd("ls", length(obj)) else NULL
   }
 
-  if (!isFALSE(saveParams)) message("paramList: ", if (exists("paramList")) paste(substitute(paramList), length(paramList), " elements.") else " not provided.")
+  if (!isFALSE(saveParams)) message("paramList: ", if (exists("paramList")) paste(substitute_deparse(paramList), length(paramList), " elements.") else " not provided.")
   if (!isFALSE(saveParams)) message("allGenes: ", if (exists("allGenes")) " found as global variable." else " not provided.")
 
   try(tictoc::tic("xsave"), silent = TRUE)
   if (showMemObject & v) try(memory.biggest.objects(), silent = TRUE)
 
   fnameBase <- trimws(kppu(
-    prefix, substitute(obj), annot.suffix, suffix, project,
+    prefix, substitute_deparse(obj), annot.suffix, suffix, project,
     idate(Format = "%Y.%m.%d_%H.%M")
   ), whitespace = "_")
 
   FNN <- paste0(dir, fnameBase, ".qs")
-  CMND <- paste0(substitute(obj), " <- xread('", FNN, "')")
+  CMND <- paste0(substitute_deparse(obj), " <- xread('", FNN, "')")
   if (v) message(CMND)
 
   if ("Seurat" %in% is(obj)) {

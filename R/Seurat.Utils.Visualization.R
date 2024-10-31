@@ -3601,7 +3601,7 @@ scBarplotEnrichr <- function(df.enrichment,
                              tag = "...",
                              universe = NULL,
                              title = paste("GO Enriched Terms", tag),
-                             subtitle = kppws("Input: ", substitute(df.enrichment)),
+                             subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
                              caption = paste0(
                                "Input genes: ", length(df.enrichment@"gene"),
                                " | Enriched terms: ", nrow(df.enrichment),
@@ -3876,7 +3876,7 @@ save2plots.A4 <- function(
     plot_list, pname = FALSE, suffix = NULL, scale = 1,
     nrow = 2, ncol = 1,
     h = 11.69 * scale, w = 8.27 * scale, ...) {
-  if (pname == FALSE) pname <- sppp(substitute(plot_list), suffix)
+  if (pname == FALSE) pname <- sppp(substitute_deparse(plot_list), suffix)
   p1 <- cowplot::plot_grid(
     plotlist = plot_list, nrow = nrow, ncol = ncol,
     labels = LETTERS[1:length(plot_list)], ...
@@ -3926,7 +3926,7 @@ save4plots.A4 <- function(
     nrow = 2, ncol = 2,
     h = 8.27 * scale, w = 11.69 * scale,
     ...) {
-  if (pname == FALSE) pname <- sppp(substitute(plot_list), suffix)
+  if (pname == FALSE) pname <- sppp(substitute_deparse(plot_list), suffix)
   p1 <- cowplot::plot_grid(
     plotlist = plot_list, nrow = nrow, ncol = ncol,
     labels = LETTERS[1:length(plot_list)], ...
@@ -4436,7 +4436,7 @@ Plot3D.ListOfGenes <- function(
     obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
     , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, cex = 1.25, default.assay = c("integrated", "RNA")[2],
     ListOfGenes = c("BCL11B", "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4"),
-    SubFolderName = ppp("plot3D", substitute(ListOfGenes))) {
+    SubFolderName = ppp("plot3D", substitute_deparse(ListOfGenes))) {
   try(create_set_SubDir(SubFolderName))
   obj. <- obj
   rm("obj")
@@ -4462,11 +4462,15 @@ Plot3D.ListOfGenes <- function(
 #'
 #' @description This function plots and saves a list of 3D UMAP or tSNE plots using plotly.
 #' @param obj A Seurat object for which the plot is to be created. Default: 'combined.obj'.
-#' @param annotate.by Character vector specifying the metadata column to be used for annotating the plot. Default: 'integrated_snn_res.0.7'.
+#' @param annotate.by Character vector specifying the metadata column to be used for annotating
+#' the plot. Default: 'integrated_snn_res.0.7'.
 #' @param cex Numeric value specifying the point size on the plot. Default: 1.25.
-#' @param default.assay Character vector specifying the assay to be used. Default: 'RNA' (second element in the vector c("integrated", "RNA")).
-#' @param ListOfCategories Character vector specifying the categories to be included in the plot. Default categories are "v.project", "experiment", "Phase", "integrated_snn_res.0.7".
-#' @param SubFolderName String specifying the name of the subfolder where the plots will be saved. By default, it's created using the function ppp("plot3D", substitute(ListOfCategories)).
+#' @param default.assay Character vector specifying the assay to be used. Default: 'RNA'
+#' (second element in the vector c("integrated", "RNA")).
+#' @param ListOfCategories Character vector specifying the categories to be included in the plot.
+#' Default categories are "v.project", "experiment", "Phase", "integrated_snn_res.0.7".
+#' @param SubFolderName String specifying the name of the subfolder where the plots will be saved.
+#' By default, it's created using the function ppp("plot3D", substitute_deparse(ListOfCategories)).
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -4479,7 +4483,7 @@ Plot3D.ListOfCategories <- function(
     obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
     , annotate.by = "integrated_snn_res.0.7", cex = 1.25, default.assay = c("integrated", "RNA")[2],
     ListOfCategories = c("v.project", "experiment", "Phase", "integrated_snn_res.0.7"),
-    SubFolderName = ppp("plot3D", substitute(ListOfCategories))) {
+    SubFolderName = ppp("plot3D", substitute_deparse(ListOfCategories))) {
   try(create_set_SubDir(SubFolderName))
   obj. <- obj
   rm("obj")
