@@ -120,6 +120,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 
 
     if (reduction_input == "harmony") {
+      browser()
       message("------------------- Harmony - EXPERIMENTAL -------------------")
 
       m.REGR <- obj@meta.data[, variables.2.regress, drop = FALSE]
@@ -138,11 +139,11 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
         warning("The number of cells in some regress_out categories is too few (<5), consider serially calling harmony on each variable.", immediate. = TRUE)
       }
 
-      nr_new_layers <- nr.unique(combined.obj$"regress_out")
-      nr_existing_layers <- (length(Layers(combined.obj)) - 1) / 2
+      nr_new_layers <- nr.unique(obj$"regress_out")
+      nr_existing_layers <- (length(Layers(obj)) - 1) / 2
       if (nr_existing_layers != nr_new_layers) {
         tic("Split layers by regress_out")
-        combined.obj[["RNA"]] <- split(combined.obj[["RNA"]], f = combined.obj$"regress_out")
+        obj[["RNA"]] <- split(obj[["RNA"]], f = obj$"regress_out")
         toc()
       }
 

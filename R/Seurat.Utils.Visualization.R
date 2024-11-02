@@ -1168,9 +1168,10 @@ scBarplot.CellsPerCluster <- function(
     ylab_adj = 1.1,
     min.cells = round(ncol(obj) / 100),
     ...) {
+  #
   stopifnot(
     inherits(obj, "Seurat"), is.character(ident), is.logical(sort), is.character(plotname), is.character(sub),
-    is.logical(label), is.character(suffix) | is.null(suffix), is.character(palette), is.logical(return_table),
+    is.logical(label) | label == "percent", is.character(suffix) | is.null(suffix), is.character(palette), is.logical(return_table),
     is.numeric(ylab_adj), is.numeric(min.cells), ident %in% colnames(obj@meta.data)
   )
 
@@ -1181,7 +1182,7 @@ scBarplot.CellsPerCluster <- function(
   lbl <- if (isFALSE(label)) {
     NULL
   } else if (label == "percent") {
-    percentage_formatter(cell.per.cluster / sum(cell.per.cluster))
+    percentage_formatter(cell.per.cluster / sum(cell.per.cluster), digitz = 2)
   } else if (isTRUE(label)) {
     cell.per.cluster
   } else {
