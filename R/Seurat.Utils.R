@@ -36,6 +36,7 @@
 #' @param plot A boolean indicating whether to plot the results. Default: `TRUE`.
 #' @param nfeatures The number of variable genes to use. Default: 2000.
 #' @param variables.2.regress A list of variables to regress out. Default: NULL.
+#' @param harmony.covariates A list of covariates to use for Harmony. Default: variables.2.regress.
 #' @param n.PC The number of principal components to use. Default: 30.
 #' @param resolutions A list of resolutions to use for clustering. Default: c(0.1, 0.2, 0.3, 0.4, 0.5).
 #' @param reduction_input The reduction method to use as input for clustering & UMAP. Default: "pca".
@@ -61,6 +62,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
                                 save = TRUE, plot = TRUE,
                                 nfeatures = param.list$"n.var.genes",
                                 variables.2.regress = param.list$"variables.2.regress.combined",
+                                harmony.covariates = variables.2.regress,
                                 n.PC = param.list$"n.PC",
                                 resolutions = param.list$"snn_res",
                                 reduction_input = "pca",
@@ -68,9 +70,10 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
                                 harmony.seurat.implementation  = FALSE,
                                 ...) {
   #
+  har <- (reduction_input == "harmony")
   warning("Make sure you cleaned up the memory!", immediate. = TRUE)
   message("\nWorkingDir: ", WorkingDir)
-  if (reduction_input == "harmony") message("Harmony integration is attempted, but it is experimental.")
+  if (har) message("Harmony integration is attempted, but it is experimental.")
   stopifnot(require(tictoc))
 
   tictoc::tic("processSeuratObject")
@@ -88,7 +91,8 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
   iprint("nfeatures:", nfeatures)
   iprint("n.PC:", n.PC)
   iprint("snn_res:", resolutions)
-  iprint("variables.2.regress (combined):", variables.2.regress)
+  iprint("variables.2.regress (ScaleData):", variables.2.regress)
+  if (har) iprint("variables.2.regress (Haromony):", harmony.covariates)
 
   # Save parameters _________________________________________________
   param.list$"n.var.genes" <- nfeatures
@@ -119,15 +123,8 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
     obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
 
     message("------------------- ScaleData -------------------")
-    tic("ScaleData")
-    variables.2.regress.scale <-
-      if (reduction_input == "harmony") {
-        NULL
-      } else {
-        variables.2.regress
-      }
-
-    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress.scale, ...)
+    tic(kpipe("ScaleData", kppc(variables.2.regress)))
+    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress, ...)
     toc()
 
     message("------------------- PCA /UMAP -------------------")
@@ -139,8 +136,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
   }
 
   if (compute) {
-
-    if (reduction_input == "harmony") {
+    if (har)  {
 
       # Split ________________________________________________
       message("------------------- Split layers -------------------")
@@ -175,7 +171,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
       } else {
         tic("RunHarmony")
         # obj <- harmony::RunHarmony(object = obj, group.by.vars = "regress_out", dims.use = 1:n.PC, plot_convergence = FALSE)
-        obj <- harmony::RunHarmony(object = obj, group.by.vars = variables.2.regress, dims.use = 1:n.PC, plot_convergence = FALSE); toc()
+        obj <- harmony::RunHarmony(object = obj, group.by.vars = harmony.covariates, dims.use = 1:n.PC, plot_convergence = FALSE); toc()
         # It is generally better to provide individual group.by.vars, not as a single column / string.
         # Source: https://github.com/immunogenomics/harmony/issues/246
 
@@ -184,7 +180,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
 
       }
 
-      obj@misc$"harmony.params" <- c("n.PC" = n.PC, "regress" = variables.2.regress)
+      obj@misc$"harmony.params" <- c("n.PC" = n.PC, "regress" = harmony.covariates)
     }
 
 

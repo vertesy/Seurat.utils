@@ -14,6 +14,7 @@ processSeuratObject(
   plot = TRUE,
   nfeatures = param.list$n.var.genes,
   variables.2.regress = param.list$variables.2.regress.combined,
+  harmony.covariates = variables.2.regress,
   n.PC = param.list$n.PC,
   resolutions = param.list$snn_res,
   reduction_input = "pca",
@@ -42,6 +43,8 @@ processSeuratObject(
 \item{nfeatures}{The number of variable genes to use. Default: 2000.}
 
 \item{variables.2.regress}{A list of variables to regress out. Default: NULL.}
+
+\item{harmony.covariates}{A list of covariates to use for Harmony. Default: variables.2.regress.}
 
 \item{n.PC}{The number of principal components to use. Default: 30.}
 
