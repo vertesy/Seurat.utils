@@ -8,6 +8,7 @@ processSeuratObject(
   obj,
   param.list = p,
   add.meta.fractions = FALSE,
+  precompute = TRUE,
   compute = TRUE,
   save = TRUE,
   plot = TRUE,
@@ -17,6 +18,7 @@ processSeuratObject(
   resolutions = param.list$snn_res,
   reduction_input = "pca",
   WorkingDir = getwd(),
+  harmony.seurat.implementation = FALSE,
   ...
 )
 }
@@ -27,7 +29,11 @@ processSeuratObject(
 
 \item{add.meta.fractions}{A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: \code{FALSE}.}
 
-\item{compute}{A boolean indicating whether to compute the results. Default: \code{TRUE}.}
+\item{precompute}{A boolean indicating whether to compute steps: \code{FindVariableFeatures()},
+\code{calc.q99.Expression.and.set.all.genes()},  \code{ScaleData()} and \code{RunPCA()} Default: \code{TRUE}.}
+
+\item{compute}{A boolean indicating whether to compute the steps: \code{IntegrateLayers() / RunHarmony()},
+\code{RunUMAP()}, \code{FindNeighbors()}, and \code{FindClusters()}. Default: \code{TRUE}.}
 
 \item{save}{A boolean indicating whether to save the results. Default: \code{TRUE}.}
 
@@ -44,6 +50,9 @@ processSeuratObject(
 \item{reduction_input}{The reduction method to use as input for clustering & UMAP. Default: "pca".}
 
 \item{WorkingDir}{The working directory to save the results. Default: getwd().}
+
+\item{harmony.seurat.implementation}{A boolean indicating whether to use the Seurat implementation
+of Harmony. Default: \code{FALSE}.}
 
 \item{...}{Additional parameters to be passed to \code{ScaleData()}.}
 }

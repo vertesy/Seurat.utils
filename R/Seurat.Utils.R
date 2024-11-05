@@ -28,7 +28,10 @@
 #' @param obj A Seurat object to be processed.
 #' @param param.list A list of parameters used in the processing steps.
 #' @param add.meta.fractions A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: `FALSE`.
-#' @param compute A boolean indicating whether to compute the results. Default: `TRUE`.
+#' @param precompute A boolean indicating whether to compute steps: `FindVariableFeatures()`,
+#' `calc.q99.Expression.and.set.all.genes()`,  `ScaleData()` and `RunPCA()` Default: `TRUE`.
+#' @param compute A boolean indicating whether to compute the steps: `IntegrateLayers() / RunHarmony()`,
+#' `RunUMAP()`, `FindNeighbors()`, and `FindClusters()`. Default: `TRUE`.
 #' @param save A boolean indicating whether to save the results. Default: `TRUE`.
 #' @param plot A boolean indicating whether to plot the results. Default: `TRUE`.
 #' @param nfeatures The number of variable genes to use. Default: 2000.
@@ -37,6 +40,8 @@
 #' @param resolutions A list of resolutions to use for clustering. Default: c(0.1, 0.2, 0.3, 0.4, 0.5).
 #' @param reduction_input The reduction method to use as input for clustering & UMAP. Default: "pca".
 #' @param WorkingDir The working directory to save the results. Default: getwd().
+#' @param harmony.seurat.implementation A boolean indicating whether to use the Seurat implementation
+#' of Harmony. Default: `FALSE`.
 #' @param ... Additional parameters to be passed to `ScaleData()`.
 #'
 #' @return A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and clustering.
@@ -51,6 +56,7 @@
 #'
 #' @export
 processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
+                                precompute = TRUE,
                                 compute = TRUE,
                                 save = TRUE, plot = TRUE,
                                 nfeatures = param.list$"n.var.genes",
@@ -59,6 +65,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
                                 resolutions = param.list$"snn_res",
                                 reduction_input = "pca",
                                 WorkingDir = getwd(),
+                                harmony.seurat.implementation  = FALSE,
                                 ...) {
   #
   warning("Make sure you cleaned up the memory!", immediate. = TRUE)
@@ -100,7 +107,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
     obj <- addGeneClassFractions(obj)
   } # end if add.meta.fractions
 
-  if (compute) {
+  if (precompute) {
     message("------------------- FindVariableFeatures -------------------")
     tic("FindVariableFeatures")
     obj <- FindVariableFeatures(obj,
@@ -109,60 +116,80 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
     )
     toc()
 
-    tic("calc.q99.Expression.and.set.all.genes")
     obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
-    toc()
 
     message("------------------- ScaleData -------------------")
     tic("ScaleData")
-    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress, ...)
+    variables.2.regress.scale <-
+      if (reduction_input == "harmony") {
+        NULL
+      } else {
+        variables.2.regress
+      }
+
+    obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress.scale, ...)
     toc()
-
-
-    if (reduction_input == "harmony") {
-      browser()
-      message("------------------- Harmony - EXPERIMENTAL -------------------")
-
-      m.REGR <- obj@meta.data[, variables.2.regress, drop = FALSE]
-      any_regr_col_numeric <- sapply(m.REGR, is.numeric)
-      if (any(any_regr_col_numeric)) {
-        print("Some of the regression variables are numeric:")
-        print(any_regr_col_numeric)
-        stop("harmony cannot regress numeric variables")
-      }
-
-      obj$"regress_out" <- apply(m.REGR, 1, kppu)
-      if (nr.unique(obj$"regress_out") > 25) {
-        warning("The number of regress_out categories is too many (>25), consider serially calling harmony on each variable.", immediate. = TRUE)
-      }
-      if (min(table(obj$"regress_out")) < 5) {
-        warning("The number of cells in some regress_out categories is too few (<5), consider serially calling harmony on each variable.", immediate. = TRUE)
-      }
-
-      nr_new_layers <- nr.unique(obj$"regress_out")
-      nr_existing_layers <- (length(Layers(obj)) - 1) / 2
-      if (nr_existing_layers != nr_new_layers) {
-        tic("Split layers by regress_out")
-        obj[["RNA"]] <- split(obj[["RNA"]], f = obj$"regress_out")
-        toc()
-      }
-
-      tic("RunHarmony")
-      obj <- harmony::RunHarmony(object = obj, group.by.vars = "regress_out", dims.use = 1:nPCs, plot_convergence = FALSE)
-      toc()
-
-      tic("JoinLayers")
-      obj <- JoinLayers(obj, assay = "RNA")
-      toc()
-      obj@misc$"harmony.params" <- c("nPCs" = nPCs, "regress" = variables.2.regress)
-    }
-
-
 
     message("------------------- PCA /UMAP -------------------")
     tic("PCA")
     obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE)
     toc()
+
+
+  }
+
+  if (compute) {
+
+    if (reduction_input == "harmony") {
+
+      # Split ________________________________________________
+      message("------------------- Split layers -------------------")
+
+      m.REGR <- obj@meta.data[, variables.2.regress, drop = FALSE]
+      stopif("Harmony cannot regress numeric variables" = any(sapply(m.REGR, is.numeric) ) )
+
+      obj$"regress_out" <- xr <-  apply(m.REGR, 1, kppu)
+      nr_new_layers <- nr.unique(xr)
+      cells_per_layer <- table(xr)
+
+      warnif(
+        "Too few (<5) cells in some regress_out categories:" = any(cells_per_layer < 5),
+        "Too many (>25) regress_out categories" = nr_new_layers > 25
+        )
+      message("Number of regress_out categories:", nr_new_layers)
+      message("Cells per regress_out category:", paste(sort(cells_per_layer)))
+      if (T) hist(cells_per_layer)
+
+      tic("Split layers by regress_out")
+      obj[["RNA"]] <- split(obj[["RNA"]], f = xr, drop = FALSE); toc()
+
+
+      message("------------------- Harmony - EXPERIMENTAL -------------------")
+      if (harmony.seurat.implementation) {
+        message("Using Seurat's IntegrateLayers(method = HarmonyIntegration)")
+        tic("IntegrateLayers / Harmony")
+        obj <- IntegrateLayers(object = obj, method = HarmonyIntegration, orig.reduction = "pca",
+                               new.reduction = 'harmony', verbose = TRUE); toc()
+        # No need to pass group.by.vars, it is defined by the split layers
+
+      } else {
+        tic("RunHarmony")
+        # obj <- harmony::RunHarmony(object = obj, group.by.vars = "regress_out", dims.use = 1:n.PC, plot_convergence = FALSE)
+        obj <- harmony::RunHarmony(object = obj, group.by.vars = variables.2.regress, dims.use = 1:n.PC, plot_convergence = FALSE); toc()
+        # It is generally better to provide individual group.by.vars, not as a single column / string.
+        # Source: https://github.com/immunogenomics/harmony/issues/246
+
+        tic("JoinLayers")
+        obj <- JoinLayers(obj, assay = "RNA"); toc()
+
+      }
+
+      obj@misc$"harmony.params" <- c("n.PC" = n.PC, "regress" = variables.2.regress)
+    }
+
+
+
+    message("------------------- UMAP -------------------")
     tic("UMAP")
     obj <- SetupReductionsNtoKdimensions(obj,
       nPCs = n.PC, reduction_output = "umap",
