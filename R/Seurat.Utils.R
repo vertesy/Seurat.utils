@@ -3265,7 +3265,7 @@ plot.Gene.Cor.Heatmap <- function(
     # Calculate --- --- --- --- ---
     if (calc.COR) {
       message("Calculating correlation now.")
-      genes.found <- check.genes(list.of.genes = genes)
+      genes.found <- check.genes(genes = genes)
       message(length(genes.found), " genes are found in the object.")
 
       if (length(genes.found) > 200) iprint("Too many genes found in data, cor will be slow: ", length(genes.found))
@@ -3538,7 +3538,7 @@ gene.name.check <- function(Seu.obj) {
 #' queries them against the HGNC database. This function is useful for ensuring gene names are
 #' correctly formatted and exist within the dataset or are recognized gene symbols.
 #'
-#' @param list.of.genes A vector of gene names to be checked. Default: `ClassicMarkers`.
+#' @param genes A vector of gene names to be checked.
 #' @param makeuppercase If `TRUE`, converts all gene names to uppercase before checking. Default: `FALSE`.
 #' @param verbose If `TRUE`, prints information about any missing genes. Default: `TRUE`.
 #' @param HGNC.lookup If `TRUE`, attempts to look up any missing genes in the HGNC database to
@@ -3551,10 +3551,10 @@ gene.name.check <- function(Seu.obj) {
 #' \dontrun{
 #' if (interactive()) {
 #'   # Check for the presence of a gene name in uppercase
-#'   check.genes(list.of.genes = "top2a", makeuppercase = TRUE, obj = combined.obj)
+#'   check.genes(genes = "top2a", makeuppercase = TRUE, obj = combined.obj)
 #'
 #'   # Check for a gene name with verbose output and HGNC lookup
-#'   check.genes(list.of.genes = "VGLUT2", verbose = TRUE, HGNC.lookup = TRUE, obj = combined.obj)
+#'   check.genes(genes = "VGLUT2", verbose = TRUE, HGNC.lookup = TRUE, obj = combined.obj)
 #' }
 #' }
 #'
@@ -3565,7 +3565,7 @@ gene.name.check <- function(Seu.obj) {
 #' @importFrom Stringendo percentage_formatter
 #'
 check.genes <- function(
-    list.of.genes = ClassicMarkers, makeuppercase = FALSE, HGNC.lookup = FALSE,
+    genes, makeuppercase = FALSE, HGNC.lookup = FALSE,
     obj,
     assay.slot = c("RNA", "integrated")[1],
     data.slot = c("counts", "data")[2],
@@ -3575,7 +3575,7 @@ check.genes <- function(
   message(" > Running check.genes...")
   message("assay: ", assay.slot, ", data.slot: ", data.slot)
 
-  if (makeuppercase) list.of.genes <- toupper(list.of.genes)
+  if (makeuppercase) genes <- toupper(genes)
 
   all_genes <-
     if (obj@version < "5") {
@@ -3584,12 +3584,12 @@ check.genes <- function(
       rownames(GetAssayData(object = obj, layer = data.slot))
     }
 
-  missingGenes <- setdiff(list.of.genes, all_genes)
+  missingGenes <- setdiff(genes, all_genes)
   if (length(missingGenes) > 0) {
     if (verbose) {
       message(
         "\n", length(missingGenes), " or ",
-        Stringendo::percentage_formatter(length(missingGenes) / length(list.of.genes)),
+        Stringendo::percentage_formatter(length(missingGenes) / length(genes)),
         " genes not found in the data, e.g: ", kppc(head(missingGenes, n = 10))
       )
     }
@@ -3600,7 +3600,11 @@ check.genes <- function(
     }
   }
   tictoc::toc()
-  intersect(list.of.genes, all_genes)
+  intersect_genes <- intersect(genes, all_genes)
+
+  # Using logical indexing to return genes with names (if they had any)
+  genes[intersect_genes %in% genes]
+
 }
 
 
@@ -3672,7 +3676,7 @@ CalculateFractionInTrome <- function(
     obj = combined.obj,
     data.slot = c("counts", "data")[2]) {
   warning("    >>>> Use addMetaFraction() <<<<", immediate. = TRUE)
-  geneset <- check.genes(list.of.genes = geneset)
+  geneset <- check.genes(genes = geneset)
   stopifnot(length(geneset) > 0)
 
   mat <- as.matrix(slot(obj@assays$RNA, name = data.slot))

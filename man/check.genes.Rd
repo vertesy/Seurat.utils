@@ -5,7 +5,7 @@
 \title{Check if Gene Names exist in Seurat Object or HGNC Database}
 \usage{
 check.genes(
-  list.of.genes = ClassicMarkers,
+  genes,
   makeuppercase = FALSE,
   HGNC.lookup = FALSE,
   obj,
@@ -16,7 +16,7 @@ check.genes(
 )
 }
 \arguments{
-\item{list.of.genes}{A vector of gene names to be checked. Default: \code{ClassicMarkers}.}
+\item{genes}{A vector of gene names to be checked.}
 
 \item{makeuppercase}{If \code{TRUE}, converts all gene names to uppercase before checking. Default: \code{FALSE}.}
 
@@ -40,10 +40,10 @@ correctly formatted and exist within the dataset or are recognized gene symbols.
 \dontrun{
 if (interactive()) {
   # Check for the presence of a gene name in uppercase
-  check.genes(list.of.genes = "top2a", makeuppercase = TRUE, obj = combined.obj)
+  check.genes(genes = "top2a", makeuppercase = TRUE, obj = combined.obj)
 
   # Check for a gene name with verbose output and HGNC lookup
-  check.genes(list.of.genes = "VGLUT2", verbose = TRUE, HGNC.lookup = TRUE, obj = combined.obj)
+  check.genes(genes = "VGLUT2", verbose = TRUE, HGNC.lookup = TRUE, obj = combined.obj)
 }
 }
 
