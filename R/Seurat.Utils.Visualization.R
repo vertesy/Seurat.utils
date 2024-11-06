@@ -2138,25 +2138,18 @@ qUMAP <- function(
     caption = .parseBasicObjStats(obj, simple = TRUE),
     ...) {
   #
-  stopifnot(is(obj) == "Seurat")
   message("Feature: ", feature, " | Assay: ", assay)
-
-  if (feature %in% colnames(obj@meta.data)) {
-    message(paste("...found in @meta.data."))
-    stopifnot(is.numeric(obj@meta.data[, feature]))
-  }
-
-  if (check_for_2D) {
-    umap_dims <- ncol(obj@reductions[[reduction]]@cell.embeddings)
-    if (umap_dims != 2) warning(">>> UMAP is not 2 dimensional! \n Check obj@reductions[[reduction]]@cell.embeddings")
-  }
-
-  if (!(feature %in% colnames(obj@meta.data) | feature %in% Features(obj, assay = assay))) {
-    feature <- check.genes(
-      list.of.genes = feature, obj = obj, verbose = FALSE,
-      HGNC.lookup = HGNC.lookup, makeuppercase = make.uppercase
-    )
-  }
+  META <- obj@meta.data
+  stopifnot(is(obj) == "Seurat", is.character(feature),
+            "Feature not found in genes / meta.data."  = feature %in% c(Features(obj, assay = assay) , colnames(META)),
+            "meta.data column is not numeric"  = if(feature %in% colnames(META)) is.numeric(META[, feature]) else TRUE,
+            "UMAP is not 2 dimensional! \n Check obj@reductions[[reduction]]@cell.embeddings" =
+              if (check_for_2D) ncol(obj@reductions[[reduction]]@cell.embeddings) == 2,
+            reduction %in% names(obj@reductions),
+            assay %in% names(combined.obj@assays),
+            "split.by column not found in meta.data / not categorical" =
+              if (!is.null(splitby)) {splitby %in% colnames(META) && is.factor(META[[splitby]]) || is.character(META[[splitby]])} else TRUE
+            )
 
   DefaultAssay(obj) <- assay
   gg.obj <- Seurat::FeaturePlot(obj,
@@ -2520,7 +2513,7 @@ multiFeaturePlot.A4 <- function(
     list.of.genes,
     obj = combined.obj,
     subdir = TRUE,
-    foldername = substitute_deparse(list.of.genes),
+    foldername = substitute(list.of.genes),
     subtitle.from.names = TRUE,
     plot.reduction = "umap",
     intersectionAssay = c("RNA", "integrated")[1],
@@ -2547,7 +2540,7 @@ multiFeaturePlot.A4 <- function(
   if (is.null(names(list.of.genes))) subtitle.from.names <- FALSE
 
   list.of.genes.found <- check.genes(
-    list.of.genes = list.of.genes, obj = obj,
+    genes = list.of.genes, obj = obj,
     assay.slot = intersectionAssay, makeuppercase = FALSE
   )
   if (subtitle.from.names) names(list.of.genes.found) <- as.character(flip_value2name(list.of.genes)[list.of.genes.found])
@@ -2921,7 +2914,7 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj,
   MarkdownReports::create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
 
   list.of.genes.found <- check.genes(
-    list.of.genes = genes, obj = obj,
+    genes = genes, obj = obj,
     assay.slot = intersectionAssay, makeuppercase = FALSE
   )
 
@@ -3885,7 +3878,8 @@ save2plots.A4 <- function(
   p1 <- cowplot::ggdraw(p1) +
     theme(plot.background = element_rect(fill = "white", color = NA))
 
-  iprint("Saved as:", pname)
+  print("Saved as:")
+  MarkdownHelpers::ww.FnP_parser(extPNG(pname))
 
   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
@@ -3937,7 +3931,7 @@ save4plots.A4 <- function(
     theme(plot.background = element_rect(fill = "white", color = NA))
 
   iprint("Saved as:", pname)
-  # fname <- MarkdownHelpers::ww.FnP_parser(extPNG(pname) )
+  MarkdownHelpers::ww.FnP_parser(extPNG(pname))
   save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
 }
 
@@ -3975,11 +3969,11 @@ qqSaveGridA4 <- function(
   iprint(NrPlots, "plots found,", plots, "are saved.")
   pg.cf <- cowplot::plot_grid(plotlist = plotlist[plots], nrow = 2, ncol = NrPlots / 2, labels = LETTERS[1:NrPlots], ...)
   if (NrPlots == 4) list2env(list(height = width, width = height), envir = as.environment(environment()))
+  MarkdownHelpers::ww.FnP_parser(fname)
   save_plot(
     filename = fname,
     plot = pg.cf, base_height = height, base_width = width
   )
-  MarkdownHelpers::ww.FnP_parser(fname)
 }
 
 

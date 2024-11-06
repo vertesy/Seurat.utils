@@ -8,7 +8,7 @@ multiFeaturePlot.A4(
   list.of.genes,
   obj = combined.obj,
   subdir = TRUE,
-  foldername = substitute_deparse(list.of.genes),
+  foldername = substitute(list.of.genes),
   subtitle.from.names = TRUE,
   plot.reduction = "umap",
   intersectionAssay = c("RNA", "integrated")[1],

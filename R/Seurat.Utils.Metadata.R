@@ -386,19 +386,30 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
   iprint("strict", strict)
   if (strict) stopifnot("Metadata or object too short" = equal_length)
 
-
   if (!is.null(names(metadata))) {
-    if (verbose) print(head(names(metadata)))
-    if (verbose) print(head(colnames(obj)))
+    if (verbose) {
+
+      iprint("cells in metadata:", head(names(metadata)), "...")
+      iprint("cells in object:", head(colnames(obj)), "...")
+    }
     if (strict) stopifnot(names(metadata) == colnames(obj))
+
   } else {
     message("No CBCs associated with new metadata. Assuming exact match.")
     if (!equal_length) stop("Not equal lenght, no CBCs")
-    names(metadata) <- colnames(obj)
+  }
+
+  if (any(is.na(names(metadata))) ) {
+    warning("Metadata contains NA values.", immediate. = T)
+    metadata_orig <- metadata
+    metadata <- vec.fromNames(colnames(obj), fill = NA)
+    cells_found <- na.omit.strip(names(metadata_orig))
+    metadata[cells_found] <- metadata_orig[cells_found]
   }
 
   # Perform the operation
-  obj <- Seurat::AddMetaData(object = obj, metadata = metadata, col.name = col.name)
+  stopif(any(is.na(names(metadata))))
+  obj <- Seurat::AddMetaData(object = obj, metadata = metadata, col.name = col.name )
 
   prefix <- paste("New column", col.name)
   # Check for NA or NaN values
@@ -854,6 +865,8 @@ transferMetadata <- function(from, to,
       length(colnames_from) == length(colnames_to)
   )
 
+
+
   # Check cell overlaps
   cells_in_both <- intersect(colnames(from), colnames(to))
   cells_only_in_from <- setdiff(colnames(from), colnames(to))
@@ -898,20 +911,20 @@ transferMetadata <- function(from, to,
 
       # Check if column exists in source object
       if (colnames_from[i] %in% colnames(from@meta.data)) {
-
         # Transfer the metadata column
         # to[[colnames_to[i]]] <- from[[colnames_from[i]]]
 
         metadata_from <- getMetadataColumn(obj = from, col = colnames_from[i])
         to <- addMetaDataSafe(
           obj = to, col.name = colnames_to[i], metadata = metadata_from[colnames(to)],
-          strict = strict
+          strict = strict, verbose = verbose
         )
 
         message(sprintf("Transferred '%s' to '%s'.", colnames_from[i], colnames_to[i]))
       } else {
         warning(sprintf("Column '%s' not found in source object.", colnames_from[i]), immediate. = TRUE)
       }
+
     } else {
       warning(sprintf(
         "Column '%s' already exists in destination object. Set 'overwrite = TRUE' to overwrite.",
