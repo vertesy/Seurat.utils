@@ -3571,7 +3571,7 @@ scGOEnrichment <- function(genes, universe = NULL,
 #'
 #' @param df.enrichment Data frame. Enrichment results from GO analysis. Default: NULL.
 #' @param tag Character. Tag to be added to the title of the plot. Default: "in ...".
-#' @param universe Character. Background gene list (universe). Default: NULL.
+#' @param universe Character. Background gene list (universe). Default: `df.enrichment@universe`.
 #' @param title Character. Title of the plot. Default: "GO Enrichment Analysis" followed by `tag`.
 #' @param subtitle Character. Subtitle of the plot. Default: NULL.
 #' @param caption Character. Caption of the plot. Default: constructed from input parameters.
@@ -3593,7 +3593,7 @@ scGOEnrichment <- function(genes, universe = NULL,
 #' }
 scBarplotEnrichr <- function(df.enrichment,
                              tag = "...",
-                             universe = NULL,
+                             universe = df.enrichment@universe,
                              title = paste("GO Enriched Terms", tag),
                              subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
                              caption = paste0(
