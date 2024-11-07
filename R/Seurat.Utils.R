@@ -4809,7 +4809,7 @@ xsave <- function(
   ), whitespace = "_")
 
   FNN <- paste0(dir, fnameBase, ".qs")
-  CMND <- paste0(substitute_deparse(obj), " <- xread('", FNN, "')")
+  CMND <- paste0(substitute(obj), " <- xread('", FNN, "')")
   if (v) message(CMND)
 
   if ("Seurat" %in% is(obj)) {

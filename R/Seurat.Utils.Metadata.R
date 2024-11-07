@@ -934,7 +934,13 @@ transferMetadata <- function(from, to,
 
     # Plot umap _______________________________________________________
     if (plotUMAP) {
-      x <- clUMAP(obj = to, ident = colnames_to[i], suffix = "transferred.ident", ...)
+      metaX <- getMetadataColumn(col = colnames_to[i], obj = to)
+
+      if(is.numeric(metaX) && nr.unique(metaX) > 10) {
+        x <- qUMAP(obj = to, feature = colnames_to[i], suffix = "transferred.ident", ...)
+      } else {
+        x <- clUMAP(obj = to, ident = colnames_to[i], suffix = "transferred.ident", ...)
+      }
       print(x)
     }
   } # for
