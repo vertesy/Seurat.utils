@@ -7,7 +7,7 @@
 scBarplotEnrichr(
   df.enrichment,
   tag = "...",
-  universe = NULL,
+  universe = df.enrichment@universe,
   title = paste("GO Enriched Terms", tag),
   subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
   caption = paste0("Input genes: ", length(df.enrichment@gene), " | Enriched terms: ",
@@ -24,7 +24,7 @@ scBarplotEnrichr(
 
 \item{tag}{Character. Tag to be added to the title of the plot. Default: "in ...".}
 
-\item{universe}{Character. Background gene list (universe). Default: NULL.}
+\item{universe}{Character. Background gene list (universe). Default: \code{df.enrichment@universe}.}
 
 \item{title}{Character. Title of the plot. Default: "GO Enrichment Analysis" followed by \code{tag}.}
 
@@ -50,7 +50,7 @@ This function creates a bar plot of GO enrichment analysis results using the
 \code{enrichplot::barplot.enrichResult} function. It also allows saving the plot to a file.
 }
 \examples{
-\dontrun{
+\dontrun{``
 df.enrichment <- data.frame() # Example enrichment results data frame
 plotGOEnrichment(df.enrichment)
 }

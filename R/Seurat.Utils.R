@@ -14,6 +14,7 @@
 # file.remove("~/GitHub/Packages/Seurat.utils/weight3.bar.png")
 
 
+
 # _________________________________________________________________________________________________
 # One-stop-shop functions for entire pipelines _____________________________ ------
 # _________________________________________________________________________________________________
@@ -102,15 +103,16 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
   # .checkListElements(param_list = param.list, elements = c("variables.2.regress.combined", "n.PC", "snn_res"))
 
   obj@misc$"p" <- param.list # overwrite previous parameters
-
   gc()
 
-  if (add.meta.fractions) {
-    message("Adding meta data for gene-class fractions, eg. percent.mito, etc.")
-    obj <- addGeneClassFractions(obj)
-  } # end if add.meta.fractions
-
   if (precompute) {
+
+    if (add.meta.fractions) {
+      message("Adding meta data for gene-class fractions, eg. percent.mito, etc.")
+      obj <- addGeneClassFractions(obj)
+    } # end if add.meta.fractions
+
+
     message("------------------- FindVariableFeatures -------------------")
     tic("FindVariableFeatures")
     obj <- FindVariableFeatures(obj,
@@ -130,9 +132,8 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
     tic("PCA")
     obj <- RunPCA(obj, npcs = n.PC, verbose = TRUE)
     toc()
-
-
   }
+
 
   if (compute) {
     if (har)  {
@@ -140,7 +141,7 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
       # Split ________________________________________________
       message("------------------- Split layers -------------------")
 
-      m.REGR <- obj@meta.data[, variables.2.regress, drop = FALSE]
+      m.REGR <- obj@meta.data[, harmony.covariates, drop = FALSE]
       stopif("Harmony cannot regress numeric variables" = any(sapply(m.REGR, is.numeric) ) )
 
       obj$"regress_out" <- xr <-  apply(m.REGR, 1, kppu)
@@ -223,8 +224,8 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
     # res.ident <- paste0(DefaultAssay(obj), "_snn_res.", resolutions)[1:4]
     try(qClusteringUMAPS(obj = obj), silent = TRUE) # , idents = res.ident
 
-    if (ncol(obj) < 50000) try(qMarkerCheck.BrainOrg(obj = obj), silent = TRUE)
-
+    # if (ncol(obj) < 50000)
+    try(qMarkerCheck.BrainOrg(obj = obj), silent = TRUE)
 
     Signature.Genes.Top20 <- c(
       `dl-EN` = "KAZN", `ul-EN` = "SATB2" # dl-EN = deep layer excitatory neuron

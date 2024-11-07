@@ -3587,7 +3587,7 @@ scGOEnrichment <- function(genes, universe = NULL,
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \dontrun{``
 #' df.enrichment <- data.frame() # Example enrichment results data frame
 #' plotGOEnrichment(df.enrichment)
 #' }
