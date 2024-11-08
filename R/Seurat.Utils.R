@@ -1244,11 +1244,11 @@ filterExpressedGenes <- function(genes = NULL, gene_list = all.genes, threshold 
 
   # Step 1: Intersect the gene symbols with the names in the list and report statistics
   matching_genes <- intersect(names(gene_list), genes)
-  message("Number of matching genes: ", length(matching_genes))
+  message("Number of matching genes: ", length(matching_genes), " from ", length(genes))
 
   # Step 2: Filter out genes below the expression threshold
   filtered_genes <- matching_genes[sapply(matching_genes, function(g) gene_list[[g]] >= threshold)]
-  message("Number of genes above the threshold: ", length(filtered_genes))
+  message("Number of genes above the threshold: ", length(filtered_genes), " from ", length(matching_genes))
 
   # Step 3: Sort the genes according to their expression in descending order
   # sorted_genes <- filtered_genes[order(sapply(filtered_genes, function(g) gene_list[[g]]), decreasing = TRUE)]
