@@ -1164,13 +1164,13 @@ calc.q99.Expression.and.set.all.genes <- function(
 #'
 #' @examples
 #' genes <- c("AC123", "AL456", "c1orf7", "TP53", "BRCA1", "X1.AS1", "MYC")
-#' genes_kept <- filterNcGenes(genes)
+#' genes_kept <- filterCodingGenes(genes)
 #' print(genes_kept)
 #'
 #' @importFrom stringr str_detect
 #' @export
 #'
-filterNcGenes <- function(genes, pattern_NC = c(
+filterCodingGenes <- function(genes, pattern_NC = c(
   "^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
   "^LINC0[0-9]{4}", "^C[1-9]+orf[1-9]+",
   "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
@@ -1207,6 +1207,55 @@ v = TRUE, unique = TRUE, ...) {
   if (unique) genes_kept <- unique(genes_kept)
 
   return(genes_kept)
+}
+
+# _________________________________________________________________________________________________
+#' @title Filter and Sort Gene Expression List Based on Specified Genes and Expression Threshold
+#'
+#' @description This function takes a named list of gene expression values and a character vector of gene
+#' symbols. It identifies the intersection of gene symbols with names in the list, filters genes based on a
+#' specified expression threshold, and returns a character vector of genes that meet the criteria, sorted
+#' by expression in descending order.
+#'
+#' @param genes Character vector of gene symbols to search for in the gene list. Default: NULL.
+#' @param gene_list A named list of gene expression values where names are gene symbols, and values are
+#' expression levels. Default:  all.genes
+#' @param threshold Numeric value specifying the minimum expression level for filtering. Genes with
+#' expression values below this threshold will be excluded. Default: 0.1.
+#'
+#' @return A character vector of gene symbols that match the specified list, meet the expression threshold,
+#' and are sorted in descending order by expression level.
+#'
+#' @examples
+#' # Example usage:
+#' gene_list <- list(ROBO2 = 0.9982406, CDH18 = 0.9981755, DCC = 0.9981755, AL589740.1 = 0.9981103)
+#' genes <- c("ROBO2", "DCC", "AL589740.1", "UNKNOWN")
+#' filterExpressedGenes(gene_list, genes, threshold = 0.9981)
+#'
+#' @export
+filterExpressedGenes <- function(genes = NULL, gene_list = all.genes, threshold = 0.1) {
+
+  # Assertions
+  stopifnot(
+    is.list(gene_list), !is.null(gene_list),
+    is.character(genes), !is.null(genes),
+    is.numeric(threshold), length(threshold) == 1
+  )
+
+  # Step 1: Intersect the gene symbols with the names in the list and report statistics
+  matching_genes <- intersect(names(gene_list), genes)
+  message("Number of matching genes: ", length(matching_genes))
+
+  # Step 2: Filter out genes below the expression threshold
+  filtered_genes <- matching_genes[sapply(matching_genes, function(g) gene_list[[g]] >= threshold)]
+  message("Number of genes above the threshold: ", length(filtered_genes))
+
+  # Step 3: Sort the genes according to their expression in descending order
+  # sorted_genes <- filtered_genes[order(sapply(filtered_genes, function(g) gene_list[[g]]), decreasing = TRUE)]
+  sorted_genes <- names(sort(unlist(gene_list[filtered_genes]), decreasing = TRUE))
+
+  # Step 4: Return the character vector
+  return(sorted_genes)
 }
 
 

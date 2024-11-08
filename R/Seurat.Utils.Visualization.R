@@ -2146,7 +2146,7 @@ qUMAP <- function(
             "UMAP is not 2 dimensional! \n Check obj@reductions[[reduction]]@cell.embeddings" =
               if (check_for_2D) ncol(obj@reductions[[reduction]]@cell.embeddings) == 2,
             reduction %in% names(obj@reductions),
-            assay %in% names(combined.obj@assays),
+            assay %in% names(obj@assays),
             "split.by column not found in meta.data / not categorical" =
               if (!is.null(splitby)) {splitby %in% colnames(META) && is.factor(META[[splitby]]) || is.character(META[[splitby]])} else TRUE
             )
