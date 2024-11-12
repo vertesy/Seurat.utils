@@ -2945,6 +2945,7 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj,
 #' @param df_markers Data frame or list of DE genes across clusters. If not provided,
 #' attempts to retrieve from `obj@misc$df.markers[[paste0("res.", cl_res)]]`;
 #' Default: calculated based on `cl_res`.
+#' @param filt_coding_genes Logical indicating whether to filter out non-coding genes; Default: `TRUE`.
 #'
 #' @examples
 #' \dontrun{
@@ -2960,8 +2961,14 @@ PlotTopGenesPerCluster <- function(
     nrGenes = p$"n.markers",
     order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1],
     df_markers = obj@misc$"df.markers"[[paste0("res.", cl_res)]],
+    filt_coding_genes = TRUE,
     ...) {
   message(" > Running PlotTopGenesPerCluster...")
+
+  if(filt_coding_genes) {
+    genes <- df_markers$gene
+    df_markers <- df_markers[genes %in% filterCodingGenes(genes), ]
+  }
 
   topX.markers <- GetTopMarkers(
     dfDE = df_markers, n = nrGenes,

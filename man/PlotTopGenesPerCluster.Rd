@@ -10,6 +10,7 @@ PlotTopGenesPerCluster(
   nrGenes = p$n.markers,
   order.by = c("combined.score", "avg_log2FC", "p_val_adj")[1],
   df_markers = obj@misc$df.markers[[paste0("res.", cl_res)]],
+  filt_coding_genes = TRUE,
   ...
 )
 }
@@ -27,6 +28,8 @@ Default: GetClusteringRuns()\link{1}.}
 \item{df_markers}{Data frame or list of DE genes across clusters. If not provided,
 attempts to retrieve from \code{obj@misc$df.markers[[paste0("res.", cl_res)]]};
 Default: calculated based on \code{cl_res}.}
+
+\item{filt_coding_genes}{Logical indicating whether to filter out non-coding genes; Default: \code{TRUE}.}
 }
 \description{
 Visualizes the top N differentially expressed (DE) genes for each cluster within a
