@@ -8,10 +8,12 @@ matchBestIdentity(
   obj,
   ident_to_rename,
   reference_ident = GetOrderedClusteringRuns(obj)[1],
-  prefix = Reference,
+  prefix = reference_ident,
   suffix = gsub(prefix, "", x = reference_ident),
   new_ident_name = kpp(prefix, ident_to_rename, "match.to", suffix),
   plot_suffix = prefix,
+  barplot_match = TRUE,
+  barplot_fractions = TRUE,
   w = 12,
   h = 9,
   ...
@@ -35,6 +37,12 @@ There is no default value for this parameter.}
 Default is a concatenation: kpp(prefix, ident_to_rename, "match.to", reference_ident) .}
 
 \item{plot_suffix}{A string. The suffix to add to the final UMAP.}
+
+\item{barplot_match}{Draw a barplot to show the \% match between the original and new identities.
+Default: TRUE}
+
+\item{barplot_fractions}{Draw a barplot to show the \% of each category in the original and new
+identities, using \code{scBarplot.CellFractions()}. Default: TRUE}
 
 \item{w}{Width for the saved image. Default: 9}
 

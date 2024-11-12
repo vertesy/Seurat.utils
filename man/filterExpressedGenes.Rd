@@ -4,7 +4,7 @@
 \alias{filterExpressedGenes}
 \title{Filter and Sort Gene Expression List Based on Specified Genes and Expression Threshold}
 \usage{
-filterExpressedGenes(genes = NULL, gene_list = all.genes, threshold = 0)
+filterExpressedGenes(genes = NULL, gene_list = all.genes, threshold = 0.1)
 }
 \arguments{
 \item{genes}{Character vector of gene symbols to search for in the gene list. Default: NULL.}
@@ -13,7 +13,7 @@ filterExpressedGenes(genes = NULL, gene_list = all.genes, threshold = 0)
 expression levels. Default:  all.genes}
 
 \item{threshold}{Numeric value specifying the minimum expression level for filtering. Genes with
-expression values below this threshold will be excluded. Default: 0.}
+expression values below this threshold will be excluded. Default: 0.1.}
 }
 \value{
 A character vector of gene symbols that match the specified list, meet the expression threshold,
@@ -29,6 +29,6 @@ by expression in descending order.
 # Example usage:
 gene_list <- list(ROBO2 = 0.9982406, CDH18 = 0.9981755, DCC = 0.9981755, AL589740.1 = 0.9981103)
 genes <- c("ROBO2", "DCC", "AL589740.1", "UNKNOWN")
-filter_and_sort_genes(gene_list, genes, threshold = 0.9981)
+filterExpressedGenes(gene_list, genes, threshold = 0.9981)
 
 }

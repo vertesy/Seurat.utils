@@ -2237,7 +2237,7 @@ clUMAP <- function(
     nr.cols = NULL,
     plotname = ppp(toupper(reduction), ident),
     cols = NULL,
-    palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
+    palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[4],
     max.cols.for.std.palette = 7,
     highlight.clusters = NULL, cells.highlight = NULL,
     cols.highlight = "red",

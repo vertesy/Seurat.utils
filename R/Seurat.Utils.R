@@ -363,7 +363,7 @@ runDGEA <- function(obj,
   message("Resolutions analyzed:")
   df.markers.all <- Idents.for.DEG <- list.fromNames(x = res.analyzed.DE)
 
-  # browser()
+
   if (clean.misc.slot) {
     message("Erasing up the misc slot: df.markers and top.markers.resX")
     topMslots <- grepv("top.markers.res", names(obj@misc))
@@ -4093,7 +4093,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
     nr1 <- nrow(matrix_n)
 
     if (all(dim(matrix_n)) > 0) {
-      # browser()
+
       stopifnot(nrow(matrix_n) == length(newnames))
 
       if ("dgCMatrix" %in% class(matrix_n)) {

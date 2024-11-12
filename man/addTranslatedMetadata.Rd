@@ -21,6 +21,8 @@ addTranslatedMetadata(
 
 \item{translation_as_named_vec}{A named vector where names are old values and values are new translations. Default: None.}
 
+\item{new_col_name}{A character string specifying the name of the new metadata column. Default: "translation_as_named_vec".}
+
 \item{suffix}{A character string specifying the suffix for the new metadata column name. Default: ".".}
 
 \item{plot}{A logical indicating whether to plot the UMAP for the new metadata. Default: FALSE.}

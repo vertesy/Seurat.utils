@@ -25,6 +25,8 @@
 #' @param obj A Seurat object to be updated. Default: combined.obj.
 #' @param orig.ident A character string specifying the original metadata to be translated. Default: "RNA_snn_res.0.4".
 #' @param translation_as_named_vec A named vector where names are old values and values are new translations. Default: None.
+#' @param new_col_name A character string specifying the name of the new metadata column. Default: "translation_as_named_vec".
+# #' @param NA.as.character A logical indicating whether to convert NAs to character. Default: TRUE.
 #' @param suffix A character string specifying the suffix for the new metadata column name. Default: ".".
 #' @param plot A logical indicating whether to plot the UMAP for the new metadata. Default: FALSE.
 #'
@@ -37,6 +39,7 @@ addTranslatedMetadata <- function(obj = combined.obj,
                                   orig.ident = "RNA_snn_res.0.4",
                                   translation_as_named_vec,
                                   new_col_name = substitute_deparse(translation_as_named_vec),
+                                  # NA.as.character = T,
                                   suffix = NULL,
                                   plot = F,
                                   ...) {
@@ -49,11 +52,13 @@ addTranslatedMetadata <- function(obj = combined.obj,
   message("new_col_name: ", new_col_name)
 
   # Translate metadata
-  obj@meta.data[[new_col_name]] <- CodeAndRoll2::translate(
+  obj@meta.data[[new_col_name]] <- new <- CodeAndRoll2::translate(
     vec = as.character(obj@meta.data[[orig.ident]]),
     old = names(translation_as_named_vec),
     new = translation_as_named_vec
   )
+  print(table(new, useNA = "ifany"))
+
 
   if(plot) clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...)
   return(obj)
@@ -213,7 +218,7 @@ calculateAverageMetaData <- function(
     length(unique(obj@meta.data[, ident])) < max.categ
   )
 
-  # browser()
+
   # Initialize list to store results
   results <- list()
 
@@ -345,7 +350,7 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
 getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],
                                  ident_values = NA, obj = combined.obj,
                                  inverse = FALSE) {
-  # browser()
+
   mdat <- obj@meta.data[, ident]
   cells.pass <- mdat %in% ident_values
   if (inverse) cells.pass <- !cells.pass
@@ -377,7 +382,7 @@ getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],
 addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose = FALSE,
                             strict = TRUE) {
   if (verbose) message("Running addMetaDataSafe...")
-  # browser()
+
   stopifnot(
     is(obj, "Seurat"), is.vector(metadata), is.character(col.name), is.logical(overwrite),
     "Column already exists" = ((!col.name %in% colnames(obj@meta.data)) | overwrite)
@@ -525,7 +530,7 @@ addMetaFraction <- function(
   message("Assay: ", assay)
   message("Layer: ", layer)
 
-  # browser()
+
   stopif(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
@@ -1722,6 +1727,10 @@ transferLabelsSeurat <- function(
 #' @param new_ident_name A string. The name for the newly created identity column in `obj@meta.data`.
 #'   Default is a concatenation: kpp(prefix, ident_to_rename, "match.to", reference_ident) .
 #' @param plot_suffix A string. The suffix to add to the final UMAP.
+#' @param barplot_match Draw a barplot to show the % match between the original and new identities.
+#' Default: TRUE
+#' @param barplot_fractions Draw a barplot to show the % of each category in the original and new
+#' identities, using `scBarplot.CellFractions()`. Default: TRUE
 #' @param h Height for the saved image. Default: 12
 #' @param w Width for the saved image. Default: 9
 #' @param ... Additional parameters to be passed to `.replace_by_most_frequent_categories` function.
@@ -1740,12 +1749,14 @@ transferLabelsSeurat <- function(
 matchBestIdentity <- function(
     obj, ident_to_rename,
     reference_ident = GetOrderedClusteringRuns(obj)[1],
-    prefix = Reference,
+    prefix = reference_ident,
     suffix = gsub(prefix, "", x = reference_ident),
     # to_suffix = "matched",
     # to_suffix = FixPlotName(gsub(pattern = "[a-zA-Z_]", replacement = "", x = ident_to_rename)),
     new_ident_name = kpp(prefix, ident_to_rename, "match.to", suffix),
     plot_suffix = prefix,
+    barplot_match = TRUE,
+    barplot_fractions = TRUE,
     w = 12, h = 9,
     ...) {
   stopifnot("colname prefix undefined" = !is.null(prefix))
@@ -1753,7 +1764,7 @@ matchBestIdentity <- function(
   dictionary <- obj@meta.data[, c(ident_to_rename, reference_ident)]
 
   translation <- .replace_by_most_frequent_categories(
-    df = dictionary, show_plot = TRUE, suffix_barplot = ident_to_rename, ...
+    df = dictionary, show_plot = barplot_match, suffix_barplot = ident_to_rename, ...
   )
 
   obj@meta.data[, new_ident_name] <- translation[, 1]
@@ -1761,6 +1772,11 @@ matchBestIdentity <- function(
   imessage("new ident name:", new_ident_name)
   px <- clUMAP(ident = new_ident_name, obj = obj, suffix = plot_suffix, w = w, h = h, ...)
   print(px)
+
+  if (barplot_fractions) {
+    scBarplot.CellFractions(fill.by = reference_ident , group.by = new_ident_name, obj = obj)
+  }
+
   return(obj)
 }
 
