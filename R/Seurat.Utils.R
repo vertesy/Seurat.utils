@@ -468,7 +468,7 @@ runDGEA <- function(obj,
     create_set_OutDir(directory, subdirectory)
 
     # Assign df.markers.all to global environment
-    ReadWriter::write.simple.xlsx(named_list = df.markers.all, filename = "df.markers.all")
+    ReadWriter::write.simple.xlsx(named_list = df.markers.all, filename = kpp("df.markers.all", kppd(res.analyzed.DE), idate()))
     assign("df.markers.all", df.markers.all, envir = .GlobalEnv)
 
 
@@ -1220,6 +1220,7 @@ v = TRUE, unique = TRUE, ...) {
 #' @param genes Character vector of gene symbols to search for in the gene list. Default: NULL.
 #' @param gene_list A named list of gene expression values where names are gene symbols, and values are
 #' expression levels. Default:  all.genes
+#' @param sort_by_expr Logical value specifying whether to sort the resulting gene list by expression level.
 #' @param threshold Numeric value specifying the minimum expression level for filtering. Genes with
 #' expression values below this threshold will be excluded. Default: 0.1.
 #'
@@ -1233,29 +1234,38 @@ v = TRUE, unique = TRUE, ...) {
 #' filterExpressedGenes(gene_list, genes, threshold = 0.9981)
 #'
 #' @export
-filterExpressedGenes <- function(genes = NULL, gene_list = all.genes, threshold = 0.1) {
+filterExpressedGenes <- function(genes, gene_list = all.genes
+                                 , sort_by_expr = TRUE, threshold = 0.1) {
 
   # Assertions
   stopifnot(
-    is.list(gene_list), !is.null(gene_list),
-    is.character(genes), !is.null(genes),
+    is.list(gene_list),
+    is.character(genes),
     is.numeric(threshold), length(threshold) == 1
   )
+  stopif(is.null(gene_list))
 
+  # browser()
   # Step 1: Intersect the gene symbols with the names in the list and report statistics
-  matching_genes <- intersect(names(gene_list), genes)
-  message("Number of matching genes: ", length(matching_genes), " from ", length(genes))
+  matching_genes <- CodeAndRoll2::intersect.w.Names(x = genes, y = names(gene_list), names = "x")
+  message("Number of matching genes: ", length(matching_genes), " from ", length(genes)
+          , ". Missing: ", head(setdiff(genes, names(gene_list))), " ...")
 
   # Step 2: Filter out genes below the expression threshold
   filtered_genes <- matching_genes[sapply(matching_genes, function(g) gene_list[[g]] >= threshold)]
   message("Number of genes above the threshold: ", length(filtered_genes), " from ", length(matching_genes))
 
-  # Step 3: Sort the genes according to their expression in descending order
+  # Step 3: Conditionally sort genes according to their expression in descending order
+  if (sort_by_expr) {
+    order_of_expr <- order(unlist(gene_list[filtered_genes]), decreasing = TRUE)
+    filtered_genes <- filtered_genes[order_of_expr]
+  }
+
   # sorted_genes <- filtered_genes[order(sapply(filtered_genes, function(g) gene_list[[g]]), decreasing = TRUE)]
-  sorted_genes <- names(sort(unlist(gene_list[filtered_genes]), decreasing = TRUE))
+  # sorted_genes <- names(sort(unlist(gene_list[filtered_genes]), decreasing = TRUE))
 
   # Step 4: Return the character vector
-  return(sorted_genes)
+  return(filtered_genes)
 }
 
 

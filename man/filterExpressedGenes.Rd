@@ -4,13 +4,20 @@
 \alias{filterExpressedGenes}
 \title{Filter and Sort Gene Expression List Based on Specified Genes and Expression Threshold}
 \usage{
-filterExpressedGenes(genes = NULL, gene_list = all.genes, threshold = 0.1)
+filterExpressedGenes(
+  genes,
+  gene_list = all.genes,
+  sort_by_expr = TRUE,
+  threshold = 0.1
+)
 }
 \arguments{
 \item{genes}{Character vector of gene symbols to search for in the gene list. Default: NULL.}
 
 \item{gene_list}{A named list of gene expression values where names are gene symbols, and values are
 expression levels. Default:  all.genes}
+
+\item{sort_by_expr}{Logical value specifying whether to sort the resulting gene list by expression level.}
 
 \item{threshold}{Numeric value specifying the minimum expression level for filtering. Genes with
 expression values below this threshold will be excluded. Default: 0.1.}
