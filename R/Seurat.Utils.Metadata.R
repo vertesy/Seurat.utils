@@ -1757,6 +1757,7 @@ matchBestIdentity <- function(
     plot_suffix = prefix,
     barplot_match = TRUE,
     barplot_fractions = TRUE,
+    rnd_colors = T,
     w = 12, h = 9,
     ...) {
   stopifnot("colname prefix undefined" = !is.null(prefix))
@@ -1774,7 +1775,10 @@ matchBestIdentity <- function(
   print(px)
 
   if (barplot_fractions) {
-    scBarplot.CellFractions(fill.by = reference_ident , group.by = new_ident_name, obj = obj)
+    COLZ <- getDiscretePaletteObj(ident.used = reference_ident, obj = obj, palette.used = "glasbey")
+    scBarplot.CellFractions(fill.by = reference_ident , group.by = new_ident_name, obj = obj
+                            # , rnd_colors = rnd_colors
+                            , custom_col_palette = COLZ)
   }
 
   return(obj)
@@ -1825,6 +1829,7 @@ matchBestIdentity <- function(
     show_plot = TRUE,
     suffix_barplot = NULL,
     ext = "png",
+    min.thr = 0.5,
     ...) {
   # Convert to data frame if it is not
   if (!is.data.frame(df)) {
@@ -1866,9 +1871,9 @@ matchBestIdentity <- function(
       subtitle = paste(
         "From", colnames(df)[1], "->", colnames(df)[2], "| median",
         percentage_formatter(median(quality)), "\n",
-        sum(quality > 0.5), "clusters above 50% match"
+        sum(quality > min.thr), "clusters above 50% match"
       ),
-      hline = 0.5, filtercol = -1,
+      hline = min.thr, filtercol = -1,
       xlab = paste("Best query match to reference"),
       ylab = "Proportion of Total Matches",
       ...
