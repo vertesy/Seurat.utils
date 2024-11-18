@@ -1247,7 +1247,7 @@ filterExpressedGenes <- function(genes, gene_list = all.genes
 
   # browser()
   # Step 1: Intersect the gene symbols with the names in the list and report statistics
-  matching_genes <- CodeAndRoll2::intersect.w.Names(x = genes, y = names(gene_list), names = "x")
+  matching_genes <- CodeAndRoll2::intersect.wNames(x = genes, y = names(gene_list), names = "x")
   message("Number of matching genes: ", length(matching_genes), " from ", length(genes)
           , ". Missing: ", head(setdiff(genes, names(gene_list))), " ...")
 
@@ -1267,6 +1267,9 @@ filterExpressedGenes <- function(genes, gene_list = all.genes
   # Step 4: Return the character vector
   return(filtered_genes)
 }
+
+# r$CodeAndRoll2()
+# filterExpressedGenes(AstrocyteMarkers)
 
 
 

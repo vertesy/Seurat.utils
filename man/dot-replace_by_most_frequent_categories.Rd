@@ -11,6 +11,7 @@
   show_plot = TRUE,
   suffix_barplot = NULL,
   ext = "png",
+  min.thr = 0.5,
   ...
 )
 }

@@ -14,6 +14,7 @@ matchBestIdentity(
   plot_suffix = prefix,
   barplot_match = TRUE,
   barplot_fractions = TRUE,
+  rnd_colors = T,
   w = 12,
   h = 9,
   ...

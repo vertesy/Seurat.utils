@@ -8,6 +8,8 @@ qSeuViolin(
   obj,
   feature = "nFeature_RNA",
   ident = GetNamedClusteringRuns(obj = obj, v = FALSE)[1],
+  assay = "RNA",
+  slot = "data",
   split.by = NULL,
   colors = NULL,
   clip.outliers = TRUE,

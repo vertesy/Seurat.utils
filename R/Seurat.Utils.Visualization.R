@@ -1971,6 +1971,8 @@ qSeuViolin <- function(
     obj,
     feature = "nFeature_RNA",
     ident = GetNamedClusteringRuns(obj = obj, v = FALSE)[1],
+    assay = "RNA",
+    slot = "data",
     split.by = NULL,
     colors = NULL,
     clip.outliers = TRUE,
@@ -2006,6 +2008,17 @@ qSeuViolin <- function(
     feature %in% colnames(obj@meta.data) || feature %in% rownames(obj)
   )
 
+  is_meta_feature <- feature %in% colnames(obj@meta.data) # check if feature is in meta.data, otherwise it is a  gene name
+
+  value_vector <-
+    if(is_meta_feature){
+      obj@meta.data[[feature]]
+    } else {
+      # Extract normalized expression values ("data" slot) from the RNA assay
+      GetAssayData(obj, assay = assay, slot = slot)[feature, ]
+    }
+
+
   if (exists("idents")) warning("Use arg. ident instead of idents!\n", immediate. = TRUE)
   if (exists("features")) warning("Use arg. feature instead of features!\n", immediate. = TRUE)
 
@@ -2024,14 +2037,14 @@ qSeuViolin <- function(
 
   if (replace.na) {
     warning("NA's are not, but zeros are displayed on the plot. Avoid replace.na when possible", immediate. = TRUE)
-    obj@meta.data[[feature]] <- na.replace(x = obj@meta.data[[feature]], replace = 0)
+    value_vector <- na.replace(x = value_vector, replace = 0)
   }
 
-  # browser()
+
   if (clip.outliers) {
     warning("Outliers are clipped at percentiles 0.5% and 99.5%", immediate. = TRUE)
     obj@meta.data[[feature]] <- CodeAndRoll2::clip.outliers.at.percentile(
-      x = obj@meta.data[[feature]], percentiles = c(.005, .995)
+      x = value_vector, percentiles = c(.005, .995)
     )
   }
 
@@ -2041,6 +2054,7 @@ qSeuViolin <- function(
     colors <- as.factor.numeric(sapply(split(col_long, split_col), unique))
     stopifnot("colors cannot be uniquely split by ident. Set colors = NULL!" = length(colors) == length(unique(split_col)))
   }
+  # browser()
 
   p.obj <- Seurat::VlnPlot(
     object = obj,
