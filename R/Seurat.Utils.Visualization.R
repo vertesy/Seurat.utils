@@ -1942,7 +1942,7 @@ qFeatureScatter <- function(
 #' @param colors A character vector specifying the colors to use for the plot.
 #' @param clip.outliers A logical indicating whether to clip outliers.
 #' @param replace.na A logical indicating whether NA values should be replaced.
-#' @param pt.size The size of the individual datapoints in the plot. Set to 0 to get a clean violin plot.
+#' @param pt.size The size of the individual datapoints in the plot. Default: 0 for simple violin plot.
 #' @param sub Subtitle of the plot. Default: feature by ident.
 #' @param suffix An optional string to append to the title of the plot.
 #' @param suffix.2.title A logical indicating whether to append the suffix to the plot title.
@@ -1977,7 +1977,7 @@ qSeuViolin <- function(
     colors = NULL,
     clip.outliers = TRUE,
     replace.na = FALSE,
-    pt.size = 0.5,
+    pt.size = 0,
     sub = NULL,
     suffix = NULL,
     suffix.2.title = FALSE,
@@ -1993,6 +1993,7 @@ qSeuViolin <- function(
     grid = TRUE,
     w = NULL, h = 7,
     ...) {
+  message(" > Running qSeuViolin...")
   #
   stopifnot(
     "Seurat" %in% class(obj), # object must be a Seurat object
