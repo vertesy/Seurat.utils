@@ -2438,8 +2438,19 @@ removeResidualSmallClusters <- function(
     max.cells = max(round((ncol(obj)) / 2000), 5),
     plot.removed = TRUE) {
   #
+
+  stopifnot(
+    inherits(obj, "Seurat"),
+    is.character(identitites), length(identitites) > 0,
+    all(identitites %in% colnames(obj@meta.data)),
+    is.numeric(max.cells), max.cells > 0,
+    is.logical(plot.removed)
+  )
+
+
   META <- obj@meta.data
   all.cells <- rownames(META)
+
 
   message("max.cells: ", max.cells, " | Scanning over these identities:")
   small.clusters <- cells.to.remove <- CodeAndRoll2::list.fromNames(identitites)
@@ -2457,29 +2468,33 @@ removeResidualSmallClusters <- function(
         "| Cell counts:", tbl[small.clusters[[i]]]
       )
     }
-  }
 
-  all.cells.2.remove <- unique(unlist(cells.to.remove))
-  if (plot.removed) {
-    SBT <- paste(length(all.cells.2.remove), "cells removed from small clusters across", length(identitites), "identities.")
-    pobj <- clUMAP(
-      obj = obj, ident = GetClusteringRuns(obj = obj)[1], sub = SBT,
-      cells.highlight = all.cells.2.remove
-    )
-    print(pobj)
-  }
+    all.cells.2.remove <- unique(unlist(cells.to.remove))
+    if (plot.removed) {
+      SBT <- paste(length(all.cells.2.remove), "cells removed from small clusters across", length(identitites), "identities.")
+      pobj <- clUMAP(
+        obj = obj, ident = identitites[i],
+        sub = SBT, caption = NULL,
+        cells.highlight = all.cells.2.remove
+      )
+      print(pobj)
+    } # if plot.removed
 
-  if (length(all.cells.2.remove)) {
-    iprint(
-      ">>> a total of", length(all.cells.2.remove),
-      "cells are removed which belonged to a small cluster in any of the identities."
-    )
-  } else {
-    iprint(">>> No cells are removed because belonging to small cluster.")
-  }
 
-  cells.2.keep <- setdiff(all.cells, all.cells.2.remove)
-  obj <- subset(x = obj, cells = cells.2.keep)
+    if (length(all.cells.2.remove)) {
+      iprint(
+        ">>> a total of", length(all.cells.2.remove),
+        "cells are removed which belonged to a small cluster in any of the identities."
+      )
+    } else {
+      iprint(">>> No cells are removed because belonging to small cluster.")
+    }
+
+    cells.2.keep <- setdiff(all.cells, all.cells.2.remove)
+    obj <- subset(x = obj, cells = cells.2.keep)
+
+  } # for list of identities (meta columns)
+
 
   return(obj)
 }
