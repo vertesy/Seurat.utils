@@ -2438,7 +2438,6 @@ removeResidualSmallClusters <- function(
     max.cells = max(round((ncol(obj)) / 2000), 5),
     plot.removed = TRUE) {
   #
-
   stopifnot(
     inherits(obj, "Seurat"),
     is.character(identitites), length(identitites) > 0,
