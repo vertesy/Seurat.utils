@@ -2215,6 +2215,8 @@ qUMAP <- function(
 #' @param palette Color palette for generating cluster colors; Default: 'glasbey'.
 #' @param highlight.clusters Specific clusters to be highlighted; optional; Default: NULL.
 #' @param cells.highlight Specific cells to be highlighted; optional; Default: NULL.
+#' @param cols.highlight Color for highlighted cells; Default: 'red'.
+#' @param sizes.highlight Size of highlighted cells; Default: 1.
 #' @param label Show cluster labels; Default: `TRUE`.
 #' @param repel Repel labels to avoid overlap; Default: `TRUE`.
 #' @param legend Show legend; Default: opposite of `label`.
@@ -2637,6 +2639,7 @@ multiFeaturePlot.A4 <- function(
 #' @param nr.Col Number of columns in the plot grid. Default: 2.
 #' @param nr.Row Number of rows in the plot grid. Default: 4.
 #' @param cex Size of the text in the plot, calculated based on the number of rows and columns. Default: Calculated value.
+#' @param sizes.highlight Size of highlighted cells; Default: 1.
 #' @param subdir Logical flag indicating whether to create a subdirectory for the plots. Default: `TRUE`.
 #' @param prefix Optional prefix for the plot file names. Default: `NULL`.
 #' @param suffix Optional suffix for the plot file names. Default: `NULL`.
@@ -2669,6 +2672,7 @@ multiSingleClusterHighlightPlots.A4 <- function(
     colors = c("grey", "red"),
     nr.Col = 2, nr.Row = 4,
     cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
+    sizes.highlight = 1,
     subdir = TRUE,
     prefix = NULL, suffix = NULL,
     background_col = "white",
@@ -2728,7 +2732,9 @@ multiSingleClusterHighlightPlots.A4 <- function(
       plot.list[[j]] <- clUMAP(
         ident = ident, obj = obj,
         highlight.clusters = cl, label = FALSE, legend = FALSE, save.plot = FALSE,
-        plotname = plotname, cols = colors, h = h, w = w, ...
+        plotname = plotname, cols = colors,
+        sizes.highlight = sizes.highlight,
+        h = h, w = w, ...
       )
     } # for j
 

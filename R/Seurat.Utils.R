@@ -2446,7 +2446,7 @@ removeResidualSmallClusters <- function(
     is.numeric(max.cells), max.cells > 0,
     is.logical(plot.removed)
   )
-
+  message("First, consider using RelabelSmallCategories() instead, to relabel small clusters.")
 
   META <- obj@meta.data
   all.cells <- rownames(META)
