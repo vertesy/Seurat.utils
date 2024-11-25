@@ -1624,7 +1624,12 @@ transferLabelsSeurat <- function(
     stopifnot(file.exists(reference_path))
     reference_obj <- readr::read_rds(reference_path)
   } else {
-    stopifnot(inherits(reference_obj, "Seurat") & min(dim(reference_obj)) > 10)
+    stopifnot(
+      inherits(reference_obj, "Seurat"),
+      min(dim(reference_obj)) > 10,
+      reference_ident %in% colnames(reference_obj@meta.data)
+    )
+
   }
 
   # Report

@@ -112,6 +112,11 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
       obj <- addGeneClassFractions(obj)
     } # end if add.meta.fractions
 
+    if("data" %!in% Layers(obj.Pati)) {
+      message("------------------- NormalizeData -------------------")
+      obj <- Seurat::NormalizeData(object = obj)
+    }
+
 
     message("------------------- FindVariableFeatures -------------------")
     tic("FindVariableFeatures")
