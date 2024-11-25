@@ -14,7 +14,7 @@ qSeuViolin(
   colors = NULL,
   clip.outliers = TRUE,
   replace.na = FALSE,
-  pt.size = 0.5,
+  pt.size = 0,
   sub = NULL,
   suffix = NULL,
   suffix.2.title = FALSE,
@@ -48,7 +48,7 @@ qSeuViolin(
 
 \item{replace.na}{A logical indicating whether NA values should be replaced.}
 
-\item{pt.size}{The size of the individual datapoints in the plot. Set to 0 to get a clean violin plot.}
+\item{pt.size}{The size of the individual datapoints in the plot. Default: 0 for simple violin plot.}
 
 \item{sub}{Subtitle of the plot. Default: feature by ident.}
 

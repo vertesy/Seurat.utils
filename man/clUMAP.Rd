@@ -76,6 +76,10 @@ clUMAP(
 
 \item{cells.highlight}{Specific cells to be highlighted; optional; Default: NULL.}
 
+\item{cols.highlight}{Color for highlighted cells; Default: 'red'.}
+
+\item{sizes.highlight}{Size of highlighted cells; Default: 1.}
+
 \item{label}{Show cluster labels; Default: \code{TRUE}.}
 
 \item{repel}{Repel labels to avoid overlap; Default: \code{TRUE}.}

@@ -15,6 +15,7 @@ multiSingleClusterHighlightPlots.A4(
   nr.Col = 2,
   nr.Row = 4,
   cex = round(0.1/(nr.Col * nr.Row), digits = 2),
+  sizes.highlight = 1,
   subdir = TRUE,
   prefix = NULL,
   suffix = NULL,
@@ -48,6 +49,8 @@ multiSingleClusterHighlightPlots.A4(
 \item{nr.Row}{Number of rows in the plot grid. Default: 4.}
 
 \item{cex}{Size of the text in the plot, calculated based on the number of rows and columns. Default: Calculated value.}
+
+\item{sizes.highlight}{Size of highlighted cells; Default: 1.}
 
 \item{subdir}{Logical flag indicating whether to create a subdirectory for the plots. Default: \code{TRUE}.}
 
