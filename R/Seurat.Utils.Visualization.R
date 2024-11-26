@@ -939,7 +939,7 @@ scBarplot.CellFractions <- function(
   if (is.null(w)) {
     categ_X <- nr.unique(META[, group.by])
     categ_Y <- nr.unique(META[, fill.by])
-    w <- ceiling(max(6, categ_Y / 4, categ_X / 2))
+    w <- ceiling(max(7, categ_Y / 4, categ_X / 1.5))
   }
 
   set.seed(seedNr)
@@ -965,8 +965,8 @@ scBarplot.CellFractions <- function(
     pname.suffix <- "(downsampled)"
 
     capt.suffix <- paste0(
-      "\nDownsampled all groups in ", fill.by, " (Y) to ", min.nr.sampled.cells,
-      " cells before splitting by X. \nThis number is max(smallest group, 5% of total cells). Largest groups previosly was: ", largest_grp
+      "\nDownsampled all groups in ", fill.by, " (Y) to ", n_smallest_group,
+      " cells before splitting by X. \nIt is calculated as max(smallest group, 5% of total cells). Largest groups previosly was: ", largest_grp
     )
   }
 
