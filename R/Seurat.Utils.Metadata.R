@@ -534,7 +534,7 @@ addMetaFraction <- function(
   stopif(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
-  if (!isFALSE(gene.set)) geneset <- check.genes(genes = gene.set, obj = obj)
+  # if (!isFALSE(gene.set)) geneset <- check.genes(genes = gene.set, obj = obj)
   total_expr <- Matrix::colSums(GetAssayData(object = obj))
   all.genes <- Features(obj, assay = assay)
 
@@ -547,7 +547,7 @@ addMetaFraction <- function(
   genes.expr <- GetAssayData(object = obj, assay = assay, layer = layer)[genes.matching, ]
   target_expr <- if (length(genes.matching) > 1) Matrix::colSums(genes.expr) else genes.expr
 
-  iprint(length(genes.matching), "genes found, eg:", sample(genes.matching, 10))
+  iprint(length(genes.matching), "genes found, eg:", head(genes.matching, 10))
 
   obj <- AddMetaData(object = obj, metadata = target_expr / total_expr, col.name = col.name)
   colnames(obj@meta.data)
@@ -587,9 +587,11 @@ addGeneClassFractions <- function(obj,
   message("Adding meta data for gene-class fractions, e.g., percent.mito, etc.")
 
   for (col_name in names(gene_fractions)) {
+    message(col_name, "...")
+
     if (!metaColnameExists(col_name = col_name, obj = obj)) {
       gene_data <- gene_fractions[[col_name]]
-      message("Adding ", col_name, "to  @meta.data...", gene_data)
+      message("Adding ", col_name, " to  @meta.data...", gene_data)
       obj <- addMetaFraction(
         col.name = col_name, gene.symbol.pattern = gene_data, obj = obj,
         assay = "RNA"
