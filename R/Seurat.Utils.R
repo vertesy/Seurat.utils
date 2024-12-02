@@ -105,18 +105,23 @@ processSeuratObject <- function(obj, param.list = p, add.meta.fractions = FALSE,
   obj@misc$"p" <- param.list # overwrite previous parameters
   gc()
 
+
+  if (precompute | add.meta.fractions) {
+
+    if("data" %!in% Layers(obj)) {
+      message("------------------- NormalizeData -------------------")
+      obj <- Seurat::NormalizeData(object = obj)
+    }
+  }
+
+
   if (add.meta.fractions) {
     message("Adding meta data for gene-class fractions, eg. percent.mito, etc.")
     obj <- addGeneClassFractions(obj)
   } # end if add.meta.fractions
 
+
   if (precompute) {
-
-    if("data" %!in% Layers(obj.Pati)) {
-      message("------------------- NormalizeData -------------------")
-      obj <- Seurat::NormalizeData(object = obj)
-    }
-
 
     message("------------------- FindVariableFeatures -------------------")
     tic("FindVariableFeatures")
