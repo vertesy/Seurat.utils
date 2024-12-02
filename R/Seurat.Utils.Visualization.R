@@ -3040,20 +3040,23 @@ qQC.plots.BrainOrg <- function(
   message(" > Plotting qQC.plots.BrainOrg...")
 
   # Check that the QC markers are in the object
-  QC.Features.Found <- intersect(QC.Features, colnames(obj@meta.data))
+  QC.Features.Found <- intersect(QC.Features, union(colnames(obj@meta.data), rownames(obj)))
+  QC.Features.Found.in.meta <- intersect(QC.Features, colnames(obj@meta.data))
   n.found <- length(QC.Features.Found)
   message(kppws(n.found, " found: ", QC.Features.Found))
   stopifnot(n.found > 1)
 
 
   # Count the number of NAs in specified columns
-  na_counts <- sapply(X = obj@meta.data[, QC.Features.Found], function(x) sum(is.na(x)))
+  na_counts <- sapply(X = obj@meta.data[, QC.Features.Found.in.meta], function(x) sum(is.na(x)))
 
   # Raise a warning if there are any NAs
-  if (sum(na_counts) > 0) {
-    warning(sprintf("There are %d NA values found\n", na_counts),
-      immediate. = TRUE
-    )
+  if(length(na_counts)){
+    if (sum(na_counts) > 0) {
+      warning(sprintf("There are %d NA values found\n", na_counts),
+              immediate. = TRUE
+      )
+    }
   }
 
   px <- list(

@@ -27,7 +27,7 @@
 #'
 #' @param obj A Seurat object to be processed.
 #' @param param.list A list of parameters used in the processing steps.
-#' @param update_gene_symbols A boolean indicating whether to update gene symbols from HGNC. Default: `TRUE`.
+#' @param update_gene_symbols A boolean indicating whether to update gene symbols from HGNC. Default: `FALSE`.
 #' @param add.meta.fractions A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: `FALSE`.
 #' @param precompute A boolean indicating whether to compute steps: `FindVariableFeatures()`,
 #' `calc.q99.Expression.and.set.all.genes()`,  `ScaleData()` and `RunPCA()` Default: `TRUE`.
@@ -58,7 +58,7 @@
 #'
 #' @export
 processSeuratObject <- function(obj, param.list = p,
-                                update_gene_symbols = TRUE,
+                                update_gene_symbols = FALSE,
                                 add.meta.fractions = FALSE,
                                 precompute = TRUE,
                                 compute = TRUE,
@@ -111,7 +111,7 @@ processSeuratObject <- function(obj, param.list = p,
 
   if (update_gene_symbols) {
     message("------------------- UpdateGenesSeurat -------------------")
-    obj <- UpdateGenesSeurat(objj)
+    obj <- UpdateGenesSeurat(obj)
   }
 
   if (precompute | add.meta.fractions) {
