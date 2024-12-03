@@ -7,7 +7,7 @@
 processSeuratObject(
   obj,
   param.list = p,
-  update_gene_symbols = TRUE,
+  update_gene_symbols = FALSE,
   add.meta.fractions = FALSE,
   precompute = TRUE,
   compute = TRUE,
@@ -29,7 +29,7 @@ processSeuratObject(
 
 \item{param.list}{A list of parameters used in the processing steps.}
 
-\item{update_gene_symbols}{A boolean indicating whether to update gene symbols from HGNC. Default: \code{TRUE}.}
+\item{update_gene_symbols}{A boolean indicating whether to update gene symbols from HGNC. Default: \code{FALSE}.}
 
 \item{add.meta.fractions}{A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: \code{FALSE}.}
 

@@ -18,7 +18,7 @@ qSeuViolin(
   sub = NULL,
   suffix = NULL,
   suffix.2.title = FALSE,
-  caption = .parseKeyParams(obj),
+  caption = try(.parseKeyParams(obj), silent = TRUE),
   logY = TRUE,
   hline = FALSE,
   ylab = "Expression",
