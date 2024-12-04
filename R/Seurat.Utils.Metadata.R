@@ -523,7 +523,7 @@ addMetaFraction <- function(
     col.name = "percent.mito",
     gene.symbol.pattern = c("^MT\\.|^MT-", FALSE)[1],
     assay = "RNA",
-    layer = "data",
+    layer = "counts",
     gene.set = FALSE,
     verbose = TRUE) {
   #
@@ -533,8 +533,7 @@ addMetaFraction <- function(
 
   stopifnot(
     is(obj, "Seurat"),
-    is.character(col.name), is.character(assay), is.character(layer),
-    is.logical(gene.set), is.logical(verbose),
+    is.character(col.name), is.character(assay), is.character(layer), is.logical(verbose),
     assay %in% Assays(obj), layer %in% Layers(obj)
   )
 
