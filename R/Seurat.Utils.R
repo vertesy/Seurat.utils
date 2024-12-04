@@ -4048,16 +4048,27 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
                               assay = "RNA",
                               slots = c("data", "counts", "meta.features")) {
   #
+  # browser()
   message("RenameGenesSeurat, assay: ", assay)
   warning("Run this before integration and downstream processing. It only attempts to change
           @counts, @data, and @meta.features in obj@assays$YOUR_ASSAY.", immediate. = TRUE)
+
 
   stopifnot(
     "Unequal gene name sets: nrow(assayobj) != nrow(newnames):" =
       length(Features(obj, assay = assay)) == length(newnames)
   )
 
-  if (obj@version < "5") warning("obj@version < 5. Old versions are not supported. Update the obj!", immediate. = TRUE)
+  if (obj@version < "5") {
+    warning("obj@version < 5. Old versions are not supported. Update the obj!", immediate. = TRUE)
+  } else {
+    layers <- Layers(obj)
+    slots_found <- slots %in% layers
+    stopifnot(any(slots_found))
+    warnifnot("Not all slots present in the object - all(slots_found)" = all(slots_found))
+    slots <- intersect(slots , layers)
+  }
+
 
   if ("scale.data" %in% slots) {
     n_genes_sc_dta <- nrow(obj@assays[[assay]]$"scale.data")
