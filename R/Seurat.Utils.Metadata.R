@@ -526,17 +526,17 @@ addMetaFraction <- function(
     layer = "data",
     gene.set = FALSE,
     verbose = TRUE) {
+  #
+  message("Should rather use the default `Seurat::PercentageFeatureSet`")
+  message("Assay: ", assay)
+  message("Layer: ", layer)
+
   stopifnot(
     is(obj, "Seurat"),
     is.character(col.name), is.character(assay), is.character(layer),
     is.logical(gene.set), is.logical(verbose),
     assay %in% Assays(obj), layer %in% Layers(obj)
   )
-
-  message("Should rather use the default `Seurat::PercentageFeatureSet`")
-  message("Assay: ", assay)
-  message("Layer: ", layer)
-
 
   stopif(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")

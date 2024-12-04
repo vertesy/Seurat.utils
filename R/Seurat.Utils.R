@@ -4421,6 +4421,7 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' @param suffix A character string specifying the suffix of the files saved.
 #' @param min.cells An integer value specifying the minimum number of cells. Default: 5.
 #' @param min.features An integer value specifying the minimum number of features. Default: 200.
+#' @param normalize_data Add normalized "data" layer?. Default: `TRUE`.
 #' @param updateHGNC A logical value indicating whether to update the HGNC. Default: `TRUE`.
 #' @param save Save .qs object? Default: `TRUE`.
 #' @param ShowStats A logical value indicating whether to show statistics. Default: `TRUE`.
@@ -4441,6 +4442,7 @@ Convert10Xfolders <- function(
     suffix = strsplit(folderPattern, "_")[[1]][1],
     depth = 4,
     min.cells = 5, min.features = 200,
+    normalize_data = TRUE,
     updateHGNC = TRUE, ShowStats = TRUE,
     writeCBCtable = TRUE,
     nthreads = .getNrCores(),
@@ -4498,6 +4500,9 @@ Convert10Xfolders <- function(
 
     # update --- --- ---
     if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
+
+    # NormalizeData --- --- ---
+    if (normalize_data) seu <- NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000,  verbose = TRUE)
 
     # write out --- --- ---
     if (save) qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)

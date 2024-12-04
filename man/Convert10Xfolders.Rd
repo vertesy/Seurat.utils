@@ -12,6 +12,7 @@ Convert10Xfolders(
   depth = 4,
   min.cells = 5,
   min.features = 200,
+  normalize_data = TRUE,
   updateHGNC = TRUE,
   ShowStats = TRUE,
   writeCBCtable = TRUE,
@@ -37,6 +38,8 @@ Convert10Xfolders(
 \item{min.cells}{An integer value specifying the minimum number of cells. Default: 5.}
 
 \item{min.features}{An integer value specifying the minimum number of features. Default: 200.}
+
+\item{normalize_data}{Add normalized "data" layer?. Default: \code{TRUE}.}
 
 \item{updateHGNC}{A logical value indicating whether to update the HGNC. Default: \code{TRUE}.}
 
