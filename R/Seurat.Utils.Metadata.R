@@ -526,6 +526,13 @@ addMetaFraction <- function(
     layer = "data",
     gene.set = FALSE,
     verbose = TRUE) {
+  stopifnot(
+    is(obj, "Seurat"),
+    is.character(col.name), is.character(assay), is.character(layer),
+    is.logical(gene.set), is.logical(verbose),
+    assay %in% Assays(obj), layer %in% Layers(obj)
+  )
+
   message("Should rather use the default `Seurat::PercentageFeatureSet`")
   message("Assay: ", assay)
   message("Layer: ", layer)
@@ -535,7 +542,7 @@ addMetaFraction <- function(
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
   # if (!isFALSE(gene.set)) geneset <- check.genes(genes = gene.set, obj = obj)
-  total_expr <- Matrix::colSums(GetAssayData(object = obj))
+  total_expr <- Matrix::colSums(GetAssayData(object = obj, assay = assay, layer = layer))
   all.genes <- Features(obj, assay = assay)
 
   genes.matching <- if (!isFALSE(gene.set)) {
