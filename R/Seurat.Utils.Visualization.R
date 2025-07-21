@@ -3000,7 +3000,8 @@ PlotTopGenesPerCluster <- function(
   for (i in 1:length(ls.topMarkers)) {
     multiFeaturePlot.A4(
       list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = TRUE, foldername = ppp("TopGenes.umaps"),
-      prefix = ppp("DEG.markers.res", cl_res, "cluster", names(ls.topMarkers)[i])
+      prefix = ppp("DEG.markers.res", cl_res, "cluster", names(ls.topMarkers)[i]),
+      ...
     )
   }
 }

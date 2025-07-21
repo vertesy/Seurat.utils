@@ -9,7 +9,7 @@ addMetaFraction(
   col.name = "percent.mito",
   gene.symbol.pattern = c("^MT\\\\.|^MT-", FALSE)[1],
   assay = "RNA",
-  layer = "data",
+  layer = "counts",
   gene.set = FALSE,
   verbose = TRUE
 )

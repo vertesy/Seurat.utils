@@ -7,7 +7,9 @@
 filterCodingGenes(
   genes,
   pattern_NC = c("^A[CFLP][0-9]{6}", "^Z[0-9]{5}", "^LINC0[0-9]{4}", "^C[1-9]+orf[1-9]+",
-    "[-|\\\\.]AS[1-9]*$", "[-|\\\\.]DT[1-9]*$", "^MIR[1-9]", "^SNHG[1-9]"),
+    "^C[1-9][0-9]+orf[1-9]+", "^CXorf[1-9]+", "[-|\\\\.]AS[1-9]*$", "[-|\\\\.]DT[1-9]*$",
+    "^MIR[1-9]", "^SNHG[1-9]", "^CU[0-9]{6}", "^BX[0-9]{6}", "^FP[0-9]{6}",
+    "^AC[0-9]{6}"),
   v = TRUE,
   unique = TRUE,
   ...
@@ -17,7 +19,7 @@ filterCodingGenes(
 \item{genes}{A character vector of gene symbols.}
 
 \item{pattern_NC}{A character vector of patterns to filter out non-coding gene symbols.
-Default: c("^AC.", "^AL.", "^c\link{1-9}orf", "\\.AS\link{1-9}$").}
+Default: c("^AC.", "^AL.", "^c\link{1-9}orf", "\\.AS\link{1-9}$", ... etc.}
 
 \item{v}{"verbose" Whether to print the number of genes before and after filtering.}
 
