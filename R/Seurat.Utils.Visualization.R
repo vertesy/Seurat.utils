@@ -756,7 +756,7 @@ PctCellsExpressingGenes <- function(genes, obj, assay = "RNA", min.expr = 1,
   message("  genes: ", paste(genes, collapse = ", "))
   message("  assay: ", assay)
   message("  min.expr: ", min.expr)
-  message("  ident: ", ifelse(is.null(ident), "NULL", paste(ident, lenght(ident), "-", head(ident))))
+  message("  ident: ", ifelse(is.null(ident), "NULL", paste(ident, length(ident), "-", head(ident))))
   message("  max.idents: ", max.idents)
 
   # Get the expression data
