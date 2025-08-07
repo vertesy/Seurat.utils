@@ -1,10 +1,11 @@
 # Vignette for 57 functions in Seurat.Utils.Visualization.R
 Updated: 2024/03/25 15:51
 
-Seurat.utils Is a collection of utility functions for Seurat single cell analysis.
+Seurat.utils is a collection of utility functions for Seurat single cell analysis.
     Functions allow 3D plotting, visualisation of statistics & QC,
     the automation / multiplexing of plotting, interaction with the Seurat object, etc.
-    Some functionalities require functions from CodeAndRoll and MarkdownReports libraries.> For details, please use the `help()` function, or browse the source code.
+    Some functionalities require functions from CodeAndRoll2 and MarkdownReports libraries.
+> For details, please use the `help()` function, or browse the source code.
 
 #### 1. PlotFilters: `PlotFilters()`
 Plot filtering threshold and distributions, using four panels to highlight the relation between Gene- and UMI-count, ribosomal- and mitochondrial-content.

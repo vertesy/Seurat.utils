@@ -25,9 +25,9 @@ DESCRIPTION <- list(
   "Title" = "Seurat.utils - utility functions for Seurat",
   "Author" = person(given = "Abel", family = "Vertesy", email = "av@imba.oeaw.ac.at", role = c("aut", "cre")),
   "Authors@R" = 'person(given = "Abel", family = "Vertesy", email = "av@imba.oeaw.ac.at", role =  c("aut", "cre") )',
-  "Description" = "Seurat.utils Is a collection of utility functions for Seurat v3.
-    Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics &
-    QC, interaction with the Seurat object, etc. Some functionalities require functions from CodeAndRoll and MarkdownReports libraries.",
+    "Description" = "Seurat.utils is a collection of utility functions for Seurat v3.
+      Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics &
+      QC, interaction with the Seurat object, etc. Some functionalities require functions from CodeAndRoll2 and MarkdownReports libraries.",
   "License" = "GPL-3 + file LICENSE",
   "Version" = package.version,
   "Packaged" = Sys.time()

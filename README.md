@@ -1,6 +1,6 @@
 # Seurat.utils ![status: active](https://raw.githubusercontent.com/vertesy/TheCorvinas/master/GitHub/Badges/active.svg) [![DOI](https://zenodo.org/badge/248721133.svg)](https://zenodo.org/badge/latestdoi/248721133) 
 
-`Seurat.utils` Is a collection of utility functions for Seurat. Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics & QC, interaction with the Seurat object, etc.  Some functionalities require functions from [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2), [ReadWriter](https://github.com/vertesy/ReadWriter), [Stringendo](https://github.com/vertesy/Stringendo), [ggExpressDev](https://github.com/vertesy/ggExpressDev), [MarkdownReports](https://github.com/vertesy/MarkdownReports), and the [Rocinante](https://github.com/vertesy/Rocinante) (See installation).
+`Seurat.utils` is a collection of utility functions for Seurat. Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics & QC, interaction with the Seurat object, etc. Some functionalities require functions from [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2), [ReadWriter](https://github.com/vertesy/ReadWriter), [Stringendo](https://github.com/vertesy/Stringendo), [ggExpressDev](https://github.com/vertesy/ggExpressDev), [MarkdownReports](https://github.com/vertesy/MarkdownReports), and the [Rocinante](https://github.com/vertesy/Rocinante) (see installation).
 
 [TOC]
 
@@ -14,7 +14,7 @@ Seurat.utils relies on:
 - [ReadWriter](https://github.com/vertesy/ReadWriter)
 - [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2)
 - [MarkdownHelpers](https://github.com/vertesy/MarkdownHelpers)
-- [Markdownreports](https://github.com/vertesy/Markdownreports)
+- [MarkdownReports](https://github.com/vertesy/MarkdownReports)
 - [ggExpress](https://github.com/vertesy/ggExpress)
 
 ... and provides functions for
@@ -35,7 +35,7 @@ devtools::install_github(repo = "vertesy/Stringendo", upgrade = F)
 devtools::install_github(repo = "vertesy/CodeAndRoll2", upgrade = F)
 devtools::install_github(repo = "vertesy/ReadWriter", upgrade = F)
 devtools::install_github(repo = "vertesy/MarkdownHelpers", upgrade = F)
-devtools::install_github(repo = "vertesy/Markdownreports", upgrade = F)
+devtools::install_github(repo = "vertesy/MarkdownReports", upgrade = F)
 devtools::install_github(repo = "vertesy/ggExpress", upgrade = F)
 
 # Recommended
@@ -56,7 +56,7 @@ devtools::install_github(repo = "vertesy/Seurat.utils", upgrade = F)
 require("Seurat.utils")
 ```
 
-**NOTE: If you type 'all' when R asks to update dependencies, you may get into installation errors / infinite loops. If updating fails, type 'no' when prompted. **
+**NOTE**: If you type 'all' when R asks to update dependencies, you may get into installation errors / infinite loops. If updating fails, type 'no' when prompted.
 
 Alternatively, you simply source it from the web. 
 *This way function help will not work, and you will have no local copy of the code on your hard drive.*

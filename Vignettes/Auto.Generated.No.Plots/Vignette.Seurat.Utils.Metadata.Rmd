@@ -1,10 +1,11 @@
 # Vignette for 29 functions in Seurat.Utils.Metadata.R
 Updated: 2024/03/26 11:27
 
-Seurat.utils Is a collection of utility functions for Seurat single cell analysis.
+Seurat.utils is a collection of utility functions for Seurat single cell analysis.
     Functions allow 3D plotting, visualisation of statistics & QC,
     the automation / multiplexing of plotting, interaction with the Seurat object, etc.
-    Some functionalities require functions from CodeAndRoll and MarkdownReports libraries.> For details, please use the `help()` function, or browse the source code.
+    Some functionalities require functions from CodeAndRoll2 and MarkdownReports libraries.
+> For details, please use the `help()` function, or browse the source code.
 
 #### 1. Get Metadata Column Names Matching Pattern: `getMetaColnames()`
 Retrieves column names from an object's metadata that match a specified pattern.
