@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{scCalcPCAVarExplained}
 \alias{scCalcPCAVarExplained}
-\title{Calculate the percent of variation explained by individual PC's}
+\title{Calculate the percent of variation explained by individual PCs}
 \usage{
 scCalcPCAVarExplained(obj = combined.obj)
 }

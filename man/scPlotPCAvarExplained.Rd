@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{scPlotPCAvarExplained}
 \alias{scPlotPCAvarExplained}
-\title{Plot the percent of variation explained by individual PC's}
+\title{Plot the percent of variation explained by individual PCs}
 \usage{
 scPlotPCAvarExplained(
   obj = combined.obj,

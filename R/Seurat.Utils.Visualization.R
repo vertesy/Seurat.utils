@@ -11,9 +11,9 @@
 #' @title Plot filtering thresholds and distributions
 #'
 #' @description This function plots the filtering thresholds and distributions for Seurat objects,
-#' using four panels to highlight the relationship between gene- and UMI-counts, and the
-#' ribosomal- and mitochondrial-content.  !! Default arguments assume that `p` is a list of
-#' parameters, present in the global environment, with elements `thr.lp.mito`, `thr.hp.mito`,
+#' using four panels to highlight the relationship between gene and UMI counts and the
+#' ribosomal and mitochondrial content. Default arguments assume that `p` is a list of
+#' parameters present in the global environment with elements `thr.lp.mito`, `thr.hp.mito`,
 #' `thr.lp.ribo`, `thr.hp.ribo`, `thr.lp.nFeature_RNA`, and `thr.hp.nFeature_RNA`.
 #'
 #' @param ls.obj A list of Seurat objects to be analyzed. Default: `ls.Seurat`.
@@ -238,7 +238,7 @@ PlotFilters <- function(
 # require('MarkdownReports') # require("devtools")
 
 # _________________________________________________________________________________________________
-#' @title Calculate the percent of variation explained by individual PC's
+#' @title Calculate the percent of variation explained by individual PCs
 #'
 #' @description This function calculates the percentage of variation each principal component (PC)
 #' accounts for in a Seurat object. It's specifically tailored for Seurat objects and provides a
@@ -267,7 +267,7 @@ scCalcPCAVarExplained <- function(obj = combined.obj) { # Determine percent of v
 }
 
 # _________________________________________________________________________________________________
-#' @title Plot the percent of variation explained by individual PC's
+#' @title Plot the percent of variation explained by individual PCs
 #'
 #' @description This function plots the percentage of variation explained by each principal
 #' component (PC) in a Seurat object. It allows for a visual assessment of how much variance is
@@ -409,7 +409,7 @@ PercentInTranscriptome <- function(
 # _________________________________________________________________________________________________
 #' @title Histogram All Genes' Expression Level and a Highlighted Gene
 #'
-#' @description Shows a comparison of the expression level of the chose gene to all genes.
+#' @description Shows a comparison of the expression level of the chosen gene to all genes.
 #' Very useful to see if the gene has a meaningful expression level. This function generates a
 #' histogram to visualize the expression level distribution of a specified gene across all cells in
 #' a Seurat object. It highlights the position of the gene of interest within the overall distribution.

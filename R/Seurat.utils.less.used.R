@@ -22,7 +22,7 @@
 #' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: `TRUE`.
 #' @param depth An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default: 2.
 #' @param sample.barcoding A logical value indicating whether Cell Ranger was run with sample barcoding. Default: `FALSE`.
-#' @param sort_alphanumeric sort files alphanumeric? Default: `TRUE`.
+#' @param sort_alphanumeric Sort files alphanumerically? Default: `TRUE`.
 #' @examples
 #' \dontrun{
 #' if (interactive()) Convert10Xfolders(InputDir)
@@ -42,7 +42,7 @@ Convert10Xfolders_v1 <- function(
     ext = "qs",
     sort_alphanumeric = TRUE,
     ...) {
-  warning("Since v2.5.0, the output is saved in the more effcient qs format! See qs package.", immediate. = TRUE)
+  warning("Since v2.5.0, the output is saved in the more efficient qs format! See qs package.", immediate. = TRUE)
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
@@ -136,7 +136,7 @@ Convert10Xfolders_v1 <- function(
 #' @param pt_size Size of points. Default: 0.5
 #' @param name.suffix Suffix to append to the plot's name. Default: NULL
 #' @param width Width of the plot. Default: hA4
-#' @param heigth Height of the plot. Default: 1.75 * wA4
+#' @param height Height of the plot. Default: 1.75 * wA4
 #' @param filetype Filetype to save plot as. Default: 'pdf'
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @seealso
@@ -154,7 +154,7 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", 
                                       no_axes = TRUE,
                                       pt_size = 0.5,
                                       name.suffix = NULL,
-                                      width = hA4, heigth = 1.75 * wA4, filetype = "pdf", ...) {
+                                      width = hA4, height = 1.75 * wA4, filetype = "pdf", ...) {
   p1 <- Seurat::DimPlot(
     object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use,
     no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size,
@@ -177,7 +177,7 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", 
     ncol = 2 # we're saving a grid plot of 2 columns
     , nrow = 1 # and 2 rows
     , base_width = width,
-    base_height = heigth
+    base_height = height
     # each individual subplot should have an aspect ratio of 1.3
     # , base_aspect_ratio = 1.5
   )
