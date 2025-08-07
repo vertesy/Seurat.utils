@@ -28,7 +28,7 @@
 #' @param obj A Seurat object to be processed.
 #' @param param.list A list of parameters used in the processing steps.
 #' @param update_gene_symbols A boolean indicating whether to update gene symbols from HGNC. Default: `FALSE`.
-#' @param add.meta.fractions A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: `FALSE`.
+#' @param add.meta.fractions A boolean indicating whether to add metadata for fractions of cells in each cluster. Default: `FALSE`.
 #' @param precompute A boolean indicating whether to compute steps: `FindVariableFeatures()`,
 #' `calc.q99.Expression.and.set.all.genes()`,  `ScaleData()` and `RunPCA()` Default: `TRUE`.
 #' @param compute A boolean indicating whether to compute the steps: `IntegrateLayers() / RunHarmony()`,
@@ -95,7 +95,7 @@ processSeuratObject <- function(obj, param.list = p,
   iprint("n.PC:", n.PC)
   iprint("snn_res:", resolutions)
   iprint("variables.2.regress (ScaleData):", variables.2.regress)
-  if (har) iprint("variables.2.regress (Haromony):", harmony.covariates)
+  if (har) iprint("variables.2.regress (Harmony):", harmony.covariates)
 
   # Save parameters _________________________________________________
   param.list$"n.var.genes" <- nfeatures
@@ -123,7 +123,7 @@ processSeuratObject <- function(obj, param.list = p,
   }
 
   if (add.meta.fractions) {
-    message("Adding meta data for gene-class fractions, eg. percent.mito, etc.")
+    message("Adding metadata for gene-class fractions, e.g., percent.mito, etc.")
     obj <- addGeneClassFractions(obj)
   } # end if add.meta.fractions
 
@@ -286,7 +286,7 @@ processSeuratObject <- function(obj, param.list = p,
 #'        Default: `TRUE`.
 #' @param directory Character string specifying the base directory for saving results.
 #'        Default: OutDir
-#' @param dir_suffix Character string specifying the suffix for the subdirecotry directory.
+#' @param dir_suffix Character string specifying the suffix for the subdirectory.
 #' @param subdirectory Character string specifying the subdirectory for saving outputs within
 #'        the base directory. Default: "DGEA + date".
 #' @param calculate.DGEA Logical determining if the DE analysis should be calculated.
@@ -382,13 +382,13 @@ runDGEA <- function(obj,
 
 
   if (clean.misc.slot) {
-    message("Erasing up the misc slot: df.markers and top.markers.resX")
+    message("Clearing the misc slot: df.markers and top.markers.resX")
     topMslots <- grepv("top.markers.res", names(obj@misc))
     obj@misc[topMslots] <- NULL
   }
 
   if (clean.meta.data) {
-    message("Erasing up the meta.data clustering columns.")
+    message("Clearing the meta.data clustering columns.")
     topMslots <- grepv("top.markers.res", names(obj@meta.data))
     cl.ordered <- GetOrderedClusteringRuns(obj = obj)
     obj@meta.data[, cl.ordered] <- NULL
@@ -437,7 +437,7 @@ runDGEA <- function(obj,
   if (n.cores > 1) future::plan("multisession", workers = n.cores)
 
   if (calculate.DGEA) {
-    message("Calclulating ----------------------------------------")
+    message("Calculating ----------------------------------------")
     for (i in 1:length(res.analyzed.DE)) {
       res <- res.analyzed.DE[i]
       tag.res <- ppp("res", res)
@@ -699,7 +699,7 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
 
   gc(full = TRUE)
   try(memory.biggest.objects(), silent = TRUE)
-  user_input <- readline(prompt = "Are you sure that memory should not be cleaned before paralellizng? (y/n)")
+  user_input <- readline(prompt = "Are you sure that memory should not be cleaned before parallelizing? (y/n)")
 
   if (user_input == "y") {
     iprint("N. cores", cores)
@@ -1414,7 +1414,7 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #' @description The `GetClusteringRuns` function retrieves metadata column names associated with
 #'  clustering runs, based on a pattern to match, `"*snn_res.[0-9].[0-9]$"`, by default.
 #' @param obj Seurat object, Default: `combined.obj`
-#' @param res Clustering resoluton to use, Default: `FALSE`.
+#' @param res Clustering resolution to use, Default: `FALSE`.
 #' @param pat Pattern to match, Default: `*snn_res.*[0-9]$`
 #' @param v verbose, Default: `TRUE`.
 #'
@@ -1458,7 +1458,7 @@ GetClusteringRuns <- function(obj = combined.obj,
 #' @description The `GetNamedClusteringRuns` function retrieves metadata column names associated with
 #'  non-numeric ("named") clustering runs, based on a pattern to match, `"Name|name"`, by default.
 #' @param obj Seurat object, Default: `combined.obj`
-#' @param res Clustering resoluton to use, Default: c(FALSE, 0.5)[1]
+#' @param res Clustering resolution to use, Default: c(FALSE, 0.5)[1]
 #' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: `FALSE`.
 #' @param pat Pattern to match, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
 #' @param find.alternatives If TRUE, tries to find alternative clustering runs with
@@ -1502,7 +1502,7 @@ GetNamedClusteringRuns <- function(
 #'
 #' @description Get Clustering Runs: metadata column names.
 #' @param obj Seurat object, Default: `combined.obj`.
-#' @param res Clustering resoluton to use, Default: `FALSE`.
+#' @param res Clustering resolution to use, Default: `FALSE`.
 #' @param pat Pattern to match, Default: '*snn_res.*[0,1]\.[0-9]\.ordered$'
 #' @examples
 #' \dontrun{
