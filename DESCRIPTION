@@ -4,11 +4,11 @@ Version: 2.8.5
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <av@imba.oeaw.ac.at> [aut, cre]
-Description: Seurat.utils Is a collection of utility functions for Seurat
-    single cell analysis.  Functions allow 3D plotting, visualisation of
+Description: Seurat.utils is a collection of utility functions for Seurat
+    single cell analysis. Functions allow 3D plotting, visualisation of
     statistics & QC, the automation / multiplexing of plotting,
-    interaction with the Seurat object, etc.  Some functionalities require
-    functions from CodeAndRoll and MarkdownReports libraries.
+    interaction with the Seurat object, etc. Some functionalities require
+    functions from CodeAndRoll2 and MarkdownReports libraries.
 License: GPL-3 + file LICENSE
 BugReports: https://github.com/vertesy/Seurat.utils/issues
 Depends: 
