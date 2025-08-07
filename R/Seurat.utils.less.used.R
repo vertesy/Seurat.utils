@@ -345,9 +345,9 @@ umapNamedClusters <- function(obj = combined.obj,
 #' @param obj Seurat object, Default: combined.obj
 #' @param dim Dimensions to use, Default: 1:2
 #' @param plotit Plot results (& show it), Default: `TRUE`.
-#' @param swap Swap Lambda paramter (multiplied with this) , Default: -1
+#' @param swap Swap Lambda parameter (multiplied with this) , Default: -1
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
+#' @param res Clustering resolution to use, Default: 'integrated_snn_res.0.5'
 #' @examples
 #' \dontrun{
 #' if (interactive()) {

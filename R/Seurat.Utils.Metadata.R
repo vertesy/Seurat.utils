@@ -91,7 +91,7 @@ getMetaColnames <- function(obj = combined.obj,
 
   # Output assertion
   if (is.null(matchedColnames)) {
-    warning("No matching meta data!", immediate. = TRUE)
+    warning("No matching metadata!", immediate. = TRUE)
   } else {
     message(length(matchedColnames), " columns matching pattern '", pattern, "'.")
   }
@@ -308,7 +308,7 @@ calculatePercentageMatch <- function(
 #'
 #' @description Get the median values of different columns in meta.data, can iterate over a list of Seurat objects.
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
-#' @param n.datasets lenght of list (n objects), Default: length(ls.Seurat)
+#' @param n.datasets length of list (n objects), Default: length(ls.Seurat)
 #' @param mColname Metadata column name to calculate on. Default: 'percent.mito'
 #' @examples
 #' \dontrun{
@@ -401,7 +401,7 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
 
   } else {
     message("No CBCs associated with new metadata. Assuming exact match.")
-    if (!equal_length) stop("Not equal lenght, no CBCs")
+    if (!equal_length) stop("Not equal length, no CBCs")
   }
 
   if (any(is.na(names(metadata))) ) {
@@ -563,17 +563,17 @@ addMetaFraction <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title Add Meta Data for Gene-Class Fractions
+#' @title Add Metadata for Gene-Class Fractions
 #'
 #' @description
-#' This function adds meta data for various gene-class fractions such as percent.mito, percent.ribo,
+#' This function adds metadata for various gene-class fractions such as percent.mito, percent.ribo,
 #' percent.AC.GenBank, percent.AL.EMBL, percent.LINC, percent.MALAT1, and percent.HGA to a Seurat object.
-#' If the meta data already exists, a message will be displayed.
+#' If the metadata already exists, a message will be displayed.
 #'
 #' @param obj A Seurat object to be updated. Default: None.
 #' @param gene_fractions A named list containing gene symbol patterns for each meta column name.
 #'                       Default: List of predefined gene fractions.
-#' @param add_hga A logical value indicating whether to add percent.HGA meta data. Default: `TRUE`.
+#' @param add_hga A logical value indicating whether to add percent.HGA metadata. Default: `TRUE`.
 #'
 #' @return An updated Seurat object.
 #' @export
@@ -590,7 +590,7 @@ addGeneClassFractions <- function(obj,
                                     "percent.MALAT1" = "^MALAT1"
                                   ),
                                   add_hga = TRUE) {
-  message("Adding meta data for gene-class fractions, e.g., percent.mito, etc.")
+  message("Adding metadata for gene-class fractions, e.g., percent.mito, etc.")
 
   for (col_name in names(gene_fractions)) {
     message(col_name, "...")
