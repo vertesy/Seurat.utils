@@ -120,7 +120,7 @@ metaColnameExists <- function(col_name, obj = combined.obj) {
 #' @description Retrieves a specified metadata column from a Seurat object and returns it as a named vector.
 #' @param col A string specifying the name of the metadata column to be retrieved. Default: 'batch'.
 #' @param obj A Seurat object from which the metadata column will be retrieved. Default: combined.obj.
-#' @param as_numeric A logical flag indicating whether the returned values should be converted to numeric format. Default: `FALSE`. (FALSE).
+#' @param as_numeric A logical flag indicating whether the returned values should be converted to numeric format. Default: `FALSE`.
 #' @return A named vector containing the values from the specified metadata column. If 'as_numeric' is TRUE, the values are converted to numeric format.
 #' @examples
 #' \dontrun{
@@ -188,7 +188,7 @@ get_levels_seu <- function(obj, ident, max_levels = 100, dput = TRUE) {
 #'   Defaults to list('median' = median, 'mean' = mean).
 #' @param verbose Logical flag indicating whether to print detailed information about the metrics
 #'   calculation process. Defaults to TRUE.
-#' @param max.categ max number of groups in ident.
+#' @param max.categ Maximum number of groups in ident.
 #'
 #' @return A list containing data frames with calculated metrics for each specified metadata feature,
 #'   grouped by the identity categories. Each data frame corresponds to one of the specified metrics.
@@ -337,7 +337,7 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
 #' @param ident A string specifying the name of the metadata column from which to retrieve cell IDs. Default: 'res.0.6'.
 #' @param ident_values A vector of values to match in the metadata column. Default: `NA`.
 #' @param obj The Seurat object from which to retrieve the cell IDs. Default: combined.obj.
-#' @param inverse A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of ident_values. Default: `FALSE`.
+#' @param inverse A boolean value indicating whether to invert the match, i.e., retrieve cell IDs that do not match the provided list of ident_values. Default: `FALSE`.
 #' @return A vector of cell IDs that match (or don't match, if `inverse = TRUE`) the provided list of values.
 #' @examples
 #' \dontrun{
