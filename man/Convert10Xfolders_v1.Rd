@@ -43,7 +43,7 @@ Convert10Xfolders_v1(
 
 \item{sample.barcoding}{A logical value indicating whether Cell Ranger was run with sample barcoding. Default: \code{FALSE}.}
 
-\item{sort_alphanumeric}{Sort files alphanumerically? Default: \code{TRUE}.}
+\item{sort_alphanumeric}{sort files alphanumeric? Default: \code{TRUE}.}
 }
 \description{
 This function takes a parent directory with a number of subfolders, each

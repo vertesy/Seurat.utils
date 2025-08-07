@@ -33,7 +33,7 @@ Default: "data".}
 \item{...}{Any other parameter that can be passed to the internally called functions.}
 }
 \description{
-Shows a comparison of the expression level of the chosen gene to all genes.
+Shows a comparison of the expression level of the chose gene to all genes.
 Very useful to see if the gene has a meaningful expression level. This function generates a
 histogram to visualize the expression level distribution of a specified gene across all cells in
 a Seurat object. It highlights the position of the gene of interest within the overall distribution.

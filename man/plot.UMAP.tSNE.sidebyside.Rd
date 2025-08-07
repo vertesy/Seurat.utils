@@ -17,7 +17,7 @@
   pt_size = 0.5,
   name.suffix = NULL,
   width = hA4,
-  height = 1.75 * wA4,
+  heigth = 1.75 * wA4,
   filetype = "pdf",
   ...
 )
@@ -47,7 +47,7 @@
 
 \item{width}{Width of the plot. Default: hA4}
 
-\item{height}{Height of the plot. Default: 1.75 * wA4}
+\item{heigth}{Height of the plot. Default: 1.75 * wA4}
 
 \item{filetype}{Filetype to save plot as. Default: 'pdf'}
 
