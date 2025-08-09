@@ -10,7 +10,7 @@ addTranslatedMetadata(
   translation_as_named_vec,
   new_col_name = substitute_deparse(translation_as_named_vec),
   suffix = NULL,
-  plot = F,
+  plot = FALSE,
   ...
 )
 }

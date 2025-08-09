@@ -39,9 +39,9 @@ addTranslatedMetadata <- function(obj = combined.obj,
                                   orig.ident = "RNA_snn_res.0.4",
                                   translation_as_named_vec,
                                   new_col_name = substitute_deparse(translation_as_named_vec),
-                                  # NA.as.character = T,
+                                  # NA.as.character = TRUE,
                                   suffix = NULL,
-                                  plot = F,
+                                  plot = FALSE,
                                   ...) {
   # Input assertions
   stopifnot(is(obj, "Seurat"),
@@ -60,7 +60,7 @@ addTranslatedMetadata <- function(obj = combined.obj,
   print(table(new, useNA = "ifany"))
 
 
-  if(plot) clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...)
+  if (plot) clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...)
   return(obj)
 }
 
@@ -90,7 +90,7 @@ getMetaColnames <- function(obj = combined.obj,
   matchedColnames <- grep(pattern = pattern, x = colnames(obj@meta.data), value = TRUE)
 
   # Output assertion
-  if (is.null(matchedColnames)) {
+  if (length(matchedColnames) == 0) {
     warning("No matching metadata!", immediate. = TRUE)
   } else {
     message(length(matchedColnames), " columns matching pattern '", pattern, "'.")
@@ -135,7 +135,7 @@ getMetadataColumn <- function(col = "batch", obj = combined.obj, as_numeric = FA
 
   x <- df.col.2.named.vector(df = obj@meta.data, col = col)
   if (as_numeric) {
-    as.numeric.wNames(x) + 1
+    as.numeric.wNames(x)
   } else {
     x
   }
@@ -333,11 +333,13 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
 # _________________________________________________________________________________________________
 #' @title getCellIDs.from.meta
 #'
-#' @description Retrieves cell IDs from a specified metadata column of a Seurat object, where the cell ID matches a provided list of values. The matching operation uses the `%in%` operator.
-#' @param ident A string specifying the name of the metadata column from which to retrieve cell IDs. Default: 'res.0.6'.
-#' @param ident_values A vector of values to match in the metadata column. Default: `NA`.
-#' @param obj The Seurat object from which to retrieve the cell IDs. Default: combined.obj.
-#' @param inverse A boolean value indicating whether to invert the match, i.e., retrieve cell IDs that do not match the provided list of ident_values. Default: `FALSE`.
+#' @description Retrieves cell IDs from a specified metadata column of a Seurat object, where the cell ID matches a provided list of values.
+#'   The matching operation uses the `%in%` operator and can handle `NA`/`NaN` values.
+#' @param ident A string specifying the name of the metadata column from which to retrieve cell IDs.
+#'   Default: first entry returned by `GetClusteringRuns()`.
+#' @param ident_values Values to match in the metadata column (may include `NA`/`NaN`). Default: `NA`.
+#' @param obj The Seurat object from which to retrieve the cell IDs. Default: `combined.obj`.
+#' @param inverse Logical; if `TRUE`, returns cell IDs that do not match the provided list. Default: `FALSE`.
 #' @return A vector of cell IDs that match (or don't match, if `inverse = TRUE`) the provided list of values.
 #' @examples
 #' \dontrun{
@@ -348,15 +350,25 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
 #' }
 #' @export
 getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],
-                                 ident_values = NA, obj = combined.obj,
+                                 ident_values = NA,
+                                 obj = combined.obj,
                                  inverse = FALSE) {
 
-  mdat <- obj@meta.data[, ident]
-  cells.pass <- mdat %in% ident_values
+  mdat <- obj@meta.data[[ident]]
+
+  non_missing <- ident_values[!is.na(ident_values)]
+  cells.pass <- rep(FALSE, nrow(obj@meta.data))
+
+  if (length(non_missing))
+    cells.pass <- mdat %in% non_missing
+
+  if (any(is.na(ident_values)))
+    cells.pass <- cells.pass | is.na(mdat)
+
   if (inverse) cells.pass <- !cells.pass
 
   iprint(sum(cells.pass), "cells found.")
-  return(rownames(obj@meta.data)[which(cells.pass)])
+  rownames(obj@meta.data)[which(cells.pass)]
 }
 
 
