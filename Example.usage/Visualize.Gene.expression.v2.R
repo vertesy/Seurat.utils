@@ -26,7 +26,7 @@ if (FALSE) {
 try (source('https://raw.githubusercontent.com/vertesy/CodeAndRoll/master/CodeAndRoll.R'),silent= F)
 try(source('https://raw.githubusercontent.com/vertesy/Seurat.utils/master/00.Load.Seurat.Utils.WEB.R'), silent =   T)
 try(source('https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/00.Load.Seurat3.Multicore.R'), silent=T)
-# If it fails, see alternaitve at the end
+# If it fails, see alternative at the end
 
 require('MarkdownReportsDev')
 # If installation of MarkdownReportsDev did not work:
@@ -120,10 +120,10 @@ ClassicMarkers = c(
 )
 
 
-# Alternaitve for SEURAT.UTILS - You can try to load each script individually ------------------------
+# Alternative for SEURAT.UTILS - You can try to load each script individually ------------------------
 if (FALSE) {
   "SEURAT.UTILS components"
-  "You probably dont need all for your work"
+  "You probably don't need all for your work"
   try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Seurat.update.gene.symbols.HGNC.R"))
   try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/metadata.manipulation.R"))
   try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/plotting.dim.reduction.2D.R"))
@@ -138,10 +138,10 @@ if (FALSE) {
 
 }
 
-# Alternaitve for SEURAT.MULTICORE - You can try to load each script individually ------------------------
+# Alternative for SEURAT.MULTICORE - You can try to load each script individually ------------------------
 if (FALSE) {
   " SEURAT.MULTICORE components"
-  "You probably dont need these at all for your work"
+  "You probably don't need these at all for your work"
   try(source("https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Seurat3.Multicore.Read.Write.R"))
   try(source("https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Seurat3.Multicore.Generic.Functions.R"))
 

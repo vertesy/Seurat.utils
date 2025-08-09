@@ -31,7 +31,7 @@ Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-25, pval_scaling =
 
 
 # ------------------------------------------------------------------------------------
-StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
+StoreTop25Markers <- function(obj = combined.obj # Save the top 25 markers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
                               , df_markers = df.markers, res = 0.5) {
   top25.markers <-
     df_markers %>%
