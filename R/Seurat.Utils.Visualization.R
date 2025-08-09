@@ -234,7 +234,7 @@ PlotFilters <- function(
 # tools for tools::toTitleCase
 
 # May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= FALSE) # generic utilities funtions
+# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= FALSE) # generic utilities functions
 # require('MarkdownReports') # require("devtools")
 
 # _________________________________________________________________________________________________
@@ -1197,7 +1197,7 @@ scBarplot.CellsPerCluster <- function(
 
   SBT <- pc_TRUE(nr.cells.per.cl < min.cells,
     NumberAndPC = TRUE,
-    suffix = paste("of identites are below:", min.cells, "cells, or", percentage_formatter(min.PCT.cells), "of all cells.")
+    suffix = paste("of identities are below:", min.cells, "cells, or", percentage_formatter(min.PCT.cells), "of all cells.")
   )
 
   pl <- ggExpress::qbarplot(cell.per.cluster,
@@ -4023,7 +4023,7 @@ qqSaveGridA4 <- function(
 # try(library(htmlwidgets), silent = TRUE)
 
 # May also require
-# try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= TRUE) # generic utilities funtions
+# try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= TRUE) # generic utilities functions
 # require('MarkdownReports') # require("devtools")
 
 

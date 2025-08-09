@@ -730,7 +730,7 @@ getCellIDs.from.meta <- function(ident = 'res.0.6', values = NA, obj=combined.ob
 # seu.add.meta.from.vector ------------------------------------------------------------------------
 seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell ) { # Add a new metadata column to a Seurat  object
   obj@meta.data[, metaD.colname ] = Label.per.cell
-  iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
+  iprint(metaD.colname, "contains the named identities. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
   return(obj)
 }
 # combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell )
@@ -764,7 +764,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
   # identity mapping ----------------
   new.ident <- translate(vec = as.character(Idents(obj)), old = ident.X, new = ident.Y)
   obj@meta.data[[metaD.colname]] = new.ident
-  iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:"); cat(paste0("\t", ident.Y, "\n"))
+  iprint(metaD.colname, "contains the named identities. Use Idents(combined.obj) = '...'. The names are:"); cat(paste0("\t", ident.Y, "\n"))
 }
 # combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj, ident.table = clusterIDs.GO.process)
 
@@ -1421,7 +1421,7 @@ aux.plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 # try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpress.functions.R"), silent = T)
 
 # May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
+# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities functions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 
@@ -1811,7 +1811,7 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
 # try(library(htmlwidgets), silent = T)
 
 # May also require
-# try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= T) # generic utilities funtions
+# try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= T) # generic utilities functions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 
@@ -2197,7 +2197,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 # tools for tools::toTitleCase
 
 # May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
+# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities functions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 # PCA percent of variation associated with each PC ------------------------------------------------------------

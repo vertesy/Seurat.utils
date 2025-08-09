@@ -1000,7 +1000,7 @@ plotClustSizeDistr <- function(
 #' seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname, Label.per.cell = Cl.Label.per.cell) {
 #'   .Deprecated("addMetaDataSafe")
 #'   obj@meta.data[, metaD.colname] <- Label.per.cell
-#'   iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
+#'   iprint(metaD.colname, "contains the named identities. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
 #'   return(obj)
 #' }
 #'

@@ -737,7 +737,7 @@ seu.map.and.add.new.ident.to.meta <- function(
   {
     new.ident <- CodeAndRoll2::translate(vec = as.character(Idents(obj)), old = ident.X, new = ident.Y)
     obj@meta.data[[metaD.colname]] <- new.ident
-    iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:")
+    iprint(metaD.colname, "contains the named identities. Use Idents(combined.obj) = '...'. The names are:")
     cat(paste0("\t", ident.Y, "\n"))
   }
 }
@@ -1286,7 +1286,7 @@ heatmap_calc_clust_median <- function(
       plotname = FixPlotName(make.names(plot_name), suffix, "pdf")
     )
 
-    # Now plot correlation heatmap between the identites
+    # Now plot correlation heatmap between the identities
     corX <- cor(t(df_cluster_medians), method = "spearman")
     pl <- pheatmap::pheatmap(corX,
       main = paste0("Correlation between ", plot_name),

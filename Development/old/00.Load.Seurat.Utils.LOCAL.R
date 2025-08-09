@@ -27,5 +27,5 @@ try(source('~/GitHub/TheCorvinas/R/GO-scoring/Seurat.gene.sets.and.GO.terms.R'))
 
 # Requirements ------------------------
 # May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
+# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities functions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")

@@ -6,7 +6,7 @@
 \usage{
 removeResidualSmallClusters(
   obj = combined.obj,
-  identitites = GetClusteringRuns(obj, pat = "*snn_res.[0-9].[0-9]$")[1:5],
+  identities = GetClusteringRuns(obj, pat = "*snn_res.[0-9].[0-9]$")[1:5],
   max.cells = max(round((ncol(obj))/2000), 5),
   plot.removed = TRUE
 )
@@ -14,7 +14,7 @@ removeResidualSmallClusters(
 \arguments{
 \item{obj}{Seurat object from which small clusters will be removed. Default: \code{combined.obj}.}
 
-\item{identitites}{Vector of clustering identities to examine for small clusters;
+\item{identities}{Vector of clustering identities to examine for small clusters;
 Default: \code{GetClusteringRuns(obj)}.}
 
 \item{max.cells}{Maximum number of cells a cluster can contain to still be considered for removal.

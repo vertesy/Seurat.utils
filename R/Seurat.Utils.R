@@ -2433,7 +2433,7 @@ RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "o
 #' where small, possibly unrepresentative clusters may remain.
 #'
 #' @param obj Seurat object from which small clusters will be removed. Default: `combined.obj`.
-#' @param identitites Vector of clustering identities to examine for small clusters;
+#' @param identities Vector of clustering identities to examine for small clusters;
 #' Default: `GetClusteringRuns(obj)`.
 #' @param max.cells Maximum number of cells a cluster can contain to still be considered for removal.
 #' Default: The lesser of 0.5% of the dataset or 10 cells.
@@ -2449,14 +2449,14 @@ RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "o
 #' @export
 removeResidualSmallClusters <- function(
     obj = combined.obj,
-    identitites = GetClusteringRuns(obj, pat = "*snn_res.[0-9].[0-9]$")[1:5],
+    identities = GetClusteringRuns(obj, pat = "*snn_res.[0-9].[0-9]$")[1:5],
     max.cells = max(round((ncol(obj)) / 2000), 5),
     plot.removed = TRUE) {
   #
   stopifnot(
     inherits(obj, "Seurat"),
-    is.character(identitites), length(identitites) > 0,
-    all(identitites %in% colnames(obj@meta.data)),
+    is.character(identities), length(identities) > 0,
+    all(identities %in% colnames(obj@meta.data)),
     is.numeric(max.cells), max.cells > 0,
     is.logical(plot.removed)
   )
@@ -2467,10 +2467,10 @@ removeResidualSmallClusters <- function(
 
 
   message("max.cells: ", max.cells, " | Scanning over these identities:")
-  small.clusters <- cells.to.remove <- CodeAndRoll2::list.fromNames(identitites)
+  small.clusters <- cells.to.remove <- CodeAndRoll2::list.fromNames(identities)
 
-  for (i in 1:length(identitites)) {
-    colX <- identitites[i]
+  for (i in 1:length(identities)) {
+    colX <- identities[i]
     print(colX)
     tbl <- table(META[[colX]])
 
@@ -2485,9 +2485,9 @@ removeResidualSmallClusters <- function(
 
     all.cells.2.remove <- unique(unlist(cells.to.remove))
     if (plot.removed) {
-      SBT <- paste(length(all.cells.2.remove), "cells removed from small clusters across", length(identitites), "identities.")
+      SBT <- paste(length(all.cells.2.remove), "cells removed from small clusters across", length(identities), "identities.")
       pobj <- clUMAP(
-        obj = obj, ident = identitites[i],
+        obj = obj, ident = identities[i],
         sub = SBT, caption = NULL,
         cells.highlight = all.cells.2.remove
       )
@@ -2591,7 +2591,7 @@ removeClustersAndDropLevels <- function(ls_obj,
   for (index in indices) {
     dataset_name <- object_names[index]
     obj <- ls_obj[[dataset_name]]
-    obj <- removeResidualSmallClusters(obj = obj, identitites = GetClusteringRuns(obj), ...)
+    obj <- removeResidualSmallClusters(obj = obj, identities = GetClusteringRuns(obj), ...)
     obj <- dropLevelsSeurat(obj)
     ls_obj[[dataset_name]] <- obj
   }
