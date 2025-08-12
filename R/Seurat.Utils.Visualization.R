@@ -2285,7 +2285,7 @@ clUMAP <- function(
     is.character(caption) | is.null(caption),
     is.logical(save.plot),
     is.character(suffix) | is.null(suffix),
-    is.null(ident) || (is.character(ident) && length(ident) == 1),
+    is.null(ident) || (is.character(ident) && length(ident) == 1 && ident %in% colnames(obj@meta.data)),
     is.null(splitby) || splitby %in% colnames(obj@meta.data)
   )
   tictoc::tic()
