@@ -90,7 +90,7 @@ getMetaColnames <- function(obj = combined.obj,
   matchedColnames <- grep(pattern = pattern, x = colnames(obj@meta.data), value = TRUE)
 
   # Output assertion
-  if (is.null(matchedColnames)) {
+  if (length(matchedColnames) == 0) {
     warning("No matching metadata!", immediate. = TRUE)
   } else {
     message(length(matchedColnames), " columns matching pattern '", pattern, "'.")
