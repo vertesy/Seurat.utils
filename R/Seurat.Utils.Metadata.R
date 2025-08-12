@@ -111,6 +111,11 @@ getMetaColnames <- function(obj = combined.obj,
 #' @return A logical value indicating whether the column exists (TRUE) or not (FALSE).
 #' @export
 metaColnameExists <- function(col_name, obj = combined.obj) {
+  stopifnot(
+    inherits(obj, "Seurat"),
+    is.character(col_name),
+    length(col_name) == 1
+  )
   col_name %in% colnames(obj@meta.data)
 }
 
@@ -162,6 +167,12 @@ getMetadataColumn <- function(col = "batch", obj = combined.obj, as_numeric = FA
 #' @export
 
 get_levels_seu <- function(obj, ident, max_levels = 100, dput = TRUE) {
+  stopifnot(
+    inherits(obj, "Seurat"),
+    is.character(ident),
+    length(ident) == 1,
+    ident %in% colnames(obj@meta.data)
+  )
   Levels <- unique(deframe(obj[[ident]]))
   stopifnot(length(Levels) < max_levels)
   if (dput) {
