@@ -1821,7 +1821,7 @@ recall.all.genes <- function(obj = combined.obj, overwrite = FALSE) {
       MarkdownHelpers::ww.assign_to_global(name = "all.genes", value = all.genes, verbose = FALSE)
       message("all.genes is now (re)defined in the global environment.")
     } else {
-      message("  ->   Variable 'all.genes' exits in the global namespace, and overwrite is: FALSE")
+      message("  ->   Variable 'all.genes' exists in the global namespace, and overwrite is: FALSE")
     }
   } else {
     message("  ->   Slot 'all.genes' does not exist in obj@misc.")
@@ -1901,7 +1901,7 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
 
   if ("p" %in% names(obj@misc)) {
     p_found <- exists("p", envir = .GlobalEnv)
-    if (p_found) message("  ->   Variable 'p' exits in the global namespace.")
+    if (p_found) message("  ->   Variable 'p' exists in the global namespace.")
 
     if (!p_found | (p_found & overwrite == TRUE)) {
       MarkdownHelpers::ww.assign_to_global(name = "p", value = obj@misc$"p", verbose = FALSE)
@@ -1937,7 +1937,7 @@ recall.genes.ls <- function(obj = combined.obj, overwrite = FALSE) { # genes.ls
   obj <- ww.get.1st.Seur.element(obj)
 
   if ("genes.ls" %in% names(obj@misc)) {
-    if (!exists("genes.ls")) message("variable 'genes.ls' exits in the global namespace: ", head(p))
+    if (!exists("genes.ls")) message("variable 'genes.ls' exists in the global namespace: ", head(p))
 
     if (!exists("genes.ls") | (exists("genes.ls") & overwrite == TRUE)) {
       MarkdownHelpers::ww.assign_to_global(name = "genes.ls", value = obj@misc$"genes.ls")

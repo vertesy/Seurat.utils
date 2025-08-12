@@ -234,7 +234,7 @@ PlotFilters <- function(
 # tools for tools::toTitleCase
 
 # May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= FALSE) # generic utilities funtions
+# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= FALSE) # generic utilities functions
 # require('MarkdownReports') # require("devtools")
 
 # _________________________________________________________________________________________________
@@ -4023,7 +4023,7 @@ qqSaveGridA4 <- function(
 # try(library(htmlwidgets), silent = TRUE)
 
 # May also require
-# try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= TRUE) # generic utilities funtions
+# try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= TRUE) # generic utilities functions
 # require('MarkdownReports') # require("devtools")
 
 
