@@ -47,7 +47,7 @@ addTranslatedMetadata <- function(obj = combined.obj,
   stopifnot(
     is(obj, "Seurat"),
     is.character(orig.ident) && length(orig.ident) == 1,
-    is.character(suffix) | is.null(suffix),
+    is.vector(suffix) | is.null(suffix),
     "Not a named vec was provided!" = !is.null(names(translation_as_named_vec))
   )
 
