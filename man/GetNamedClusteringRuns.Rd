@@ -16,7 +16,7 @@ GetNamedClusteringRuns(
 \arguments{
 \item{obj}{Seurat object, Default: \code{combined.obj}}
 
-\item{res}{Clustering resoluton to use, Default: c(FALSE, 0.5)\link{1}}
+\item{res}{Clustering resolution to use, Default: c(FALSE, 0.5)\link{1}}
 
 \item{topgene}{Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: \code{FALSE}.}
 

@@ -157,7 +157,7 @@ getCellIDs.from.meta <- function(ident = 'res.0.6', values = NA, obj=combined.ob
 # seu.add.meta.from.vector ------------------------------------------------------------------------
 seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell ) { # Add a new metadata column to a Seurat  object
   obj@meta.data[, metaD.colname ] = Label.per.cell
-  iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
+  iprint(metaD.colname, "contains the named identities. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
   return(obj)
 }
 # combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell )
@@ -191,7 +191,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
   # identity mapping ----------------
   new.ident <- translate(vec = as.character(Idents(obj)), old = ident.X, new = ident.Y)
   obj@meta.data[[metaD.colname]] = new.ident
-  iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:"); cat(paste0("\t", ident.Y, "\n"))
+  iprint(metaD.colname, "contains the named identities. Use Idents(combined.obj) = '...'. The names are:"); cat(paste0("\t", ident.Y, "\n"))
 }
 # combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj, ident.table = clusterIDs.GO.process)
 
