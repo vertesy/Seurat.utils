@@ -20,11 +20,11 @@ AutoNumber.by.PrinCurve(
 
 \item{plotit}{Plot results (& show it), Default: \code{TRUE}.}
 
-\item{swap}{Swap Lambda paramter (multiplied with this) , Default: -1}
+\item{swap}{Swap Lambda parameter (multiplied with this) , Default: -1}
 
 \item{reduction}{UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'}
 
-\item{res}{Clustering resoluton to use, Default: 'integrated_snn_res.0.5'}
+\item{res}{Clustering resolution to use, Default: 'integrated_snn_res.0.5'}
 }
 \description{
 Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #

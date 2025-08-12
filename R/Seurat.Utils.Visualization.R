@@ -234,7 +234,7 @@ PlotFilters <- function(
 # tools for tools::toTitleCase
 
 # May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= FALSE) # generic utilities funtions
+# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= FALSE) # generic utilities functions
 # require('MarkdownReports') # require("devtools")
 
 # _________________________________________________________________________________________________
@@ -409,7 +409,7 @@ PercentInTranscriptome <- function(
 # _________________________________________________________________________________________________
 #' @title Histogram All Genes' Expression Level and a Highlighted Gene
 #'
-#' @description Shows a comparison of the expression level of the chose gene to all genes.
+#' @description Shows a comparison of the expression level of the chosen gene to all genes.
 #' Very useful to see if the gene has a meaningful expression level. This function generates a
 #' histogram to visualize the expression level distribution of a specified gene across all cells in
 #' a Seurat object. It highlights the position of the gene of interest within the overall distribution.
@@ -1197,7 +1197,7 @@ scBarplot.CellsPerCluster <- function(
 
   SBT <- pc_TRUE(nr.cells.per.cl < min.cells,
     NumberAndPC = TRUE,
-    suffix = paste("of identites are below:", min.cells, "cells, or", percentage_formatter(min.PCT.cells), "of all cells.")
+    suffix = paste("of identities are below:", min.cells, "cells, or", percentage_formatter(min.PCT.cells), "of all cells.")
   )
 
   pl <- ggExpress::qbarplot(cell.per.cluster,
@@ -4023,7 +4023,7 @@ qqSaveGridA4 <- function(
 # try(library(htmlwidgets), silent = TRUE)
 
 # May also require
-# try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= TRUE) # generic utilities funtions
+# try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= TRUE) # generic utilities functions
 # require('MarkdownReports') # require("devtools")
 
 

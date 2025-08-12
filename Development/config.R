@@ -5,10 +5,10 @@ DESCRIPTION <- list(
   package.name = "Seurat.utils",
   version = "2.8.6",
   title = "Seurat.utils - utility functions for Seurat",
-  description = "Seurat.utils Is a collection of utility functions for Seurat single cell analysis.
-    Functions allow 3D plotting, visualisation of statistics & QC,
-    the automation / multiplexing of plotting, interaction with the Seurat object, etc.
-    Some functionalities require functions from CodeAndRoll and MarkdownReports libraries.",
+    description = "Seurat.utils is a collection of utility functions for Seurat single cell analysis.
+      Functions allow 3D plotting, visualisation of statistics & QC,
+      the automation / multiplexing of plotting, interaction with the Seurat object, etc.
+      Some functionalities require functions from CodeAndRoll2 and MarkdownReports libraries.",
   depends = "tidyverse, Seurat, Stringendo, CodeAndRoll2, ggExpress, magrittr",
   imports = "cowplot, dplyr, ggcorrplot, ggpubr, ggrepel, HGNChelper, htmlwidgets,
     Matrix, matrixStats, princurve, pheatmap,

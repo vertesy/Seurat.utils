@@ -29,7 +29,7 @@ Defaults to list('median' = median, 'mean' = mean).}
 \item{verbose}{Logical flag indicating whether to print detailed information about the metrics
 calculation process. Defaults to TRUE.}
 
-\item{max.categ}{max number of groups in ident.}
+\item{max.categ}{Maximum number of groups in ident.}
 }
 \value{
 A list containing data frames with calculated metrics for each specified metadata feature,

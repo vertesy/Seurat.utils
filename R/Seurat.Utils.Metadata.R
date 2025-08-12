@@ -39,9 +39,9 @@ addTranslatedMetadata <- function(obj = combined.obj,
                                   orig.ident = "RNA_snn_res.0.4",
                                   translation_as_named_vec,
                                   new_col_name = substitute_deparse(translation_as_named_vec),
-                                  # NA.as.character = T,
+                                  # NA.as.character = TRUE,
                                   suffix = NULL,
-                                  plot = F,
+                                  plot = FALSE,
                                   ...) {
   # Input assertions
   stopifnot(is(obj, "Seurat"),
@@ -60,7 +60,7 @@ addTranslatedMetadata <- function(obj = combined.obj,
   print(table(new, useNA = "ifany"))
 
 
-  if(plot) clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...)
+  if (plot) clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...)
   return(obj)
 }
 
@@ -90,8 +90,8 @@ getMetaColnames <- function(obj = combined.obj,
   matchedColnames <- grep(pattern = pattern, x = colnames(obj@meta.data), value = TRUE)
 
   # Output assertion
-  if (is.null(matchedColnames)) {
-    warning("No matching meta data!", immediate. = TRUE)
+  if (length(matchedColnames) == 0) {
+    warning("No matching metadata!", immediate. = TRUE)
   } else {
     message(length(matchedColnames), " columns matching pattern '", pattern, "'.")
   }
@@ -120,7 +120,7 @@ metaColnameExists <- function(col_name, obj = combined.obj) {
 #' @description Retrieves a specified metadata column from a Seurat object and returns it as a named vector.
 #' @param col A string specifying the name of the metadata column to be retrieved. Default: 'batch'.
 #' @param obj A Seurat object from which the metadata column will be retrieved. Default: combined.obj.
-#' @param as_numeric A logical flag indicating whether the returned values should be converted to numeric format. Default: `FALSE`. (FALSE).
+#' @param as_numeric A logical flag indicating whether the returned values should be converted to numeric format. Default: `FALSE`.
 #' @return A named vector containing the values from the specified metadata column. If 'as_numeric' is TRUE, the values are converted to numeric format.
 #' @examples
 #' \dontrun{
@@ -135,7 +135,7 @@ getMetadataColumn <- function(col = "batch", obj = combined.obj, as_numeric = FA
 
   x <- df.col.2.named.vector(df = obj@meta.data, col = col)
   if (as_numeric) {
-    as.numeric.wNames(x) + 1
+    as.numeric.wNames(x)
   } else {
     x
   }
@@ -188,7 +188,7 @@ get_levels_seu <- function(obj, ident, max_levels = 100, dput = TRUE) {
 #'   Defaults to list('median' = median, 'mean' = mean).
 #' @param verbose Logical flag indicating whether to print detailed information about the metrics
 #'   calculation process. Defaults to TRUE.
-#' @param max.categ max number of groups in ident.
+#' @param max.categ Maximum number of groups in ident.
 #'
 #' @return A list containing data frames with calculated metrics for each specified metadata feature,
 #'   grouped by the identity categories. Each data frame corresponds to one of the specified metrics.
@@ -308,7 +308,7 @@ calculatePercentageMatch <- function(
 #'
 #' @description Get the median values of different columns in meta.data, can iterate over a list of Seurat objects.
 #' @param ls.obj List of Seurat objects, Default: ls.Seurat
-#' @param n.datasets lenght of list (n objects), Default: length(ls.Seurat)
+#' @param n.datasets length of list (n objects), Default: length(ls.Seurat)
 #' @param mColname Metadata column name to calculate on. Default: 'percent.mito'
 #' @examples
 #' \dontrun{
@@ -333,11 +333,13 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
 # _________________________________________________________________________________________________
 #' @title getCellIDs.from.meta
 #'
-#' @description Retrieves cell IDs from a specified metadata column of a Seurat object, where the cell ID matches a provided list of values. The matching operation uses the `%in%` operator.
-#' @param ident A string specifying the name of the metadata column from which to retrieve cell IDs. Default: 'res.0.6'.
-#' @param ident_values A vector of values to match in the metadata column. Default: `NA`.
-#' @param obj The Seurat object from which to retrieve the cell IDs. Default: combined.obj.
-#' @param inverse A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of ident_values. Default: `FALSE`.
+#' @description Retrieves cell IDs from a specified metadata column of a Seurat object, where the cell ID matches a provided list of values.
+#'   The matching operation uses the `%in%` operator and can handle `NA`/`NaN` values.
+#' @param ident A string specifying the name of the metadata column from which to retrieve cell IDs.
+#'   Default: first entry returned by `GetClusteringRuns()`.
+#' @param ident_values Values to match in the metadata column (may include `NA`/`NaN`). Default: `NA`.
+#' @param obj The Seurat object from which to retrieve the cell IDs. Default: `combined.obj`.
+#' @param inverse Logical; if `TRUE`, returns cell IDs that do not match the provided list. Default: `FALSE`.
 #' @return A vector of cell IDs that match (or don't match, if `inverse = TRUE`) the provided list of values.
 #' @examples
 #' \dontrun{
@@ -347,16 +349,26 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
 #' }
 #' }
 #' @export
-getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],
-                                 ident_values = NA, obj = combined.obj,
-                                 inverse = FALSE) {
-
-  mdat <- obj@meta.data[, ident]
-  cells.pass <- mdat %in% ident_values
-  if (inverse) cells.pass <- !cells.pass
-
-  iprint(sum(cells.pass), "cells found.")
-  return(rownames(obj@meta.data)[which(cells.pass)])
+getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],   # metadata column name
+                                 ident_values = NA,                 # values to match (may include NA/NaN)
+                                 obj = combined.obj,               # Seurat object
+                                 inverse = FALSE) {                # invert selection?
+  
+  mdat <- obj@meta.data[[ident]]                                   # pull the column as a vector ([[ ]] avoids dropping issues)
+  
+  non_missing <- ident_values[!is.na(ident_values)]                 # keep only real (non-NA/NaN) targets; "NA" string stays
+  cells.pass <- rep(FALSE, nrow(obj@meta.data))                     # start with no matches
+  
+  if (length(non_missing))                                          # if any real targets exist,
+    cells.pass <- mdat %in% non_missing                             #   mark matches via %in%
+  
+  if (any(is.na(ident_values)))                                     # if NA/NaN is among targets,
+    cells.pass <- cells.pass | is.na(mdat)                          #   also match missing values in metadata
+  
+  if (inverse) cells.pass <- !cells.pass                            # optionally invert selection
+  
+  iprint(sum(cells.pass), "cells found.")                           # report how many matched
+  rownames(obj@meta.data)[which(cells.pass)]                        # return matching cell IDs
 }
 
 
@@ -401,7 +413,7 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
 
   } else {
     message("No CBCs associated with new metadata. Assuming exact match.")
-    if (!equal_length) stop("Not equal lenght, no CBCs")
+    if (!equal_length) stop("Not equal length, no CBCs")
   }
 
   if (any(is.na(names(metadata))) ) {
@@ -563,17 +575,17 @@ addMetaFraction <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title Add Meta Data for Gene-Class Fractions
+#' @title Add Metadata for Gene-Class Fractions
 #'
 #' @description
-#' This function adds meta data for various gene-class fractions such as percent.mito, percent.ribo,
+#' This function adds metadata for various gene-class fractions such as percent.mito, percent.ribo,
 #' percent.AC.GenBank, percent.AL.EMBL, percent.LINC, percent.MALAT1, and percent.HGA to a Seurat object.
-#' If the meta data already exists, a message will be displayed.
+#' If the metadata already exists, a message will be displayed.
 #'
 #' @param obj A Seurat object to be updated. Default: None.
 #' @param gene_fractions A named list containing gene symbol patterns for each meta column name.
 #'                       Default: List of predefined gene fractions.
-#' @param add_hga A logical value indicating whether to add percent.HGA meta data. Default: `TRUE`.
+#' @param add_hga A logical value indicating whether to add percent.HGA metadata. Default: `TRUE`.
 #'
 #' @return An updated Seurat object.
 #' @export
@@ -590,7 +602,7 @@ addGeneClassFractions <- function(obj,
                                     "percent.MALAT1" = "^MALAT1"
                                   ),
                                   add_hga = TRUE) {
-  message("Adding meta data for gene-class fractions, e.g., percent.mito, etc.")
+  message("Adding metadata for gene-class fractions, e.g., percent.mito, etc.")
 
   for (col_name in names(gene_fractions)) {
     message(col_name, "...")
@@ -737,7 +749,7 @@ seu.map.and.add.new.ident.to.meta <- function(
   {
     new.ident <- CodeAndRoll2::translate(vec = as.character(Idents(obj)), old = ident.X, new = ident.Y)
     obj@meta.data[[metaD.colname]] <- new.ident
-    iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:")
+    iprint(metaD.colname, "contains the named identities. Use Idents(combined.obj) = '...'. The names are:")
     cat(paste0("\t", ident.Y, "\n"))
   }
 }
@@ -1286,7 +1298,7 @@ heatmap_calc_clust_median <- function(
       plotname = FixPlotName(make.names(plot_name), suffix, "pdf")
     )
 
-    # Now plot correlation heatmap between the identites
+    # Now plot correlation heatmap between the identities
     corX <- cor(t(df_cluster_medians), method = "spearman")
     pl <- pheatmap::pheatmap(corX,
       main = paste0("Correlation between ", plot_name),

@@ -28,7 +28,7 @@
 #' @param obj A Seurat object to be processed.
 #' @param param.list A list of parameters used in the processing steps.
 #' @param update_gene_symbols A boolean indicating whether to update gene symbols from HGNC. Default: `FALSE`.
-#' @param add.meta.fractions A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: `FALSE`.
+#' @param add.meta.fractions A boolean indicating whether to add metadata for fractions of cells in each cluster. Default: `FALSE`.
 #' @param precompute A boolean indicating whether to compute steps: `FindVariableFeatures()`,
 #' `calc.q99.Expression.and.set.all.genes()`,  `ScaleData()` and `RunPCA()` Default: `TRUE`.
 #' @param compute A boolean indicating whether to compute the steps: `IntegrateLayers() / RunHarmony()`,
@@ -95,7 +95,7 @@ processSeuratObject <- function(obj, param.list = p,
   iprint("n.PC:", n.PC)
   iprint("snn_res:", resolutions)
   iprint("variables.2.regress (ScaleData):", variables.2.regress)
-  if (har) iprint("variables.2.regress (Haromony):", harmony.covariates)
+  if (har) iprint("variables.2.regress (Harmony):", harmony.covariates)
 
   # Save parameters _________________________________________________
   param.list$"n.var.genes" <- nfeatures
@@ -123,7 +123,7 @@ processSeuratObject <- function(obj, param.list = p,
   }
 
   if (add.meta.fractions) {
-    message("Adding meta data for gene-class fractions, eg. percent.mito, etc.")
+    message("Adding metadata for gene-class fractions, e.g., percent.mito, etc.")
     obj <- addGeneClassFractions(obj)
   } # end if add.meta.fractions
 
@@ -286,7 +286,7 @@ processSeuratObject <- function(obj, param.list = p,
 #'        Default: `TRUE`.
 #' @param directory Character string specifying the base directory for saving results.
 #'        Default: OutDir
-#' @param dir_suffix Character string specifying the suffix for the subdirecotry directory.
+#' @param dir_suffix Character string specifying the suffix for the subdirectory.
 #' @param subdirectory Character string specifying the subdirectory for saving outputs within
 #'        the base directory. Default: "DGEA + date".
 #' @param calculate.DGEA Logical determining if the DE analysis should be calculated.
@@ -382,13 +382,13 @@ runDGEA <- function(obj,
 
 
   if (clean.misc.slot) {
-    message("Erasing up the misc slot: df.markers and top.markers.resX")
+    message("Clearing the misc slot: df.markers and top.markers.resX")
     topMslots <- grepv("top.markers.res", names(obj@misc))
     obj@misc[topMslots] <- NULL
   }
 
   if (clean.meta.data) {
-    message("Erasing up the meta.data clustering columns.")
+    message("Clearing the meta.data clustering columns.")
     topMslots <- grepv("top.markers.res", names(obj@meta.data))
     cl.ordered <- GetOrderedClusteringRuns(obj = obj)
     obj@meta.data[, cl.ordered] <- NULL
@@ -437,7 +437,7 @@ runDGEA <- function(obj,
   if (n.cores > 1) future::plan("multisession", workers = n.cores)
 
   if (calculate.DGEA) {
-    message("Calclulating ----------------------------------------")
+    message("Calculating ----------------------------------------")
     for (i in 1:length(res.analyzed.DE)) {
       res <- res.analyzed.DE[i]
       tag.res <- ppp("res", res)
@@ -699,7 +699,7 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
 
   gc(full = TRUE)
   try(memory.biggest.objects(), silent = TRUE)
-  user_input <- readline(prompt = "Are you sure that memory should not be cleaned before paralellizng? (y/n)")
+  user_input <- readline(prompt = "Are you sure that memory should not be cleaned before parallelizing? (y/n)")
 
   if (user_input == "y") {
     iprint("N. cores", cores)
@@ -1414,7 +1414,7 @@ getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2
 #' @description The `GetClusteringRuns` function retrieves metadata column names associated with
 #'  clustering runs, based on a pattern to match, `"*snn_res.[0-9].[0-9]$"`, by default.
 #' @param obj Seurat object, Default: `combined.obj`
-#' @param res Clustering resoluton to use, Default: `FALSE`.
+#' @param res Clustering resolution to use, Default: `FALSE`.
 #' @param pat Pattern to match, Default: `*snn_res.*[0-9]$`
 #' @param v verbose, Default: `TRUE`.
 #'
@@ -1458,7 +1458,7 @@ GetClusteringRuns <- function(obj = combined.obj,
 #' @description The `GetNamedClusteringRuns` function retrieves metadata column names associated with
 #'  non-numeric ("named") clustering runs, based on a pattern to match, `"Name|name"`, by default.
 #' @param obj Seurat object, Default: `combined.obj`
-#' @param res Clustering resoluton to use, Default: c(FALSE, 0.5)[1]
+#' @param res Clustering resolution to use, Default: c(FALSE, 0.5)[1]
 #' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: `FALSE`.
 #' @param pat Pattern to match, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
 #' @param find.alternatives If TRUE, tries to find alternative clustering runs with
@@ -1502,7 +1502,7 @@ GetNamedClusteringRuns <- function(
 #'
 #' @description Get Clustering Runs: metadata column names.
 #' @param obj Seurat object, Default: `combined.obj`.
-#' @param res Clustering resoluton to use, Default: `FALSE`.
+#' @param res Clustering resolution to use, Default: `FALSE`.
 #' @param pat Pattern to match, Default: '*snn_res.*[0,1]\.[0-9]\.ordered$'
 #' @examples
 #' \dontrun{
@@ -1821,7 +1821,7 @@ recall.all.genes <- function(obj = combined.obj, overwrite = FALSE) {
       MarkdownHelpers::ww.assign_to_global(name = "all.genes", value = all.genes, verbose = FALSE)
       message("all.genes is now (re)defined in the global environment.")
     } else {
-      message("  ->   Variable 'all.genes' exits in the global namespace, and overwrite is: FALSE")
+      message("  ->   Variable 'all.genes' exists in the global namespace, and overwrite is: FALSE")
     }
   } else {
     message("  ->   Slot 'all.genes' does not exist in obj@misc.")
@@ -1901,7 +1901,7 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
 
   if ("p" %in% names(obj@misc)) {
     p_found <- exists("p", envir = .GlobalEnv)
-    if (p_found) message("  ->   Variable 'p' exits in the global namespace.")
+    if (p_found) message("  ->   Variable 'p' exists in the global namespace.")
 
     if (!p_found | (p_found & overwrite == TRUE)) {
       MarkdownHelpers::ww.assign_to_global(name = "p", value = obj@misc$"p", verbose = FALSE)
@@ -1937,7 +1937,7 @@ recall.genes.ls <- function(obj = combined.obj, overwrite = FALSE) { # genes.ls
   obj <- ww.get.1st.Seur.element(obj)
 
   if ("genes.ls" %in% names(obj@misc)) {
-    if (!exists("genes.ls")) message("variable 'genes.ls' exits in the global namespace: ", head(p))
+    if (!exists("genes.ls")) message("variable 'genes.ls' exists in the global namespace: ", head(p))
 
     if (!exists("genes.ls") | (exists("genes.ls") & overwrite == TRUE)) {
       MarkdownHelpers::ww.assign_to_global(name = "genes.ls", value = obj@misc$"genes.ls")
@@ -2433,7 +2433,7 @@ RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "o
 #' where small, possibly unrepresentative clusters may remain.
 #'
 #' @param obj Seurat object from which small clusters will be removed. Default: `combined.obj`.
-#' @param identitites Vector of clustering identities to examine for small clusters;
+#' @param identities Vector of clustering identities to examine for small clusters;
 #' Default: `GetClusteringRuns(obj)`.
 #' @param max.cells Maximum number of cells a cluster can contain to still be considered for removal.
 #' Default: The lesser of 0.5% of the dataset or 10 cells.
@@ -2449,14 +2449,14 @@ RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "o
 #' @export
 removeResidualSmallClusters <- function(
     obj = combined.obj,
-    identitites = GetClusteringRuns(obj, pat = "*snn_res.[0-9].[0-9]$")[1:5],
+    identities = GetClusteringRuns(obj, pat = "*snn_res.[0-9].[0-9]$")[1:5],
     max.cells = max(round((ncol(obj)) / 2000), 5),
     plot.removed = TRUE) {
   #
   stopifnot(
     inherits(obj, "Seurat"),
-    is.character(identitites), length(identitites) > 0,
-    all(identitites %in% colnames(obj@meta.data)),
+    is.character(identities), length(identities) > 0,
+    all(identities %in% colnames(obj@meta.data)),
     is.numeric(max.cells), max.cells > 0,
     is.logical(plot.removed)
   )
@@ -2467,10 +2467,10 @@ removeResidualSmallClusters <- function(
 
 
   message("max.cells: ", max.cells, " | Scanning over these identities:")
-  small.clusters <- cells.to.remove <- CodeAndRoll2::list.fromNames(identitites)
+  small.clusters <- cells.to.remove <- CodeAndRoll2::list.fromNames(identities)
 
-  for (i in 1:length(identitites)) {
-    colX <- identitites[i]
+  for (i in 1:length(identities)) {
+    colX <- identities[i]
     print(colX)
     tbl <- table(META[[colX]])
 
@@ -2485,9 +2485,9 @@ removeResidualSmallClusters <- function(
 
     all.cells.2.remove <- unique(unlist(cells.to.remove))
     if (plot.removed) {
-      SBT <- paste(length(all.cells.2.remove), "cells removed from small clusters across", length(identitites), "identities.")
+      SBT <- paste(length(all.cells.2.remove), "cells removed from small clusters across", length(identities), "identities.")
       pobj <- clUMAP(
-        obj = obj, ident = identitites[i],
+        obj = obj, ident = identities[i],
         sub = SBT, caption = NULL,
         cells.highlight = all.cells.2.remove
       )
@@ -2591,7 +2591,7 @@ removeClustersAndDropLevels <- function(ls_obj,
   for (index in indices) {
     dataset_name <- object_names[index]
     obj <- ls_obj[[dataset_name]]
-    obj <- removeResidualSmallClusters(obj = obj, identitites = GetClusteringRuns(obj), ...)
+    obj <- removeResidualSmallClusters(obj = obj, identities = GetClusteringRuns(obj), ...)
     obj <- dropLevelsSeurat(obj)
     ls_obj[[dataset_name]] <- obj
   }

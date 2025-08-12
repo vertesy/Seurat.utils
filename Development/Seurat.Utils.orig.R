@@ -31,7 +31,7 @@ Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-25, pval_scaling =
 
 
 # ------------------------------------------------------------------------------------
-StoreTop25Markers <- function(obj = combined.obj # Save the top 25 makers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
+StoreTop25Markers <- function(obj = combined.obj # Save the top 25 markers based on `avg_log2FC` output table of `FindAllMarkers()` (df_markers) under `@misc$df.markers$res...`. By default, it rounds up insignificant digits up to 3.
                               , df_markers = df.markers, res = 0.5) {
   top25.markers <-
     df_markers %>%
@@ -730,7 +730,7 @@ getCellIDs.from.meta <- function(ident = 'res.0.6', values = NA, obj=combined.ob
 # seu.add.meta.from.vector ------------------------------------------------------------------------
 seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell ) { # Add a new metadata column to a Seurat  object
   obj@meta.data[, metaD.colname ] = Label.per.cell
-  iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
+  iprint(metaD.colname, "contains the named identities. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
   return(obj)
 }
 # combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell )
@@ -764,7 +764,7 @@ seu.map.and.add.new.ident.to.meta <- function(obj = combined.obj, ident.table = 
   # identity mapping ----------------
   new.ident <- translate(vec = as.character(Idents(obj)), old = ident.X, new = ident.Y)
   obj@meta.data[[metaD.colname]] = new.ident
-  iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:"); cat(paste0("\t", ident.Y, "\n"))
+  iprint(metaD.colname, "contains the named identities. Use Idents(combined.obj) = '...'. The names are:"); cat(paste0("\t", ident.Y, "\n"))
 }
 # combined.obj <- seu.map.and.add.new.ident.to.meta(obj = combined.obj, ident.table = clusterIDs.GO.process)
 
@@ -974,7 +974,7 @@ recallAllGenes <- function(obj = combined.obj) { # all.genes set by calc.q90.Exp
     all.genes <- obj@misc$all.genes
     print(head(unlist(all.genes)))
     ww.assign_to_global(name = "all.genes", value = all.genes)
-  } else {print("variable 'all.genes' exits in the global namespace")}
+  } else {print("variable 'all.genes' exists in the global namespace")}
 }
 # recallAllGenes(); all.genes
 
@@ -984,13 +984,13 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
     n.datasets <- obj@misc$n.datasets
     print(head(unlist(n.datasets)))
     ww.assign_to_global(name = "n.datasets", value = n.datasets)
-  } else {print("variable 'n.datasets' exits in the global namespace")}
+  } else {print("variable 'n.datasets' exists in the global namespace")}
 
   if (!exists('meta.tags')) {
     meta.tags <- obj@misc$meta.tags
     print(head(unlist(meta.tags)))
     ww.assign_to_global(name = "meta.tags", value = meta.tags)
-  } else {print("variable 'meta.tags' exits in the global namespace")}
+  } else {print("variable 'meta.tags' exists in the global namespace")}
 
 }
 # recall.n.datasets(); n.datasets
@@ -1002,7 +1002,7 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
   } else {
     p <- obj@misc$'p'
     print(head(p))
-    if (exists('p')) iprint("variable 'p' exits in the global namespace:");
+    if (exists('p')) iprint("variable 'p' exists in the global namespace:");
 
     if (!exists('p') | (exists('p') & overwrite == TRUE) ) {
       ww.assign_to_global(name = "p", value = p); print("Overwritten.")
@@ -1020,7 +1020,7 @@ recall.genes.ls<- function(obj = combined.obj) { # genes.ls
     genes.ls <- obj@misc$genes.ls
     print(head(unlist(genes.ls)))
     ww.assign_to_global(name = "genes.ls", value = genes.ls)
-  } else {print("variable 'genes.ls' exits in the global namespace")}
+  } else {print("variable 'genes.ls' exists in the global namespace")}
 }
 # recall.genes.ls(); genes.ls
 
@@ -1421,7 +1421,7 @@ aux.plotAllMseqBCs <- function(bar.table = bar.table[,1:96], barcodes.used = BCs
 # try(source("https://raw.githubusercontent.com/vertesy/ggExpressDev/main/ggExpress.functions.R"), silent = T)
 
 # May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
+# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities functions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 
@@ -1811,7 +1811,7 @@ getDiscretePalette <- function(ident.used = GetClusteringRuns()[1]
 # try(library(htmlwidgets), silent = T)
 
 # May also require
-# try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= T) # generic utilities funtions
+# try (source('~/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= T) # generic utilities functions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 
@@ -2197,7 +2197,7 @@ PlotFilters <- function(ls.obj = ls.Seurat # Plot filtering threshold and distri
 # tools for tools::toTitleCase
 
 # May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities funtions
+# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= F) # generic utilities functions
 # require('MarkdownReportsDev') # require("devtools") # plotting related utilities functions # devtools::install_github(repo = "vertesy/MarkdownReportsDev")
 
 # PCA percent of variation associated with each PC ------------------------------------------------------------

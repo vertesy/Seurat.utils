@@ -12,19 +12,20 @@ getCellIDs.from.meta(
 )
 }
 \arguments{
-\item{ident}{A string specifying the name of the metadata column from which to retrieve cell IDs. Default: 'res.0.6'.}
+\item{ident}{A string specifying the name of the metadata column from which to retrieve cell IDs. Default: first entry returned by \code{GetClusteringRuns()}.}
 
-\item{ident_values}{A vector of values to match in the metadata column. Default: \code{NA}.}
+\item{ident_values}{Values to match in the metadata column (may include \code{NA}/\code{NaN}). Default: \code{NA}.}
 
-\item{obj}{The Seurat object from which to retrieve the cell IDs. Default: combined.obj.}
+\item{obj}{The Seurat object from which to retrieve the cell IDs. Default: \code{combined.obj}.}
 
-\item{inverse}{A boolean value indicating whether to inverse the match, i.e., retrieve cell IDs that do not match the provided list of ident_values. Default: \code{FALSE}.}
+\item{inverse}{Logical; if \code{TRUE}, returns cell IDs that do not match the provided list. Default: \code{FALSE}.}
 }
 \value{
 A vector of cell IDs that match (or don't match, if \code{inverse = TRUE}) the provided list of values.
 }
 \description{
-Retrieves cell IDs from a specified metadata column of a Seurat object, where the cell ID matches a provided list of values. The matching operation uses the \code{\%in\%} operator.
+Retrieves cell IDs from a specified metadata column of a Seurat object, where the cell ID matches a provided list of values.
+The matching operation uses the \code{\%in\%} operator and can handle \code{NA}/\code{NaN} values.
 }
 \examples{
 \dontrun{

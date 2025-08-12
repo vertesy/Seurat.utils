@@ -22,7 +22,7 @@
 #' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: `TRUE`.
 #' @param depth An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default: 2.
 #' @param sample.barcoding A logical value indicating whether Cell Ranger was run with sample barcoding. Default: `FALSE`.
-#' @param sort_alphanumeric sort files alphanumeric? Default: `TRUE`.
+#' @param sort_alphanumeric Sort files alphanumerically? Default: `TRUE`.
 #' @examples
 #' \dontrun{
 #' if (interactive()) Convert10Xfolders(InputDir)
@@ -136,7 +136,7 @@ Convert10Xfolders_v1 <- function(
 #' @param pt_size Size of points. Default: 0.5
 #' @param name.suffix Suffix to append to the plot's name. Default: NULL
 #' @param width Width of the plot. Default: hA4
-#' @param heigth Height of the plot. Default: 1.75 * wA4
+#' @param height Height of the plot. Default: 1.75 * wA4
 #' @param filetype Filetype to save plot as. Default: 'pdf'
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @seealso
@@ -154,7 +154,7 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", 
                                       no_axes = TRUE,
                                       pt_size = 0.5,
                                       name.suffix = NULL,
-                                      width = hA4, heigth = 1.75 * wA4, filetype = "pdf", ...) {
+                                      width = hA4, height = 1.75 * wA4, filetype = "pdf", ...) {
   p1 <- Seurat::DimPlot(
     object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use,
     no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size,
@@ -177,7 +177,7 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", 
     ncol = 2 # we're saving a grid plot of 2 columns
     , nrow = 1 # and 2 rows
     , base_width = width,
-    base_height = heigth
+    base_height = height
     # each individual subplot should have an aspect ratio of 1.3
     # , base_aspect_ratio = 1.5
   )
@@ -345,9 +345,9 @@ umapNamedClusters <- function(obj = combined.obj,
 #' @param obj Seurat object, Default: combined.obj
 #' @param dim Dimensions to use, Default: 1:2
 #' @param plotit Plot results (& show it), Default: `TRUE`.
-#' @param swap Swap Lambda paramter (multiplied with this) , Default: -1
+#' @param swap Swap Lambda parameter (multiplied with this) , Default: -1
 #' @param reduction UMAP, tSNE, or PCA (Dim. reduction to use), Default: 'umap'
-#' @param res Clustering resoluton to use, Default: 'integrated_snn_res.0.5'
+#' @param res Clustering resolution to use, Default: 'integrated_snn_res.0.5'
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -1000,7 +1000,7 @@ plotClustSizeDistr <- function(
 #' seu.add.meta.from.vector <- function(obj = combined.obj, metaD.colname, Label.per.cell = Cl.Label.per.cell) {
 #'   .Deprecated("addMetaDataSafe")
 #'   obj@meta.data[, metaD.colname] <- Label.per.cell
-#'   iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
+#'   iprint(metaD.colname, "contains the named identities. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
 #'   return(obj)
 #' }
 #'
