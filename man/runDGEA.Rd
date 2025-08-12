@@ -49,7 +49,7 @@ Default: 1.}
 \item{directory}{Character string specifying the base directory for saving results.
 Default: OutDir}
 
-\item{dir_suffix}{Character string specifying the suffix for the subdirecotry directory.}
+\item{dir_suffix}{Character string specifying the suffix for the subdirectory.}
 
 \item{subdirectory}{Character string specifying the subdirectory for saving outputs within
 the base directory. Default: "DGEA + date".}

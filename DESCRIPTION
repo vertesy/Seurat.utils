@@ -1,28 +1,37 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat
-Version: 2.8.5
+Version: 2.9.0
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <av@imba.oeaw.ac.at> [aut, cre]
 Description: Seurat.utils is a collection of utility functions for Seurat
-    single cell analysis. Functions allow 3D plotting, visualisation of
+    single cell analysis.  Functions allow 3D plotting, visualisation of
     statistics & QC, the automation / multiplexing of plotting,
-    interaction with the Seurat object, etc. Some functionalities require
+    interaction with the Seurat object, etc.  Some functionalities require
     functions from CodeAndRoll2 and MarkdownReports libraries.
 License: GPL-3 + file LICENSE
 BugReports: https://github.com/vertesy/Seurat.utils/issues
 Depends: 
     CodeAndRoll2,
-    ggExpress,
-    magrittr,
     Seurat,
     Stringendo,
+    ggExpress,
+    magrittr,
     tidyverse
 Imports: 
+    EnhancedVolcano,
+    HGNChelper,
+    MarkdownHelpers,
+    MarkdownReports,
+    Matrix,
+    R.utils,
+    RColorBrewer,
+    ReadWriter,
+    SeuratObject,
+    SoupX,
     checkmate,
     cowplot,
     dplyr,
-    EnhancedVolcano,
     foreach,
     fs,
     future,
@@ -32,35 +41,26 @@ Imports:
     ggrepel,
     gplots,
     harmony,
-    HGNChelper,
     htmlwidgets,
-    MarkdownHelpers,
-    MarkdownReports,
-    Matrix,
     matrixStats,
     pheatmap,
     plotly,
     princurve,
     qs,
-    R.utils,
-    RColorBrewer,
     readr,
-    ReadWriter,
     reshape2,
     rstudioapi,
     scales,
-    SeuratObject,
-    SoupX,
     sparseMatrixStats,
     stringr,
     tibble,
     tictoc
 Suggests: 
-    clusterProfiler,
     DatabaseLinke.R,
+    clusterProfiler,
     enrichplot,
     vroom
 Encoding: UTF-8
-Packaged: 2024-10-23 22:59:23.332565
+Packaged: 2025-08-12 16:49:19.669352
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
