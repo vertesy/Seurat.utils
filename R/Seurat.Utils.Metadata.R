@@ -349,26 +349,26 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
 #' }
 #' }
 #' @export
-getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],
-                                 ident_values = NA,
-                                 obj = combined.obj,
-                                 inverse = FALSE) {
-
-  mdat <- obj@meta.data[[ident]]
-
-  non_missing <- ident_values[!is.na(ident_values)]
-  cells.pass <- rep(FALSE, nrow(obj@meta.data))
-
-  if (length(non_missing))
-    cells.pass <- mdat %in% non_missing
-
-  if (any(is.na(ident_values)))
-    cells.pass <- cells.pass | is.na(mdat)
-
-  if (inverse) cells.pass <- !cells.pass
-
-  iprint(sum(cells.pass), "cells found.")
-  rownames(obj@meta.data)[which(cells.pass)]
+getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],   # metadata column name
+                                 ident_values = NA,                 # values to match (may include NA/NaN)
+                                 obj = combined.obj,               # Seurat object
+                                 inverse = FALSE) {                # invert selection?
+  
+  mdat <- obj@meta.data[[ident]]                                   # pull the column as a vector ([[ ]] avoids dropping issues)
+  
+  non_missing <- ident_values[!is.na(ident_values)]                 # keep only real (non-NA/NaN) targets; "NA" string stays
+  cells.pass <- rep(FALSE, nrow(obj@meta.data))                     # start with no matches
+  
+  if (length(non_missing))                                          # if any real targets exist,
+    cells.pass <- mdat %in% non_missing                             #   mark matches via %in%
+  
+  if (any(is.na(ident_values)))                                     # if NA/NaN is among targets,
+    cells.pass <- cells.pass | is.na(mdat)                          #   also match missing values in metadata
+  
+  if (inverse) cells.pass <- !cells.pass                            # optionally invert selection
+  
+  iprint(sum(cells.pass), "cells found.")                           # report how many matched
+  rownames(obj@meta.data)[which(cells.pass)]                        # return matching cell IDs
 }
 
 
