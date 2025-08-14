@@ -19,11 +19,11 @@ addTranslatedMetadata(
 
 \item{orig.ident}{A character string specifying the original metadata to be translated. Default: "RNA_snn_res.0.4".}
 
-\item{translation_as_named_vec}{A named vector where names are old values and values are new translations. Default: None.}
+\item{translation_as_named_vec}{A named vector where names are old values and values are new translations.}
 
-\item{new_col_name}{A character string specifying the name of the new metadata column. Default: "translation_as_named_vec".}
+\item{new_col_name}{A character string specifying the base name of the new metadata column.}
 
-\item{suffix}{A character string specifying the suffix for the new metadata column name. Default: ".".}
+\item{suffix}{A character string appended to \code{new_col_name} to form the final metadata column name. Default: \code{NULL}.}
 
 \item{plot}{A logical indicating whether to plot the UMAP for the new metadata. Default: FALSE.}
 }
@@ -32,6 +32,6 @@ An updated Seurat object.
 }
 \description{
 This function translates a specified metadata vector in a Seurat object using a named vector of old
-and new values and adds it to the Seurat object with a specified suffix. The function also generates
-UMAP plots for the new metadata.
+and new values and adds it to the Seurat object. A suffix can optionally be appended to the name of
+the newly created metadata column. The function also generates UMAP plots for the new metadata.
 }
