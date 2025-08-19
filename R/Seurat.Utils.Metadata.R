@@ -121,6 +121,8 @@ metaColnameExists <- function(col_name, obj = combined.obj) {
 #' @param col A string specifying the name of the metadata column to be retrieved. Default: 'batch'.
 #' @param obj A Seurat object from which the metadata column will be retrieved. Default: combined.obj.
 #' @param as_numeric A logical flag indicating whether the returned values should be converted to numeric format. Default: `FALSE`.
+#' @param v verbose. Default: `TRUE`.
+#'
 #' @return A named vector containing the values from the specified metadata column. If 'as_numeric' is TRUE, the values are converted to numeric format.
 #' @examples
 #' \dontrun{
@@ -130,8 +132,9 @@ metaColnameExists <- function(col_name, obj = combined.obj) {
 #' }
 #' }
 #' @export
-getMetadataColumn <- function(col = "batch", obj = combined.obj, as_numeric = FALSE) {
+getMetadataColumn <- function(col = "batch", obj = combined.obj, as_numeric = FALSE, v = T) {
   stopifnot(col %in% colnames(obj@meta.data))
+  if(v) message(substitute(obj), ", ", ncol(obj), " cells." )
 
   x <- df.col.2.named.vector(df = obj@meta.data, col = col)
   if (as_numeric) {
@@ -353,20 +356,20 @@ getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],   # metadata co
                                  ident_values = NA,                 # values to match (may include NA/NaN)
                                  obj = combined.obj,               # Seurat object
                                  inverse = FALSE) {                # invert selection?
-  
+
   mdat <- obj@meta.data[[ident]]                                   # pull the column as a vector ([[ ]] avoids dropping issues)
-  
+
   non_missing <- ident_values[!is.na(ident_values)]                 # keep only real (non-NA/NaN) targets; "NA" string stays
   cells.pass <- rep(FALSE, nrow(obj@meta.data))                     # start with no matches
-  
+
   if (length(non_missing))                                          # if any real targets exist,
     cells.pass <- mdat %in% non_missing                             #   mark matches via %in%
-  
+
   if (any(is.na(ident_values)))                                     # if NA/NaN is among targets,
     cells.pass <- cells.pass | is.na(mdat)                          #   also match missing values in metadata
-  
+
   if (inverse) cells.pass <- !cells.pass                            # optionally invert selection
-  
+
   iprint(sum(cells.pass), "cells found.")                           # report how many matched
   rownames(obj@meta.data)[which(cells.pass)]                        # return matching cell IDs
 }

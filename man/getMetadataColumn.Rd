@@ -4,7 +4,7 @@
 \alias{getMetadataColumn}
 \title{getMetadataColumn}
 \usage{
-getMetadataColumn(col = "batch", obj = combined.obj, as_numeric = FALSE)
+getMetadataColumn(col = "batch", obj = combined.obj, as_numeric = FALSE, v = T)
 }
 \arguments{
 \item{col}{A string specifying the name of the metadata column to be retrieved. Default: 'batch'.}
@@ -12,6 +12,8 @@ getMetadataColumn(col = "batch", obj = combined.obj, as_numeric = FALSE)
 \item{obj}{A Seurat object from which the metadata column will be retrieved. Default: combined.obj.}
 
 \item{as_numeric}{A logical flag indicating whether the returned values should be converted to numeric format. Default: \code{FALSE}.}
+
+\item{v}{verbose. Default: \code{TRUE}.}
 }
 \value{
 A named vector containing the values from the specified metadata column. If 'as_numeric' is TRUE, the values are converted to numeric format.
