@@ -60,7 +60,7 @@ addTranslatedMetadata <- function(obj = combined.obj,
   print(table(new, useNA = "ifany"))
 
 
-  if (plot) clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...)
+  if (plot) x <- clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...); print(x)
   return(obj)
 }
 

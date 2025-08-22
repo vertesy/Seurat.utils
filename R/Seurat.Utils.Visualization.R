@@ -1608,7 +1608,7 @@ getDiscretePalette <- function() .Deprecated("DiscretePaletteSafe and DiscretePa
 #' @export
 getDiscretePaletteObj <- function(ident.used,
                                   obj,
-                                  palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
+                                  palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "parade", "stepped")[2],
                                   show.colors = FALSE,
                                   seed = 1989) {
   stopifnot(
@@ -1657,7 +1657,7 @@ getDiscretePaletteObj <- function(ident.used,
 #'
 #' @export
 DiscretePaletteSafe <- function(n,
-                                palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
+                                palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "parade", "stepped")[2],
                                 show.colors = FALSE,
                                 seed = 1989) {
   stopifnot(
@@ -2294,17 +2294,17 @@ clUMAP <- function(
     iprint("Identity not found. Plotting", ident, "\n")
   }
   identity <- obj[[ident]]
-  NtCategs <- length(unique(identity[, 1]))
+  Ident_categories <- unique(identity[, 1])
+  NtCategs <- length(Ident_categories)
   if (NtCategs > 1000) warning("More than 1000 levels! qUMAP?", immediate. = TRUE)
-
 
   # Highlight specific clusters if provided _____________________________________________________
   if (!missing(highlight.clusters)) {
     if (!(all(highlight.clusters %in% identity[, 1]))) {
       MSG <- paste(
         "Some clusters not found in the object! Missing:",
-        kppc(setdiff(highlight.clusters, unique(identity[, 1]))), "\nFrom:\n",
-        kppc(sort(unique(identity[, 1])))
+        kppc(setdiff(highlight.clusters, Ident_categories)), "\nFrom:\n",
+        kppc(sort(Ident_categories))
       )
       warning(MSG, immediate. = TRUE)
     }
@@ -2340,6 +2340,7 @@ clUMAP <- function(
       )
     }
   }
+
 
   # if (FALSE) cols <- adjustcolor(cols, alpha.f = alpha)
 
