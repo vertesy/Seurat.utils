@@ -1175,9 +1175,9 @@ scBarplot.CellsPerCluster <- function(
     is.numeric(ylab_adj), is.numeric(min.cells), ident %in% colnames(obj@meta.data)
   )
 
-  cat(0)
+  1
   cell.per.cl <- obj[[ident]][, 1]
-  cell.per.cluster <- (table(cell.per.cl))
+  cell.per.cluster <- (table(cell.per.cl, useNA = "ifany"))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
   lbl <- if (isFALSE(label)) {
     NULL
@@ -1193,12 +1193,16 @@ scBarplot.CellsPerCluster <- function(
   message("min cell thr: ", min.cells, " corresponding to min: ", percentage_formatter(min.PCT.cells))
 
   n.clusters <- length(cell.per.cluster)
-  nr.cells.per.cl <- table(obj[[ident]][, 1])
+  nr.cells.per.cl <- table(obj[[ident]][, 1], useNA = "ifany")
 
   SBT <- pc_TRUE(nr.cells.per.cl < min.cells,
     NumberAndPC = TRUE,
     suffix = paste("of identities are below:", min.cells, "cells, or", percentage_formatter(min.PCT.cells), "of all cells.")
   )
+
+  # Fix NA names, if any
+  names(cell.per.cluster)[is.na(names(cell.per.cluster))] <- "NA"
+
 
   pl <- ggExpress::qbarplot(cell.per.cluster,
     plotname = plotname,
@@ -2917,6 +2921,7 @@ qGeneExpressionUMAPS <- function(
 #' @export
 
 plotQUMAPsInAFolder <- function(genes, obj = combined.obj,
+                                # subtitles = NULL, # assume the names of the vector.
                                 foldername = NULL,
                                 intersectionAssay = DefaultAssay(obj),
                                 plot.reduction = "umap",
@@ -2940,9 +2945,10 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj,
     assay.slot = intersectionAssay, makeuppercase = FALSE
   )
 
-  for (g in list.of.genes.found) {
-    message(g)
-    qUMAP(g, reduction = plot.reduction, obj = obj, ...)
+  for (i in seq_along(list.of.genes.found)) {
+    g <- list.of.genes.found[i];   message(g)
+    qUMAP(feature = g, sub = names(list.of.genes.found)[i],
+          reduction = plot.reduction, obj = obj, ...)
   }
 
   MarkdownReports::create_set_OutDir(ParentDir)
