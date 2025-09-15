@@ -1163,6 +1163,7 @@ scBarplot.CellsPerCluster <- function(
     sub = ident,
     label = list(TRUE, "percent")[[1]],
     suffix = if (label == "percent") "percent" else NULL,
+    col = NULL,
     palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
     return_table = FALSE,
     ylab_adj = 1.1,
@@ -1200,6 +1201,8 @@ scBarplot.CellsPerCluster <- function(
     suffix = paste("of identities are below:", min.cells, "cells, or", percentage_formatter(min.PCT.cells), "of all cells.")
   )
 
+  color <- if (is.null(col)) 1:n.clusters else col
+
   # Fix NA names, if any
   names(cell.per.cluster)[is.na(names(cell.per.cluster))] <- "NA"
 
@@ -1208,7 +1211,7 @@ scBarplot.CellsPerCluster <- function(
     plotname = plotname,
     subtitle = paste0(sub, "\n", SBT),
     suffix = kpp(ident, ncol(obj), "c", suffix),
-    col = 1:n.clusters,
+    col = color,
     caption = .parseBasicObjStats(obj = obj),
     xlab.angle = 45,
     ylim = c(0, ylab_adj * max(cell.per.cluster)),
