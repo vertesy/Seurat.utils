@@ -2325,7 +2325,7 @@ clUMAP <- function(
     # Annotation to subtitle _________________________________________________________________
     sub2 <- paste(PCT, length(highlight.these), "cells in", ident, "are highlighted")
     sub3 <- paste("Highlighted clusters:", kppc(highlight.clusters))
-    sub <- if (is.null(sub)) pnl(sub2, sub3) else pnl(sub, sub2, sub3)
+    sub <- if (is.null(sub)) ppnl(sub2, sub3) else ppnl(sub, sub2, sub3)
 
     # title <- kpipe(ident, )
   } else {
