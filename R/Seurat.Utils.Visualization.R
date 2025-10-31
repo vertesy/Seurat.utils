@@ -147,6 +147,7 @@ PlotFilters <- function(
         "Cells between", above.nFeature_RNA, "and", below.nFeature_RNA,
         " UMIs are selected \n(", pc_TRUE(filt.nFeature_RNA), ")"
       )) +
+      scale_y_log10() +
       geom_vline(xintercept = below.nFeature_RNA) +
       geom_vline(xintercept = above.nFeature_RNA) +
       theme(legend.position = "top")
@@ -161,8 +162,8 @@ PlotFilters <- function(
         alpha = transparency, size = cex, show.legend = FALSE,
         aes(color = filt.nFeature_RNA & filt.below.mito)
       ) +
-      scale_x_log10() + # scale_y_log10() +
-      # annotation_logticks() +
+      scale_x_log10() +
+      annotation_logticks() +
       geom_hline(yintercept = below.mito) +
       geom_hline(yintercept = above.mito) +
       geom_vline(xintercept = below.nFeature_RNA) +
@@ -179,7 +180,7 @@ PlotFilters <- function(
         alpha = transparency, size = cex, show.legend = FALSE,
         aes(color = filt.nFeature_RNA & filt.below.ribo)
       ) +
-      scale_x_log10() + # scale_y_log10() +
+      scale_x_log10() +
       annotation_logticks() +
       geom_hline(yintercept = below.ribo) +
       geom_hline(yintercept = above.ribo) +
@@ -204,6 +205,21 @@ PlotFilters <- function(
       geom_vline(xintercept = below.ribo) +
       geom_vline(xintercept = above.ribo)
     # D
+
+    # Add title to A and caption to D
+    main_title <- paste("Object", suffices[i])
+    caption_text <- paste0(
+      "pct.mito [", below.mito, "-", above.mito, "] | ",
+      "pct.ribo [", below.ribo, "-", above.ribo, "] | ",
+      "nFeature_RNA [", below.nFeature_RNA, "-", above.nFeature_RNA, "]"
+    )
+
+    # Modify plots A and D
+    A <- A + ggtitle(main_title) # +
+      # theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold"))
+
+    D <- D + labs(caption = caption_text) # +
+      # theme(plot.caption = element_text(hjust = 0, size = 10, face = "italic"))
 
     plot_list <- list(A, B, C, D)
     px <- cowplot::plot_grid(
