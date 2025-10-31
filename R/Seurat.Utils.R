@@ -1081,6 +1081,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   )
 
   # Get the data matrix ____________________________________________________________
+  # browser()
   assay_data <- obj@assays[[assay]]
   if (obj.version >= "5") {
     if (assay == "RNA") {
@@ -1265,7 +1266,6 @@ filterExpressedGenes <- function(genes, gene_list = all.genes
   )
   stopif(is.null(gene_list))
 
-  # browser()
   # Step 1: Intersect the gene symbols with the names in the list and report statistics
   matching_genes <- CodeAndRoll2::intersect.wNames(x = genes, y = names(gene_list), names = "x")
   message("Number of matching genes: ", length(matching_genes), " from ", length(genes)
@@ -3997,6 +3997,7 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", assay = 
     all.genes <- Features(obj, assay = assay)
     HGNC.updated <- HGNChelper::checkGeneSymbols(all.genes, unmapped.as.na = FALSE, map = NULL, species = species_)
     if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
+
     if (ShowStats) {
       print(HGNC.updated)
       print(GetUpdateStats(HGNC.updated))
@@ -4056,6 +4057,8 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
   #
   # browser()
   message("RenameGenesSeurat, assay: ", assay)
+  message("Slots expected: ", slots)
+  message("Slots found: ", SeuratObject::Layers(obj@assays[[assay]]))
   warning("Run this before integration and downstream processing. It only attempts to change
           @counts, @data, and @meta.features in obj@assays$YOUR_ASSAY.", immediate. = TRUE)
 
@@ -4068,7 +4071,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
   if (obj@version < "5") {
     warning("obj@version < 5. Old versions are not supported. Update the obj!", immediate. = TRUE)
   } else {
-    layers <- Layers(obj)
+    layers <- Layers(obj@assays[[assay]])
     slots_found <- slots %in% layers
     stopifnot(any(slots_found))
     warnifnot("Not all slots present in the object - all(slots_found)" = all(slots_found))
