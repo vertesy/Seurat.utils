@@ -115,8 +115,10 @@ PlotFilters <- function(
 
     if (Calculate_nFeature_LowPass) {
       nFtr <- ls.obj[[i]]$"nFeature_RNA"
-      below.nFeature_RNA <- floor(quantile(nFtr, probs = qval))
-      message(pc_TRUE(nFtr < below.nFeature_RNA, NumberAndPC = T, suffix = paste("cells below thr.", below.nFeature_RNA, "at quantile:", qval)))
+      nFtr_valid <- nFtr[nFtr > above.nFeature_RNA]                                # restrict to high-quality cells
+
+      below.nFeature_RNA <- floor(quantile(nFtr_valid, probs = qval))
+      message(pc_TRUE(nFtr_valid < below.nFeature_RNA, NumberAndPC = T, suffix = paste("cells below thr.", below.nFeature_RNA, "at quantile:", qval)))
       stopifnot(below.nFeature_RNA > above.nFeature_RNA)
     }
 
@@ -129,8 +131,6 @@ PlotFilters <- function(
       print('objX <- addMetaFraction(obj = objX, col.name = "percent.ribo", gene.symbol.pattern =  "^RPL|^RPS")')
       stop()
     }
-
-    # browser()
 
     filt.nFeature_RNA <- (mm$"nFeature_RNA" < below.nFeature_RNA & mm$"nFeature_RNA" > above.nFeature_RNA)
     filt.below.mito <- (mm$"percent.mito" < below.mito & mm$"percent.mito" > above.mito)
@@ -237,10 +237,10 @@ PlotFilters <- function(
     # Add overall title and caption cleanly, with white background
     px <- cowplot::ggdraw() +
       theme(plot.background = element_rect(fill = "white", colour = NA)) +          # white canvas
-      cowplot::draw_label(main_title, x = 0.02, y = 0.985, hjust = 0.5, vjust = 1,
+      cowplot::draw_label(main_title, x = 0.02, y = 0.98, hjust = 0, vjust = 1,
                           fontface = "bold", size = 22) +                           # slightly closer to top
       cowplot::draw_plot(p_grid, y = 0.055, height = 0.89) +                        # raise the grid, taller height
-      cowplot::draw_label(caption_text, x = 0.98, y = 0.015, hjust = 1, vjust = 0,
+      cowplot::draw_label(caption_text, x = 0.98, y = 0.02, hjust = 1, vjust = 0,
                           fontface = "italic", size = 12)                           # closer to bottom
 
 
@@ -248,24 +248,6 @@ PlotFilters <- function(
     fname <- kpps(OutDir, FixPlotName("Filtering.thresholds", suffices[i], filetype))
     cowplot::save_plot(filename = fname, plot = px, base_height = 15)
     stopifnot(file.exists(fname))
-
-
-    # # Modify plots A and D
-    # A <- A + ggtitle(main_title) # +
-    #   # theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold"))
-    #
-    # D <- D + labs(caption = caption_text) # +
-    #   # theme(plot.caption = element_text(hjust = 0, size = 10, face = "italic"))
-    #
-    # plot_list <- list(A, B, C, D)
-    # px <- cowplot::plot_grid(
-    #   plotlist = plot_list, nrow = 2, ncol = 2,
-    #   labels = LETTERS[1:4], label_size = 20
-    # )
-    # fname <- kpps(OutDir, FixPlotName("Filtering.thresholds", suffices[i], filetype))
-    #
-    # cowplot::save_plot(filename = fname, plot = px, base_height = 14, ncol = 1, nrow = 1) # Figure 2
-    # stopifnot(file.exists(fname))
   } # for
   # _________________________________________________________________________________________________
   create_set_OutDir(parentdir)
