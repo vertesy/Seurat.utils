@@ -56,7 +56,7 @@ PlotFilters <- function(
     par.ls = p,
     parentdir = OutDirOrig,
     suffices = names(ls.obj),
-    filetype = ".png",
+    filetype = ".jpg",
     below.mito = par.ls$"thr.lp.mito",
     above.mito = par.ls$"thr.hp.mito",
     below.ribo = par.ls$"thr.lp.ribo",
@@ -130,12 +130,15 @@ PlotFilters <- function(
       stop()
     }
 
+    # browser()
+
     filt.nFeature_RNA <- (mm$"nFeature_RNA" < below.nFeature_RNA & mm$"nFeature_RNA" > above.nFeature_RNA)
     filt.below.mito <- (mm$"percent.mito" < below.mito & mm$"percent.mito" > above.mito)
     filt.below.ribo <- (mm$"percent.ribo" < below.ribo & mm$"percent.ribo" > above.ribo)
 
     mm <- cbind(mm, filt.nFeature_RNA, filt.below.mito, filt.below.ribo)
 
+    # Define colour thresholds for nFeature_RNA
     mm$colour.thr.nFeature <- cut(mm$"nFeature_RNA",
       breaks = c(-Inf, above.nFeature_RNA, below.nFeature_RNA, Inf),
       labels = c(
@@ -145,16 +148,20 @@ PlotFilters <- function(
       )
     )
 
+    LQ <- pc_TRUE(mm$"nFeature_RNA" <= above.nFeature_RNA)
+    Doublets <- pc_TRUE(mm$"nFeature_RNA" >= below.nFeature_RNA)
+
     A <- ggplot(data = mm, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
       geom_histogram(binwidth = 100) +
       ggtitle(paste(
         "Cells between", above.nFeature_RNA, "and", below.nFeature_RNA,
-        " UMIs are selected \n(", pc_TRUE(filt.nFeature_RNA), ")"
+        "UMIs are selected \n(", pc_TRUE(filt.nFeature_RNA), "), with",
+        LQ, "low-quality and", Doublets, "doublet cells excluded."
       )) +
       scale_y_log10() +
       geom_vline(xintercept = below.nFeature_RNA) +
       geom_vline(xintercept = above.nFeature_RNA) +
-      theme(legend.position = "top")
+      theme(legend.position = "none") # "top"
     # A
 
     B <- ggplot2::ggplot(mm, aes(x = nFeature_RNA, y = percent.mito)) +
@@ -194,7 +201,7 @@ PlotFilters <- function(
 
     D <- ggplot(mm, aes(x = percent.ribo, y = percent.mito)) +
       ggtitle(paste(
-        "Cells w/o extremes selected \n(with A,B,C:",
+        "Final: All cells w/o extreme values are selected \n(with A,B,C:",
         pc_TRUE(filt.nFeature_RNA & filt.below.mito & filt.below.ribo), ")"
       )) +
       geom_point(
@@ -215,25 +222,50 @@ PlotFilters <- function(
     caption_text <- paste0(
       "pct.mito [", below.mito, "-", above.mito, "] | ",
       "pct.ribo [", below.ribo, "-", above.ribo, "] | ",
-      "nFeature_RNA [", below.nFeature_RNA, "-", above.nFeature_RNA, "]"
+      "nFeature_RNA [", above.nFeature_RNA, "-", below.nFeature_RNA, "]"
     )
 
-    # Modify plots A and D
-    A <- A + ggtitle(main_title) # +
-      # theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold"))
 
-    D <- D + labs(caption = caption_text) # +
-      # theme(plot.caption = element_text(hjust = 0, size = 10, face = "italic"))
-
-    plot_list <- list(A, B, C, D)
-    px <- cowplot::plot_grid(
-      plotlist = plot_list, nrow = 2, ncol = 2,
-      labels = LETTERS[1:4], label_size = 20
+    # Combine plots in 2x2 grid
+    p_grid <- cowplot::plot_grid(
+      plotlist = list(A, B, C, D),
+      nrow = 2, ncol = 2,
+      labels = LETTERS[1:4],
+      label_size = 20
     )
+
+    # Add overall title and caption cleanly, with white background
+    px <- cowplot::ggdraw() +
+      theme(plot.background = element_rect(fill = "white", colour = NA)) +          # white canvas
+      cowplot::draw_label(main_title, x = 0.02, y = 0.985, hjust = 0.5, vjust = 1,
+                          fontface = "bold", size = 22) +                           # slightly closer to top
+      cowplot::draw_plot(p_grid, y = 0.055, height = 0.89) +                        # raise the grid, taller height
+      cowplot::draw_label(caption_text, x = 0.98, y = 0.015, hjust = 1, vjust = 0,
+                          fontface = "italic", size = 12)                           # closer to bottom
+
+
+    # Save figure
     fname <- kpps(OutDir, FixPlotName("Filtering.thresholds", suffices[i], filetype))
-
-    cowplot::save_plot(filename = fname, plot = px, base_height = 14, ncol = 1, nrow = 1) # Figure 2
+    cowplot::save_plot(filename = fname, plot = px, base_height = 15)
     stopifnot(file.exists(fname))
+
+
+    # # Modify plots A and D
+    # A <- A + ggtitle(main_title) # +
+    #   # theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold"))
+    #
+    # D <- D + labs(caption = caption_text) # +
+    #   # theme(plot.caption = element_text(hjust = 0, size = 10, face = "italic"))
+    #
+    # plot_list <- list(A, B, C, D)
+    # px <- cowplot::plot_grid(
+    #   plotlist = plot_list, nrow = 2, ncol = 2,
+    #   labels = LETTERS[1:4], label_size = 20
+    # )
+    # fname <- kpps(OutDir, FixPlotName("Filtering.thresholds", suffices[i], filetype))
+    #
+    # cowplot::save_plot(filename = fname, plot = px, base_height = 14, ncol = 1, nrow = 1) # Figure 2
+    # stopifnot(file.exists(fname))
   } # for
   # _________________________________________________________________________________________________
   create_set_OutDir(parentdir)
