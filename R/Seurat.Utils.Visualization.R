@@ -158,9 +158,8 @@ PlotFilters <- function(
         "UMIs are selected \n(", pc_TRUE(filt.nFeature_RNA), "), with",
         LQ, "low-quality and", Doublets, "doublet cells excluded."
       )) +
-      scale_y_log10() +
-      geom_vline(xintercept = below.nFeature_RNA) +
-      geom_vline(xintercept = above.nFeature_RNA) +
+      scale_y_log10() + annotation_logticks() +
+      geom_vline(xintercept = below.nFeature_RNA) + geom_vline(xintercept = above.nFeature_RNA) +
       theme(legend.position = "none") # "top"
     # A
 
@@ -173,12 +172,9 @@ PlotFilters <- function(
         alpha = transparency, size = cex, show.legend = FALSE,
         aes(color = filt.nFeature_RNA & filt.below.mito)
       ) +
-      scale_x_log10() +
-      annotation_logticks() +
-      geom_hline(yintercept = below.mito) +
-      geom_hline(yintercept = above.mito) +
-      geom_vline(xintercept = below.nFeature_RNA) +
-      geom_vline(xintercept = above.nFeature_RNA)
+      scale_x_log10() + annotation_logticks() +
+      geom_hline(yintercept = below.mito) + geom_hline(yintercept = above.mito) +
+      geom_vline(xintercept = below.nFeature_RNA) + geom_vline(xintercept = above.nFeature_RNA)
     # B
 
     C <- ggplot(mm, aes(x = nFeature_RNA, y = percent.ribo)) +
@@ -191,12 +187,9 @@ PlotFilters <- function(
         alpha = transparency, size = cex, show.legend = FALSE,
         aes(color = filt.nFeature_RNA & filt.below.ribo)
       ) +
-      scale_x_log10() +
-      annotation_logticks() +
-      geom_hline(yintercept = below.ribo) +
-      geom_hline(yintercept = above.ribo) +
-      geom_vline(xintercept = below.nFeature_RNA) +
-      geom_vline(xintercept = above.nFeature_RNA)
+      scale_x_log10() + annotation_logticks() +
+      geom_hline(yintercept = below.ribo) + geom_hline(yintercept = above.ribo) +
+      geom_vline(xintercept = below.nFeature_RNA) + geom_vline(xintercept = above.nFeature_RNA)
     # C
 
     D <- ggplot(mm, aes(x = percent.ribo, y = percent.mito)) +
@@ -208,13 +201,9 @@ PlotFilters <- function(
         alpha = transparency, size = cex, show.legend = FALSE,
         aes(color = filt.nFeature_RNA & filt.below.mito & filt.below.ribo)
       ) +
-      scale_x_log10() +
-      scale_y_log10() +
-      annotation_logticks() +
-      geom_hline(yintercept = below.mito) +
-      geom_hline(yintercept = above.mito) +
-      geom_vline(xintercept = below.ribo) +
-      geom_vline(xintercept = above.ribo)
+      scale_x_log10() + scale_y_log10() + annotation_logticks() +
+      geom_hline(yintercept = below.mito) + geom_hline(yintercept = above.mito) +
+      geom_vline(xintercept = below.ribo) + geom_vline(xintercept = above.ribo)
     # D
 
     # Add title to A and caption to D
