@@ -106,14 +106,18 @@ PlotFilters <- function(
   MarkdownReports::create_set_OutDir(OutDir)
   stopifnot(length(suffices) == length(ls.obj))
 
-  Calculate_nFeature_LowPass <- if (below.nFeature_RNA < 1) below.nFeature_RNA else FALSE
+  Calculate_nFeature_LowPass <- below.nFeature_RNA > 0 && below.nFeature_RNA < 1 # Use quantile low pass threshold
+  if (Calculate_nFeature_LowPass) qval <- below.nFeature_RNA
+
   for (i in 1:length(ls.obj)) {
     print(suffices[i])
     mm <- ls.obj[[i]]@meta.data
 
-    if (Calculate_nFeature_LowPass < 1) {
-      below.nFeature_RNA <- floor(quantile(ls.obj[[i]]$"nFeature_RNA", probs = Calculate_nFeature_LowPass))
-      iprint("below.nFeature_RNA at", percentage_formatter(Calculate_nFeature_LowPass), "percentile:", below.nFeature_RNA)
+    if (Calculate_nFeature_LowPass) {
+      nFtr <- ls.obj[[i]]$"nFeature_RNA"
+      below.nFeature_RNA <- floor(quantile(nFtr, probs = qval))
+      message(pc_TRUE(nFtr < below.nFeature_RNA, NumberAndPC = T, suffix = paste("cells below thr.", below.nFeature_RNA, "at quantile:", qval)))
+      stopifnot(below.nFeature_RNA > above.nFeature_RNA)
     }
 
     AllMetaColumnsPresent <- all(c("nFeature_RNA", "percent.mito", "percent.ribo") %in% colnames(mm))
