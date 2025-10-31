@@ -115,7 +115,7 @@ PlotFilters <- function(
 
     if (Calculate_nFeature_LowPass) {
       nFtr <- ls.obj[[i]]$"nFeature_RNA"
-      nFtr_valid <- nFtr[nFtr > above.nFeature_RNA]                                # restrict to high-quality cells
+      nFtr_valid <- nFtr[nFtr > above.nFeature_RNA]                                # restrict to high-quality cells, otherwise the quantile may be Influenced by the amount of junk in the library.
 
       below.nFeature_RNA <- floor(quantile(nFtr_valid, probs = qval))
       message(pc_TRUE(nFtr_valid < below.nFeature_RNA, NumberAndPC = T, suffix = paste("cells below thr.", below.nFeature_RNA, "at quantile:", qval)))
@@ -148,8 +148,9 @@ PlotFilters <- function(
       )
     )
 
-    LQ <- pc_TRUE(mm$"nFeature_RNA" <= above.nFeature_RNA)
-    Doublets <- pc_TRUE(mm$"nFeature_RNA" >= below.nFeature_RNA)
+    boolean_LC_cells <- mm$"nFeature_RNA" <= above.nFeature_RNA
+    LQ <- pc_TRUE(boolean_LC_cells)
+    Doublets <- pc_TRUE(mm$"nFeature_RNA"[!boolean_LC_cells] >= below.nFeature_RNA)
 
     A <- ggplot(data = mm, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
       geom_histogram(binwidth = 100) +
@@ -211,7 +212,8 @@ PlotFilters <- function(
     caption_text <- paste0(
       "pct.mito [", below.mito, "-", above.mito, "] | ",
       "pct.ribo [", below.ribo, "-", above.ribo, "] | ",
-      "nFeature_RNA [", above.nFeature_RNA, "-", below.nFeature_RNA, "]"
+      "nFeature_RNA [", above.nFeature_RNA, "-", below.nFeature_RNA, "] | ",
+      "Doublet % and quantile cutoff is calculated on cells above min. nFeature_RNA"
     )
 
 
