@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{xread2}
 \alias{xread2}
-\title{Load a .qs object with optional safe-memory check (CBE only)}
+\title{Load a .qs object with optional SLURM-based safe-memory check (CBE only)}
 \usage{
 xread2(
   path,
@@ -17,52 +17,46 @@ xread2(
 )
 }
 \arguments{
-\item{path}{Path to the \code{.qs} file to load. Must exist. Default: None.}
+\item{path}{Path to the \code{.qs} file to load. Must exist. Default: none.}
 
-\item{nthreads}{Number of threads passed to \code{qs::qread()}. Uses 1 if the file is smaller than
-\code{1e7} bytes, otherwise 4. Default: \code{if (file.size(path) < 1e7) 1 else 4}.}
+\item{nthreads}{Number of threads for \code{qs::qread()}. Uses 1 if file < 1e7 bytes, else 4.
+Default: \code{if (file.size(path) < 1e7) 1 else 4}.}
 
-\item{loadParamsAndAllGenes}{Logical; if \code{TRUE}, attempt to recall parameters and the
-\code{all.genes} list from \code{obj@misc}. Default: \code{TRUE}.}
+\item{loadParamsAndAllGenes}{Logical; if \code{TRUE}, recall stored parameters and gene lists
+from \code{obj@misc}. Default: \code{TRUE}.}
 
-\item{overwriteParams}{Logical; if \code{TRUE}, allow \code{recall.parameters()} to overwrite existing
-parameters. Default: \code{FALSE}.}
+\item{overwriteParams}{Logical; overwrite existing parameters when recalling. Default: \code{FALSE}.}
 
-\item{overwriteAllGenes}{Logical; if \code{TRUE}, allow \code{recall.all.genes()} to overwrite the
-\code{all.genes} list. Default: \code{FALSE}.}
+\item{overwriteAllGenes}{Logical; overwrite existing \code{all.genes} list. Default: \code{FALSE}.}
 
-\item{set_m}{Logical; if \code{TRUE}, create \code{m} in the global environment as a list of metadata
-columns and their first 50 unique values. Default: \code{TRUE}.}
-
-\item{safe_load}{Logical; if \code{TRUE}, run the memory safety check (only if \code{onCBE} is \code{TRUE}).
+\item{set_m}{Logical; if \code{TRUE}, create variable \code{m} in global environment with metadata values.
 Default: \code{TRUE}.}
 
-\item{disk2mem_size_inflation}{Numeric factor estimating how much the \code{.qs} payload expands
-when loaded into memory. Default: \code{3}.}
+\item{safe_load}{Logical; enable SLURM-based memory safety check. Default: \code{TRUE}.}
 
-\item{...}{Additional arguments forwarded to \code{qs::qread()}. Default: None.}
+\item{disk2mem_size_inflation}{Estimated expansion factor of \code{.qs} file once in memory.
+Default: \code{3}.}
+
+\item{...}{Additional arguments passed to \code{qs::qread()}. Default: none.}
 }
 \value{
-The loaded object, returned invisibly.
+Invisibly returns the loaded object.
 }
 \description{
-Loads a \code{.qs}-serialized object (e.g., a Seurat object or list) with an optional safety check
-that estimates in-R memory needs before loading. The safety check only runs when the global
-variable \code{onCBE} exists and is \code{TRUE} (tested via \code{Stringendo::ifExistsAndTrue("onCBE")}).
-If the estimated need exceeds a conservative headroom, the function warns and asks the user if
-they want to proceed. This helps avoid session crashes on constrained HPC sessions.
+Loads a \code{.qs} serialized object (e.g., Seurat object or list) with an optional memory-safety
+check that prevents loading objects larger than the SLURM job's allocated memory. The memory
+check runs \strong{only} when:
+\enumerate{
+\item \code{safe_load = TRUE}
+\item the global variable \code{onCBE} exists and is \code{TRUE}
+\item the session is running inside a SLURM job with a defined memory limit
 }
-\details{
-The safety check estimates \code{need = disk2mem_size_inflation * file.size(path)} and compares it to
-a conservative headroom computed from a best-effort memory ceiling and the current R process
-RSS. The ceiling is determined in this order: SLURM limit (\code{SLURM_MEM_PER_NODE} in MB), cgroup
-memory limit (\verb{/sys/fs/cgroup/memory.max}), or \verb{/proc/meminfo} (\code{MemAvailable}). A margin is
-applied via \verb{min(0.9 * limit, limit - 3 GiB)}. If \code{need > headroom}, the function warns and
-prompts the user to continue or abort.
+
+If no SLURM memory limit is detected, the safety check is skipped and a warning is shown.
 }
 \examples{
 \dontrun{
-combined.obj <- xread2("/path/to/object.qs")
+obj <- xread2("/path/to/object.qs")
 }
 
 }
