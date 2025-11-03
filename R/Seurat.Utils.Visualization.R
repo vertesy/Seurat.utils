@@ -4121,7 +4121,7 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 #' @importFrom plotly plot_ly layout
 #' @importFrom Seurat FetchData
 #'
-#' @export
+#' @export plot3D.umap.gene
 
 plot3D.umap.gene <- function(
     gene = "TOP2A",
@@ -4177,20 +4177,6 @@ plot3D.umap.gene <- function(
     NULL
   }
 
-  # plt <- plotly::plot_ly(
-  #   data = plotting.data,
-  #   x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3,
-  #   type = "scatter3d",
-  #   mode = "markers",
-  #   marker = list(size = dotsize),
-  #   text = ~label,
-  #   color = ~Expression,
-  #   opacity = alpha
-  #   # , colors = c('darkgrey', 'red')
-  #   , colorscale = "Viridis"
-  #   # , hoverinfo="text"
-  #   , ...
-  # )
   plt <- plotly::plot_ly(
     data = plotting.data,
     x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3,
@@ -4235,7 +4221,7 @@ plot3D.umap.gene <- function(
 #' @importFrom plotly plot_ly layout
 #' @importFrom Seurat FetchData
 #'
-#' @export
+#' @export plot3D.umap
 
 plot3D.umap <- function(
     obj = combined.obj,
@@ -4493,7 +4479,7 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
 #'   Plot3D.ListOfGenes(obj = combined.obj, ListOfGenes = CellTypeMarkers)
 #' }
 #' }
-#' @export
+#' @export Plot3D.ListOfGenes
 Plot3D.ListOfGenes <- function(
     obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
     , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, cex = 1.25, default.assay = c("integrated", "RNA")[2],
@@ -4540,7 +4526,7 @@ Plot3D.ListOfGenes <- function(
 #'   Plot3D.ListOfCategories(obj = combined.obj, ListOfCategories = categ3Dplots)
 #' }
 #' }
-#' @export
+#' @export Plot3D.ListOfCategories
 Plot3D.ListOfCategories <- function(
     obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
     , annotate.by = "integrated_snn_res.0.7", cex = 1.25, default.assay = c("integrated", "RNA")[2],

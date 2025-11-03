@@ -9,7 +9,7 @@ PlotFilters(
   par.ls = p,
   parentdir = OutDirOrig,
   suffices = names(ls.obj),
-  filetype = ".png",
+  filetype = ".jpg",
   below.mito = par.ls$thr.lp.mito,
   above.mito = par.ls$thr.hp.mito,
   below.ribo = par.ls$thr.lp.ribo,

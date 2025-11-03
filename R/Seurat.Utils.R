@@ -5029,6 +5029,163 @@ xread <- function(file,
   invisible(obj)
 }
 
+# _________________________________________________________________________________________________
+#' @title Load a .qs object with optional safe-memory check (CBE only)
+#'
+#' @description
+#' Loads a `.qs`-serialized object (e.g., a Seurat object or list) with an optional safety check
+#' that estimates in-R memory needs before loading. The safety check only runs when the global
+#' variable `onCBE` exists and is `TRUE` (tested via `Stringendo::ifExistsAndTrue("onCBE")`).
+#' If the estimated need exceeds a conservative headroom, the function warns and asks the user if
+#' they want to proceed. This helps avoid session crashes on constrained HPC sessions.
+#'
+#' @param path Path to the `.qs` file to load. Must exist. Default: None.
+#' @param nthreads Number of threads passed to `qs::qread()`. Uses 1 if the file is smaller than
+#'   `1e7` bytes, otherwise 4. Default: `if (file.size(path) < 1e7) 1 else 4`.
+#' @param loadParamsAndAllGenes Logical; if `TRUE`, attempt to recall parameters and the
+#'   `all.genes` list from `obj@misc`. Default: `TRUE`.
+#' @param overwriteParams Logical; if `TRUE`, allow `recall.parameters()` to overwrite existing
+#'   parameters. Default: `FALSE`.
+#' @param overwriteAllGenes Logical; if `TRUE`, allow `recall.all.genes()` to overwrite the
+#'   `all.genes` list. Default: `FALSE`.
+#' @param set_m Logical; if `TRUE`, create `m` in the global environment as a list of metadata
+#'   columns and their first 50 unique values. Default: `TRUE`.
+#' @param safe_load Logical; if `TRUE`, run the memory safety check (only if `onCBE` is `TRUE`).
+#'   Default: `TRUE`.
+#' @param disk2mem_size_inflation Numeric factor estimating how much the `.qs` payload expands
+#'   when loaded into memory. Default: `3`.
+#' @param ... Additional arguments forwarded to `qs::qread()`. Default: None.
+#'
+#' @details
+#' The safety check estimates `need = disk2mem_size_inflation * file.size(path)` and compares it to
+#' a conservative headroom computed from a best-effort memory ceiling and the current R process
+#' RSS. The ceiling is determined in this order: SLURM limit (`SLURM_MEM_PER_NODE` in MB), cgroup
+#' memory limit (`/sys/fs/cgroup/memory.max`), or `/proc/meminfo` (`MemAvailable`). A margin is
+#' applied via `min(0.9 * limit, limit - 3 GiB)`. If `need > headroom`, the function warns and
+#' prompts the user to continue or abort.
+#'
+#' @return The loaded object, returned invisibly.
+#'
+#' @examples
+#' \dontrun{
+#' combined.obj <- xread2("/path/to/object.qs")
+#' }
+#'
+#' @importFrom qs qread
+#' @importFrom tictoc tic toc
+#' @importFrom Stringendo ifExistsAndTrue
+#' @export
+xread2 <- function(path,
+                   nthreads = if (file.size(path) < 1e7) 1 else 4,
+                   loadParamsAndAllGenes = TRUE,
+                   overwriteParams = FALSE,
+                   overwriteAllGenes = FALSE,
+                   set_m = TRUE,
+                   safe_load = TRUE,
+                   disk2mem_size_inflation = 3,
+                   ...) {
+  stopifnot(file.exists(path))
+
+  # Helper: pretty-print bytes with automatic units
+  bytes <- function(x) format(structure(x, class = "object_size"), units = "auto")
+
+  # Helper: current R process memory usage (Resident Set Size) in bytes
+  get_rss <- function() {
+    kb <- as.numeric(gsub("\\D", "",
+                          grep("^VmRSS:", readLines("/proc/self/status"),
+                               value = TRUE)))
+    kb * 1024
+  }
+
+  # Helper: determine a memory ceiling (bytes): SLURM > cgroup > MemAvailable
+  get_limit <- function() {
+    # 1) SLURM job memory (MB)
+    m <- as.numeric(Sys.getenv("SLURM_MEM_PER_NODE", ""))
+    if (!is.na(m)) return(m * 1024^2)
+
+    # 2) cgroup v2 memory limit (bytes) if enforced
+    cg <- "/sys/fs/cgroup/memory.max"
+    if (file.exists(cg)) {
+      v <- readLines(cg, n = 1)
+      if (v != "max") return(as.numeric(v))
+    }
+
+    # 3) fallback: MemAvailable from /proc/meminfo (kB -> bytes)
+    kb <- as.numeric(gsub("\\D", "",
+                          grep("^MemAvailable:", readLines("/proc/meminfo"),
+                               value = TRUE)))
+    kb * 1024
+  }
+
+  # Only run the memory safety check on CBE when requested
+  if (safe_load && Stringendo::ifExistsAndTrue("onCBE")) {
+    sz <- file.size(path)
+    rss <- get_rss()
+    lim <- get_limit()
+
+    # Safe cap per your rule: leave 10% or at least 3 GiB
+    safe_cap <- min(0.9 * lim, lim - 3 * 1024^3)
+    headroom <- safe_cap - rss
+    need <- disk2mem_size_inflation * sz
+
+    message("Need: ", bytes(need),
+            " | Headroom: ", bytes(headroom),
+            " | RSS (used memory): ", bytes(rss))
+
+    if (need > headroom) {
+      warning("Estimated need exceeds safe memory headroom. You may run out of memory.")
+      ans <- readline("Do you still want to load the file? [y/N]: ")
+      if (tolower(ans) != "y") return(invisible(NULL))
+    }
+  }
+
+  message(nthreads, " threads.")
+  try(tictoc::tic("xread2"), silent = TRUE)
+
+  # IMPORTANT: use the correct argument name for qs::qread()
+  obj <- qs::qread(file = path, nthreads = nthreads, ...)
+
+  # Preserve your original reporting logic
+  report <- if (is(obj, "Seurat")) {
+    kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "metadata columns.")
+  } else if (is.list(obj)) {
+    kppws("is a list of:", length(obj))
+  } else {
+    kppws("of length:", length(obj))
+  }
+
+  if ("Seurat" %in% is(obj)) {
+    if (loadParamsAndAllGenes) {
+      p_local <- obj@misc$"p"
+      all.genes_local <- obj@misc$"all.genes"
+
+      if (is.null(p_local)) {
+        message("No parameter list 'p' found in object@misc.")
+      } else {
+        recall.parameters(obj = obj, overwrite = overwriteParams)
+      }
+
+      if (is.null(all.genes_local)) {
+        message("No gene list 'all.genes' found in object@misc.")
+      } else {
+        recall.all.genes(obj = obj, overwrite = overwriteAllGenes)
+      }
+    }
+
+    if (set_m) {
+      # Create `m` in the global environment: metadata columns -> first 50 unique values
+      m <- lapply(data.frame(obj@meta.data), function(x) head(unique(x), 50))
+      assign("m", m, envir = .GlobalEnv)
+      message("Variable 'm', a list of @meta.data colnames and first 50 unique values, ",
+              "is now defined in the global environment.")
+    }
+  }
+
+  iprint(is(obj)[1], report)
+  try(tictoc::toc(), silent = TRUE)
+  invisible(obj)
+}
+
 
 
 # _________________________________________________________________________________________________
