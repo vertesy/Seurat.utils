@@ -1061,8 +1061,12 @@ calc.q99.Expression.and.set.all.genes <- function(
     show = TRUE,
     obj.version = obj@version
 ) {
+  top.quant <- (1 - quantileX)
+  message("\nCalculating the gene expression level at the the top", percentage_formatter(top.quant), " of cells. | q: ", quantileX )
   message("slot: ", slot, " assay: ", assay, ".\n")
-  n.cells <- floor(ncol(obj) * (1 - quantileX))
+  nr.total.cells <- ncol(obj)
+
+  n.cells.in.top.quantile <- floor(nr.total.cells * top.quant) # number of cells in the top quantileX
 
   tictoc::tic("calc.q99.Expression.and.set.all.genes")
   stopifnot(
@@ -1076,8 +1080,8 @@ calc.q99.Expression.and.set.all.genes <- function(
   warnifnot(
     slot %in% c("data", "scale.data", "counts"),
     assay %in% c("RNA", "integrated"),
-    "Expression >0 is required in >1000 cells. Increase quantileX!" = n.cells > 1000,
-    "Expression >0 is required in <50 cells. Decrease quantileX!" = n.cells < 50
+    ">1000 cells in the top the quantileX (with >0 expression). Increase quantileX not to miss genes expressed in small populations!" = n.cells.in.top.quantile > 1000,
+    "<50 cells in the top the quantileX (with >0 expression). Decrease quantileX for robustness!" = n.cells.in.top.quantile > 50
   )
 
   # Get the data matrix ____________________________________________________________
@@ -1100,7 +1104,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   if (ncol(data_mtx) > max.cells) {
     dsampled <- sample(x = 1:ncol(data_mtx), size = max.cells)
     data_mtx <- data_mtx[, dsampled]
-    message("Downsampled from ", ncol(obj), "to ", max.cells, " cells")
+    message("Downsampled from ", ncol(obj), " to ", max.cells, " cells")
   }
 
   # Calculate the number of cells in the top quantile (e.g.: 99th quantile) that is
