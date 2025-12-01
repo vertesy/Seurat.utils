@@ -609,122 +609,141 @@ plotGeneExprHistAcrossCells <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title Percentage of Cells Above Threshold
+#' @title Compute % of Cells Above a Threshold for a Metadata or Gene Feature
 #'
-#' @description This function calculates the percentage of cells above a specified threshold for a given
-#' feature in a Seurat object. It can subset the data based on a specified identity and values.
+#' @description
+#' Computes the fraction of cells with values above a specified threshold for
+#' either a metadata column or an assay feature. Supports optional subsetting
+#' and optional regrouping into boxplot-style categories.
 #'
-#' @param obj A Seurat object. Default: combined.obj.
-#' @param feature The feature to evaluate.
-#' @param ident The identity class to split the data by. Default: GetNamedClusteringRuns(obj)[1].
-#' @param box Logical value indicating whether to plot the boxplot. Default: `TRUE`.
-#' @param box.ident The identity class to split the data by for individual dots in the boxplot.
-#' Ident will be used for the boxes displayed (matching the barplot).  Default: NULL.
-#' @param threshold The threshold value to evaluate the feature against. Default: 2.
-#' @param subset_ident The identity class to subset the data by. Default: NULL.
-#' @param subset_values The values of the identity class to keep in the subset. Default: NULL.
-#' @param omit.na Logical value indicating whether to omit NA values. Default: `TRUE`.
-#' @param assay The assay to use for feature extraction. Default: 'RNA'.
-#' @param plot Logical value indicating whether to plot the results. Default: `TRUE`.
-#' @param ylab The label for the y-axis of the plot. Default: "% cells above threshold".
-#' @param ... Additional parameters to pass to the plotting function.
+#' @param object Seurat object.
+#' @param feature Character. Metadata column or gene/feature name.
+#' @param ident Character. Metadata column used for grouping.
+#' @param threshold Numeric. Threshold above which cells are counted.
+#' @param box Logical. If TRUE, regroup by \code{ident.box}.
+#' @param ident.box Character or NULL. Secondary grouping variable for box mode.
+#' @param subset_ident Character or NULL. Metadata column used for subsetting.
+#' @param subset_values Vector or NULL. Values of \code{subset_ident} to keep.
+#' @param omit.na Logical. Whether to remove NA values in the feature.
+#' @param assay Character. Assay name passed to \code{FetchData}.
+#' @param slot Character. Slot name passed to \code{FetchData}.
+#' @param plot Logical. Whether to generate a plot.
+#' @param caption Character or NULL. Caption for the plot.
+#' @param ylab Character. Y-axis label.
+#' @param ... Additional arguments passed to plotting functions.
 #'
-#' @return A named vector with the percentage of cells above the threshold for each identity class.
+#' @return
+#' A named numeric vector of percentages, or a list of such vectors if
+#' \code{box = TRUE}.
 #'
-#' @examples
-#' \dontrun{
-#' PctCellsAboveX(obj = seurat_object, feature = "GeneA", ident = "CellType", threshold = 1.5)
-#' }
-PctCellsAboveX <- function(obj = combined.obj,
-                           feature = "TOP2A",
-                           ident = GetNamedClusteringRuns(obj = obj, v = FALSE)[1],
-                           threshold = 2,
-                           suffix = ppp(substitute_deparse(obj), ncol(obj), "thr", threshold),
-                           box = FALSE,
-                           ident.box = NULL,
-                           subset_ident = NULL,
-                           subset_values = NULL,
-                           omit.na = TRUE,
-                           assay = "RNA",
-                           plot = TRUE,
-                           caption = NULL,
-                           ylab = "% cells above threshold",
-                           # color = NULL,
-                           ...) {
+#' @export
+
+PctCellsAboveX <- function(
+    object,
+    feature,
+    ident,
+    threshold = 1,
+    box = FALSE,
+    ident.box = NULL,
+    subset_ident = NULL,
+    subset_values = NULL,
+    omit.na = TRUE,
+    assay = "RNA",
+    slot = "data",
+    plot = TRUE,
+    caption = NULL,
+    ylab = "% cells above threshold",
+    ...
+) {
+
+  # 1. Validate input ________________________________________
   stopifnot(
-    is(obj, "Seurat"),
-    feature %in% colnames(obj@meta.data) | feature %in% Features(obj, assay = assay),
-    ident %in% colnames(obj@meta.data),
-    is.null(subset_ident) | subset_ident %in% colnames(obj@meta.data),
-    is.null(subset_values) | subset_values %in% unique(obj@meta.data[, subset_ident]),
-    !box & is.null(ident.box) | box
+    inherits(object, "Seurat"),
+    is.character(feature),
+    is.character(ident),
+    ident %in% colnames(object@meta.data),
+    is.null(subset_ident) || subset_ident %in% colnames(object@meta.data),
+    box || is.null(ident.box)
   )
 
+  # 2. Fetch metadata/gene values _____________________________
+  vars_to_get <- unique(c(feature, ident, subset_ident, ident.box))
+  df <- Seurat::FetchData(
+    object = object,
+    assay = assay,
+    slot = slot,
+    vars = vars_to_get
+  )
+  df$expr <- df[[feature]]
+
+  # 3. Subset rows if required ________________________________
   if (!is.null(subset_ident)) {
-    obj <- subsetSeuObjByIdent(obj, ident = subset_ident, identGroupKeep = subset_values)
-    if (omit.na) ls_feat <- lapply(ls_feat, na.omit.strip)
+    keep_rows <- df[[subset_ident]] %in% subset_values
+    df <- df[keep_rows, , drop = FALSE]
   }
 
-  split_ident <- if (box) ident.box else ident
-  ls_feat <- split(obj@meta.data[, feature], f = obj@meta.data[, split_ident])
-  if (omit.na) ls_feat <- lapply(ls_feat, na.omit.strip)
+  # 4. Remove NA values _______________________________________
+  if (omit.na) df <- df[!is.na(df$expr), , drop = FALSE]
 
-  # Calculate the percentage of cells above the threshold for each split_ident
-  Fraction.of.Cells.Above.Threshold <- sapply(ls_feat, function(x) sum(x > threshold) / length(x))
+  # 5. Split by ident or ident.box ____________________________
+  split_col <- if (box) ident.box else ident
+  ls_feat <- split(df$expr, df[[split_col]])
 
+  # 6. Compute percentages ____________________________________
+  pct_vec <- vapply(ls_feat, function(x) mean(x > threshold), numeric(1))
+
+  # 7. Re-group for box mode __________________________________
   if (box) {
-    # Arrange ident.box to categories of ident
-    ls.from_to <- lapply(split(obj@meta.data[, ident.box], f = obj@meta.data[, ident]), unique)
-    from_to <- list.2.replicated.name.vec(ls.from_to)
-
-    stopifnot(all(names(from_to) %in% names(Fraction.of.Cells.Above.Threshold)))
-
-    from_to <- from_to[names(Fraction.of.Cells.Above.Threshold)]
-
-    # Split Fraction
-    ls.Fraction.of.Cells.Above.Threshold <- split(Fraction.of.Cells.Above.Threshold, f = from_to)
+    from_to <- split(df[[ident.box]], df[[ident]])
+    from_to <- list.2.replicated.name.vec(from_to)
+    pct_vec <- pct_vec[names(from_to)]
+    pct_list <- split(pct_vec, f = from_to)
   }
 
-
+  # 8. Plotting (your exact original code) ____________________
   if (plot) {
-    if (is.null(caption)) {
-      caption <- pc_TRUE(is.na(Fraction.of.Cells.Above.Threshold),
-        suffix = "of idents yielded NA/NaN & exluded from plot."
-      )
-    }
+    if (is.null(caption))
+      caption <- paste0(sum(is.na(pct_vec)), " NA values removed")
+
     TTL <- paste("Percentage of Cells Above Threshold for", feature)
     STL <- paste("Cells above threshold for", feature, "above", threshold)
-    SFX <- ppp(feature, "by", ident, "thr", threshold, "subset_ident", subset_ident, suffix)
-
-    Fraction.of.Cells.Above.Threshold <- na.omit.strip(Fraction.of.Cells.Above.Threshold)
+    SFX <- ppp(feature, "by", ident, "thr", threshold, "subset_ident", subset_ident)
 
     if (box) {
-      pobj <- qboxplot(ls.Fraction.of.Cells.Above.Threshold, ,
-        plotname = TTL, subtitle = STL, caption = caption, suffix = SFX,
-        add = "dotplot", xlab.angle = 45,
-        hide.legend = TRUE, ,
-        ylab = ylab
-        # , xlab = ident
-        , ...
+      pobj <- qboxplot(
+        pct_list,
+        add = "dotplot",
+        xlab.angle = 45,
+        hide.legend = TRUE,
+        plotname = TTL,
+        subtitle = STL,
+        caption = caption,
+        suffix = SFX,
+        ylab = ylab,
+        ...
       )
     } else {
-      "barplot"
-      pobj <- qbarplot(Fraction.of.Cells.Above.Threshold,
-        label = percentage_formatter(Fraction.of.Cells.Above.Threshold),
-        plotname = TTL, subtitle = STL, caption = caption, suffix = SFX,
-        ylab = ylab
-        # , xlab = ident
-        , ...
+      pobj <- qbarplot(
+        pct_vec,
+        label = percentage_formatter(pct_vec),
+        plotname = TTL,
+        subtitle = STL,
+        caption = caption,
+        suffix = SFX,
+        ylab = ylab,
+        ...
       )
     }
-
-
 
     print(pobj)
   }
 
-  return(Fraction.of.Cells.Above.Threshold)
+  # 9. Return final output ____________________________________
+  if (box) return(pct_list)
+  return(pct_vec)
 }
+
+
 
 
 # _________________________________________________________________________________________________
