@@ -111,7 +111,7 @@ PlotFilters <- function(
 
   for (i in 1:length(ls.obj)) {
     print(suffices[i])
-    mm <- ls.obj[[i]]@meta.data
+    metadata_df <- ls.obj[[i]]@meta.data
 
     if (Calculate_nFeature_LowPass) {
       nFtr <- ls.obj[[i]]$"nFeature_RNA"
@@ -122,24 +122,24 @@ PlotFilters <- function(
       stopifnot(below.nFeature_RNA > above.nFeature_RNA)
     }
 
-    AllMetaColumnsPresent <- all(c("nFeature_RNA", "percent.mito", "percent.ribo") %in% colnames(mm))
+    AllMetaColumnsPresent <- all(c("nFeature_RNA", "percent.mito", "percent.ribo") %in% colnames(metadata_df))
     if (!AllMetaColumnsPresent) {
       print(c("nFeature_RNA", "percent.mito", "percent.ribo"))
-      print(c("nFeature_RNA", "percent.mito", "percent.ribo") %in% colnames(mm))
+      print(c("nFeature_RNA", "percent.mito", "percent.ribo") %in% colnames(metadata_df))
       print("Try to run:")
       print('objX <- addMetaFraction(obj = objX, col.name = "percent.mito", gene.symbol.pattern =  "^MT\\.|^MT-")')
       print('objX <- addMetaFraction(obj = objX, col.name = "percent.ribo", gene.symbol.pattern =  "^RPL|^RPS")')
       stop()
     }
 
-    filt.nFeature_RNA <- (mm$"nFeature_RNA" < below.nFeature_RNA & mm$"nFeature_RNA" > above.nFeature_RNA)
-    filt.below.mito <- (mm$"percent.mito" < below.mito & mm$"percent.mito" > above.mito)
-    filt.below.ribo <- (mm$"percent.ribo" < below.ribo & mm$"percent.ribo" > above.ribo)
+    filt.nFeature_RNA <- (metadata_df$"nFeature_RNA" < below.nFeature_RNA & metadata_df$"nFeature_RNA" > above.nFeature_RNA)
+    filt.below.mito <- (metadata_df$"percent.mito" < below.mito & metadata_df$"percent.mito" > above.mito)
+    filt.below.ribo <- (metadata_df$"percent.ribo" < below.ribo & metadata_df$"percent.ribo" > above.ribo)
 
-    mm <- cbind(mm, filt.nFeature_RNA, filt.below.mito, filt.below.ribo)
+    metadata_df <- cbind(metadata_df, filt.nFeature_RNA, filt.below.mito, filt.below.ribo)
 
     # Define colour thresholds for nFeature_RNA
-    mm$colour.thr.nFeature <- cut(mm$"nFeature_RNA",
+    metadata_df$colour.thr.nFeature <- cut(metadata_df$"nFeature_RNA",
       breaks = c(-Inf, above.nFeature_RNA, below.nFeature_RNA, Inf),
       labels = c(
         paste0("LQ (<", above.nFeature_RNA, ")"),
@@ -148,11 +148,11 @@ PlotFilters <- function(
       )
     )
 
-    boolean_LC_cells <- mm$"nFeature_RNA" <= above.nFeature_RNA
+    boolean_LC_cells <- metadata_df$"nFeature_RNA" <= above.nFeature_RNA
     LQ <- pc_TRUE(boolean_LC_cells)
-    Doublets <- pc_TRUE(mm$"nFeature_RNA"[!boolean_LC_cells] >= below.nFeature_RNA)
+    Doublets <- pc_TRUE(metadata_df$"nFeature_RNA"[!boolean_LC_cells] >= below.nFeature_RNA)
 
-    A <- ggplot(data = mm, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
+    A <- ggplot(data = metadata_df, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
       geom_histogram(binwidth = 100) +
       ggtitle(paste(
         "Cells between", above.nFeature_RNA, "and", below.nFeature_RNA,
@@ -164,7 +164,7 @@ PlotFilters <- function(
       theme(legend.position = "none") # "top"
     # A
 
-    B <- ggplot2::ggplot(mm, aes(x = nFeature_RNA, y = percent.mito)) +
+    B <- ggplot2::ggplot(metadata_df, aes(x = nFeature_RNA, y = percent.mito)) +
       ggplot2::ggtitle(paste(
         "Cells below", percentage_formatter(below.mito),
         "mito reads are selected \n(with A:", pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")"
@@ -178,7 +178,7 @@ PlotFilters <- function(
       geom_vline(xintercept = below.nFeature_RNA) + geom_vline(xintercept = above.nFeature_RNA)
     # B
 
-    C <- ggplot(mm, aes(x = nFeature_RNA, y = percent.ribo)) +
+    C <- ggplot(metadata_df, aes(x = nFeature_RNA, y = percent.ribo)) +
       ggtitle(paste(
         "Cells below", percentage_formatter(below.ribo),
         "ribo reads are selected \n(with A:",
@@ -193,7 +193,7 @@ PlotFilters <- function(
       geom_vline(xintercept = below.nFeature_RNA) + geom_vline(xintercept = above.nFeature_RNA)
     # C
 
-    D <- ggplot(mm, aes(x = percent.ribo, y = percent.mito)) +
+    D <- ggplot(metadata_df, aes(x = percent.ribo, y = percent.mito)) +
       ggtitle(paste(
         "Final: All cells w/o extreme values are selected \n(with A,B,C:",
         pc_TRUE(filt.nFeature_RNA & filt.below.mito & filt.below.ribo), ")"

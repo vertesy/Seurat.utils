@@ -672,12 +672,12 @@ addGeneClassFractions <- function(obj,
 #' }
 #' @export
 add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) { # N is the for which dataset
-  stopifnot(length(names(tags)) == length(tags))
+  stopifnot(length(names(list.of.tags)) == length(list.of.tags))
   nCells <- nrow(obj@meta.data)
   for (i in 1:length(list.of.tags)) {
     tagX <- list.of.tags[[i]]
     new.meta.tag.per.cell <- rep(tagX[n], nCells)
-    obj <- AddMetaData(object = obj, metadata = new.meta.tag.per.cell, col.name = names(tags)[i])
+    obj <- AddMetaData(object = obj, metadata = new.meta.tag.per.cell, col.name = names(list.of.tags)[i])
   }
   return(obj)
 }
@@ -1118,7 +1118,7 @@ writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(
   metadataList <- lapply(ls.Obj, function(obj) {
     stopifnot("meta.data" %in% slotNames(obj)) # Check for meta.data slot
     metaData <- obj@meta.data
-    metaData[, !(names(metaData) %in% cols.remove)]
+    metaData[, !(names(metaData) %in% cols.remove), drop = FALSE]
   })
 
   # Find common columns and subset
