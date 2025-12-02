@@ -1797,8 +1797,8 @@ ww.get.1st.Seur.element <- function(obj) {
 # _________________________________________________________________________________________________
 #' @title Recall all.genes global variable from a Seurat object
 #'
-#' @description Recall \code{all.genes} from a Seurat object's \code{misc} slot
-#'   and optionally reset the global variable.
+#' @description Recall \code{all.genes} from a Seurat object's \code{misc} slot,
+#'   which is stored by \code{calc.q99.Expression.and.set.all.genes()}, and optionally reset the global variable.
 #' @param obj Seurat object, Default: `combined.obj`
 #' @examples
 #' \dontrun{
