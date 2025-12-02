@@ -106,14 +106,18 @@ PlotFilters <- function(
   MarkdownReports::create_set_OutDir(OutDir)
   stopifnot(length(suffices) == length(ls.obj))
 
-  Calculate_nFeature_LowPass <- if (below.nFeature_RNA < 1) below.nFeature_RNA else FALSE
+  use_quantile_nFeature <- is.numeric(below.nFeature_RNA) && below.nFeature_RNA < 1
+  Calculate_nFeature_LowPass <- if (use_quantile_nFeature) below.nFeature_RNA else NA_real_
+  original_below_nFeature_RNA <- below.nFeature_RNA
   for (i in 1:length(ls.obj)) {
     print(suffices[i])
     mm <- ls.obj[[i]]@meta.data
 
-    if (Calculate_nFeature_LowPass < 1) {
+    if (use_quantile_nFeature && Calculate_nFeature_LowPass < 1) {
       below.nFeature_RNA <- floor(quantile(ls.obj[[i]]$"nFeature_RNA", probs = Calculate_nFeature_LowPass))
       iprint("below.nFeature_RNA at", percentage_formatter(Calculate_nFeature_LowPass), "percentile:", below.nFeature_RNA)
+    } else {
+      stopifnot(identical(below.nFeature_RNA, original_below_nFeature_RNA))
     }
 
     AllMetaColumnsPresent <- all(c("nFeature_RNA", "percent.mito", "percent.ribo") %in% colnames(mm))
