@@ -72,10 +72,10 @@ processSeuratObject <- function(obj, param.list = p,
                                 harmony.seurat.implementation  = FALSE,
                                 ...) {
   #
-  har <- (reduction_input == "harmony")
+  use_harmony <- (reduction_input == "harmony")
   warning("Make sure you cleaned up the memory!", immediate. = TRUE)
   message("\nWorkingDir: ", WorkingDir)
-  if (har) message("Harmony integration is attempted, but it is experimental.")
+  if (use_harmony) message("Harmony integration is attempted, but it is experimental.")
   stopifnot(require(tictoc))
 
   tictoc::tic("processSeuratObject")
@@ -94,7 +94,7 @@ processSeuratObject <- function(obj, param.list = p,
   iprint("n.PC:", n.PC)
   iprint("snn_res:", resolutions)
   iprint("variables.2.regress (ScaleData):", variables.2.regress)
-  if (har) iprint("variables.2.regress (Harmony):", harmony.covariates)
+  if (use_harmony) iprint("variables.2.regress (Harmony):", harmony.covariates)
 
   # Save parameters _________________________________________________
   param.list$"n.var.genes" <- nfeatures
@@ -152,7 +152,7 @@ processSeuratObject <- function(obj, param.list = p,
 
 
   if (compute) {
-    if (har)  {
+    if (use_harmony)  {
 
       # Split ________________________________________________
       message("------------------- Split layers -------------------")
