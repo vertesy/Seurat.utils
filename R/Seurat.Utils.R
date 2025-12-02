@@ -1775,7 +1775,8 @@ set.mm <- function(obj = combined.obj) {
 #' @title Get the First Seurat Object from a List of Seurat Objects
 #'
 #' @description Return the first Seurat object from a list, or the object itself
-#'   if a single Seurat object is supplied.
+#'   if a single Seurat object is supplied. If input is a list, all elements are
+#'   assumed to be Seurat objects.
 #'
 #' @param obj A Seurat object, a list of Seurat objects, or any other list.
 #'
