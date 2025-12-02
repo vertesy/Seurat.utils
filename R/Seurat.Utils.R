@@ -86,9 +86,12 @@ processSeuratObject <- function(obj, param.list = p,
     is.list(param.list),
     all(c("n.PC", "snn_res") %in% names(param.list)),
     is.numeric(n.PC), is.numeric(resolutions),
-    is.character(variables.2.regress) | is.null(variables.2.regress),
-    "variables.2.regress is not found in @meta" = variables.2.regress %in% colnames(obj@meta.data)
+    is.character(variables.2.regress) || is.null(variables.2.regress)
   )
+
+  if (!is.null(variables.2.regress)) {
+    stopifnot("variables.2.regress is not found in @meta" = variables.2.regress %in% colnames(obj@meta.data))
+  }
 
   iprint("nfeatures:", nfeatures)
   iprint("n.PC:", n.PC)
