@@ -4097,7 +4097,6 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 
   for (slotX in slots) {
     print(slotX)
-    if (slotX == "scale.data") browser()
     nrO <- nrow(SeuratObject::GetAssayData(object = obj, assay = assay, layer = slotX))
     obj <- .check_and_rename(obj, assay, newnames = newnames, layer.name = slotX)
     nrN <- nrow(SeuratObject::GetAssayData(object = obj, assay = assay, layer = slotX))
