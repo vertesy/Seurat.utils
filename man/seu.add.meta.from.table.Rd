@@ -14,8 +14,7 @@ seu.add.meta.from.table(obj = combined.obj, meta, suffix = ".fromMeta")
 \item{suffix}{A suffix added to the filename, Default: '.fromMeta'}
 }
 \description{
-Add multiple new metadata columns to a Seurat object using a table keyed by cell
-names.
+Add metadata columns from a table keyed by cell names.
 }
 \examples{
 \dontrun{

@@ -28,6 +28,5 @@ downsampleSeuObj.and.Save(
 \item{suffix}{A suffix added to the filename, Default: ''}
 }
 \description{
-Subset a Seurat object to a target fraction of cells and save the downsampled
-object to the working directory.
+Downsample a Seurat object to a target fraction and save it.
 }
