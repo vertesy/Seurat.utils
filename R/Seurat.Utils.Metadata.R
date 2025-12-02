@@ -1118,7 +1118,7 @@ writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(
   metadataList <- lapply(ls.Obj, function(obj) {
     stopifnot("meta.data" %in% slotNames(obj)) # Check for meta.data slot
     metaData <- obj@meta.data
-    metaData[, !(names(metaData) %in% cols.remove)]
+    metaData[, !(names(metaData) %in% cols.remove), drop = FALSE]
   })
 
   # Find common columns and subset
