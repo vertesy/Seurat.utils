@@ -1109,7 +1109,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   # Calculate the number of cells in the top quantile (e.g.: 99th quantile) that is
   # required to for gene expression to be >0
   message(
-    "Each gene has to be expressed in min. ", n.cells, " cells, to have >0 quantile-expression\n",
+    "Each gene has to be expressed in min. ", n.cells.in.top.quantile, " cells, to have >0 quantile-expression\n",
     "quantileX: ", quantileX, " max.cells: ", max.cells
   )
 
@@ -3773,7 +3773,7 @@ fixZeroIndexing.seurat <- function(ColName.metadata = "res.0.6", obj = org) {
 #' @export
 #'
 CalculateFractionInTrome <- function(
-    genesCalc.Cor.Seuratet = c("MALAT1"),
+    geneset = c("MALAT1"),
     obj = combined.obj,
     data.slot = c("counts", "data")[2]) {
   warning("    >>>> Use addMetaFraction() <<<<", immediate. = TRUE)
@@ -4875,7 +4875,7 @@ isave.RDS <- function(
 #' @param allGenes Optional; a list of all genes to save within the Seurat object.
 #' @param saveLocation Logical; if TRUE and if the object is a Seurat object, file location is saved
 #' into misc slot.
-#' @param backgroundJob NOT IMPLEMENTED. Logical; if TRUE, the compression is done in the background.
+# #' @param backgroundJob NOT IMPLEMENTED. Logical; if TRUE, the compression is done in the background.
 #' @param v Verbose output.
 #'
 #' @return Invisible; The function is called for its side effects (saving a file) and does not return anything.
@@ -4901,7 +4901,7 @@ xsave <- function(
     paramList = if (exists("p")) p else NULL,
     allGenes = if (exists("all.genes")) all.genes else NULL,
     saveLocation = TRUE,
-    backgroundJob = FALSE,
+    # backgroundJob = FALSE,
     v = TRUE) {
   #
   if (v) message(nthreads, " threads.\n-----------")

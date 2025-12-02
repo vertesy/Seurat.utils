@@ -5,20 +5,20 @@
 \title{Calculate Fraction of Genes in Transcriptome}
 \usage{
 CalculateFractionInTrome(
-  genesCalc.Cor.Seuratet = c("MALAT1"),
+  geneset = c("MALAT1"),
   obj = combined.obj,
   data.slot = c("counts", "data")[2]
 )
 }
 \arguments{
+\item{geneset}{A character vector of gene symbols for which the fraction in the transcriptome will be calculated.
+Default: \code{c("MALAT1")}. The function will check for the existence of these genes in the Seurat object.}
+
 \item{obj}{A Seurat object containing gene expression data. Default: \code{combined.obj}.
 The function extracts gene expression data from this object to calculate fractions.}
 
 \item{data.slot}{The data slot from which to extract expression data. This can be \code{"counts"}
 for raw counts or \code{"data"} for normalized data. Default: second element (\code{"data"}).}
-
-\item{geneset}{A character vector of gene symbols for which the fraction in the transcriptome will be calculated.
-Default: \code{c("MALAT1")}. The function will check for the existence of these genes in the Seurat object.}
 }
 \value{
 A numeric vector where each element represents the fraction of the specified geneset's expression
