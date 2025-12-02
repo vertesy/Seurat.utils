@@ -2,20 +2,20 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{PctCellsAboveX}
 \alias{PctCellsAboveX}
-\title{Percentage of Cells Above Threshold}
+\title{Compute \% of Cells Above a Threshold for a Metadata or Gene Feature}
 \usage{
 PctCellsAboveX(
-  obj = combined.obj,
-  feature = "TOP2A",
-  ident = GetNamedClusteringRuns(obj = obj, v = FALSE)[1],
-  threshold = 2,
-  suffix = ppp(substitute_deparse(obj), ncol(obj), "thr", threshold),
+  object,
+  feature,
+  ident,
+  threshold = 1,
   box = FALSE,
   ident.box = NULL,
   subset_ident = NULL,
   subset_values = NULL,
   omit.na = TRUE,
   assay = "RNA",
+  slot = "data",
   plot = TRUE,
   caption = NULL,
   ylab = "\% cells above threshold",
@@ -23,42 +23,42 @@ PctCellsAboveX(
 )
 }
 \arguments{
-\item{obj}{A Seurat object. Default: combined.obj.}
+\item{object}{Seurat object.}
 
-\item{feature}{The feature to evaluate.}
+\item{feature}{Character. Metadata column or gene/feature name.}
 
-\item{ident}{The identity class to split the data by. Default: GetNamedClusteringRuns(obj)\link{1}.}
+\item{ident}{Character. Metadata column used for grouping.}
 
-\item{threshold}{The threshold value to evaluate the feature against. Default: 2.}
+\item{threshold}{Numeric. Threshold above which cells are counted.}
 
-\item{box}{Logical value indicating whether to plot the boxplot. Default: \code{TRUE}.}
+\item{box}{Logical. If TRUE, regroup by \code{ident.box}.}
 
-\item{subset_ident}{The identity class to subset the data by. Default: NULL.}
+\item{ident.box}{Character or NULL. Secondary grouping variable for box mode.}
 
-\item{subset_values}{The values of the identity class to keep in the subset. Default: NULL.}
+\item{subset_ident}{Character or NULL. Metadata column used for subsetting.}
 
-\item{omit.na}{Logical value indicating whether to omit NA values. Default: \code{TRUE}.}
+\item{subset_values}{Vector or NULL. Values of \code{subset_ident} to keep.}
 
-\item{assay}{The assay to use for feature extraction. Default: 'RNA'.}
+\item{omit.na}{Logical. Whether to remove NA values in the feature.}
 
-\item{plot}{Logical value indicating whether to plot the results. Default: \code{TRUE}.}
+\item{assay}{Character. Assay name passed to \code{FetchData}.}
 
-\item{ylab}{The label for the y-axis of the plot. Default: "\% cells above threshold".}
+\item{slot}{Character. Slot name passed to \code{FetchData}.}
 
-\item{...}{Additional parameters to pass to the plotting function.}
+\item{plot}{Logical. Whether to generate a plot.}
 
-\item{box.ident}{The identity class to split the data by for individual dots in the boxplot.
-Ident will be used for the boxes displayed (matching the barplot).  Default: NULL.}
+\item{caption}{Character or NULL. Caption for the plot.}
+
+\item{ylab}{Character. Y-axis label.}
+
+\item{...}{Additional arguments passed to plotting functions.}
 }
 \value{
-A named vector with the percentage of cells above the threshold for each identity class.
+A named numeric vector of percentages, or a list of such vectors if
+\code{box = TRUE}.
 }
 \description{
-This function calculates the percentage of cells above a specified threshold for a given
-feature in a Seurat object. It can subset the data based on a specified identity and values.
-}
-\examples{
-\dontrun{
-PctCellsAboveX(obj = seurat_object, feature = "GeneA", ident = "CellType", threshold = 1.5)
-}
+Computes the fraction of cells with values above a specified threshold for
+either a metadata column or an assay feature. Supports optional subsetting
+and optional regrouping into boxplot-style categories.
 }

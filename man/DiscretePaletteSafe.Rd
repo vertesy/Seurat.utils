@@ -6,7 +6,8 @@
 \usage{
 DiscretePaletteSafe(
   n,
-  palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
+  palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "parade",
+    "stepped")[2],
   show.colors = FALSE,
   seed = 1989
 )

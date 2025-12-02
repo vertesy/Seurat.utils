@@ -6,7 +6,7 @@
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.utils.less.used.R")
 
-
+l
 # devtools::check_man("~/GitHub/Packages/Seurat.utils")
 # devtools::load_all("~/GitHub/Packages/Seurat.utils")
 # devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
@@ -1061,8 +1061,12 @@ calc.q99.Expression.and.set.all.genes <- function(
     show = TRUE,
     obj.version = obj@version
 ) {
+  top.quant <- (1 - quantileX)
+  message("\nCalculating the gene expression level at the the top", percentage_formatter(top.quant), " of cells. | q: ", quantileX )
   message("slot: ", slot, " assay: ", assay, ".\n")
-  n.cells <- floor(ncol(obj) * (1 - quantileX))
+  nr.total.cells <- ncol(obj)
+
+  n.cells.in.top.quantile <- floor(nr.total.cells * top.quant) # number of cells in the top quantileX
 
   tictoc::tic("calc.q99.Expression.and.set.all.genes")
   stopifnot(
@@ -1076,11 +1080,12 @@ calc.q99.Expression.and.set.all.genes <- function(
   warnifnot(
     slot %in% c("data", "scale.data", "counts"),
     assay %in% c("RNA", "integrated"),
-    "Expression >0 is required in >1000 cells. Increase quantileX!" = n.cells > 1000,
-    "Expression >0 is required in <50 cells. Decrease quantileX!" = n.cells < 50
+    ">1000 cells in the top the quantileX (with >0 expression). Increase quantileX not to miss genes expressed in small populations!" = n.cells.in.top.quantile > 1000,
+    "<50 cells in the top the quantileX (with >0 expression). Decrease quantileX for robustness!" = n.cells.in.top.quantile > 50
   )
 
   # Get the data matrix ____________________________________________________________
+  # browser()
   assay_data <- obj@assays[[assay]]
   if (obj.version >= "5") {
     if (assay == "RNA") {
@@ -1099,7 +1104,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   if (ncol(data_mtx) > max.cells) {
     dsampled <- sample(x = 1:ncol(data_mtx), size = max.cells)
     data_mtx <- data_mtx[, dsampled]
-    message("Downsampled from ", ncol(obj), "to ", max.cells, " cells")
+    message("Downsampled from ", ncol(obj), " to ", max.cells, " cells")
   }
 
   # Calculate the number of cells in the top quantile (e.g.: 99th quantile) that is
@@ -1265,7 +1270,6 @@ filterExpressedGenes <- function(genes, gene_list = all.genes
   )
   stopif(is.null(gene_list))
 
-  # browser()
   # Step 1: Intersect the gene symbols with the names in the list and report statistics
   matching_genes <- CodeAndRoll2::intersect.wNames(x = genes, y = names(gene_list), names = "x")
   message("Number of matching genes: ", length(matching_genes), " from ", length(genes)
@@ -1525,7 +1529,7 @@ GetOrderedClusteringRuns <- function(obj = combined.obj, res = FALSE,
 # _________________________________________________________________________________________________
 #' @title GetNumberOfClusters
 #'
-#' @description Get Number Of Clusters #
+#' @description Print the number of clusters for each stored clustering run.
 #' @param obj Seurat object, Default: `combined.obj`
 #' @examples
 #' \dontrun{
@@ -1774,10 +1778,8 @@ set.mm <- function(obj = combined.obj) {
 # _________________________________________________________________________________________________
 #' @title Get the First Seurat Object from a List of Seurat Objects
 #'
-#' @description #' If provided with a list of Seurat objects, this function returns the first
-#' Seurat object in the list. If the input is a single Seurat object, it returns
-#' the object itself. It is assumed that all elements of the list are Seurat
-#' objects if the input is a list.
+#' @description Return the first Seurat object from a list, or the object itself
+#'   if a single Seurat object is supplied.
 #'
 #' @param obj A Seurat object, a list of Seurat objects, or any other list.
 #'
@@ -1799,7 +1801,8 @@ ww.get.1st.Seur.element <- function(obj) {
 # _________________________________________________________________________________________________
 #' @title Recall all.genes global variable from a Seurat object
 #'
-#' @description all.genes set by calc.q99.Expression.and.set.all.genes() #
+#' @description Recall \code{all.genes} from a Seurat object's \code{misc} slot,
+#'   which is stored by \code{calc.q99.Expression.and.set.all.genes()}, and optionally reset the global variable.
 #' @param obj Seurat object, Default: `combined.obj`
 #' @examples
 #' \dontrun{
@@ -2224,7 +2227,7 @@ downsampleSeuObj <- function(obj = ls.Seurat[[i]], fractionCells = 0.25, nCells 
 # _________________________________________________________________________________________________
 #' @title downsampleSeuObj.and.Save
 #'
-#' @description Subset a compressed Seurat Obj and save it in wd. #
+#' @description Downsample a Seurat object to a target fraction and save it.
 #' @param obj Seurat object, Default: ORC
 #' @param fraction Fractional size to downsample to. Default: 0.25
 #' @param seed random seed used, Default: 1989
@@ -3997,6 +4000,7 @@ UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", assay = 
     all.genes <- Features(obj, assay = assay)
     HGNC.updated <- HGNChelper::checkGeneSymbols(all.genes, unmapped.as.na = FALSE, map = NULL, species = species_)
     if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
+
     if (ShowStats) {
       print(HGNC.updated)
       print(GetUpdateStats(HGNC.updated))
@@ -4056,6 +4060,8 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
   #
   # browser()
   message("RenameGenesSeurat, assay: ", assay)
+  message("Slots expected: ", slots)
+  message("Slots found: ", SeuratObject::Layers(obj@assays[[assay]]))
   warning("Run this before integration and downstream processing. It only attempts to change
           @counts, @data, and @meta.features in obj@assays$YOUR_ASSAY.", immediate. = TRUE)
 
@@ -4068,7 +4074,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
   if (obj@version < "5") {
     warning("obj@version < 5. Old versions are not supported. Update the obj!", immediate. = TRUE)
   } else {
-    layers <- Layers(obj)
+    layers <- Layers(obj@assays[[assay]])
     slots_found <- slots %in% layers
     stopifnot(any(slots_found))
     warnifnot("Not all slots present in the object - all(slots_found)" = all(slots_found))
@@ -5026,6 +5032,145 @@ xread <- function(file,
   invisible(obj)
 }
 
+# _________________________________________________________________________________________________
+#' @title Load a .qs object with optional SLURM-based safe-memory check (CBE only)
+#'
+#' @description
+#' Loads a `.qs` serialized object (e.g., Seurat object or list) with an optional memory-safety
+#' check that prevents loading objects larger than the SLURM job's allocated memory. The memory
+#' check runs **only** when:
+#' 1) `safe_load = TRUE`
+#' 2) the global variable `onCBE` exists and is `TRUE`
+#' 3) the session is running inside a SLURM job with a defined memory limit
+#'
+#' If no SLURM memory limit is detected, the safety check is skipped and a warning is shown.
+#'
+#' @param path Path to the `.qs` file to load. Must exist. Default: none.
+#' @param nthreads Number of threads for `qs::qread()`. Uses 1 if file < 1e7 bytes, else 4.
+#'   Default: `if (file.size(path) < 1e7) 1 else 4`.
+#' @param loadParamsAndAllGenes Logical; if `TRUE`, recall stored parameters and gene lists
+#'   from `obj@misc`. Default: `TRUE`.
+#' @param overwriteParams Logical; overwrite existing parameters when recalling. Default: `FALSE`.
+#' @param overwriteAllGenes Logical; overwrite existing `all.genes` list. Default: `FALSE`.
+#' @param set_m Logical; if `TRUE`, create variable `m` in global environment with metadata values.
+#'   Default: `TRUE`.
+#' @param safe_load Logical; enable SLURM-based memory safety check. Default: `TRUE`.
+#' @param disk2mem_size_inflation Estimated expansion factor of `.qs` file once in memory.
+#'   Default: `3`.
+#' @param ... Additional arguments passed to `qs::qread()`. Default: none.
+#'
+#' @return Invisibly returns the loaded object.
+#'
+#' @examples
+#' \dontrun{
+#' obj <- xread2("/path/to/object.qs")
+#' }
+#'
+#' @importFrom qs qread
+#' @importFrom tictoc tic toc
+#' @importFrom Stringendo ifExistsAndTrue
+#' @export
+xread2 <- function(path,
+                   nthreads = if (file.size(path) < 1e7) 1 else 4,
+                   loadParamsAndAllGenes = TRUE,
+                   overwriteParams = FALSE,
+                   overwriteAllGenes = FALSE,
+                   set_m = TRUE,
+                   safe_load = TRUE,
+                   disk2mem_size_inflation = 3,
+                   ...) {
+  stopifnot(file.exists(path))
+
+  # Pretty print bytes
+  bytes <- function(x) format(structure(x, class = "object_size"), units = "auto")
+
+  # Current R memory usage (RSS)
+  get_rss <- function() {
+    kb <- as.numeric(gsub("\\D", "",
+                          grep("^VmRSS:", readLines("/proc/self/status"),
+                               value = TRUE)))
+    kb * 1024
+  }
+
+  # SLURM memory (in bytes), or NA if not inside SLURM job
+  get_slurm_limit <- function() {
+    m <- suppressWarnings(as.numeric(Sys.getenv("SLURM_MEM_PER_NODE", "")))
+    if (!is.na(m) && m > 0) return(m * 1024^2)
+    NA_real_
+  }
+
+  # ---- MEMORY SAFETY CHECK ----
+  if (safe_load && Stringendo::ifExistsAndTrue("onCBE")) {
+    lim <- get_slurm_limit()
+
+    if (is.na(lim)) {
+      warning("Memory safety check skipped: no SLURM memory limit detected.")
+    } else {
+      sz  <- file.size(path)
+      rss <- get_rss()
+
+      # Leave 10% or 3GB free, whichever is larger
+      safe_cap <- min(0.9 * lim, lim - 3 * 1024^3)
+      safe_cap <- max(safe_cap, rss + 1 * 1024^3)  # never below current usage
+      headroom <- safe_cap - rss
+      need <- disk2mem_size_inflation * sz
+
+      message("Need: ", bytes(need),
+              " | Headroom: ", bytes(headroom),
+              " | RSS (used memory): ", bytes(rss))
+
+      if (need > headroom) {
+        message("⚠ Estimated need exceeds SLURM job memory. Loading may crash the session.")
+        ans <- readline("Do you still want to load the file? [y/N]: ")
+        if (tolower(ans) != "y") return(invisible(NULL))
+      }
+    }
+  }
+
+  # ---- ORIGINAL LOGIC BELOW ----
+  message(nthreads, " threads.")
+  try(tictoc::tic("xread2"), silent = TRUE)
+
+  obj <- qs::qread(file = path, nthreads = nthreads, ...)
+
+  report <- if (is(obj, "Seurat")) {
+    kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "metadata columns.")
+  } else if (is.list(obj)) {
+    kppws("is a list of:", length(obj))
+  } else {
+    kppws("of length:", length(obj))
+  }
+
+  if ("Seurat" %in% is(obj)) {
+    if (loadParamsAndAllGenes) {
+      p_local <- obj@misc$"p"
+      all.genes_local <- obj@misc$"all.genes"
+
+      if (is.null(p_local)) {
+        message("No parameter list 'p' found in object@misc.")
+      } else {
+        recall.parameters(obj = obj, overwrite = overwriteParams)
+      }
+
+      if (is.null(all.genes_local)) {
+        message("No gene list 'all.genes' found in object@misc.")
+      } else {
+        recall.all.genes(obj = obj, overwrite = overwriteAllGenes)
+      }
+    }
+
+    if (set_m) {
+      m <- lapply(data.frame(obj@meta.data), function(x) head(unique(x), 50))
+      assign("m", m, envir = .GlobalEnv)
+      message("Variable 'm' created in global environment with metadata preview.")
+    }
+  }
+
+  iprint(is(obj)[1], report)
+  try(tictoc::toc(), silent = TRUE)
+  invisible(obj)
+}
+
 
 
 # _________________________________________________________________________________________________
@@ -5071,8 +5216,7 @@ isave.image <- function(
 # _________________________________________________________________________________________________
 #' @title Save workspace - qsave.image
 #'
-#' @description Faster saving of workspace, and compression outside R, when it can run in the background.
-#' Seemingly quite CPU hungry and not very efficient compression. #
+#' @description Save the workspace with external gzip compression (CPU intensive).
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @param showMemObject Logical; if TRUE, the function will print out the memory size of the largest
 #' objects in the workspace. Default: `TRUE`.
@@ -5547,8 +5691,8 @@ jPairwiseJaccardIndexList <- function(lsG = ls_genes) {
 # _________________________________________________________________________________________________
 #' @title jPresenceMatrix
 #'
-#' @description Make a binary presence matrix from a list. Source:
-#' https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings #
+#' @description Make a binary presence matrix from a list of vectors. Source:
+#'   https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings
 #' @param string_list List of strings to compare overlapping entries.
 #' Default: lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4)
 #' @examples
@@ -5572,8 +5716,8 @@ jPresenceMatrix <- function(string_list = lst(a = 1:3, b = 2:5, c = 4:9, d = -1:
 # _________________________________________________________________________________________________
 #' @title jJaccardIndexBinary
 #'
-#' @description Calculate Jaccard Index. Modified from:
-#' https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
+#' @description Calculate the Jaccard Index for two binary vectors. Modified from:
+#'   https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
 #' @param x Set X
 #' @param y Set Y
 #' @examples
