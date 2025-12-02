@@ -6,7 +6,6 @@
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
 # source("~/GitHub/Packages/Seurat.utils/R/Seurat.utils.less.used.R")
 
-l
 # devtools::check_man("~/GitHub/Packages/Seurat.utils")
 # devtools::load_all("~/GitHub/Packages/Seurat.utils")
 # devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
