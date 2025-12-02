@@ -113,7 +113,7 @@ PlotFilters <- function(
     print(suffices[i])
     mm <- ls.obj[[i]]@meta.data
 
-    if (use_quantile_nFeature && Calculate_nFeature_LowPass < 1) {
+    if (use_quantile_nFeature) {
       below.nFeature_RNA <- floor(quantile(ls.obj[[i]]$"nFeature_RNA", probs = Calculate_nFeature_LowPass))
       iprint("below.nFeature_RNA at", percentage_formatter(Calculate_nFeature_LowPass), "percentile:", below.nFeature_RNA)
     } else {
