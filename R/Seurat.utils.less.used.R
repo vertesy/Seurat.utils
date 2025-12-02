@@ -156,18 +156,24 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", 
                                       name.suffix = NULL,
                                       width = hA4, height = 1.75 * wA4, filetype = "pdf", ...) {
   p1 <- Seurat::DimPlot(
-    object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use,
-    no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size,
-    group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...
+    object = obj, reduction = "tsne", cells = cells_use,
+    group.by = grouping, label = do_label, label.size = label_size,
+    pt.size = pt_size, raster = !vector_friendly, ...
   ) +
     ggtitle("tSNE") + theme(plot.title = element_text(hjust = 0.5))
 
+  if (no_axes) p1 <- p1 + Seurat::NoAxes()
+  if (no_legend) p1 <- p1 + Seurat::NoLegend()
+
   p2 <- Seurat::DimPlot(
-    object = obj, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use,
-    no.legend = TRUE, do.return = do_return, do.label = do_label, label.size = label_size,
-    group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size, ...
+    object = obj, reduction = "umap", cells = cells_use,
+    group.by = grouping, label = do_label, label.size = label_size,
+    pt.size = pt_size, raster = !vector_friendly, ...
   ) +
     ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
+
+  if (no_axes) p2 <- p2 + Seurat::NoAxes()
+  p2 <- p2 + Seurat::NoLegend()
 
   plots <- cowplot::plot_grid(p1, p2, labels = c("A", "B"), ncol = 2)
   plotname <- kpp("UMAP.tSNE", grouping, name.suffix, filetype)
@@ -181,6 +187,10 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", 
     # each individual subplot should have an aspect ratio of 1.3
     # , base_aspect_ratio = 1.5
   )
+
+  if (isTRUE(do_return)) return(plots)
+
+  invisible(NULL)
 }
 
 
@@ -341,7 +351,7 @@ umapNamedClusters <- function(obj = combined.obj,
 # _________________________________________________________________________________________________
 #' @title AutoNumber.by.PrinCurve
 #'
-#' @description Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
+#' @description Relabel cluster numbers based on their position along the principal curve fitted to the specified dimensionality reduction (UMAP, tSNE, or PCA).
 #' @param obj Seurat object, Default: combined.obj
 #' @param dim Dimensions to use, Default: 1:2
 #' @param plotit Plot results (& show it), Default: `TRUE`.

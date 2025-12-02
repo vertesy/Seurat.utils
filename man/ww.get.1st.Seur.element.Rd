@@ -15,7 +15,7 @@ If the input is not a Seurat object or a list containing at least one Seurat
 object, the function will throw an error.
 }
 \description{
-#' If provided with a list of Seurat objects, this function returns the first
+If provided with a list of Seurat objects, this function returns the first
 Seurat object in the list. If the input is a single Seurat object, it returns
 the object itself. It is assumed that all elements of the list are Seurat
 objects if the input is a list.

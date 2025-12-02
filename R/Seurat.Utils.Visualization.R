@@ -286,6 +286,10 @@ PlotFilters <- function(
 #'
 #' @export
 scCalcPCAVarExplained <- function(obj = combined.obj) { # Determine percent of variation associated with each PC.
+  stopifnot(
+    inherits(obj, "Seurat"),
+    "pca" %in% names(obj@reductions)
+  )
   pct <- obj@reductions$pca@stdev / sum(obj@reductions$pca@stdev) * 100
   names(pct) <- 1:length(obj@reductions$pca@stdev)
   return(pct)
@@ -333,6 +337,10 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
                                   # caption = .parseKeyParams(obj, suffix = "| hline at 1%"),
                                   use.MarkdownReports = FALSE,
                                   ...) {
+  stopifnot(
+    inherits(obj, "Seurat"),
+    "pca" %in% names(obj@reductions)
+  )
   message(" > Running scPlotPCAvarExplained...")
 
   pct <- scCalcPCAVarExplained(obj)
@@ -2321,11 +2329,15 @@ clUMAP <- function(
     check_for_2D = TRUE,
     ...) {
   #
-
   stopifnot(
+    inherits(obj, "Seurat"),
+    is.character(reduction) && length(reduction) == 1,
+    reduction %in% names(obj@reductions),
     is.character(caption) | is.null(caption),
     is.logical(save.plot),
-    is.character(suffix) | is.null(suffix)
+    is.character(suffix) | is.null(suffix),
+    is.null(ident) || (is.character(ident) && length(ident) == 1 && ident %in% colnames(obj@meta.data)),
+    is.null(splitby) || splitby %in% colnames(obj@meta.data)
   )
   tictoc::tic()
 

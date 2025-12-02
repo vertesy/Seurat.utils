@@ -19,15 +19,15 @@
 #'
 #' @description
 #' This function translates a specified metadata vector in a Seurat object using a named vector of old
-#' and new values and adds it to the Seurat object with a specified suffix. The function also generates
-#' UMAP plots for the new metadata.
+#' and new values and adds it to the Seurat object. A suffix can optionally be appended to the name of
+#' the newly created metadata column. The function also generates UMAP plots for the new metadata.
 #'
 #' @param obj A Seurat object to be updated. Default: combined.obj.
 #' @param orig.ident A character string specifying the original metadata to be translated. Default: "RNA_snn_res.0.4".
 #' @param translation_as_named_vec A named vector where names are old values and values are new translations. Default: None.
-#' @param new_col_name A character string specifying the name of the new metadata column. Default: "translation_as_named_vec".
+#' @param new_col_name A character string specifying the base name of the new metadata column.
 # #' @param NA.as.character A logical indicating whether to convert NAs to character. Default: TRUE.
-#' @param suffix A character string specifying the suffix for the new metadata column name. Default: ".".
+#' @param suffix A character string appended to `new_col_name` to form the final metadata column name. Default: `NULL`.
 #' @param plot A logical indicating whether to plot the UMAP for the new metadata. Default: FALSE.
 #'
 #' @return An updated Seurat object.
@@ -44,21 +44,26 @@ addTranslatedMetadata <- function(obj = combined.obj,
                                   plot = FALSE,
                                   ...) {
   # Input assertions
-  stopifnot(is(obj, "Seurat"),
+  stopifnot(
+    is(obj, "Seurat"),
     is.character(orig.ident) && length(orig.ident) == 1,
-    is.character(suffix) | is.null(suffix),
+    is.vector(suffix) | is.null(suffix),
     "Not a named vec was provided!" = !is.null(names(translation_as_named_vec))
   )
+
+  # Allow appending a suffix to the metadata column name
+  if (!is.null(suffix)) {
+    new_col_name <- paste0(new_col_name, suffix)
+  }
   message("new_col_name: ", new_col_name)
 
-  # Translate metadata
+  # Translate metadata and store under the new column name
   obj@meta.data[[new_col_name]] <- new <- CodeAndRoll2::translate(
     vec = as.character(obj@meta.data[[orig.ident]]),
     old = names(translation_as_named_vec),
     new = translation_as_named_vec
   )
   print(table(new, useNA = "ifany"))
-
 
   if (plot) x <- clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...); print(x)
   return(obj)
@@ -111,6 +116,11 @@ getMetaColnames <- function(obj = combined.obj,
 #' @return A logical value indicating whether the column exists (TRUE) or not (FALSE).
 #' @export
 metaColnameExists <- function(col_name, obj = combined.obj) {
+  stopifnot(
+    inherits(obj, "Seurat"),
+    is.character(col_name),
+    length(col_name) == 1
+  )
   col_name %in% colnames(obj@meta.data)
 }
 
@@ -165,6 +175,12 @@ getMetadataColumn <- function(col = "batch", obj = combined.obj, as_numeric = FA
 #' @export
 
 get_levels_seu <- function(obj, ident, max_levels = 100, dput = TRUE) {
+  stopifnot(
+    inherits(obj, "Seurat"),
+    is.character(ident),
+    length(ident) == 1,
+    ident %in% colnames(obj@meta.data)
+  )
   Levels <- unique(deframe(obj[[ident]]))
   stopifnot(length(Levels) < max_levels)
   if (dput) {
@@ -670,7 +686,7 @@ add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) { # 
 # _________________________________________________________________________________________________
 #' @title seu.add.meta.from.table
 #'
-#' @description Add multiple new metadata columns to a Seurat object from a table. #
+#' @description Add metadata columns from a table keyed by cell names.
 #' @param obj Seurat object, Default: seu.ORC
 #' @param meta Metadata data frame.
 #' @param suffix A suffix added to the filename, Default: '.fromMeta'
