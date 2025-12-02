@@ -851,7 +851,7 @@ SmallestNonAboveX <- function(vec, X = 0) {
 #' @title AreTheseCellNamesTheSame
 #'
 #' @description Assert and compare two character vectors (e.g.: cell IDs) how much they overlap and
-#' plot a Venn Diagram. The function aborts with an error if overlap is too small.
+#' plot a Venn diagram. The function aborts with an error if overlap is too small.
 #' @param vec1 Character vector, eg. with cell names
 #' @param vec2 Character vector, eg. with cell names
 #' @param names Names for plotting
@@ -870,7 +870,7 @@ AreTheseCellNamesTheSame <- function(
   cells.in.both <- intersect(vec1, vec2)
   sbb <- percentage_formatter(length(cells.in.both) / length(vec2), suffix = "of cells (GEX) in have a UVI assigned")
   ggExpress::qvenn(Cellname.Overlap, subt = sbb)
-  iprint("Venn Diagramm saved.")
+  iprint("Venn diagram saved.")
   iprint(sbb)
 
   Nr.overlapping <- length(intersect(vec1, vec2))
@@ -2059,16 +2059,16 @@ copyMiscElements <- function(obj.from, obj.to, elements.needed, overwrite = TRUE
   }
 
   # Check for existing elements in obj.to@misc
-  elements.already.exisiting <- intersect(elements.needed, names(obj.to@misc))
-  if (length(elements.already.exisiting) > 0) {
+  elements.already.existing <- intersect(elements.needed, names(obj.to@misc))
+  if (length(elements.already.existing) > 0) {
     if (!overwrite) {
       stop(
         "The following elements already exist in obj.to@misc and 'overwrite' is FALSE: ",
-        paste(elements.already.exisiting, collapse = ", ")
+        paste(elements.already.existing, collapse = ", ")
       )
     } else {
       warning("Overwriting the following elements in obj.to@misc: ",
-              paste(elements.already.exisiting, collapse = ", "),
+              paste(elements.already.existing, collapse = ", "),
               immediate. = TRUE
       )
     }
@@ -4705,7 +4705,7 @@ LoadAllSeurats <- function(
     } else if (!use_rds) {
       ls.Seu[[i]] <- qs::qread(file = FNP)
     } else {
-      warning("File pattern ambigous. Use either qs or rds:", file.pattern, immediate. = TRUE)
+      warning("File pattern ambiguous. Use either qs or rds:", file.pattern, immediate. = TRUE)
     }
   } # for
   print(tictoc::toc())
@@ -4986,7 +4986,7 @@ xread <- function(file,
   obj <- qs::qread(file = file, nthreads = nthreads, ...)
 
   report <- if (is(obj, "Seurat")) {
-    kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "meta colums.")
+    kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "meta columns.")
   } else if (is.list(obj)) {
     kppws("is a list of:", length(obj))
   } else {
@@ -5640,7 +5640,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 # _________________________________________________________________________________________________
 #' @title jJaccardIndexVec
 #'
-#' @description Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
+#' @description Calculate jaccard similarity for 2 vectors. Helper to jPairwiseJaccardIndexList.
 #' @param A Set A, Default: 1:3
 #' @param B Set B, Default: 2:4
 #' @export

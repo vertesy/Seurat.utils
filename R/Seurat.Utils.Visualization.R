@@ -710,8 +710,11 @@ PctCellsAboveX <- function(
 
   # 8. Plotting (your exact original code) ____________________
   if (plot) {
-    if (is.null(caption))
-      caption <- paste0(sum(is.na(pct_vec)), " NA values removed")
+    if (is.null(caption)) {
+      caption <- pc_TRUE(is.na(Fraction.of.Cells.Above.Threshold),
+        suffix = "of idents yielded NA/NaN & excluded from plot."
+      )
+    }
 
     TTL <- paste("Percentage of Cells Above Threshold for", feature)
     STL <- paste("Cells above threshold for", feature, "above", threshold)
@@ -1018,7 +1021,7 @@ scBarplot.CellFractions <- function(
 
     capt.suffix <- paste0(
       "\nDownsampled all groups in ", fill.by, " (Y) to ", n_smallest_group,
-      " cells before splitting by X. \nIt is calculated as max(smallest group, 5% of total cells). Largest groups previosly was: ", largest_grp
+      " cells before splitting by X. \nIt is calculated as max(smallest group, 5% of total cells). Largest group previously contained: ", largest_grp
     )
   }
 
@@ -2413,7 +2416,7 @@ clUMAP <- function(
 
   # Plot _________________________________________________________________________________________
   if (NtCategs > MaxCategThrHP) {
-    iprint("Too many categories (", NtCategs, ") in ", ident, "- use qUMAP for continous variables.")
+    iprint("Too many categories (", NtCategs, ") in ", ident, "- use qUMAP for continuous variables.")
   } else {
     if (length(unique(identity)) < MaxCategThrHP) {
       gg.obj <-
@@ -3883,7 +3886,7 @@ countEnrichedDepletedGenes <- function(df, min_padj = 0.01, min_logFC = 0.5,
 # Helpers ______________________________ ----
 # _________________________________________________________________________________________________
 
-#' @title Adjust Layout Parameters for multi* plotting fucntions
+#' @title Adjust Layout Parameters for multi* plotting functions
 #'
 #' @description Adjusts layout dimensions and properties based on the specified layout type.
 #'              Updates the provided environment with new dimensions and layout configuration.
@@ -4145,8 +4148,8 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 #' \dontrun{
 #' if (interactive()) {
 #'   plot3D.umap.gene(obj = combined.obj, gene = "DDIT4", quantileCutoff = .95)
-#'   plot3D.umap.gene(obj = combined.obj, gene = "percent.mito", quantileCutoff = .95) # for continous meta variables
-#'   plot3D.umap.gene(obj = combined.obj, gene = "nFeature_RNA", quantileCutoff = .95) # for continous meta variables
+#'   plot3D.umap.gene(obj = combined.obj, gene = "percent.mito", quantileCutoff = .95) # for continuous meta variables
+#'   plot3D.umap.gene(obj = combined.obj, gene = "nFeature_RNA", quantileCutoff = .95) # for continuous meta variables
 #' }
 #' }
 #' @importFrom plotly plot_ly layout
@@ -4380,8 +4383,8 @@ BackupReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") { #
 #' @param dimensions A numeric vector specifying the dimensions to use for the dimensionality reductions. Default: 3:2
 #' @param reduction_input The type of dimensionality reduction to use as input. Can be "pca", or
 #' some correction results, like harmony pca. Default: 'pca'
-#' @param reduction_output Te type of dimensionality reduction to perform.  Can be "umap", "tsne",
-#' "pca", or some correctionn results, like harmony pca.  Default: 'umap'
+#' @param reduction_output The type of dimensionality reduction to perform.  Can be "umap", "tsne",
+#' "pca", or some correction results, like harmony pca.  Default: 'umap'
 #' @param ... Additional arguments to pass to the dimensionality reduction function.
 #' @return The input Seurat object with computed dimensionality reductions and backups of these reductions.
 #' @examples
@@ -4512,7 +4515,7 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
 #' }
 #' @export Plot3D.ListOfGenes
 Plot3D.ListOfGenes <- function(
-    obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
+    obj = combined.obj # Plot and save list of 3D UMAP or tSNE plots using plotly.
     , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, cex = 1.25, default.assay = c("integrated", "RNA")[2],
     ListOfGenes = c("BCL11B", "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4"),
     SubFolderName = ppp("plot3D", substitute_deparse(ListOfGenes))) {
@@ -4559,7 +4562,7 @@ Plot3D.ListOfGenes <- function(
 #' }
 #' @export Plot3D.ListOfCategories
 Plot3D.ListOfCategories <- function(
-    obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
+    obj = combined.obj # Plot and save list of 3D UMAP or tSNE plots using plotly.
     , annotate.by = "integrated_snn_res.0.7", cex = 1.25, default.assay = c("integrated", "RNA")[2],
     ListOfCategories = c("v.project", "experiment", "Phase", "integrated_snn_res.0.7"),
     SubFolderName = ppp("plot3D", substitute_deparse(ListOfCategories))) {
