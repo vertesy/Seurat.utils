@@ -31,18 +31,18 @@ BiocManager::install("sparseMatrixStats")
 require("devtools")
 
 # Install dependencies
-devtools::install_github(repo = "vertesy/Stringendo", upgrade = F)
-devtools::install_github(repo = "vertesy/CodeAndRoll2", upgrade = F)
-devtools::install_github(repo = "vertesy/ReadWriter", upgrade = F)
-devtools::install_github(repo = "vertesy/MarkdownHelpers", upgrade = F)
-devtools::install_github(repo = "vertesy/MarkdownReports", upgrade = F)
-devtools::install_github(repo = "vertesy/ggExpress", upgrade = F)
+devtools::install_github(repo = "vertesy/Stringendo", ref = "main", upgrade = F)
+devtools::install_github(repo = "vertesy/CodeAndRoll2", ref = "main", upgrade = F)
+devtools::install_github(repo = "vertesy/ReadWriter", ref = "main", upgrade = F)
+devtools::install_github(repo = "vertesy/MarkdownHelpers", ref = "main", upgrade = F)
+devtools::install_github(repo = "vertesy/MarkdownReports", ref = "main", upgrade = F)
+devtools::install_github(repo = "vertesy/ggExpress", ref = "main", upgrade = F)
 
 # Recommended
-devtools::install_github(repo = "vertesy/DatabaseLinke.R", upgrade = F)
+devtools::install_github(repo = "vertesy/DatabaseLinke.R, ref = "main"", upgrade = F)
 
 # Install Seurat.utils
-devtools::install_github(repo = "vertesy/Seurat.utils", upgrade = F)
+devtools::install_github(repo = "vertesy/Seurat.utils", ref = "main", upgrade = F)
 
 # You may need to install
 # install.packages("pheatmap")

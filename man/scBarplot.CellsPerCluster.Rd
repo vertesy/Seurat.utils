@@ -12,6 +12,7 @@ scBarplot.CellsPerCluster(
   sub = ident,
   label = list(TRUE, "percent")[[1]],
   suffix = if (label == "percent") "percent" else NULL,
+  col = NULL,
   palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
   return_table = FALSE,
   ylab_adj = 1.1,

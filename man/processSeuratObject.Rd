@@ -31,7 +31,7 @@ processSeuratObject(
 
 \item{update_gene_symbols}{A boolean indicating whether to update gene symbols from HGNC. Default: \code{FALSE}.}
 
-\item{add.meta.fractions}{A boolean indicating whether to add meta data for fractions of cells in each cluster. Default: \code{FALSE}.}
+\item{add.meta.fractions}{A boolean indicating whether to add metadata for fractions of cells in each cluster. Default: \code{FALSE}.}
 
 \item{precompute}{A boolean indicating whether to compute steps: \code{FindVariableFeatures()},
 \code{calc.q99.Expression.and.set.all.genes()},  \code{ScaleData()} and \code{RunPCA()} Default: \code{TRUE}.}

@@ -56,7 +56,7 @@ PlotFilters <- function(
     par.ls = p,
     parentdir = OutDirOrig,
     suffices = names(ls.obj),
-    filetype = ".png",
+    filetype = ".jpg",
     below.mito = par.ls$"thr.lp.mito",
     above.mito = par.ls$"thr.hp.mito",
     below.ribo = par.ls$"thr.lp.ribo",
@@ -106,14 +106,20 @@ PlotFilters <- function(
   MarkdownReports::create_set_OutDir(OutDir)
   stopifnot(length(suffices) == length(ls.obj))
 
-  Calculate_nFeature_LowPass <- if (below.nFeature_RNA < 1) below.nFeature_RNA else FALSE
+  Calculate_nFeature_LowPass <- below.nFeature_RNA > 0 && below.nFeature_RNA < 1 # Use quantile low pass threshold
+  if (Calculate_nFeature_LowPass) qval <- below.nFeature_RNA
+
   for (i in 1:length(ls.obj)) {
     print(suffices[i])
     mm <- ls.obj[[i]]@meta.data
 
-    if (Calculate_nFeature_LowPass < 1) {
-      below.nFeature_RNA <- floor(quantile(ls.obj[[i]]$"nFeature_RNA", probs = Calculate_nFeature_LowPass))
-      iprint("below.nFeature_RNA at", percentage_formatter(Calculate_nFeature_LowPass), "percentile:", below.nFeature_RNA)
+    if (Calculate_nFeature_LowPass) {
+      nFtr <- ls.obj[[i]]$"nFeature_RNA"
+      nFtr_valid <- nFtr[nFtr > above.nFeature_RNA]                                # restrict to high-quality cells, otherwise the quantile may be Influenced by the amount of junk in the library.
+
+      below.nFeature_RNA <- floor(quantile(nFtr_valid, probs = qval))
+      message(pc_TRUE(nFtr_valid < below.nFeature_RNA, NumberAndPC = T, suffix = paste("cells below thr.", below.nFeature_RNA, "at quantile:", qval)))
+      stopifnot(below.nFeature_RNA > above.nFeature_RNA)
     }
 
     AllMetaColumnsPresent <- all(c("nFeature_RNA", "percent.mito", "percent.ribo") %in% colnames(mm))
@@ -132,6 +138,7 @@ PlotFilters <- function(
 
     mm <- cbind(mm, filt.nFeature_RNA, filt.below.mito, filt.below.ribo)
 
+    # Define colour thresholds for nFeature_RNA
     mm$colour.thr.nFeature <- cut(mm$"nFeature_RNA",
       breaks = c(-Inf, above.nFeature_RNA, below.nFeature_RNA, Inf),
       labels = c(
@@ -141,15 +148,20 @@ PlotFilters <- function(
       )
     )
 
+    boolean_LC_cells <- mm$"nFeature_RNA" <= above.nFeature_RNA
+    LQ <- pc_TRUE(boolean_LC_cells)
+    Doublets <- pc_TRUE(mm$"nFeature_RNA"[!boolean_LC_cells] >= below.nFeature_RNA)
+
     A <- ggplot(data = mm, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
       geom_histogram(binwidth = 100) +
       ggtitle(paste(
         "Cells between", above.nFeature_RNA, "and", below.nFeature_RNA,
-        " UMIs are selected \n(", pc_TRUE(filt.nFeature_RNA), ")"
+        "UMIs are selected \n(", pc_TRUE(filt.nFeature_RNA), "), with",
+        LQ, "low-quality and", Doublets, "doublet cells excluded."
       )) +
-      geom_vline(xintercept = below.nFeature_RNA) +
-      geom_vline(xintercept = above.nFeature_RNA) +
-      theme(legend.position = "top")
+      scale_y_log10() + annotation_logticks() +
+      geom_vline(xintercept = below.nFeature_RNA) + geom_vline(xintercept = above.nFeature_RNA) +
+      theme(legend.position = "none") # "top"
     # A
 
     B <- ggplot2::ggplot(mm, aes(x = nFeature_RNA, y = percent.mito)) +
@@ -161,12 +173,9 @@ PlotFilters <- function(
         alpha = transparency, size = cex, show.legend = FALSE,
         aes(color = filt.nFeature_RNA & filt.below.mito)
       ) +
-      scale_x_log10() + # scale_y_log10() +
-      # annotation_logticks() +
-      geom_hline(yintercept = below.mito) +
-      geom_hline(yintercept = above.mito) +
-      geom_vline(xintercept = below.nFeature_RNA) +
-      geom_vline(xintercept = above.nFeature_RNA)
+      scale_x_log10() + annotation_logticks() +
+      geom_hline(yintercept = below.mito) + geom_hline(yintercept = above.mito) +
+      geom_vline(xintercept = below.nFeature_RNA) + geom_vline(xintercept = above.nFeature_RNA)
     # B
 
     C <- ggplot(mm, aes(x = nFeature_RNA, y = percent.ribo)) +
@@ -179,40 +188,56 @@ PlotFilters <- function(
         alpha = transparency, size = cex, show.legend = FALSE,
         aes(color = filt.nFeature_RNA & filt.below.ribo)
       ) +
-      scale_x_log10() + # scale_y_log10() +
-      annotation_logticks() +
-      geom_hline(yintercept = below.ribo) +
-      geom_hline(yintercept = above.ribo) +
-      geom_vline(xintercept = below.nFeature_RNA) +
-      geom_vline(xintercept = above.nFeature_RNA)
+      scale_x_log10() + annotation_logticks() +
+      geom_hline(yintercept = below.ribo) + geom_hline(yintercept = above.ribo) +
+      geom_vline(xintercept = below.nFeature_RNA) + geom_vline(xintercept = above.nFeature_RNA)
     # C
 
     D <- ggplot(mm, aes(x = percent.ribo, y = percent.mito)) +
       ggtitle(paste(
-        "Cells w/o extremes selected \n(with A,B,C:",
+        "Final: All cells w/o extreme values are selected \n(with A,B,C:",
         pc_TRUE(filt.nFeature_RNA & filt.below.mito & filt.below.ribo), ")"
       )) +
       geom_point(
         alpha = transparency, size = cex, show.legend = FALSE,
         aes(color = filt.nFeature_RNA & filt.below.mito & filt.below.ribo)
       ) +
-      scale_x_log10() +
-      scale_y_log10() +
-      annotation_logticks() +
-      geom_hline(yintercept = below.mito) +
-      geom_hline(yintercept = above.mito) +
-      geom_vline(xintercept = below.ribo) +
-      geom_vline(xintercept = above.ribo)
+      scale_x_log10() + scale_y_log10() + annotation_logticks() +
+      geom_hline(yintercept = below.mito) + geom_hline(yintercept = above.mito) +
+      geom_vline(xintercept = below.ribo) + geom_vline(xintercept = above.ribo)
     # D
 
-    plot_list <- list(A, B, C, D)
-    px <- cowplot::plot_grid(
-      plotlist = plot_list, nrow = 2, ncol = 2,
-      labels = LETTERS[1:4], label_size = 20
+    # Add title to A and caption to D
+    main_title <- paste("Object", suffices[i])
+    caption_text <- paste0(
+      "pct.mito [", below.mito, "-", above.mito, "] | ",
+      "pct.ribo [", below.ribo, "-", above.ribo, "] | ",
+      "nFeature_RNA [", above.nFeature_RNA, "-", below.nFeature_RNA, "] | ",
+      "Doublet % and quantile cutoff is calculated on cells above min. nFeature_RNA"
     )
-    fname <- kpps(OutDir, FixPlotName("Filtering.thresholds", suffices[i], filetype))
 
-    cowplot::save_plot(filename = fname, plot = px, base_height = 14, ncol = 1, nrow = 1) # Figure 2
+
+    # Combine plots in 2x2 grid
+    p_grid <- cowplot::plot_grid(
+      plotlist = list(A, B, C, D),
+      nrow = 2, ncol = 2,
+      labels = LETTERS[1:4],
+      label_size = 20
+    )
+
+    # Add overall title and caption cleanly, with white background
+    px <- cowplot::ggdraw() +
+      theme(plot.background = element_rect(fill = "white", colour = NA)) +          # white canvas
+      cowplot::draw_label(main_title, x = 0.02, y = 0.98, hjust = 0, vjust = 1,
+                          fontface = "bold", size = 22) +                           # slightly closer to top
+      cowplot::draw_plot(p_grid, y = 0.055, height = 0.89) +                        # raise the grid, taller height
+      cowplot::draw_label(caption_text, x = 0.98, y = 0.02, hjust = 1, vjust = 0,
+                          fontface = "italic", size = 12)                           # closer to bottom
+
+
+    # Save figure
+    fname <- kpps(OutDir, FixPlotName("Filtering.thresholds", suffices[i], filetype))
+    cowplot::save_plot(filename = fname, plot = px, base_height = 15)
     stopifnot(file.exists(fname))
   } # for
   # _________________________________________________________________________________________________
@@ -592,122 +617,141 @@ plotGeneExprHistAcrossCells <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title Percentage of Cells Above Threshold
+#' @title Compute % of Cells Above a Threshold for a Metadata or Gene Feature
 #'
-#' @description This function calculates the percentage of cells above a specified threshold for a given
-#' feature in a Seurat object. It can subset the data based on a specified identity and values.
+#' @description
+#' Computes the fraction of cells with values above a specified threshold for
+#' either a metadata column or an assay feature. Supports optional subsetting
+#' and optional regrouping into boxplot-style categories.
 #'
-#' @param obj A Seurat object. Default: combined.obj.
-#' @param feature The feature to evaluate.
-#' @param ident The identity class to split the data by. Default: GetNamedClusteringRuns(obj)[1].
-#' @param box Logical value indicating whether to plot the boxplot. Default: `TRUE`.
-#' @param box.ident The identity class to split the data by for individual dots in the boxplot.
-#' Ident will be used for the boxes displayed (matching the barplot).  Default: NULL.
-#' @param threshold The threshold value to evaluate the feature against. Default: 2.
-#' @param subset_ident The identity class to subset the data by. Default: NULL.
-#' @param subset_values The values of the identity class to keep in the subset. Default: NULL.
-#' @param omit.na Logical value indicating whether to omit NA values. Default: `TRUE`.
-#' @param assay The assay to use for feature extraction. Default: 'RNA'.
-#' @param plot Logical value indicating whether to plot the results. Default: `TRUE`.
-#' @param ylab The label for the y-axis of the plot. Default: "% cells above threshold".
-#' @param ... Additional parameters to pass to the plotting function.
+#' @param object Seurat object.
+#' @param feature Character. Metadata column or gene/feature name.
+#' @param ident Character. Metadata column used for grouping.
+#' @param threshold Numeric. Threshold above which cells are counted.
+#' @param box Logical. If TRUE, regroup by \code{ident.box}.
+#' @param ident.box Character or NULL. Secondary grouping variable for box mode.
+#' @param subset_ident Character or NULL. Metadata column used for subsetting.
+#' @param subset_values Vector or NULL. Values of \code{subset_ident} to keep.
+#' @param omit.na Logical. Whether to remove NA values in the feature.
+#' @param assay Character. Assay name passed to \code{FetchData}.
+#' @param slot Character. Slot name passed to \code{FetchData}.
+#' @param plot Logical. Whether to generate a plot.
+#' @param caption Character or NULL. Caption for the plot.
+#' @param ylab Character. Y-axis label.
+#' @param ... Additional arguments passed to plotting functions.
 #'
-#' @return A named vector with the percentage of cells above the threshold for each identity class.
+#' @return
+#' A named numeric vector of percentages, or a list of such vectors if
+#' \code{box = TRUE}.
 #'
-#' @examples
-#' \dontrun{
-#' PctCellsAboveX(obj = seurat_object, feature = "GeneA", ident = "CellType", threshold = 1.5)
-#' }
-PctCellsAboveX <- function(obj = combined.obj,
-                           feature = "TOP2A",
-                           ident = GetNamedClusteringRuns(obj = obj, v = FALSE)[1],
-                           threshold = 2,
-                           suffix = ppp(substitute_deparse(obj), ncol(obj), "thr", threshold),
-                           box = FALSE,
-                           ident.box = NULL,
-                           subset_ident = NULL,
-                           subset_values = NULL,
-                           omit.na = TRUE,
-                           assay = "RNA",
-                           plot = TRUE,
-                           caption = NULL,
-                           ylab = "% cells above threshold",
-                           # color = NULL,
-                           ...) {
+#' @export
+
+PctCellsAboveX <- function(
+    object,
+    feature,
+    ident,
+    threshold = 1,
+    box = FALSE,
+    ident.box = NULL,
+    subset_ident = NULL,
+    subset_values = NULL,
+    omit.na = TRUE,
+    assay = "RNA",
+    slot = "data",
+    plot = TRUE,
+    caption = NULL,
+    ylab = "% cells above threshold",
+    ...
+) {
+
+  # 1. Validate input ________________________________________
   stopifnot(
-    is(obj, "Seurat"),
-    feature %in% colnames(obj@meta.data) | feature %in% Features(obj, assay = assay),
-    ident %in% colnames(obj@meta.data),
-    is.null(subset_ident) | subset_ident %in% colnames(obj@meta.data),
-    is.null(subset_values) | subset_values %in% unique(obj@meta.data[, subset_ident]),
-    !box & is.null(ident.box) | box
+    inherits(object, "Seurat"),
+    is.character(feature),
+    is.character(ident),
+    ident %in% colnames(object@meta.data),
+    is.null(subset_ident) || subset_ident %in% colnames(object@meta.data),
+    box || is.null(ident.box)
   )
 
+  # 2. Fetch metadata/gene values _____________________________
+  vars_to_get <- unique(c(feature, ident, subset_ident, ident.box))
+  df <- Seurat::FetchData(
+    object = object,
+    assay = assay,
+    slot = slot,
+    vars = vars_to_get
+  )
+  df$expr <- df[[feature]]
+
+  # 3. Subset rows if required ________________________________
   if (!is.null(subset_ident)) {
-    obj <- subsetSeuObjByIdent(obj, ident = subset_ident, identGroupKeep = subset_values)
-    if (omit.na) ls_feat <- lapply(ls_feat, na.omit.strip)
+    keep_rows <- df[[subset_ident]] %in% subset_values
+    df <- df[keep_rows, , drop = FALSE]
   }
 
-  split_ident <- if (box) ident.box else ident
-  ls_feat <- split(obj@meta.data[, feature], f = obj@meta.data[, split_ident])
-  if (omit.na) ls_feat <- lapply(ls_feat, na.omit.strip)
+  # 4. Remove NA values _______________________________________
+  if (omit.na) df <- df[!is.na(df$expr), , drop = FALSE]
 
-  # Calculate the percentage of cells above the threshold for each split_ident
-  Fraction.of.Cells.Above.Threshold <- sapply(ls_feat, function(x) sum(x > threshold) / length(x))
+  # 5. Split by ident or ident.box ____________________________
+  split_col <- if (box) ident.box else ident
+  ls_feat <- split(df$expr, df[[split_col]])
 
+  # 6. Compute percentages ____________________________________
+  pct_vec <- vapply(ls_feat, function(x) mean(x > threshold), numeric(1))
+
+  # 7. Re-group for box mode __________________________________
   if (box) {
-    # Arrange ident.box to categories of ident
-    ls.from_to <- lapply(split(obj@meta.data[, ident.box], f = obj@meta.data[, ident]), unique)
-    from_to <- list.2.replicated.name.vec(ls.from_to)
-
-    stopifnot(all(names(from_to) %in% names(Fraction.of.Cells.Above.Threshold)))
-
-    from_to <- from_to[names(Fraction.of.Cells.Above.Threshold)]
-
-    # Split Fraction
-    ls.Fraction.of.Cells.Above.Threshold <- split(Fraction.of.Cells.Above.Threshold, f = from_to)
+    from_to <- split(df[[ident.box]], df[[ident]])
+    from_to <- list.2.replicated.name.vec(from_to)
+    pct_vec <- pct_vec[names(from_to)]
+    pct_list <- split(pct_vec, f = from_to)
   }
 
-
+  # 8. Plotting (your exact original code) ____________________
   if (plot) {
-    if (is.null(caption)) {
-      caption <- pc_TRUE(is.na(Fraction.of.Cells.Above.Threshold),
-        suffix = "of idents yielded NA/NaN & exluded from plot."
-      )
-    }
+    if (is.null(caption))
+      caption <- paste0(sum(is.na(pct_vec)), " NA values removed")
+
     TTL <- paste("Percentage of Cells Above Threshold for", feature)
     STL <- paste("Cells above threshold for", feature, "above", threshold)
-    SFX <- ppp(feature, "by", ident, "thr", threshold, "subset_ident", subset_ident, suffix)
-
-    Fraction.of.Cells.Above.Threshold <- na.omit.strip(Fraction.of.Cells.Above.Threshold)
+    SFX <- ppp(feature, "by", ident, "thr", threshold, "subset_ident", subset_ident)
 
     if (box) {
-      pobj <- qboxplot(ls.Fraction.of.Cells.Above.Threshold, ,
-        plotname = TTL, subtitle = STL, caption = caption, suffix = SFX,
-        add = "dotplot", xlab.angle = 45,
-        hide.legend = TRUE, ,
-        ylab = ylab
-        # , xlab = ident
-        , ...
+      pobj <- qboxplot(
+        pct_list,
+        add = "dotplot",
+        xlab.angle = 45,
+        hide.legend = TRUE,
+        plotname = TTL,
+        subtitle = STL,
+        caption = caption,
+        suffix = SFX,
+        ylab = ylab,
+        ...
       )
     } else {
-      "barplot"
-      pobj <- qbarplot(Fraction.of.Cells.Above.Threshold,
-        label = percentage_formatter(Fraction.of.Cells.Above.Threshold),
-        plotname = TTL, subtitle = STL, caption = caption, suffix = SFX,
-        ylab = ylab
-        # , xlab = ident
-        , ...
+      pobj <- qbarplot(
+        pct_vec,
+        label = percentage_formatter(pct_vec),
+        plotname = TTL,
+        subtitle = STL,
+        caption = caption,
+        suffix = SFX,
+        ylab = ylab,
+        ...
       )
     }
-
-
 
     print(pobj)
   }
 
-  return(Fraction.of.Cells.Above.Threshold)
+  # 9. Return final output ____________________________________
+  if (box) return(pct_list)
+  return(pct_vec)
 }
+
+
 
 
 # _________________________________________________________________________________________________
@@ -1171,6 +1215,7 @@ scBarplot.CellsPerCluster <- function(
     sub = ident,
     label = list(TRUE, "percent")[[1]],
     suffix = if (label == "percent") "percent" else NULL,
+    col = NULL,
     palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[3],
     return_table = FALSE,
     ylab_adj = 1.1,
@@ -1183,9 +1228,9 @@ scBarplot.CellsPerCluster <- function(
     is.numeric(ylab_adj), is.numeric(min.cells), ident %in% colnames(obj@meta.data)
   )
 
-  cat(0)
+  1
   cell.per.cl <- obj[[ident]][, 1]
-  cell.per.cluster <- (table(cell.per.cl))
+  cell.per.cluster <- (table(cell.per.cl, useNA = "ifany"))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
   lbl <- if (isFALSE(label)) {
     NULL
@@ -1201,18 +1246,24 @@ scBarplot.CellsPerCluster <- function(
   message("min cell thr: ", min.cells, " corresponding to min: ", percentage_formatter(min.PCT.cells))
 
   n.clusters <- length(cell.per.cluster)
-  nr.cells.per.cl <- table(obj[[ident]][, 1])
+  nr.cells.per.cl <- table(obj[[ident]][, 1], useNA = "ifany")
 
   SBT <- pc_TRUE(nr.cells.per.cl < min.cells,
     NumberAndPC = TRUE,
     suffix = paste("of identities are below:", min.cells, "cells, or", percentage_formatter(min.PCT.cells), "of all cells.")
   )
 
+  color <- if (is.null(col)) 1:n.clusters else col
+
+  # Fix NA names, if any
+  names(cell.per.cluster)[is.na(names(cell.per.cluster))] <- "NA"
+
+
   pl <- ggExpress::qbarplot(cell.per.cluster,
     plotname = plotname,
     subtitle = paste0(sub, "\n", SBT),
     suffix = kpp(ident, ncol(obj), "c", suffix),
-    col = 1:n.clusters,
+    col = color,
     caption = .parseBasicObjStats(obj = obj),
     xlab.angle = 45,
     ylim = c(0, ylab_adj * max(cell.per.cluster)),
@@ -1616,7 +1667,7 @@ getDiscretePalette <- function() .Deprecated("DiscretePaletteSafe and DiscretePa
 #' @export
 getDiscretePaletteObj <- function(ident.used,
                                   obj,
-                                  palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
+                                  palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "parade", "stepped")[2],
                                   show.colors = FALSE,
                                   seed = 1989) {
   stopifnot(
@@ -1665,7 +1716,7 @@ getDiscretePaletteObj <- function(ident.used,
 #'
 #' @export
 DiscretePaletteSafe <- function(n,
-                                palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[2],
+                                palette.used = c("alphabet", "alphabet2", "glasbey", "polychrome", "parade", "stepped")[2],
                                 show.colors = FALSE,
                                 seed = 1989) {
   stopifnot(
@@ -2306,17 +2357,17 @@ clUMAP <- function(
     iprint("Identity not found. Plotting", ident, "\n")
   }
   identity <- obj[[ident]]
-  NtCategs <- length(unique(identity[, 1]))
+  Ident_categories <- unique(identity[, 1])
+  NtCategs <- length(Ident_categories)
   if (NtCategs > 1000) warning("More than 1000 levels! qUMAP?", immediate. = TRUE)
-
 
   # Highlight specific clusters if provided _____________________________________________________
   if (!missing(highlight.clusters)) {
     if (!(all(highlight.clusters %in% identity[, 1]))) {
       MSG <- paste(
         "Some clusters not found in the object! Missing:",
-        kppc(setdiff(highlight.clusters, unique(identity[, 1]))), "\nFrom:\n",
-        kppc(sort(unique(identity[, 1])))
+        kppc(setdiff(highlight.clusters, Ident_categories)), "\nFrom:\n",
+        kppc(sort(Ident_categories))
       )
       warning(MSG, immediate. = TRUE)
     }
@@ -2330,7 +2381,7 @@ clUMAP <- function(
     # Annotation to subtitle _________________________________________________________________
     sub2 <- paste(PCT, length(highlight.these), "cells in", ident, "are highlighted")
     sub3 <- paste("Highlighted clusters:", kppc(highlight.clusters))
-    sub <- if (is.null(sub)) pnl(sub2, sub3) else pnl(sub, sub2, sub3)
+    sub <- if (is.null(sub)) ppnl(sub2, sub3) else ppnl(sub, sub2, sub3)
 
     # title <- kpipe(ident, )
   } else {
@@ -2352,6 +2403,7 @@ clUMAP <- function(
       )
     }
   }
+
 
   # if (FALSE) cols <- adjustcolor(cols, alpha.f = alpha)
 
@@ -2928,6 +2980,7 @@ qGeneExpressionUMAPS <- function(
 #' @export
 
 plotQUMAPsInAFolder <- function(genes, obj = combined.obj,
+                                # subtitles = NULL, # assume the names of the vector.
                                 foldername = NULL,
                                 intersectionAssay = DefaultAssay(obj),
                                 plot.reduction = "umap",
@@ -2951,9 +3004,10 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj,
     assay.slot = intersectionAssay, makeuppercase = FALSE
   )
 
-  for (g in list.of.genes.found) {
-    message(g)
-    qUMAP(g, reduction = plot.reduction, obj = obj, ...)
+  for (i in seq_along(list.of.genes.found)) {
+    g <- list.of.genes.found[i];   message(g)
+    qUMAP(feature = g, sub = names(list.of.genes.found)[i],
+          reduction = plot.reduction, obj = obj, ...)
   }
 
   MarkdownReports::create_set_OutDir(ParentDir)
@@ -4098,7 +4152,7 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 #' @importFrom plotly plot_ly layout
 #' @importFrom Seurat FetchData
 #'
-#' @export
+#' @export plot3D.umap.gene
 
 plot3D.umap.gene <- function(
     gene = "TOP2A",
@@ -4154,20 +4208,6 @@ plot3D.umap.gene <- function(
     NULL
   }
 
-  # plt <- plotly::plot_ly(
-  #   data = plotting.data,
-  #   x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3,
-  #   type = "scatter3d",
-  #   mode = "markers",
-  #   marker = list(size = dotsize),
-  #   text = ~label,
-  #   color = ~Expression,
-  #   opacity = alpha
-  #   # , colors = c('darkgrey', 'red')
-  #   , colorscale = "Viridis"
-  #   # , hoverinfo="text"
-  #   , ...
-  # )
   plt <- plotly::plot_ly(
     data = plotting.data,
     x = ~UMAP_1, y = ~UMAP_2, z = ~UMAP_3,
@@ -4212,7 +4252,7 @@ plot3D.umap.gene <- function(
 #' @importFrom plotly plot_ly layout
 #' @importFrom Seurat FetchData
 #'
-#' @export
+#' @export plot3D.umap
 
 plot3D.umap <- function(
     obj = combined.obj,
@@ -4470,7 +4510,7 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
 #'   Plot3D.ListOfGenes(obj = combined.obj, ListOfGenes = CellTypeMarkers)
 #' }
 #' }
-#' @export
+#' @export Plot3D.ListOfGenes
 Plot3D.ListOfGenes <- function(
     obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
     , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, cex = 1.25, default.assay = c("integrated", "RNA")[2],
@@ -4517,7 +4557,7 @@ Plot3D.ListOfGenes <- function(
 #'   Plot3D.ListOfCategories(obj = combined.obj, ListOfCategories = categ3Dplots)
 #' }
 #' }
-#' @export
+#' @export Plot3D.ListOfCategories
 Plot3D.ListOfCategories <- function(
     obj = combined.obj # Plot and save list of 3D UMAP ot tSNE plots using plotly.
     , annotate.by = "integrated_snn_res.0.7", cex = 1.25, default.assay = c("integrated", "RNA")[2],

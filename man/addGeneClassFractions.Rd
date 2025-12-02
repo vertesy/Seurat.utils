@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Metadata.R
 \name{addGeneClassFractions}
 \alias{addGeneClassFractions}
-\title{Add Meta Data for Gene-Class Fractions}
+\title{Add Metadata for Gene-Class Fractions}
 \usage{
 addGeneClassFractions(
   obj,
@@ -18,13 +18,13 @@ addGeneClassFractions(
 \item{gene_fractions}{A named list containing gene symbol patterns for each meta column name.
 Default: List of predefined gene fractions.}
 
-\item{add_hga}{A logical value indicating whether to add percent.HGA meta data. Default: \code{TRUE}.}
+\item{add_hga}{A logical value indicating whether to add percent.HGA metadata. Default: \code{TRUE}.}
 }
 \value{
 An updated Seurat object.
 }
 \description{
-This function adds meta data for various gene-class fractions such as percent.mito, percent.ribo,
+This function adds metadata for various gene-class fractions such as percent.mito, percent.ribo,
 percent.AC.GenBank, percent.AL.EMBL, percent.LINC, percent.MALAT1, and percent.HGA to a Seurat object.
-If the meta data already exists, a message will be displayed.
+If the metadata already exists, a message will be displayed.
 }

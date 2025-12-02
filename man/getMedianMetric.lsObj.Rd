@@ -13,7 +13,7 @@ getMedianMetric.lsObj(
 \arguments{
 \item{ls.obj}{List of Seurat objects, Default: ls.Seurat}
 
-\item{n.datasets}{lenght of list (n objects), Default: length(ls.Seurat)}
+\item{n.datasets}{length of list (n objects), Default: length(ls.Seurat)}
 
 \item{mColname}{Metadata column name to calculate on. Default: 'percent.mito'}
 }

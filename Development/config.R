@@ -3,7 +3,7 @@
 
 DESCRIPTION <- list(
   package.name = "Seurat.utils",
-  version = "2.8.6",
+  version = "2.9.0",
   title = "Seurat.utils - utility functions for Seurat",
     description = "Seurat.utils is a collection of utility functions for Seurat single cell analysis.
       Functions allow 3D plotting, visualisation of statistics & QC,
