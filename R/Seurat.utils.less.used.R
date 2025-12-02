@@ -341,7 +341,7 @@ umapNamedClusters <- function(obj = combined.obj,
 # _________________________________________________________________________________________________
 #' @title AutoNumber.by.PrinCurve
 #'
-#' @description Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions. #
+#' @description Relabel cluster numbers based on their position along the principal curve fitted to the specified dimensionality reduction (UMAP, tSNE, or PCA). This assigns new cluster labels according to their order along the curve, rather than simply relabeling clusters.
 #' @param obj Seurat object, Default: combined.obj
 #' @param dim Dimensions to use, Default: 1:2
 #' @param plotit Plot results (& show it), Default: `TRUE`.

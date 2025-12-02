@@ -684,7 +684,7 @@ add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) { # 
 # _________________________________________________________________________________________________
 #' @title seu.add.meta.from.table
 #'
-#' @description Add multiple new metadata columns to a Seurat object from a table. #
+#' @description Add metadata columns from a table keyed by cell names.
 #' @param obj Seurat object, Default: seu.ORC
 #' @param meta Metadata data frame.
 #' @param suffix A suffix added to the filename, Default: '.fromMeta'

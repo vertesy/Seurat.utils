@@ -1525,7 +1525,7 @@ GetOrderedClusteringRuns <- function(obj = combined.obj, res = FALSE,
 # _________________________________________________________________________________________________
 #' @title GetNumberOfClusters
 #'
-#' @description Get Number Of Clusters #
+#' @description Print the number of clusters for each stored clustering run.
 #' @param obj Seurat object, Default: `combined.obj`
 #' @examples
 #' \dontrun{
@@ -1774,10 +1774,8 @@ set.mm <- function(obj = combined.obj) {
 # _________________________________________________________________________________________________
 #' @title Get the First Seurat Object from a List of Seurat Objects
 #'
-#' @description #' If provided with a list of Seurat objects, this function returns the first
-#' Seurat object in the list. If the input is a single Seurat object, it returns
-#' the object itself. It is assumed that all elements of the list are Seurat
-#' objects if the input is a list.
+#' @description Return the first Seurat object from a list, or the object itself
+#'   if a single Seurat object is supplied.
 #'
 #' @param obj A Seurat object, a list of Seurat objects, or any other list.
 #'
@@ -1799,7 +1797,8 @@ ww.get.1st.Seur.element <- function(obj) {
 # _________________________________________________________________________________________________
 #' @title Recall all.genes global variable from a Seurat object
 #'
-#' @description all.genes set by calc.q99.Expression.and.set.all.genes() #
+#' @description Recall \code{all.genes} from a Seurat object's \code{misc} slot,
+#'   which is stored by \code{calc.q99.Expression.and.set.all.genes()}, and optionally reset the global variable.
 #' @param obj Seurat object, Default: `combined.obj`
 #' @examples
 #' \dontrun{
@@ -2224,7 +2223,7 @@ downsampleSeuObj <- function(obj = ls.Seurat[[i]], fractionCells = 0.25, nCells 
 # _________________________________________________________________________________________________
 #' @title downsampleSeuObj.and.Save
 #'
-#' @description Subset a compressed Seurat Obj and save it in wd. #
+#' @description Downsample a Seurat object to a target fraction and save it.
 #' @param obj Seurat object, Default: ORC
 #' @param fraction Fractional size to downsample to. Default: 0.25
 #' @param seed random seed used, Default: 1989
@@ -5071,8 +5070,7 @@ isave.image <- function(
 # _________________________________________________________________________________________________
 #' @title Save workspace - qsave.image
 #'
-#' @description Faster saving of workspace, and compression outside R, when it can run in the background.
-#' Seemingly quite CPU hungry and not very efficient compression. #
+#' @description Save the workspace with external gzip compression (CPU intensive).
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @param showMemObject Logical; if TRUE, the function will print out the memory size of the largest
 #' objects in the workspace. Default: `TRUE`.
@@ -5547,8 +5545,8 @@ jPairwiseJaccardIndexList <- function(lsG = ls_genes) {
 # _________________________________________________________________________________________________
 #' @title jPresenceMatrix
 #'
-#' @description Make a binary presence matrix from a list. Source:
-#' https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings #
+#' @description Make a binary presence matrix from a list of vectors. Source:
+#'   https://stackoverflow.com/questions/56155707/r-how-to-create-a-binary-relation-matrix-from-a-list-of-strings
 #' @param string_list List of strings to compare overlapping entries.
 #' Default: lst(a = 1:3, b = 2:5, c = 4:9, d = -1:4)
 #' @examples
@@ -5572,8 +5570,8 @@ jPresenceMatrix <- function(string_list = lst(a = 1:3, b = 2:5, c = 4:9, d = -1:
 # _________________________________________________________________________________________________
 #' @title jJaccardIndexBinary
 #'
-#' @description Calculate Jaccard Index. Modified from:
-#' https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/ #
+#' @description Calculate the Jaccard Index for two binary vectors. Modified from:
+#'   https://www.displayr.com/how-to-calculate-jaccard-coefficients-in-displayr-using-r/
 #' @param x Set X
 #' @param y Set Y
 #' @examples
