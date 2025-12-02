@@ -42,7 +42,7 @@ Convert10Xfolders_v1 <- function(
     ext = "qs",
     sort_alphanumeric = TRUE,
     ...) {
-  warning("Since v2.5.0, the output is saved in the more effcient qs format! See qs package.", immediate. = TRUE)
+  warning("Since v2.5.0, the output is saved in the more efficient qs format! See qs package.", immediate. = TRUE)
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
