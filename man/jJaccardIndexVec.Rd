@@ -12,5 +12,5 @@ jJaccardIndexVec(A = 1:3, B = 2:4)
 \item{B}{Set B, Default: 2:4}
 }
 \description{
-Calculate jaccard similarity for 2 vecotrs. Helper to jPairwiseJaccardIndexList.
+Calculate jaccard similarity for 2 vectors. Helper to jPairwiseJaccardIndexList.
 }

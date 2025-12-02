@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{.adjustLayout}
 \alias{.adjustLayout}
-\title{Adjust Layout Parameters for multi* plotting fucntions}
+\title{Adjust Layout Parameters for multi* plotting functions}
 \usage{
 .adjustLayout(layout, scaling, wA4, hA4, env)
 }

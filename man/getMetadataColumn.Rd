@@ -14,7 +14,6 @@ getMetadataColumn(col = "batch", obj = combined.obj, as_numeric = FALSE, v = T)
 \item{as_numeric}{A logical flag indicating whether the returned values should be converted to numeric format. Default: \code{FALSE}.}
 
 \item{v}{verbose. Default: \code{TRUE}.}
-
 }
 \value{
 A named vector containing the values from the specified metadata column. If 'as_numeric' is TRUE, the values are converted to numeric format.

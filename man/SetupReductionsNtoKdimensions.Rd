@@ -23,8 +23,8 @@ SetupReductionsNtoKdimensions(
 \item{reduction_input}{The type of dimensionality reduction to use as input. Can be "pca", or
 some correction results, like harmony pca. Default: 'pca'}
 
-\item{reduction_output}{Te type of dimensionality reduction to perform.  Can be "umap", "tsne",
-"pca", or some correctionn results, like harmony pca.  Default: 'umap'}
+\item{reduction_output}{The type of dimensionality reduction to perform.  Can be "umap", "tsne",
+"pca", or some correction results, like harmony pca.  Default: 'umap'}
 
 \item{...}{Additional arguments to pass to the dimensionality reduction function.}
 }
