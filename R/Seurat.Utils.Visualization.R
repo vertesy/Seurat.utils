@@ -71,7 +71,7 @@ PlotFilters <- function(
     ),
     transparency = 0.25,
     cex = 0.75,
-    theme.used = theme_bw(base_size = 18),
+    theme.used = theme_bw(base_size = 18)
     # LabelDistFromTop = 200 # for barplot_label
     ) {
   message("Expects a list of Seurat objects, `ls.obj` with names, and a list of parameters, `par.ls` with a defined structure.")

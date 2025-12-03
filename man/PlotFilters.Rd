@@ -22,8 +22,7 @@ PlotFilters(
     above.nFeature_RNA),
   transparency = 0.25,
   cex = 0.75,
-  theme.used = theme_bw(base_size = 18),
-  LabelDistFromTop = 200
+  theme.used = theme_bw(base_size = 18)
 )
 }
 \arguments{
@@ -54,8 +53,6 @@ PlotFilters(
 \item{cex}{Size of points on scatter plots. Default: 0.75.}
 
 \item{theme.used}{A \code{ggplot2} theme for all plots. Default: \code{theme_bw(base_size = 18)}.}
-
-\item{LabelDistFromTop}{Distance from top for label placement. Default: 200.}
 }
 \description{
 This function plots the filtering thresholds and distributions for Seurat objects,

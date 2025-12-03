@@ -10,8 +10,7 @@ GetNumberOfClusters(obj = combined.obj)
 \item{obj}{Seurat object, Default: \code{combined.obj}}
 }
 \description{
-Print the number of clusters present for each stored clustering run in the Seurat
-object's metadata.
+Print the number of clusters for each stored clustering run.
 }
 \examples{
 \dontrun{
