@@ -1,9 +1,7 @@
 # Seurat.utils ![status: active](https://raw.githubusercontent.com/vertesy/TheCorvinas/master/GitHub/Badges/active.svg) [![DOI](https://zenodo.org/badge/248721133.svg)](https://zenodo.org/badge/latestdoi/248721133) 
 
-`Seurat.utils` is a collection of utility functions for Seurat. Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics & QC, interaction with the Seurat object, etc. Some functionalities require functions from [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2), [ReadWriter](https://github.com/vertesy/ReadWriter), [Stringendo](https://github.com/vertesy/Stringendo), [ggExpressDev](https://github.com/vertesy/ggExpressDev), [MarkdownReports](https://github.com/vertesy/MarkdownReports), and the [Rocinante](https://github.com/vertesy/Rocinante) (see installation).
-
-[TOC]
-
+`Seurat.utils` is a collection of utility functions for Seurat (v5). Functions allow the automation / multiplexing of plotting, 3D plotting, quick visualisations (see: [ggExpress](https://github.com/vertesy/ggExpress)), filtering, statistics & QC, interaction with the Seurat object (e.g.: metadata), etc. 
+Functionalities rely on basic function libraries listed below.
 
 
 # Installation
