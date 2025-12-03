@@ -69,7 +69,7 @@ processSeuratObject <- function(obj, param.list = p,
                                 resolutions = param.list$"snn_res",
                                 reduction_input = "pca",
                                 WorkingDir = getwd(),
-                                harmony.seurat.implementation  = FALSE,
+                                harmony.seurat.implementation = FALSE,
                                 ...) {
   #
   use_harmony <- (reduction_input == "harmony")
@@ -117,8 +117,7 @@ processSeuratObject <- function(obj, param.list = p,
   }
 
   if (precompute | add.meta.fractions) {
-
-    if("data" %!in% Layers(obj)) {
+    if ("data" %!in% Layers(obj)) {
       message("------------------- NormalizeData -------------------")
       obj <- Seurat::NormalizeData(object = obj)
     }
@@ -131,12 +130,11 @@ processSeuratObject <- function(obj, param.list = p,
 
 
   if (precompute) {
-
     message("------------------- FindVariableFeatures -------------------")
     tic("FindVariableFeatures")
     obj <- FindVariableFeatures(obj,
-                                mean.function = "FastExpMean",
-                                dispersion.function = "FastLogVMR", nfeatures = nfeatures
+      mean.function = "FastExpMean",
+      dispersion.function = "FastLogVMR", nfeatures = nfeatures
     )
     toc()
 
@@ -155,15 +153,14 @@ processSeuratObject <- function(obj, param.list = p,
 
 
   if (compute) {
-    if (use_harmony)  {
-
+    if (use_harmony) {
       # Split ________________________________________________
       message("------------------- Split layers -------------------")
 
       m.REGR <- obj@meta.data[, harmony.covariates, drop = FALSE]
-      stopif("Harmony cannot regress numeric variables" = any(sapply(m.REGR, is.numeric) ) )
+      stopif("Harmony cannot regress numeric variables" = any(sapply(m.REGR, is.numeric)))
 
-      obj$"regress_out" <- xr <-  apply(m.REGR, 1, kppu)
+      obj$"regress_out" <- xr <- apply(m.REGR, 1, kppu)
       nr_new_layers <- nr.unique(xr)
       cells_per_layer <- table(xr)
 
@@ -176,27 +173,31 @@ processSeuratObject <- function(obj, param.list = p,
       if (T) hist(cells_per_layer)
 
       tic("Split layers by regress_out")
-      obj[["RNA"]] <- split(obj[["RNA"]], f = xr, drop = FALSE); toc()
+      obj[["RNA"]] <- split(obj[["RNA"]], f = xr, drop = FALSE)
+      toc()
 
 
       message("------------------- Harmony - EXPERIMENTAL -------------------")
       if (harmony.seurat.implementation) {
         message("Using Seurat's IntegrateLayers(method = HarmonyIntegration)")
         tic("IntegrateLayers / Harmony")
-        obj <- IntegrateLayers(object = obj, method = HarmonyIntegration, orig.reduction = "pca",
-                               new.reduction = 'harmony', verbose = TRUE); toc()
+        obj <- IntegrateLayers(
+          object = obj, method = HarmonyIntegration, orig.reduction = "pca",
+          new.reduction = "harmony", verbose = TRUE
+        )
+        toc()
         # No need to pass group.by.vars, it is defined by the split layers
-
       } else {
         tic("RunHarmony")
         # obj <- harmony::RunHarmony(object = obj, group.by.vars = "regress_out", dims.use = 1:n.PC, plot_convergence = FALSE)
-        obj <- harmony::RunHarmony(object = obj, group.by.vars = harmony.covariates, dims.use = 1:n.PC, plot_convergence = FALSE); toc()
+        obj <- harmony::RunHarmony(object = obj, group.by.vars = harmony.covariates, dims.use = 1:n.PC, plot_convergence = FALSE)
+        toc()
         # It is generally better to provide individual group.by.vars, not as a single column / string.
         # Source: https://github.com/immunogenomics/harmony/issues/246
 
         tic("JoinLayers")
-        obj <- JoinLayers(obj, assay = "RNA"); toc()
-
+        obj <- JoinLayers(obj, assay = "RNA")
+        toc()
       }
 
       obj@misc$"harmony.params" <- c("n.PC" = n.PC, "regress" = harmony.covariates)
@@ -207,8 +208,8 @@ processSeuratObject <- function(obj, param.list = p,
     message("------------------- UMAP -------------------")
     tic("UMAP")
     obj <- SetupReductionsNtoKdimensions(obj,
-                                         nPCs = n.PC, reduction_output = "umap",
-                                         reduction_input = reduction_input, dimensions = 3:2
+      nPCs = n.PC, reduction_output = "umap",
+      reduction_input = reduction_input, dimensions = 3:2
     )
     toc()
 
@@ -454,15 +455,15 @@ runDGEA <- function(obj,
       # Perform differential expression analysis
       tic("FindAllMarkers")
       df.markers <- Seurat::FindAllMarkers(obj,
-                                           verbose = TRUE,
-                                           test.use = param.list$"test",
-                                           logfc.threshold = param.list$"logfc.threshold",
-                                           return.thresh = param.list$"return.thresh",
-                                           min.pct = param.list$"min.pct",
-                                           min.diff.pct = param.list$"min.diff.pct",
-                                           min.cells.group = param.list$"min.cells.group",
-                                           max.cells.per.ident = param.list$"max.cells.per.ident",
-                                           only.pos = param.list$"only.pos",
+        verbose = TRUE,
+        test.use = param.list$"test",
+        logfc.threshold = param.list$"logfc.threshold",
+        return.thresh = param.list$"return.thresh",
+        min.pct = param.list$"min.pct",
+        min.diff.pct = param.list$"min.diff.pct",
+        min.cells.group = param.list$"min.cells.group",
+        max.cells.per.ident = param.list$"max.cells.per.ident",
+        only.pos = param.list$"only.pos",
       )
       toc()
 
@@ -539,14 +540,14 @@ runDGEA <- function(obj,
         df.markers.tbl <- as_tibble(df.markers)
         df.markers.tbl$"cluster" <- as.character(df.markers.tbl$"cluster")
         p.deg.hist <- ggpubr::gghistogram(df.markers.tbl,
-                                          x = "avg_log2FC",
-                                          title = "Number of enriched genes per cluster",
-                                          subtitle = "Binned by Log2(FC)",
-                                          caption = paste(res, "| vertical line at FC of 2."),
-                                          rug = TRUE,
-                                          color = "cluster", fill = "cluster",
-                                          facet.by = "cluster", xlim = c(0, 3),
-                                          ylab = "Nr. D.E. Genes"
+          x = "avg_log2FC",
+          title = "Number of enriched genes per cluster",
+          subtitle = "Binned by Log2(FC)",
+          caption = paste(res, "| vertical line at FC of 2."),
+          rug = TRUE,
+          color = "cluster", fill = "cluster",
+          facet.by = "cluster", xlim = c(0, 3),
+          ylab = "Nr. D.E. Genes"
         ) +
           geom_vline(xintercept = 1) +
           theme_linedraw()
@@ -570,15 +571,15 @@ runDGEA <- function(obj,
 
         # Get the number of genes per cluster
         (NrOfHighlySignLFC2_genes <- lfc2_hiSig_genes |>
-            summarise(n = n()) |>
-            deframe() |>
-            sortbyitsnames())
+          summarise(n = n()) |>
+          deframe() |>
+          sortbyitsnames())
 
         qbarplot(NrOfHighlySignLFC2_genes,
-                 label = NrOfHighlySignLFC2_genes,
-                 plotname = "Number of diff. genes per cluster",
-                 sub = "Genes with avg_log2FC > 1 and p_val_adj < 0.05",
-                 xlab = "Clusters", ylab = "Number of diff. genes"
+          label = NrOfHighlySignLFC2_genes,
+          plotname = "Number of diff. genes per cluster",
+          sub = "Genes with avg_log2FC > 1 and p_val_adj < 0.05",
+          xlab = "Clusters", ylab = "Number of diff. genes"
         )
 
         # Write out gene lists per cluster ________________________________________
@@ -881,8 +882,8 @@ AreTheseCellNamesTheSame <- function(
   Percent_Overlapping <- Nr.overlapping / Nr.total
   print("")
   report <- percentage_formatter(Percent_Overlapping,
-                                 prefix = "In total,",
-                                 suffix = paste("of the cellIDs overlap across", names(Cellname.Overlap)[1], "and", names(Cellname.Overlap)[2])
+    prefix = "In total,",
+    suffix = paste("of the cellIDs overlap across", names(Cellname.Overlap)[1], "and", names(Cellname.Overlap)[2])
   )
   print(report[1])
   stopifnot(Percent_Overlapping > min.overlap)
@@ -915,11 +916,11 @@ addToMiscOrToolsSlot <- function(obj, pocket_name = "misc",
   message("Running addToMiscOrToolsSlot()...")
 
   stopifnot(is(obj, "Seurat"),
-            pocket_name %in% c("misc", "tools"),
-            is.character(slot_name), length(slot_name) == 1,
-            is.character(sub_slot_name), length(sub_slot_name) == 1,
-            "slot name or value is provided" = is.null(slot_value) || !is.null(slot_name),
-            "sub_slot name or value is provided" = is.null(sub_slot_value) || !is.null(sub_slot_name)
+    pocket_name %in% c("misc", "tools"),
+    is.character(slot_name), length(slot_name) == 1,
+    is.character(sub_slot_name), length(sub_slot_name) == 1,
+    "slot name or value is provided" = is.null(slot_value) || !is.null(slot_name),
+    "sub_slot name or value is provided" = is.null(sub_slot_value) || !is.null(sub_slot_name)
   )
 
   # Accessing the specified slot
@@ -1061,10 +1062,9 @@ calc.q99.Expression.and.set.all.genes <- function(
     suffix = substitute_deparse(obj),
     plot = TRUE,
     show = TRUE,
-    obj.version = obj@version
-) {
+    obj.version = obj@version) {
   top.quant <- (1 - quantileX)
-  message("\nCalculating the gene expression level at the the top", percentage_formatter(top.quant), " of cells. | q: ", quantileX )
+  message("\nCalculating the gene expression level at the the top", percentage_formatter(top.quant), " of cells. | q: ", quantileX)
   message("slot: ", slot, " assay: ", assay, ".\n")
   nr.total.cells <- ncol(obj)
 
@@ -1130,17 +1130,17 @@ calc.q99.Expression.and.set.all.genes <- function(
   # Plot the distribution of gene expression in the 99th quantile _________________________________
   if (plot) {
     pobj <- ggExpress::qhistogram(log2.gene.expr.of.the.Xth.quantile,
-                                  plotname = paste("Gene expression in the", qnameP, " in", suffix),
-                                  ext = "pdf", breaks = 30,
-                                  subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", n.cells, " cells)."),
-                                  caption = paste(n.cells, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object."),
-                                  suffix = suffix,
-                                  xlab = paste0("log2(expr. in the ", qnameP, "quantile+1) [UMI]"),
-                                  ylab = "Nr. of genes",
-                                  plot = TRUE, save = TRUE,
-                                  vline = .15,
-                                  filtercol = TRUE,
-                                  palette_use = "npg"
+      plotname = paste("Gene expression in the", qnameP, " in", suffix),
+      ext = "pdf", breaks = 30,
+      subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", n.cells, " cells)."),
+      caption = paste(n.cells, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object."),
+      suffix = suffix,
+      xlab = paste0("log2(expr. in the ", qnameP, "quantile+1) [UMI]"),
+      ylab = "Nr. of genes",
+      plot = TRUE, save = TRUE,
+      vline = .15,
+      filtercol = TRUE,
+      palette_use = "npg"
     )
     tictoc::toc()
     if (show) print(pobj)
@@ -1194,16 +1194,17 @@ calc.q99.Expression.and.set.all.genes <- function(
 #' @importFrom stringr str_detect
 #' @export
 #'
-filterCodingGenes <- function(genes, pattern_NC = c(
-  "^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
-  "^LINC0[0-9]{4}",
-  "^C[1-9]+orf[1-9]+", "^C[1-9][0-9]+orf[1-9]+",  "^CXorf[1-9]+",
-  "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
-  "^MIR[1-9]", "^SNHG[1-9]",
-  "^CU[0-9]{6}", "^BX[0-9]{6}",
-  "^FP[0-9]{6}", "^AC[0-9]{6}"
-),
-v = TRUE, unique = TRUE, ...) {
+filterCodingGenes <- function(
+    genes, pattern_NC = c(
+      "^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
+      "^LINC0[0-9]{4}",
+      "^C[1-9]+orf[1-9]+", "^C[1-9][0-9]+orf[1-9]+", "^CXorf[1-9]+",
+      "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
+      "^MIR[1-9]", "^SNHG[1-9]",
+      "^CU[0-9]{6}", "^BX[0-9]{6}",
+      "^FP[0-9]{6}", "^AC[0-9]{6}"
+    ),
+    v = TRUE, unique = TRUE, ...) {
   # Input assertions
   stopifnot(
     is.character(genes), length(genes) > 0,
@@ -1261,9 +1262,9 @@ v = TRUE, unique = TRUE, ...) {
 #' filterExpressedGenes(gene_list, genes, threshold = 0.9981)
 #'
 #' @export
-filterExpressedGenes <- function(genes, gene_list = all.genes
-                                 , sort_by_expr = TRUE, threshold = 0.1) {
-
+filterExpressedGenes <- function(
+    genes, gene_list = all.genes,
+    sort_by_expr = TRUE, threshold = 0.1) {
   # Assertions
   stopifnot(
     is.list(gene_list),
@@ -1274,8 +1275,10 @@ filterExpressedGenes <- function(genes, gene_list = all.genes
 
   # Step 1: Intersect the gene symbols with the names in the list and report statistics
   matching_genes <- CodeAndRoll2::intersect.wNames(x = genes, y = names(gene_list), names = "x")
-  message("Number of matching genes: ", length(matching_genes), " from ", length(genes)
-          , ". Missing: ", head(setdiff(genes, names(gene_list))), " ...")
+  message(
+    "Number of matching genes: ", length(matching_genes), " from ", length(genes),
+    ". Missing: ", head(setdiff(genes, names(gene_list))), " ..."
+  )
 
   # Step 2: Filter out genes below the expression threshold
   filtered_genes <- matching_genes[sapply(matching_genes, function(g) gene_list[[g]] >= threshold)]
@@ -1741,9 +1744,9 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene = "ACTB", filterZe
   }
   suppressWarnings(
     MarkdownReports::whist(expr.all,
-                           vline = expr.GOI, breaks = 100, main = title, plotname = make.names(title),
-                           ylab = "Genes",
-                           xlab = "Av. mRNA in the 10% top expressing cells (q90 av.exp.)"
+      vline = expr.GOI, breaks = 100, main = title, plotname = make.names(title),
+      ylab = "Genes",
+      xlab = "Av. mRNA in the 10% top expressing cells (q90 av.exp.)"
     )
   )
 }
@@ -2071,8 +2074,8 @@ copyMiscElements <- function(obj.from, obj.to, elements.needed, overwrite = TRUE
       )
     } else {
       warning("Overwriting the following elements in obj.to@misc: ",
-              paste(elements.already.existing, collapse = ", "),
-              immediate. = TRUE
+        paste(elements.already.existing, collapse = ", "),
+        immediate. = TRUE
       )
     }
   }
@@ -2247,8 +2250,8 @@ downsampleSeuObj.and.Save <- function(
   # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute_deparse(obj),
   # suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
   xsave(obj_Xpc,
-        suffix = ppp(suffix, nr.cells.kept, "cells.with.min.features", min.features),
-        nthreads = nthreads, project = getProject(), showMemObject = TRUE, saveParams = FALSE
+    suffix = ppp(suffix, nr.cells.kept, "cells.with.min.features", min.features),
+    nthreads = nthreads, project = getProject(), showMemObject = TRUE, saveParams = FALSE
   )
 }
 
@@ -2310,8 +2313,8 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
   if (dsample.to.repl.thr) {
     max.cells <- round(ncol(obj) * replacement.thr)
     msg <- percentage_formatter(replacement.thr,
-                                suffix = paste("of the data or", max.cells, "of cells."),
-                                prefix = "Sampling with replacement to:"
+      suffix = paste("of the data or", max.cells, "of cells."),
+      prefix = "Sampling with replacement to:"
     )
     message(msg)
   }
@@ -2383,8 +2386,9 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
 #'   v = TRUE
 #' )
 #'
-RelabelSmallCategories <- function(obj, col_in, backup_col_name = ppp(col_in, "orig")
-                                   , min_count = 100, small_label = "Other", v = TRUE) {
+RelabelSmallCategories <- function(
+    obj, col_in, backup_col_name = ppp(col_in, "orig"),
+    min_count = 100, small_label = "Other", v = TRUE) {
   # Input assertions
   stopifnot(
     inherits(obj, "Seurat"), # Check if obj is a Seurat object
@@ -2511,7 +2515,6 @@ removeResidualSmallClusters <- function(
 
     cells.2.keep <- setdiff(all.cells, all.cells.2.remove)
     obj <- subset(x = obj, cells = cells.2.keep)
-
   } # for list of identities (meta columns)
 
 
@@ -2835,7 +2838,7 @@ Add.DE.combined.score <- function(
     df = df.markers, p_val_min = 1e-25, pval_scaling = 0.001, colP = "p_val",
     colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = TRUE)
     # , colLFC = "avg_log2FC"
-) { # Score = -LOG10(p_val) * avg_log2FC
+    ) { # Score = -LOG10(p_val) * avg_log2FC
   p_cutoff <- SmallestNonAboveX(vec = df[[colP]], X = p_val_min)
   df$"combined.score" <- round(df[[colLFC]] * -log10(p_cutoff / pval_scaling))
   return(df)
@@ -3067,12 +3070,12 @@ AutoLabelTop.logFC <- function(
     top_log2FC <- df.top.markers$"avg_log2FC"
     names(top_log2FC) <- ppp(df.top.markers$"cluster", df.top.markers$"gene")
     ggExpress::qbarplot(top_log2FC,
-                        plotname = "The strongest fold change by cluster",
-                        label = iround(top_log2FC),
-                        subtitle = group.by,
-                        ylab = "avg_log2FC", xlab = "clusters",
-                        hline = 2,
-                        suffix = group.by
+      plotname = "The strongest fold change by cluster",
+      label = iround(top_log2FC),
+      subtitle = group.by,
+      ylab = "avg_log2FC", xlab = "clusters",
+      hline = 2,
+      suffix = group.by
     )
   }
 
@@ -3708,7 +3711,6 @@ check.genes <- function(
 
   # Using logical indexing to return genes with names (if they had any)
   genes[intersect_genes %in% genes]
-
 }
 
 
@@ -4080,7 +4082,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
     slots_found <- slots %in% layers
     stopifnot(any(slots_found))
     warnifnot("Not all slots present in the object - all(slots_found)" = all(slots_found))
-    slots <- intersect(slots , layers)
+    slots <- intersect(slots, layers)
   }
 
 
@@ -4161,7 +4163,6 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
     nr1 <- nrow(matrix_n)
 
     if (all(dim(matrix_n)) > 0) {
-
       stopifnot(nrow(matrix_n) == length(newnames))
 
       if ("dgCMatrix" %in% class(matrix_n)) {
@@ -4175,8 +4176,8 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
         rownames(matrix_n) <- newnames
       } else {
         warning(">>> No renaming: ", assay, "@", layer.name,
-                " not of type dgeCMatrix / Matrix / data.frame.",
-                immediate. = TRUE
+          " not of type dgeCMatrix / Matrix / data.frame.",
+          immediate. = TRUE
         )
       }
       stopifnot(nr1 == nrow(matrix_n))
@@ -4390,9 +4391,9 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
   colnames(HGNC.UpdateStatistics) <- c("Gene Symbols updated (% of Total Genes)", "Number of Gene Symbols updated")
   lll <- wcolorize(vector = rownames(HGNC.UpdateStatistics))
   MarkdownReports::wplot(HGNC.UpdateStatistics,
-                         col = lll,
-                         xlim = c(0, max(HGNC.UpdateStatistics[, 1])),
-                         ylim = c(0, max(HGNC.UpdateStatistics[, 2]))
+    col = lll,
+    xlim = c(0, max(HGNC.UpdateStatistics[, 1])),
+    ylim = c(0, max(HGNC.UpdateStatistics[, 2]))
   )
   MarkdownReports::wlegend(NamedColorVec = lll, poz = 1)
 }
@@ -4515,7 +4516,7 @@ Convert10Xfolders <- function(
     if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
 
     # NormalizeData --- --- ---
-    if (normalize_data) seu <- NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000,  verbose = TRUE)
+    if (normalize_data) seu <- NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000, verbose = TRUE)
 
     # write out --- --- ---
     if (save) qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)
@@ -5087,16 +5088,21 @@ xread2 <- function(path,
 
   # Current R memory usage (RSS)
   get_rss <- function() {
-    kb <- as.numeric(gsub("\\D", "",
-                          grep("^VmRSS:", readLines("/proc/self/status"),
-                               value = TRUE)))
+    kb <- as.numeric(gsub(
+      "\\D", "",
+      grep("^VmRSS:", readLines("/proc/self/status"),
+        value = TRUE
+      )
+    ))
     kb * 1024
   }
 
   # SLURM memory (in bytes), or NA if not inside SLURM job
   get_slurm_limit <- function() {
     m <- suppressWarnings(as.numeric(Sys.getenv("SLURM_MEM_PER_NODE", "")))
-    if (!is.na(m) && m > 0) return(m * 1024^2)
+    if (!is.na(m) && m > 0) {
+      return(m * 1024^2)
+    }
     NA_real_
   }
 
@@ -5107,23 +5113,27 @@ xread2 <- function(path,
     if (is.na(lim)) {
       warning("Memory safety check skipped: no SLURM memory limit detected.")
     } else {
-      sz  <- file.size(path)
+      sz <- file.size(path)
       rss <- get_rss()
 
       # Leave 10% or 3GB free, whichever is larger
       safe_cap <- min(0.9 * lim, lim - 3 * 1024^3)
-      safe_cap <- max(safe_cap, rss + 1 * 1024^3)  # never below current usage
+      safe_cap <- max(safe_cap, rss + 1 * 1024^3) # never below current usage
       headroom <- safe_cap - rss
       need <- disk2mem_size_inflation * sz
 
-      message("Need: ", bytes(need),
-              " | Headroom: ", bytes(headroom),
-              " | RSS (used memory): ", bytes(rss))
+      message(
+        "Need: ", bytes(need),
+        " | Headroom: ", bytes(headroom),
+        " | RSS (used memory): ", bytes(rss)
+      )
 
       if (need > headroom) {
         message("⚠ Estimated need exceeds SLURM job memory. Loading may crash the session.")
         ans <- readline("Do you still want to load the file? [y/N]: ")
-        if (tolower(ans) != "y") return(invisible(NULL))
+        if (tolower(ans) != "y") {
+          return(invisible(NULL))
+        }
       }
     }
   }
@@ -5488,7 +5498,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 
     Outlier <- idx.HE2 &
       (cell.rate < quantile(cell.rate, probs = pr) |
-         soup.rate < quantile(soup.rate, probs = pr))
+        soup.rate < quantile(soup.rate, probs = pr))
 
     pc_TRUE(Outlier)
     sum(Outlier)
@@ -5509,7 +5519,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
       ylab(paste(axl.pfx, "Cells", axl.sfx)) +
       ggtitle("Soup VS. Cells", subtitle = pr) +
       ggrepel::geom_text_repel(aes(label = ifelse(Outlier,
-                                                  as.character(gene), ""
+        as.character(gene), ""
       )))
     ggsave(pgg, filename = file.path(OutDir, fname), width = 7, height = 7)
   } # for
@@ -5534,11 +5544,11 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes <- 100 * head(sort(CR.matrices$"soup.rel.RC", decreasing = TRUE), n = 20)
 
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes,
-                            plotname = kppd("Soup.GEMs.top.Genes", library_name),
-                            ylab = "% mRNA in the Soup",
-                            sub = paste("Within the", library_name, "dataset"),
-                            tilted_text = TRUE,
-                            ylim = c(0, max(Soup.GEMs.top.Genes) * 1.5)
+    plotname = kppd("Soup.GEMs.top.Genes", library_name),
+    ylab = "% mRNA in the Soup",
+    sub = paste("Within the", library_name, "dataset"),
+    tilted_text = TRUE,
+    ylim = c(0, max(Soup.GEMs.top.Genes) * 1.5)
   )
   barplot_label(
     barplotted_variable = Soup.GEMs.top.Genes,
@@ -5578,10 +5588,10 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes.summarized <- 100 * soupProfile.summarized[1:NrColumns2Show] / CR.matrices$"soup.total.sum"
   maxx <- max(Soup.GEMs.top.Genes.summarized)
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes.summarized,
-                            plotname = kppd("Soup.GEMs.top.Genes.summarized", library_name),
-                            ylab = "% mRNA in the Soup", ylim = c(0, maxx + 3),
-                            sub = paste("Within the", library_name, "dataset"),
-                            tilted_text = TRUE, col = ccc
+    plotname = kppd("Soup.GEMs.top.Genes.summarized", library_name),
+    ylab = "% mRNA in the Soup", ylim = c(0, maxx + 3),
+    sub = paste("Within the", library_name, "dataset"),
+    tilted_text = TRUE, col = ccc
   )
   barplot_label(
     barplotted_variable = Soup.GEMs.top.Genes.summarized,
@@ -5594,10 +5604,10 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 
   maxx <- max(Absolute.fraction.soupProfile.summarized)
   MarkdownReports::wbarplot(Absolute.fraction.soupProfile.summarized,
-                            plotname = kppd("Absolute.fraction.soupProfile.summarized", library_name),
-                            ylab = "% of mRNA in cells", ylim = c(0, maxx * 1.33),
-                            sub = paste(Stringendo::percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", library_name),
-                            tilted_text = TRUE, col = ccc
+    plotname = kppd("Absolute.fraction.soupProfile.summarized", library_name),
+    ylab = "% of mRNA in cells", ylim = c(0, maxx * 1.33),
+    sub = paste(Stringendo::percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", library_name),
+    tilted_text = TRUE, col = ccc
   )
   barplot_label(
     barplotted_variable = Absolute.fraction.soupProfile.summarized,
@@ -5610,11 +5620,11 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes.non.summarized <- 100 * sort(genes.non.Above, decreasing = TRUE)[1:20] / CR.matrices$"soup.total.sum"
   maxx <- max(Soup.GEMs.top.Genes.non.summarized)
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes.non.summarized,
-                            plotname = kppd("Soup.GEMs.top.Genes.non.summarized", library_name),
-                            ylab = "% mRNA in the Soup",
-                            sub = paste("Within the", library_name, "dataset"),
-                            tilted_text = TRUE, col = "#BF3100",
-                            ylim = c(0, maxx * 1.5)
+    plotname = kppd("Soup.GEMs.top.Genes.non.summarized", library_name),
+    ylab = "% mRNA in the Soup",
+    sub = paste("Within the", library_name, "dataset"),
+    tilted_text = TRUE, col = "#BF3100",
+    ylim = c(0, maxx * 1.5)
   )
   barplot_label(
     barplotted_variable = Soup.GEMs.top.Genes.non.summarized,

@@ -41,7 +41,7 @@ object as input.
 \dontrun{
 # Load the Seurat object (example)
 library(Seurat)
-combined.obj <- readRDS("path/to/your/seurat_object.rds")
+`combined.obj <- readRDS("path/to/your/seurat_object.rds")`
 
 # Define genes of interest
 # Define genes of interest

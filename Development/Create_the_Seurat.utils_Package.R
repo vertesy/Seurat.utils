@@ -54,8 +54,7 @@ checkres <- devtools::check(repository.dir, cran = FALSE)
 
 # Automated Codebase linting to tidyverse style ------------------------------------------------
 styler::style_pkg(repository.dir)
-# styler::style_file("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
-
+styler::style_file("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
 
 # Extract package dependencies ------------------------------------------------
 PackageTools::extract_package_dependencies(repository.dir)
@@ -91,9 +90,20 @@ if (F) {
 for (scriptX in ls.scripts.full.path) {
   PackageTools::list_of_funs_to_markdown(scriptX)
 }
-file.edit(paste0(repository.dir, "R/list.of.functions.in.", package.name, ".det.md"))
+
+
+
+file.edit(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".det.md"))
+file.edit(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".Visualization.det.md"))
+file.edit(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".Metadata.det.md"))
+file.edit(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".less.used.det.md"))
+
 file.edit(paste0(repository.dir, "/README.md"))
+
 file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".det.md"))
+file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".Visualization.det.md"))
+file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".Metadata.det.md"))
+file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".less.used.det.md"))
 
 r$PackageTools()
 PackageTools::copy_github_badge("active") # Add badge to readme via clipboard

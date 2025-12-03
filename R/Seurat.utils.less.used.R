@@ -188,7 +188,9 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", 
     # , base_aspect_ratio = 1.5
   )
 
-  if (isTRUE(do_return)) return(plots)
+  if (isTRUE(do_return)) {
+    return(plots)
+  }
 
   invisible(NULL)
 }
@@ -969,8 +971,8 @@ plotClustSizeDistr <- function(
   if (plot) {
     if (length(clust.size.distr) < thr.hist) {
       ggExpress::qbarplot(clust.size.distr,
-                          plotname = ptitle, subtitle = psubtitle,
-                          label = clust.size.distr, xlab = "Clusters", ylab = xlb, ...
+        plotname = ptitle, subtitle = psubtitle,
+        label = clust.size.distr, xlab = "Clusters", ylab = xlb, ...
       )
     } else {
       ggExpress::qhistogram(
