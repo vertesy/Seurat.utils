@@ -1,9 +1,7 @@
 # Seurat.utils ![status: active](https://raw.githubusercontent.com/vertesy/TheCorvinas/master/GitHub/Badges/active.svg) [![DOI](https://zenodo.org/badge/248721133.svg)](https://zenodo.org/badge/latestdoi/248721133) 
 
-`Seurat.utils` is a collection of utility functions for Seurat. Functions allow the automation / multiplexing of plotting, 3D plotting, visualisation of statistics & QC, interaction with the Seurat object, etc. Some functionalities require functions from [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2), [ReadWriter](https://github.com/vertesy/ReadWriter), [Stringendo](https://github.com/vertesy/Stringendo), [ggExpressDev](https://github.com/vertesy/ggExpressDev), [MarkdownReports](https://github.com/vertesy/MarkdownReports), and the [Rocinante](https://github.com/vertesy/Rocinante) (see installation).
-
-[TOC]
-
+`Seurat.utils` is a collection of utility functions for Seurat (v5). Functions allow the automation / multiplexing of plotting, 3D plotting, quick visualisations (see: [ggExpress](https://github.com/vertesy/ggExpress)), filtering, statistics & QC, interaction with the Seurat object (e.g.: metadata), etc. 
+Functionalities rely on basic function libraries listed below.
 
 
 # Installation
@@ -101,9 +99,6 @@ It needs to be sourced, cannot be installed:
 ```R
 source("https://raw.githubusercontent.com/vertesy/Rocinante/master/R/Rocinante.R")
 ```
-
-# List of Functions 
-
 
 ## List of Functions in Seurat.Utils.R (98) 
 
@@ -880,6 +875,8 @@ Updated: 2025/12/03 10:19
 - #### 31 `matchBestIdentity()`
 
   Match and Translate Best Identity. This function matches the best identity from `ident_to_rename` to `reference_ident` in an object,  in other words, it replaces original categories with the most frequent ones from the reference,  hence helps to filter out less important categories. 
+
+
 
 ## List of Functions in Seurat.utils.less.used.R (12) 
 Updated: 2025/12/03 10:19
