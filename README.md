@@ -921,14 +921,11 @@ Helper to calculate Cell Expression Proportion for Gene. Computes the proportion
 
 
 
-
-
 # Usage
 
 You can use most functions at relevant steps of a standard Seurat analysis.
 
 We are preparing a vignette.
-
 
 
 
