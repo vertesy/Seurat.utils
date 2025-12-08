@@ -624,10 +624,10 @@ addGeneClassFractions <- function(obj,
                                   ),
                                   species = c("human", "mouse")[1],
                                   add_hga = TRUE) {
-  message("Adding metadata for gene-class fractions, e.g., percent.mito, etc.")
+  message("Adding metadata for gene-class fractions, e.g., percent.mito, etc.\n")
 
   if (species == "mouse") {
-    message("Using mouse gene patterns for: mito, ribo, Gm.predicted, and Malat1 genes.")
+    message("Using mouse gene patterns for: mito, ribo, Gm.predicted, and Malat1 genes.\n")
     gene_fractions <- list(
       "percent.mito"        = "^(mt-|MT-)",
       "percent.ribo"        = "^(Rpl|Rps)",
@@ -666,6 +666,7 @@ addGeneClassFractions <- function(obj,
       "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1", "NPAS4", "HK2", "BNIP3L",
       "JUN", "ENO2", "GAPDH", "ANKRD37", "ALDOA", "GADD45G", "TXNIP"
     )
+    if (species == "mouse") HGA_MarkerGenes <- toSentence(HGA_MarkerGenes)
 
     if (!metaColnameExists(col_name = "percent.HGA", obj = obj)) {
       obj <- addMetaFraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj = obj)
