@@ -7,6 +7,7 @@
 processSeuratObject(
   obj,
   param.list = p,
+  species_ = "human",
   update_gene_symbols = FALSE,
   add.meta.fractions = FALSE,
   precompute = TRUE,
@@ -28,6 +29,8 @@ processSeuratObject(
 \item{obj}{A Seurat object to be processed.}
 
 \item{param.list}{A list of parameters used in the processing steps.}
+
+\item{species_}{A character string indicating the species ("human" or "mouse"). Default: "human".}
 
 \item{update_gene_symbols}{A boolean indicating whether to update gene symbols from HGNC. Default: \code{FALSE}.}
 

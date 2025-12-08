@@ -26,6 +26,7 @@
 #'
 #' @param obj A Seurat object to be processed.
 #' @param param.list A list of parameters used in the processing steps.
+#' @param species_ A character string indicating the species ("human" or "mouse"). Default: "human".
 #' @param update_gene_symbols A boolean indicating whether to update gene symbols from HGNC. Default: `FALSE`.
 #' @param add.meta.fractions A boolean indicating whether to add metadata for fractions of cells in each cluster. Default: `FALSE`.
 #' @param precompute A boolean indicating whether to compute steps: `FindVariableFeatures()`,
@@ -56,12 +57,13 @@
 #' @importFrom harmony RunHarmony
 #'
 #' @export
-processSeuratObject <- function(obj, param.list = p,
+processSeuratObject <- function(obj, param.list = p, species_ = "human",
                                 update_gene_symbols = FALSE,
                                 add.meta.fractions = FALSE,
                                 precompute = TRUE,
                                 compute = TRUE,
-                                save = TRUE, plot = TRUE,
+                                save = TRUE,
+                                plot = TRUE,
                                 nfeatures = param.list$"n.var.genes",
                                 variables.2.regress = param.list$"variables.2.regress.combined",
                                 harmony.covariates = variables.2.regress,
@@ -113,7 +115,7 @@ processSeuratObject <- function(obj, param.list = p,
 
   if (update_gene_symbols) {
     message("------------------- UpdateGenesSeurat -------------------")
-    obj <- UpdateGenesSeurat(obj)
+    obj <- UpdateGenesSeurat(obj, ShowStats = TRUE, species_ = species_)
   }
 
   if (precompute | add.meta.fractions) {
@@ -125,7 +127,7 @@ processSeuratObject <- function(obj, param.list = p,
 
   if (add.meta.fractions) {
     message("Adding metadata for gene-class fractions, e.g., percent.mito, etc.")
-    obj <- addGeneClassFractions(obj)
+    obj <- addGeneClassFractions(obj, species = species_)
   } # end if add.meta.fractions
 
 
@@ -1133,7 +1135,7 @@ calc.q99.Expression.and.set.all.genes <- function(
       plotname = paste("Gene expression in the", qnameP, " in", suffix),
       ext = "pdf", breaks = 30,
       subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", nr.total.cells, " cells)."),
-      caption = paste(n.cells, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object."),
+      caption = paste(nr.total.cells, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object."),
       suffix = suffix,
       xlab = paste0("log2(expr. in the ", qnameP, "quantile+1) [UMI]"),
       ylab = "Nr. of genes",
@@ -3965,8 +3967,8 @@ FindCorrelatedGenes <- function(
 #' @param obj A Seurat object containing gene expression data. Default: `ls.Seurat[[i]]`
 #' (ensure to replace `i` with the actual index or variable referencing your Seurat object).
 #' @param species_ The species for which the gene symbols are checked and updated,
-#' used to ensure the correct gene nomenclature is applied. Default: `'human'`.
-#' Supports `'human'`, `'mouse'`, etc., as specified in the `HGNChelper` package.
+#' used to ensure the correct gene nomenclature is applied. Default: `'human'`,
+#' Supports `'human'`, `'mouse'`, as specified in the `HGNChelper` package.
 #' @param EnforceUnique Logical flag indicating whether to enforce unique gene symbols
 #' within the Seurat object. When set to `TRUE`, it resolves issues with duplicated gene symbols
 #' by appending unique identifiers. Default: `TRUE`.
@@ -3995,14 +3997,22 @@ FindCorrelatedGenes <- function(
 #' @export
 #' @importFrom HGNChelper checkGeneSymbols
 #'
-UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", assay = "RNA",
-                              EnforceUnique = TRUE, ShowStats = FALSE) {
+UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", # assay = "RNA",
+                              EnforceUnique = TRUE, ShowStats = F) {
   assays.present <- Assays(obj)
   for (assay in assays.present) {
     message("Renaming in assay: ", assay, "...")
 
-    all.genes <- Features(obj, assay = assay)
-    HGNC.updated <- HGNChelper::checkGeneSymbols(all.genes, unmapped.as.na = FALSE, map = NULL, species = species_)
+    all_genes <- Features(obj, assay = assay)
+
+    if( species_ %in% c("human", "mouse") ) {
+      HGNC.updated <- HGNChelper::checkGeneSymbols(all_genes, unmapped.as.na = FALSE, map = NULL, species = species_)
+    } else {
+      message(species_)
+      warning("Species not supported by HGNChelper. Skipping gene symbol update.", immediate. = TRUE)
+      next
+    }
+
     if (EnforceUnique) HGNC.updated <- HGNC.EnforceUnique(HGNC.updated)
 
     if (ShowStats) {
