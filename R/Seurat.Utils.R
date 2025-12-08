@@ -1132,7 +1132,7 @@ calc.q99.Expression.and.set.all.genes <- function(
     pobj <- ggExpress::qhistogram(log2.gene.expr.of.the.Xth.quantile,
       plotname = paste("Gene expression in the", qnameP, " in", suffix),
       ext = "pdf", breaks = 30,
-      subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", n.cells, " cells)."),
+      subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", nr.total.cells, " cells)."),
       caption = paste(n.cells, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object."),
       suffix = suffix,
       xlab = paste0("log2(expr. in the ", qnameP, "quantile+1) [UMI]"),
