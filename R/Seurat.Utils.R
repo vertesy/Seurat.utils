@@ -52,6 +52,20 @@
 #' # Assuming ls.Seurat is a list of Seurat objects and params is a list of parameters
 #' # results <- mclapply(ls.Seurat, processSeuratObject, params, mc.cores = 4)
 #'
+#' @details
+#' Recommended to run the pipeline in sections in case some parts break.
+#'
+#' \preformatted{
+#' # 1. Precompute
+#' obj_Seu <- processSeuratObject(obj = obj_Seu, precompute = TRUE, compute = FALSE)
+#'
+#' # 2. Compute and save
+#' obj_Seu <- processSeuratObject(obj = obj_Seu, precompute = FALSE, compute = TRUE)
+#'
+#' # 3. Plot
+#' obj_Seu <- processSeuratObject(obj = obj_Seu, compute = TRUE, plot = TRUE)
+#' }
+#'
 #' @importFrom Seurat ScaleData RunPCA RunUMAP FindNeighbors FindClusters
 #' @importFrom tictoc tic toc
 #' @importFrom harmony RunHarmony
@@ -203,10 +217,9 @@ processSeuratObject <- function(obj, param.list = p, species_ = "human",
       }
 
       obj@misc$"harmony.params" <- c("n.PC" = n.PC, "regress" = harmony.covariates)
-    }
+    } # end if use_harmony
 
-
-
+    # Compute UMAP, FindNeighbors, FindClusters _________________________________________________
     message("------------------- UMAP -------------------")
     tic("UMAP")
     obj <- SetupReductionsNtoKdimensions(obj,
@@ -223,7 +236,7 @@ processSeuratObject <- function(obj, param.list = p, species_ = "human",
     tic("FindClusters")
     obj <- FindClusters(obj, resolution = resolutions)
     toc()
-  }
+  } # END if (compute)
 
 
   if (save) {
