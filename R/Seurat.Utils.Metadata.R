@@ -605,6 +605,7 @@ addMetaFraction <- function(
 #' @param obj A Seurat object to be updated. Default: None.
 #' @param gene_fractions A named list containing gene symbol patterns for each meta column name.
 #'                       Default: List of predefined gene fractions.
+#' @param species A character string specifying the species ("human" or "mouse"). Default: "human".
 #' @param add_hga A logical value indicating whether to add percent.HGA metadata. Default: `TRUE`.
 #'
 #' @return An updated Seurat object.
@@ -621,8 +622,27 @@ addGeneClassFractions <- function(obj,
                                     "percent.LINC" = "^LINC0",
                                     "percent.MALAT1" = "^MALAT1"
                                   ),
+                                  species = c("human", "mouse")[1],
                                   add_hga = TRUE) {
   message("Adding metadata for gene-class fractions, e.g., percent.mito, etc.")
+
+  if (species == "mouse") {
+    message("Using mouse gene patterns for: mito, ribo, Gm.predicted, and Malat1 genes.")
+    gene_fractions <- list(
+      "percent.mito"        = "^(mt-|MT-)",
+      "percent.ribo"        = "^(Rpl|Rps)",
+
+      # Mouse AC/AL loci do not exist in the same way as human GenBank/EMBL ACxxxxx / ALxxxxx loci.
+      # The closest equivalents are "Gm" predicted and lincRNAs genes.
+      "percent.Gm.predicted" = "^Gm[0-9]+",
+
+      "percent.Malat1"       = "^Malat1$"
+    )
+  } else if (species == "human") {
+    message("Using human gene patterns for: mito, ribo, AC/AL loci, LINC, and MALAT1 genes.")
+  } else {
+    stop("Unsupported species: ", species)
+  }
 
   for (col_name in names(gene_fractions)) {
     message(col_name, "...")
