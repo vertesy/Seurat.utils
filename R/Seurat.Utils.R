@@ -1078,7 +1078,8 @@ calc.q99.Expression.and.set.all.genes <- function(
     plot = TRUE,
     suffix = substitute(obj),
     show = TRUE,
-    obj.version = obj@version) {
+    obj.version = obj@version,
+    ...) {
 
   top.quant <- (1 - quantileX)
   message("\nCalculating the gene expression level at the the top ", percentage_formatter(top.quant), " of cells. | q: ", quantileX)
@@ -1163,8 +1164,8 @@ calc.q99.Expression.and.set.all.genes <- function(
       plot = TRUE, save = TRUE,
       vline = .15,
       filtercol = TRUE,
-      palette_use = "npg"
-    )
+      palette_use = "npg", w = 8, h = 6,
+      ...)
     tictoc::toc()
     if (show) print(pobj)
   }

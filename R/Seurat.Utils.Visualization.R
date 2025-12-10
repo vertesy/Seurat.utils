@@ -2068,7 +2068,7 @@ qSeuViolin <- function(
     is.character(ident),
     ident %in% colnames(obj@meta.data),
     is.character(feature),
-    feature %in% colnames(obj@meta.data) || feature %in% rownames(obj)
+    feature %in% colnames(obj@meta.data) || feature %in% rownames(obj) # This version of the function works on a single feature only.
   )
 
   is_meta_feature <- feature %in% colnames(obj@meta.data) # check if feature is in meta.data, otherwise it is a  gene name
