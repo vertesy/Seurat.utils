@@ -247,6 +247,7 @@ processSeuratObject <- function(obj, param.list = p, species_ = "human",
 
   if (plot) {
     message("------------------- Plotting -------------------")
+    try.dev.off()
 
     try(suPlotVariableFeatures(obj = obj, assay = "RNA"), silent = TRUE)
 
@@ -1074,16 +1075,19 @@ calc.q99.Expression.and.set.all.genes <- function(
     assay = c("RNA", "integrated", "SCT")[1],
     set.misc = TRUE,
     assign_to_global_env = TRUE,
-    suffix = substitute_deparse(obj),
     plot = TRUE,
+    suffix = substitute(obj),
     show = TRUE,
     obj.version = obj@version) {
-  top.quant <- (1 - quantileX)
-  message("\nCalculating the gene expression level at the the top", percentage_formatter(top.quant), " of cells. | q: ", quantileX)
-  message("slot: ", slot, " assay: ", assay, ".\n")
-  nr.total.cells <- ncol(obj)
 
+  top.quant <- (1 - quantileX)
+  message("\nCalculating the gene expression level at the the top ", percentage_formatter(top.quant), " of cells. | q: ", quantileX)
+  message("slot: ", slot, " assay: ", assay, ".\n")
+
+  nr.total.cells <- ncol(obj)
   n.cells.in.top.quantile <- floor(nr.total.cells * top.quant) # number of cells in the top quantileX
+
+  suffix <- deparse(suffix) # needed to make sure its a string
 
   tictoc::tic("calc.q99.Expression.and.set.all.genes")
   stopifnot(
@@ -1117,6 +1121,10 @@ calc.q99.Expression.and.set.all.genes <- function(
     data_mtx <- slot(assay_data, slot)
   }
 
+  # Set names
+  stopifnot(all(dim(obj) == dim(data_mtx)))
+  dimnames(data_mtx) <- dimnames(obj)
+
   # Downsample if the number of cells is too high _________________________________________________
   if (ncol(data_mtx) > max.cells) {
     dsampled <- sample(x = 1:ncol(data_mtx), size = max.cells)
@@ -1136,8 +1144,8 @@ calc.q99.Expression.and.set.all.genes <- function(
   slot_name <- kpp("expr", qname)
 
   print("Calculating Gene Quantiles")
-  expr.q99.df <- sparseMatrixStats::rowQuantiles(data_mtx, probs = quantileX)
-  expr.q99 <- iround(expr.q99.df)
+  expr.q99.raw <- sparseMatrixStats::rowQuantiles(data_mtx, probs = quantileX)
+  expr.q99 <- iround(expr.q99.raw)
 
   log2.gene.expr.of.the.Xth.quantile <- as.numeric(log2(expr.q99 + 1)) # strip names
   qnameP <- paste0(100 * quantileX, "th quantile")
@@ -1145,7 +1153,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   # Plot the distribution of gene expression in the 99th quantile _________________________________
   if (plot) {
     pobj <- ggExpress::qhistogram(log2.gene.expr.of.the.Xth.quantile,
-      plotname = paste("Gene expression in the", qnameP, " in", suffix),
+      plotname = paste("Gene expression in the", qnameP, "in", suffix),
       ext = "pdf", breaks = 30,
       subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", nr.total.cells, " cells)."),
       caption = paste(nr.total.cells, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object."),
@@ -1178,7 +1186,8 @@ calc.q99.Expression.and.set.all.genes <- function(
 
   iprint(
     "Quantile", quantileX, "is now stored under obj@misc$", slot_name,
-    " Please execute all.genes <- obj@misc$all.genes."
+    "Please execute:\n",
+    "`Seurat.utils::recall.all.genes(obj)` or `obj.TSC@misc$all.genes`\n\n"
   )
   return(obj)
 }
@@ -1245,7 +1254,7 @@ filterCodingGenes <- function(
   }
 
   # Output assertions
-  stopifnot(is.character(genes_kept), length(genes_kept) <= original_length)
+  stopifnot(is.character(genes_kept), filtered_length <= original_length)
 
   if (unique) genes_kept <- unique(genes_kept)
 
@@ -1280,6 +1289,9 @@ filterCodingGenes <- function(
 filterExpressedGenes <- function(
     genes, gene_list = all.genes,
     sort_by_expr = TRUE, threshold = 0.1) {
+
+  message(" > Running filterExpressedGenes()...")
+
   # Assertions
   stopifnot(
     is.list(gene_list),
@@ -1288,8 +1300,11 @@ filterExpressedGenes <- function(
   )
   stopif(is.null(gene_list))
 
+
   # Step 1: Intersect the gene symbols with the names in the list and report statistics
   matching_genes <- CodeAndRoll2::intersect.wNames(x = genes, y = names(gene_list), names = "x")
+  stopifnot(length(matching_genes) > 0)
+
   message(
     "Number of matching genes: ", length(matching_genes), " from ", length(genes),
     ". Missing: ", head(setdiff(genes, names(gene_list))), " ..."
@@ -1298,6 +1313,8 @@ filterExpressedGenes <- function(
   # Step 2: Filter out genes below the expression threshold
   filtered_genes <- matching_genes[sapply(matching_genes, function(g) gene_list[[g]] >= threshold)]
   message("Number of genes above the threshold: ", length(filtered_genes), " from ", length(matching_genes))
+
+  print(as.numeric.wNames.character(gene_list[genes]))
 
   # Step 3: Conditionally sort genes according to their expression in descending order
   if (sort_by_expr) {
@@ -1309,7 +1326,7 @@ filterExpressedGenes <- function(
   # sorted_genes <- names(sort(unlist(gene_list[filtered_genes]), decreasing = TRUE))
 
   # Step 4: Return the character vector
-  return(filtered_genes)
+  invisible(filtered_genes)
 }
 
 # r$CodeAndRoll2()
