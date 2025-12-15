@@ -661,6 +661,7 @@ PctCellsAboveX <- function(
     plot = TRUE,
     caption = NULL,
     ylab = "% cells above threshold",
+    palette = "jco",
     ...
 ) {
 
@@ -699,6 +700,8 @@ PctCellsAboveX <- function(
 
   # 6. Compute percentages ____________________________________
   pct_vec <- vapply(ls_feat, function(x) mean(x > threshold), numeric(1))
+  # browser()
+
 
   # 7. Re-group for box mode __________________________________
   if (box) {
@@ -711,7 +714,7 @@ PctCellsAboveX <- function(
   # 8. Plotting (your exact original code) ____________________
   if (plot) {
     if (is.null(caption)) {
-      caption <- pc_TRUE(is.na(Fraction.of.Cells.Above.Threshold),
+      caption <- pc_TRUE(is.na(pct_vec),
         suffix = "of idents yielded NA/NaN & excluded from plot."
       )
     }
@@ -731,6 +734,7 @@ PctCellsAboveX <- function(
         caption = caption,
         suffix = SFX,
         ylab = ylab,
+        palette_use = palette,
         ...
       )
     } else {
@@ -742,6 +746,7 @@ PctCellsAboveX <- function(
         caption = caption,
         suffix = SFX,
         ylab = ylab,
+        palette_use = palette,
         ...
       )
     }
