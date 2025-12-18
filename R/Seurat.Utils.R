@@ -2893,7 +2893,7 @@ addCombinedScore2DGEAResults <- function(
 #' @importFrom dplyr mutate across any_of
 #'
 #' @export
-roundDGE_table <- function(
+roundDGEAResults <- function(
     res,
     cols.p = c("p_val", "p_val_adj"),
     cols.other = c(
