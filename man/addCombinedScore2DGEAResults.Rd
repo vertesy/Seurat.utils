@@ -8,34 +8,44 @@ addCombinedScore2DGEAResults(
   df = df.markers,
   p_val_min = 1e-25,
   pval_scaling = 0.001,
-  colP = "p_val",
+  colP = "p_val_adj",
   colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df),
     perl = TRUE)
 )
 }
 \arguments{
-\item{df}{A data frame that holds the result of a differential gene expression analysis,
-typically obtained via the 'FindAllMarkers' function. Default: df.markers.}
+\item{df}{A data frame containing differential gene expression results, typically produced
+by \code{Seurat::FindAllMarkers}. Default: \code{df.markers}.}
 
-\item{p_val_min}{The minimum p-value considered. All values below this threshold are set to
-this value. Default: 1e-25.}
+\item{p_val_min}{Numeric scalar specifying the minimum allowed p-value; all smaller values
+are clipped to this threshold to stabilize the score. Default: \code{1e-25}.}
 
-\item{pval_scaling}{The value to scale p-values by in the calculation of the combined score. Default: 0.001.}
+\item{pval_scaling}{Numeric scalar defining the reference significance level at which the
+p-value contribution becomes zero. Values smaller than this increase the score, while
+larger values down-weight it. Default: \code{0.001}.}
 
-\item{colP}{The name of the column in the input data frame that holds p-values. Default: 'p_val'.}
+\item{colP}{Character string giving the name of the column containing (adjusted) p-values.
+Default: \code{"p_val_adj"}.}
 
-\item{colLFC}{The name of the column in the input data frame that holds log-fold change values.
-By default, it selects the first column not named "avg_logFC" or "avg_log2FC".}
+\item{colLFC}{Character string giving the name of the column containing log-fold change
+values. By default, the first column matching \code{avg_logFC} or \code{avg_log2FC}
+is selected automatically.}
+}
+\value{
+The input data frame with an additional column named \code{"combined.score"}.
 }
 \description{
-Add a combined score to differential expression (DE) results. The score is
-calculated as log-fold change (LFC) times negative logarithm of scaled
-p-value (LFC * -log10( p_cutoff / pval_scaling )).
+Adds a combined differential expression score that integrates log-fold change (effect size)
+with statistical evidence from adjusted p-values. The score is calculated as
+\eqn{LFC * -log10(p_adj / pval_scaling)}, where \code{pval_scaling} defines a reference
+significance level. P-values are clipped to a minimum threshold to avoid infinite or
+excessively large scores. This formulation emphasizes genes that show both strong
+expression changes and evidence well beyond a chosen significance baseline, which is
+especially useful for single-cell DGE results where very small p-values are common.
 }
 \examples{
 \dontrun{
-if (interactive()) {
-  df.markers <- addCombinedScore2DGEAResults(df.markers)
+df.markers <- addCombinedScore2DGEAResults(df.markers)
 }
-}
+
 }
