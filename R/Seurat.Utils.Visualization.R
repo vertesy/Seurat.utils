@@ -3404,7 +3404,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 #'
 #' @importFrom EnhancedVolcano EnhancedVolcano
 #'
-#' @export
+#' @export scEnhancedVolcano
 
 scEnhancedVolcano <- function(
     toptable,

@@ -1221,16 +1221,16 @@ filterCodingGenes <- function(
   # Filter the genes
   combined_pattern <- paste(pattern_NC, collapse = "|")
   genes_discarded <- genes[stringr::str_detect(genes, combined_pattern)]
-  iprint("Example discarded", CodeAndRoll2::trail(genes_discarded))
+  if (v)  iprint("Examples of", length(genes_discarded) , "discarded symbols:", CodeAndRoll2::trail(genes_discarded, 5))
 
   genes_kept <- genes[stringr::str_detect(genes, combined_pattern, negate = TRUE)]
 
+  original_length <- length(genes)
+  filtered_length <- length(genes_kept)
+
   # Report original and final list sizes and percentage remaining
   if (v) {
-    original_length <- length(genes)
-    filtered_length <- length(genes_kept)
     percentage_remaining <- (filtered_length / original_length) * 100
-
     message("Original number of gene symbols: ", original_length)
     message("Filtered number of gene symbols: ", filtered_length)
     message("Percentage remaining: ", round(percentage_remaining, 2), "%")
