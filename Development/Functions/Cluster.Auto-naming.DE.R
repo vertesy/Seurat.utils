@@ -14,7 +14,7 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
   vec[vec <= X] <- newmin
   vec
 }
-# SmallestNonZero(vec = df.markers$"p_val")
+# ClipAtSmallestAboveX(vec = df.markers$"p_val")
 
 
 # AddCombinedScore2DEGResults ------------------------------------------------------------------------

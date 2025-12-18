@@ -489,7 +489,7 @@ runDGEA <- function(obj,
       # order df.markers by logFC
       df.markers <- df.markers[order(df.markers$"avg_log2FC", decreasing = TRUE), ]
 
-      if (add.combined.score) df.markers <- AddCombinedScore2DEGResults(df.markers)
+      if (add.combined.score) df.markers <- addCombinedScore2DGEAResults(df.markers)
 
       obj@misc$"df.markers"[[df.slot]] <- df.markers
 
@@ -847,24 +847,6 @@ SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
 
 
 
-# _________________________________________________________________________________________________
-#' @title SmallestNonAboveX
-#'
-#' @description replace small values with the next smallest value found, which is >X.
-#' @param vec Numeric input vector
-#' @param X Threshold, Default: 0
-#' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   SmallestNonZero(vec = df.markers$"p_val")
-#' }
-#' }
-#' @export
-SmallestNonAboveX <- function(vec, X = 0) {
-  newmin <- min(vec[vec > X])
-  vec[vec <= X] <- newmin
-  vec
-}
 
 
 # _________________________________________________________________________________________________
@@ -2847,7 +2829,7 @@ downsampleListSeuObjsPercent <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title AddCombinedScore2DEGResults
+#' @title addCombinedScore2DGEAResults
 #'
 #' @description Add a combined score to differential expression (DE) results. The score is
 #' calculated as log-fold change (LFC) times negative logarithm of scaled
@@ -2863,19 +2845,103 @@ downsampleListSeuObjsPercent <- function(
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   df.markers <- AddCombinedScore2DEGResults(df.markers)
+#'   df.markers <- addCombinedScore2DGEAResults(df.markers)
 #' }
 #' }
 #' @export
-AddCombinedScore2DEGResults <- function(
+addCombinedScore2DGEAResults <- function(
     df = df.markers, p_val_min = 1e-25, pval_scaling = 0.001, colP = "p_val",
     colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = TRUE)
-    # , colLFC = "avg_log2FC"
-    ) { # Score = -LOG10(p_val) * avg_log2FC
-  p_cutoff <- SmallestNonAboveX(vec = df[[colP]], X = p_val_min)
+    ) {
+  p_cutoff <- clip.at.fixed.value(x = df[[colP]], thr = p_val_min, above = F)
   df$"combined.score" <- round(df[[colLFC]] * -log10(p_cutoff / pval_scaling))
   return(df)
 }
+
+
+# _________________________________________________________________________________________________
+
+#' @title Round numeric columns in DGE result tables
+#'
+#' @description
+#' Rounds numeric columns in differential gene expression (DGE) result tables
+#' (e.g. from \code{Seurat::FindMarkers()}) to a meaningful number of digits.
+#' The function is intentionally limited to *rounding* (not formatting) and
+#' keeps all columns numeric. Columns that are not present are silently ignored.
+#'
+#' @param res A data.frame or tibble containing DGE results.
+#' @param cols.p Character vector of p-value column names to round using
+#'   \code{signif()}. Default matches common Seurat outputs.
+#' @param cols.other Character vector of other numeric columns to round using
+#'   \code{round()} (e.g. logFC, percentages, average expression).
+#'   Default matches common Seurat outputs.
+#' @param digits.p Integer. Number of significant digits for p-values.
+#'   Default: 2.
+#' @param digits.other Integer. Number of decimal digits for other columns.
+#'   Default: 2.
+#'
+#' @details
+#' Typical defaults assume Seurat-style DGE tables with columns such as
+#' \code{p_val}, \code{p_val_adj}, \code{avg_log2FC}, \code{pct.1}, \code{pct.2},
+#' and optional average-expression columns (\code{av.expr.1}, \code{av.expr.2}).
+#' All column vectors are optional; missing columns are skipped automatically.
+#'
+#' @return
+#' A data.frame with the same structure as \code{res}, but with rounded numeric
+#' columns.
+#'
+#' @importFrom dplyr mutate across any_of
+#'
+#' @export
+roundDGE_table <- function(
+    res,
+    cols.p = c("p_val", "p_val_adj"),
+    cols.other = c(
+      "avg_log2FC",
+      "pct.1", "pct.2",
+      "av.expr.1", "av.expr.2"
+    ),
+    digits.p = 2,
+    digits.other = 2
+) {
+
+  stopifnot(
+    "res must be a data.frame" = is.data.frame(res),
+    "cols.p must be character" = is.character(cols.p),
+    "cols.other must be character" = is.character(cols.other),
+    "digits.p must be numeric" = is.numeric(digits.p),
+    "digits.other must be numeric" = is.numeric(digits.other)
+  )
+
+  message(
+    "Rounding p-value columns: ",
+    paste(intersect(cols.p, colnames(res)), collapse = ", "),
+    " (signif digits = ", digits.p, ")"
+  )
+
+  message(
+    "Rounding other numeric columns: ",
+    paste(intersect(cols.other, colnames(res)), collapse = ", "),
+    " (decimal digits = ", digits.other, ")"
+  )
+
+  res |>
+    dplyr::mutate(
+      # p-value columns (significant digits)
+      dplyr::across(
+        dplyr::any_of(cols.p),
+        ~ signif(.x, digits.p)
+      ),
+      # other numeric columns (fixed decimal rounding)
+      dplyr::across(
+        dplyr::any_of(cols.other),
+        ~ round(.x, digits.other)
+      )
+    )
+}
+
+
+
 
 
 
@@ -6231,3 +6297,23 @@ compareVarFeaturesAndRanks <- function(
 # _________________________________________________________________________________________________
 # Temp _____________________________ ------
 # _________________________________________________________________________________________________
+
+
+# _________________________________________________________________________________________________
+#' #' @title ClipAtSmallestAboveX
+#' #'
+#' #' @description Replace small values with the next smallest value found, which is >X.
+#' #' @param vec Numeric input vector
+#' #' @param X Threshold, Default: 0
+#' #' @examples
+#' #' \dontrun{
+#' #' if (interactive()) {
+#' #'   ClipAtSmallestAboveX(vec = df.markers$"p_val")
+#' #' }
+#' #' }
+#' #' @export
+#' ClipAtSmallestAboveX <- function(vec, X = 0) {
+#'   newmin <- min(vec[vec > X])
+#'   vec[vec <= X] <- newmin
+#'   vec
+#' }
