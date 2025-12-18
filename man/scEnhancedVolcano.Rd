@@ -10,7 +10,7 @@ scEnhancedVolcano(
   y = "p_val_adj",
   lab = rownames(toptable),
   title = paste("DGEA"),
-  selectLab = trail(lab, 10),
+  selectLab = trail(filterCodingGenes(lab), 10),
   min.p = 1e-50,
   max.l2fc = Inf,
   min.pct.cells = 0.1,

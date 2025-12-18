@@ -489,7 +489,7 @@ runDGEA <- function(obj,
       # order df.markers by logFC
       df.markers <- df.markers[order(df.markers$"avg_log2FC", decreasing = TRUE), ]
 
-      if (add.combined.score) df.markers <- Add.DE.combined.score(df.markers)
+      if (add.combined.score) df.markers <- AddCombinedScore2DEGResults(df.markers)
 
       obj@misc$"df.markers"[[df.slot]] <- df.markers
 
@@ -2847,7 +2847,7 @@ downsampleListSeuObjsPercent <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title Add.DE.combined.score
+#' @title AddCombinedScore2DEGResults
 #'
 #' @description Add a combined score to differential expression (DE) results. The score is
 #' calculated as log-fold change (LFC) times negative logarithm of scaled
@@ -2863,11 +2863,11 @@ downsampleListSeuObjsPercent <- function(
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'   df.markers <- Add.DE.combined.score(df.markers)
+#'   df.markers <- AddCombinedScore2DEGResults(df.markers)
 #' }
 #' }
 #' @export
-Add.DE.combined.score <- function(
+AddCombinedScore2DEGResults <- function(
     df = df.markers, p_val_min = 1e-25, pval_scaling = 0.001, colP = "p_val",
     colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = TRUE)
     # , colLFC = "avg_log2FC"

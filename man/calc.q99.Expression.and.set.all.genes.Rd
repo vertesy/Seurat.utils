@@ -12,10 +12,11 @@ calc.q99.Expression.and.set.all.genes(
   assay = c("RNA", "integrated", "SCT")[1],
   set.misc = TRUE,
   assign_to_global_env = TRUE,
-  suffix = substitute_deparse(obj),
   plot = TRUE,
+  suffix = substitute(obj),
   show = TRUE,
-  obj.version = obj@version
+  obj.version = obj@version,
+  ...
 )
 }
 \arguments{

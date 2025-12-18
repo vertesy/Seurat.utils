@@ -17,8 +17,8 @@ SmallestNonAboveX <- function(vec, X = 0) { # replace small values with the next
 # SmallestNonZero(vec = df.markers$"p_val")
 
 
-# Add.DE.combined.score ------------------------------------------------------------------------
-Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-25, pval_scaling = 0.001, colP = "p_val"
+# AddCombinedScore2DEGResults ------------------------------------------------------------------------
+AddCombinedScore2DEGResults <- function(df=df.markers, p_val_min=1e-25, pval_scaling = 0.001, colP = "p_val"
                                   , colLFC = grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = T)
                                   # , colLFC = "avg_log2FC"
                                   ) { # Score = -LOG10(p_val) * avg_log2FC
@@ -26,7 +26,7 @@ Add.DE.combined.score <- function(df=df.markers, p_val_min=1e-25, pval_scaling =
   df$'combined.score' <- round(df[[colLFC]] * -log10( p_cutoff / pval_scaling ) )
   return(df)
 }
-# df.markers <- Add.DE.combined.score(df.markers)
+# df.markers <- AddCombinedScore2DEGResults(df.markers)
 
 
 

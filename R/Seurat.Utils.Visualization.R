@@ -3411,7 +3411,7 @@ scEnhancedVolcano <- function(
     y = "p_val_adj",
     lab = rownames(toptable),
     title = paste("DGEA"),
-    selectLab = trail(lab, 10),
+    selectLab = trail(filterCodingGenes(lab), 10),
     min.p = 1e-50,
     max.l2fc = Inf,
     min.pct.cells = 0.1,
@@ -3422,7 +3422,8 @@ scEnhancedVolcano <- function(
     caption = paste("Min. Fold Change in Input:", .estMinimumFC(toptable)),
     caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
     count_stats = TRUE,
-    drawConnectors = TRUE, max.overlaps = Inf,
+    drawConnectors = TRUE,
+    max.overlaps = Inf,
     h = 9, w = h,
     ...) {
   #
