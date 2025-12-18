@@ -8,8 +8,8 @@ scEnhancedVolcano(
   toptable,
   x = "avg_log2FC",
   y = "p_val_adj",
-  lab = rownames(toptable),
   title = paste("DGEA"),
+  lab = rownames(toptable),
   selectLab = trail(filterCodingGenes(lab), 10),
   min.p = 1e-50,
   max.l2fc = Inf,
@@ -23,6 +23,7 @@ scEnhancedVolcano(
   count_stats = TRUE,
   drawConnectors = TRUE,
   max.overlaps = Inf,
+  also.pdf = FALSE,
   h = 9,
   w = h,
   ...
@@ -35,9 +36,9 @@ scEnhancedVolcano(
 
 \item{y}{The y-axis, which is typically the adjusted p-value.}
 
-\item{lab}{A vector of gene symbols to label on the plot.}
-
 \item{title}{The title of the plot.}
+
+\item{lab}{A vector of gene symbols to label on the plot.}
 
 \item{selectLab}{A vector of gene symbols to select for labeling.}
 
@@ -64,6 +65,8 @@ scEnhancedVolcano(
 \item{drawConnectors}{Whether to draw connectors between the labels and the points.}
 
 \item{max.overlaps}{The maximum number of labels that can overlap.}
+
+\item{also.pdf}{Logical. Whether to save the plot as a PDF in addition to the default png format.}
 
 \item{h}{The height of the plot.}
 

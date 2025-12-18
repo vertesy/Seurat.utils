@@ -3376,14 +3376,10 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 #' @description This function creates an enhanced volcano plot.
 #'
 #' @param toptable A data frame with the results of differential gene expression analysis.
-#' @param lab A vector of gene symbols to label on the plot.
-#' @param suffix A string to append to the filename/title of the plot.
-#' @param title The title of the plot.
-#' @param suffix A string to append to the filename/title of the plot.
-#' @param caption The first line of caption of the plot.
-#' @param caption2 The second line of caption of the plot.
 #' @param x The x-axis, which is typically the average log2 fold change.
 #' @param y The y-axis, which is typically the adjusted p-value.
+#' @param title The title of the plot.
+#' @param lab A vector of gene symbols to label on the plot.
 #' @param selectLab A vector of gene symbols to select for labeling.
 #' @param min.p The minimum p-value, to trim high values on the Y-axis.
 #' @param max.l2fc The maximum log2 fold change, to trim high values on the X-axis.
@@ -3391,10 +3387,15 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 #' @param pCutoffCol The column in the toptable that contains the p-value cutoff.
 #' @param pCutoff The p-value cutoff.
 #' @param FCcutoff The fold change cutoff.
+#'
+#' @param suffix A string to append to the filename/title of the plot.
+#' @param suffix A string to append to the filename/title of the plot.
+#' @param caption The first line of caption of the plot.
+#' @param caption2 The second line of caption of the plot.
 #' @param count_stats Logical. Calculates a data frame with the count statistics.
 #' @param drawConnectors Whether to draw connectors between the labels and the points.
 #' @param max.overlaps The maximum number of labels that can overlap.
-#' @param min.p The minimum p-value, to trim high values on the Y-axis.
+#' @param also.pdf Logical. Whether to save the plot as a PDF in addition to the default png format.
 #' @param h The height of the plot.
 #' @param w The width of the plot.
 #' @param ... Pass any other parameter to `EnhancedVolcano::EnhancedVolcano()`.
@@ -3409,8 +3410,8 @@ scEnhancedVolcano <- function(
     toptable,
     x = "avg_log2FC",
     y = "p_val_adj",
-    lab = rownames(toptable),
     title = paste("DGEA"),
+    lab = rownames(toptable),
     selectLab = trail(filterCodingGenes(lab), 10),
     min.p = 1e-50,
     max.l2fc = Inf,
@@ -3418,12 +3419,14 @@ scEnhancedVolcano <- function(
     pCutoffCol = "p_val_adj",
     pCutoff = 1e-3,
     FCcutoff = 1,
+
     suffix = NULL,
     caption = paste("Min. Fold Change in Input:", .estMinimumFC(toptable)),
     caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
     count_stats = TRUE,
     drawConnectors = TRUE,
     max.overlaps = Inf,
+    also.pdf = FALSE,
     h = 9, w = h,
     ...) {
   #
@@ -3493,7 +3496,7 @@ scEnhancedVolcano <- function(
   print(pobj)
   # Save the plot.
   qqSave(
-    ggobj = pobj, title = paste0("Volcano.", make.names(title), suffix),
+    ggobj = pobj, title = paste0("Volcano.", make.names(title), suffix), also.pdf = also.pdf,
     h = h, w = w
   )
   return(pobj)
