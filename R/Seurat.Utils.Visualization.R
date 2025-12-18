@@ -3447,14 +3447,14 @@ scEnhancedVolcano <- function(
 
   # Clip p-values.
   toptable[["p_val_adj"]] <-
-    clip.at.fixed.value(x = toptable[["p_val_adj"]], thr = min.p, high = FALSE)
+    clip.at.fixed.value(x = toptable[["p_val_adj"]], thr = min.p, above = FALSE)
 
   # Clip log2FC.
   if (max.l2fc < Inf) {
     toptable[["avg_log2FC"]] <-
-      clip.at.fixed.value(x = toptable[["avg_log2FC"]], thr = -max.l2fc, high = FALSE)
+      clip.at.fixed.value(x = toptable[["avg_log2FC"]], thr = -max.l2fc, above = FALSE)
     toptable[["avg_log2FC"]] <-
-      clip.at.fixed.value(x = toptable[["avg_log2FC"]], thr = max.l2fc, high = TRUE)
+      clip.at.fixed.value(x = toptable[["avg_log2FC"]], thr = max.l2fc, above = TRUE)
   }
 
   # Add statistical information to the subtitle.
