@@ -3680,6 +3680,7 @@ scGOEnrichment <- function(genes, universe = NULL,
 #' `enrichplot::barplot.enrichResult` function. It also allows saving the plot to a file.
 #'
 #' @param df.enrichment Data frame. Enrichment results from GO analysis. Default: NULL.
+#' @param showCategory Integer. Number of categories (GO-terms as bars) to show in the plot. Default: 20.
 #' @param tag Character. Tag to be added to the title of the plot. Default: "in ...".
 #' @param universe Character. Background gene list (universe). Default: `df.enrichment@universe`.
 #' @param title Character. Title of the plot. Default: "GO Enrichment Analysis" followed by `tag`.
@@ -3702,6 +3703,8 @@ scGOEnrichment <- function(genes, universe = NULL,
 #' plotGOEnrichment(df.enrichment)
 #' }
 scBarplotEnrichr <- function(df.enrichment,
+                             showCategory = 20,
+                             label_format = 30,
                              tag = "...",
                              universe = df.enrichment@universe,
                              title = paste("GO Enriched Terms", tag),
@@ -3709,6 +3712,7 @@ scBarplotEnrichr <- function(df.enrichment,
                              caption = paste0(
                                "Input genes: ", length(df.enrichment@"gene"),
                                " | Enriched terms: ", nrow(df.enrichment),
+                               " | Shown: ", min(showCategory, nrow(df.enrichment)),
                                " | background genes: ", length(universe)
                              ),
                              save = TRUE,
@@ -3738,7 +3742,7 @@ scBarplotEnrichr <- function(df.enrichment,
           size = 8, color = "red", hjust = 0.5, vjust = 0.5
         )
     } else {
-      enrichplot:::barplot.enrichResult(df.enrichment, showCategory = 20)
+      enrichplot:::barplot.enrichResult(df.enrichment, showCategory = showCategory, label_format = label_format)
     }
   pobj <- pobj + ggplot2::labs(title = title, subtitle = subtitle, caption = caption)
 
@@ -3748,6 +3752,9 @@ scBarplotEnrichr <- function(df.enrichment,
 
   return(pobj)
 }
+
+
+
 
 
 # ________________________________________________________________________

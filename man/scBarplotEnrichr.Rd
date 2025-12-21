@@ -6,12 +6,15 @@
 \usage{
 scBarplotEnrichr(
   df.enrichment,
+  showCategory = 20,
+  label_format = 30,
   tag = "...",
   universe = df.enrichment@universe,
   title = paste("GO Enriched Terms", tag),
   subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
   caption = paste0("Input genes: ", length(df.enrichment@gene), " | Enriched terms: ",
-    nrow(df.enrichment), " | background genes: ", length(universe)),
+    nrow(df.enrichment), " | Shown: ", min(showCategory, nrow(df.enrichment)),
+    " | background genes: ", length(universe)),
   save = TRUE,
   w = 10,
   h = 10,
@@ -21,6 +24,8 @@ scBarplotEnrichr(
 }
 \arguments{
 \item{df.enrichment}{Data frame. Enrichment results from GO analysis. Default: NULL.}
+
+\item{showCategory}{Integer. Number of categories (GO-terms as bars) to show in the plot. Default: 20.}
 
 \item{tag}{Character. Tag to be added to the title of the plot. Default: "in ...".}
 

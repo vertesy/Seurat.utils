@@ -5226,7 +5226,7 @@ xread2 <- function(path,
     NA_real_
   }
 
-  # ---- MEMORY SAFETY CHECK ----
+  # MEMORY SAFETY CHECK ________________________________________________
   if (safe_load && Stringendo::ifExistsAndTrue("onCBE")) {
     lim <- get_slurm_limit()
 
@@ -5258,7 +5258,7 @@ xread2 <- function(path,
     }
   }
 
-  # ---- ORIGINAL LOGIC BELOW ----
+  # ORIGINAL LOGIC BELOW ______________________________
   message(nthreads, " threads.")
   try(tictoc::tic("xread2"), silent = TRUE)
 
