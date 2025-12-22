@@ -3872,13 +3872,11 @@ scEmapplotEnrichr <- function(
     universe = df.enrichment@universe,
     title = paste("GO Enrichment Map", tag),
     subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
-    caption = paste0(
-      "Input genes: ", length(df.enrichment@"gene"),
-      " | Enriched terms: ", nrow(df.enrichment),
-      " | Shown: ", min(showCategory, nrow(df.enrichment)),
-      " | background genes: ", length(universe),
-      " | min edge overlap: ", min_edge
-    ),
+    caption = paste0( "Input genes: ", length(df.enrichment@"gene"),
+                      " | Enriched terms: ", nrow(df.enrichment),
+                      " | Shown: ", min(showCategory, nrow(df.enrichment)),
+                      " | background genes: ", length(universe),
+                      " | min edge overlap: ", min_edge),
     label_format = NULL,
     layout = "kk",
     cex_label_category = 0.8,
@@ -3889,9 +3887,7 @@ scEmapplotEnrichr <- function(
     ...
 ) {
 
-  stopifnot(
-    "Package 'enrichplot' must be installed." = requireNamespace("enrichplot", quietly = TRUE)
-  )
+  stopifnot("Package 'enrichplot' must be installed." = requireNamespace("enrichplot", quietly = TRUE) )
 
   if (tag == "...") {
     warning(
@@ -3904,7 +3900,6 @@ scEmapplotEnrichr <- function(
 
   pobj <-
     if (is.null(df.enrichment) || nrow(df.enrichment) < 1) {
-
       warning("No enriched terms input!", immediate. = TRUE)
       ggplot2::ggplot() +
         ggplot2::theme_void() +
@@ -3913,10 +3908,7 @@ scEmapplotEnrichr <- function(
           x = 1, y = 1, label = "NO ENRICHMENT",
           size = 8, color = "red", hjust = 0.5, vjust = 0.5
         )
-
-
     } else if (nr_input_genes < 5) {
-
       warning("Very few input genes for GO enrichment (<5).", immediate. = TRUE)
       ggplot2::ggplot() +
         ggplot2::theme_void() +
@@ -4080,6 +4072,74 @@ countEnrichedDepletedGenes <- function(df, min_padj = 0.01, min_logFC = 0.5,
   } else {
     message("No specific layout selected, defaulting to input parameters.")
   }
+}
+
+
+# ________________________________________________________________________
+#' @title Empty ggplot with centered annotation and optional warning
+#'
+#' @description
+#' Create a blank ggplot with a centered text annotation.
+#' Optionally emits a warning with a custom message.
+#'
+#' @param label Character. Text shown in the plot.
+#' @param warning_msg Character or NULL. Warning text. Default: NULL.
+#' @param color Character. Text color. Default: "red".
+#' @param size Numeric. Text size. Default: 8.
+#'
+#' @return An placeholder ggplot object with annotation.
+.emptyAnnotatedPlot <- function(
+    label,
+    warning_msg = NULL,
+    color = "red",
+    size = 8
+) {
+  stopifnot(
+    is.character(label), is.character(color), is.numeric(size),
+    is.null(warning_msg) || (is.character(warning_msg) && length(warning_msg) == 1),
+  )
+
+  if (!is.null(warning_msg)) warning(warning_msg, immediate. = TRUE)
+
+  ggplot2::ggplot() +
+    ggplot2::theme_void() +
+    ggplot2::annotate(
+      geom  = "text",
+      x  = 1, y = 1,
+      label = label, color = color,size  = size,
+      hjust = 0.5, vjust = 0.5
+    )
+}
+
+
+
+# ________________________________________________________________________
+#' @title Empty ggplot with centered annotation
+#'
+#' @description
+#' Create a blank ggplot with a centered text annotation.
+#' Intended as a fallback plot for failed or empty enrichment results.
+#'
+#' @param label Character. Text shown in the plot.
+#' @param color Character. Text color. Default: "red".
+#' @param size Numeric. Text size. Default: 8.
+#'
+#' @return A ggplot object.
+.emptyAnnotatedPlot <- function(label, color = "red", size = 8) {
+  stopifnot(
+    is.character(label), length(label) == 1,
+    is.character(color), length(color) == 1,
+    is.numeric(size), length(size) == 1
+  )
+
+  ggplot2::ggplot() +
+    ggplot2::theme_void() +
+    ggplot2::annotate(geom  = "text", x = 1, y = 1,
+      label = label,
+      color = color,
+      size  = size,
+      hjust = 0.5, vjust = 0.5,
+      ...)
 }
 
 

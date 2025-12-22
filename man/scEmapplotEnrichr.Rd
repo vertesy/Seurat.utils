@@ -6,7 +6,7 @@
 \usage{
 scEmapplotEnrichr(
   df.enrichment,
-  showCategory = 20,
+  showCategory = 15,
   min_edge = 0.2,
   tag = "...",
   universe = df.enrichment@universe,
@@ -15,6 +15,7 @@ scEmapplotEnrichr(
   caption = paste0("Input genes: ", length(df.enrichment@gene), " | Enriched terms: ",
     nrow(df.enrichment), " | Shown: ", min(showCategory, nrow(df.enrichment)),
     " | background genes: ", length(universe), " | min edge overlap: ", min_edge),
+  label_format = NULL,
   layout = "kk",
   cex_label_category = 0.8,
   save = TRUE,
@@ -28,7 +29,7 @@ scEmapplotEnrichr(
 \arguments{
 \item{df.enrichment}{enrichResult object (e.g. from clusterProfiler::enrichGO).}
 
-\item{showCategory}{Integer. Number of GO terms (nodes) to show. Default: 30.}
+\item{showCategory}{Integer. Number of GO terms (nodes) to show. Default: 15.}
 
 \item{min_edge}{Numeric. Minimum similarity (overlap) to draw edges. Default: 0.2.}
 
