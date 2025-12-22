@@ -3879,6 +3879,7 @@ scEmapplotEnrichr <- function(
       " | background genes: ", length(universe),
       " | min edge overlap: ", min_edge
     ),
+    label_format = NULL,
     layout = "kk",
     cex_label_category = 0.8,
     save = TRUE,
@@ -3931,9 +3932,10 @@ scEmapplotEnrichr <- function(
       enrichplot::emapplot(
         x = df.enrichment,
         showCategory = showCategory,
-        min_edge = min_edge,
-        layout = layout,
-        cex_label_category = cex_label_category,
+        layout.params  = list(layout = layout),
+        edge.params    = list(min = min_edge),
+        cex.params     = list(category_label = cex_label_category),
+        cluster.params = list(label_format = label_format),
         ...
       )
     }
