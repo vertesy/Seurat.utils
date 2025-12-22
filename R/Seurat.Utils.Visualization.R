@@ -3899,24 +3899,11 @@ scEmapplotEnrichr <- function(
   nr_input_genes <- length(df.enrichment@"gene")
 
   pobj <-
-    if (is.null(df.enrichment) || nrow(df.enrichment) < 1) {
-      warning("No enriched terms input!", immediate. = TRUE)
-      ggplot2::ggplot() +
-        ggplot2::theme_void() +
-        ggplot2::annotate(
-          "text",
-          x = 1, y = 1, label = "NO ENRICHMENT",
-          size = 8, color = "red", hjust = 0.5, vjust = 0.5
-        )
+    if (is.null(df.enrichment) || nr_terms < 1) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "NO ENRICHMENT", warning_msg = "No enriched terms input!")
+
     } else if (nr_input_genes < 5) {
-      warning("Very few input genes for GO enrichment (<5).", immediate. = TRUE)
-      ggplot2::ggplot() +
-        ggplot2::theme_void() +
-        ggplot2::annotate(
-          "text",
-          x = 1, y = 1, label = "TOO FEW GENES (<5)",
-          size = 8, color = "red", hjust = 0.5, vjust = 0.5
-        )
+      Seurat.utils:::.emptyAnnotatedPlot(label = "TOO FEW GENES (<5)", warning_msg = "Too few input genes for GO enrichment (<5).")
 
     } else {
 
@@ -3945,6 +3932,136 @@ scEmapplotEnrichr <- function(
 
   return(pobj)
 }
+
+
+
+# ________________________________________________________________________
+#' @title Gene–Concept Network Plot (cnetplot wrapper)
+#'
+#' @description
+#' Wrapper around `enrichplot::cnetplot()` to visualize the gene–concept
+#' (e.g. GO / KEGG) network for enrichment results. The plot shows which genes
+#' drive which enriched terms, optionally colored by fold change (e.g. DE).
+#' Behavior mirrors `scBarplotEnrichr()` and `scEmapplotEnrichr()` with
+#' safety checks, informative fallbacks, and optional saving.
+#'
+#' @param df.enrichment enrichResult or gseaResult object.
+#' @param foldChange Named numeric vector of gene-level statistics
+#'   (e.g. logFC), names must match gene IDs in enrichment.
+#' @param showCategory Integer. Number of enriched terms to show. Default: 10.
+#' @param tag Character. Tag added to the plot title. Default: "...".
+#' @param title Character. Plot title. Default: "Gene–Concept Network" + tag.
+#' @param subtitle Character. Subtitle. Default: derived from input object.
+#' @param caption Character. Caption. Default: constructed from input parameters.
+#' @param circular Logical. Draw network in circular layout. Default: FALSE.
+#' @param colorEdge Logical. Color edges by category. Default: TRUE.
+#' @param cex_label_category Numeric. Size of category labels. Default: 0.8.
+#' @param cex_label_gene Numeric. Size of gene labels. Default: same as cex_label_category.
+#' @param node_label Character. Which nodes to label: "all", "gene",
+#'   or "category". Default: "category".
+#' @param save Logical. Whether to save the plot. Default: TRUE.
+#' @param also.pdf Logical. Save both png and pdf. Default: FALSE.
+#' @param save.obj Logical. Whether to save the ggplot object. Default: FALSE.
+#' @param w Width in inches. Default: 10.
+#' @param h Height in inches. Default: 10.
+#' @param ... Additional arguments passed to `enrichplot::cnetplot()`.
+#'
+#' @importFrom ggplot2 labs theme_void annotate
+#'
+#' @return A ggplot object (invisibly if saved).
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' edox <- setReadable(edo, 'org.Hs.eg.db', 'ENTREZID')
+#' scGeneConceptNetworkEnrichr(
+#'   df.enrichment = edox,
+#'   foldChange = geneList,
+#'   tag = "Cluster 3 neurons"
+#' )
+#' }
+scGeneConceptNetworkEnrichr <- function(
+    df.enrichment,
+    showCategory = 10,
+    foldChange = NULL,
+    tag = NULL,
+    title = paste("Gene–Concept Network", tag),
+    subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+    caption = paste0(
+      "Enriched terms: ", ifelse(is.null(df.enrichment), 0, nrow(df.enrichment)),
+      " | Shown: ", ifelse(is.null(df.enrichment), 0,
+                           min(showCategory, nrow(df.enrichment))),
+      if (!is.null(foldChange))
+        paste0(" | genes w/ foldChange: ", length(foldChange))
+      else ""
+    ),
+    circular = FALSE,
+    colorEdge = TRUE,
+    cex_label_category = 0.8,
+    cex_label_gene   = cex_label_category,
+    node_label = "category",
+    save = TRUE,
+    also.pdf = FALSE,
+    save.obj = FALSE,
+    w = 10, h = 10,
+    ...
+) {
+
+  stopifnot(
+    "Package 'enrichplot' must be installed." =
+      requireNamespace("enrichplot", quietly = TRUE)
+  )
+
+  if(is.null(tag)) warning("Please provide a tag describing where the enrichments come from.",immediate. = TRUE)
+
+  nr_terms <- if (is.null(df.enrichment)) 0 else nrow(df.enrichment)
+
+  pobj <-
+    if (is.null(df.enrichment) || nr_terms < 1) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "NO ENRICHMENT", warning_msg = "No enriched terms input!")
+
+    } else if (!is.null(foldChange) && length(foldChange) < 5) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "TOO FEW GENES (<5)", warning_msg = "Very few genes provided in foldChange (<5).")
+
+    } else {
+      enrichplot::cnetplot(
+        x = df.enrichment,
+        showCategory = showCategory,
+        node_label = node_label,
+        color.params = list(
+          foldChange = foldChange,
+          edge = colorEdge
+        ),
+        cex.params = list(
+          category_label = cex_label_category,
+          gene_label = cex_label_gene
+        ),
+        circular = circular,
+        ...
+      )
+    }
+
+  pobj <- pobj +
+    ggplot2::labs(
+      title = title,
+      subtitle = subtitle,
+      caption = caption
+    )
+
+  if (save) {
+    qqSave(
+      pobj,
+      title = title,
+      w = w, h = h,
+      also.pdf = also.pdf,
+      save.obj = save.obj
+    )
+  }
+
+  return(pobj)
+}
+
+
 
 
 
@@ -4090,16 +4207,17 @@ countEnrichedDepletedGenes <- function(df, min_padj = 0.01, min_logFC = 0.5,
 #' @return An placeholder ggplot object with annotation.
 .emptyAnnotatedPlot <- function(
     label,
-    warning_msg = NULL,
+    warning_msg = label,
     color = "red",
     size = 8
 ) {
+
   stopifnot(
     is.character(label), is.character(color), is.numeric(size),
-    is.null(warning_msg) || (is.character(warning_msg) && length(warning_msg) == 1),
+    is.null(warning_msg) || (is.character(warning_msg) && length(warning_msg) == 1)
   )
 
-  if (!is.null(warning_msg)) warning(warning_msg, immediate. = TRUE)
+  # if (!is.null(warning_msg)) warning(warning_msg, immediate. = TRUE)
 
   ggplot2::ggplot() +
     ggplot2::theme_void() +
@@ -4113,34 +4231,6 @@ countEnrichedDepletedGenes <- function(df, min_padj = 0.01, min_logFC = 0.5,
 
 
 
-# ________________________________________________________________________
-#' @title Empty ggplot with centered annotation
-#'
-#' @description
-#' Create a blank ggplot with a centered text annotation.
-#' Intended as a fallback plot for failed or empty enrichment results.
-#'
-#' @param label Character. Text shown in the plot.
-#' @param color Character. Text color. Default: "red".
-#' @param size Numeric. Text size. Default: 8.
-#'
-#' @return A ggplot object.
-.emptyAnnotatedPlot <- function(label, color = "red", size = 8) {
-  stopifnot(
-    is.character(label), length(label) == 1,
-    is.character(color), length(color) == 1,
-    is.numeric(size), length(size) == 1
-  )
-
-  ggplot2::ggplot() +
-    ggplot2::theme_void() +
-    ggplot2::annotate(geom  = "text", x = 1, y = 1,
-      label = label,
-      color = color,
-      size  = size,
-      hjust = 0.5, vjust = 0.5,
-      ...)
-}
 
 
 # _________________________________________________________________________________________________
