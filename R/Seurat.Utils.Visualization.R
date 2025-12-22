@@ -3827,6 +3827,127 @@ scBarplotEnrichr <- function(df.enrichment,
 
 
 
+# ________________________________________________________________________
+#' @title Enrichment Map (GO term network) by enrichplot
+#'
+#' @description
+#' Wrapper around `enrichplot::emapplot()` to visualize GO enrichment results
+#' as a network. Nodes are enriched GO terms, edges represent gene overlap.
+#' Includes safety checks, informative fallback plots, and optional saving,
+#' mirroring the behavior of `scBarplotEnrichr()`.
+#'
+#' @param df.enrichment enrichResult object (e.g. from clusterProfiler::enrichGO).
+#' @param showCategory Integer. Number of GO terms (nodes) to show. Default: 30.
+#' @param min_edge Numeric. Minimum similarity (overlap) to draw edges. Default: 0.2.
+#' @param tag Character. Tag added to the plot title. Default: "...".
+#' @param universe Character. Background gene list. Default: `df.enrichment@universe`.
+#' @param title Character. Plot title. Default: "GO Enrichment Map" + tag.
+#' @param subtitle Character. Subtitle. Default: derived from input object.
+#' @param caption Character. Caption. Default: constructed from input parameters.
+#' @param layout Character. igraph layout name passed to emapplot. Default: "kk".
+#' @param save Logical. Whether to save the plot. Default: TRUE.
+#' @param w Width in inches. Default: 10.
+#' @param h Height in inches. Default: 10.
+#' @param also.pdf Logical. Save both png and pdf. Default: FALSE.
+#' @param ... Additional arguments passed to `enrichplot::emapplot()`.
+#'
+#' @importFrom ggplot2 labs theme_void annotate
+#'
+#' @return A ggplot object (invisibly if saved).
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' scEmapplotEnrichr(df.enrichment, tag = "Cluster 3 neurons")
+#' }
+scEmapplotEnrichr <- function(
+    df.enrichment,
+    showCategory = 30,
+    min_edge = 0.2,
+    tag = "...",
+    universe = df.enrichment@universe,
+    title = paste("GO Enrichment Map", tag),
+    subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+    caption = paste0(
+      "Input genes: ", length(df.enrichment@"gene"),
+      " | Enriched terms: ", nrow(df.enrichment),
+      " | Shown: ", min(showCategory, nrow(df.enrichment)),
+      " | background genes: ", length(universe),
+      " | min edge overlap: ", min_edge
+    ),
+    layout = "kk",
+    cex_label_category = 0.8,
+    save = TRUE,
+    also.pdf = FALSE,
+    w = 8, h = 8,
+    ...
+) {
+
+  stopifnot(
+    "Package 'enrichplot' must be installed." = requireNamespace("enrichplot", quietly = TRUE)
+  )
+
+  if (tag == "...") {
+    warning(
+      "Please provide a tag describing where the enrichments come from.",
+      immediate. = TRUE
+    )
+  }
+
+  nr_input_genes <- length(df.enrichment@"gene")
+
+  pobj <-
+    if (is.null(df.enrichment) || nrow(df.enrichment) < 1) {
+
+      warning("No enriched terms input!", immediate. = TRUE)
+      ggplot2::ggplot() +
+        ggplot2::theme_void() +
+        ggplot2::annotate(
+          "text",
+          x = 1, y = 1, label = "NO ENRICHMENT",
+          size = 8, color = "red", hjust = 0.5, vjust = 0.5
+        )
+
+
+    } else if (nr_input_genes < 5) {
+
+      warning("Very few input genes for GO enrichment (<5).", immediate. = TRUE)
+      ggplot2::ggplot() +
+        ggplot2::theme_void() +
+        ggplot2::annotate(
+          "text",
+          x = 1, y = 1, label = "TOO FEW GENES (<5)",
+          size = 8, color = "red", hjust = 0.5, vjust = 0.5
+        )
+
+    } else {
+
+      # similarity matrix is computed internally by emapplot()
+      enrichplot::emapplot(
+        x = df.enrichment,
+        showCategory = showCategory,
+        min_edge = min_edge,
+        layout = layout,
+        cex_label_category = cex_label_category,
+        ...
+      )
+    }
+
+  pobj <- pobj +
+    ggplot2::labs(
+      title = title,
+      subtitle = subtitle,
+      caption = caption
+    )
+
+  if (save) {
+    qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf)
+  }
+
+  return(pobj)
+}
+
+
 
 # ________________________________________________________________________
 #' @title Count Enriched and Depleted Genes
