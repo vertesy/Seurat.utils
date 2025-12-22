@@ -6,7 +6,7 @@
 \usage{
 scEmapplotEnrichr(
   df.enrichment,
-  showCategory = 30,
+  showCategory = 20,
   min_edge = 0.2,
   tag = "...",
   universe = df.enrichment@universe,
@@ -19,8 +19,9 @@ scEmapplotEnrichr(
   cex_label_category = 0.8,
   save = TRUE,
   also.pdf = FALSE,
-  w = 8,
-  h = 8,
+  save.obj = FALSE,
+  w = 10,
+  h = 10,
   ...
 )
 }
@@ -46,6 +47,8 @@ scEmapplotEnrichr(
 \item{save}{Logical. Whether to save the plot. Default: TRUE.}
 
 \item{also.pdf}{Logical. Save both png and pdf. Default: FALSE.}
+
+\item{save.obj}{Logical. Whether to save the ggplot object. Default: FALSE.}
 
 \item{w}{Width in inches. Default: 10.}
 

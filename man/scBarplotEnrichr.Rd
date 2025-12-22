@@ -16,9 +16,10 @@ scBarplotEnrichr(
     nrow(df.enrichment), " | Shown: ", min(showCategory, nrow(df.enrichment)),
     " | background genes: ", length(universe)),
   save = TRUE,
+  also.pdf = FALSE,
+  save.obj = FALSE,
   w = 10,
   h = 10,
-  also.pdf = FALSE,
   ...
 )
 }
@@ -39,11 +40,13 @@ scBarplotEnrichr(
 
 \item{save}{Logical. Whether to save the plot to a file. Default: \code{TRUE}.}
 
+\item{also.pdf}{Save plot in both png and pdf formats.}
+
+\item{save.obj}{Logical. Whether to save the ggplot object. Default: FALSE.}
+
 \item{w}{Width of the plot canvas, calculated as the width of an A4 page times \code{scale}; Default: \code{11.69 * scale}.}
 
 \item{h}{Height of the plot canvas, calculated as the height of an A4 page times \code{scale}; Default: \code{8.27 * scale}.}
-
-\item{also.pdf}{Save plot in both png and pdf formats.}
 
 \item{...}{Additional arguments passed to \code{enrichplot::barplot.enrichResult}.}
 }
@@ -55,7 +58,7 @@ This function creates a bar plot of GO enrichment analysis results using the
 \code{enrichplot::barplot.enrichResult} function. It also allows saving the plot to a file.
 }
 \examples{
-\dontrun{``
+\dontrun{
 df.enrichment <- data.frame() # Example enrichment results data frame
 plotGOEnrichment(df.enrichment)
 }

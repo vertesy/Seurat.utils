@@ -3757,9 +3757,10 @@ filterGoEnrichment <- function(df.enrichments,
 #' @param subtitle Character. Subtitle of the plot. Default: NULL.
 #' @param caption Character. Caption of the plot. Default: constructed from input parameters.
 #' @param save Logical. Whether to save the plot to a file. Default: `TRUE`.
+#' @param also.pdf Save plot in both png and pdf formats.
+#' @param save.obj Logical. Whether to save the ggplot object. Default: FALSE.
 #' @param h Height of the plot canvas, calculated as the height of an A4 page times `scale`; Default: `8.27 * scale`.
 #' @param w Width of the plot canvas, calculated as the width of an A4 page times `scale`; Default: `11.69 * scale`.
-#' @param also.pdf Save plot in both png and pdf formats.
 #' @param ... Additional arguments passed to `enrichplot::barplot.enrichResult`.
 #'
 #' @importFrom ggplot2 labs
@@ -3768,7 +3769,7 @@ filterGoEnrichment <- function(df.enrichments,
 #' @export
 #'
 #' @examples
-#' \dontrun{``
+#' \dontrun{
 #' df.enrichment <- data.frame() # Example enrichment results data frame
 #' plotGOEnrichment(df.enrichment)
 #' }
@@ -3786,9 +3787,11 @@ scBarplotEnrichr <- function(df.enrichment,
                                " | background genes: ", length(universe)
                              ),
                              save = TRUE,
-                             w = 10, h = 10,
                              also.pdf = FALSE,
+                             save.obj = FALSE,
+                             w = 10, h = 10,
                              ...) {
+
   stopifnot("Package 'enrichplot' must be installed to use this function." = require("enrichplot"))
 
   if (tag == "...") warning("Please provide a tag describing where are the enrichments.", immediate. = TRUE)
@@ -3814,15 +3817,15 @@ scBarplotEnrichr <- function(df.enrichment,
     } else {
       enrichplot:::barplot.enrichResult(df.enrichment, showCategory = showCategory, label_format = label_format)
     }
+
   pobj <- pobj + ggplot2::labs(title = title, subtitle = subtitle, caption = caption)
 
   if (save) {
-    qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf)
+    qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
   }
 
   return(pobj)
 }
-
 
 
 
@@ -3837,7 +3840,7 @@ scBarplotEnrichr <- function(df.enrichment,
 #' mirroring the behavior of `scBarplotEnrichr()`.
 #'
 #' @param df.enrichment enrichResult object (e.g. from clusterProfiler::enrichGO).
-#' @param showCategory Integer. Number of GO terms (nodes) to show. Default: 30.
+#' @param showCategory Integer. Number of GO terms (nodes) to show. Default: 15.
 #' @param min_edge Numeric. Minimum similarity (overlap) to draw edges. Default: 0.2.
 #' @param tag Character. Tag added to the plot title. Default: "...".
 #' @param universe Character. Background gene list. Default: `df.enrichment@universe`.
@@ -3846,9 +3849,10 @@ scBarplotEnrichr <- function(df.enrichment,
 #' @param caption Character. Caption. Default: constructed from input parameters.
 #' @param layout Character. igraph layout name passed to emapplot. Default: "kk".
 #' @param save Logical. Whether to save the plot. Default: TRUE.
+#' @param also.pdf Logical. Save both png and pdf. Default: FALSE.
+#' @param save.obj Logical. Whether to save the ggplot object. Default: FALSE.
 #' @param w Width in inches. Default: 10.
 #' @param h Height in inches. Default: 10.
-#' @param also.pdf Logical. Save both png and pdf. Default: FALSE.
 #' @param ... Additional arguments passed to `enrichplot::emapplot()`.
 #'
 #' @importFrom ggplot2 labs theme_void annotate
@@ -3862,7 +3866,7 @@ scBarplotEnrichr <- function(df.enrichment,
 #' }
 scEmapplotEnrichr <- function(
     df.enrichment,
-    showCategory = 30,
+    showCategory = 15,
     min_edge = 0.2,
     tag = "...",
     universe = df.enrichment@universe,
@@ -3879,7 +3883,8 @@ scEmapplotEnrichr <- function(
     cex_label_category = 0.8,
     save = TRUE,
     also.pdf = FALSE,
-    w = 8, h = 8,
+    save.obj = FALSE,
+    w = 10, h = 10,
     ...
 ) {
 
@@ -3941,7 +3946,7 @@ scEmapplotEnrichr <- function(
     )
 
   if (save) {
-    qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf)
+    qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
   }
 
   return(pobj)
