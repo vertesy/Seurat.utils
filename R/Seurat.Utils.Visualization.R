@@ -3795,26 +3795,34 @@ scBarplotEnrichr <- function(df.enrichment,
   stopifnot("Package 'enrichplot' must be installed to use this function." = require("enrichplot"))
 
   if (tag == "...") warning("Please provide a tag describing where are the enrichments.", immediate. = TRUE)
-  nr_input_genes <- length(df.enrichment@"gene")
+  nr_GOENR_input_genes <- length(df.enrichment@"gene")
 
   pobj <-
-    if (nrow(df.enrichment) < 1 | is.null(df.enrichment)) {
-      warning("No enriched terms input!", immediate. = TRUE)
-      ggplot() +
-        theme_void() +
-        annotate("text",
-          x = 1, y = 1, label = "NO ENRICHMENT",
-          size = 8, color = "red", hjust = 0.5, vjust = 0.5
-        )
-    } else if (nr_input_genes < 5) {
-      warning("Very few inputs for GOENR", immediate. = TRUE)
-      ggplot() +
-        theme_void() +
-        annotate("text",
-          x = 1, y = 1, label = "TOO FEW GENES (<5)",
-          size = 8, color = "red", hjust = 0.5, vjust = 0.5
-        )
+    if (is.null(df.enrichment) || nr_terms < 1) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "No enriched terms input!")
+
+    } else if (nr_GOENR_input_genes < 5) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "Too few input genes for GO enrichment (<5).")
+
     } else {
+  # pobj <-
+  #   if (nrow(df.enrichment) < 1 | is.null(df.enrichment)) {
+  #     warning("No enriched terms input!", immediate. = TRUE)
+  #     ggplot() +
+  #       theme_void() +
+  #       annotate("text",
+  #         x = 1, y = 1, label = "NO ENRICHMENT",
+  #         size = 8, color = "red", hjust = 0.5, vjust = 0.5
+  #       )
+  #   } else if (nr_GOENR_input_genes < 5) {
+  #     warning("Very few inputs for GOENR", immediate. = TRUE)
+  #     ggplot() +
+  #       theme_void() +
+  #       annotate("text",
+  #         x = 1, y = 1, label = "TOO FEW GENES (<5)",
+  #         size = 8, color = "red", hjust = 0.5, vjust = 0.5
+  #       )
+  #   } else {
       enrichplot:::barplot.enrichResult(df.enrichment, showCategory = showCategory, label_format = label_format)
     }
 
@@ -3896,14 +3904,14 @@ scEmapplotEnrichr <- function(
     )
   }
 
-  nr_input_genes <- length(df.enrichment@"gene")
+  nr_GOENR_input_genes <- length(df.enrichment@"gene")
 
   pobj <-
     if (is.null(df.enrichment) || nr_terms < 1) {
-      Seurat.utils:::.emptyAnnotatedPlot(label = "NO ENRICHMENT", warning_msg = "No enriched terms input!")
+      Seurat.utils:::.emptyAnnotatedPlot(label = "No enriched terms input!")
 
-    } else if (nr_input_genes < 5) {
-      Seurat.utils:::.emptyAnnotatedPlot(label = "TOO FEW GENES (<5)", warning_msg = "Too few input genes for GO enrichment (<5).")
+    } else if (nr_GOENR_input_genes < 5) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "Too few input genes for GO enrichment (<5).")
 
     } else {
 
@@ -4015,13 +4023,15 @@ scGeneConceptNetworkEnrichr <- function(
   if(is.null(tag)) warning("Please provide a tag describing where the enrichments come from.",immediate. = TRUE)
 
   nr_terms <- if (is.null(df.enrichment)) 0 else nrow(df.enrichment)
+  nr_GOENR_input_genes <- length(df.enrichment@"gene")
 
   pobj <-
     if (is.null(df.enrichment) || nr_terms < 1) {
-      Seurat.utils:::.emptyAnnotatedPlot(label = "NO ENRICHMENT", warning_msg = "No enriched terms input!")
+      Seurat.utils:::.emptyAnnotatedPlot(label = "No enriched terms input!")
 
-    } else if (!is.null(foldChange) && length(foldChange) < 5) {
-      Seurat.utils:::.emptyAnnotatedPlot(label = "TOO FEW GENES (<5)", warning_msg = "Very few genes provided in foldChange (<5).")
+
+    } else if (!is.null(foldChange) && length(nr_GOENR_input_genes) < 5) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "Too few input genes for GO enrichment (<5).")
 
     } else {
       enrichplot::cnetplot(
