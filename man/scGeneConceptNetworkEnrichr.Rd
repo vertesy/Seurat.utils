@@ -2,14 +2,14 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{scGeneConceptNetworkEnrichr}
 \alias{scGeneConceptNetworkEnrichr}
-\title{Gene–Concept Network Plot (cnetplot wrapper)}
+\title{Gene-Concept Network Plot (cnetplot wrapper)}
 \usage{
 scGeneConceptNetworkEnrichr(
   df.enrichment,
   showCategory = 10,
   foldChange = NULL,
   tag = NULL,
-  title = paste("Gene–Concept Network", tag),
+  title = paste("Gene-Concept Network", tag),
   subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
   caption = paste0("Enriched terms: ", ifelse(is.null(df.enrichment), 0,
     nrow(df.enrichment)), " | Shown: ", ifelse(is.null(df.enrichment), 0,
@@ -38,7 +38,7 @@ scGeneConceptNetworkEnrichr(
 
 \item{tag}{Character. Tag added to the plot title. Default: "...".}
 
-\item{title}{Character. Plot title. Default: "Gene–Concept Network" + tag.}
+\item{title}{Character. Plot title. Default: "Gene-Concept Network" + tag.}
 
 \item{subtitle}{Character. Subtitle. Default: derived from input object.}
 
@@ -71,7 +71,7 @@ or "category". Default: "category".}
 A ggplot object (invisibly if saved).
 }
 \description{
-Wrapper around \code{enrichplot::cnetplot()} to visualize the gene–concept
+Wrapper around \code{enrichplot::cnetplot()} to visualize the gene-concept
 (e.g. GO / KEGG) network for enrichment results. The plot shows which genes
 drive which enriched terms, optionally colored by fold change (e.g. DE).
 Behavior mirrors \code{scBarplotEnrichr()} and \code{scEmapplotEnrichr()} with

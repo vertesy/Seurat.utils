@@ -3606,6 +3606,7 @@ countRelevantEnrichments <- function(df,
 #' @param save Logical. Save the results as a data frame. Default: `TRUE`.
 #' @param suffix Character. Suffix to append to the output file name. Default: 'GO.Enrichments'.
 #' @param check.gene.symbols Logical. Check gene symbols for validity. Default: `TRUE`.
+#' @param min.genes Numeric. Minimum number of genes required for enrichment analysis. Default: 3.
 #' @param ... Additional arguments to pass to `clusterProfiler::enrichGO`.
 
 #'
@@ -3625,6 +3626,7 @@ scGOEnrichment <- function(genes, universe = NULL,
                            save = TRUE,
                            suffix = NULL,
                            check.gene.symbols = TRUE,
+                           min.genes = 3,
                            ...) {
   # Load required library
   stopifnot("Package 'clusterProfiler' must be installed to use this function." = require("clusterProfiler"))
@@ -3638,15 +3640,20 @@ scGOEnrichment <- function(genes, universe = NULL,
     is.character(ont)
   )
 
-  if (is.null(genes) | length(genes) == 0) {
-    return(NULL)
-  }
+  if (is.null(genes) | length(genes) == 0) return(NULL) # If no input, do nothing.
 
   # check.gene.symbols
   if (check.gene.symbols) {
     x <- checkGeneSymbols(genes, species = "human")
     genes <- x[x[, "Approved"], 1]
   }
+
+  if (length(genes) < min.genes) {
+    warning("Too few apprived genes (", length(genes), ") for GO enrichment analysis. Minimum is ",
+            min.genes, ".", immediate. = TRUE)
+    return(NULL) # If too few genes, do nothing.
+  }
+
 
   message("Performing enrichGO() analysis...")
   message(length(genes), " approved genes of interest, in ", length(universe), " background genes.")

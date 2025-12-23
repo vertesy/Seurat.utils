@@ -4,7 +4,7 @@
 \alias{.emptyAnnotatedPlot}
 \title{Empty ggplot with centered annotation and optional warning}
 \usage{
-.emptyAnnotatedPlot(label, warning_msg = NULL, color = "red", size = 8)
+.emptyAnnotatedPlot(label, warning_msg = label, color = "red", size = 8)
 }
 \arguments{
 \item{label}{Character. Text shown in the plot.}
