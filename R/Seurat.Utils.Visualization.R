@@ -3795,6 +3795,8 @@ scBarplotEnrichr <- function(df.enrichment,
   stopifnot("Package 'enrichplot' must be installed to use this function." = require("enrichplot"))
 
   if (tag == "...") warning("Please provide a tag describing where are the enrichments.", immediate. = TRUE)
+
+  nr_terms <- if (is.null(df.enrichment)) 0 else nrow(df.enrichment)
   nr_GOENR_input_genes <- length(df.enrichment@"gene")
 
   pobj <-
@@ -3904,6 +3906,7 @@ scEmapplotEnrichr <- function(
     )
   }
 
+  nr_terms <- if (is.null(df.enrichment)) 0 else nrow(df.enrichment)
   nr_GOENR_input_genes <- length(df.enrichment@"gene")
 
   pobj <-
@@ -3944,10 +3947,10 @@ scEmapplotEnrichr <- function(
 
 
 # ________________________________________________________________________
-#' @title Gene–Concept Network Plot (cnetplot wrapper)
+#' @title Gene-Concept Network Plot (cnetplot wrapper)
 #'
 #' @description
-#' Wrapper around `enrichplot::cnetplot()` to visualize the gene–concept
+#' Wrapper around `enrichplot::cnetplot()` to visualize the gene-concept
 #' (e.g. GO / KEGG) network for enrichment results. The plot shows which genes
 #' drive which enriched terms, optionally colored by fold change (e.g. DE).
 #' Behavior mirrors `scBarplotEnrichr()` and `scEmapplotEnrichr()` with
@@ -3958,7 +3961,7 @@ scEmapplotEnrichr <- function(
 #'   (e.g. logFC), names must match gene IDs in enrichment.
 #' @param showCategory Integer. Number of enriched terms to show. Default: 10.
 #' @param tag Character. Tag added to the plot title. Default: "...".
-#' @param title Character. Plot title. Default: "Gene–Concept Network" + tag.
+#' @param title Character. Plot title. Default: "Gene-Concept Network" + tag.
 #' @param subtitle Character. Subtitle. Default: derived from input object.
 #' @param caption Character. Caption. Default: constructed from input parameters.
 #' @param circular Logical. Draw network in circular layout. Default: FALSE.
@@ -3993,7 +3996,7 @@ scGeneConceptNetworkEnrichr <- function(
     showCategory = 10,
     foldChange = NULL,
     tag = NULL,
-    title = paste("Gene–Concept Network", tag),
+    title = paste("Gene-Concept Network", tag),
     subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
     caption = paste0(
       "Enriched terms: ", ifelse(is.null(df.enrichment), 0, nrow(df.enrichment)),
@@ -4015,6 +4018,8 @@ scGeneConceptNetworkEnrichr <- function(
     ...
 ) {
 
+  message(caption)
+
   stopifnot(
     "Package 'enrichplot' must be installed." =
       requireNamespace("enrichplot", quietly = TRUE)
@@ -4029,8 +4034,7 @@ scGeneConceptNetworkEnrichr <- function(
     if (is.null(df.enrichment) || nr_terms < 1) {
       Seurat.utils:::.emptyAnnotatedPlot(label = "No enriched terms input!")
 
-
-    } else if (!is.null(foldChange) && length(nr_GOENR_input_genes) < 5) {
+    } else if (nr_GOENR_input_genes < 5) {
       Seurat.utils:::.emptyAnnotatedPlot(label = "Too few input genes for GO enrichment (<5).")
 
     } else {
