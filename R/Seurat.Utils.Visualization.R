@@ -3848,6 +3848,146 @@ scBarplotEnrichr <- function(df.enrichment,
 
 
 # ________________________________________________________________________
+#' @title Dotplot GO Enrichment Results by enrichplot
+#'
+#' @description
+#' This function creates a dot plot of GO enrichment analysis results using
+#' `enrichplot::dotplot`. It mirrors `scBarplotEnrichr()` but visualizes
+#' enrichment significance and gene ratios as a dot plot.
+#'
+#' @param df.enrichment enrichResult object. Enrichment results from GO analysis.
+#' @param showCategory Integer. Number of GO terms to show. Default: 20.
+#' @param label_format Integer. Maximum character length for GO term labels.
+#' @param tag Character. Tag appended to the title. Default: "...".
+#' @param universe Character vector. Background gene universe.
+#'   Default: `df.enrichment@universe`.
+#' @param title Character. Plot title. Default: `"GO Enriched Terms"` + tag.
+#' @param subtitle Character. Subtitle of the plot.
+#' @param caption Character. Caption text. Default is constructed automatically.
+#' @param save Logical. Whether to save the plot. Default: TRUE.
+#' @param w Numeric. Plot width. Default: 10.
+#' @param h Numeric. Plot height. Default: 10.
+#' @param also.pdf Logical. Save both PNG and PDF. Default: FALSE.
+#' @param ... Additional arguments passed to `enrichplot::dotplot`.
+#'
+#' @importFrom ggplot2 labs
+#'
+#' @return A ggplot object.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' scDotplotEnrichr(df.enrichment)
+#' }
+scDotplotEnrichr <- function(
+    df.enrichment,
+    showCategory = 20,
+    label_format = 30,
+    tag = "...",
+    universe = df.enrichment@universe,
+    title = paste("GO Enriched Terms", tag),
+    subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+    caption = paste0(
+      "Input genes: ", length(df.enrichment@"gene"),
+      " | Enriched terms: ", nrow(df.enrichment),
+      " | Shown: ", min(showCategory, nrow(df.enrichment)),
+      " | Background genes: ", length(universe)
+    ),
+    save = TRUE,
+    w = 10,
+    h = 10,
+    also.pdf = FALSE,
+    ...
+) {
+
+  stopifnot(
+    "Package 'enrichplot' must be installed." = require("enrichplot")
+  )
+
+  if (tag == "...") {
+    warning(
+      "Please provide a tag describing where the enrichments come from.",
+      immediate. = TRUE
+    )
+  }
+
+  nr_input_genes <- length(df.enrichment@"gene")
+
+  pobj <-
+    if (is.null(df.enrichment) || nrow(df.enrichment) < 1) {
+
+      warning("No enriched terms input!", immediate. = TRUE)
+      ggplot2::ggplot() +
+        ggplot2::theme_void() +
+        ggplot2::annotate(
+          geom = "text",
+          x = 1, y = 1,
+          label = "NO ENRICHMENT",
+          size = 8,
+          color = "red",
+          hjust = 0.5,
+          vjust = 0.5
+        )
+
+    } else if (nr_input_genes < 5) {
+
+      warning("Very few inputs for GO enrichment (<5 genes).", immediate. = TRUE)
+      ggplot2::ggplot() +
+        ggplot2::theme_void() +
+        ggplot2::annotate(
+          geom = "text",
+          x = 1, y = 1,
+          label = "TOO FEW GENES (<5)",
+          size = 8,
+          color = "red",
+          hjust = 0.5,
+          vjust = 0.5
+        )
+
+    } else {
+
+      enrichplot:::dotplot(
+        object = df.enrichment,
+        showCategory = showCategory,
+        label_format = label_format,
+        ...
+      )
+    }
+
+  pobj <- pobj +
+    ggplot2::labs(
+      title = title,
+      subtitle = subtitle,
+      caption = caption
+    )
+
+  if (save) {
+    qqSave(
+      pobj,
+      title = title,
+      w = w,
+      h = h,
+      also.pdf = also.pdf
+    )
+  }
+
+  return(pobj)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ________________________________________________________________________
 #' @title Enrichment Map (GO term network) by enrichplot
 #'
 #' @description
