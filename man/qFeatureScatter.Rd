@@ -8,7 +8,6 @@ qFeatureScatter(
   feature1 = "TOP2A",
   feature2 = "ID2",
   obj = combined.obj,
-  ext = "png",
   plot = TRUE,
   logX = FALSE,
   logY = FALSE,
@@ -22,8 +21,6 @@ qFeatureScatter(
 
 \item{obj}{Seurat object containing the data for features.}
 
-\item{ext}{File extension for saving the plot, if enabled.}
-
 \item{plot}{Flag to display the plot within the R session.}
 
 \item{logX}{Apply logarithmic transformation to x-axis values.}
@@ -31,6 +28,8 @@ qFeatureScatter(
 \item{logY}{Apply logarithmic transformation to y-axis values.}
 
 \item{...}{Additional parameters passed to Seurat's \code{FeatureScatter}.}
+
+\item{ext}{File extension for saving the plot, if enabled.}
 }
 \value{
 A \code{ggplot} object of the feature scatter plot if \code{plot} is TRUE.

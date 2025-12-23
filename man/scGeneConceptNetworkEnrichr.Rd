@@ -9,12 +9,13 @@ scGeneConceptNetworkEnrichr(
   showCategory = 10,
   foldChange = NULL,
   tag = NULL,
+  NULL_input = is.null(df.enrichment),
   title = paste("Gene-Concept Network", tag),
   subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
-  caption = paste0("Enriched terms: ", ifelse(is.null(df.enrichment), 0,
-    nrow(df.enrichment)), " | Shown: ", ifelse(is.null(df.enrichment), 0,
-    min(showCategory, nrow(df.enrichment))), if (!is.null(foldChange))
-    paste0(" | genes w/ foldChange: ", length(foldChange)) else ""),
+  caption = paste0("Enriched terms: ", ifelse(NULL_input, 0, nrow(df.enrichment)),
+    " | Shown: ", ifelse(NULL_input, 0, min(showCategory, nrow(df.enrichment))), if
+    (!is.null(foldChange)) paste0(" | genes w/ foldChange: ", length(foldChange)) else
+    ""),
   circular = FALSE,
   colorEdge = TRUE,
   cex_label_category = 0.8,

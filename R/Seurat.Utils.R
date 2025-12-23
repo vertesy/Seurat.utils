@@ -1137,7 +1137,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   if (plot) {
     pobj <- ggExpress::qhistogram(log2.gene.expr.of.the.Xth.quantile,
       plotname = paste("Gene expression in the", qnameP, "in", suffix),
-      ext = "pdf", breaks = 30,
+      breaks = 30,
       subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", nr.total.cells, " cells)."),
       caption = paste(nr.total.cells, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object."),
       suffix = suffix,
@@ -1668,13 +1668,12 @@ calc.cluster.averages <- function(
           ylab = ylab.text,
           xlab = xlb # Abused
           , xlab.angle = 45
-          # , ylim = c(-1,1)
-          , ...
-          # , ext = "png", w = 7, h = 5
-        ) + geom_vline(xintercept = cutoff.low, lty = 2)
+          , ...) +
+          geom_vline(xintercept = cutoff.low, lty = 2)
+
         print(p)
         title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
-        ggExpress::qqSave(ggobj = p, title = title_, ext = "png", w = width, h = height)
+        ggExpress::qqSave(ggobj = p, title = title_, w = width, h = height)
       } else {
         p <- ggExpress::qbarplot(
           vec = av.score, save = FALSE,
@@ -1685,10 +1684,8 @@ calc.cluster.averages <- function(
           ylab = ylab.text,
           xlab = xlb # Abused
           , xlab.angle = 45
-          # , ylim = c(-1,1)
-          , ...
-          # , ext = "png", w = 7, h = 5
-        ) + geom_hline(yintercept = cutoff.low, lty = 2)
+          , ...) +
+          geom_hline(yintercept = cutoff.low, lty = 2)
 
         print(p)
         title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
