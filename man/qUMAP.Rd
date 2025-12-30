@@ -13,7 +13,7 @@ qUMAP(
   splitby = NULL,
   prefix = NULL,
   suffix = make.names(sub),
-  save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
+  save.plot = get0("b.save.wplots", ifnotfound = TRUE),
   PNG = TRUE,
   h = 7,
   w = NULL,
