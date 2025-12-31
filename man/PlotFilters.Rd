@@ -5,7 +5,7 @@
 \title{Plot filtering thresholds and distributions}
 \usage{
 PlotFilters(
-  ls.obj = ls.Seurat,
+  ls.obj,
   par.ls = p,
   parentdir = OutDirOrig,
   suffices = names(ls.obj),

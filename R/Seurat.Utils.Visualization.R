@@ -27,6 +27,12 @@
   invisible()
 }
 
+
+# _________________________________________________________________________________________________
+# plotting.statistics.and.QC ______________________________ ----
+# _________________________________________________________________________________________________
+
+
 # _________________________________________________________________________________________________
 #' @title Plot filtering thresholds and distributions
 #'
@@ -72,7 +78,7 @@
 #'
 #' @export
 PlotFilters <- function(
-    ls.obj = ls.Seurat,
+    ls.obj,
     par.ls = p,
     parentdir = OutDirOrig,
     suffices = names(ls.obj),
@@ -95,6 +101,7 @@ PlotFilters <- function(
     # LabelDistFromTop = 200 # for barplot_label
     ) {
   message("Expects a list of Seurat objects, `ls.obj` with names, and a list of parameters, `par.ls` with a defined structure.")
+  if(inherits(ls.obj, "Seurat") && length(ls.obj) == 1) ls.obj <- list(ls.obj)
 
   # Create names based on the Seurat objects, catenating "dataset" and numbers 1:n
   if (is.null(suffices)) {
@@ -265,22 +272,7 @@ PlotFilters <- function(
 }
 
 
-# _________________________________________________________________________________________________
-# plotting.statistics.and.QC.R ______________________________ ----
-# _________________________________________________________________________________________________
-# source('~/GitHub/Packages/Seurat.utils/Functions/Plotting.statistics.and.QC.R')
-# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.statistics.and.QC.R"))
 
-# Source: self + web
-
-# Requirements __________________________________________
-# require(Seurat)
-# require(ggplot2)
-# tools for tools::toTitleCase
-
-# May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= FALSE) # generic utilities functions
-# require('MarkdownReports') # require("devtools")
 
 # _________________________________________________________________________________________________
 #' @title Calculate the percent of variation explained by individual PC's
