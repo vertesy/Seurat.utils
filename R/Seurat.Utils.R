@@ -3786,16 +3786,18 @@ check.genes <- function(
     ...) {
   tictoc::tic("check.genes")
   message(" > Running check.genes...")
-  message("assay: ", assay.slot, ", data.slot: ", data.slot)
+  message("assay: ", assay.slot, ", data.slot: ", data.slot, "\n")
 
   if (makeuppercase) genes <- toupper(genes)
 
-  all_genes <-
-    if (obj@version < "5") {
-      rownames(GetAssayData(object = obj, assay = assay.slot, slot = data.slot))
-    } else {
-      rownames(GetAssayData(object = obj, layer = data.slot))
-    }
+  # all_genes <-
+  #   if (obj@version < "5") {
+  #     rownames(GetAssayData(object = obj, assay = assay.slot, slot = data.slot))
+  #   } else {
+  #     rownames(GetAssayData(object = obj, layer = data.slot))
+  #   }
+
+  all_genes <- Features(obj, assay = assay.slot)
 
   missingGenes <- setdiff(genes, all_genes)
   if (length(missingGenes) > 0) {

@@ -2128,12 +2128,15 @@ qSeuViolin <- function(
   }
 
   if (!is.null(colors)) {
-    stopifnot(colors %in% colnames(obj@meta.data))
-    col_long <- as.factor(unlist(obj[[colors]]))
-    colors <- as.factor.numeric(sapply(split(col_long, split_col), unique))
-    stopifnot("colors cannot be uniquely split by ident. Set colors = NULL!" = length(colors) == length(unique(split_col)))
+    col_is_vec <- is.vector(colors) && length(colors) >= length(unique(split_col))
+    col_is_metacolname <- length(colors) ==1 && colors %in% colnames(obj@meta.data)
+    stopifnot(col_is_vec || col_is_metacolname)
+
+    if(col_is_metacolname) {
+      col_long <- as.factor(unlist(obj[[colors]]))
+      colors <- as.factor.numeric(sapply(split(col_long, split_col), unique))
+    }
   }
-  # browser()
 
   p.obj <- Seurat::VlnPlot(
     object = obj,
