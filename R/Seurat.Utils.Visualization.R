@@ -7,6 +7,26 @@
 # devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
 
 
+# ______________________________________________________________________________________________----
+# Define package options  ----
+
+.onLoad <- function(libname, pkgname) {
+  op <- options()
+
+  pkg_op <- list(
+    # insert at top
+
+    su.save.plot =  TRUE
+    # getOption("su.save.plot", TRUE)
+  )
+
+  # Only set options that are not already defined
+  to_set <- pkg_op[!names(pkg_op) %in% names(op)]
+  if (length(to_set)) options(to_set)
+
+  invisible()
+}
+
 # _________________________________________________________________________________________________
 #' @title Plot filtering thresholds and distributions
 #'
@@ -2208,7 +2228,7 @@ qUMAP <- function(
     reduction = "umap", splitby = NULL,
     prefix = NULL,
     suffix = make.names(sub),
-    save.plot = get0("b.save.wplots", ifnotfound = TRUE),
+    save.plot = getOption("su.save.plot", TRUE),
       # MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     h = 7, w = NULL, nr.cols = NULL,
@@ -2334,7 +2354,7 @@ clUMAP <- function(
     MaxCategThrHP = 200,
     axes = NULL,
     aspect.ratio = c(FALSE, 0.6)[2],
-    save.plot = get0("b.save.wplots", ifnotfound = TRUE),
+    save.plot = getOption("su.save.plot", TRUE),
       # MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     check_for_2D = TRUE,

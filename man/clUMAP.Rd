@@ -33,7 +33,7 @@ clUMAP(
   MaxCategThrHP = 200,
   axes = NULL,
   aspect.ratio = c(FALSE, 0.6)[2],
-  save.plot = get0("b.save.wplots", ifnotfound = TRUE),
+  save.plot = getOption("su.save.plot", TRUE),
   PNG = TRUE,
   check_for_2D = TRUE,
   ...
