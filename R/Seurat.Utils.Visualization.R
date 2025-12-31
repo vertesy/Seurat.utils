@@ -354,7 +354,6 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
                                   plotname = "Variance Explained by Principal Components",
                                   sub = paste(ncol(obj), "cells, ", nrow(obj), "features."),
                                   caption = "hline at 1%",
-                                  # caption = .parseKeyParams(obj, suffix = "| hline at 1%"),
                                   use.MarkdownReports = FALSE,
                                   ...) {
   stopifnot(
@@ -488,7 +487,6 @@ plotGeneExpressionInBackgroundHist <- function(
     ...) {
   message("gene: ", gene)
   stopifnot(gene %in% rownames(obj))
-
 
   GEX.Counts <- GetAssayData(object = obj, assay = assay, slot = slot)
 
