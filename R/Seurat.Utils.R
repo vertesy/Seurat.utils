@@ -3771,7 +3771,7 @@ gene.name.check <- function(Seu.obj) {
 #' }
 #' }
 #'
-#' @seealso \code{\link[Seurat]{GetAssayData}}, \code{\link[DatabaseLinke.R]{qHGNC}}
+#' @seealso \code{\link[DatabaseLinke.R]{qHGNC}}
 #'
 #' @export
 #' @importFrom Seurat GetAssayData
@@ -3818,10 +3818,8 @@ check.genes <- function(
   }
 
   tictoc::toc()
-  intersect_genes <- intersect(genes, all_genes)
+  intersect(genes, all_genes)
 
-  # Using logical indexing to return genes with names (if they had any)
-  genes[intersect_genes %in% genes]
 }
 
 

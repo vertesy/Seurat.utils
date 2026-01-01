@@ -1209,17 +1209,18 @@ plotMetadataCorHeatmap <- function(
     digits = 1,
     suffix = NULL,
     add_PCA = TRUE,
-    n_PCs = 8,
+    n_PCs = 4,
     w = ceiling((length(columns) + n_PCs) / 2), h = w,
     use_ggcorrplot = FALSE,
-    n_cutree = (n_PCs),
-    ...) {
-  meta.data <- obj@meta.data
-  columns.found <- intersect(colnames(meta.data), columns)
-  columns.not.found <- setdiff(columns, colnames(meta.data))
+    n_cutree = NA,
+    ...
+) {
+  META <- obj@meta.data
+  columns.found <- intersect(colnames(META), columns)
+  columns.not.found <- setdiff(columns, colnames(META))
   if (length(columns.not.found)) iprint("columns.not.found:", columns.not.found)
 
-  meta.data <- meta.data[, columns.found]
+  META <- META[, columns.found]
 
   if (add_PCA) {
     stopif(is.null(obj@reductions$"pca"), "PCA not found in @reductions.")
@@ -1227,32 +1228,33 @@ plotMetadataCorHeatmap <- function(
     suffix <- FixPlotName(suffix, "w.PCA")
 
     PCs <- obj@reductions$pca@cell.embeddings
-    stopifnot(nrow(meta.data) == nrow(PCs))
-    meta.data <- cbind(PCs[, 1:n_PCs], meta.data)
+    stopifnot(nrow(META) == nrow(PCs))
+    META <- cbind(PCs[, 1:n_PCs], META)
   }
 
-  corX <- cor(meta.data, method = cormethod)
+  corX <- cor(META, method = cormethod, use = "pairwise.complete.obs")
   if (use_ggcorrplot) {
     pl <- ggcorrplot::ggcorrplot(corX,
-      title = main,
-      hc.order = TRUE,
-      digits = digits,
-      lab = show_numbers,
-      type = "full",
-      ...
+                                 title = main,
+                                 hc.order = TRUE,
+                                 digits = digits,
+                                 lab = show_numbers,
+                                 type = "full",
+                                 ...
     )
-    ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, "pdf"), w = w, h = h)
+    ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, "png"), also.pdf = T, w = w, h = h)
   } else {
     pl <- pheatmap::pheatmap(corX,
-      main = main, treeheight_row = 2, treeheight_col = 2,
-      cutree_rows = n_cutree, cutree_cols = n_cutree
+                             main = main, treeheight_row = 2, treeheight_col = 2,
+                             cutree_rows = n_cutree, cutree_cols = n_cutree
     )
     wplot_save_pheatmap(
       x = pl, width = w,
       plotname = FixPlotName(make.names(main), suffix, "pdf")
     )
   }
-  pl
+  print(pl)
+  invisible(corX)
 }
 
 
