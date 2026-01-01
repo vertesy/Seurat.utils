@@ -49,5 +49,5 @@ if (interactive()) {
 
 }
 \seealso{
-\code{\link[Seurat]{GetAssayData}}, \code{\link[DatabaseLinke.R]{qHGNC}}
+\code{\link[DatabaseLinke.R]{qHGNC}}
 }

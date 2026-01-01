@@ -13,11 +13,11 @@ plotMetadataCorHeatmap(
   digits = 1,
   suffix = NULL,
   add_PCA = TRUE,
-  n_PCs = 8,
+  n_PCs = 4,
   w = ceiling((length(columns) + n_PCs)/2),
   h = w,
   use_ggcorrplot = FALSE,
-  n_cutree = (n_PCs),
+  n_cutree = NA,
   ...
 )
 }
