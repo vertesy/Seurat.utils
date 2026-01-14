@@ -1109,7 +1109,8 @@ calc.q99.Expression.and.set.all.genes <- function(
   dimnames(data_mtx) <- dimnames(obj)
 
   # Downsample if the number of cells is too high _________________________________________________
-  if (ncol(data_mtx) > max.cells) {
+  downsampled <- ncol(data_mtx) > max.cells
+  if (downsampled) {
     dsampled <- sample(x = 1:ncol(data_mtx), size = max.cells)
     data_mtx <- data_mtx[, dsampled]
     message("Downsampled from ", ncol(obj), " to ", max.cells, " cells")
@@ -1135,11 +1136,14 @@ calc.q99.Expression.and.set.all.genes <- function(
 
   # Plot the distribution of gene expression in the 99th quantile _________________________________
   if (plot) {
+    CPT <- paste(n.cells.in.top.quantile, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object.")
+    SBT <- kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", nr.total.cells, " cells).")
+
     pobj <- ggExpress::qhistogram(log2.gene.expr.of.the.Xth.quantile,
       plotname = paste("Gene expression in the", qnameP, "in", suffix),
       breaks = 30,
-      subtitle = kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", nr.total.cells, " cells)."),
-      caption = paste(nr.total.cells, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object."),
+      subtitle = SBT,
+      caption = CPT,
       suffix = suffix,
       xlab = paste0("log2(expr. in the ", qnameP, "quantile+1) [UMI]"),
       ylab = "Nr. of genes",
@@ -5050,7 +5054,9 @@ xsave <- function(
 
   FNN <- paste0(dir, fnameBase, ".qs")
   CMND <- paste0(substitute(obj), " <- xread('", FNN, "')")
-  if (v) message(CMND)
+  CMND2 <- paste0("setIfNotDefined(", substitute(obj), ", xread('", FNN, "'))")
+
+  if (v) {message(CMND, "\n"); message(CMND2)}
 
   if ("Seurat" %in% is(obj)) {
     if (saveParams) {
