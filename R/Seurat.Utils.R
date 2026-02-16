@@ -5113,12 +5113,13 @@ xread <- function(file,
   obj <- qs::qread(file = file, nthreads = nthreads, ...)
 
   report <- if (is(obj, "Seurat")) {
-    kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "meta columns.")
+    kppws("Seurat object with", ncol(obj), "cells &", ncol(obj@meta.data), "meta columns.")
   } else if (is.list(obj)) {
-    kppws("is a list of:", length(obj))
+    kppws("A list of:", length(obj))
   } else {
-    kppws("of length:", length(obj))
+    kppws("Length of:", length(obj))
   }
+  message(report)
 
 
   if ("Seurat" %in% is(obj)) {
@@ -5152,7 +5153,7 @@ xread <- function(file,
   } # Seurat
 
 
-  iprint(is(obj)[1], report)
+
   try(tictoc::toc(), silent = TRUE)
   invisible(obj)
 }
