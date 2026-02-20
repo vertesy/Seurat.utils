@@ -1083,10 +1083,15 @@ calc.q99.Expression.and.set.all.genes <- function(
 
   warnifnot(
     slot %in% c("data", "scale.data", "counts"),
-    assay %in% c("RNA", "integrated"),
-    ">1000 cells in the top the quantileX (with >0 expression). Increase quantileX not to miss genes expressed in small populations!" = n.cells.in.top.quantile > 1000,
-    "<50 cells in the top the quantileX (with >0 expression). Decrease quantileX for robustness!" = n.cells.in.top.quantile > 50
+    assay %in% c("RNA", "integrated")
   )
+
+  warnif(
+    ">1000 cells in the top the quantileX (with >0 expression). Increase quantileX not to miss genes expressed in small populations!" = n.cells.in.top.quantile > 1000,
+    "<50 cells in the top the quantileX (with >0 expression). Decrease quantileX for robustness!" = n.cells.in.top.quantile < 50
+  )
+  message(">>> n.cells.in.top.quantile: ", n.cells.in.top.quantile, "\n")
+
 
   # Get the data matrix ____________________________________________________________
   # browser()
@@ -1174,7 +1179,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   iprint(
     "Quantile", quantileX, "is now stored under obj@misc$", slot_name,
     "Please execute:\n",
-    "`Seurat.utils::recall.all.genes(obj)` or `obj.TSC@misc$all.genes`\n\n"
+    "`Seurat.utils::recall.all.genes(obj)` or `obj@misc$all.genes`\n\n"
   )
   return(obj)
 }
