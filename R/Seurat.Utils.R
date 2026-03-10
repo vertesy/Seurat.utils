@@ -1156,6 +1156,7 @@ calc.q99.Expression.and.set.all.genes <- function(
       vline = .15,
       filtercol = TRUE,
       palette_use = "npg", w = 8, h = 6,
+      save.meta.info = FALSE,
       ...)
     tictoc::toc()
     if (show) print(pobj)
