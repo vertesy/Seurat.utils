@@ -16,9 +16,10 @@ scDotplotEnrichr(
     nrow(df.enrichment), " | Shown: ", min(showCategory, nrow(df.enrichment)),
     " | Background genes: ", length(universe)),
   save = TRUE,
+  also.pdf = FALSE,
+  save.obj = FALSE,
   w = 10,
   h = 10,
-  also.pdf = FALSE,
   ...
 )
 }
@@ -42,11 +43,11 @@ Default: \code{df.enrichment@universe}.}
 
 \item{save}{Logical. Whether to save the plot. Default: TRUE.}
 
+\item{also.pdf}{Logical. Save both PNG and PDF. Default: FALSE.}
+
 \item{w}{Numeric. Plot width. Default: 10.}
 
 \item{h}{Numeric. Plot height. Default: 10.}
-
-\item{also.pdf}{Logical. Save both PNG and PDF. Default: FALSE.}
 
 \item{...}{Additional arguments passed to \code{enrichplot::dotplot}.}
 }

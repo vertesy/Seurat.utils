@@ -3423,7 +3423,6 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 #' @importFrom EnhancedVolcano EnhancedVolcano
 #'
 #' @export scEnhancedVolcano
-
 scEnhancedVolcano <- function(
     toptable,
     x = "avg_log2FC",
@@ -3437,7 +3436,6 @@ scEnhancedVolcano <- function(
     pCutoffCol = "p_val_adj",
     pCutoff = 1e-3,
     FCcutoff = 1,
-
     suffix = NULL,
     caption = paste("Min. Fold Change in Input:", .estMinimumFC(toptable)),
     caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
@@ -3446,39 +3444,45 @@ scEnhancedVolcano <- function(
     max.overlaps = Inf,
     also.pdf = FALSE,
     h = 9, w = h,
-    ...) {
-  #
+    ...
+) {
+
+  # 1. Inputs Checks ----------------------------
+  stopifnot(
+    "toptable must have > 5 rows" = nrow(toptable) > 5,
+    "Length of lab must match toptable rows" = length(lab) == nrow(toptable)
+  )
+
   message(
     "\nMin. log2fc: ", FCcutoff, "\nMax. p-adj: ", pCutoff,
     "\nMin. p-adj (trim high y-axis): ", min.p,
     "\nMin. pct cells expressing: ", min.pct.cells
   )
-  stopifnot(nrow(toptable) > 5)
 
+  # 2. Data Filtering & Label Synchronization ----------------------------
+  toptable[["..lab.."]] <- lab # Bind labels to toptable before dplyr strips rownames
 
-  # Filter min. cells expressing.
-  toptable <- toptable |> dplyr::filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
+  toptable <- toptable |>  dplyr::filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
 
-  # calculate true min pct cells expressing (maybe input prefiltered above thr. already).
+  filtered_lab <- toptable[["..lab.."]] # Extract properly synced labels
+
+  # Calculate true min pct cells expressing
   min.pct.cells <- toptable |>
-    select(pct.1, pct.2) |>
+    dplyr::select(pct.1, pct.2) |>
     as.matrix() |>
     rowMax() |>
     min()
 
-  # Clip p-values.
-  toptable[["p_val_adj"]] <-
-    clip.at.fixed.value(x = toptable[["p_val_adj"]], thr = min.p, above = FALSE)
+  # 3. Value Clipping ----------------------------
+  toptable[[y]] <- clip.at.fixed.value(x = toptable[[y]], thr = min.p, above = FALSE)
 
-  # Clip log2FC.
   if (max.l2fc < Inf) {
-    toptable[["avg_log2FC"]] <-
-      clip.at.fixed.value(x = toptable[["avg_log2FC"]], thr = -max.l2fc, above = FALSE)
-    toptable[["avg_log2FC"]] <-
-      clip.at.fixed.value(x = toptable[["avg_log2FC"]], thr = max.l2fc, above = TRUE)
+    toptable[[x]] <- clip.at.fixed.value(x = toptable[[x]], thr = -max.l2fc, above = FALSE)
+    toptable[[x]] <- clip.at.fixed.value(x = toptable[[x]], thr = max.l2fc, above = TRUE)
   }
 
-  # Add statistical information to the subtitle.
+  # 4. Generate Subtitle Stats ----------------------------
+  subtitle <- NULL
   if (count_stats) {
     enr_stats <- unlist(countRelevantEnrichments(
       df = toptable, logfc_col = x, pval_col = y,
@@ -3487,21 +3491,19 @@ scEnhancedVolcano <- function(
     stat_info <- kppws("Genes", intermingle2vec(names(enr_stats), enr_stats), "(red)")
     subtitle <- paste0(
       stat_info, "\n",
-      paste(
-        "Cutoffs: max.p_adj: ", pCutoff, " |  min.log2FC: ", FCcutoff,
-        " |  min.pct.cells: ", min.pct.cells
-      )
+      "Cutoffs: max.p_adj: ", pCutoff, " |  min.log2FC: ", FCcutoff,
+      " |  min.pct.cells: ", min.pct.cells
     )
   }
   caption <- paste0(caption, "\n", caption2)
 
-  # Create an enhanced volcano plot.
-  # try.dev.off();
+  # 5. Plotting ----------------------------
   pobj <- EnhancedVolcano::EnhancedVolcano(
     toptable = toptable,
     x = x, y = y,
     title = title, subtitle = subtitle,
-    lab = lab, selectLab = selectLab,
+    lab = filtered_lab,                  # Pass synced labels here
+    selectLab = selectLab,
     caption = caption,
     pCutoffCol = pCutoffCol,
     pCutoff = pCutoff,
@@ -3512,11 +3514,13 @@ scEnhancedVolcano <- function(
   )
 
   print(pobj)
-  # Save the plot.
+
+  # 6. Save Plot ----------------------------
   qqSave(
-    ggobj = pobj, title = paste0("Volcano.", make.names(title), suffix), also.pdf = also.pdf,
-    h = h, w = w
+    ggobj = pobj, title = paste0("Volcano.", make.names(title), suffix),
+    also.pdf = also.pdf, h = h, w = w
   )
+
   return(pobj)
 }
 
@@ -3835,9 +3839,7 @@ scBarplotEnrichr <- function(df.enrichment,
 
   pobj <- pobj + ggplot2::labs(title = title, subtitle = subtitle, caption = caption)
 
-  if (save) {
-    qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
-  }
+  if (save) qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
 
   return(pobj)
 }
@@ -3892,9 +3894,9 @@ scDotplotEnrichr <- function(
       " | Background genes: ", length(universe)
     ),
     save = TRUE,
-    w = 10,
-    h = 10,
     also.pdf = FALSE,
+    save.obj = FALSE,
+    w = 10, h = 10,
     ...
 ) {
 
@@ -3959,15 +3961,7 @@ scDotplotEnrichr <- function(
       caption = caption
     )
 
-  if (save) {
-    qqSave(
-      pobj,
-      title = title,
-      w = w,
-      h = h,
-      also.pdf = also.pdf
-    )
-  }
+  if (save) qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
 
   return(pobj)
 }
@@ -4035,6 +4029,7 @@ scEmapplotEnrichr <- function(
     label_format = NULL,
     layout = "kk",
     cex_label_category = 0.8,
+
     save = TRUE,
     also.pdf = FALSE,
     save.obj = FALSE,
@@ -4153,9 +4148,11 @@ scGeneConceptNetworkEnrichr <- function(
     ),
     circular = FALSE,
     colorEdge = TRUE,
-    cex_label_category = 0.8,
-    cex_label_gene   = cex_label_category,
+    cex_label_category = 1,
+    cex_label_gene   = cex_label_category-.3,
     node_label = "category",
+    title_size = 20,
+
     save = TRUE,
     also.pdf = FALSE,
     save.obj = FALSE,
@@ -4164,6 +4161,7 @@ scGeneConceptNetworkEnrichr <- function(
 ) {
 
   message(caption)
+  message(node_label, " nodes will be labeled. Set it to 'all' or 'gene'.")
 
   stopifnot(
     "Package 'enrichplot' must be installed." =
@@ -4205,7 +4203,31 @@ scGeneConceptNetworkEnrichr <- function(
       title = title,
       subtitle = subtitle,
       caption = caption
-    )
+    ) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(
+        size = title_size,
+        face = "bold")
+      ) +
+    ggplot2::guides(color = "none", edge_color = "none", fill = "none")
+
+
+
+  bold <- T
+  if (bold) {
+    aesp <- pobj$layers[[3]]$aes_params
+    if(length(aesp$size) > 1) {
+
+      # You cannot simply use `aesp$size == cex_label_category` because it is scaled by some parameter.
+      # Current implementation assumes the default case that category labels are bigger than gene labels.
+      # This is not a bulletproof implementation that works for now.
+      pobj$layers[[3]]$aes_params$fontface <- ifelse(aesp$size > min(aesp$size), "bold", "plain")
+    } else {
+      pobj$layers[[3]]$aes_params$fontface <- "bold"
+    }
+  }
+
+
 
   if (save) {
     qqSave(
