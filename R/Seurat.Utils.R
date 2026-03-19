@@ -1119,6 +1119,7 @@ calc.q99.Expression.and.set.all.genes <- function(
     dsampled <- sample(x = 1:ncol(data_mtx), size = max.cells)
     data_mtx <- data_mtx[, dsampled]
     message("Downsampled from ", ncol(obj), " to ", max.cells, " cells")
+    dtag= "downsampled(!)"
   }
 
   # Calculate the number of cells in the top quantile (e.g.: 99th quantile) that is
@@ -1141,8 +1142,8 @@ calc.q99.Expression.and.set.all.genes <- function(
 
   # Plot the distribution of gene expression in the 99th quantile _________________________________
   if (plot) {
-    CPT <- paste(n.cells.in.top.quantile, "cells in", qnameP, "from", ncol(data_mtx), "cells in (downsampled) object.")
-    SBT <- kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", nr.total.cells, " cells).")
+    SBT <- kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", n.cells.in.top.quantile, " cells).")
+    CPT <- paste(n.cells.in.top.quantile, "cells in", qnameP, "from", ncol(data_mtx), "cells in", dtag, "object.")
 
     pobj <- ggExpress::qhistogram(log2.gene.expr.of.the.Xth.quantile,
       plotname = paste("Gene expression in the", qnameP, "in", suffix),
