@@ -1120,6 +1120,8 @@ calc.q99.Expression.and.set.all.genes <- function(
     data_mtx <- data_mtx[, dsampled]
     message("Downsampled from ", ncol(obj), " to ", max.cells, " cells")
     dtag= "downsampled(!)"
+  } else {
+    dtag = "all cells"
   }
 
   # Calculate the number of cells in the top quantile (e.g.: 99th quantile) that is
