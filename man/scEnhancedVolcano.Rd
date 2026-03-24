@@ -2,13 +2,13 @@
 % Please edit documentation in R/Seurat.Utils.Visualization.R
 \name{scEnhancedVolcano}
 \alias{scEnhancedVolcano}
-\title{scEnhancedVolcano}
+\title{Enhanced Volcano Plot for scRNA-seq DGEA}
 \usage{
 scEnhancedVolcano(
   toptable,
   x = "avg_log2FC",
   y = "p_val_adj",
-  title = paste("DGEA"),
+  title = "DGEA",
   lab = rownames(toptable),
   selectLab = trail(filterCodingGenes(lab), 10),
   min.p = 1e-50,
@@ -30,53 +30,50 @@ scEnhancedVolcano(
 )
 }
 \arguments{
-\item{toptable}{A data frame with the results of differential gene expression analysis.}
+\item{toptable}{Data frame of DGEA results.}
 
-\item{x}{The x-axis, which is typically the average log2 fold change.}
+\item{x}{Column name for log2 fold change. Default: "avg_log2FC".}
 
-\item{y}{The y-axis, which is typically the adjusted p-value.}
+\item{y}{Column name for adjusted p-value. Default: "p_val_adj".}
 
-\item{title}{The title of the plot.}
+\item{title}{Plot title. Default: "DGEA".}
 
-\item{lab}{A vector of gene symbols to label on the plot.}
+\item{lab}{Vector of gene names matching \code{toptable} rows exactly.}
 
-\item{selectLab}{A vector of gene symbols to select for labeling.}
+\item{selectLab}{Genes to highlight.}
 
-\item{min.p}{The minimum p-value, to trim high values on the Y-axis.}
+\item{min.p}{Minimum p-value to clip at (y-axis limit).}
 
-\item{max.l2fc}{The maximum log2 fold change, to trim high values on the X-axis.}
+\item{max.l2fc}{Maximum log2 fold change to clip at (x-axis limit).}
 
-\item{min.pct.cells}{The minimum percentage of cells in which a gene must be expressed to be included in the plot.}
+\item{min.pct.cells}{Minimum percentage of cells expressing the gene in either group.}
 
-\item{pCutoffCol}{The column in the toptable that contains the p-value cutoff.}
+\item{pCutoffCol}{Column to use for p-value cutoff.}
 
-\item{pCutoff}{The p-value cutoff.}
+\item{pCutoff}{p-value cutoff.}
 
-\item{FCcutoff}{The fold change cutoff.}
+\item{FCcutoff}{log2FC cutoff.}
 
-\item{suffix}{A string to append to the filename/title of the plot.}
+\item{suffix}{Suffix for saved plot file name.}
 
-\item{caption}{The first line of caption of the plot.}
+\item{caption}{Plot caption.}
 
-\item{caption2}{The second line of caption of the plot.}
+\item{caption2}{Secondary plot caption.}
 
-\item{count_stats}{Logical. Calculates a data frame with the count statistics.}
+\item{count_stats}{Boolean to include count statistics in subtitle.}
 
-\item{drawConnectors}{Whether to draw connectors between the labels and the points.}
+\item{drawConnectors}{Boolean to draw connectors to labels.}
 
-\item{max.overlaps}{The maximum number of labels that can overlap.}
+\item{max.overlaps}{Maximum label overlaps for ggrepel.}
 
-\item{also.pdf}{Logical. Whether to save the plot as a PDF in addition to the default png format.}
+\item{also.pdf}{Boolean to also save as PDF.}
 
-\item{h}{The height of the plot.}
+\item{h}{Height of saved plot.}
 
-\item{w}{The width of the plot.}
+\item{w}{Width of saved plot.}
 
-\item{...}{Pass any other parameter to \code{EnhancedVolcano::EnhancedVolcano()}.}
-}
-\value{
-A ggplot object.
+\item{...}{Additional arguments passed to EnhancedVolcano.}
 }
 \description{
-This function creates an enhanced volcano plot.
+Wrapper for EnhancedVolcano with automated filtering, styling, and robust checks.
 }

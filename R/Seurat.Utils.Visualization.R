@@ -3389,45 +3389,38 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 # _________________________________________________________________________________________________
 
 
-#' @title scEnhancedVolcano
-#'
-#' @description This function creates an enhanced volcano plot.
-#'
-#' @param toptable A data frame with the results of differential gene expression analysis.
-#' @param x The x-axis, which is typically the average log2 fold change.
-#' @param y The y-axis, which is typically the adjusted p-value.
-#' @param title The title of the plot.
-#' @param lab A vector of gene symbols to label on the plot.
-#' @param selectLab A vector of gene symbols to select for labeling.
-#' @param min.p The minimum p-value, to trim high values on the Y-axis.
-#' @param max.l2fc The maximum log2 fold change, to trim high values on the X-axis.
-#' @param min.pct.cells The minimum percentage of cells in which a gene must be expressed to be included in the plot.
-#' @param pCutoffCol The column in the toptable that contains the p-value cutoff.
-#' @param pCutoff The p-value cutoff.
-#' @param FCcutoff The fold change cutoff.
-#'
-#' @param suffix A string to append to the filename/title of the plot.
-#' @param suffix A string to append to the filename/title of the plot.
-#' @param caption The first line of caption of the plot.
-#' @param caption2 The second line of caption of the plot.
-#' @param count_stats Logical. Calculates a data frame with the count statistics.
-#' @param drawConnectors Whether to draw connectors between the labels and the points.
-#' @param max.overlaps The maximum number of labels that can overlap.
-#' @param also.pdf Logical. Whether to save the plot as a PDF in addition to the default png format.
-#' @param h The height of the plot.
-#' @param w The width of the plot.
-#' @param ... Pass any other parameter to `EnhancedVolcano::EnhancedVolcano()`.
-#'
-#' @return A ggplot object.
-#'
+#' @title Enhanced Volcano Plot for scRNA-seq DGEA
+#' @description Wrapper for EnhancedVolcano with automated filtering, styling, and robust checks.
+#' @param toptable Data frame of DGEA results.
+#' @param x Column name for log2 fold change. Default: "avg_log2FC".
+#' @param y Column name for adjusted p-value. Default: "p_val_adj".
+#' @param title Plot title. Default: "DGEA".
+#' @param lab Vector of gene names matching `toptable` rows exactly.
+#' @param selectLab Genes to highlight.
+#' @param min.p Minimum p-value to clip at (y-axis limit).
+#' @param max.l2fc Maximum log2 fold change to clip at (x-axis limit).
+#' @param min.pct.cells Minimum percentage of cells expressing the gene in either group.
+#' @param pCutoffCol Column to use for p-value cutoff.
+#' @param pCutoff p-value cutoff.
+#' @param FCcutoff log2FC cutoff.
+#' @param suffix Suffix for saved plot file name.
+#' @param caption Plot caption.
+#' @param caption2 Secondary plot caption.
+#' @param count_stats Boolean to include count statistics in subtitle.
+#' @param drawConnectors Boolean to draw connectors to labels.
+#' @param max.overlaps Maximum label overlaps for ggrepel.
+#' @param also.pdf Boolean to also save as PDF.
+#' @param h Height of saved plot.
+#' @param w Width of saved plot.
+#' @param ... Additional arguments passed to EnhancedVolcano.
+#' @importFrom dplyr filter select
 #' @importFrom EnhancedVolcano EnhancedVolcano
-#'
-#' @export scEnhancedVolcano
+#' @export
 scEnhancedVolcano <- function(
     toptable,
     x = "avg_log2FC",
     y = "p_val_adj",
-    title = paste("DGEA"),
+    title = "DGEA",
     lab = rownames(toptable),
     selectLab = trail(filterCodingGenes(lab), 10),
     min.p = 1e-50,
@@ -3447,10 +3440,12 @@ scEnhancedVolcano <- function(
     ...
 ) {
 
-  # 1. Inputs Checks ----------------------------
+  # 1. Input Checks ------------------------------------------------------------
   stopifnot(
+    "toptable must be a data.frame" = is.data.frame(toptable),
     "toptable must have > 5 rows" = nrow(toptable) > 5,
-    "Length of lab must match toptable rows" = length(lab) == nrow(toptable)
+    "Length of lab must match toptable rows" = length(lab) == nrow(toptable),
+    "Required columns missing" = all(c(x, y, pCutoffCol, "pct.1", "pct.2") %in% colnames(toptable))
   )
 
   message(
@@ -3459,12 +3454,22 @@ scEnhancedVolcano <- function(
     "\nMin. pct cells expressing: ", min.pct.cells
   )
 
-  # 2. Data Filtering & Label Synchronization ----------------------------
-  toptable[["..lab.."]] <- lab # Bind labels to toptable before dplyr strips rownames
+  # 2. Data Filtering & Label Synchronization ----------------------------------
+  toptable[["..lab.."]] <- as.character(lab)                      # Preserve labels across filter
 
-  toptable <- toptable |>  dplyr::filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
+  toptable <- toptable |>
+    dplyr::filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
 
-  filtered_lab <- toptable[["..lab.."]] # Extract properly synced labels
+  stopifnot(
+    "No rows remain after min.pct.cells filtering" = nrow(toptable) > 0,
+    "Filtered labels must match rows" = length(toptable[["..lab.."]]) == nrow(toptable)
+  )
+
+  filtered_lab <- as.character(toptable[["..lab.."]])             # Extract synced labels
+  filtered_lab[filtered_lab == ""] <- NA_character_               # Pass NA, not empty string
+
+  # Keep only valid, unique labels
+  selectLab <- unique(intersect(as.character(selectLab), filtered_lab))
 
   # Calculate true min pct cells expressing
   min.pct.cells <- toptable |>
@@ -3473,36 +3478,49 @@ scEnhancedVolcano <- function(
     rowMax() |>
     min()
 
-  # 3. Value Clipping ----------------------------
-  toptable[[y]] <- clip.at.fixed.value(x = toptable[[y]], thr = min.p, above = FALSE)
+  # 3. Value Clipping ----------------------------------------------------------
+  toptable[[x]] <- as.numeric(toptable[[x]])
+  toptable[[y]] <- as.numeric(toptable[[y]])
+  toptable[[pCutoffCol]] <- as.numeric(toptable[[pCutoffCol]])
 
-  if (max.l2fc < Inf) {
-    toptable[[x]] <- clip.at.fixed.value(x = toptable[[x]], thr = -max.l2fc, above = FALSE)
-    toptable[[x]] <- clip.at.fixed.value(x = toptable[[x]], thr = max.l2fc, above = TRUE)
+  stopifnot(
+    "x contains no finite values" = any(is.finite(toptable[[x]])),
+    "y contains no finite values" = any(is.finite(toptable[[y]]))
+  )
+
+  toptable[[y]] <- clip.at.fixed.value(toptable[[y]], thr = min.p, above = FALSE)
+
+  if (!identical(pCutoffCol, y)) {
+    toptable[[pCutoffCol]] <- clip.at.fixed.value(
+      toptable[[pCutoffCol]], thr = min.p, above = FALSE
+    )
   }
 
-  # 4. Generate Subtitle Stats ----------------------------
+  if (max.l2fc < Inf) {
+    toptable[[x]] <- clip.at.fixed.value(toptable[[x]], thr = -max.l2fc, above = FALSE)
+    toptable[[x]] <- clip.at.fixed.value(toptable[[x]], thr = max.l2fc, above = TRUE)
+  }
+
+  # 4. Subtitle Stats Generation -----------------------------------------------
   subtitle <- NULL
   if (count_stats) {
     enr_stats <- unlist(countRelevantEnrichments(
-      df = toptable, logfc_col = x, pval_col = y,
-      logfc_cutoff = FCcutoff, pval_cutoff = pCutoff
+      df = toptable, logfc_col = x, pval_col = y, logfc_cutoff = FCcutoff, pval_cutoff = pCutoff
     ))
     stat_info <- kppws("Genes", intermingle2vec(names(enr_stats), enr_stats), "(red)")
     subtitle <- paste0(
-      stat_info, "\n",
-      "Cutoffs: max.p_adj: ", pCutoff, " |  min.log2FC: ", FCcutoff,
-      " |  min.pct.cells: ", min.pct.cells
+      stat_info, "\nCutoffs: max.p_adj: ", pCutoff, " | min.log2FC: ", FCcutoff,
+      " | min.pct.cells: ", min.pct.cells
     )
   }
   caption <- paste0(caption, "\n", caption2)
 
-  # 5. Plotting ----------------------------
+  # 5. Plotting ----------------------------------------------------------------
   pobj <- EnhancedVolcano::EnhancedVolcano(
     toptable = toptable,
     x = x, y = y,
     title = title, subtitle = subtitle,
-    lab = filtered_lab,                  # Pass synced labels here
+    lab = filtered_lab,
     selectLab = selectLab,
     caption = caption,
     pCutoffCol = pCutoffCol,
@@ -3513,9 +3531,9 @@ scEnhancedVolcano <- function(
     ...
   )
 
-  print(pobj)
+  stopifnot("EnhancedVolcano must return a ggplot object" = inherits(pobj, "ggplot"))
 
-  # 6. Save Plot ----------------------------
+  # 6. Save Plot ---------------------------------------------------------------
   qqSave(
     ggobj = pobj, title = paste0("Volcano.", make.names(title), suffix),
     also.pdf = also.pdf, h = h, w = w
@@ -3523,6 +3541,117 @@ scEnhancedVolcano <- function(
 
   return(pobj)
 }
+
+
+
+
+
+
+
+#
+# scEnhancedVolcano <- function(
+#     toptable,
+#     x = "avg_log2FC",
+#     y = "p_val_adj",
+#     title = paste("DGEA"),
+#     lab = rownames(toptable),
+#     selectLab = trail(filterCodingGenes(lab), 10),
+#     min.p = 1e-50,
+#     max.l2fc = Inf,
+#     min.pct.cells = 0.1,
+#     pCutoffCol = "p_val_adj",
+#     pCutoff = 1e-3,
+#     FCcutoff = 1,
+#     suffix = NULL,
+#     caption = paste("Min. Fold Change in Input:", .estMinimumFC(toptable)),
+#     caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
+#     count_stats = TRUE,
+#     drawConnectors = TRUE,
+#     max.overlaps = Inf,
+#     also.pdf = FALSE,
+#     h = 9, w = h,
+#     ...
+# ) {
+#
+#   # 1. Inputs Checks ----------------------------
+#   stopifnot(
+#     "toptable must have > 5 rows" = nrow(toptable) > 5,
+#     "Length of lab must match toptable rows" = length(lab) == nrow(toptable)
+#   )
+#
+#   message(
+#     "\nMin. log2fc: ", FCcutoff, "\nMax. p-adj: ", pCutoff,
+#     "\nMin. p-adj (trim high y-axis): ", min.p,
+#     "\nMin. pct cells expressing: ", min.pct.cells
+#   )
+#
+#   # 2. Data Filtering & Label Synchronization ----------------------------
+#   toptable[["..lab.."]] <- lab # Bind labels to toptable before dplyr strips rownames
+#
+#   toptable <- toptable |>  dplyr::filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
+#
+#   filtered_lab <- toptable[["..lab.."]] # Extract properly synced labels
+#
+#   # Calculate true min pct cells expressing
+#   min.pct.cells <- toptable |>
+#     dplyr::select(pct.1, pct.2) |>
+#     as.matrix() |>
+#     rowMax() |>
+#     min()
+#
+#   # 3. Value Clipping ----------------------------
+#   toptable[[y]] <- clip.at.fixed.value(x = toptable[[y]], thr = min.p, above = FALSE)
+#
+#   if (max.l2fc < Inf) {
+#     toptable[[x]] <- clip.at.fixed.value(x = toptable[[x]], thr = -max.l2fc, above = FALSE)
+#     toptable[[x]] <- clip.at.fixed.value(x = toptable[[x]], thr = max.l2fc, above = TRUE)
+#   }
+#
+#   # 4. Generate Subtitle Stats ----------------------------
+#   subtitle <- NULL
+#   if (count_stats) {
+#     enr_stats <- unlist(countRelevantEnrichments(
+#       df = toptable, logfc_col = x, pval_col = y,
+#       logfc_cutoff = FCcutoff, pval_cutoff = pCutoff
+#     ))
+#     stat_info <- kppws("Genes", intermingle2vec(names(enr_stats), enr_stats), "(red)")
+#     subtitle <- paste0(
+#       stat_info, "\n",
+#       "Cutoffs: max.p_adj: ", pCutoff, " |  min.log2FC: ", FCcutoff,
+#       " |  min.pct.cells: ", min.pct.cells
+#     )
+#   }
+#   caption <- paste0(caption, "\n", caption2)
+#
+#
+#   # 5. Plotting ----------------------------
+#   # ??? pdf(NULL)
+#
+#   pobj <- EnhancedVolcano::EnhancedVolcano(
+#     toptable = toptable,
+#     x = x, y = y,
+#     title = title, subtitle = subtitle,
+#     lab = filtered_lab,                  # Pass synced labels here
+#     selectLab = selectLab,
+#     caption = caption,
+#     pCutoffCol = pCutoffCol,
+#     pCutoff = pCutoff,
+#     FCcutoff = FCcutoff,
+#     drawConnectors = drawConnectors,
+#     max.overlaps = max.overlaps,
+#     ...
+#   )
+#
+#   # print(pobj) # Sometimes causes the " Viewport has zero dimension(s)" error.
+#
+#   # 6. Save Plot ----------------------------
+#   qqSave(
+#     ggobj = pobj, title = paste0("Volcano.", make.names(title), suffix),
+#     also.pdf = also.pdf, h = h, w = w
+#   )
+#
+#   return(pobj)
+# }
 
 # ________________________________________________________________________
 #' @title Estimate Minimum Log2-Based Fold Change
