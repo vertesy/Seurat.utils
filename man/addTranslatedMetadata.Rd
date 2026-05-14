@@ -19,7 +19,7 @@ addTranslatedMetadata(
 
 \item{orig.ident}{A character string specifying the original metadata to be translated. Default: "RNA_snn_res.0.4".}
 
-\item{translation_as_named_vec}{A named vector where names are old values and values are new translations. Default: None.}
+\item{translation_as_named_vec}{A named vector where names are old values and values are new translations.}
 
 \item{new_col_name}{A character string specifying the base name of the new metadata column.}
 

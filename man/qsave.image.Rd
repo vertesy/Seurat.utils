@@ -15,7 +15,9 @@ objects in the workspace. Default: \code{TRUE}.}
 \item{options}{Options passed on to gzip, via CLI. Default: \code{c("--force", NULL)[1]}}
 }
 \description{
-Save the workspace with external gzip compression (CPU intensive).
+Faster saving of the workspace with compression handled outside R so it can run in
+the background. Note that this approach is CPU intensive and the gzip compression
+may not be the most efficient option.
 }
 \seealso{
 \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}

@@ -47,7 +47,7 @@ Convert10Xfolders(
 
 \item{writeCBCtable}{A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: \code{TRUE}.}
 
-\item{sort_alphanumeric}{sort files alphanumeric? Default: \code{TRUE}.}
+\item{sort_alphanumeric}{Sort files alphanumerically? Default: \code{TRUE}.}
 
 \item{save_empty_droplets}{save empty droplets? Default: \code{TRUE}.}
 
