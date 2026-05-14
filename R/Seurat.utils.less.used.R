@@ -42,7 +42,9 @@ Convert10Xfolders_v1 <- function(
     ext = "qs",
     sort_alphanumeric = TRUE,
     ...) {
-  warning("Since v2.5.0, the output is saved in the more efficient qs format! See qs package.", immediate. = TRUE)
+  warning("Since v2.9.0, the output is saved into qs format with qs2 package.", immediate. = TRUE)
+
+  compress_level <- .map_preset_to_compress_level(preset)
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
@@ -87,7 +89,7 @@ Convert10Xfolders_v1 <- function(
       LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
 
       LSBnameOUT <- ppp(paste0(InputDir, "/LSB.", fnameIN), "qs")
-      qs::qsave(x = LSB, file = LSBnameOUT)
+      qs2::qs_save(object = LSB, file = LSBnameOUT, compress_level = compress_level)
     } else {
       print("More than 2 elements in the list of matrices")
     }
@@ -106,7 +108,7 @@ Convert10Xfolders_v1 <- function(
     if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
 
     # write out --- --- ---
-    qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)
+    qs2::qs_save(object = seu, file = f.path.out, nthreads = nthreads, compress_level = compress_level)
 
     # write cellIDs ---  --- ---
     if (writeCBCtable) {

@@ -46,7 +46,7 @@ Imports:
     pheatmap,
     plotly,
     princurve,
-    qs,
+    qs2,
     readr,
     reshape2,
     rstudioapi,

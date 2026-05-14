@@ -4468,6 +4468,8 @@ Convert10Xfolders <- function(
     is.logical(sort_alphanumeric)
   )
 
+  compress_level <- .map_preset_to_compress_level(preset)
+
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
 
@@ -4515,7 +4517,7 @@ Convert10Xfolders <- function(
     if (normalize_data) seu <- NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000,  verbose = TRUE)
 
     # write out --- --- ---
-    if (save) qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)
+    if (save) qs2::qs_save(object = seu, file = f.path.out, nthreads = nthreads, compress_level = compress_level)
 
     # write cellIDs ---  --- ---
     if (writeCBCtable) {
@@ -4548,12 +4550,12 @@ Convert10Xfolders <- function(
         obj_empty_drops <- subset(seu, cells = CBC_empty_drops)
 
         f_path_out_ED <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("obj.empty.droplets", fnameIN, nr.empty.droplets), extension = ext)
-        qs::qsave(x = obj_empty_drops, file = f_path_out_ED, nthreads = nthreads, preset = preset)
+        qs2::qs_save(object = obj_empty_drops, file = f_path_out_ED, nthreads = nthreads, compress_level = compress_level)
 
         # save the bulk RNA counts of the empty droplets
         Soup.Bulk.RNA <- rowSums(count_matrix[, CBC_empty_drops])
         f_path_out_Bulk <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("Soup.Bulk.RNA", fnameIN), extension = "qs")
-        qs::qsave(x = Soup.Bulk.RNA, file = f_path_out_Bulk, nthreads = nthreads, preset = preset)
+        qs2::qs_save(object = Soup.Bulk.RNA, file = f_path_out_Bulk, nthreads = nthreads, compress_level = compress_level)
         ReadWriter::write.simple.tsv(Soup.Bulk.RNA, suffix = fnameIN, manual_directory = SoupDir)
       }
     } else {
@@ -4703,7 +4705,7 @@ LoadAllSeurats <- function(
     if (use_rds) {
       ls.Seu[[i]] <- readRDS(FNP)
     } else if (!use_rds) {
-      ls.Seu[[i]] <- qs::qread(file = FNP)
+      ls.Seu[[i]] <- qs2::qs_read(file = FNP)
     } else {
       warning("File pattern ambiguous. Use either qs or rds:", file.pattern, immediate. = TRUE)
     }
@@ -4854,10 +4856,26 @@ isave.RDS <- function(
   }
 }
 
+# Internal helper: map qs1-style preset string to qs2 compress_level integer.
+#
+# @param preset Character string; one of "fast", "balanced", "high", or "archive".
+#   Unknown values trigger a warning and fall back to the "balanced" default (3L).
+# @return An integer compress_level suitable for `qs2::qs_save()`:
+#   "fast" -> 1L, "balanced" -> 3L, "high" -> 6L, "archive" -> 12L.
+.map_preset_to_compress_level <- function(preset) {
+  valid_presets <- c("fast", "balanced", "high", "archive")
+  if (!preset %in% valid_presets) {
+    warning("Unknown preset '", preset, "'; defaulting to 'balanced' (compress_level=3). Valid options: ",
+            paste(valid_presets, collapse = ", "), call. = FALSE)
+    return(3L) # explicit early return to make the fallback unambiguous
+  }
+  switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L)
+}
+
 # _________________________________________________________________________________________________
-#' @title Save an R Object Using 'qs' Package for Fast Compressed Saving
+#' @title Save an R Object Using 'qs2' Package for Fast Compressed Saving
 #'
-#' @description This function saves an R object to a file in a quick and efficient format using the 'qs' package.
+#' @description This function saves an R object to a file in a quick and efficient format using the 'qs2' package.
 #' It constructs the file name based on various inputs and stores additional metadata if the object is a Seurat object.
 #' The saving path can be adjusted by the presence of 'OutDir' in the global environment or defaults to the working directory.
 #'
@@ -4865,7 +4883,8 @@ isave.RDS <- function(
 #' @param suffix Optional; a suffix to add to the filename.
 #' @param prefix Optional; a prefix to add to the filename.
 #' @param nthreads Number of threads to use when saving, defaults to 12.
-#' @param preset Compression preset, defaults to 'high'.
+#' @param preset Compression preset for backward compatibility; mapped to `compress_level`.
+#'   One of "fast" (1), "balanced" (3), "high" (6), or "archive" (12). Defaults to "high".
 #' @param project The project name to be included in the filename, defaults to the result of `getProject()`.
 #' @param dir Output Directory
 #' @param showMemObject Logical; if TRUE, displays the memory size of the largest objects.
@@ -4880,10 +4899,10 @@ isave.RDS <- function(
 #'
 #' @return Invisible; The function is called for its side effects (saving a file) and does not return anything.
 #'
-#' @note The function uses the 'qs' package for quick and efficient serialization of objects and
+#' @note The function uses the 'qs2' package for quick and efficient serialization of objects and
 #' includes a timing feature from the 'tictoc' package.
-#' @seealso \code{\link[qs]{qsave}} for the underlying save function used.
-#' @importFrom qs qsave
+#' @seealso \code{\link[qs2]{qs_save}} for the underlying save function used.
+#' @importFrom qs2 qs_save
 #' @importFrom tictoc tic toc
 #' @importFrom rstudioapi isAvailable
 #'
@@ -4906,6 +4925,9 @@ xsave <- function(
   #
   if (v) message(nthreads, " threads.\n-----------")
   if (v) message("project: ", project)
+
+  # resolve compression level early, before any object modifications
+  compress_level <- .map_preset_to_compress_level(preset)
 
   # check if the object is a Seurat object
   obj_is_seurat <- inherits(obj, "Seurat")
@@ -4939,15 +4961,15 @@ xsave <- function(
     if (saveLocation) try(obj@misc$"file.location" <- CMND, silent = TRUE)
   }
 
-  qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
+  qs2::qs_save(object = obj, file = FNN, nthreads = nthreads, compress_level = compress_level)
 
   try(tictoc::toc(), silent = TRUE)
 }
 
 # _________________________________________________________________________________________________
-#' @title Read an R Object Using 'qs' Package for Fast Decompression
+#' @title Read an R Object Using 'qs2' Package for Fast Decompression
 #'
-#' @description This function reads an R object from a file saved in a format specific to the 'qs' package,
+#' @description This function reads an R object from a file saved in a format specific to the 'qs2' package,
 #' which is designed for quick and efficient compression and decompression of R objects.
 #' It also times the read operation, providing feedback on the duration of the operation.
 #'
@@ -4959,14 +4981,14 @@ xsave <- function(
 #' @param overwriteAllGenes Logical; if TRUE and if the object is a Seurat object, the all genes are overwritten.
 #' @param set_m Logical; if TRUE, the variable 'm', a list of @meta.data colnames, is assigned to
 #' the global environment.
-#' @param ... Further arguments passed on to the 'qs::qread' function.
+#' @param ... Further arguments passed on to the 'qs2::qs_read' function.
 #'
 #' @return The R object that was saved in the specified file.
-#' @note The function uses the 'qs' package for fast and efficient deserialization of objects
+#' @note The function uses the 'qs2' package for fast and efficient deserialization of objects
 #' and includes a timing feature from the 'tictoc' package.
 #'
-#' @seealso \code{\link[qs]{qread}} for the underlying read function used.
-#' @importFrom qs qread
+#' @seealso \code{\link[qs2]{qs_read}} for the underlying read function used.
+#' @importFrom qs2 qs_read
 #' @importFrom tictoc tic toc
 #' @importFrom rstudioapi isAvailable
 #'
@@ -4983,7 +5005,7 @@ xread <- function(file,
   message(nthreads, " threads.")
   try(tictoc::tic("xread"), silent = TRUE)
 
-  obj <- qs::qread(file = file, nthreads = nthreads, ...)
+  obj <- qs2::qs_read(file = file, nthreads = nthreads, ...)
 
   report <- if (is(obj, "Seurat")) {
     kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "meta columns.")
@@ -5044,7 +5066,7 @@ xread <- function(file,
 #' If no SLURM memory limit is detected, the safety check is skipped and a warning is shown.
 #'
 #' @param path Path to the `.qs` file to load. Must exist. Default: none.
-#' @param nthreads Number of threads for `qs::qread()`. Uses 1 if file < 1e7 bytes, else 4.
+#' @param nthreads Number of threads for `qs2::qs_read()`. Uses 1 if file < 1e7 bytes, else 4.
 #'   Default: `if (file.size(path) < 1e7) 1 else 4`.
 #' @param loadParamsAndAllGenes Logical; if `TRUE`, recall stored parameters and gene lists
 #'   from `obj@misc`. Default: `TRUE`.
@@ -5055,7 +5077,7 @@ xread <- function(file,
 #' @param safe_load Logical; enable SLURM-based memory safety check. Default: `TRUE`.
 #' @param disk2mem_size_inflation Estimated expansion factor of `.qs` file once in memory.
 #'   Default: `3`.
-#' @param ... Additional arguments passed to `qs::qread()`. Default: none.
+#' @param ... Additional arguments passed to `qs2::qs_read()`. Default: none.
 #'
 #' @return Invisibly returns the loaded object.
 #'
@@ -5064,7 +5086,7 @@ xread <- function(file,
 #' obj <- xread2("/path/to/object.qs")
 #' }
 #'
-#' @importFrom qs qread
+#' @importFrom qs2 qs_read
 #' @importFrom tictoc tic toc
 #' @importFrom Stringendo ifExistsAndTrue
 #' @export
@@ -5129,7 +5151,7 @@ xread2 <- function(path,
   message(nthreads, " threads.")
   try(tictoc::tic("xread2"), silent = TRUE)
 
-  obj <- qs::qread(file = path, nthreads = nthreads, ...)
+  obj <- qs2::qs_read(file = path, nthreads = nthreads, ...)
 
   report <- if (is(obj, "Seurat")) {
     kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "metadata columns.")
