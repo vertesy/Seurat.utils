@@ -4468,6 +4468,8 @@ Convert10Xfolders <- function(
     is.logical(sort_alphanumeric)
   )
 
+  compress_level <- switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L, 3L)
+
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
 
@@ -4515,7 +4517,7 @@ Convert10Xfolders <- function(
     if (normalize_data) seu <- NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000,  verbose = TRUE)
 
     # write out --- --- ---
-    if (save) qs2::qs_save(object = seu, file = f.path.out, nthreads = nthreads)
+    if (save) qs2::qs_save(object = seu, file = f.path.out, nthreads = nthreads, compress_level = compress_level)
 
     # write cellIDs ---  --- ---
     if (writeCBCtable) {
@@ -4548,12 +4550,12 @@ Convert10Xfolders <- function(
         obj_empty_drops <- subset(seu, cells = CBC_empty_drops)
 
         f_path_out_ED <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("obj.empty.droplets", fnameIN, nr.empty.droplets), extension = ext)
-        qs2::qs_save(object = obj_empty_drops, file = f_path_out_ED, nthreads = nthreads)
+        qs2::qs_save(object = obj_empty_drops, file = f_path_out_ED, nthreads = nthreads, compress_level = compress_level)
 
         # save the bulk RNA counts of the empty droplets
         Soup.Bulk.RNA <- rowSums(count_matrix[, CBC_empty_drops])
         f_path_out_Bulk <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("Soup.Bulk.RNA", fnameIN), extension = "qs")
-        qs2::qs_save(object = Soup.Bulk.RNA, file = f_path_out_Bulk, nthreads = nthreads)
+        qs2::qs_save(object = Soup.Bulk.RNA, file = f_path_out_Bulk, nthreads = nthreads, compress_level = compress_level)
         ReadWriter::write.simple.tsv(Soup.Bulk.RNA, suffix = fnameIN, manual_directory = SoupDir)
       }
     } else {
@@ -4940,6 +4942,11 @@ xsave <- function(
     if (saveLocation) try(obj@misc$"file.location" <- CMND, silent = TRUE)
   }
 
+  valid_presets <- c("fast", "balanced", "high", "archive")
+  if (!preset %in% valid_presets) {
+    warning("Unknown preset '", preset, "'; defaulting to 'balanced' (compress_level=3). Valid options: ",
+            paste(valid_presets, collapse = ", "), call. = FALSE)
+  }
   compress_level <- switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L, 3L)
   qs2::qs_save(object = obj, file = FNN, nthreads = nthreads, compress_level = compress_level)
 
