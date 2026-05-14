@@ -1,6 +1,6 @@
 Package: Seurat.utils
-Title: Seurat.utils - utility functions for Seurat
-Version: 2.9.0
+Title: Seurat.utils - utility functions for Seurat v5
+Version: 2.9.1
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <av@imba.oeaw.ac.at> [aut, cre]
@@ -61,6 +61,6 @@ Suggests:
     enrichplot,
     vroom
 Encoding: UTF-8
-Packaged: 2025-08-12 16:49:19.669352
+Packaged: 2025-12-03 10:05:36.316459
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1

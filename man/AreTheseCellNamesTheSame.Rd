@@ -22,7 +22,7 @@ AreTheseCellNamesTheSame(
 }
 \description{
 Assert and compare two character vectors (e.g.: cell IDs) how much they overlap and
-plot a Venn Diagram. The function aborts with an error if overlap is too small.
+plot a Venn diagram. The function aborts with an error if overlap is too small.
 }
 \examples{
 # reTheseCellNamesTheSame()

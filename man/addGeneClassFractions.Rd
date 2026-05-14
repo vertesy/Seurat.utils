@@ -9,6 +9,7 @@ addGeneClassFractions(
   gene_fractions = list(percent.mito = "^MT\\\\.|^MT-", percent.ribo = "^RPL|^RPS",
     percent.AC.GenBank = "^AC[0-9]{6}\\\\.", percent.AL.EMBL = "^AL[0-9]{6}\\\\.",
     percent.LINC = "^LINC0", percent.MALAT1 = "^MALAT1"),
+  species = c("human", "mouse")[1],
   add_hga = TRUE
 )
 }
@@ -17,6 +18,8 @@ addGeneClassFractions(
 
 \item{gene_fractions}{A named list containing gene symbol patterns for each meta column name.
 Default: List of predefined gene fractions.}
+
+\item{species}{A character string specifying the species ("human" or "mouse"). Default: "human".}
 
 \item{add_hga}{A logical value indicating whether to add percent.HGA metadata. Default: \code{TRUE}.}
 }

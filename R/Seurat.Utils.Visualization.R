@@ -7,6 +7,32 @@
 # devtools::document("~/GitHub/Packages/Seurat.utils"); devtools::load_all("~/GitHub/Packages/Seurat.utils")
 
 
+# ______________________________________________________________________________________________----
+# Define package options  ----
+
+.onLoad <- function(libname, pkgname) {
+  op <- options()
+
+  pkg_op <- list(
+    # insert at top
+
+    su.save.plot =  TRUE
+    # getOption("su.save.plot", TRUE)
+  )
+
+  # Only set options that are not already defined
+  to_set <- pkg_op[!names(pkg_op) %in% names(op)]
+  if (length(to_set)) options(to_set)
+
+  invisible()
+}
+
+
+# _________________________________________________________________________________________________
+# plotting.statistics.and.QC ______________________________ ----
+# _________________________________________________________________________________________________
+
+
 # _________________________________________________________________________________________________
 #' @title Plot filtering thresholds and distributions
 #'
@@ -30,7 +56,7 @@
 #' @param transparency Point transparency on scatter plots. Default: 0.25.
 #' @param cex Size of points on scatter plots. Default: 0.75.
 #' @param theme.used A `ggplot2` theme for all plots. Default: `theme_bw(base_size = 18)`.
-#' @param LabelDistFromTop Distance from top for label placement. Default: 200.
+# #' @param LabelDistFromTop Distance from top for label placement. Default: 200.
 #'
 #' @examples
 #' \dontrun{
@@ -52,7 +78,7 @@
 #'
 #' @export
 PlotFilters <- function(
-    ls.obj = ls.Seurat,
+    ls.obj,
     par.ls = p,
     parentdir = OutDirOrig,
     suffices = names(ls.obj),
@@ -71,10 +97,11 @@ PlotFilters <- function(
     ),
     transparency = 0.25,
     cex = 0.75,
-    theme.used = theme_bw(base_size = 18),
-    LabelDistFromTop = 200 # for barplot_label
+    theme.used = theme_bw(base_size = 18)
+    # LabelDistFromTop = 200 # for barplot_label
     ) {
   message("Expects a list of Seurat objects, `ls.obj` with names, and a list of parameters, `par.ls` with a defined structure.")
+  if(inherits(ls.obj, "Seurat") && length(ls.obj) == 1) ls.obj <- list(ls.obj)
 
   # Create names based on the Seurat objects, catenating "dataset" and numbers 1:n
   if (is.null(suffices)) {
@@ -245,22 +272,7 @@ PlotFilters <- function(
 }
 
 
-# _________________________________________________________________________________________________
-# plotting.statistics.and.QC.R ______________________________ ----
-# _________________________________________________________________________________________________
-# source('~/GitHub/Packages/Seurat.utils/Functions/Plotting.statistics.and.QC.R')
-# try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Plotting.statistics.and.QC.R"))
 
-# Source: self + web
-
-# Requirements __________________________________________
-# require(Seurat)
-# require(ggplot2)
-# tools for tools::toTitleCase
-
-# May also require
-# try (source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R'),silent= FALSE) # generic utilities functions
-# require('MarkdownReports') # require("devtools")
 
 # _________________________________________________________________________________________________
 #' @title Calculate the percent of variation explained by individual PC's
@@ -334,7 +346,6 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
                                   plotname = "Variance Explained by Principal Components",
                                   sub = paste(ncol(obj), "cells, ", nrow(obj), "features."),
                                   caption = "hline at 1%",
-                                  # caption = .parseKeyParams(obj, suffix = "| hline at 1%"),
                                   use.MarkdownReports = FALSE,
                                   ...) {
   stopifnot(
@@ -468,7 +479,6 @@ plotGeneExpressionInBackgroundHist <- function(
     ...) {
   message("gene: ", gene)
   stopifnot(gene %in% rownames(obj))
-
 
   GEX.Counts <- GetAssayData(object = obj, assay = assay, slot = slot)
 
@@ -661,6 +671,7 @@ PctCellsAboveX <- function(
     plot = TRUE,
     caption = NULL,
     ylab = "% cells above threshold",
+    palette = "jco",
     ...
 ) {
 
@@ -699,6 +710,8 @@ PctCellsAboveX <- function(
 
   # 6. Compute percentages ____________________________________
   pct_vec <- vapply(ls_feat, function(x) mean(x > threshold), numeric(1))
+  # browser()
+
 
   # 7. Re-group for box mode __________________________________
   if (box) {
@@ -711,7 +724,7 @@ PctCellsAboveX <- function(
   # 8. Plotting (your exact original code) ____________________
   if (plot) {
     if (is.null(caption)) {
-      caption <- pc_TRUE(is.na(Fraction.of.Cells.Above.Threshold),
+      caption <- pc_TRUE(is.na(pct_vec),
         suffix = "of idents yielded NA/NaN & excluded from plot."
       )
     }
@@ -731,6 +744,7 @@ PctCellsAboveX <- function(
         caption = caption,
         suffix = SFX,
         ylab = ylab,
+        palette_use = palette,
         ...
       )
     } else {
@@ -742,6 +756,7 @@ PctCellsAboveX <- function(
         caption = caption,
         suffix = SFX,
         ylab = ylab,
+        palette_use = palette,
         ...
       )
     }
@@ -780,7 +795,7 @@ PctCellsAboveX <- function(
 #' \dontrun{
 #' # Load the Seurat object (example)
 #' library(Seurat)
-#' combined.obj <- readRDS("path/to/your/seurat_object.rds")
+#' `combined.obj <- readRDS("path/to/your/seurat_object.rds")`
 #'
 #' # Define genes of interest
 #' # Define genes of interest
@@ -1973,7 +1988,8 @@ plotAndSaveHeatmaps <- function(results, path = getwd(),
 #' @importFrom ggplot2 ggtitle theme_linedraw scale_x_log10 scale_y_log10
 qFeatureScatter <- function(
     feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj,
-    ext = "png", plot = TRUE,
+    # ext = "png",
+    plot = TRUE,
     logX = FALSE, logY = FALSE,
     ...) {
   plotname <- kpp(feature1, "VS", feature2)
@@ -2068,7 +2084,7 @@ qSeuViolin <- function(
     is.character(ident),
     ident %in% colnames(obj@meta.data),
     is.character(feature),
-    feature %in% colnames(obj@meta.data) || feature %in% rownames(obj)
+    feature %in% colnames(obj@meta.data) || feature %in% rownames(obj) # This version of the function works on a single feature only.
   )
 
   is_meta_feature <- feature %in% colnames(obj@meta.data) # check if feature is in meta.data, otherwise it is a  gene name
@@ -2112,12 +2128,15 @@ qSeuViolin <- function(
   }
 
   if (!is.null(colors)) {
-    stopifnot(colors %in% colnames(obj@meta.data))
-    col_long <- as.factor(unlist(obj[[colors]]))
-    colors <- as.factor.numeric(sapply(split(col_long, split_col), unique))
-    stopifnot("colors cannot be uniquely split by ident. Set colors = NULL!" = length(colors) == length(unique(split_col)))
+    col_is_vec <- is.vector(colors) && length(colors) >= length(unique(split_col))
+    col_is_metacolname <- length(colors) ==1 && colors %in% colnames(obj@meta.data)
+    stopifnot(col_is_vec || col_is_metacolname)
+
+    if(col_is_metacolname) {
+      col_long <- as.factor(unlist(obj[[colors]]))
+      colors <- as.factor.numeric(sapply(split(col_long, split_col), unique))
+    }
   }
-  # browser()
 
   p.obj <- Seurat::VlnPlot(
     object = obj,
@@ -2202,7 +2221,8 @@ qUMAP <- function(
     reduction = "umap", splitby = NULL,
     prefix = NULL,
     suffix = make.names(sub),
-    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
+    save.plot = getOption("su.save.plot", TRUE),
+      # MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     h = 7, w = NULL, nr.cols = NULL,
     assay = c("RNA", "integrated")[1],
@@ -2327,7 +2347,8 @@ clUMAP <- function(
     MaxCategThrHP = 200,
     axes = NULL,
     aspect.ratio = c(FALSE, 0.6)[2],
-    save.plot = MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
+    save.plot = getOption("su.save.plot", TRUE),
+      # MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
     PNG = TRUE,
     check_for_2D = TRUE,
     ...) {
@@ -2858,7 +2879,7 @@ qClusteringUMAPS <- function(
     prefix = "Clustering.UMAP.Res",
     suffix = "",
     nrow = 2, ncol = 2,
-    w = 11.69, h = 8.27,
+    w = 2 * 11.69, h = 2 * 8.27,
     title = sppu(
       prefix,
       as.numeric(stringr::str_extract(idents, "\\d+\\.\\d+$")),
@@ -3361,52 +3382,47 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 # General ______________________________ ----
 # _________________________________________________________________________________________________
 
+
+
 # _________________________________________________________________________________________________
-# DGEA and GO-term enrichment ______________________________ ----
+# DGEA ______________________________ ----
 # _________________________________________________________________________________________________
 
 
-#' @title scEnhancedVolcano
-#'
-#' @description This function creates an enhanced volcano plot.
-#'
-#' @param toptable A data frame with the results of differential gene expression analysis.
-#' @param lab A vector of gene symbols to label on the plot.
-#' @param suffix A string to append to the filename/title of the plot.
-#' @param title The title of the plot.
-#' @param suffix A string to append to the filename/title of the plot.
-#' @param caption The first line of caption of the plot.
-#' @param caption2 The second line of caption of the plot.
-#' @param x The x-axis, which is typically the average log2 fold change.
-#' @param y The y-axis, which is typically the adjusted p-value.
-#' @param selectLab A vector of gene symbols to select for labeling.
-#' @param min.p The minimum p-value, to trim high values on the Y-axis.
-#' @param max.l2fc The maximum log2 fold change, to trim high values on the X-axis.
-#' @param min.pct.cells The minimum percentage of cells in which a gene must be expressed to be included in the plot.
-#' @param pCutoffCol The column in the toptable that contains the p-value cutoff.
-#' @param pCutoff The p-value cutoff.
-#' @param FCcutoff The fold change cutoff.
-#' @param count_stats Logical. Calculates a data frame with the count statistics.
-#' @param drawConnectors Whether to draw connectors between the labels and the points.
-#' @param max.overlaps The maximum number of labels that can overlap.
-#' @param min.p The minimum p-value, to trim high values on the Y-axis.
-#' @param h The height of the plot.
-#' @param w The width of the plot.
-#' @param ... Pass any other parameter to `EnhancedVolcano::EnhancedVolcano()`.
-#'
-#' @return A ggplot object.
-#'
+#' @title Enhanced Volcano Plot for scRNA-seq DGEA
+#' @description Wrapper for EnhancedVolcano with automated filtering, styling, and robust checks.
+#' @param toptable Data frame of DGEA results.
+#' @param x Column name for log2 fold change. Default: "avg_log2FC".
+#' @param y Column name for adjusted p-value. Default: "p_val_adj".
+#' @param title Plot title. Default: "DGEA".
+#' @param lab Vector of gene names matching `toptable` rows exactly.
+#' @param selectLab Genes to highlight.
+#' @param min.p Minimum p-value to clip at (y-axis limit).
+#' @param max.l2fc Maximum log2 fold change to clip at (x-axis limit).
+#' @param min.pct.cells Minimum percentage of cells expressing the gene in either group.
+#' @param pCutoffCol Column to use for p-value cutoff.
+#' @param pCutoff p-value cutoff.
+#' @param FCcutoff log2FC cutoff.
+#' @param suffix Suffix for saved plot file name.
+#' @param caption Plot caption.
+#' @param caption2 Secondary plot caption.
+#' @param count_stats Boolean to include count statistics in subtitle.
+#' @param drawConnectors Boolean to draw connectors to labels.
+#' @param max.overlaps Maximum label overlaps for ggrepel.
+#' @param also.pdf Boolean to also save as PDF.
+#' @param h Height of saved plot.
+#' @param w Width of saved plot.
+#' @param ... Additional arguments passed to EnhancedVolcano.
+#' @importFrom dplyr filter select
 #' @importFrom EnhancedVolcano EnhancedVolcano
-#'
 #' @export
-
 scEnhancedVolcano <- function(
     toptable,
     x = "avg_log2FC",
     y = "p_val_adj",
+    title = "DGEA",
     lab = rownames(toptable),
-    title = paste("DGEA"),
-    selectLab = trail(lab, 10),
+    selectLab = trail(filterCodingGenes(lab), 10),
     min.p = 1e-50,
     max.l2fc = Inf,
     min.pct.cells = 0.1,
@@ -3417,64 +3433,95 @@ scEnhancedVolcano <- function(
     caption = paste("Min. Fold Change in Input:", .estMinimumFC(toptable)),
     caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
     count_stats = TRUE,
-    drawConnectors = TRUE, max.overlaps = Inf,
+    drawConnectors = TRUE,
+    max.overlaps = Inf,
+    also.pdf = FALSE,
     h = 9, w = h,
-    ...) {
-  #
+    ...
+) {
+
+  # 1. Input Checks ------------------------------------------------------------
+  stopifnot(
+    "toptable must be a data.frame" = is.data.frame(toptable),
+    "toptable must have > 5 rows" = nrow(toptable) > 5,
+    "Length of lab must match toptable rows" = length(lab) == nrow(toptable),
+    "Required columns missing" = all(c(x, y, pCutoffCol, "pct.1", "pct.2") %in% colnames(toptable))
+  )
+
   message(
     "\nMin. log2fc: ", FCcutoff, "\nMax. p-adj: ", pCutoff,
     "\nMin. p-adj (trim high y-axis): ", min.p,
     "\nMin. pct cells expressing: ", min.pct.cells
   )
-  stopifnot(nrow(toptable) > 5)
 
+  # 2. Data Filtering & Label Synchronization ----------------------------------
+  toptable[["..lab.."]] <- as.character(lab)                      # Preserve labels across filter
 
-  # Filter min. cells expressing.
-  toptable <- toptable |> dplyr::filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
+  toptable <- toptable |>
+    dplyr::filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
 
-  # calculate true min pct cells expressing (maybe input prefiltered above thr. already).
+  stopifnot(
+    "No rows remain after min.pct.cells filtering" = nrow(toptable) > 0,
+    "Filtered labels must match rows" = length(toptable[["..lab.."]]) == nrow(toptable)
+  )
+
+  filtered_lab <- as.character(toptable[["..lab.."]])             # Extract synced labels
+  filtered_lab[filtered_lab == ""] <- NA_character_               # Pass NA, not empty string
+
+  # Keep only valid, unique labels
+  selectLab <- unique(intersect(as.character(selectLab), filtered_lab))
+
+  # Calculate true min pct cells expressing
   min.pct.cells <- toptable |>
-    select(pct.1, pct.2) |>
+    dplyr::select(pct.1, pct.2) |>
     as.matrix() |>
     rowMax() |>
     min()
 
-  # Clip p-values.
-  toptable[["p_val_adj"]] <-
-    clip.at.fixed.value(x = toptable[["p_val_adj"]], thr = min.p, high = FALSE)
+  # 3. Value Clipping ----------------------------------------------------------
+  toptable[[x]] <- as.numeric(toptable[[x]])
+  toptable[[y]] <- as.numeric(toptable[[y]])
+  toptable[[pCutoffCol]] <- as.numeric(toptable[[pCutoffCol]])
 
-  # Clip log2FC.
-  if (max.l2fc < Inf) {
-    toptable[["avg_log2FC"]] <-
-      clip.at.fixed.value(x = toptable[["avg_log2FC"]], thr = -max.l2fc, high = FALSE)
-    toptable[["avg_log2FC"]] <-
-      clip.at.fixed.value(x = toptable[["avg_log2FC"]], thr = max.l2fc, high = TRUE)
+  stopifnot(
+    "x contains no finite values" = any(is.finite(toptable[[x]])),
+    "y contains no finite values" = any(is.finite(toptable[[y]]))
+  )
+
+  toptable[[y]] <- clip.at.fixed.value(toptable[[y]], thr = min.p, above = FALSE)
+
+  if (!identical(pCutoffCol, y)) {
+    toptable[[pCutoffCol]] <- clip.at.fixed.value(
+      toptable[[pCutoffCol]], thr = min.p, above = FALSE
+    )
   }
 
-  # Add statistical information to the subtitle.
+  if (max.l2fc < Inf) {
+    toptable[[x]] <- clip.at.fixed.value(toptable[[x]], thr = -max.l2fc, above = FALSE)
+    toptable[[x]] <- clip.at.fixed.value(toptable[[x]], thr = max.l2fc, above = TRUE)
+  }
+
+  # 4. Subtitle Stats Generation -----------------------------------------------
+  subtitle <- NULL
   if (count_stats) {
     enr_stats <- unlist(countRelevantEnrichments(
-      df = toptable, logfc_col = x, pval_col = y,
-      logfc_cutoff = FCcutoff, pval_cutoff = pCutoff
+      df = toptable, logfc_col = x, pval_col = y, logfc_cutoff = FCcutoff, pval_cutoff = pCutoff
     ))
     stat_info <- kppws("Genes", intermingle2vec(names(enr_stats), enr_stats), "(red)")
     subtitle <- paste0(
-      stat_info, "\n",
-      paste(
-        "Cutoffs: max.p_adj: ", pCutoff, " |  min.log2FC: ", FCcutoff,
-        " |  min.pct.cells: ", min.pct.cells
-      )
+      stat_info, "\nCutoffs: max.p_adj: ", pCutoff, " | min.log2FC: ", FCcutoff,
+      " | min.pct.cells: ", min.pct.cells
     )
   }
   caption <- paste0(caption, "\n", caption2)
 
-  # Create an enhanced volcano plot.
-  # try.dev.off();
+  # 5. Plotting ----------------------------------------------------------------
   pobj <- EnhancedVolcano::EnhancedVolcano(
     toptable = toptable,
     x = x, y = y,
     title = title, subtitle = subtitle,
-    lab = lab, selectLab = selectLab,
+    lab = filtered_lab,
+    selectLab = selectLab,
     caption = caption,
     pCutoffCol = pCutoffCol,
     pCutoff = pCutoff,
@@ -3484,14 +3531,127 @@ scEnhancedVolcano <- function(
     ...
   )
 
-  print(pobj)
-  # Save the plot.
+  stopifnot("EnhancedVolcano must return a ggplot object" = inherits(pobj, "ggplot"))
+
+  # 6. Save Plot ---------------------------------------------------------------
   qqSave(
     ggobj = pobj, title = paste0("Volcano.", make.names(title), suffix),
-    h = h, w = w
+    also.pdf = also.pdf, h = h, w = w
   )
+
   return(pobj)
 }
+
+
+
+
+
+
+
+#
+# scEnhancedVolcano <- function(
+#     toptable,
+#     x = "avg_log2FC",
+#     y = "p_val_adj",
+#     title = paste("DGEA"),
+#     lab = rownames(toptable),
+#     selectLab = trail(filterCodingGenes(lab), 10),
+#     min.p = 1e-50,
+#     max.l2fc = Inf,
+#     min.pct.cells = 0.1,
+#     pCutoffCol = "p_val_adj",
+#     pCutoff = 1e-3,
+#     FCcutoff = 1,
+#     suffix = NULL,
+#     caption = paste("Min. Fold Change in Input:", .estMinimumFC(toptable)),
+#     caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
+#     count_stats = TRUE,
+#     drawConnectors = TRUE,
+#     max.overlaps = Inf,
+#     also.pdf = FALSE,
+#     h = 9, w = h,
+#     ...
+# ) {
+#
+#   # 1. Inputs Checks ----------------------------
+#   stopifnot(
+#     "toptable must have > 5 rows" = nrow(toptable) > 5,
+#     "Length of lab must match toptable rows" = length(lab) == nrow(toptable)
+#   )
+#
+#   message(
+#     "\nMin. log2fc: ", FCcutoff, "\nMax. p-adj: ", pCutoff,
+#     "\nMin. p-adj (trim high y-axis): ", min.p,
+#     "\nMin. pct cells expressing: ", min.pct.cells
+#   )
+#
+#   # 2. Data Filtering & Label Synchronization ----------------------------
+#   toptable[["..lab.."]] <- lab # Bind labels to toptable before dplyr strips rownames
+#
+#   toptable <- toptable |>  dplyr::filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
+#
+#   filtered_lab <- toptable[["..lab.."]] # Extract properly synced labels
+#
+#   # Calculate true min pct cells expressing
+#   min.pct.cells <- toptable |>
+#     dplyr::select(pct.1, pct.2) |>
+#     as.matrix() |>
+#     rowMax() |>
+#     min()
+#
+#   # 3. Value Clipping ----------------------------
+#   toptable[[y]] <- clip.at.fixed.value(x = toptable[[y]], thr = min.p, above = FALSE)
+#
+#   if (max.l2fc < Inf) {
+#     toptable[[x]] <- clip.at.fixed.value(x = toptable[[x]], thr = -max.l2fc, above = FALSE)
+#     toptable[[x]] <- clip.at.fixed.value(x = toptable[[x]], thr = max.l2fc, above = TRUE)
+#   }
+#
+#   # 4. Generate Subtitle Stats ----------------------------
+#   subtitle <- NULL
+#   if (count_stats) {
+#     enr_stats <- unlist(countRelevantEnrichments(
+#       df = toptable, logfc_col = x, pval_col = y,
+#       logfc_cutoff = FCcutoff, pval_cutoff = pCutoff
+#     ))
+#     stat_info <- kppws("Genes", intermingle2vec(names(enr_stats), enr_stats), "(red)")
+#     subtitle <- paste0(
+#       stat_info, "\n",
+#       "Cutoffs: max.p_adj: ", pCutoff, " |  min.log2FC: ", FCcutoff,
+#       " |  min.pct.cells: ", min.pct.cells
+#     )
+#   }
+#   caption <- paste0(caption, "\n", caption2)
+#
+#
+#   # 5. Plotting ----------------------------
+#   # ??? pdf(NULL)
+#
+#   pobj <- EnhancedVolcano::EnhancedVolcano(
+#     toptable = toptable,
+#     x = x, y = y,
+#     title = title, subtitle = subtitle,
+#     lab = filtered_lab,                  # Pass synced labels here
+#     selectLab = selectLab,
+#     caption = caption,
+#     pCutoffCol = pCutoffCol,
+#     pCutoff = pCutoff,
+#     FCcutoff = FCcutoff,
+#     drawConnectors = drawConnectors,
+#     max.overlaps = max.overlaps,
+#     ...
+#   )
+#
+#   # print(pobj) # Sometimes causes the " Viewport has zero dimension(s)" error.
+#
+#   # 6. Save Plot ----------------------------
+#   qqSave(
+#     ggobj = pobj, title = paste0("Volcano.", make.names(title), suffix),
+#     also.pdf = also.pdf, h = h, w = w
+#   )
+#
+#   return(pobj)
+# }
 
 # ________________________________________________________________________
 #' @title Estimate Minimum Log2-Based Fold Change
@@ -3570,6 +3730,13 @@ countRelevantEnrichments <- function(df,
 }
 
 
+
+# _________________________________________________________________________________________________
+# GO-term enrichment ______________________________ ----
+# _________________________________________________________________________________________________
+
+
+
 # ________________________________________________________________________
 #' @title Perform GO Enrichment Analysis
 #'
@@ -3588,6 +3755,7 @@ countRelevantEnrichments <- function(df,
 #' @param save Logical. Save the results as a data frame. Default: `TRUE`.
 #' @param suffix Character. Suffix to append to the output file name. Default: 'GO.Enrichments'.
 #' @param check.gene.symbols Logical. Check gene symbols for validity. Default: `TRUE`.
+#' @param min.genes Numeric. Minimum number of genes required for enrichment analysis. Default: 3.
 #' @param ... Additional arguments to pass to `clusterProfiler::enrichGO`.
 
 #'
@@ -3607,6 +3775,7 @@ scGOEnrichment <- function(genes, universe = NULL,
                            save = TRUE,
                            suffix = NULL,
                            check.gene.symbols = TRUE,
+                           min.genes = 3,
                            ...) {
   # Load required library
   stopifnot("Package 'clusterProfiler' must be installed to use this function." = require("clusterProfiler"))
@@ -3620,15 +3789,20 @@ scGOEnrichment <- function(genes, universe = NULL,
     is.character(ont)
   )
 
-  if (is.null(genes) | length(genes) == 0) {
-    return(NULL)
-  }
+  if (is.null(genes) | length(genes) == 0) return(NULL) # If no input, do nothing.
 
   # check.gene.symbols
   if (check.gene.symbols) {
     x <- checkGeneSymbols(genes, species = "human")
     genes <- x[x[, "Approved"], 1]
   }
+
+  if (length(genes) < min.genes) {
+    warning("Too few apprived genes (", length(genes), ") for GO enrichment analysis. Minimum is ",
+            min.genes, ".", immediate. = TRUE)
+    return(NULL) # If too few genes, do nothing.
+  }
+
 
   message("Performing enrichGO() analysis...")
   message(length(genes), " approved genes of interest, in ", length(universe), " background genes.")
@@ -3659,85 +3833,6 @@ scGOEnrichment <- function(genes, universe = NULL,
   message("\nNr of enriched terms: ", nr_of_enr_terms)
 
   return(go_results)
-}
-
-
-
-
-# ________________________________________________________________________
-#' @title Barplot GO Enrichment Results by enrichplot
-#'
-#' @description This function creates a bar plot of GO enrichment analysis results using the
-#' `enrichplot::barplot.enrichResult` function. It also allows saving the plot to a file.
-#'
-#' @param df.enrichment Data frame. Enrichment results from GO analysis. Default: NULL.
-#' @param tag Character. Tag to be added to the title of the plot. Default: "in ...".
-#' @param universe Character. Background gene list (universe). Default: `df.enrichment@universe`.
-#' @param title Character. Title of the plot. Default: "GO Enrichment Analysis" followed by `tag`.
-#' @param subtitle Character. Subtitle of the plot. Default: NULL.
-#' @param caption Character. Caption of the plot. Default: constructed from input parameters.
-#' @param save Logical. Whether to save the plot to a file. Default: `TRUE`.
-#' @param h Height of the plot canvas, calculated as the height of an A4 page times `scale`; Default: `8.27 * scale`.
-#' @param w Width of the plot canvas, calculated as the width of an A4 page times `scale`; Default: `11.69 * scale`.
-#' @param also.pdf Save plot in both png and pdf formats.
-#' @param ... Additional arguments passed to `enrichplot::barplot.enrichResult`.
-#'
-#' @importFrom ggplot2 labs
-#'
-#' @return None. The function prints the plot and optionally saves it.
-#' @export
-#'
-#' @examples
-#' \dontrun{``
-#' df.enrichment <- data.frame() # Example enrichment results data frame
-#' plotGOEnrichment(df.enrichment)
-#' }
-scBarplotEnrichr <- function(df.enrichment,
-                             tag = "...",
-                             universe = df.enrichment@universe,
-                             title = paste("GO Enriched Terms", tag),
-                             subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
-                             caption = paste0(
-                               "Input genes: ", length(df.enrichment@"gene"),
-                               " | Enriched terms: ", nrow(df.enrichment),
-                               " | background genes: ", length(universe)
-                             ),
-                             save = TRUE,
-                             w = 10, h = 10,
-                             also.pdf = FALSE,
-                             ...) {
-  stopifnot("Package 'enrichplot' must be installed to use this function." = require("enrichplot"))
-
-  if (tag == "...") warning("Please provide a tag describing where are the enrichments.", immediate. = TRUE)
-  nr_input_genes <- length(df.enrichment@"gene")
-
-  pobj <-
-    if (nrow(df.enrichment) < 1 | is.null(df.enrichment)) {
-      warning("No enriched terms input!", immediate. = TRUE)
-      ggplot() +
-        theme_void() +
-        annotate("text",
-          x = 1, y = 1, label = "NO ENRICHMENT",
-          size = 8, color = "red", hjust = 0.5, vjust = 0.5
-        )
-    } else if (nr_input_genes < 5) {
-      warning("Very few inputs for GOENR", immediate. = TRUE)
-      ggplot() +
-        theme_void() +
-        annotate("text",
-          x = 1, y = 1, label = "TOO FEW GENES (<5)",
-          size = 8, color = "red", hjust = 0.5, vjust = 0.5
-        )
-    } else {
-      enrichplot:::barplot.enrichResult(df.enrichment, showCategory = 20)
-    }
-  pobj <- pobj + ggplot2::labs(title = title, subtitle = subtitle, caption = caption)
-
-  if (save) {
-    qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf)
-  }
-
-  return(pobj)
 }
 
 
@@ -3801,6 +3896,483 @@ filterGoEnrichment <- function(df.enrichments,
 # Assuming GO.Enriched.DL.Ctrl is an object of class `enrichResult`
 # descriptions <- filterGoEnrichment(GO.Enriched.DL.Ctrl)
 # print(descriptions)
+
+
+
+# ________________________________________________________________________
+#' @title Barplot GO Enrichment Results by enrichplot
+#'
+#' @description This function creates a bar plot of GO enrichment analysis results using the
+#' `enrichplot::barplot.enrichResult` function. It also allows saving the plot to a file.
+#'
+#' @param df.enrichment Data frame. Enrichment results from GO analysis. Default: NULL.
+#' @param showCategory Integer. Number of categories (GO-terms as bars) to show in the plot. Default: 20.
+#' @param tag Character. Tag to be added to the title of the plot. Default: "in ...".
+#' @param universe Character. Background gene list (universe). Default: `df.enrichment@universe`.
+#' @param title Character. Title of the plot. Default: "GO Enrichment Analysis" followed by `tag`.
+#' @param subtitle Character. Subtitle of the plot. Default: NULL.
+#' @param caption Character. Caption of the plot. Default: constructed from input parameters.
+#' @param save Logical. Whether to save the plot to a file. Default: `TRUE`.
+#' @param also.pdf Save plot in both png and pdf formats.
+#' @param save.obj Logical. Whether to save the ggplot object. Default: FALSE.
+#' @param h Height of the plot canvas, calculated as the height of an A4 page times `scale`; Default: `8.27 * scale`.
+#' @param w Width of the plot canvas, calculated as the width of an A4 page times `scale`; Default: `11.69 * scale`.
+#' @param ... Additional arguments passed to `enrichplot::barplot.enrichResult`.
+#'
+#' @importFrom ggplot2 labs
+#'
+#' @return None. The function prints the plot and optionally saves it.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' df.enrichment <- data.frame() # Example enrichment results data frame
+#' plotGOEnrichment(df.enrichment)
+#' }
+scBarplotEnrichr <- function(df.enrichment,
+                             showCategory = 20,
+                             label_format = 30,
+                             tag = "...",
+                             universe = df.enrichment@universe,
+                             title = paste("GO Enriched Terms", tag),
+                             subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+                             caption = paste0(
+                               "Input genes: ", length(df.enrichment@"gene"),
+                               " | Enriched terms: ", nrow(df.enrichment),
+                               " | Shown: ", min(showCategory, nrow(df.enrichment)),
+                               " | background genes: ", length(universe)
+                             ),
+                             save = TRUE,
+                             also.pdf = FALSE,
+                             save.obj = FALSE,
+                             w = 10, h = 10,
+                             ...) {
+
+  stopifnot("Package 'enrichplot' must be installed to use this function." = require("enrichplot"))
+
+  if (tag == "...") warning("Please provide a tag describing where are the enrichments.", immediate. = TRUE)
+
+  nr_terms <- if (is.null(df.enrichment)) 0 else nrow(df.enrichment)
+  nr_GOENR_input_genes <- if (is.null(df.enrichment)) 0 else length(df.enrichment@"gene")
+
+  pobj <-
+    if (is.null(df.enrichment) || nr_terms < 1) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "No enriched terms input!")
+
+    } else if (nr_GOENR_input_genes < 5) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "Too few input genes for GO enrichment (<5).")
+
+    } else {
+      enrichplot:::barplot.enrichResult(df.enrichment, showCategory = showCategory, label_format = label_format)
+    }
+
+  pobj <- pobj + ggplot2::labs(title = title, subtitle = subtitle, caption = caption)
+
+  if (save) qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
+
+  return(pobj)
+}
+
+
+
+
+# ________________________________________________________________________
+#' @title Dotplot GO Enrichment Results by enrichplot
+#'
+#' @description
+#' This function creates a dot plot of GO enrichment analysis results using
+#' `enrichplot::dotplot`. It mirrors `scBarplotEnrichr()` but visualizes
+#' enrichment significance and gene ratios as a dot plot.
+#'
+#' @param df.enrichment enrichResult object. Enrichment results from GO analysis.
+#' @param showCategory Integer. Number of GO terms to show. Default: 20.
+#' @param label_format Integer. Maximum character length for GO term labels.
+#' @param tag Character. Tag appended to the title. Default: "...".
+#' @param universe Character vector. Background gene universe.
+#'   Default: `df.enrichment@universe`.
+#' @param title Character. Plot title. Default: `"GO Enriched Terms"` + tag.
+#' @param subtitle Character. Subtitle of the plot.
+#' @param caption Character. Caption text. Default is constructed automatically.
+#' @param save Logical. Whether to save the plot. Default: TRUE.
+#' @param w Numeric. Plot width. Default: 10.
+#' @param h Numeric. Plot height. Default: 10.
+#' @param also.pdf Logical. Save both PNG and PDF. Default: FALSE.
+#' @param ... Additional arguments passed to `enrichplot::dotplot`.
+#'
+#' @importFrom ggplot2 labs
+#'
+#' @return A ggplot object.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' scDotplotEnrichr(df.enrichment)
+#' }
+scDotplotEnrichr <- function(
+    df.enrichment,
+    showCategory = 20,
+    label_format = 30,
+    tag = "...",
+    universe = df.enrichment@universe,
+    title = paste("GO Enriched Terms", tag),
+    subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+    caption = paste0(
+      "Input genes: ", length(df.enrichment@"gene"),
+      " | Enriched terms: ", nrow(df.enrichment),
+      " | Shown: ", min(showCategory, nrow(df.enrichment)),
+      " | Background genes: ", length(universe)
+    ),
+    save = TRUE,
+    also.pdf = FALSE,
+    save.obj = FALSE,
+    w = 10, h = 10,
+    ...
+) {
+
+  stopifnot(
+    "Package 'enrichplot' must be installed." = require("enrichplot")
+  )
+
+  if (tag == "...") {
+    warning(
+      "Please provide a tag describing where the enrichments come from.",
+      immediate. = TRUE
+    )
+  }
+
+  nr_input_genes <- length(df.enrichment@"gene")
+
+  pobj <-
+    if (is.null(df.enrichment) || nrow(df.enrichment) < 1) {
+
+      warning("No enriched terms input!", immediate. = TRUE)
+      ggplot2::ggplot() +
+        ggplot2::theme_void() +
+        ggplot2::annotate(
+          geom = "text",
+          x = 1, y = 1,
+          label = "NO ENRICHMENT",
+          size = 8,
+          color = "red",
+          hjust = 0.5,
+          vjust = 0.5
+        )
+
+    } else if (nr_input_genes < 5) {
+
+      warning("Very few inputs for GO enrichment (<5 genes).", immediate. = TRUE)
+      ggplot2::ggplot() +
+        ggplot2::theme_void() +
+        ggplot2::annotate(
+          geom = "text",
+          x = 1, y = 1,
+          label = "TOO FEW GENES (<5)",
+          size = 8,
+          color = "red",
+          hjust = 0.5,
+          vjust = 0.5
+        )
+
+    } else {
+
+      enrichplot:::dotplot(
+        object = df.enrichment,
+        showCategory = showCategory,
+        label_format = label_format,
+        ...
+      )
+    }
+
+  pobj <- pobj +
+    ggplot2::labs(
+      title = title,
+      subtitle = subtitle,
+      caption = caption
+    )
+
+  if (save) qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
+
+  return(pobj)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ________________________________________________________________________
+#' @title Enrichment Map (GO term network) by enrichplot
+#'
+#' @description
+#' Wrapper around `enrichplot::emapplot()` to visualize GO enrichment results
+#' as a network. Nodes are enriched GO terms, edges represent gene overlap.
+#' Includes safety checks, informative fallback plots, and optional saving,
+#' mirroring the behavior of `scBarplotEnrichr()`.
+#'
+#' @param df.enrichment enrichResult object (e.g. from clusterProfiler::enrichGO).
+#' @param showCategory Integer. Number of GO terms (nodes) to show. Default: 15.
+#' @param min_edge Numeric. Minimum similarity (overlap) to draw edges. Default: 0.2.
+#' @param tag Character. Tag added to the plot title. Default: "...".
+#' @param universe Character. Background gene list. Default: `df.enrichment@universe`.
+#' @param title Character. Plot title. Default: "GO Enrichment Map" + tag.
+#' @param subtitle Character. Subtitle. Default: derived from input object.
+#' @param caption Character. Caption. Default: constructed from input parameters.
+#' @param layout Character. igraph layout name passed to emapplot. Default: "kk".
+#' @param save Logical. Whether to save the plot. Default: TRUE.
+#' @param also.pdf Logical. Save both png and pdf. Default: FALSE.
+#' @param save.obj Logical. Whether to save the ggplot object. Default: FALSE.
+#' @param w Width in inches. Default: 10.
+#' @param h Height in inches. Default: 10.
+#' @param ... Additional arguments passed to `enrichplot::emapplot()`.
+#'
+#' @importFrom ggplot2 labs theme_void annotate
+#'
+#' @return A ggplot object (invisibly if saved).
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' scEmapplotEnrichr(df.enrichment, tag = "Cluster 3 neurons")
+#' }
+scEmapplotEnrichr <- function(
+    df.enrichment,
+    showCategory = 15,
+    min_edge = 0.2,
+    tag = "...",
+    universe = df.enrichment@universe,
+    title = paste("GO Enrichment Map", tag),
+    subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+    caption = paste0( "Input genes: ", length(df.enrichment@"gene"),
+                      " | Enriched terms: ", nrow(df.enrichment),
+                      " | Shown: ", min(showCategory, nrow(df.enrichment)),
+                      " | background genes: ", length(universe),
+                      " | min edge overlap: ", min_edge),
+    label_format = NULL,
+    layout = "kk",
+    cex_label_category = 0.8,
+
+    save = TRUE,
+    also.pdf = FALSE,
+    save.obj = FALSE,
+    w = 10, h = 10,
+    ...
+) {
+
+  stopifnot("Package 'enrichplot' must be installed." = requireNamespace("enrichplot", quietly = TRUE) )
+
+  if (tag == "...") {
+    warning(
+      "Please provide a tag describing where the enrichments come from.",
+      immediate. = TRUE
+    )
+  }
+
+  nr_terms <- if (is.null(df.enrichment)) 0 else nrow(df.enrichment)
+  nr_GOENR_input_genes <- if (is.null(df.enrichment)) 0 else length(df.enrichment@"gene")
+
+  pobj <-
+    if (is.null(df.enrichment) || nr_terms < 1) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "No enriched terms input!")
+
+    } else if (nr_GOENR_input_genes < 5) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "Too few input genes for GO enrichment (<5).")
+
+    } else {
+
+      # similarity matrix is computed internally by emapplot()
+      enrichplot::emapplot(
+        x = df.enrichment,
+        showCategory = showCategory,
+        layout.params  = list(layout = layout),
+        edge.params    = list(min = min_edge),
+        cex.params     = list(category_label = cex_label_category),
+        cluster.params = list(label_format = label_format),
+        ...
+      )
+    }
+
+  pobj <- pobj +
+    ggplot2::labs(
+      title = title,
+      subtitle = subtitle,
+      caption = caption
+    )
+
+  if (save) {
+    qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
+  }
+
+  return(pobj)
+}
+
+
+
+# ________________________________________________________________________
+#' @title Gene-Concept Network Plot (cnetplot wrapper)
+#'
+#' @description
+#' Wrapper around `enrichplot::cnetplot()` to visualize the gene-concept
+#' (e.g. GO / KEGG) network for enrichment results. The plot shows which genes
+#' drive which enriched terms, optionally colored by fold change (e.g. DE).
+#' Behavior mirrors `scBarplotEnrichr()` and `scEmapplotEnrichr()` with
+#' safety checks, informative fallbacks, and optional saving.
+#'
+#' @param df.enrichment enrichResult or gseaResult object.
+#' @param foldChange Named numeric vector of gene-level statistics
+#'   (e.g. logFC), names must match gene IDs in enrichment.
+#' @param showCategory Integer. Number of enriched terms to show. Default: 10.
+#' @param tag Character. Tag added to the plot title. Default: "...".
+#' @param title Character. Plot title. Default: "Gene-Concept Network" + tag.
+#' @param subtitle Character. Subtitle. Default: derived from input object.
+#' @param caption Character. Caption. Default: constructed from input parameters.
+#' @param circular Logical. Draw network in circular layout. Default: FALSE.
+#' @param colorEdge Logical. Color edges by category. Default: TRUE.
+#' @param cex_label_category Numeric. Size of category labels. Default: 0.8.
+#' @param cex_label_gene Numeric. Size of gene labels. Default: same as cex_label_category.
+#' @param node_label Character. Which nodes to label: "all", "gene",
+#'   or "category". Default: "category".
+#' @param save Logical. Whether to save the plot. Default: TRUE.
+#' @param also.pdf Logical. Save both png and pdf. Default: FALSE.
+#' @param save.obj Logical. Whether to save the ggplot object. Default: FALSE.
+#' @param w Width in inches. Default: 10.
+#' @param h Height in inches. Default: 10.
+#' @param ... Additional arguments passed to `enrichplot::cnetplot()`.
+#'
+#' @importFrom ggplot2 labs theme_void annotate
+#'
+#' @return A ggplot object (invisibly if saved).
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' edox <- setReadable(edo, 'org.Hs.eg.db', 'ENTREZID')
+#' scGeneConceptNetworkEnrichr(
+#'   df.enrichment = edox,
+#'   foldChange = geneList,
+#'   tag = "Cluster 3 neurons"
+#' )
+#' }
+scGeneConceptNetworkEnrichr <- function(
+    df.enrichment,
+    showCategory = 10,
+    foldChange = NULL,
+    tag = NULL,
+    NULL_input = is.null(df.enrichment),
+    title = paste("Gene-Concept Network", tag),
+    subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+    caption = paste0(
+      "Enriched terms: ", ifelse(NULL_input, 0, nrow(df.enrichment)),
+      " | Shown: ", ifelse(NULL_input, 0, min(showCategory, nrow(df.enrichment))),
+      if (!is.null(foldChange))
+        paste0(" | genes w/ foldChange: ", length(foldChange))
+      else ""
+    ),
+    circular = FALSE,
+    colorEdge = TRUE,
+    cex_label_category = 1,
+    cex_label_gene   = cex_label_category-.3,
+    node_label = "category",
+    title_size = 20,
+
+    save = TRUE,
+    also.pdf = FALSE,
+    save.obj = FALSE,
+    w = 10, h = 10,
+    ...
+) {
+
+  message(caption)
+  message(node_label, " nodes will be labeled. Set it to 'all' or 'gene'.")
+
+  stopifnot(
+    "Package 'enrichplot' must be installed." =
+      requireNamespace("enrichplot", quietly = TRUE)
+  )
+
+  if(is.null(tag)) warning("Please provide a tag describing where the enrichments come from.",immediate. = TRUE)
+
+  nr_terms <- if (NULL_input) 0 else nrow(df.enrichment)
+  nr_GOENR_input_genes <- if (NULL_input) 0 else length(df.enrichment@"gene")
+
+  pobj <-
+    if (NULL_input || nr_terms < 1) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "No enriched terms input!")
+
+    } else if (nr_GOENR_input_genes < 5) {
+      Seurat.utils:::.emptyAnnotatedPlot(label = "Too few input genes for GO enrichment (<5).")
+
+    } else {
+      enrichplot::cnetplot(
+        x = df.enrichment,
+        showCategory = showCategory,
+        node_label = node_label,
+        color.params = list(
+          foldChange = foldChange,
+          edge = colorEdge
+        ),
+        cex.params = list(
+          category_label = cex_label_category,
+          gene_label = cex_label_gene
+        ),
+        circular = circular,
+        ...
+      )
+    }
+
+  pobj <- pobj +
+    ggplot2::labs(
+      title = title,
+      subtitle = subtitle,
+      caption = caption
+    ) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(
+        size = title_size,
+        face = "bold")
+      ) +
+    ggplot2::guides(color = "none", edge_color = "none", fill = "none")
+
+
+
+  bold <- T
+  if (bold) {
+    aesp <- pobj$layers[[3]]$aes_params
+    if(length(aesp$size) > 1) {
+
+      # You cannot simply use `aesp$size == cex_label_category` because it is scaled by some parameter.
+      # Current implementation assumes the default case that category labels are bigger than gene labels.
+      # This is not a bulletproof implementation that works for now.
+      pobj$layers[[3]]$aes_params$fontface <- ifelse(aesp$size > min(aesp$size), "bold", "plain")
+    } else {
+      pobj$layers[[3]]$aes_params$fontface <- "bold"
+    }
+  }
+
+
+
+  if (save) {
+    qqSave(
+      pobj,
+      title = title,
+      w = w, h = h,
+      also.pdf = also.pdf,
+      save.obj = save.obj
+    )
+  }
+
+  return(pobj)
+}
+
+
+
 
 
 # ________________________________________________________________________
@@ -3928,6 +4500,47 @@ countEnrichedDepletedGenes <- function(df, min_padj = 0.01, min_logFC = 0.5,
     message("No specific layout selected, defaulting to input parameters.")
   }
 }
+
+
+# ________________________________________________________________________
+#' @title Empty ggplot with centered annotation and optional warning
+#'
+#' @description
+#' Create a blank ggplot with a centered text annotation.
+#' Optionally emits a warning with a custom message.
+#'
+#' @param label Character. Text shown in the plot.
+#' @param warning_msg Character or NULL. Warning text. Default: NULL.
+#' @param color Character. Text color. Default: "red".
+#' @param size Numeric. Text size. Default: 8.
+#'
+#' @return An placeholder ggplot object with annotation.
+.emptyAnnotatedPlot <- function(
+    label,
+    warning_msg = label,
+    color = "red",
+    size = 8
+) {
+
+  stopifnot(
+    is.character(label), is.character(color), is.numeric(size),
+    is.null(warning_msg) || (is.character(warning_msg) && length(warning_msg) == 1)
+  )
+
+  # if (!is.null(warning_msg)) warning(warning_msg, immediate. = TRUE)
+
+  ggplot2::ggplot() +
+    ggplot2::theme_void() +
+    ggplot2::annotate(
+      geom  = "text",
+      x  = 1, y = 1,
+      label = label, color = color,size  = size,
+      hjust = 0.5, vjust = 0.5
+    )
+}
+
+
+
 
 
 # _________________________________________________________________________________________________

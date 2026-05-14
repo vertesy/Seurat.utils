@@ -7,6 +7,7 @@
 processSeuratObject(
   obj,
   param.list = p,
+  species_ = "human",
   update_gene_symbols = FALSE,
   add.meta.fractions = FALSE,
   precompute = TRUE,
@@ -28,6 +29,8 @@ processSeuratObject(
 \item{obj}{A Seurat object to be processed.}
 
 \item{param.list}{A list of parameters used in the processing steps.}
+
+\item{species_}{A character string indicating the species ("human" or "mouse"). Default: "human".}
 
 \item{update_gene_symbols}{A boolean indicating whether to update gene symbols from HGNC. Default: \code{FALSE}.}
 
@@ -69,6 +72,20 @@ A Seurat object after applying scaling, PCA, UMAP, neighbor finding, and cluster
 Applies a series of Seurat processing steps to each Seurat object in a list.
 The operations include scaling data, running PCA, UMAP, finding neighbors, and finding clusters.
 This is done in parallel using multiple cores.
+}
+\details{
+Recommended to run the pipeline in sections in case some parts break.
+
+\preformatted{
+# 1. Precompute
+obj_Seu <- processSeuratObject(obj = obj_Seu, precompute = TRUE, compute = FALSE)
+
+# 2. Compute and save
+obj_Seu <- processSeuratObject(obj = obj_Seu, precompute = FALSE, compute = TRUE)
+
+# 3. Plot
+obj_Seu <- processSeuratObject(obj = obj_Seu, compute = TRUE, plot = TRUE)
+}
 }
 \examples{
 # Assuming ls.Seurat is a list of Seurat objects and params is a list of parameters

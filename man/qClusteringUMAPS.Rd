@@ -11,8 +11,8 @@ qClusteringUMAPS(
   suffix = "",
   nrow = 2,
   ncol = 2,
-  w = 11.69,
-  h = 8.27,
+  w = 2 * 11.69,
+  h = 2 * 8.27,
   title = sppu(prefix, as.numeric(stringr::str_extract(idents, "\\\\d+\\\\.\\\\d+$")),
     suffix),
   ...

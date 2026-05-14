@@ -19,6 +19,7 @@ PctCellsAboveX(
   plot = TRUE,
   caption = NULL,
   ylab = "\% cells above threshold",
+  palette = "jco",
   ...
 )
 }

@@ -16,6 +16,7 @@ scGOEnrichment(
   save = TRUE,
   suffix = NULL,
   check.gene.symbols = TRUE,
+  min.genes = 3,
   ...
 )
 }
@@ -41,6 +42,8 @@ scGOEnrichment(
 \item{suffix}{Character. Suffix to append to the output file name. Default: 'GO.Enrichments'.}
 
 \item{check.gene.symbols}{Logical. Check gene symbols for validity. Default: \code{TRUE}.}
+
+\item{min.genes}{Numeric. Minimum number of genes required for enrichment analysis. Default: 3.}
 
 \item{...}{Additional arguments to pass to \code{clusterProfiler::enrichGO}.}
 }

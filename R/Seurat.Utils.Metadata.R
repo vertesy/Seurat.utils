@@ -65,7 +65,8 @@ addTranslatedMetadata <- function(obj = combined.obj,
   )
   print(table(new, useNA = "ifany"))
 
-  if (plot) x <- clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...); print(x)
+  if (plot) x <- clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...)
+  print(x)
   return(obj)
 }
 
@@ -144,7 +145,7 @@ metaColnameExists <- function(col_name, obj = combined.obj) {
 #' @export
 getMetadataColumn <- function(col = "batch", obj = combined.obj, as_numeric = FALSE, v = T) {
   stopifnot(col %in% colnames(obj@meta.data))
-  if(v) message(substitute(obj), ", ", ncol(obj), " cells." )
+  if (v) message(substitute(obj), ", ", ncol(obj), " cells.")
 
   x <- df.col.2.named.vector(df = obj@meta.data, col = col)
   if (as_numeric) {
@@ -368,26 +369,28 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
 #' }
 #' }
 #' @export
-getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1],   # metadata column name
-                                 ident_values = NA,                 # values to match (may include NA/NaN)
-                                 obj = combined.obj,               # Seurat object
-                                 inverse = FALSE) {                # invert selection?
+getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1], # metadata column name
+                                 ident_values = NA, # values to match (may include NA/NaN)
+                                 obj = combined.obj, # Seurat object
+                                 inverse = FALSE) { # invert selection?
 
-  mdat <- obj@meta.data[[ident]]                                   # pull the column as a vector ([[ ]] avoids dropping issues)
+  mdat <- obj@meta.data[[ident]] # pull the column as a vector ([[ ]] avoids dropping issues)
 
-  non_missing <- ident_values[!is.na(ident_values)]                 # keep only real (non-NA/NaN) targets; "NA" string stays
-  cells.pass <- rep(FALSE, nrow(obj@meta.data))                     # start with no matches
+  non_missing <- ident_values[!is.na(ident_values)] # keep only real (non-NA/NaN) targets; "NA" string stays
+  cells.pass <- rep(FALSE, nrow(obj@meta.data)) # start with no matches
 
-  if (length(non_missing))                                          # if any real targets exist,
-    cells.pass <- mdat %in% non_missing                             #   mark matches via %in%
+  if (length(non_missing)) { # if any real targets exist,
+    cells.pass <- mdat %in% non_missing
+  } #   mark matches via %in%
 
-  if (any(is.na(ident_values)))                                     # if NA/NaN is among targets,
-    cells.pass <- cells.pass | is.na(mdat)                          #   also match missing values in metadata
+  if (any(is.na(ident_values))) { # if NA/NaN is among targets,
+    cells.pass <- cells.pass | is.na(mdat)
+  } #   also match missing values in metadata
 
-  if (inverse) cells.pass <- !cells.pass                            # optionally invert selection
+  if (inverse) cells.pass <- !cells.pass # optionally invert selection
 
-  iprint(sum(cells.pass), "cells found.")                           # report how many matched
-  rownames(obj@meta.data)[which(cells.pass)]                        # return matching cell IDs
+  iprint(sum(cells.pass), "cells found.") # report how many matched
+  rownames(obj@meta.data)[which(cells.pass)] # return matching cell IDs
 }
 
 
@@ -424,18 +427,16 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
 
   if (!is.null(names(metadata))) {
     if (verbose) {
-
       iprint("cells in metadata:", head(names(metadata)), "...")
       iprint("cells in object:", head(colnames(obj)), "...")
     }
     if (strict) stopifnot(names(metadata) == colnames(obj))
-
   } else {
     message("No CBCs associated with new metadata. Assuming exact match.")
     if (!equal_length) stop("Not equal length, no CBCs")
   }
 
-  if (any(is.na(names(metadata))) ) {
+  if (any(is.na(names(metadata)))) {
     warning("Metadata contains NA values.", immediate. = T)
     metadata_orig <- metadata
     metadata <- vec.fromNames(colnames(obj), fill = NA)
@@ -445,7 +446,7 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
 
   # Perform the operation
   stopif(any(is.na(names(metadata))))
-  obj <- Seurat::AddMetaData(object = obj, metadata = metadata, col.name = col.name )
+  obj <- Seurat::AddMetaData(object = obj, metadata = metadata, col.name = col.name)
 
   prefix <- paste("New column", col.name)
   # Check for NA or NaN values
@@ -604,6 +605,7 @@ addMetaFraction <- function(
 #' @param obj A Seurat object to be updated. Default: None.
 #' @param gene_fractions A named list containing gene symbol patterns for each meta column name.
 #'                       Default: List of predefined gene fractions.
+#' @param species A character string specifying the species ("human" or "mouse"). Default: "human".
 #' @param add_hga A logical value indicating whether to add percent.HGA metadata. Default: `TRUE`.
 #'
 #' @return An updated Seurat object.
@@ -620,8 +622,27 @@ addGeneClassFractions <- function(obj,
                                     "percent.LINC" = "^LINC0",
                                     "percent.MALAT1" = "^MALAT1"
                                   ),
+                                  species = c("human", "mouse")[1],
                                   add_hga = TRUE) {
-  message("Adding metadata for gene-class fractions, e.g., percent.mito, etc.")
+  message("Adding metadata for gene-class fractions, e.g., percent.mito, etc.\n")
+
+  if (species == "mouse") {
+    message("Using mouse gene patterns for: mito, ribo, Gm.predicted, and Malat1 genes.\n")
+    gene_fractions <- list(
+      "percent.mito"        = "^(mt-|MT-)",
+      "percent.ribo"        = "^(Rpl|Rps)",
+
+      # Mouse AC/AL loci do not exist in the same way as human GenBank/EMBL ACxxxxx / ALxxxxx loci.
+      # The closest equivalents are "Gm" predicted and lincRNAs genes.
+      "percent.Gm.predicted" = "^Gm[0-9]+",
+
+      "percent.Malat1"       = "^Malat1$"
+    )
+  } else if (species == "human") {
+    message("Using human gene patterns for: mito, ribo, AC/AL loci, LINC, and MALAT1 genes.")
+  } else {
+    stop("Unsupported species: ", species)
+  }
 
   for (col_name in names(gene_fractions)) {
     message(col_name, "...")
@@ -645,6 +666,7 @@ addGeneClassFractions <- function(obj,
       "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1", "NPAS4", "HK2", "BNIP3L",
       "JUN", "ENO2", "GAPDH", "ANKRD37", "ALDOA", "GADD45G", "TXNIP"
     )
+    if (species == "mouse") HGA_MarkerGenes <- toSentence(HGA_MarkerGenes)
 
     if (!metaColnameExists(col_name = "percent.HGA", obj = obj)) {
       obj <- addMetaFraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj = obj)
@@ -672,12 +694,12 @@ addGeneClassFractions <- function(obj,
 #' }
 #' @export
 add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) { # N is the for which dataset
-  stopifnot(length(names(tags)) == length(tags))
+  stopifnot(length(names(list.of.tags)) == length(list.of.tags))
   nCells <- nrow(obj@meta.data)
   for (i in 1:length(list.of.tags)) {
     tagX <- list.of.tags[[i]]
     new.meta.tag.per.cell <- rep(tagX[n], nCells)
-    obj <- AddMetaData(object = obj, metadata = new.meta.tag.per.cell, col.name = names(tags)[i])
+    obj <- AddMetaData(object = obj, metadata = new.meta.tag.per.cell, col.name = names(list.of.tags)[i])
   }
   return(obj)
 }
@@ -949,10 +971,8 @@ transferMetadata <- function(from, to,
 
   # Transfer metadata columns _______________________________________________________
   for (i in seq_along(colnames_from)) {
-
     # Check if to-column exists in destination object OR you overwrite anyway
     if (!(colnames_to[i] %in% colnames(to@meta.data)) || overwrite) {
-
       # Check if column exists in source object
       if (colnames_from[i] %in% colnames(from@meta.data)) {
         # Transfer the metadata column
@@ -968,7 +988,6 @@ transferMetadata <- function(from, to,
       } else {
         warning(sprintf("Column '%s' not found in source object.", colnames_from[i]), immediate. = TRUE)
       }
-
     } else {
       warning(sprintf(
         "Column '%s' already exists in destination object. Set 'overwrite = TRUE' to overwrite.",
@@ -980,7 +999,7 @@ transferMetadata <- function(from, to,
     if (plotUMAP) {
       metaX <- getMetadataColumn(col = colnames_to[i], obj = to)
 
-      if(is.numeric(metaX) && nr.unique(metaX) > 10) {
+      if (is.numeric(metaX) && nr.unique(metaX) > 10) {
         x <- qUMAP(obj = to, feature = colnames_to[i], suffix = "transferred.ident", ...)
       } else {
         x <- clUMAP(obj = to, ident = colnames_to[i], suffix = "transferred.ident", ...)
@@ -1118,7 +1137,7 @@ writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(
   metadataList <- lapply(ls.Obj, function(obj) {
     stopifnot("meta.data" %in% slotNames(obj)) # Check for meta.data slot
     metaData <- obj@meta.data
-    metaData[, !(names(metaData) %in% cols.remove)]
+    metaData[, !(names(metaData) %in% cols.remove), drop = FALSE]
   })
 
   # Find common columns and subset
@@ -1190,17 +1209,18 @@ plotMetadataCorHeatmap <- function(
     digits = 1,
     suffix = NULL,
     add_PCA = TRUE,
-    n_PCs = 8,
+    n_PCs = 4,
     w = ceiling((length(columns) + n_PCs) / 2), h = w,
     use_ggcorrplot = FALSE,
-    n_cutree = (n_PCs),
-    ...) {
-  meta.data <- obj@meta.data
-  columns.found <- intersect(colnames(meta.data), columns)
-  columns.not.found <- setdiff(columns, colnames(meta.data))
+    n_cutree = NA,
+    ...
+) {
+  META <- obj@meta.data
+  columns.found <- intersect(colnames(META), columns)
+  columns.not.found <- setdiff(columns, colnames(META))
   if (length(columns.not.found)) iprint("columns.not.found:", columns.not.found)
 
-  meta.data <- meta.data[, columns.found]
+  META <- META[, columns.found]
 
   if (add_PCA) {
     stopif(is.null(obj@reductions$"pca"), "PCA not found in @reductions.")
@@ -1208,32 +1228,33 @@ plotMetadataCorHeatmap <- function(
     suffix <- FixPlotName(suffix, "w.PCA")
 
     PCs <- obj@reductions$pca@cell.embeddings
-    stopifnot(nrow(meta.data) == nrow(PCs))
-    meta.data <- cbind(PCs[, 1:n_PCs], meta.data)
+    stopifnot(nrow(META) == nrow(PCs))
+    META <- cbind(PCs[, 1:n_PCs], META)
   }
 
-  corX <- cor(meta.data, method = cormethod)
+  corX <- cor(META, method = cormethod, use = "pairwise.complete.obs")
   if (use_ggcorrplot) {
     pl <- ggcorrplot::ggcorrplot(corX,
-      title = main,
-      hc.order = TRUE,
-      digits = digits,
-      lab = show_numbers,
-      type = "full",
-      ...
+                                 title = main,
+                                 hc.order = TRUE,
+                                 digits = digits,
+                                 lab = show_numbers,
+                                 type = "full",
+                                 ...
     )
-    ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, "pdf"), w = w, h = h)
+    ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, "png"), also.pdf = T, w = w, h = h)
   } else {
     pl <- pheatmap::pheatmap(corX,
-      main = main, treeheight_row = 2, treeheight_col = 2,
-      cutree_rows = n_cutree, cutree_cols = n_cutree
+                             main = main, treeheight_row = 2, treeheight_col = 2,
+                             cutree_rows = n_cutree, cutree_cols = n_cutree
     )
     wplot_save_pheatmap(
       x = pl, width = w,
       plotname = FixPlotName(make.names(main), suffix, "pdf")
     )
   }
-  pl
+  print(pl)
+  invisible(corX)
 }
 
 
@@ -1668,7 +1689,6 @@ transferLabelsSeurat <- function(
       min(dim(reference_obj)) > 10,
       reference_ident %in% colnames(reference_obj@meta.data)
     )
-
   }
 
   # Report
@@ -1820,9 +1840,11 @@ matchBestIdentity <- function(
 
   if (barplot_fractions) {
     COLZ <- getDiscretePaletteObj(ident.used = reference_ident, obj = obj, palette.used = "glasbey")
-    scBarplot.CellFractions(fill.by = reference_ident , group.by = new_ident_name, obj = obj
-                            # , rnd_colors = rnd_colors
-                            , custom_col_palette = COLZ)
+    scBarplot.CellFractions(
+      fill.by = reference_ident, group.by = new_ident_name, obj = obj
+      # , rnd_colors = rnd_colors
+      , custom_col_palette = COLZ
+    )
   }
 
   return(obj)
