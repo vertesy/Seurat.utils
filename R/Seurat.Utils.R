@@ -4468,6 +4468,11 @@ Convert10Xfolders <- function(
     is.logical(sort_alphanumeric)
   )
 
+  valid_presets <- c("fast", "balanced", "high", "archive")
+  if (!preset %in% valid_presets) {
+    warning("Unknown preset '", preset, "'; defaulting to 'balanced' (compress_level=3). Valid options: ",
+            paste(valid_presets, collapse = ", "), call. = FALSE)
+  }
   compress_level <- switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L, 3L)
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
