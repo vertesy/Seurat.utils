@@ -4857,14 +4857,19 @@ isave.RDS <- function(
 }
 
 # Internal helper: map qs1-style preset string to qs2 compress_level integer.
-# Warns on unknown preset values.
+#
+# @param preset Character string; one of "fast", "balanced", "high", or "archive".
+#   Unknown values trigger a warning and fall back to the "balanced" default (3L).
+# @return An integer compress_level suitable for `qs2::qs_save()`:
+#   "fast" -> 1L, "balanced" -> 3L, "high" -> 6L, "archive" -> 12L.
 .map_preset_to_compress_level <- function(preset) {
   valid_presets <- c("fast", "balanced", "high", "archive")
   if (!preset %in% valid_presets) {
     warning("Unknown preset '", preset, "'; defaulting to 'balanced' (compress_level=3). Valid options: ",
             paste(valid_presets, collapse = ", "), call. = FALSE)
+    return(3L) # explicit early return to make the fallback unambiguous
   }
-  switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L, 3L)
+  switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L)
 }
 
 # _________________________________________________________________________________________________
