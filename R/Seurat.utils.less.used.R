@@ -42,7 +42,7 @@ Convert10Xfolders_v1 <- function(
     ext = "qs",
     sort_alphanumeric = TRUE,
     ...) {
-  warning("Since v2.5.0, the output is saved in the more efficient qs format! See qs2 package.", immediate. = TRUE)
+  warning("Since v2.9.0, the output is saved into qs format with qs2 package.", immediate. = TRUE)
 
   compress_level <- .map_preset_to_compress_level(preset)
 
