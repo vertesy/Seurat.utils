@@ -44,12 +44,7 @@ Convert10Xfolders_v1 <- function(
     ...) {
   warning("Since v2.5.0, the output is saved in the more efficient qs format! See qs2 package.", immediate. = TRUE)
 
-  valid_presets <- c("fast", "balanced", "high", "archive")
-  if (!preset %in% valid_presets) {
-    warning("Unknown preset '", preset, "'; defaulting to 'balanced' (compress_level=3). Valid options: ",
-            paste(valid_presets, collapse = ", "), call. = FALSE)
-  }
-  compress_level <- switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L, 3L)
+  compress_level <- .map_preset_to_compress_level(preset)
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)

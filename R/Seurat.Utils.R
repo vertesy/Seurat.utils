@@ -4468,12 +4468,7 @@ Convert10Xfolders <- function(
     is.logical(sort_alphanumeric)
   )
 
-  valid_presets <- c("fast", "balanced", "high", "archive")
-  if (!preset %in% valid_presets) {
-    warning("Unknown preset '", preset, "'; defaulting to 'balanced' (compress_level=3). Valid options: ",
-            paste(valid_presets, collapse = ", "), call. = FALSE)
-  }
-  compress_level <- switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L, 3L)
+  compress_level <- .map_preset_to_compress_level(preset)
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
@@ -4861,6 +4856,17 @@ isave.RDS <- function(
   }
 }
 
+# Internal helper: map qs1-style preset string to qs2 compress_level integer.
+# Warns on unknown preset values.
+.map_preset_to_compress_level <- function(preset) {
+  valid_presets <- c("fast", "balanced", "high", "archive")
+  if (!preset %in% valid_presets) {
+    warning("Unknown preset '", preset, "'; defaulting to 'balanced' (compress_level=3). Valid options: ",
+            paste(valid_presets, collapse = ", "), call. = FALSE)
+  }
+  switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L, 3L)
+}
+
 # _________________________________________________________________________________________________
 #' @title Save an R Object Using 'qs2' Package for Fast Compressed Saving
 #'
@@ -4915,6 +4921,9 @@ xsave <- function(
   if (v) message(nthreads, " threads.\n-----------")
   if (v) message("project: ", project)
 
+  # resolve compression level early, before any object modifications
+  compress_level <- .map_preset_to_compress_level(preset)
+
   # check if the object is a Seurat object
   obj_is_seurat <- inherits(obj, "Seurat")
   if (obj_is_seurat) {
@@ -4947,12 +4956,6 @@ xsave <- function(
     if (saveLocation) try(obj@misc$"file.location" <- CMND, silent = TRUE)
   }
 
-  valid_presets <- c("fast", "balanced", "high", "archive")
-  if (!preset %in% valid_presets) {
-    warning("Unknown preset '", preset, "'; defaulting to 'balanced' (compress_level=3). Valid options: ",
-            paste(valid_presets, collapse = ", "), call. = FALSE)
-  }
-  compress_level <- switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L, 3L)
   qs2::qs_save(object = obj, file = FNN, nthreads = nthreads, compress_level = compress_level)
 
   try(tictoc::toc(), silent = TRUE)
