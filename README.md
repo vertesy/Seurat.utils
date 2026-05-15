@@ -9,6 +9,7 @@ Functionalities rely on basic function libraries listed below.
 ### Installation NEWS
 Until I update the code to [`qs2`]([url](https://github.com/qsbase/qs2)), you have to install `qs` [from github]([url](https://github.com/qsbase/qs)):
 `remotes::install_cran("qs", type = "source", configure.args = "--with-simd=AVX2")`
+ `qs` is reportedy fails to install on R4.6.x on Windows.
 
 Seurat.utils relies on:
 
