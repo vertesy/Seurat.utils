@@ -2283,104 +2283,213 @@ downsampleSeuObj.and.Save <- function(
 
 
 # _________________________________________________________________________________________________
-#' @title Sample max number of Cells From each identity in a Seurat Object
+#' @title Downsample Cells Per Identity in a Seurat Object
 #'
-#' @description This function samples a specified maximum number of cells from each identity class
-#' in a Seurat object, in the meta.data. It ensures that the sampling does not exceed the total
-#' number of cells available per identity.
+#' @description Downsample each identity class to `fraction.downsampled` of its
+#' cells, bounded by `min.cells` and `max.cells`. Identity classes with
+#' `min.cells` or fewer cells are kept unchanged.
 #'
-#' @param obj A Seurat object from which cells are to be sampled.
-#' @param ident A character vector specifying the identity class from which cells are to be sampled.
-#' @param max.cells A positive integer indicating the maximum number of cells to sample from each identity class.
-#' @param verbose Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.
-#' @param replacement.thr A numeric value between 0 and 1 indicating the percentage of cells to sample from each identity class. Defaults to 0.05.
-#' @param dsample.to.repl.thr Logical indicating if sampling should be done with replacement. Defaults to FALSE.
-#' @param plot_stats Logical indicating to plot a barplot.
-#' @param seed An integer to set the seed for reproducibility.
+#' @param obj A Seurat object.
+#' @param ident Metadata column used for grouping cells.
+#' @param fraction.downsampled Fraction of cells retained per identity class.
+#' @param min.cells Minimum number of cells retained for larger identity classes.
+#' @param max.cells Maximum number of cells retained per identity class.
+#' @param verbose Logical, whether to report sampling statistics.
+#' @param plot_stats Logical, whether to plot retained fractions.
+#' @param seed Integer seed for reproducible sampling.
 #'
+#' @return A Seurat object subset to the sampled cells.
 #'
-#' @return Returns a Seurat object containing only the sampled cells.
-#'
-#' @details This function checks for the presence of the specified identity class within the object's metadata.
-#' If the number of cells within any identity class is less than or equal to the `max.cells` parameter,
-#' all cells from that class are retained. Otherwise, a random sample of `max.cells` is taken from the class.
-#' The function updates the identity of the cells in the returned Seurat object to reflect the sampled cells.
-#' If `verbose` is TRUE, it prints the total number of cells sampled and provides a visual summary of the fraction
-#' of cells retained per identity class.
+#' @details For each identity class, the function calculates
+#' `round(n_cells * fraction.downsampled)`. If the class has `min.cells` or
+#' fewer cells, all cells are retained. Otherwise, the target cell number is
+#' bounded to `[min.cells, max.cells]` and sampled without replacement.
 #'
 #' @examples
-#' # Assuming `seuratObj` is a Seurat object with identities stored in its metadata
-#' sampledSeuratObj <- downsampleSeuObjByIdentAndMaxcells(obj = seuratObj, ident = "cellType", max.cells = 100)
+#' sampled_obj <- downsampleSeuObjByIdentAndMaxcells(
+#'   obj = combined.obj,
+#'   ident = "Cell.types.v11.fine",
+#'   fraction.downsampled = 0.2,
+#'   min.cells = 100,
+#'   max.cells = 2000
+#' )
 #'
 #' @importFrom CodeAndRoll2 df.col.2.named.vector
-#'
 #' @export
-#'
+
 downsampleSeuObjByIdentAndMaxcells <- function(obj,
                                                ident = GetNamedClusteringRuns()[1],
-                                               max.cells = min(table(obj[[ident]])),
+                                               fraction.downsampled = 0.2,
+                                               min.cells = 100,
+                                               max.cells = 2000,
                                                verbose = TRUE,
-                                               replacement.thr = 0.05,
-                                               dsample.to.repl.thr = (max.cells / ncol(obj)) < replacement.thr, # if less than 5% of cells are sampled, sample with replacement
                                                plot_stats = TRUE,
                                                seed = 1989) {
   stopifnot(
-    "obj must be a Seurat object" = inherits(obj, "Seurat"),
-    "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
-    "max.cells must be a positive integer" = is.numeric(max.cells) && max.cells > 0,
-    max.cells < ncol(obj)
+    inherits(obj, "Seurat"),
+    is.character(ident), length(ident) == 1, ident %in% colnames(obj@meta.data),
+    is.numeric(fraction.downsampled), length(fraction.downsampled) == 1,
+    fraction.downsampled > 0, fraction.downsampled <= 1,
+    is.numeric(min.cells), length(min.cells) == 1, min.cells > 0,
+    is.numeric(max.cells), length(max.cells) == 1, max.cells > 0, max.cells > min.cells,
+    is.logical(verbose), length(verbose) == 1, is.logical(plot_stats), length(plot_stats) == 1
   )
-
-  data <- CodeAndRoll2::df.col.2.named.vector(obj[[ident]])
-  uniqueCategories <- unique(data)
-
   set.seed(seed)
-  if (dsample.to.repl.thr) {
-    max.cells <- round(ncol(obj) * replacement.thr)
-    msg <- percentage_formatter(replacement.thr,
-      suffix = paste("of the data or", max.cells, "of cells."),
-      prefix = "Sampling with replacement to:"
-    )
-    message(msg)
+
+  message("Downsampling by identity: ", ident)
+  message("Fraction: ", fraction.downsampled)
+  message("Bounds per identity: [", min.cells, ", ", max.cells, "]")
+
+
+  vec_ident <- CodeAndRoll2::df.col.2.named.vector(obj@meta.data, ident, names = NULL)
+  orig_cells <- table(vec_ident)
+  target_cells <- orig_cells
+  sampledNames <- list()
+
+  # Sample cells from each identity ------------------------
+  for (category in names(orig_cells)) {
+    cells_now <- names(vec_ident[vec_ident == category])
+    n_orig <- length(cells_now)
+    n_target <- round(n_orig * fraction.downsampled)
+
+    if (n_orig <= min.cells) n_target <- n_orig
+    if (n_orig > min.cells) n_target <- max(n_target, min.cells)
+    n_target <- min(n_target, max.cells, n_orig)
+
+    target_cells[[category]] <- n_target
+    sampledNames[[category]] <- sample(cells_now, n_target)
   }
 
-  # Sample cells from each identity class
-  sampledNames <- lapply(uniqueCategories, function(category) {
-    namesInCategory <- names(data[data == category])
-    if (length(namesInCategory) <= max.cells) {
-      # If the number of cells in the category is less than or equal to max.cells, return all cells
-      return(namesInCategory)
-    } else {
-      return(sample(namesInCategory, max.cells))
-    }
-  })
-
-  sampledCells <- unlist(sampledNames)
-
+  sampledCells <- unlist(sampledNames, use.names = FALSE)
   Idents(obj) <- ident
-  obj2 <- subset(x = obj, cells = sampledCells)
+  obj_ds <- subset(x = obj, cells = sampledCells)
 
-  subb <- paste0("From ", ncol(obj), " reduced to ", ncol(obj2), " cells.")
+  fr_remaining <- iround(target_cells / orig_cells)
+  subb <- paste0("From ", ncol(obj), " reduced to ", ncol(obj_ds), " cells.")
+
   message(subb)
+  message("Total retained fraction: ", iround(ncol(obj_ds) / ncol(obj)))
 
   if (verbose) {
-    message("Total cells sampled: ", length(sampledCells))
-    print(table(data))
-
-    nr_remaining_cells <- orig_cells <- table(data)
-    nr_remaining_cells[nr_remaining_cells > max.cells] <- max.cells
-    fr_remaining_per_cluster <- iround(nr_remaining_cells / orig_cells)
-    print(fr_remaining_per_cluster)
-  }
-  if (plot_stats) {
-    pobj <- qbarplot(
-      vec = fr_remaining_per_cluster, subtitle = subb, label = fr_remaining_per_cluster,
-      ylab = "fr. of cells", save = FALSE
+    sample_stats <- data.frame(
+      original_cells = as.integer(orig_cells),
+      target_cells = as.integer(target_cells),
+      retained_fraction = as.numeric(fr_remaining),
+      row.names = names(orig_cells)
     )
-    print(pobj)
+
+    message("Downsampling stats per identity:")
+    print(sample_stats)
   }
-  return(obj2)
+
+  if (plot_stats) {
+    qbarplot(vec = fr_remaining, subtitle = subb, label = fr_remaining, ylab = "fr. of cells", save = FALSE, plot = T)
+  }
+
+  return(obj_ds)
 }
+
+
+# #' @title Sample max number of Cells From each identity in a Seurat Object
+# #'
+# #' @description This function samples a specified maximum number of cells from each identity class
+# #' in a Seurat object, in the meta.data. It ensures that the sampling does not exceed the total
+# #' number of cells available per identity.
+# #'
+# #' @param obj A Seurat object from which cells are to be sampled.
+# #' @param ident A character vector specifying the identity class from which cells are to be sampled.
+# #' @param max.cells A positive integer indicating the maximum number of cells to sample from each identity class.
+# #' @param verbose Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.
+# #' @param fraction.downsampled A numeric value between 0 and 1 indicating the fraction of the total cells that will be downsampled.
+# #' If the fraction of cells to be sampled is less than this threshold, sampling will be done with replacement. Defaults to 0.05 (5%).
+# #' @param downsample.w.replacement Logical indicating if sampling should be done with replacement. Defaults to FALSE.
+# #' @param plot_stats Logical indicating to plot a barplot.
+# #' @param seed An integer to set the seed for reproducibility.
+# #'
+# #'
+# #' @return Returns a Seurat object containing only the sampled cells.
+# #'
+# #' @details This function checks for the presence of the specified identity class within the object's metadata.
+# #' If the number of cells within any identity class is less than or equal to the `max.cells` parameter,
+# #' all cells from that class are retained. Otherwise, a random sample of `max.cells` is taken from the class.
+# #' The function updates the identity of the cells in the returned Seurat object to reflect the sampled cells.
+# #' If `verbose` is TRUE, it prints the total number of cells sampled and provides a visual summary of the fraction
+# #' of cells retained per identity class.
+# #'
+# #' @examples
+# #' # Assuming `seuratObj` is a Seurat object with identities stored in its metadata
+# #' sampledSeuratObj <- downsampleSeuObjByIdentAndMaxcells(obj = seuratObj, ident = "cellType", max.cells = 100)
+# #'
+# #' @importFrom CodeAndRoll2 df.col.2.named.vector
+# #'
+# #' @export
+
+# downsampleSeuObjByIdentAndMaxcells <- function(obj,
+#                                                ident = GetNamedClusteringRuns()[1],
+#                                                max.cells = min(table(obj[[ident]])),
+#                                                verbose = TRUE,
+#                                                fraction.downsampled = 0.05,
+#                                                downsample.w.replacement = FALSE,
+#                                                plot_stats = TRUE,
+#                                                seed = 1989) {
+#   stopifnot(
+#     "obj must be a Seurat object" = inherits(obj, "Seurat"),
+#     "ident must be a character and exist in obj@meta.data" = is.character(ident) && ident %in% colnames(obj@meta.data),
+#     "max.cells must be a positive integer" = is.numeric(max.cells) && max.cells > 0,
+#     max.cells < ncol(obj)
+#   )
+#
+#   vec_ident <- CodeAndRoll2::df.col.2.named.vector(obj@meta.data,ident, names = NULL)
+#   uniqueCategories <- unique(vec_ident)
+#
+#   set.seed(seed)
+#   if (downsample.w.replacement) {
+#     msg <- percentage_formatter(
+#       max.cells / ncol(obj),
+#       suffix = paste("of the data or max", max.cells, "cells per identity."),
+#       prefix = "Sampling with replacement to: "
+#     )
+#     message(msg)
+#   }
+#
+#   # Sample cells from each identity class
+#   sampledNames <- lapply(uniqueCategories, function(category) {
+#     namesInCategory <- names(vec_ident[vec_ident == category])        # cells in group
+#     n_cells <- min(length(namesInCategory), max.cells)                # cap per group
+#
+#     sample(
+#       x = namesInCategory,
+#       size = n_cells,
+#       replace = downsample.w.replacement                             # actually use replacement
+#     )
+#   })
+#
+#   sampledCells <- unlist(sampledNames)
+#
+#   Idents(obj) <- ident
+#   obj_ds <- subset(x = obj, cells = sampledCells)
+#
+#   subb <- paste0("From ", ncol(obj), " reduced to ", ncol(obj_ds), " cells.")
+#   message(subb)
+#
+#   if (verbose) {
+#     message("Total cells sampled: ", length(sampledCells))
+#     print(table(vec_ident))
+#
+#     nr_remaining_cells <- orig_cells <- table(vec_ident)
+#     nr_remaining_cells[nr_remaining_cells > max.cells] <- max.cells
+#     fr_remaining_per_cluster <- iround(nr_remaining_cells / orig_cells)
+#     print(fr_remaining_per_cluster)
+#   }
+#   if (plot_stats) {
+#     pobj <- qbarplot(
+#       vec = fr_remaining_per_cluster, subtitle = subb, label = fr_remaining_per_cluster,
+#       ylab = "fr. of cells", save = FALSE
+#     )
+#     print(pobj)
+#   }
+#   return(obj_ds)
+# }
 
 # _________________________________________________________________________________________________
 #' @title Relabel Small Categories / Clusters

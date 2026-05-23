@@ -9,8 +9,8 @@ downsampleSeuObjByIdentAndMaxcells(
   ident = GetNamedClusteringRuns()[1],
   max.cells = min(table(obj[[ident]])),
   verbose = TRUE,
-  replacement.thr = 0.05,
-  dsample.to.repl.thr = (max.cells/ncol(obj)) < replacement.thr,
+  fraction.downsampled = 0.05,
+  downsample.w.replacement = (max.cells/ncol(obj)) < fraction.downsampled,
   plot_stats = TRUE,
   seed = 1989
 )
@@ -24,9 +24,9 @@ downsampleSeuObjByIdentAndMaxcells(
 
 \item{verbose}{Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.}
 
-\item{replacement.thr}{A numeric value between 0 and 1 indicating the percentage of cells to sample from each identity class. Defaults to 0.05.}
+\item{fraction.downsampled}{A numeric value between 0 and 1 indicating the}
 
-\item{dsample.to.repl.thr}{Logical indicating if sampling should be done with replacement. Defaults to FALSE.}
+\item{downsample.w.replacement}{Logical indicating if sampling should be done with replacement. Defaults to FALSE.}
 
 \item{plot_stats}{Logical indicating to plot a barplot.}
 
