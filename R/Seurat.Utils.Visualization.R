@@ -2637,6 +2637,14 @@ multiFeaturePlot.A4 <- function(
     format = c("jpg", "pdf", "png")[1],
     ...) {
   tictoc::tic()
+  stopifnot(
+    is.logical(subdir), is.logical(subtitle.from.names), is.logical(saveGeneList),
+    is.logical(aspect.ratio) | is.numeric(aspect.ratio),
+    is.character(plot.reduction), plot.reduction %in% names(obj@reductions),
+    is.character(intersectionAssay), intersectionAssay %in% names(obj@assays),
+    is.character(format), format %in% c("jpg", "pdf", "png")
+  )
+
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- "genes"
   final.foldername <- FixPlotName(paste0(foldername, "-", plot.reduction, suffix))
