@@ -305,7 +305,7 @@ processSeuratObject <- function(obj, param.list = p, species_ = "human",
 #'        Default: `TRUE`.
 #' @param directory Character string specifying the base directory for saving results.
 #'        Default: OutDir
-#' @param dir_suffix Character string specifying the suffix for the subdirectory.
+# #' @param dir_suffix Character string specifying the suffix for the subdirectory.
 #' @param subdirectory Character string specifying the subdirectory for saving outputs within
 #'        the base directory. Default: "DGEA + date".
 #' @param calculate.DGEA Logical determining if the DE analysis should be calculated.
@@ -328,7 +328,7 @@ processSeuratObject <- function(obj, param.list = p, species_ = "human",
 #' @param WorkingDir Character string specifying the working directory. Default: getwd().
 #'
 #' @importFrom future plan
-#' @return Modified Seurat object and markers list.
+#' @return Modified Seurat object. The df.markers.all is instead assigned to .GlobalEnv.
 #' @examples
 #' runDGEA(obj = mySeuratObject, param.list = myListParams, directory = "Results/MyAnalysis")
 #'
@@ -343,7 +343,7 @@ runDGEA <- function(obj,
                     # ordering = if(any(!testNumericCompatible(res.analyzed.DE))) "no" else "ordered", # param.list$"cl.annotation"
                     # ordering = "ordered", # param.list$"cl.annotation"
                     directory,
-                    dir_suffix,
+                    # dir_suffix,
                     subdirectory = ppp("DGEA_res", idate()),
                     add.combined.score = TRUE,
                     save.obj = TRUE,
@@ -471,15 +471,15 @@ runDGEA <- function(obj,
       # Perform differential expression analysis
       tic("FindAllMarkers")
       df.markers <- Seurat::FindAllMarkers(obj,
-        verbose = TRUE,
-        test.use = param.list$"test",
-        logfc.threshold = param.list$"logfc.threshold",
-        return.thresh = param.list$"return.thresh",
-        min.pct = param.list$"min.pct",
-        min.diff.pct = param.list$"min.diff.pct",
-        min.cells.group = param.list$"min.cells.group",
-        max.cells.per.ident = param.list$"max.cells.per.ident",
-        only.pos = param.list$"only.pos",
+                                           verbose = TRUE,
+                                           test.use = param.list$"test",
+                                           logfc.threshold = param.list$"logfc.threshold",
+                                           return.thresh = param.list$"return.thresh",
+                                           min.pct = param.list$"min.pct",
+                                           min.diff.pct = param.list$"min.diff.pct",
+                                           min.cells.group = param.list$"min.cells.group",
+                                           max.cells.per.ident = param.list$"max.cells.per.ident",
+                                           only.pos = param.list$"only.pos"
       )
       toc()
 
@@ -530,6 +530,8 @@ runDGEA <- function(obj,
       df.markers <- obj@misc$"df.markers"[[df.slot]]
       Stringendo::stopif(is.null(df.markers))
 
+      # obj <- StoreAllMarkers(df_markers = df.markers, res = res, obj = obj)
+
       PlotTopGenesPerCluster(
         obj = obj,
         cl_res = res,
@@ -538,14 +540,20 @@ runDGEA <- function(obj,
         order.by = param.list$"DEG.ranking"
       )
 
+
       # Automatic cluster labeling by top gene ________________________________________
       if (auto.cluster.naming) {
         message("Automatic cluster labeling by top gene.")
 
-        obj <- StoreAllMarkers(df_markers = df.markers, res = res, obj = obj)
-        obj <- AutoLabelTop.logFC(group.by = Idents.for.DEG[[i]], obj = obj, plot.top.genes = FALSE) # already plotted above
+        ident.values <- unique(obj@meta.data[[Idents.for.DEG[[i]]]])
+        numeric.clusters <- all(grepl("^[0-9]+$", as.character(ident.values)))
 
-        clUMAP(ident = ppp("cl.names.top.gene", Idents.for.DEG[[i]]), obj = obj, caption = umap_caption)
+        if (numeric.clusters) {
+          obj <- AutoLabelTop.logFC(group.by =  Idents.for.DEG[[i]], df_markers = df.markers, obj = obj, plot.top.genes = FALSE)
+          clUMAP(ident = ppp("cl.names.top.gene", Idents.for.DEG[[i]]), obj = obj, caption = umap_caption)
+        }
+
+
       } # end if auto.cluster.naming
 
       # Plot per-cluster gene enrichment histogram ________________________________________
@@ -556,14 +564,14 @@ runDGEA <- function(obj,
         df.markers.tbl <- as_tibble(df.markers)
         df.markers.tbl$"cluster" <- as.character(df.markers.tbl$"cluster")
         p.deg.hist <- ggpubr::gghistogram(df.markers.tbl,
-          x = "avg_log2FC",
-          title = "Number of enriched genes per cluster",
-          subtitle = "Binned by Log2(FC)",
-          caption = paste(res, "| vertical line at FC of 2."),
-          rug = TRUE,
-          color = "cluster", fill = "cluster",
-          facet.by = "cluster", xlim = c(0, 3),
-          ylab = "Nr. D.E. Genes"
+                                          x = "avg_log2FC",
+                                          title = "Number of enriched genes per cluster",
+                                          subtitle = "Binned by Log2(FC)",
+                                          caption = paste(res, "| vertical line at FC of 2."),
+                                          rug = TRUE,
+                                          color = "cluster", fill = "cluster",
+                                          facet.by = "cluster", xlim = c(0, 3),
+                                          ylab = "Nr. D.E. Genes"
         ) +
           geom_vline(xintercept = 1) +
           theme_linedraw()
@@ -587,15 +595,15 @@ runDGEA <- function(obj,
 
         # Get the number of genes per cluster
         (NrOfHighlySignLFC2_genes <- lfc2_hiSig_genes |>
-          summarise(n = n()) |>
-          deframe() |>
-          sortbyitsnames())
+            summarise(n = n()) |>
+            deframe() |>
+            sortbyitsnames())
 
         qbarplot(NrOfHighlySignLFC2_genes,
-          label = NrOfHighlySignLFC2_genes,
-          plotname = "Number of diff. genes per cluster",
-          sub = "Genes with avg_log2FC > 1 and p_val_adj < 0.05",
-          xlab = "Clusters", ylab = "Number of diff. genes"
+                 label = NrOfHighlySignLFC2_genes,
+                 plotname = "Number of diff. genes per cluster",
+                 subtitle = "Genes with avg_log2FC > 1 and p_val_adj < 0.05",
+                 xlab = "Clusters", ylab = "Number of diff. genes"
         )
 
         # Write out gene lists per cluster ________________________________________
@@ -613,8 +621,8 @@ runDGEA <- function(obj,
 
           # write out the gene list, each element to a txt file.
           create_set_OutDir(paste0(dir_DGEA, ppp("res", res), "/top_genes"))
-          for (i in 1:length(genes_list)) {
-            write.simple.vec(input_vec = genes_list[[i]], filename = names(genes_list)[i], v = FALSE)
+          for (g in 1:length(genes_list)) {
+            write.simple.vec(input_vec = genes_list[[g]], filename = names(genes_list)[g], v = FALSE)
           } # for cluster
         }
       } # end if plot.log.top.gene.stats
@@ -623,8 +631,8 @@ runDGEA <- function(obj,
   # create_set_OutDir(directory, subdirectory)
 
   # Return obj and df.markers.all to global environment
-  return(obj)
   create_set_Original_OutDir()
+  return(obj)
 } # end runDGEA
 
 
