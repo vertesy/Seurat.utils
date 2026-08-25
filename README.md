@@ -107,9 +107,17 @@ It needs to be sourced, cannot be installed:
 source("https://raw.githubusercontent.com/vertesy/Rocinante/master/R/Rocinante.R")
 ```
 
+
+# Usage
+
+You can use most functions at relevant steps of a standard Seurat analysis.
+
+We are preparing a vignette.
+
+
 ## List of Functions in Seurat.Utils.R (98) 
 
-Updated: 2025/12/03 10:19
+Updated: 2026/08/25 20:09
 
 - #### 1 `processSeuratObject()`
 
@@ -135,161 +143,161 @@ Updated: 2025/12/03 10:19
 
   Intersect Genes with the List of Noticeably Expressed Genes. Intersects a vector of gene names with a Seurat object to find genes that are both  in the input list and have expression levels in the top quantiles as defined by the object's  q99 expression data. It aims to filter genes based on their expression levels being above a  specified threshold. Additionally, it offers an option to sort the genes by their expression  levels in decreasing order. 
 
-- #### 7 `SmallestNonAboveX()`
-
-  SmallestNonAboveX. replace small values with the next smallest value found, which is >X.
-
-- #### 8 `AreTheseCellNamesTheSame()`
+- #### 7 `AreTheseCellNamesTheSame()`
 
   AreTheseCellNamesTheSame. Assert and compare two character vectors (e.g.: cell IDs) how much they overlap and  plot a Venn diagram. The function aborts with an error if overlap is too small.
 
-- #### 9 `addToMiscOrToolsSlot()`
+- #### 8 `addToMiscOrToolsSlot()`
 
   Add to Misc or Tools Slot. This function creates and adds a sub-slot to either the 'misc' or 'tools' slot of a  Seurat object. If the sub-slot already exists, it can either be overwritten or a warning will be issued. 
 
-- #### 10 `showToolsSlots()`
+- #### 9 `showToolsSlots()`
 
   Display Slots in the @tools of an Seurat Object. `showToolsSlots` prints the names of slots in the `@tools` of a given object.  It specifically targets list elements, skipping over data frames and other non-list objects. 
 
-- #### 11 `showMiscSlots()`
+- #### 10 `showMiscSlots()`
 
   Display Slots in the @misc of an Seurat Object. See `showToolsSlots` for details. Prints the names of slots in the `@misc` of a given object.  It specifically targets list elements, skipping over data frames and other non-list objects. 
 
-- #### 12 `calc.q99.Expression.and.set.all.genes()`
+- #### 11 `calc.q99.Expression.and.set.all.genes()`
 
   calc.q99.Expression.and.set.all.genes. Calculate the gene expression of the e.g.: 99th quantile (expression in the top 1% cells).
 
-- #### 13 `filterCodingGenes()`
+- #### 12 `filterCodingGenes()`
 
   Filter Coding Gene Symbols (or any matching input Patterns). This function filters out gene names that match specified patterns. It reports  the original and final number of gene symbols and the percentage remaining after filtering.  It filters out non-coding gene symbols by default. 
 
-- #### 14 `filterExpressedGenes()`
+- #### 13 `filterExpressedGenes()`
 
   Filter and Sort Gene Expression List Based on Specified Genes and Expression Threshold. This function takes a named list of gene expression values and a character vector of gene  symbols. It identifies the intersection of gene symbols with names in the list, filters genes based on a  specified expression threshold, and returns a character vector of genes that meet the criteria, sorted  by expression in descending order. 
 
-- #### 15 `RenameClustering()`
+- #### 14 `RenameClustering()`
 
   RenameClustering. Rename clustering in a Seurat object.
 
-- #### 16 `shorten_clustering_names()`
+- #### 15 `shorten_clustering_names()`
 
   Shorten Clustering Names. This function takes in a string representing a clustering name,  and shortens it according to specific rules. It replaces "snn_res." with "",  "best.matching.names" with "bmatch", "ordered" with "ord",  "ManualNames" with "mNames", and ".long" at the end of the string with ".L". 
 
-- #### 17 `getClusterNames()`
+- #### 16 `getClusterNames()`
 
   Retrieve Cluster Names. Extracts cluster names based on a specified identity class from a Seurat object. 
 
-- #### 18 `GetClusteringRuns()`
+- #### 17 `GetClusteringRuns()`
 
   GetClusteringRuns. The `GetClusteringRuns` function retrieves metadata column names associated with   clustering runs, based on a pattern to match, `"*snn_res.[0-9].[0-9]$"`, by default.
 
-- #### 19 `GetNamedClusteringRuns()`
+- #### 18 `GetNamedClusteringRuns()`
 
   GetNamedClusteringRuns. The `GetNamedClusteringRuns` function retrieves metadata column names associated with   non-numeric ("named") clustering runs, based on a pattern to match, `"Name|name"`, by default.
 
-- #### 20 `GetOrderedClusteringRuns()`
+- #### 19 `GetOrderedClusteringRuns()`
 
   GetOrderedClusteringRuns. Get Clustering Runs: metadata column names.
 
-- #### 21 `GetNumberOfClusters()`
+- #### 20 `GetNumberOfClusters()`
 
   GetNumberOfClusters. Print the number of clusters for each stored clustering run.
 
-- #### 22 `calc.cluster.averages()`
+- #### 21 `calc.cluster.averages()`
 
   calc.cluster.averages. Calculates the average of a metadata column (numeric) per cluster.
 
-- #### 23 `plot.expression.rank.q90()`
+- #### 22 `plot.expression.rank.q90()`
 
   plot.expression.rank.q90. Plot gene expression based on the expression at the 90th quantile  (so you will not lose genes expressed in few cells).
 
-- #### 24 `set.mm()`
+- #### 23 `set.mm()`
 
   set.mm. Helps to find metadata columns. It creates a list with the names of of 'obj@meta.data'.
 
-- #### 25 `ww.get.1st.Seur.element()`
+- #### 24 `ww.get.1st.Seur.element()`
 
   Get the First Seurat Object from a List of Seurat Objects. Return the first Seurat object from a list, or the object itself    if a single Seurat object is supplied. 
 
-- #### 26 `recall.all.genes()`
+- #### 25 `recall.all.genes()`
 
   Recall all.genes global variable from a Seurat object. Recall \code{all.genes} from a Seurat object's \code{misc} slot,    which is stored by \code{calc.q99.Expression.and.set.all.genes()}, and optionally reset the global variable.
 
-- #### 27 `recall.meta.tags.n.datasets()`
+- #### 26 `recall.meta.tags.n.datasets()`
 
   recall.meta.tags.n.datasets. Recall  meta.tags from obj@misc to "meta.tags" in the global environment.
 
-- #### 28 `recall.parameters()`
+- #### 27 `recall.parameters()`
 
   recall.parameters. Recall parameters from obj@misc to "p" in the global environment.
 
-- #### 29 `recall.genes.ls()`
+- #### 28 `recall.genes.ls()`
 
   recall.genes.ls. Recall genes.ls from obj@misc to "genes.ls" in the global environment.
 
-- #### 30 `save.parameters()`
+- #### 29 `save.parameters()`
 
   Save Parameters to Seurat Object. Stores a list of parameters within the `@misc$p` slot of a Seurat object,  allowing for easy reference and tracking of analysis parameters used. 
 
-- #### 31 `create_scCombinedMeta()`
+- #### 30 `create_scCombinedMeta()`
 
   Create Single-Cell Metadata Object for a collection of Seurat Objects. This function creates a metadata object to correspond to a list of    single-cell experiments, for storing parent level information.    It initializes the object with the experiment and project name, and the    creation date. The created object is of class 'scMetadata_class'.
 
-- #### 32 `copyMiscElements()`
+- #### 31 `copyMiscElements()`
 
   Copy Specified Elements from One Seurat Object's @misc to Another's. Copies specified elements from the `@misc` slot of one Seurat object to the `@misc` slot  of another. It warns if some specified elements are missing in the source object or if elements are  overwritten in the destination object, depending on the `overwrite` argument. 
 
-- #### 33 `copyCompleteToolsSlots()`
+- #### 32 `copyCompleteToolsSlots()`
 
   Copy Tools Slots from Multiple Seurat Objects. This function copies the `@tools` slots from a list of Seurat objects into a new slot  of a target Seurat object. This allows for the aggregation of tools information from multiple  experiments or datasets into a single, consolidated Seurat object. 
 
-- #### 34 `subsetSeuObjByIdent()`
+- #### 33 `subsetSeuObjByIdent()`
 
   Subset a Seurat Object by Identity. Subsets a Seurat object based on a specified identity column and values. It allows    for an optional inversion of the selection. 
 
-- #### 35 `downsampleSeuObj()`
+- #### 34 `downsampleSeuObj()`
 
   downsampleSeuObj. Subset a compressed Seurat object and save it in the working directory.
 
-- #### 36 `downsampleSeuObj.and.Save()`
+- #### 35 `downsampleSeuObj.and.Save()`
 
   downsampleSeuObj.and.Save. Downsample a Seurat object to a target fraction and save it.
 
-- #### 37 `downsampleSeuObjByIdentAndMaxcells()`
+- #### 36 `# downsampleSeuObjByIdentAndMaxcells()`
 
-  Sample max number of Cells From each identity in a Seurat Object. This function samples a specified maximum number of cells from each identity class  in a Seurat object, in the meta.data. It ensures that the sampling does not exceed the total  number of cells available per identity. 
+  Downsample Cells Per Identity in a Seurat Object. Downsample each identity class to `fraction.downsampled` of its  cells, bounded by `min.cells` and `max.cells`. Identity classes with  `min.cells` or fewer cells are kept unchanged. 
 
-- #### 38 `RelabelSmallCategories()`
+- #### 37 `RelabelSmallCategories()`
 
   Relabel Small Categories / Clusters.   Relabels small categories in a specified metadata column of a Seurat object. Categories with  cell counts less than a minimum count are relabeled to a specified label. The function adds  a new metadata column with the updated labels. 
 
-- #### 39 `removeResidualSmallClusters()`
+- #### 38 `removeResidualSmallClusters()`
 
   Remove Residual Small Clusters from a Seurat Object. Removes clusters containing fewer cells than specified by `max.cells`  from a Seurat object. This function is particularly useful after subsetting a dataset,  where small, possibly unrepresentative clusters may remain. 
 
-- #### 40 `dropLevelsSeurat()`
+- #### 39 `dropLevelsSeurat()`
 
   dropLevelsSeurat. Drop unused levels from `factor` variables in a Seurat object's meta.data.
 
-- #### 41 `removeClustersAndDropLevels()`
+- #### 40 `removeClustersAndDropLevels()`
 
   Remove Clusters and Drop Levels from a List of Seurat Objects. This function removes residual small clusters from specified Seurat objects and  drops levels in factor-like metadata.
 
-- #### 42 `removeCellsByUmap()`
+- #### 41 `removeCellsByUmap()`
 
   Remove Cells by Dimension Reduction. This function applies a cutoff in the specified dimension of a given  dimension reduction (UMAP, PCA, or t-SNE) to remove cells.
 
-- #### 43 `downsampleListSeuObjsNCells()`
+- #### 42 `downsampleListSeuObjsNCells()`
 
   Downsample a List of Seurat Objects to a Specific Number of Cells. Downsampling each Seurat object in a list to a specified number of cells. This function is  particularly useful for creating smaller, more manageable subsets of large single-cell datasets for  preliminary analyses or testing. 
 
-- #### 44 `downsampleListSeuObjsPercent()`
+- #### 43 `downsampleListSeuObjsPercent()`
 
   Downsample a List of Seurat Objects to a Fraction. Downsampling a list of Seurat objects to a specified fraction of their original size.  This is useful for reducing dataset size for quicker processing or testing workflows. 
 
-- #### 45 `Add.DE.combined.score()`
+- #### 44 `addCombinedScore2DGEAResults()`
 
-  Add.DE.combined.score. Add a combined score to differential expression (DE) results. The score is  calculated as log-fold change (LFC) times negative logarithm of scaled  p-value (LFC * -log10( p_cutoff / pval_scaling )).
+  addCombinedScore2DGEAResults.   Adds a combined differential expression score that integrates log-fold change (effect size)  with statistical evidence from adjusted p-values. The score is calculated as  \eqn{LFC * -log10(p_adj / pval_scaling)}, where \code{pval_scaling} defines a reference  significance level. P-values are clipped to a minimum threshold to avoid infinite or  excessively large scores. This formulation emphasizes genes that show both strong  expression changes and evidence well beyond a chosen significance baseline, which is  especially useful for single-cell DGE results where very small p-values are common. 
+
+- #### 45 `roundDGEAResults()`
+
+  Round numeric columns in DGE result tables.   Rounds numeric columns in differential gene expression (DGE) result tables  (e.g. from \code{Seurat::FindMarkers()}) to a meaningful number of digits.  The function is intentionally limited to *rounding* (not formatting) and  keeps all columns numeric. Columns that are not present are silently ignored. 
 
 - #### 46 `StoreTop25Markers()`
 
@@ -505,9 +513,9 @@ Updated: 2025/12/03 10:19
 
 
 
-## List of Functions in Seurat.Utils.Visualization.R (61) 
+## List of Functions in Seurat.Utils.Visualization.R (65) 
 
-Updated: 2025/12/03 10:19
+Updated: 2026/08/25 20:09
 
 - #### 1 `PlotFilters()`
 
@@ -665,9 +673,9 @@ Updated: 2025/12/03 10:19
 
   Relabel Cluster Numbers Along a UMAP (or tSNE) Axis. Automatically renumbers clusters based on their position along a specified dimension  in a UMAP (or tSNE or PCA) plot, potentially enhancing interpretability by ordering clusters. 
 
-- #### 40 `scEnhancedVolcano()`
+- #### 40 `# scEnhancedVolcano()`
 
-  scEnhancedVolcano. This function creates an enhanced volcano plot. 
+  Enhanced Volcano Plot for scRNA-seq DGEA. Wrapper for EnhancedVolcano with automated filtering, styling, and robust checks.
 
 - #### 41 `.estMinimumFC()`
 
@@ -681,83 +689,97 @@ Updated: 2025/12/03 10:19
 
   Perform GO Enrichment Analysis. This function performs Gene Ontology (GO) enrichment analysis using the  `clusterProfiler::enrichGO` function. It takes the gene list, universe, organism database,  gene identifier type, and ontology type as inputs and returns the enrichment results. 
 
-- #### 44 `scBarplotEnrichr()`
-
-  Barplot GO Enrichment Results by enrichplot. This function creates a bar plot of GO enrichment analysis results using the  `enrichplot::barplot.enrichResult` function. It also allows saving the plot to a file. 
-
-- #### 45 `filterGoEnrichment()`
+- #### 44 `filterGoEnrichment()`
 
   Filter GO Enrichment Results. This function filters GO enrichment results based on adjusted p-value and q-value  cutoffs, and retrieves the descriptions of the filtered results. 
 
-- #### 46 `countEnrichedDepletedGenes()`
+- #### 45 `scBarplotEnrichr()`
+
+  Barplot GO Enrichment Results by enrichplot. This function creates a bar plot of GO enrichment analysis results using the  `enrichplot::barplot.enrichResult` function. It also allows saving the plot to a file. 
+
+- #### 46 `scDotplotEnrichr()`
+
+  Dotplot GO Enrichment Results by enrichplot.   This function creates a dot plot of GO enrichment analysis results using  `enrichplot::dotplot`. It mirrors `scBarplotEnrichr()` but visualizes  enrichment significance and gene ratios as a dot plot. 
+
+- #### 47 `scEmapplotEnrichr()`
+
+  Enrichment Map (GO term network) by enrichplot.   Wrapper around `enrichplot::emapplot()` to visualize GO enrichment results  as a network. Nodes are enriched GO terms, edges represent gene overlap.  Includes safety checks, informative fallback plots, and optional saving,  mirroring the behavior of `scBarplotEnrichr()`. 
+
+- #### 48 `scGeneConceptNetworkEnrichr()`
+
+  Gene-Concept Network Plot (cnetplot wrapper).   Wrapper around `enrichplot::cnetplot()` to visualize the gene-concept  (e.g. GO / KEGG) network for enrichment results. The plot shows which genes  drive which enriched terms, optionally colored by fold change (e.g. DE).  Behavior mirrors `scBarplotEnrichr()` and `scEmapplotEnrichr()` with  safety checks, informative fallbacks, and optional saving. 
+
+- #### 49 `countEnrichedDepletedGenes()`
 
   Count Enriched and Depleted Genes. This function counts the number of significantly enriched and depleted genes  based on the provided criteria. It filters the genes based on adjusted p-value and  logarithm of fold change. 
 
-- #### 47 `.adjustLayout()`
+- #### 50 `.adjustLayout()`
 
   Adjust Layout Parameters for multi* plotting functions. Adjusts layout dimensions and properties based on the specified layout type.               Updates the provided environment with new dimensions and layout configuration. 
 
-- #### 48 `save2plots.A4()`
+- #### 51 `.emptyAnnotatedPlot()`
+
+  Empty ggplot with centered annotation and optional warning.   Create a blank ggplot with a centered text annotation.  Optionally emits a warning with a custom message. 
+
+- #### 52 `save2plots.A4()`
 
   Save Two Plots on One A4 Page. Arranges and saves two UMAP plots (or any plots) side-by-side or one above  the other on a single A4 page. 
 
-- #### 49 `save4plots.A4()`
+- #### 53 `save4plots.A4()`
 
   Save Four Plots on One A4 Page. Arranges and saves four plots (e.g. UMAPs) onto a single A4 page, allowing for a  compact comparison of different visualizations or clustering results. 
 
-- #### 50 `qqSaveGridA4()`
+- #### 54 `qqSaveGridA4()`
 
   qqSaveGridA4. Saves a grid of 2 or 4 ggplot objects onto an A4 page.
 
-- #### 51 `ww.check.quantile.cutoff.and.clip.outliers()`
+- #### 55 `ww.check.quantile.cutoff.and.clip.outliers()`
 
   Check Quantile Cutoff and Clip Outliers. Checks a specified quantile cutoff and clips outliers from an expression vector,  ensuring that a minimum number of cells expressing a gene remain. 
 
-- #### 52 `plot3D.umap.gene()`
+- #### 56 `plot3D.umap.gene()`
 
   plot3D.umap.gene. Plot a 3D umap with gene expression. Uses plotly. Based on github.com/Dragonmasterx87.
 
-- #### 53 `plot3D.umap()`
+- #### 57 `plot3D.umap()`
 
   plot3D.umap. Plot a 3D umap based on one of the metadata columns. Uses plotly. Based on github.com/Dragonmasterx87.
 
-- #### 54 `SavePlotlyAsHtml()`
+- #### 58 `SavePlotlyAsHtml()`
 
   SavePlotlyAsHtml. Save a Plotly 3D scatterplot as an HTML file.
 
-- #### 55 `BackupReduction()`
+- #### 59 `BackupReduction()`
 
   Backup Dimensionality Reduction Data. This function is mostly used internally.It stores a backup of specified  dimensionality reduction data (e.g., UMAP, tSNE, PCA)  within the Seurat object, from `obj@reductions$umap` to the `@misc$reductions.backup` slot. This  allows to store 2D and 3D UMAP visualizations in parallel and easily switch between them via  the `RecallReduction` function. 
 
-- #### 56 `SetupReductionsNtoKdimensions()`
+- #### 60 `SetupReductionsNtoKdimensions()`
 
   SetupReductionsNtoKdimensions. Function to calculate N-to-K dimensional umaps (default = 2:3); and back them up to  slots `obj@misc$reductions.backup` from @reductions$umap
 
-- #### 57 `RecallReduction()`
+- #### 61 `RecallReduction()`
 
   Recall Dimensionality Reduction from backup slot. Restores dimensionality reduction data (e.g., UMAP, tSNE, PCA) from a backup  stored within `obj@misc$reductions.backup` to the active `obj@reductions` slot. 
 
-- #### 58 `.Annotate4Plotly3D()`
+- #### 62 `.Annotate4Plotly3D()`
 
   .Annotate4Plotly3D. Internal helper function. Create annotation labels for 3D plots.  Source https://plot.ly/r/text-and-annotations/#3d-annotations.
 
-- #### 59 `Plot3D.ListOfGenes()`
+- #### 63 `Plot3D.ListOfGenes()`
 
   Plot3D.ListOfGenes. Plot and save list of 3D UMAP or tSNE plots using plotly.
 
-- #### 60 `Plot3D.ListOfCategories()`
+- #### 64 `Plot3D.ListOfCategories()`
 
   Plot3D.ListOfCategories. This function plots and saves a list of 3D UMAP or tSNE plots using plotly.
 
-- #### 61 `panelCorPearson()`
+- #### 65 `panelCorPearson()`
 
   Display Correlation Values in Pairs Plot. This function displays the correlation coefficient and significance level within  a scatterplot generated by the `pairs()` function. The default correlation method is Pearson,  but Kendall or Spearman methods can also be selected. 
 
-
-
 ## List of Functions in Seurat.Utils.Metadata.R (31) 
 
-Updated: 2025/12/03 10:19
+Updated: 2026/08/25 20:09
 
 - #### 1 `addTranslatedMetadata()`
 
@@ -883,53 +905,211 @@ Updated: 2025/12/03 10:19
 
   Match and Translate Best Identity. This function matches the best identity from `ident_to_rename` to `reference_ident` in an object,  in other words, it replaces original categories with the most frequent ones from the reference,  hence helps to filter out less important categories. 
 
-
-
 ## List of Functions in Seurat.utils.less.used.R (12) 
-Updated: 2025/12/03 10:19
+
+Updated: 2026/08/25 20:09
+
 - #### 1 `Convert10Xfolders_v1()`
-Convert10Xfolders - legacy version. This function takes a parent directory with a number of subfolders, each  containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices,  (2) converts them to Seurat objects, and (3) saves them as .RDS files.
+
+  Convert10Xfolders - legacy version. This function takes a parent directory with a number of subfolders, each  containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices,  (2) converts them to Seurat objects, and (3) saves them as .RDS files.
 
 - #### 2 `plot.UMAP.tSNE.sidebyside()`
-plot.UMAP.tSNE.sidebyside. Plot a UMAP and tSNE side by side.
+
+  plot.UMAP.tSNE.sidebyside. Plot a UMAP and tSNE side by side.
 
 - #### 3 `multi_clUMAP.A4()`
-Plot multiple categorical variables in combined UMAPs. Generates and saves multiple UMAP plots for clustering results, adjusting the  layout and plot dimensions. Supports the generation of plots in different  formats and customization of the visual appearance. 
+
+  Plot multiple categorical variables in combined UMAPs. Generates and saves multiple UMAP plots for clustering results, adjusting the  layout and plot dimensions. Supports the generation of plots in different  formats and customization of the visual appearance. 
 
 - #### 4 `umapNamedClusters()`
-Plot and Save UMAP without legend. Generates a UMAP plot colored by a specified metadata column and saves the plot to a file. 
+
+  Plot and Save UMAP without legend. Generates a UMAP plot colored by a specified metadata column and saves the plot to a file. 
 
 - #### 5 `AutoNumber.by.PrinCurve()`
-AutoNumber.by.PrinCurve. Relabel cluster numbers based on their position along the principal curve fitted to the specified dimensionality reduction (UMAP, tSNE, or PCA).
+
+  AutoNumber.by.PrinCurve. Relabel cluster numbers based on their position along the principal curve fitted to the specified dimensionality reduction (UMAP, tSNE, or PCA).
 
 - #### 6 `load10Xv3()`
-Load 10X Genomics Version 3 Data. Loads 10X Genomics data from a specified directory containing output folders for raw and filtered data.  This function is designed to handle data from 10X Genomics Chromium Single Cell technologies (version 3). 
+
+  Load 10X Genomics Version 3 Data. Loads 10X Genomics data from a specified directory containing output folders for raw and filtered data.  This function is designed to handle data from 10X Genomics Chromium Single Cell technologies (version 3). 
 
 - #### 7 `removeScaleData()`
-Convert10Xfolders.old. This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.
+
+  Convert10Xfolders.old. This function takes a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. It (1) loads the filtered data matrices, (2) converts them to Seurat objects, and (3) saves them as .RDS files.
 
 - #### 8 `cellID_to_cellType()`
-Remove Layers from Seurat Object by Pattern. This function removes layers from a Seurat object's RNA assay based on a specified regular expression pattern.  It first backs up the object before removing layers that match the pattern. 
+
+  Remove Layers from Seurat Object by Pattern. This function removes layers from a Seurat object's RNA assay based on a specified regular expression pattern.  It first backs up the object before removing layers that match the pattern. 
 
 - #### 9 `Create.MiscSlot()`
-Create.MiscSlot. Create a new slot in the 'misc' slot of a Seurat object.
+
+  Create.MiscSlot. Create a new slot in the 'misc' slot of a Seurat object.
 
 - #### 10 `regress_out_and_recalculate_seurat()`
-Regress Out and Recalculate Seurat. The function performs a series of calculations and manipulations on a Seurat object,  including identifying variable features, scaling data, running PCA, setting up reductions, finding neighbors,  and finding clusters. It optionally performs t-SNE and saves the object. 
+
+  Regress Out and Recalculate Seurat. The function performs a series of calculations and manipulations on a Seurat object,  including identifying variable features, scaling data, running PCA, setting up reductions, finding neighbors,  and finding clusters. It optionally performs t-SNE and saves the object. 
 
 - #### 11 `PrctCellExpringGene()`
-Proportion of Cells Expressing Given Genes. Calculates the proportion of cells expressing one or more specified genes. 
+
+  Proportion of Cells Expressing Given Genes. Calculates the proportion of cells expressing one or more specified genes. 
 
 - #### 12 `ww.calc_helper()`
-Helper to calculate Cell Expression Proportion for Gene. Computes the proportion of cells expressing a specific gene within a Seurat object. 
+
+  Helper to calculate Cell Expression Proportion for Gene. Computes the proportion of cells expressing a specific gene within a Seurat object. 
 
 
 
-# Usage
 
-You can use most functions at relevant steps of a standard Seurat analysis.
+## Function relationships
+> (of connected functions)
 
-We are preparing a vignette.
+```mermaid
+ flowchart LR 
+
+  xread2(xread2) --> recall.parameters(recall.parameters)
+  xread2(xread2) --> recall.all.genes(recall.all.genes)
+  xread(xread) --> recall.parameters(recall.parameters)
+  xread(xread) --> recall.all.genes(recall.all.genes)
+  writeCombinedMetadataToTsvFromLsObj(writeCombinedMetadataToTsvFromLsObj) --> xsave(xsave)
+  whitelist.subset.ls.Seurat(whitelist.subset.ls.Seurat) --> getMetadataColumn(getMetadataColumn)
+  umapHiLightSel(umapHiLightSel) --> getCellIDs.from.meta(getCellIDs.from.meta)
+  transferMetadata(transferMetadata) --> getMetadataColumn(getMetadataColumn)
+  transferMetadata(transferMetadata) --> qUMAP(qUMAP)
+  transferMetadata(transferMetadata) --> clUMAP(clUMAP)
+  transferMetadata(transferMetadata) --> addMetaDataSafe(addMetaDataSafe)
+  transferLabelsSeurat(transferLabelsSeurat) --> qSeuViolin(qSeuViolin)
+  transferLabelsSeurat(transferLabelsSeurat) --> .parseBasicObjStats(.parseBasicObjStats)
+  transferLabelsSeurat(transferLabelsSeurat) --> xsave(xsave)
+  transferLabelsSeurat(transferLabelsSeurat) --> qUMAP(qUMAP)
+  transferLabelsSeurat(transferLabelsSeurat) --> clUMAP(clUMAP)
+  scPieClusterDistribution(scPieClusterDistribution) --> .parseBasicObjStats(.parseBasicObjStats)
+  scGeneConceptNetworkEnrichr(scGeneConceptNetworkEnrichr) --> .emptyAnnotatedPlot(.emptyAnnotatedPlot)
+  scGOEnrichment(scGOEnrichment) --> xsave(xsave)
+  scEnhancedVolcano(scEnhancedVolcano) --> countRelevantEnrichments(countRelevantEnrichments)
+  scEmapplotEnrichr(scEmapplotEnrichr) --> .emptyAnnotatedPlot(.emptyAnnotatedPlot)
+  scBarplotEnrichr(scBarplotEnrichr) --> .emptyAnnotatedPlot(.emptyAnnotatedPlot)
+  scBarplot.FractionBelowThr(scBarplot.FractionBelowThr) --> scBarplot.FractionAboveThr(scBarplot.FractionAboveThr)
+  scBarplot.CellsPerCluster(scBarplot.CellsPerCluster) --> .parseBasicObjStats(.parseBasicObjStats)
+  scBarplot.CellsPerCluster(scBarplot.CellsPerCluster) --> DiscretePaletteSafe(DiscretePaletteSafe)
+  saveLsSeuratMetadata(saveLsSeuratMetadata) --> xsave(xsave)
+  save.parameters(save.parameters) --> ww.get.1st.Seur.element(ww.get.1st.Seur.element)
+  runDGEA(runDGEA) --> addCombinedScore2DGEAResults(addCombinedScore2DGEAResults)
+  runDGEA(runDGEA) --> GetOrderedClusteringRuns(GetOrderedClusteringRuns)
+  runDGEA(runDGEA) --> xsave(xsave)
+  runDGEA(runDGEA) --> PlotTopGenesPerCluster(PlotTopGenesPerCluster)
+  runDGEA(runDGEA) --> GetClusteringRuns(GetClusteringRuns)
+  runDGEA(runDGEA) --> clUMAP(clUMAP)
+  runDGEA(runDGEA) --> AutoNumber.by.UMAP(AutoNumber.by.UMAP)
+  runDGEA(runDGEA) --> AutoLabelTop.logFC(AutoLabelTop.logFC)
+  removeResidualSmallClusters(removeResidualSmallClusters) --> clUMAP(clUMAP)
+  removeClustersAndDropLevels(removeClustersAndDropLevels) --> removeResidualSmallClusters(removeResidualSmallClusters)
+  removeClustersAndDropLevels(removeClustersAndDropLevels) --> dropLevelsSeurat(dropLevelsSeurat)
+  removeClustersAndDropLevels(removeClustersAndDropLevels) --> GetClusteringRuns(GetClusteringRuns)
+  removeCellsByUmap(removeCellsByUmap) --> clUMAP(clUMAP)
+  regress_out_and_recalculate_seurat(regress_out_and_recalculate_seurat) --> calc.q99.Expression.and.set.all.genes(calc.q99.Expression.and.set.all.genes)
+  regress_out_and_recalculate_seurat(regress_out_and_recalculate_seurat) --> isave.RDS(isave.RDS)
+  regress_out_and_recalculate_seurat(regress_out_and_recalculate_seurat) --> qUMAP(qUMAP)
+  regress_out_and_recalculate_seurat(regress_out_and_recalculate_seurat) --> SetupReductionsNtoKdimensions(SetupReductionsNtoKdimensions)
+  regress_out_and_recalculate_seurat(regress_out_and_recalculate_seurat) --> GetClusteringRuns(GetClusteringRuns)
+  regress_out_and_recalculate_seurat(regress_out_and_recalculate_seurat) --> clUMAP(clUMAP)
+  recall.parameters(recall.parameters) --> ww.get.1st.Seur.element(ww.get.1st.Seur.element)
+  recall.meta.tags.n.datasets(recall.meta.tags.n.datasets) --> ww.get.1st.Seur.element(ww.get.1st.Seur.element)
+  recall.genes.ls(recall.genes.ls) --> ww.get.1st.Seur.element(ww.get.1st.Seur.element)
+  recall.all.genes(recall.all.genes) --> ww.get.1st.Seur.element(ww.get.1st.Seur.element)
+  qGeneExpressionUMAPS(qGeneExpressionUMAPS) --> qUMAP(qUMAP)
+  scPlotPCAvarExplained(scPlotPCAvarExplained) --> scCalcPCAVarExplained(scCalcPCAVarExplained)
+  qQC.plots.BrainOrg(qQC.plots.BrainOrg) --> qUMAP(qUMAP)
+  qMarkerCheck.BrainOrg(qMarkerCheck.BrainOrg) --> multiFeaturePlot.A4(multiFeaturePlot.A4)
+  qClusteringUMAPS(qClusteringUMAPS) --> clUMAP(clUMAP)
+  processSeuratObject(processSeuratObject) --> suPlotVariableFeatures(suPlotVariableFeatures)
+  processSeuratObject(processSeuratObject) --> scPlotPCAvarExplained(scPlotPCAvarExplained)
+  processSeuratObject(processSeuratObject) --> qQC.plots.BrainOrg(qQC.plots.BrainOrg)
+  processSeuratObject(processSeuratObject) --> qMarkerCheck.BrainOrg(qMarkerCheck.BrainOrg)
+  processSeuratObject(processSeuratObject) --> qClusteringUMAPS(qClusteringUMAPS)
+  processSeuratObject(processSeuratObject) --> calc.q99.Expression.and.set.all.genes(calc.q99.Expression.and.set.all.genes)
+  processSeuratObject(processSeuratObject) --> plotQUMAPsInAFolder(plotQUMAPsInAFolder)
+  processSeuratObject(processSeuratObject) --> xsave(xsave)
+  processSeuratObject(processSeuratObject) --> addGeneClassFractions(addGeneClassFractions)
+  processSeuratObject(processSeuratObject) --> SetupReductionsNtoKdimensions(SetupReductionsNtoKdimensions)
+  processSeuratObject(processSeuratObject) --> UpdateGenesSeurat(UpdateGenesSeurat)
+  plotQUMAPsInAFolder(plotQUMAPsInAFolder) --> qUMAP(qUMAP)
+  plotQUMAPsInAFolder(plotQUMAPsInAFolder) --> check.genes(check.genes)
+  plot.Gene.Cor.Heatmap(plot.Gene.Cor.Heatmap) --> check.genes(check.genes)
+  plot.Gene.Cor.Heatmap(plot.Gene.Cor.Heatmap) --> sparse.cor(sparse.cor)
+  multi_clUMAP.A4(multi_clUMAP.A4) --> .adjustLayout(.adjustLayout)
+  multi_clUMAP.A4(multi_clUMAP.A4) --> clUMAP(clUMAP)
+  multiSingleClusterHighlightPlots.A4(multiSingleClusterHighlightPlots.A4) --> clUMAP(clUMAP)
+  matchBestIdentity(matchBestIdentity) --> scBarplot.CellFractions(scBarplot.CellFractions)
+  matchBestIdentity(matchBestIdentity) --> .replace_by_most_frequent_categories(.replace_by_most_frequent_categories)
+  matchBestIdentity(matchBestIdentity) --> getDiscretePaletteObj(getDiscretePaletteObj)
+  matchBestIdentity(matchBestIdentity) --> clUMAP(clUMAP)
+  jPairwiseJaccardIndexList(jPairwiseJaccardIndexList) --> jJaccardIndexVec(jJaccardIndexVec)
+  jPairwiseJaccardIndex(jPairwiseJaccardIndex) --> jJaccardIndexBinary(jJaccardIndexBinary)
+  downsampleSeuObj.and.Save(downsampleSeuObj.and.Save) --> xsave(xsave)
+  downsampleSeuObj.and.Save(downsampleSeuObj.and.Save) --> downsampleSeuObj(downsampleSeuObj)
+  downsampleListSeuObjsPercent(downsampleListSeuObjsPercent) --> isave.RDS(isave.RDS)
+  downsampleListSeuObjsPercent(downsampleListSeuObjsPercent) --> downsampleSeuObj(downsampleSeuObj)
+  isave.RDS(isave.RDS) --> .saveRDS.compress.in.BG(.saveRDS.compress.in.BG)
+  downsampleSeuObj(downsampleSeuObj) --> sampleNpc(sampleNpc)
+  downsampleListSeuObjsNCells(downsampleListSeuObjsNCells) --> isave.RDS(isave.RDS)
+  downsampleListSeuObjsNCells(downsampleListSeuObjsNCells) --> downsampleSeuObj(downsampleSeuObj)
+  copyMiscElements(copyMiscElements) --> ww.get.1st.Seur.element(ww.get.1st.Seur.element)
+  getDiscretePaletteObj(getDiscretePaletteObj) --> DiscretePaletteSafe(DiscretePaletteSafe)
+  calc.cluster.averages(calc.cluster.averages) --> qUMAP(qUMAP)
+  addTranslatedMetadata(addTranslatedMetadata) --> clUMAP(clUMAP)
+  addGeneClassFractions(addGeneClassFractions) --> metaColnameExists(metaColnameExists)
+  addGeneClassFractions(addGeneClassFractions) --> addMetaFraction(addMetaFraction)
+  UpdateSeuratObjectProperly(UpdateSeuratObjectProperly) --> UpdateGenesSeurat(UpdateGenesSeurat)
+  SetupReductionsNtoKdimensions(SetupReductionsNtoKdimensions) --> BackupReduction(BackupReduction)
+  SelectHighlyExpressedGenesq99(SelectHighlyExpressedGenesq99) --> IntersectGeneLsWithObject(IntersectGeneLsWithObject)
+  RenameGenesSeurat(RenameGenesSeurat) --> .check_and_rename(.check_and_rename)
+  RenameClustering(RenameClustering) --> clUMAP(clUMAP)
+  PrctCellExpringGene(PrctCellExpringGene) --> ww.calc_helper(ww.calc_helper)
+  PrctCellExpringGene(PrctCellExpringGene) --> PrctCellExpringGene(PrctCellExpringGene)
+  PlotTopGenesPerCluster(PlotTopGenesPerCluster) --> filterCodingGenes(filterCodingGenes)
+  PlotTopGenesPerCluster(PlotTopGenesPerCluster) --> GetTopMarkers(GetTopMarkers)
+  PlotTopGenesPerCluster(PlotTopGenesPerCluster) --> multiFeaturePlot.A4(multiFeaturePlot.A4)
+  PlotTopGenes(PlotTopGenes) --> multiFeaturePlot.A4(multiFeaturePlot.A4)
+  plot3D.umap.gene(plot3D.umap.gene) --> ww.check.quantile.cutoff.and.clip.outliers(ww.check.quantile.cutoff.and.clip.outliers)
+  plot3D.umap.gene(plot3D.umap.gene) --> SavePlotlyAsHtml(SavePlotlyAsHtml)
+  plot3D.umap.gene(plot3D.umap.gene) --> .Annotate4Plotly3D(.Annotate4Plotly3D)
+  Plot3D.ListOfGenes(Plot3D.ListOfGenes) --> plot3D.umap.gene(plot3D.umap.gene)
+  plot3D.umap(plot3D.umap) --> gg_color_hue(gg_color_hue)
+  plot3D.umap(plot3D.umap) --> SavePlotlyAsHtml(SavePlotlyAsHtml)
+  plot3D.umap(plot3D.umap) --> .Annotate4Plotly3D(.Annotate4Plotly3D)
+  Plot3D.ListOfCategories(Plot3D.ListOfCategories) --> plot3D.umap(plot3D.umap)
+  IntersectGeneLsWithObject(IntersectGeneLsWithObject) --> HGNC.EnforceUnique(HGNC.EnforceUnique)
+  IntersectGeneLsWithObject(IntersectGeneLsWithObject) --> GetUpdateStats(GetUpdateStats)
+  GetNumberOfClusters(GetNumberOfClusters) --> GetClusteringRuns(GetClusteringRuns)
+  GetNamedClusteringRuns(GetNamedClusteringRuns) --> GetClusteringRuns(GetClusteringRuns)
+  ConvertDropSeqfolders(ConvertDropSeqfolders) --> UpdateGenesSeurat(UpdateGenesSeurat)
+  Convert10Xfolders_v1(Convert10Xfolders_v1) --> UpdateGenesSeurat(UpdateGenesSeurat)
+  Convert10Xfolders.old(Convert10Xfolders.old) --> UpdateGenesSeurat(UpdateGenesSeurat)
+  UpdateGenesSeurat(UpdateGenesSeurat) --> RenameGenesSeurat(RenameGenesSeurat)
+  UpdateGenesSeurat(UpdateGenesSeurat) --> HGNC.EnforceUnique(HGNC.EnforceUnique)
+  UpdateGenesSeurat(UpdateGenesSeurat) --> GetUpdateStats(GetUpdateStats)
+  Convert10Xfolders(Convert10Xfolders) --> UpdateGenesSeurat(UpdateGenesSeurat)
+  CalculateFractionInTrome(CalculateFractionInTrome) --> check.genes(check.genes)
+  Calc.Cor.Seurat(Calc.Cor.Seurat) --> sparse.cor(sparse.cor)
+  clUMAP(clUMAP) --> getDiscretePaletteObj(getDiscretePaletteObj)
+  clUMAP(clUMAP) --> GetClusteringRuns(GetClusteringRuns)
+  clUMAP(clUMAP) --> GetNamedClusteringRuns(GetNamedClusteringRuns)
+  AutoNumber.by.UMAP(AutoNumber.by.UMAP) --> clUMAP(clUMAP)
+  multiFeaturePlot.A4(multiFeaturePlot.A4) --> check.genes(check.genes)
+  AutoLabelTop.logFC(AutoLabelTop.logFC) --> multiFeaturePlot.A4(multiFeaturePlot.A4)
+  AutoLabelTop.logFC(AutoLabelTop.logFC) --> addMetaDataSafe(addMetaDataSafe)
+  AutoLabelTop.logFC(AutoLabelTop.logFC) --> GetTopMarkersDF(GetTopMarkersDF)
+  AutoLabel.KnownMarkers(AutoLabel.KnownMarkers) --> GetTopMarkersDF(GetTopMarkersDF)
+  .parseKeyParams(.parseKeyParams) --> .getNrScaledFeatures(.getNrScaledFeatures)
+  .parseKeyParams(.parseKeyParams) --> .getNrPCs(.getNrPCs)
+  .parseKeyParams(.parseKeyParams) --> .getRegressionVariablesForScaleData(.getRegressionVariablesForScaleData)
+  .getRegressionVariablesForScaleData(.getRegressionVariablesForScaleData) --> .FindCommandInObject(.FindCommandInObject)
+subgraph SubGraphOne
+
+end
+```
+*created by `convert_igraph_to_mermaid()`*
+
 
 
 

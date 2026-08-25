@@ -10,7 +10,6 @@
 # source('~/.pack.R')
 
 
-
 # _________________________________________________________________________________________________
 # Extract and check metadata columns  ______________________________ ----
 # _________________________________________________________________________________________________
@@ -143,7 +142,7 @@ metaColnameExists <- function(col_name, obj = combined.obj) {
 #' }
 #' }
 #' @export
-getMetadataColumn <- function(col = "batch", obj = combined.obj, as_numeric = FALSE, v = T) {
+getMetadataColumn <- function(col = "batch", obj = combined.obj, as_numeric = FALSE, v = TRUE) {
   stopifnot(col %in% colnames(obj@meta.data))
   if (v) message(substitute(obj), ", ", ncol(obj), " cells.")
 
@@ -226,11 +225,12 @@ get_levels_seu <- function(obj, ident, max_levels = 100, dput = TRUE) {
 #'
 #' @export
 calculateAverageMetaData <- function(
-    obj = combined.obj,
-    meta.features = c("nFeature_RNA", "percent.ribo", "percent.mito"),
-    ident = GetClusteringRuns()[1],
-    metrics = list("median" = median, "mean" = mean),
-    verbose = TRUE, max.categ = 30) {
+  obj = combined.obj,
+  meta.features = c("nFeature_RNA", "percent.ribo", "percent.mito"),
+  ident = GetClusteringRuns()[1],
+  metrics = list("median" = median, "mean" = mean),
+  verbose = TRUE, max.categ = 30
+) {
   stopifnot(
     is(obj, "Seurat"),
     "ident not found in object" = ident %in% colnames(obj@meta.data),
@@ -282,12 +282,13 @@ calculateAverageMetaData <- function(
 #' @examples
 #' calculatePercentageMatch(obj = combined.obj, ident = "Simple_Celltypes")
 calculatePercentageMatch <- function(
-    obj,
-    ident = GetClusteringRuns()[1],
-    meta.features = c("AAV.detected.min2", "AAV.detected"),
-    match.values = c("AAV.detected.min2" = "AAV", "AAV.detected" = "AAV"), # Named vector for matches
-    verbose = TRUE,
-    max.categ = 100) {
+  obj,
+  ident = GetClusteringRuns()[1],
+  meta.features = c("AAV.detected.min2", "AAV.detected"),
+  match.values = c("AAV.detected.min2" = "AAV", "AAV.detected" = "AAV"), # Named vector for matches
+  verbose = TRUE,
+  max.categ = 100
+) {
   # Check for preconditions
   stopifnot(
     is(obj, "Seurat"),
@@ -322,7 +323,6 @@ calculatePercentageMatch <- function(
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title getMedianMetric.lsObj
 #'
@@ -347,7 +347,6 @@ getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seu
   }
   return(medMetric)
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -437,7 +436,7 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
   }
 
   if (any(is.na(names(metadata)))) {
-    warning("Metadata contains NA values.", immediate. = T)
+    warning("Metadata contains NA values.", immediate. = TRUE)
     metadata_orig <- metadata
     metadata <- vec.fromNames(colnames(obj), fill = NA)
     cells_found <- na.omit.strip(names(metadata_orig))
@@ -458,7 +457,6 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
 
   return(obj)
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -551,13 +549,14 @@ create.metadata.vector <- function(vec, obj = combined.obj, fill = NA,
 #' @importFrom Matrix colSums
 #' @importFrom CodeAndRoll2 grepv
 addMetaFraction <- function(
-    obj,
-    col.name = "percent.mito",
-    gene.symbol.pattern = c("^MT\\.|^MT-", FALSE)[1],
-    assay = "RNA",
-    layer = "counts",
-    gene.set = FALSE,
-    verbose = TRUE) {
+  obj,
+  col.name = "percent.mito",
+  gene.symbol.pattern = c("^MT\\.|^MT-", FALSE)[1],
+  assay = "RNA",
+  layer = "counts",
+  gene.set = FALSE,
+  verbose = TRUE
+) {
   #
   message("Should rather use the default `Seurat::PercentageFeatureSet`")
   message("Assay: ", assay)
@@ -591,7 +590,6 @@ addMetaFraction <- function(
   colnames(obj@meta.data)
   return(obj)
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -629,14 +627,13 @@ addGeneClassFractions <- function(obj,
   if (species == "mouse") {
     message("Using mouse gene patterns for: mito, ribo, Gm.predicted, and Malat1 genes.\n")
     gene_fractions <- list(
-      "percent.mito"        = "^(mt-|MT-)",
-      "percent.ribo"        = "^(Rpl|Rps)",
+      "percent.mito" = "^(mt-|MT-)",
+      "percent.ribo" = "^(Rpl|Rps)",
 
       # Mouse AC/AL loci do not exist in the same way as human GenBank/EMBL ACxxxxx / ALxxxxx loci.
       # The closest equivalents are "Gm" predicted and lincRNAs genes.
       "percent.Gm.predicted" = "^Gm[0-9]+",
-
-      "percent.Malat1"       = "^Malat1$"
+      "percent.Malat1" = "^Malat1$"
     )
   } else if (species == "human") {
     message("Using human gene patterns for: mito, ribo, AC/AL loci, LINC, and MALAT1 genes.")
@@ -758,9 +755,10 @@ seu.add.meta.from.table <- function(obj = combined.obj, meta, suffix = ".fromMet
 #' }
 #' @export
 seu.map.and.add.new.ident.to.meta <- function(
-    obj = combined.obj, ident.table = clusterIDs.GO.process,
-    orig.ident = Idents(obj),
-    metaD.colname = substitute_deparse(ident.table)) {
+  obj = combined.obj, ident.table = clusterIDs.GO.process,
+  orig.ident = Idents(obj),
+  metaD.colname = substitute_deparse(ident.table)
+) {
   # identities should match
   {
     Idents(obj) <- orig.ident
@@ -796,8 +794,6 @@ seu.map.and.add.new.ident.to.meta <- function(
 }
 
 
-
-
 # _________________________________________________________________________________________________
 # Replace / overwrite / remove metadata  ______________________________ ----
 # _________________________________________________________________________________________________
@@ -822,7 +818,6 @@ fix.orig.ident <- function(obj = merged.obj) {
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title seu.RemoveMetadata
 #'
@@ -836,8 +831,9 @@ fix.orig.ident <- function(obj = merged.obj) {
 #' combined.obj <- seu.RemoveMetadata(obj = combined.obj, cols_remove = c("column1", "column2"))
 #' }
 seu.RemoveMetadata <- function(
-    obj = combined.obj,
-    cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = TRUE)) {
+  obj = combined.obj,
+  cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = TRUE)
+) {
   CNN <- colnames(obj@meta.data)
   iprint("cols_remove:", cols_remove)
   print("")
@@ -932,7 +928,6 @@ transferMetadata <- function(from, to,
   )
 
 
-
   # Check cell overlaps
   cells_in_both <- intersect(colnames(from), colnames(to))
   cells_only_in_from <- setdiff(colnames(from), colnames(to))
@@ -940,7 +935,6 @@ transferMetadata <- function(from, to,
   nr.cells.both <- length(cells_in_both)
   nr.cells.only.from <- length(cells_only_in_from)
   nr.cells.only.to <- length(cells_only_in_to)
-
 
 
   # Print cell overlap information  _______________________________________________________
@@ -1012,7 +1006,6 @@ transferMetadata <- function(from, to,
 }
 
 
-
 # _________________________________________________________________________________________________
 # Subset metadata  ______________________________ ----
 # _________________________________________________________________________________________________
@@ -1042,7 +1035,6 @@ sampleNpc <- function(metaDF = MetaData[which(Pass), ], pc = 0.1) {
   cellIDs.keep <- sample(cellIDs, size = nr_cells, replace = FALSE)
   return(cellIDs.keep)
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -1094,7 +1086,6 @@ merge_seurat_metadata <- function(ls_obj, include_cols = NULL, exclude_cols = NU
 
 # Example usage:
 # merged_metadata <- merge_seurat_metadata(ls_obj, include_cols = c("nFeature_RNA", "nCount_RNA"))
-
 
 
 #' @title Combine Metadata from a list of Seurat objects and Write to TSV
@@ -1168,7 +1159,6 @@ writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(
 }
 
 
-
 # _________________________________________________________________________________________________
 # Plot metadata ______________________________ ----
 # _________________________________________________________________________________________________
@@ -1201,19 +1191,19 @@ writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(
 #' @importFrom pheatmap pheatmap
 #' @export
 plotMetadataCorHeatmap <- function(
-    columns = c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo"),
-    obj,
-    cormethod = c("pearson", "spearman")[1],
-    main = paste("Metadata", cormethod, "correlations"),
-    show_numbers = FALSE,
-    digits = 1,
-    suffix = NULL,
-    add_PCA = TRUE,
-    n_PCs = 4,
-    w = ceiling((length(columns) + n_PCs) / 2), h = w,
-    use_ggcorrplot = FALSE,
-    n_cutree = NA,
-    ...
+  columns = c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo"),
+  obj,
+  cormethod = c("pearson", "spearman")[1],
+  main = paste("Metadata", cormethod, "correlations"),
+  show_numbers = FALSE,
+  digits = 1,
+  suffix = NULL,
+  add_PCA = TRUE,
+  n_PCs = 4,
+  w = ceiling((length(columns) + n_PCs) / 2), h = w,
+  use_ggcorrplot = FALSE,
+  n_cutree = NA,
+  ...
 ) {
   META <- obj@meta.data
   columns.found <- intersect(colnames(META), columns)
@@ -1235,18 +1225,18 @@ plotMetadataCorHeatmap <- function(
   corX <- cor(META, method = cormethod, use = "pairwise.complete.obs")
   if (use_ggcorrplot) {
     pl <- ggcorrplot::ggcorrplot(corX,
-                                 title = main,
-                                 hc.order = TRUE,
-                                 digits = digits,
-                                 lab = show_numbers,
-                                 type = "full",
-                                 ...
+      title = main,
+      hc.order = TRUE,
+      digits = digits,
+      lab = show_numbers,
+      type = "full",
+      ...
     )
-    ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, "png"), also.pdf = T, w = w, h = h)
+    ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, "png"), also.pdf = TRUE, w = w, h = h)
   } else {
     pl <- pheatmap::pheatmap(corX,
-                             main = main, treeheight_row = 2, treeheight_col = 2,
-                             cutree_rows = n_cutree, cutree_cols = n_cutree
+      main = main, treeheight_row = 2, treeheight_col = 2,
+      cutree_rows = n_cutree, cutree_cols = n_cutree
     )
     wplot_save_pheatmap(
       x = pl, width = w,
@@ -1288,15 +1278,16 @@ plotMetadataCorHeatmap <- function(
 #' @import tidyverse
 #' @export
 heatmap_calc_clust_median <- function(
-    meta, ident, subset_ident_levels = FALSE,
-    variables, scale = TRUE,
-    suffix = NULL,
-    return_matrix = FALSE,
-    plotname = "Median metadata values by cluster",
-    n_cut_row = NA,
-    n_cut_col = NA,
-    w = ceiling(length(variables) / 2),
-    ...) {
+  meta, ident, subset_ident_levels = FALSE,
+  variables, scale = TRUE,
+  suffix = NULL,
+  return_matrix = FALSE,
+  plotname = "Median metadata values by cluster",
+  n_cut_row = NA,
+  n_cut_col = NA,
+  w = ceiling(length(variables) / 2),
+  ...
+) {
   # Ensure that 'meta' is a dataframe, 'ident' is a column in 'meta', and 'variables' are columns in 'meta'
   stopifnot(
     is.data.frame(meta),
@@ -1355,7 +1346,6 @@ heatmap_calc_clust_median <- function(
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title plotMetadataMedianFractionBarplot
 #'
@@ -1383,20 +1373,21 @@ heatmap_calc_clust_median <- function(
 #' @importFrom reshape2 melt
 
 plotMetadataMedianFractionBarplot <- function(
-    columns = c("percent.mito", "percent.ribo"),
-    suffix = NULL,
-    group.by = GetClusteringRuns(obj = obj)[2],
-    method = c("median", "mean")[1],
-    min.thr = 2.5 # At least this many percent in at least 1 cluster
-    , return.matrix = FALSE,
-    main = paste(method, "read fractions per transcript class and cluster", suffix),
-    ylab = "Fraction of transcriptome (%)",
-    percentify = TRUE,
-    subt = NULL,
-    position = position_stack(),
-    w = 10, h = 6,
-    obj = combined.obj,
-    ...) {
+  columns = c("percent.mito", "percent.ribo"),
+  suffix = NULL,
+  group.by = GetClusteringRuns(obj = obj)[2],
+  method = c("median", "mean")[1],
+  min.thr = 2.5 # At least this many percent in at least 1 cluster
+  , return.matrix = FALSE,
+  main = paste(method, "read fractions per transcript class and cluster", suffix),
+  ylab = "Fraction of transcriptome (%)",
+  percentify = TRUE,
+  subt = NULL,
+  position = position_stack(),
+  w = 10, h = 6,
+  obj = combined.obj,
+  ...
+) {
   meta.data <- obj@meta.data
   stopifnot(group.by %in% colnames(meta.data))
   columns.found <- intersect(colnames(meta.data), c(group.by, columns))
@@ -1432,7 +1423,6 @@ plotMetadataMedianFractionBarplot <- function(
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title Plot Metadata Category Pie Chart
 #'
@@ -1465,15 +1455,16 @@ plotMetadataMedianFractionBarplot <- function(
 #' @return A pie chart visualizing the distribution of categories within the specified metadata column.
 #' @export
 plotMetadataCategPie <- function(
-    metacol = "Singlet.status",
-    plot_name = paste(metacol, "distribution"),
-    obj = combined.obj,
-    max.categs = 20,
-    both_pc_and_value = TRUE,
-    subtitle = NULL,
-    labels = NULL,
-    LegendSide = FALSE,
-    ...) {
+  metacol = "Singlet.status",
+  plot_name = paste(metacol, "distribution"),
+  obj = combined.obj,
+  max.categs = 20,
+  both_pc_and_value = TRUE,
+  subtitle = NULL,
+  labels = NULL,
+  LegendSide = FALSE,
+  ...
+) {
   #
   categ_pivot <- table(obj[[metacol]])
   stopifnot(length(categ_pivot) < max.categs)
@@ -1488,12 +1479,9 @@ plotMetadataCategPie <- function(
 }
 
 
-
 # _________________________________________________________________________________________________
 # Label / identity transfer across objects ______________________________ ----
 # _________________________________________________________________________________________________
-
-
 
 
 #' @title Rename Azimuth Columns in Seurat Object
@@ -1577,10 +1565,11 @@ renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1],
 #'
 #' @export
 renameSmallCategories <- function(
-    obj,
-    idents = c("predicted.class", "predicted.cluster", "predicted.subclass"),
-    min.cells = max(round((ncol(obj)) / 2000), 10),
-    new.name = "unclear") {
+  obj,
+  idents = c("predicted.class", "predicted.cluster", "predicted.subclass"),
+  min.cells = max(round((ncol(obj)) / 2000), 10),
+  new.name = "unclear"
+) {
   stopifnot("obj must be a Seurat object" = is(obj, "Seurat"))
 
   for (ident in idents) {
@@ -1660,24 +1649,25 @@ renameSmallCategories <- function(
 #'
 #' @export
 transferLabelsSeurat <- function(
-    query_obj,
-    reference_obj,
-    reference_path = NULL,
-    reference_ident,
-    anchors = NULL,
-    new_ident = gsub(
-      pattern = "ordered",
-      replacement = "transferred",
-      x = reference_ident
-    ),
-    predictions_col = "predicted.id",
-    predictions_score = sppp(new_ident, "score"),
-    save_anchors = TRUE,
-    reference_suffix = "REFERENCE.obj",
-    plot_suffix = NULL,
-    plot_reference = TRUE,
-    w = 12, h = 9,
-    ...) {
+  query_obj,
+  reference_obj,
+  reference_path = NULL,
+  reference_ident,
+  anchors = NULL,
+  new_ident = gsub(
+    pattern = "ordered",
+    replacement = "transferred",
+    x = reference_ident
+  ),
+  predictions_col = "predicted.id",
+  predictions_score = sppp(new_ident, "score"),
+  save_anchors = TRUE,
+  reference_suffix = "REFERENCE.obj",
+  plot_suffix = NULL,
+  plot_reference = TRUE,
+  w = 12, h = 9,
+  ...
+) {
   #
   if (is.null(reference_obj)) {
     iprint("Loading reference object:", basename(reference_path))
@@ -1811,19 +1801,20 @@ transferLabelsSeurat <- function(
 #' }
 #' @export
 matchBestIdentity <- function(
-    obj, ident_to_rename,
-    reference_ident = GetOrderedClusteringRuns(obj)[1],
-    prefix = reference_ident,
-    suffix = gsub(prefix, "", x = reference_ident),
-    # to_suffix = "matched",
-    # to_suffix = FixPlotName(gsub(pattern = "[a-zA-Z_]", replacement = "", x = ident_to_rename)),
-    new_ident_name = kpp(prefix, ident_to_rename, "match.to", suffix),
-    plot_suffix = prefix,
-    barplot_match = TRUE,
-    barplot_fractions = TRUE,
-    rnd_colors = T,
-    w = 12, h = 9,
-    ...) {
+  obj, ident_to_rename,
+  reference_ident = GetOrderedClusteringRuns(obj)[1],
+  prefix = reference_ident,
+  suffix = gsub(prefix, "", x = reference_ident),
+  # to_suffix = "matched",
+  # to_suffix = FixPlotName(gsub(pattern = "[a-zA-Z_]", replacement = "", x = ident_to_rename)),
+  new_ident_name = kpp(prefix, ident_to_rename, "match.to", suffix),
+  plot_suffix = prefix,
+  barplot_match = TRUE,
+  barplot_fractions = TRUE,
+  rnd_colors = TRUE,
+  w = 12, h = 9,
+  ...
+) {
   stopifnot("colname prefix undefined" = !is.null(prefix))
 
   dictionary <- obj@meta.data[, c(ident_to_rename, reference_ident)]
@@ -1849,7 +1840,6 @@ matchBestIdentity <- function(
 
   return(obj)
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -1890,13 +1880,14 @@ matchBestIdentity <- function(
 #' head(cbind(MXX[, 1], z[, 1]))
 #' }
 .replace_by_most_frequent_categories <- function(
-    df, query_col = colnames(df)[1],
-    ref_col = colnames(df)[2],
-    show_plot = TRUE,
-    suffix_barplot = NULL,
-    ext = "png",
-    min.thr = 0.5,
-    ...) {
+  df, query_col = colnames(df)[1],
+  ref_col = colnames(df)[2],
+  show_plot = TRUE,
+  suffix_barplot = NULL,
+  ext = "png",
+  min.thr = 0.5,
+  ...
+) {
   # Convert to data frame if it is not
   if (!is.data.frame(df)) {
     df <- as.data.frame(df)

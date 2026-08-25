@@ -1,9 +1,8 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat v5
-Version: 2.9.1
+Version: 2.9.5
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
-Author: Abel Vertesy <av@imba.oeaw.ac.at> [aut, cre]
 Description: Seurat.utils is a collection of utility functions for Seurat
     single cell analysis.  Functions allow 3D plotting, visualisation of
     statistics & QC, the automation / multiplexing of plotting,
@@ -13,25 +12,16 @@ License: GPL-3 + file LICENSE
 BugReports: https://github.com/vertesy/Seurat.utils/issues
 Depends: 
     CodeAndRoll2,
-    Seurat,
-    Stringendo,
     ggExpress,
     magrittr,
+    Seurat,
+    Stringendo,
     tidyverse
 Imports: 
-    EnhancedVolcano,
-    HGNChelper,
-    MarkdownHelpers,
-    MarkdownReports,
-    Matrix,
-    R.utils,
-    RColorBrewer,
-    ReadWriter,
-    SeuratObject,
-    SoupX,
     checkmate,
     cowplot,
     dplyr,
+    EnhancedVolcano,
     foreach,
     fs,
     future,
@@ -41,26 +31,35 @@ Imports:
     ggrepel,
     gplots,
     harmony,
+    HGNChelper,
     htmlwidgets,
+    MarkdownHelpers,
+    MarkdownReports,
+    Matrix,
     matrixStats,
     pheatmap,
     plotly,
     princurve,
     qs,
+    R.utils,
+    RColorBrewer,
     readr,
+    ReadWriter,
     reshape2,
     rstudioapi,
     scales,
+    SeuratObject,
+    SoupX,
     sparseMatrixStats,
     stringr,
     tibble,
     tictoc
 Suggests: 
-    DatabaseLinke.R,
     clusterProfiler,
+    DatabaseLinke.R,
     enrichplot,
     vroom
 Encoding: UTF-8
-Packaged: 2025-12-03 10:05:36.316459
+Packaged: 2026-08-25 20:12:10.960369
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2

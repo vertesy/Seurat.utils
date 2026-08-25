@@ -2,54 +2,57 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{downsampleSeuObjByIdentAndMaxcells}
 \alias{downsampleSeuObjByIdentAndMaxcells}
-\title{Sample max number of Cells From each identity in a Seurat Object}
+\title{Downsample Cells Per Identity in a Seurat Object}
 \usage{
 downsampleSeuObjByIdentAndMaxcells(
   obj,
   ident = GetNamedClusteringRuns()[1],
-  max.cells = min(table(obj[[ident]])),
+  fraction.downsampled = 0.2,
+  min.cells = 100,
+  max.cells = 2000,
   verbose = TRUE,
-  fraction.downsampled = 0.05,
-  downsample.w.replacement = (max.cells/ncol(obj)) < fraction.downsampled,
   plot_stats = TRUE,
   seed = 1989
 )
 }
 \arguments{
-\item{obj}{A Seurat object from which cells are to be sampled.}
+\item{obj}{A Seurat object.}
 
-\item{ident}{A character vector specifying the identity class from which cells are to be sampled.}
+\item{ident}{Metadata column used for grouping cells.}
 
-\item{max.cells}{A positive integer indicating the maximum number of cells to sample from each identity class.}
+\item{fraction.downsampled}{Fraction of cells retained per identity class.}
 
-\item{verbose}{Logical indicating if messages about the sampling process should be printed to the console. Defaults to TRUE.}
+\item{min.cells}{Minimum number of cells retained for larger identity classes.}
 
-\item{fraction.downsampled}{A numeric value between 0 and 1 indicating the}
+\item{max.cells}{Maximum number of cells retained per identity class.}
 
-\item{downsample.w.replacement}{Logical indicating if sampling should be done with replacement. Defaults to FALSE.}
+\item{verbose}{Logical, whether to report sampling statistics.}
 
-\item{plot_stats}{Logical indicating to plot a barplot.}
+\item{plot_stats}{Logical, whether to plot retained fractions.}
 
-\item{seed}{An integer to set the seed for reproducibility.}
+\item{seed}{Integer seed for reproducible sampling.}
 }
 \value{
-Returns a Seurat object containing only the sampled cells.
+A Seurat object subset to the sampled cells.
 }
 \description{
-This function samples a specified maximum number of cells from each identity class
-in a Seurat object, in the meta.data. It ensures that the sampling does not exceed the total
-number of cells available per identity.
+Downsample each identity class to \code{fraction.downsampled} of its
+cells, bounded by \code{min.cells} and \code{max.cells}. Identity classes with
+\code{min.cells} or fewer cells are kept unchanged.
 }
 \details{
-This function checks for the presence of the specified identity class within the object's metadata.
-If the number of cells within any identity class is less than or equal to the \code{max.cells} parameter,
-all cells from that class are retained. Otherwise, a random sample of \code{max.cells} is taken from the class.
-The function updates the identity of the cells in the returned Seurat object to reflect the sampled cells.
-If \code{verbose} is TRUE, it prints the total number of cells sampled and provides a visual summary of the fraction
-of cells retained per identity class.
+For each identity class, the function calculates
+\code{round(n_cells * fraction.downsampled)}. If the class has \code{min.cells} or
+fewer cells, all cells are retained. Otherwise, the target cell number is
+bounded to \verb{[min.cells, max.cells]} and sampled without replacement.
 }
 \examples{
-# Assuming `seuratObj` is a Seurat object with identities stored in its metadata
-sampledSeuratObj <- downsampleSeuObjByIdentAndMaxcells(obj = seuratObj, ident = "cellType", max.cells = 100)
+sampled_obj <- downsampleSeuObjByIdentAndMaxcells(
+  obj = combined.obj,
+  ident = "Cell.types.v11.fine",
+  fraction.downsampled = 0.2,
+  min.cells = 100,
+  max.cells = 2000
+)
 
 }

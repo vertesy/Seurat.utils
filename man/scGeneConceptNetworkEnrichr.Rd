@@ -14,8 +14,12 @@ scGeneConceptNetworkEnrichr(
   subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
   caption = paste0("Enriched terms: ", ifelse(NULL_input, 0, nrow(df.enrichment)),
     " | Shown: ", ifelse(NULL_input, 0, min(showCategory, nrow(df.enrichment))), if
-    (!is.null(foldChange)) paste0(" | genes w/ foldChange: ", length(foldChange)) else
-    ""),
+    (!is.null(foldChange)) {
+     paste0(" | genes w/ foldChange: ", length(foldChange))
+
+    } else {
+     ""
+ }),
   circular = FALSE,
   colorEdge = TRUE,
   cex_label_category = 1,
@@ -81,7 +85,7 @@ safety checks, informative fallbacks, and optional saving.
 }
 \examples{
 \dontrun{
-edox <- setReadable(edo, 'org.Hs.eg.db', 'ENTREZID')
+edox <- setReadable(edo, "org.Hs.eg.db", "ENTREZID")
 scGeneConceptNetworkEnrichr(
   df.enrichment = edox,
   foldChange = geneList,
