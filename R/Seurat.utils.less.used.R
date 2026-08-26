@@ -5,7 +5,6 @@
 # setwd("~/GitHub/Packages/Seurat.utils")
 
 
-
 # _________________________________________________________________________________________________
 #' @title Convert10Xfolders - legacy version
 #'
@@ -29,6 +28,7 @@
 #' }
 #' @export
 Convert10Xfolders_v1 <- function(
+<<<<<<< HEAD
     InputDir,
     regex = FALSE,
     folderPattern = c("filtered_feature", "raw_feature", "SoupX_decont")[1],
@@ -45,6 +45,23 @@ Convert10Xfolders_v1 <- function(
   warning("Since v2.9.0, the output is saved into qs format with qs2 package.", immediate. = TRUE)
 
   compress_level <- .map_preset_to_compress_level(preset)
+=======
+  InputDir,
+  regex = FALSE,
+  folderPattern = c("filtered_feature", "raw_feature", "SoupX_decont")[1],
+  depth = 4,
+  min.cells = 5, min.features = 200,
+  updateHGNC = TRUE, ShowStats = TRUE,
+  writeCBCtable = TRUE,
+  sample.barcoding = FALSE,
+  nthreads = .getNrCores(),
+  preset = "high",
+  ext = "qs",
+  sort_alphanumeric = TRUE,
+  ...
+) {
+  warning("Since v2.5.0, the output is saved in the more efficient qs format! See qs package.", immediate. = TRUE)
+>>>>>>> origin/main
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
@@ -118,8 +135,6 @@ Convert10Xfolders_v1 <- function(
     }
   } # for
 }
-
-
 
 
 # ____________________________________________________________________________________
@@ -236,25 +251,26 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", 
 #' @export
 
 multi_clUMAP.A4 <- function(
-    obj = combined.obj,
-    idents = GetClusteringRuns(obj)[1:4],
-    foldername = "clUMAPs_multi",
-    plot.reduction = "umap",
-    intersectionAssay = c("RNA", "integrated")[1],
-    layout = c("tall", "wide", FALSE)[2],
-    # colors = c("grey", "red"),
-    nr.Col = 2, nr.Row = 4,
-    cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
-    label = FALSE, # can be a vector of length idents
-    legend = !label,
-    subdir = TRUE,
-    prefix = NULL, suffix = NULL,
-    background_col = "white",
-    aspect.ratio = c(FALSE, 0.6)[2],
-    saveGeneList = FALSE,
-    w = 8.27, h = 11.69, scaling = 1,
-    format = c("jpg", "pdf", "png")[1],
-    ...) {
+  obj = combined.obj,
+  idents = GetClusteringRuns(obj)[1:4],
+  foldername = "clUMAPs_multi",
+  plot.reduction = "umap",
+  intersectionAssay = c("RNA", "integrated")[1],
+  layout = c("tall", "wide", FALSE)[2],
+  # colors = c("grey", "red"),
+  nr.Col = 2, nr.Row = 4,
+  cex = round(0.1 / (nr.Col * nr.Row), digits = 2),
+  label = FALSE, # can be a vector of length idents
+  legend = !label,
+  subdir = TRUE,
+  prefix = NULL, suffix = NULL,
+  background_col = "white",
+  aspect.ratio = c(FALSE, 0.6)[2],
+  saveGeneList = FALSE,
+  w = 8.27, h = 11.69, scaling = 1,
+  format = c("jpg", "pdf", "png")[1],
+  ...
+) {
   .Deprecated("qClusteringUMAPS")
   message("multi_clUMAP.A4() is kept because it can plot more than 4 resolutions, inti a subfolder.")
 
@@ -312,7 +328,6 @@ multi_clUMAP.A4 <- function(
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title Plot and Save UMAP without legend
 #'
@@ -351,7 +366,6 @@ umapNamedClusters <- function(obj = combined.obj,
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title AutoNumber.by.PrinCurve
 #'
@@ -381,9 +395,10 @@ umapNamedClusters <- function(obj = combined.obj,
 #'
 #' @export
 AutoNumber.by.PrinCurve <- function(
-    obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
-    , dim = 1:2, plotit = TRUE, swap = -1,
-    reduction = "umap", res = "integrated_snn_res.0.5") {
+  obj = combined.obj # Relabel cluster numbers along the principal curve of 2 UMAP (or tSNE) dimensions.
+  , dim = 1:2, plotit = TRUE, swap = -1,
+  reduction = "umap", res = "integrated_snn_res.0.5"
+) {
   # require(princurve)
   dim_name <- ppu(toupper(reduction), dim)
   coord.umap <- FetchData(object = obj, vars = dim_name)
@@ -411,11 +426,9 @@ AutoNumber.by.PrinCurve <- function(
 }
 
 
-
 # _________________________________________________________________________________________________
 # Read and Write Seurat Objects ----
 # _________________________________________________________________________________________________
-
 
 
 #' @title Load 10X Genomics Version 3 Data
@@ -567,10 +580,6 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 }
 
 
-
-
-
-
 # _________________________________________________________________________________________________
 #' @title Convert10Xfolders.old
 #'
@@ -589,11 +598,27 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #' }
 #' @export
 Convert10Xfolders.old <- function(
+<<<<<<< HEAD
     InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
     , folderPattern = c("filtered", "SoupX_decont")[1],
     min.cells = 10, min.features = 200, updateHGNC = TRUE, ShowStats = TRUE) {
   .Deprecated("Convert10Xfolders")
 
+=======
+  InputDir,
+  folderPattern = c("filtered", "SoupX_decont")[1],
+  min.cells = 10, min.features = 200,
+  updateHGNC = TRUE, ShowStats = TRUE
+) {
+  # ... function body ...
+}
+
+Convert10Xfolders.old <- function(
+  InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
+  , folderPattern = c("filtered", "SoupX_decont")[1],
+  min.cells = 10, min.features = 200, updateHGNC = TRUE, ShowStats = TRUE
+) {
+>>>>>>> origin/main
   fin <- list.dirs(InputDir, recursive = FALSE)
   fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = FALSE)
 
@@ -627,7 +652,6 @@ Convert10Xfolders.old <- function(
     saveRDS(seu, file = fnameOUT)
   }
 }
-
 
 
 # _________________________________________________________________________________________________
@@ -722,8 +746,6 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 }
 
 
-
-
 # _________________________________________________________________________________________________
 # Archived ----
 # _________________________________________________________________________________________________
@@ -759,17 +781,18 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 #'
 #' @export
 regress_out_and_recalculate_seurat <- function(
-    obj,
-    n.var.features = p$"n.var.genes", # p is a list of parameters, 2000
-    features.scale = n.var.features,
-    vars.to.regress,
-    suffix,
-    nPCs = p$"n.PC",
-    clust_resolutions = p$"snn_res",
-    calc_tSNE = FALSE,
-    plot_umaps = TRUE,
-    save_obj = TRUE,
-    assayX = "RNA") {
+  obj,
+  n.var.features = p$"n.var.genes", # p is a list of parameters, 2000
+  features.scale = n.var.features,
+  vars.to.regress,
+  suffix,
+  nPCs = p$"n.PC",
+  clust_resolutions = p$"snn_res",
+  calc_tSNE = FALSE,
+  plot_umaps = TRUE,
+  save_obj = TRUE,
+  assayX = "RNA"
+) {
   .Deprecated("processSeuratObject")
 
   tictoc::tic()
@@ -921,7 +944,6 @@ ww.calc_helper <- function(obj, genes, slot = "RNA") {
 }
 
 
-
 #' @title Cluster Size Distribution Plot (Barplot or Histogram)
 #'
 #' @description Generates a bar plot or histogram to visualize the size distribution of clusters
@@ -944,9 +966,10 @@ ww.calc_helper <- function(obj, genes, slot = "RNA") {
 #'
 # #' @export
 plotClustSizeDistr <- function(
-    obj = combined.obj, ident,
-    plot = TRUE, thr.hist = 30,
-    ...) {
+  obj = combined.obj, ident,
+  plot = TRUE, thr.hist = 30,
+  ...
+) {
   .Deprecated("plotClusterSizeDistribution()")
 
   stopifnot(ident %in% colnames(obj@meta.data))
@@ -981,8 +1004,6 @@ plotClustSizeDistr <- function(
     clust.size.distr
   }
 }
-
-
 
 
 #' # _________________________________________________________________________________________________
@@ -1213,7 +1234,6 @@ plotClustSizeDistr <- function(
 #
 #   # ggExpress::qqSave(categ.per.cluster, ...)
 # }
-
 
 
 # _________________________________________________________________________________________________

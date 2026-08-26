@@ -1,49 +1,53 @@
-# AGENTS
+# Guidance for Agents
 
-## Overview
-Seurat.utils is an R package with helper functions that extend [Seurat](https://satijalab.org/seurat) for single-cell analysis. It collects routines for metadata handling, visualization, and general utilities.
+Version: 2026.08.27-00:00
 
-## Repository layout
-- `R/` – package source code.
-  - `Seurat.Utils.R` – core functions.
-  - `Seurat.Utils.Metadata.R` – metadata helpers.
-  - `Seurat.Utils.Visualization.R` – plotting helpers.
-  - `Seurat.utils.less.used.R` – rarely used functions.
-  - `*.bac` files are backups; ignore them.
-- `man/` – function documentation generated from roxygen comments.
-- `Vignettes/` – long-form usage examples.
-- `Example.usage/` – short code examples.
-- `Development/` – experimental scripts.
-- `Function.Dependencies.md` – overview of internal function relationships.
+## I: Generic (all @vertesy repos)
 
-## Working with the code
-1. Place new or modified functions in `R/` and document them with roxygen2 comments.
-2. Run package checks before committing:
-   ```bash
-   R -q -e "devtools::document(); devtools::check()"
-   ```
-   This updates documentation and performs `R CMD check`.
-3. Commit only `.R` and generated documentation files; do not commit `.bac` backups or temporary files.
+### 3. General rules 
 
-## Coding style
-- Prefer R's native pipe `|>` rather than `%>%`.
-- Follow the tidyverse conventions and the styles used in other @vertesy packages.
+1. Write condense and very cleary understandable code and text.
+2. ALWAYS understand the larger goal and the full context first: read the whole file, grep all call sites, check the roxygen block.
+3. Use short inline comments to explain the code: separate lines before a larger block for the higher-level intent, and/or short trailing comments after a line for that specific step.
 
-## Dependencies
-Core functionality expects several other @vertesy packages to be installed:
-- [Stringendo](https://github.com/vertesy/Stringendo)
-- [CodeAndRoll2](https://github.com/vertesy/CodeAndRoll2)
-- [ReadWriter](https://github.com/vertesy/ReadWriter)
-- [MarkdownHelpers](https://github.com/vertesy/MarkdownHelpers)
-- [MarkdownReports](https://github.com/vertesy/MarkdownReports)
-- [ggExpress](https://github.com/vertesy/ggExpress)
-Optional but recommended:
-- [DatabaseLinke.R](https://github.com/vertesy/DatabaseLinke.R)
-- [Rocinante](https://github.com/vertesy/Rocinante)
+- Every function starts with a COMPACT input-argument assertion for key inputs. Use combined stopifnot statements.
 
-Ensure these packages are installed when running or testing the code.
+### 2. Code Review Rules
 
-## Getting started
-New contributors should read `README.md` for installation instructions and explore `R/Seurat.Utils.R` to see typical function style. `Function.Dependencies.md` and the vignettes provide deeper insights into the package's structure.
+Make every finding easy to scan and understand.
 
-Happy hacking!
+- Use simple, direct English.
+- Use short sentences and bullet points.
+- Avoid compiler jargon, dense technical language, and noun stacking.
+- Name files, functions, variables, and arguments explicitly.
+- Never use vague references such as "the new formal" or "subsequent values".
+
+For each finding, state:
+
+- **Problem:** What is wrong or will break?
+- **Trigger:** When does it happen?
+- **Fix:** What should be changed?
+
+Keep only findings that can be explained clearly and concisely.
+Do not flag formatting, line length, or missing tests.
+
+### 3. Update the Source, Not Just the Documentation
+
+Documentation is generated from upstream sources: `.Rd` files from roxygen annotations and `DESCRIPTION` from `Development/Dependencies.R` via `config.R`.
+
+Package rebuilds overwrite these files, so always update the upstream source first, then regenerate the documentation.
+
+## II: Repos of R function libraries
+
+- New arguments go at the end, just before `...`. Never insert in the middle.
+- Do not use tests.
+- Whenever you are implementing a larger change (a bug fix, a substantial code change), you shoud increase the version number in `Development/config.R` by 0.0.1.
+
+## III: Seurat.utils specific
+
+**Seurat.utils** — R helper functions extending Seurat for single-cell analysis: metadata handling, visualization, general utilities.
+
+- `R/`: `Seurat.Utils.R` (core), `Seurat.Utils.Metadata.R` (metadata), `Seurat.Utils.Visualization.R` (plotting), `Seurat.utils.less.used.R` (rarely used). `*.bac` files are backups — ignore, never commit.
+- `Function.Dependencies.md`: map of internal function relationships.
+- Prefer native pipe `|>` over `%>%`.
+- Depends on @vertesy `Stringendo`, `CodeAndRoll2`, `ReadWriter`, `MarkdownHelpers`, `MarkdownReports`, `ggExpress`. Optional: `DatabaseLinke.R`, `Rocinante`.

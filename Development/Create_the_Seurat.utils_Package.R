@@ -29,7 +29,7 @@ file.edit("DESCRIPTION")
 source('~/GitHub/Packages/Rocinante/R/Rocinante.R')
 rprofile()
 devtools::install_local(repository.dir, upgrade = F)
-PackageTools:::.parse_description(config_path = config.path)
+# PackageTools:::.parse_description(config_path = config.path)
 
 
 # Test if you can install from github ------------------------------------------------
@@ -120,4 +120,6 @@ for (scriptX in ls.scripts.full.path) {
 
 
 
+PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
+devtools::install_local(repository.dir, upgrade = F)
 

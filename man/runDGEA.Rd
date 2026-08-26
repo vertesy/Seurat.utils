@@ -12,7 +12,6 @@ runDGEA(
   reorder.clusters = if (is.null(ident)) TRUE else FALSE,
   reorder.dimension = 1,
   directory,
-  dir_suffix,
   subdirectory = ppp("DGEA_res", idate()),
   add.combined.score = TRUE,
   save.obj = TRUE,
@@ -48,8 +47,6 @@ Default: 1.}
 
 \item{directory}{Character string specifying the base directory for saving results.
 Default: OutDir}
-
-\item{dir_suffix}{Character string specifying the suffix for the subdirectory.}
 
 \item{subdirectory}{Character string specifying the subdirectory for saving outputs within
 the base directory. Default: "DGEA + date".}
@@ -90,7 +87,7 @@ Default: 1.}
 \item{WorkingDir}{Character string specifying the working directory. Default: getwd().}
 }
 \value{
-Modified Seurat object and markers list.
+Modified Seurat object. The df.markers.all is instead assigned to .GlobalEnv.
 }
 \description{
 Runs a differential gene expression analysis based on specified parameters,

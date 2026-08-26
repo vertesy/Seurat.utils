@@ -4,7 +4,12 @@
 \alias{getMetadataColumn}
 \title{getMetadataColumn}
 \usage{
-getMetadataColumn(col = "batch", obj = combined.obj, as_numeric = FALSE, v = T)
+getMetadataColumn(
+  col = "batch",
+  obj = combined.obj,
+  as_numeric = FALSE,
+  v = TRUE
+)
 }
 \arguments{
 \item{col}{A string specifying the name of the metadata column to be retrieved. Default: 'batch'.}
