@@ -12,8 +12,7 @@ getCellIDs.from.meta(
 )
 }
 \arguments{
-\item{ident}{A string specifying the name of the metadata column from which to retrieve cell IDs.
-Default: first entry returned by \code{GetClusteringRuns()}.}
+\item{ident}{A string specifying the name of the metadata column from which to retrieve cell IDs. Default: first entry returned by \code{GetClusteringRuns()}.}
 
 \item{ident_values}{Values to match in the metadata column (may include \code{NA}/\code{NaN}). Default: \code{NA}.}
 

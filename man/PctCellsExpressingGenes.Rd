@@ -44,12 +44,11 @@ library(Seurat)
 `combined.obj <- readRDS("path/to/your/seurat_object.rds")`
 
 # Define genes of interest
-# Define genes of interest
 genes <- c("TOP2A", "MAP2")
 # Call the function
 PctCellsExpressingGenes(genes = genes, obj = combined.obj)
 # Call the function with ident
-#' PctCellsExpressingGenes(genes = genes, obj = combined.obj, ident = "cluster")
+PctCellsExpressingGenes(genes = genes, obj = combined.obj, ident = "cluster")
 }
 
 }

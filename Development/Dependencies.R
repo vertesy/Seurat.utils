@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+Dependency file generated on Wed Dec  3 10:18:33 2025 
+
+=======
 Dependency file generated on Tue Aug 25 20:09:03 2026 
 
 #################################################################################################### 
@@ -674,3 +678,4 @@ stats
 Stringendo
 stringr
 utils
+>>>>>>> origin/main

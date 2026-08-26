@@ -3,7 +3,11 @@
 
 DESCRIPTION <- list(
   package.name = "Seurat.utils",
+<<<<<<< HEAD
+  version = "2.9.1",
+=======
   version = "2.9.5",
+>>>>>>> origin/main
   title = "Seurat.utils - utility functions for Seurat v5",
     description = "Seurat.utils is a collection of utility functions for Seurat single cell analysis.
       Functions allow 3D plotting, visualisation of statistics & QC,
@@ -16,7 +20,11 @@ DESCRIPTION <- list(
     ReadWriter, MarkdownHelpers, MarkdownReports,
     plotly, qs, foreach, harmony, EnhancedVolcano, rstudioapi,
     RColorBrewer, SeuratObject, checkmate, fs, future,
+<<<<<<< HEAD
+    ggplot2, gplots, gtools", # , grDevices
+=======
     ggplot2, gplots", # , grDevices
+>>>>>>> origin/main
   suggests = "clusterProfiler, enrichplot, DatabaseLinke.R, vroom",
   author.given = "Abel",
   author.family = "Vertesy",

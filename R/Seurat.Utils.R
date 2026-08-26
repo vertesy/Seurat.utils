@@ -477,7 +477,11 @@ runDGEA <- function(obj,
         min.diff.pct = param.list$"min.diff.pct",
         min.cells.group = param.list$"min.cells.group",
         max.cells.per.ident = param.list$"max.cells.per.ident",
+<<<<<<< HEAD
+        only.pos = param.list$"only.pos",
+=======
         only.pos = param.list$"only.pos"
+>>>>>>> origin/main
       )
       toc()
 
@@ -598,7 +602,11 @@ runDGEA <- function(obj,
         qbarplot(NrOfHighlySignLFC2_genes,
           label = NrOfHighlySignLFC2_genes,
           plotname = "Number of diff. genes per cluster",
+<<<<<<< HEAD
+          sub = "Genes with avg_log2FC > 1 and p_val_adj < 0.05",
+=======
           subtitle = "Genes with avg_log2FC > 1 and p_val_adj < 0.05",
+>>>>>>> origin/main
           xlab = "Clusters", ylab = "Number of diff. genes"
         )
 
@@ -848,6 +856,13 @@ SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
 }
 
 
+<<<<<<< HEAD
+
+
+
+
+=======
+>>>>>>> origin/main
 # _________________________________________________________________________________________________
 #' @title AreTheseCellNamesTheSame
 #'
@@ -1049,6 +1064,24 @@ showMiscSlots <- function(obj = combined.obj, max.level = 1, subslot = NULL,
 #' @export
 
 calc.q99.Expression.and.set.all.genes <- function(
+<<<<<<< HEAD
+    obj = combined.obj,
+    quantileX = 0.99, max.cells = 1e5,
+    slot = "data",
+    assay = c("RNA", "integrated", "SCT")[1],
+    set.misc = TRUE,
+    assign_to_global_env = TRUE,
+    plot = TRUE,
+    suffix = substitute(obj),
+    show = TRUE,
+    obj.version = obj@version,
+    ...) {
+
+  top.quant <- (1 - quantileX)
+  message("\nCalculating the gene expression level at the the top ", percentage_formatter(top.quant), " of cells. | q: ", quantileX)
+  message("slot: ", slot, " assay: ", assay, ".\n")
+
+=======
   obj = combined.obj,
   quantileX = 0.99, max.cells = 1e5,
   slot = "data",
@@ -1065,6 +1098,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   message("\nCalculating the gene expression level at the the top ", percentage_formatter(top.quant), " of cells. | q: ", quantileX)
   message("slot: ", slot, " assay: ", assay, ".\n")
 
+>>>>>>> origin/main
   nr.total.cells <- ncol(obj)
   n.cells.in.top.quantile <- floor(nr.total.cells * top.quant) # number of cells in the top quantileX
 
@@ -1117,9 +1151,15 @@ calc.q99.Expression.and.set.all.genes <- function(
     dsampled <- sample(x = 1:ncol(data_mtx), size = max.cells)
     data_mtx <- data_mtx[, dsampled]
     message("Downsampled from ", ncol(obj), " to ", max.cells, " cells")
+<<<<<<< HEAD
+    dtag= "downsampled(!)"
+  } else {
+    dtag = "all cells"
+=======
     dtag <- "downsampled(!)"
   } else {
     dtag <- "all cells"
+>>>>>>> origin/main
   }
 
   # Calculate the number of cells in the top quantile (e.g.: 99th quantile) that is
@@ -1158,8 +1198,12 @@ calc.q99.Expression.and.set.all.genes <- function(
       filtercol = TRUE,
       palette_use = "npg", w = 8, h = 6,
       save.meta.info = FALSE,
+<<<<<<< HEAD
+      ...)
+=======
       ...
     )
+>>>>>>> origin/main
     tictoc::toc()
     if (show) print(pobj)
   }
@@ -1213,6 +1257,18 @@ calc.q99.Expression.and.set.all.genes <- function(
 #' @export
 #'
 filterCodingGenes <- function(
+<<<<<<< HEAD
+    genes, pattern_NC = c(
+      "^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
+      "^LINC0[0-9]{4}",
+      "^C[1-9]+orf[1-9]+", "^C[1-9][0-9]+orf[1-9]+", "^CXorf[1-9]+",
+      "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
+      "^MIR[1-9]", "^SNHG[1-9]",
+      "^CU[0-9]{6}", "^BX[0-9]{6}",
+      "^FP[0-9]{6}", "^AC[0-9]{6}"
+    ),
+    v = TRUE, unique = TRUE, ...) {
+=======
   genes, pattern_NC = c(
     "^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
     "^LINC0[0-9]{4}",
@@ -1224,6 +1280,7 @@ filterCodingGenes <- function(
   ),
   v = TRUE, unique = TRUE, ...
 ) {
+>>>>>>> origin/main
   # Input assertions
   stopifnot(
     is.character(genes), length(genes) > 0,
@@ -1233,7 +1290,11 @@ filterCodingGenes <- function(
   # Filter the genes
   combined_pattern <- paste(pattern_NC, collapse = "|")
   genes_discarded <- genes[stringr::str_detect(genes, combined_pattern)]
+<<<<<<< HEAD
+  if (v)  iprint("Examples of", length(genes_discarded) , "discarded symbols:", CodeAndRoll2::trail(genes_discarded, 5))
+=======
   if (v) iprint("Examples of", length(genes_discarded), "discarded symbols:", CodeAndRoll2::trail(genes_discarded, 5))
+>>>>>>> origin/main
 
   genes_kept <- genes[stringr::str_detect(genes, combined_pattern, negate = TRUE)]
 
@@ -1282,9 +1343,15 @@ filterCodingGenes <- function(
 #'
 #' @export
 filterExpressedGenes <- function(
+<<<<<<< HEAD
+    genes, gene_list = all.genes,
+    sort_by_expr = TRUE, threshold = 0.1) {
+
+=======
   genes, gene_list = all.genes,
   sort_by_expr = TRUE, threshold = 0.1
 ) {
+>>>>>>> origin/main
   message(" > Running filterExpressedGenes()...")
 
   # Assertions
@@ -1674,9 +1741,14 @@ calc.cluster.averages <- function(
           subtitle = paste(subtitle, "| median in blue/dashed"),
           ylab = ylab.text,
           xlab = xlb # Abused
+<<<<<<< HEAD
+          , xlab.angle = 45
+          , ...) +
+=======
           , xlab.angle = 45,
           ...
         ) +
+>>>>>>> origin/main
           geom_vline(xintercept = cutoff.low, lty = 2)
 
         print(p)
@@ -1691,9 +1763,14 @@ calc.cluster.averages <- function(
           subtitle = subtitle,
           ylab = ylab.text,
           xlab = xlb # Abused
+<<<<<<< HEAD
+          , xlab.angle = 45
+          , ...) +
+=======
           , xlab.angle = 45,
           ...
         ) +
+>>>>>>> origin/main
           geom_hline(yintercept = cutoff.low, lty = 2)
 
         print(p)
@@ -2321,6 +2398,15 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
     is.logical(verbose), length(verbose) == 1, is.logical(plot_stats), length(plot_stats) == 1
   )
   set.seed(seed)
+<<<<<<< HEAD
+  if (dsample.to.repl.thr) {
+    max.cells <- round(ncol(obj) * replacement.thr)
+    msg <- percentage_formatter(replacement.thr,
+      suffix = paste("of the data or", max.cells, "of cells."),
+      prefix = "Sampling with replacement to:"
+    )
+    message(msg)
+=======
 
   message("Downsampling by identity: ", ident)
   message("Fraction: ", fraction.downsampled)
@@ -2344,6 +2430,7 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
 
     target_cells[[category]] <- n_target
     sampledNames[[category]] <- sample(cells_now, n_target)
+>>>>>>> origin/main
   }
 
   sampledCells <- unlist(sampledNames, use.names = FALSE)
@@ -2507,9 +2594,14 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
 #' )
 #'
 RelabelSmallCategories <- function(
+<<<<<<< HEAD
+    obj, col_in, backup_col_name = ppp(col_in, "orig"),
+    min_count = 100, small_label = "Other", v = TRUE) {
+=======
   obj, col_in, backup_col_name = ppp(col_in, "orig"),
   min_count = 100, small_label = "Other", v = TRUE
 ) {
+>>>>>>> origin/main
   # Input assertions
   stopifnot(
     inherits(obj, "Seurat"), # Check if obj is a Seurat object
@@ -2968,10 +3060,17 @@ downsampleListSeuObjsPercent <- function(
 #' @export
 
 addCombinedScore2DGEAResults <- function(
+<<<<<<< HEAD
+    df = df.markers, p_val_min = 1e-25, pval_scaling = 0.001, colP = "p_val_adj",
+    colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = TRUE)
+    ) {
+  p_clipped <- clip.at.fixed.value(x = df[[colP]], thr = p_val_min, above = F)
+=======
   df = df.markers, p_val_min = 1e-25, pval_scaling = 0.001, colP = "p_val_adj",
   colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = TRUE)
 ) {
   p_clipped <- clip.at.fixed.value(x = df[[colP]], thr = p_val_min, above = FALSE)
+>>>>>>> origin/main
   df$"combined.score" <- round(df[[colLFC]] * -log10(p_clipped / pval_scaling))
   return(df)
 }
@@ -3012,6 +3111,19 @@ addCombinedScore2DGEAResults <- function(
 #'
 #' @export
 roundDGEAResults <- function(
+<<<<<<< HEAD
+    res,
+    cols.p = c("p_val", "p_val_adj"),
+    cols.other = c(
+      "avg_log2FC",
+      "pct.1", "pct.2",
+      "av.expr.1", "av.expr.2"
+    ),
+    digits.p = 2,
+    digits.other = 2
+) {
+
+=======
   res,
   cols.p = c("p_val", "p_val_adj"),
   cols.other = c(
@@ -3022,6 +3134,7 @@ roundDGEAResults <- function(
   digits.p = 2,
   digits.other = 2
 ) {
+>>>>>>> origin/main
   stopifnot(
     "res must be a data.frame" = is.data.frame(res),
     "cols.p must be character" = is.character(cols.p),
@@ -3056,6 +3169,14 @@ roundDGEAResults <- function(
       )
     )
 }
+<<<<<<< HEAD
+
+
+
+
+
+=======
+>>>>>>> origin/main
 
 
 # _________________________________________________________________________________________________
@@ -3484,6 +3605,20 @@ sparse.cor <- function(smat) {
 #'
 #' @export
 Calc.Cor.Seurat <- function(
+<<<<<<< HEAD
+    assay.use = "RNA",
+    slot.use = "data",
+    quantileX = 0.95,
+    max.cells = 40000,
+    seed = p$"seed",
+    digits = 2, obj = combined.obj) {
+  stopifnot(
+    inherits(obj, "Seurat"),
+    is.numeric(max.cells), length(max.cells) == 1L, !is.na(max.cells), is.finite(max.cells), max.cells > 0,
+    is.numeric(quantileX), length(quantileX) == 1L, !is.na(quantileX), is.finite(quantileX), quantileX >= 0, quantileX <= 1,
+    is.numeric(digits), length(digits) == 1L, !is.na(digits), is.finite(digits)
+  )
+=======
   assay.use = "RNA",
   slot.use = "data",
   quantileX = 0.95,
@@ -3491,12 +3626,15 @@ Calc.Cor.Seurat <- function(
   seed = p$"seed",
   digits = 2, obj = combined.obj
 ) {
+>>>>>>> origin/main
   expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
   if (ncol(expr.mat) > max.cells) {
     set.seed(seed = seed)
     cells.use <- sample(x = colnames(expr.mat), size = max.cells)
   } else {
-    cells.use <- ncol(expr.mat)
+    # Retain every cell when downsampling is unnecessary.
+    cells.use <- colnames(expr.mat)
+    if (is.null(cells.use)) cells.use <- seq_len(ncol(expr.mat))
   }
 
   qname <- paste0("q", quantileX * 100)
@@ -3916,6 +4054,10 @@ check.genes <- function(
 
   tictoc::toc()
   intersect(genes, all_genes)
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/main
 }
 
 
@@ -3982,10 +4124,16 @@ fixZeroIndexing.seurat <- function(ColName.metadata = "res.0.6", obj = org) {
 #' @export
 #'
 CalculateFractionInTrome <- function(
+<<<<<<< HEAD
+    geneset = c("MALAT1"),
+    obj = combined.obj,
+    data.slot = c("counts", "data")[2]) {
+=======
   geneset = c("MALAT1"),
   obj = combined.obj,
   data.slot = c("counts", "data")[2]
 ) {
+>>>>>>> origin/main
   warning("    >>>> Use addMetaFraction() <<<<", immediate. = TRUE)
   geneset <- check.genes(genes = geneset)
   stopifnot(length(geneset) > 0)
@@ -4201,14 +4349,22 @@ FindCorrelatedGenes <- function(
 #' @importFrom HGNChelper checkGeneSymbols
 #'
 UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", # assay = "RNA",
+<<<<<<< HEAD
+                              EnforceUnique = TRUE, ShowStats = F) {
+=======
                               EnforceUnique = TRUE, ShowStats = FALSE) {
+>>>>>>> origin/main
   assays.present <- Assays(obj)
   for (assay in assays.present) {
     message("Renaming in assay: ", assay, "...")
 
     all_genes <- Features(obj, assay = assay)
 
+<<<<<<< HEAD
+    if( species_ %in% c("human", "mouse") ) {
+=======
     if (species_ %in% c("human", "mouse")) {
+>>>>>>> origin/main
       HGNC.updated <- HGNChelper::checkGeneSymbols(all_genes, unmapped.as.na = FALSE, map = NULL, species = species_)
     } else {
       message(species_)
@@ -4410,72 +4566,49 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 # _________________________________________________________________________________________________
 #' @title Remove Specific Genes from a Seurat Object
 #'
-#' @description Removes specified genes from the metadata, counts, data, and scale.data slots of a Seurat object.
-#' This operation is typically performed prior to data integration to ensure that gene sets are consistent
-#' across multiple datasets. The function modifies the Seurat object in place.
+#' @description Removes specified genes from every layer of the RNA assay in a
+#' Seurat object. This operation is typically performed prior to data integration
+#' to ensure that gene sets are consistent across multiple datasets.
 #'
 #' @param obj A Seurat object. Default: `ls.Seurat[[i]]` (please ensure to replace `i` with the actual index or variable).
 #' @param symbols2remove A character vector specifying the genes to be removed from the Seurat object;
 #' Default: `c("TOP2A")`.
 #'
-#' @details This function directly modifies the `@counts`, `@data`, and `@scale.data` slots within
-#' the RNA assay of the provided Seurat object, as well as the `@meta.data` slot. It's important to run
-#' this function as one of the initial steps after creating the Seurat object and before proceeding
-#' with downstream analyses or integration processes.
+#' @details Feature subsetting is performed through Seurat's RNA assay interface,
+#' so both legacy assay slots and Seurat v5 assay layers are supported. Other
+#' assays and cell-level metadata are left unchanged. Requested genes absent from
+#' the RNA assay are reported, while genes that are present are still removed.
 #'
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
 #'   # Assuming `SeuratObj` is your Seurat object and you want to remove the gene "TOP2A"
 #'   updatedSeuratObj <- RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
-#'   # Now `updatedSeuratObj` does not contain "TOP2A" in the specified slots
+#'   # Now `updatedSeuratObj` does not contain "TOP2A" in any RNA assay layer
 #' }
 #' }
 #'
-#' @return A Seurat object with the specified genes removed from the mentioned slots.
+#' @return A Seurat object with the specified genes removed from the RNA assay.
 #'
 #' @export
 RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A")) {
-  print("Run this as the first thing after creating the Seurat object.
-        It only removes genes from: metadata; obj@assays$RNA@counts, @data and @scale.data.")
-  RNA <- obj@assays$RNA
+  stopifnot(inherits(obj, "Seurat"), is.character(symbols2remove), length(symbols2remove) > 0L)
 
-  if (length(RNA@counts)) {
-    NotFound <- setdiff(symbols2remove, RNA@counts@Dimnames[[1]])
-    if (length(NotFound) == 0) {
-      RNA@counts@Dimnames[[1]] <- symbols2remove
-      print("Genes removed from RNA@counts")
-    } else {
-      print("Not All Genes Found in RNA@counts. Missing:")
-      print(NotFound)
-    }
+  if (!"RNA" %in% Seurat::Assays(obj)) {
+    stop("Object does not contain an 'RNA' assay.")
   }
-  if (length(RNA@data)) {
-    if (length(setdiff(symbols2remove, RNA@data@Dimnames[[1]])) == 0) {
-      RNA@data@Dimnames[[1]] <- symbols2remove
-      print("Genes removed from RNA@data.")
-    } else {
-      print("Not All Genes Found in RNA@data")
-    }
+
+  rna_features <- Seurat::Features(obj, assay = "RNA")
+
+  # Report absent requests without preventing removal of the features that exist.
+  missing_genes <- setdiff(symbols2remove, rna_features)
+  if (length(missing_genes)) {
+    message("Genes not found in the RNA assay: ", paste(missing_genes, collapse = ", "))
   }
-  if (length(RNA@scale.data)) {
-    if (length(setdiff(symbols2remove, RNA@scale.data@Dimnames[[1]])) == 0) {
-      RNA@scale.data@Dimnames[[1]] <- symbols2remove
-      print("Genes removed from RNA@scale.data.")
-    } else {
-      print("Not All Genes Found in RNA@scale.data")
-    }
-  }
-  if (length(obj@meta.data)) {
-    if (length(setdiff(symbols2remove, rownames(obj@meta.data))) == 0) {
-      rownames(obj@meta.data) <- symbols2remove
-      print("Genes removed from @meta.data.")
-    } else {
-      print("Not All Genes Found in @metadata")
-    }
-  }
-  obj@assays$RNA <- RNA
-  return(obj)
+
+  retained_features <- setdiff(rna_features, symbols2remove)
+  obj[["RNA"]] <- subset(obj[["RNA"]], features = retained_features)
+  obj
 }
 
 
@@ -4595,8 +4728,9 @@ GetUpdateStats <- function(genes = HGNC.updated[[i]]) {
 #'
 #' @export
 PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)", "Updated (Nr.)")) { # Scatter plot of update stats.
-  stopifnot(column.names %in% colnames(UpdateStatMat))
-  HGNC.UpdateStatistics <- mat[, column.names]
+  # The plot labels below require exactly two columns from a rectangular input.
+  stopifnot(is.matrix(mat) || is.data.frame(mat), is.character(column.names), length(column.names) == 2L, all(column.names %in% colnames(mat)))
+  HGNC.UpdateStatistics <- mat[, column.names, drop = FALSE]
   HGNC.UpdateStatistics[, "Updated (%)"] <- 100 * HGNC.UpdateStatistics[, "Updated (%)"]
   colnames(HGNC.UpdateStatistics) <- c("Gene Symbols updated (% of Total Genes)", "Number of Gene Symbols updated")
   lll <- wcolorize(vector = rownames(HGNC.UpdateStatistics))
@@ -4642,12 +4776,12 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' @param min.features An integer value specifying the minimum number of features. Default: 200.
 #' @param normalize_data Add normalized "data" layer?. Default: `TRUE`.
 #' @param updateHGNC A logical value indicating whether to update the HGNC. Default: `TRUE`.
-#' @param save Save .qs object? Default: `TRUE`.
 #' @param ShowStats A logical value indicating whether to show statistics. Default: `TRUE`.
 #' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: `TRUE`.
 #' @param depth An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default: 2.
 #' @param sort_alphanumeric sort files alphanumeric? Default: `TRUE`.
 #' @param save_empty_droplets save empty droplets? Default: `TRUE`.
+#' @param save Save .qs object? Default: `TRUE`.
 #'
 #' @examples
 #' \dontrun{
@@ -4655,6 +4789,24 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' }
 #' @export
 Convert10Xfolders <- function(
+<<<<<<< HEAD
+    InputDir,
+    regex = FALSE,
+    folderPattern = c("filtered_feature", "raw_feature", "SoupX_decont")[1],
+    suffix = strsplit(folderPattern, "_")[[1]][1],
+    depth = 4,
+    min.cells = 5, min.features = 200,
+    normalize_data = TRUE,
+    updateHGNC = TRUE, ShowStats = TRUE,
+    writeCBCtable = TRUE,
+    nthreads = .getNrCores(),
+    preset = "high",
+    ext = "qs",
+    sort_alphanumeric = TRUE,
+    save_empty_droplets = TRUE,
+    save = TRUE,
+    ...) {
+=======
   InputDir,
   regex = FALSE,
   folderPattern = c("filtered_feature", "raw_feature", "SoupX_decont")[1],
@@ -4671,12 +4823,16 @@ Convert10Xfolders <- function(
   save_empty_droplets = TRUE,
   ...
 ) {
+>>>>>>> origin/main
   stopifnot(
     is.character(InputDir), dir.exists(InputDir),
     is.logical(regex), is.character(folderPattern), is.character(suffix), is.numeric(depth),
-    is.numeric(min.cells), is.numeric(min.features), is.logical(updateHGNC), is.logical(ShowStats), is.logical(writeCBCtable),
+    is.numeric(min.cells), is.numeric(min.features), is.logical(updateHGNC), is.logical(ShowStats),
+    is.logical(save) && length(save) == 1L && !is.na(save), is.logical(writeCBCtable),
     is.logical(sort_alphanumeric)
   )
+
+  compress_level <- .map_preset_to_compress_level(preset)
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
@@ -4725,7 +4881,7 @@ Convert10Xfolders <- function(
     if (normalize_data) seu <- NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000, verbose = TRUE)
 
     # write out --- --- ---
-    if (save) qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)
+    if (save) qs2::qs_save(object = seu, file = f.path.out, nthreads = nthreads, compress_level = compress_level)
 
     # write cellIDs ---  --- ---
     if (writeCBCtable) {
@@ -4758,12 +4914,12 @@ Convert10Xfolders <- function(
         obj_empty_drops <- subset(seu, cells = CBC_empty_drops)
 
         f_path_out_ED <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("obj.empty.droplets", fnameIN, nr.empty.droplets), extension = ext)
-        qs::qsave(x = obj_empty_drops, file = f_path_out_ED, nthreads = nthreads, preset = preset)
+        qs2::qs_save(object = obj_empty_drops, file = f_path_out_ED, nthreads = nthreads, compress_level = compress_level)
 
         # save the bulk RNA counts of the empty droplets
         Soup.Bulk.RNA <- rowSums(count_matrix[, CBC_empty_drops])
         f_path_out_Bulk <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("Soup.Bulk.RNA", fnameIN), extension = "qs")
-        qs::qsave(x = Soup.Bulk.RNA, file = f_path_out_Bulk, nthreads = nthreads, preset = preset)
+        qs2::qs_save(object = Soup.Bulk.RNA, file = f_path_out_Bulk, nthreads = nthreads, compress_level = compress_level)
         ReadWriter::write.simple.tsv(Soup.Bulk.RNA, suffix = fnameIN, manual_directory = SoupDir)
       }
     } else {
@@ -4914,7 +5070,7 @@ LoadAllSeurats <- function(
     if (use_rds) {
       ls.Seu[[i]] <- readRDS(FNP)
     } else if (!use_rds) {
-      ls.Seu[[i]] <- qs::qread(file = FNP)
+      ls.Seu[[i]] <- qs2::qs_read(file = FNP)
     } else {
       warning("File pattern ambiguous. Use either qs or rds:", file.pattern, immediate. = TRUE)
     }
@@ -5061,10 +5217,26 @@ isave.RDS <- function(
   }
 }
 
+# Internal helper: map qs1-style preset string to qs2 compress_level integer.
+#
+# @param preset Character string; one of "fast", "balanced", "high", or "archive".
+#   Unknown values trigger a warning and fall back to the "balanced" default (3L).
+# @return An integer compress_level suitable for `qs2::qs_save()`:
+#   "fast" -> 1L, "balanced" -> 3L, "high" -> 6L, "archive" -> 12L.
+.map_preset_to_compress_level <- function(preset) {
+  valid_presets <- c("fast", "balanced", "high", "archive")
+  if (!preset %in% valid_presets) {
+    warning("Unknown preset '", preset, "'; defaulting to 'balanced' (compress_level=3). Valid options: ",
+            paste(valid_presets, collapse = ", "), call. = FALSE)
+    return(3L) # explicit early return to make the fallback unambiguous
+  }
+  switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L)
+}
+
 # _________________________________________________________________________________________________
-#' @title Save an R Object Using 'qs' Package for Fast Compressed Saving
+#' @title Save an R Object Using 'qs2' Package for Fast Compressed Saving
 #'
-#' @description This function saves an R object to a file in a quick and efficient format using the 'qs' package.
+#' @description This function saves an R object to a file in a quick and efficient format using the 'qs2' package.
 #' It constructs the file name based on various inputs and stores additional metadata if the object is a Seurat object.
 #' The saving path can be adjusted by the presence of 'OutDir' in the global environment or defaults to the working directory.
 #'
@@ -5072,7 +5244,8 @@ isave.RDS <- function(
 #' @param suffix Optional; a suffix to add to the filename.
 #' @param prefix Optional; a prefix to add to the filename.
 #' @param nthreads Number of threads to use when saving, defaults to 12.
-#' @param preset Compression preset, defaults to 'high'.
+#' @param preset Compression preset for backward compatibility; mapped to `compress_level`.
+#'   One of "fast" (1), "balanced" (3), "high" (6), or "archive" (12). Defaults to "high".
 #' @param project The project name to be included in the filename, defaults to the result of `getProject()`.
 #' @param dir Output Directory
 #' @param showMemObject Logical; if TRUE, displays the memory size of the largest objects.
@@ -5087,15 +5260,31 @@ isave.RDS <- function(
 #'
 #' @return Invisible; The function is called for its side effects (saving a file) and does not return anything.
 #'
-#' @note The function uses the 'qs' package for quick and efficient serialization of objects and
+#' @note The function uses the 'qs2' package for quick and efficient serialization of objects and
 #' includes a timing feature from the 'tictoc' package.
-#' @seealso \code{\link[qs]{qsave}} for the underlying save function used.
-#' @importFrom qs qsave
+#' @seealso \code{\link[qs2]{qs_save}} for the underlying save function used.
+#' @importFrom qs2 qs_save
 #' @importFrom tictoc tic toc
 #' @importFrom rstudioapi isAvailable
 #'
 #' @export
 xsave <- function(
+<<<<<<< HEAD
+    obj,
+    suffix = NULL,
+    prefix = NULL,
+    nthreads = if (object.size(obj) < 1e7) 1 else .getNrCores(12),
+    preset = "high",
+    project = getProject(),
+    dir = if (exists("OutDir")) OutDir else getwd(),
+    showMemObject = TRUE,
+    saveParams = if (exists("p")) TRUE else FALSE, # save allGenes and paramList
+    paramList = if (exists("p")) p else NULL,
+    allGenes = if (exists("all.genes")) all.genes else NULL,
+    saveLocation = TRUE,
+    # backgroundJob = FALSE,
+    v = TRUE) {
+=======
   obj,
   suffix = NULL,
   prefix = NULL,
@@ -5111,9 +5300,13 @@ xsave <- function(
   # backgroundJob = FALSE,
   v = TRUE
 ) {
+>>>>>>> origin/main
   #
   if (v) message(nthreads, " threads.\n-----------")
   if (v) message("project: ", project)
+
+  # resolve compression level early, before any object modifications
+  compress_level <- .map_preset_to_compress_level(preset)
 
   # check if the object is a Seurat object
   obj_is_seurat <- inherits(obj, "Seurat")
@@ -5139,10 +5332,14 @@ xsave <- function(
   CMND <- paste0(substitute(obj), " <- xread('", FNN, "')")
   CMND2 <- paste0("setIfNotDefined(", substitute(obj), ", xread('", FNN, "'))")
 
+<<<<<<< HEAD
+  if (v) {message(CMND, "\n"); message(CMND2)}
+=======
   if (v) {
     message(CMND, "\n")
     message(CMND2)
   }
+>>>>>>> origin/main
 
   if ("Seurat" %in% is(obj)) {
     if (saveParams) {
@@ -5152,15 +5349,15 @@ xsave <- function(
     if (saveLocation) try(obj@misc$"file.location" <- CMND, silent = TRUE)
   }
 
-  qs::qsave(x = obj, file = FNN, nthreads = nthreads, preset = preset)
+  qs2::qs_save(object = obj, file = FNN, nthreads = nthreads, compress_level = compress_level)
 
   try(tictoc::toc(), silent = TRUE)
 }
 
 # _________________________________________________________________________________________________
-#' @title Read an R Object Using 'qs' Package for Fast Decompression
+#' @title Read an R Object Using 'qs2' Package for Fast Decompression
 #'
-#' @description This function reads an R object from a file saved in a format specific to the 'qs' package,
+#' @description This function reads an R object from a file saved in a format specific to the 'qs2' package,
 #' which is designed for quick and efficient compression and decompression of R objects.
 #' It also times the read operation, providing feedback on the duration of the operation.
 #'
@@ -5172,14 +5369,14 @@ xsave <- function(
 #' @param overwriteAllGenes Logical; if TRUE and if the object is a Seurat object, the all genes are overwritten.
 #' @param set_m Logical; if TRUE, the variable 'm', a list of @meta.data colnames, is assigned to
 #' the global environment.
-#' @param ... Further arguments passed on to the 'qs::qread' function.
+#' @param ... Further arguments passed on to the 'qs2::qs_read' function.
 #'
 #' @return The R object that was saved in the specified file.
-#' @note The function uses the 'qs' package for fast and efficient deserialization of objects
+#' @note The function uses the 'qs2' package for fast and efficient deserialization of objects
 #' and includes a timing feature from the 'tictoc' package.
 #'
-#' @seealso \code{\link[qs]{qread}} for the underlying read function used.
-#' @importFrom qs qread
+#' @seealso \code{\link[qs2]{qs_read}} for the underlying read function used.
+#' @importFrom qs2 qs_read
 #' @importFrom tictoc tic toc
 #' @importFrom rstudioapi isAvailable
 #'
@@ -5196,7 +5393,7 @@ xread <- function(file,
   message(nthreads, " threads.")
   try(tictoc::tic("xread"), silent = TRUE)
 
-  obj <- qs::qread(file = file, nthreads = nthreads, ...)
+  obj <- qs2::qs_read(file = file, nthreads = nthreads, ...)
 
   report <- if (is(obj, "Seurat")) {
     kppws("Seurat object with", ncol(obj), "cells &", ncol(obj@meta.data), "meta columns.")
@@ -5239,6 +5436,10 @@ xread <- function(file,
   } # Seurat
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/main
   try(tictoc::toc(), silent = TRUE)
   invisible(obj)
 }
@@ -5257,7 +5458,7 @@ xread <- function(file,
 #' If no SLURM memory limit is detected, the safety check is skipped and a warning is shown.
 #'
 #' @param path Path to the `.qs` file to load. Must exist. Default: none.
-#' @param nthreads Number of threads for `qs::qread()`. Uses 1 if file < 1e7 bytes, else 4.
+#' @param nthreads Number of threads for `qs2::qs_read()`. Uses 1 if file < 1e7 bytes, else 4.
 #'   Default: `if (file.size(path) < 1e7) 1 else 4`.
 #' @param loadParamsAndAllGenes Logical; if `TRUE`, recall stored parameters and gene lists
 #'   from `obj@misc`. Default: `TRUE`.
@@ -5268,7 +5469,7 @@ xread <- function(file,
 #' @param safe_load Logical; enable SLURM-based memory safety check. Default: `TRUE`.
 #' @param disk2mem_size_inflation Estimated expansion factor of `.qs` file once in memory.
 #'   Default: `3`.
-#' @param ... Additional arguments passed to `qs::qread()`. Default: none.
+#' @param ... Additional arguments passed to `qs2::qs_read()`. Default: none.
 #'
 #' @return Invisibly returns the loaded object.
 #'
@@ -5277,7 +5478,7 @@ xread <- function(file,
 #' obj <- xread2("/path/to/object.qs")
 #' }
 #'
-#' @importFrom qs qread
+#' @importFrom qs2 qs_read
 #' @importFrom tictoc tic toc
 #' @importFrom Stringendo ifExistsAndTrue
 #' @export
@@ -5351,7 +5552,7 @@ xread2 <- function(path,
   message(nthreads, " threads.")
   try(tictoc::tic("xread2"), silent = TRUE)
 
-  obj <- qs::qread(file = path, nthreads = nthreads, ...)
+  obj <- qs2::qs_read(file = path, nthreads = nthreads, ...)
 
   report <- if (is(obj, "Seurat")) {
     kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "metadata columns.")

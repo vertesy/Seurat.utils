@@ -27,7 +27,8 @@ AutoNumber.by.PrinCurve(
 \item{res}{Clustering resolution to use, Default: 'integrated_snn_res.0.5'}
 }
 \description{
-Relabel cluster numbers based on their position along the principal curve fitted to the specified dimensionality reduction (UMAP, tSNE, or PCA).
+Relabel cluster numbers based on their position along the principal curve fitted to
+two dimensional reductions (UMAP or tSNE).
 }
 \examples{
 \dontrun{

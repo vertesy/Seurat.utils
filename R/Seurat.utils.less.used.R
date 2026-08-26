@@ -28,6 +28,24 @@
 #' }
 #' @export
 Convert10Xfolders_v1 <- function(
+<<<<<<< HEAD
+    InputDir,
+    regex = FALSE,
+    folderPattern = c("filtered_feature", "raw_feature", "SoupX_decont")[1],
+    depth = 4,
+    min.cells = 5, min.features = 200,
+    updateHGNC = TRUE, ShowStats = TRUE,
+    writeCBCtable = TRUE,
+    sample.barcoding = FALSE,
+    nthreads = .getNrCores(),
+    preset = "high",
+    ext = "qs",
+    sort_alphanumeric = TRUE,
+    ...) {
+  warning("Since v2.9.0, the output is saved into qs format with qs2 package.", immediate. = TRUE)
+
+  compress_level <- .map_preset_to_compress_level(preset)
+=======
   InputDir,
   regex = FALSE,
   folderPattern = c("filtered_feature", "raw_feature", "SoupX_decont")[1],
@@ -43,6 +61,7 @@ Convert10Xfolders_v1 <- function(
   ...
 ) {
   warning("Since v2.5.0, the output is saved in the more efficient qs format! See qs package.", immediate. = TRUE)
+>>>>>>> origin/main
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
@@ -87,7 +106,7 @@ Convert10Xfolders_v1 <- function(
       LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
 
       LSBnameOUT <- ppp(paste0(InputDir, "/LSB.", fnameIN), "qs")
-      qs::qsave(x = LSB, file = LSBnameOUT)
+      qs2::qs_save(object = LSB, file = LSBnameOUT, compress_level = compress_level)
     } else {
       print("More than 2 elements in the list of matrices")
     }
@@ -106,7 +125,7 @@ Convert10Xfolders_v1 <- function(
     if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
 
     # write out --- --- ---
-    qs::qsave(x = seu, file = f.path.out, nthreads = nthreads, preset = preset)
+    qs2::qs_save(object = seu, file = f.path.out, nthreads = nthreads, compress_level = compress_level)
 
     # write cellIDs ---  --- ---
     if (writeCBCtable) {
@@ -579,6 +598,13 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #' }
 #' @export
 Convert10Xfolders.old <- function(
+<<<<<<< HEAD
+    InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
+    , folderPattern = c("filtered", "SoupX_decont")[1],
+    min.cells = 10, min.features = 200, updateHGNC = TRUE, ShowStats = TRUE) {
+  .Deprecated("Convert10Xfolders")
+
+=======
   InputDir,
   folderPattern = c("filtered", "SoupX_decont")[1],
   min.cells = 10, min.features = 200,
@@ -592,6 +618,7 @@ Convert10Xfolders.old <- function(
   , folderPattern = c("filtered", "SoupX_decont")[1],
   min.cells = 10, min.features = 200, updateHGNC = TRUE, ShowStats = TRUE
 ) {
+>>>>>>> origin/main
   fin <- list.dirs(InputDir, recursive = FALSE)
   fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = FALSE)
 

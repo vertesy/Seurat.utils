@@ -1,6 +1,10 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat v5
+<<<<<<< HEAD
+Version: 2.9.1
+=======
 Version: 2.9.5
+>>>>>>> origin/main
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Description: Seurat.utils is a collection of utility functions for Seurat
@@ -30,6 +34,7 @@ Imports:
     ggpubr,
     ggrepel,
     gplots,
+    gtools,
     harmony,
     HGNChelper,
     htmlwidgets,
@@ -40,9 +45,13 @@ Imports:
     pheatmap,
     plotly,
     princurve,
+<<<<<<< HEAD
+    qs2,
+=======
     qs,
     R.utils,
     RColorBrewer,
+>>>>>>> origin/main
     readr,
     ReadWriter,
     reshape2,
@@ -60,6 +69,10 @@ Suggests:
     enrichplot,
     vroom
 Encoding: UTF-8
+<<<<<<< HEAD
+Packaged: 2025-12-03 10:05:36.316459
+=======
 Packaged: 2026-08-25 20:12:10.960369
+>>>>>>> origin/main
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
