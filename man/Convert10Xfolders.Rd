@@ -21,6 +21,7 @@ Convert10Xfolders(
   ext = "qs",
   sort_alphanumeric = TRUE,
   save_empty_droplets = TRUE,
+  save = TRUE,
   ...
 )
 }

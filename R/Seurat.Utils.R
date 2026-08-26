@@ -4553,12 +4553,12 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' @param min.features An integer value specifying the minimum number of features. Default: 200.
 #' @param normalize_data Add normalized "data" layer?. Default: `TRUE`.
 #' @param updateHGNC A logical value indicating whether to update the HGNC. Default: `TRUE`.
-#' @param save Save .qs object? Default: `TRUE`.
 #' @param ShowStats A logical value indicating whether to show statistics. Default: `TRUE`.
 #' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: `TRUE`.
 #' @param depth An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default: 2.
 #' @param sort_alphanumeric sort files alphanumeric? Default: `TRUE`.
 #' @param save_empty_droplets save empty droplets? Default: `TRUE`.
+#' @param save Save .qs object? Default: `TRUE`.
 #'
 #' @examples
 #' \dontrun{
@@ -4580,11 +4580,13 @@ Convert10Xfolders <- function(
     ext = "qs",
     sort_alphanumeric = TRUE,
     save_empty_droplets = TRUE,
+    save = TRUE,
     ...) {
   stopifnot(
     is.character(InputDir), dir.exists(InputDir),
     is.logical(regex), is.character(folderPattern), is.character(suffix), is.numeric(depth),
-    is.numeric(min.cells), is.numeric(min.features), is.logical(updateHGNC), is.logical(ShowStats), is.logical(writeCBCtable),
+    is.numeric(min.cells), is.numeric(min.features), is.logical(updateHGNC), is.logical(ShowStats),
+    is.logical(save) && length(save) == 1L && !is.na(save), is.logical(writeCBCtable),
     is.logical(sort_alphanumeric)
   )
 
