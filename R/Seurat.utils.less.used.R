@@ -589,17 +589,11 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #' }
 #' @export
 Convert10Xfolders.old <- function(
-    InputDir,
-    folderPattern = c("filtered", "SoupX_decont")[1],
-    min.cells = 10, min.features = 200,
-    updateHGNC = TRUE, ShowStats = TRUE) {
-  # ... function body ...
-}
-
-Convert10Xfolders.old <- function(
     InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
     , folderPattern = c("filtered", "SoupX_decont")[1],
     min.cells = 10, min.features = 200, updateHGNC = TRUE, ShowStats = TRUE) {
+  .Deprecated("Convert10Xfolders")
+
   fin <- list.dirs(InputDir, recursive = FALSE)
   fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = FALSE)
 
