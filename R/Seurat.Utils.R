@@ -4355,13 +4355,19 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A")) {
   stopifnot(inherits(obj, "Seurat"), is.character(symbols2remove), length(symbols2remove) > 0L)
 
+  if (!"RNA" %in% Seurat::Assays(obj)) {
+    stop("Object does not contain an 'RNA' assay.")
+  }
+
+  rna_features <- Seurat::Features(obj, assay = "RNA")
+
   # Report absent requests without preventing removal of the features that exist.
-  missing_genes <- setdiff(symbols2remove, rownames(obj[["RNA"]]))
+  missing_genes <- setdiff(symbols2remove, rna_features)
   if (length(missing_genes)) {
     message("Genes not found in the RNA assay: ", paste(missing_genes, collapse = ", "))
   }
 
-  retained_features <- setdiff(rownames(obj[["RNA"]]), symbols2remove)
+  retained_features <- setdiff(rna_features, symbols2remove)
   obj[["RNA"]] <- subset(obj[["RNA"]], features = retained_features)
   obj
 }
