@@ -1121,17 +1121,28 @@ merge_seurat_metadata <- function(ls_obj, include_cols = NULL, exclude_cols = NU
 #'
 #' @examples
 #' # Assuming a list of Seurat objects with meta.data
-#' mergedMetaData <- writeMetadataToTsv(seuratObjectsList, cols.remove = c("column1", "column2"))
+#' mergedMetaData <- writeCombinedMetadataToTsvFromLsObj(
+#'   seuratObjectsList,
+#'   cols.remove = c("column1", "column2")
+#' )
 #'
 #' @note
 #' This function is intended for use with S4 objects that have a `@meta.data` slot.
-#' The function currently contains a `browser()` call for debugging purposes, which should be removed in production.
 #'
 #' @export
 writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(),
                                                 save_as_qs = TRUE, save_as_tsv = TRUE, ...) {
-  warning("writeMetadataToTsv is EXPERIMENTAL. It writes out subset of columns", immediate. = TRUE)
-  stopifnot(is.list(ls.Obj)) # Validate that input is a list
+  warning(
+    "writeCombinedMetadataToTsvFromLsObj is EXPERIMENTAL. It merges shared metadata columns and optionally writes QS and TSV files.",
+    immediate. = TRUE
+  )
+  # Validate collection, column selection, and output switches.
+  stopifnot(
+    is.list(ls.Obj),
+    is.character(cols.remove),
+    is.logical(save_as_qs), length(save_as_qs) == 1L, !is.na(save_as_qs),
+    is.logical(save_as_tsv), length(save_as_tsv) == 1L, !is.na(save_as_tsv)
+  )
 
   # Extract metadata from each object and remove specified columns
   metadataList <- lapply(ls.Obj, function(obj) {
