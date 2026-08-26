@@ -4327,72 +4327,43 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
 # _________________________________________________________________________________________________
 #' @title Remove Specific Genes from a Seurat Object
 #'
-#' @description Removes specified genes from the metadata, counts, data, and scale.data slots of a Seurat object.
-#' This operation is typically performed prior to data integration to ensure that gene sets are consistent
-#' across multiple datasets. The function modifies the Seurat object in place.
+#' @description Removes specified genes from every layer of the RNA assay in a
+#' Seurat object. This operation is typically performed prior to data integration
+#' to ensure that gene sets are consistent across multiple datasets.
 #'
 #' @param obj A Seurat object. Default: `ls.Seurat[[i]]` (please ensure to replace `i` with the actual index or variable).
 #' @param symbols2remove A character vector specifying the genes to be removed from the Seurat object;
 #' Default: `c("TOP2A")`.
 #'
-#' @details This function directly modifies the `@counts`, `@data`, and `@scale.data` slots within
-#' the RNA assay of the provided Seurat object, as well as the `@meta.data` slot. It's important to run
-#' this function as one of the initial steps after creating the Seurat object and before proceeding
-#' with downstream analyses or integration processes.
+#' @details Feature subsetting is performed through Seurat's RNA assay interface,
+#' so both legacy assay slots and Seurat v5 assay layers are supported. Other
+#' assays and cell-level metadata are left unchanged. Requested genes absent from
+#' the RNA assay are reported, while genes that are present are still removed.
 #'
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
 #'   # Assuming `SeuratObj` is your Seurat object and you want to remove the gene "TOP2A"
 #'   updatedSeuratObj <- RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
-#'   # Now `updatedSeuratObj` does not contain "TOP2A" in the specified slots
+#'   # Now `updatedSeuratObj` does not contain "TOP2A" in any RNA assay layer
 #' }
 #' }
 #'
-#' @return A Seurat object with the specified genes removed from the mentioned slots.
+#' @return A Seurat object with the specified genes removed from the RNA assay.
 #'
 #' @export
 RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A")) {
-  print("Run this as the first thing after creating the Seurat object.
-        It only removes genes from: metadata; obj@assays$RNA@counts, @data and @scale.data.")
-  RNA <- obj@assays$RNA
+  stopifnot(inherits(obj, "Seurat"), is.character(symbols2remove), length(symbols2remove) > 0L)
 
-  if (length(RNA@counts)) {
-    NotFound <- setdiff(symbols2remove, RNA@counts@Dimnames[[1]])
-    if (length(NotFound) == 0) {
-      RNA@counts@Dimnames[[1]] <- symbols2remove
-      print("Genes removed from RNA@counts")
-    } else {
-      print("Not All Genes Found in RNA@counts. Missing:")
-      print(NotFound)
-    }
+  # Report absent requests without preventing removal of the features that exist.
+  missing_genes <- setdiff(symbols2remove, rownames(obj[["RNA"]]))
+  if (length(missing_genes)) {
+    message("Genes not found in the RNA assay: ", paste(missing_genes, collapse = ", "))
   }
-  if (length(RNA@data)) {
-    if (length(setdiff(symbols2remove, RNA@data@Dimnames[[1]])) == 0) {
-      RNA@data@Dimnames[[1]] <- symbols2remove
-      print("Genes removed from RNA@data.")
-    } else {
-      print("Not All Genes Found in RNA@data")
-    }
-  }
-  if (length(RNA@scale.data)) {
-    if (length(setdiff(symbols2remove, RNA@scale.data@Dimnames[[1]])) == 0) {
-      RNA@scale.data@Dimnames[[1]] <- symbols2remove
-      print("Genes removed from RNA@scale.data.")
-    } else {
-      print("Not All Genes Found in RNA@scale.data")
-    }
-  }
-  if (length(obj@meta.data)) {
-    if (length(setdiff(symbols2remove, rownames(obj@meta.data))) == 0) {
-      rownames(obj@meta.data) <- symbols2remove
-      print("Genes removed from @meta.data.")
-    } else {
-      print("Not All Genes Found in @metadata")
-    }
-  }
-  obj@assays$RNA <- RNA
-  return(obj)
+
+  retained_features <- setdiff(rownames(obj[["RNA"]]), symbols2remove)
+  obj[["RNA"]] <- subset(obj[["RNA"]], features = retained_features)
+  obj
 }
 
 
