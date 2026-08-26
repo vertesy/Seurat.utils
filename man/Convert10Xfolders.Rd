@@ -15,6 +15,7 @@ Convert10Xfolders(
   normalize_data = TRUE,
   updateHGNC = TRUE,
   ShowStats = TRUE,
+  save = TRUE,
   writeCBCtable = TRUE,
   nthreads = .getNrCores(),
   preset = "high",
@@ -45,13 +46,13 @@ Convert10Xfolders(
 
 \item{ShowStats}{A logical value indicating whether to show statistics. Default: \code{TRUE}.}
 
+\item{save}{Save .qs object? Default: \code{TRUE}.}
+
 \item{writeCBCtable}{A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: \code{TRUE}.}
 
 \item{sort_alphanumeric}{Sort files alphanumerically? Default: \code{TRUE}.}
 
 \item{save_empty_droplets}{save empty droplets? Default: \code{TRUE}.}
-
-\item{save}{Save .qs object? Default: \code{TRUE}.}
 }
 \description{
 This function takes a parent directory with a number of subfolders, each

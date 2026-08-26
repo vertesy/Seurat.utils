@@ -4588,6 +4588,7 @@ Convert10Xfolders <- function(
     min.cells = 5, min.features = 200,
     normalize_data = TRUE,
     updateHGNC = TRUE, ShowStats = TRUE,
+    save = TRUE,
     writeCBCtable = TRUE,
     nthreads = .getNrCores(),
     preset = "high",
@@ -4598,7 +4599,8 @@ Convert10Xfolders <- function(
   stopifnot(
     is.character(InputDir), dir.exists(InputDir),
     is.logical(regex), is.character(folderPattern), is.character(suffix), is.numeric(depth),
-    is.numeric(min.cells), is.numeric(min.features), is.logical(updateHGNC), is.logical(ShowStats), is.logical(writeCBCtable),
+    is.numeric(min.cells), is.numeric(min.features), is.logical(updateHGNC), is.logical(ShowStats),
+    is.logical(save) && length(save) == 1L && !is.na(save), is.logical(writeCBCtable),
     is.logical(sort_alphanumeric)
   )
 
