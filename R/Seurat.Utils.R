@@ -3403,12 +3403,20 @@ Calc.Cor.Seurat <- function(
     max.cells = 40000,
     seed = p$"seed",
     digits = 2, obj = combined.obj) {
+  stopifnot(
+    inherits(obj, "Seurat"),
+    is.numeric(max.cells), length(max.cells) == 1L, !is.na(max.cells), is.finite(max.cells), max.cells > 0,
+    is.numeric(quantileX), length(quantileX) == 1L, !is.na(quantileX), is.finite(quantileX), quantileX >= 0, quantileX <= 1,
+    is.numeric(digits), length(digits) == 1L, !is.na(digits), is.finite(digits)
+  )
   expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
   if (ncol(expr.mat) > max.cells) {
     set.seed(seed = seed)
     cells.use <- sample(x = colnames(expr.mat), size = max.cells)
   } else {
-    cells.use <- ncol(expr.mat)
+    # Retain every cell when downsampling is unnecessary.
+    cells.use <- colnames(expr.mat)
+    if (is.null(cells.use)) cells.use <- seq_len(ncol(expr.mat))
   }
 
   qname <- paste0("q", quantileX * 100)
