@@ -16,7 +16,7 @@ DESCRIPTION <- list(
     ReadWriter, MarkdownHelpers, MarkdownReports,
     plotly, qs, foreach, harmony, EnhancedVolcano, rstudioapi,
     RColorBrewer, SeuratObject, checkmate, fs, future,
-    ggplot2, gplots", # , grDevices
+    ggplot2, gplots, gtools", # , grDevices
   suggests = "clusterProfiler, enrichplot, DatabaseLinke.R, vroom",
   author.given = "Abel",
   author.family = "Vertesy",
