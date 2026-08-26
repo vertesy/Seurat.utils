@@ -4515,8 +4515,9 @@ GetUpdateStats <- function(genes = HGNC.updated[[i]]) {
 #'
 #' @export
 PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)", "Updated (Nr.)")) { # Scatter plot of update stats.
-  stopifnot(column.names %in% colnames(UpdateStatMat))
-  HGNC.UpdateStatistics <- mat[, column.names]
+  # The plot labels below require exactly two columns from a rectangular input.
+  stopifnot(is.matrix(mat) || is.data.frame(mat), is.character(column.names), length(column.names) == 2L, all(column.names %in% colnames(mat)))
+  HGNC.UpdateStatistics <- mat[, column.names, drop = FALSE]
   HGNC.UpdateStatistics[, "Updated (%)"] <- 100 * HGNC.UpdateStatistics[, "Updated (%)"]
   colnames(HGNC.UpdateStatistics) <- c("Gene Symbols updated (% of Total Genes)", "Number of Gene Symbols updated")
   lll <- wcolorize(vector = rownames(HGNC.UpdateStatistics))
