@@ -1991,7 +1991,7 @@ plotAndSaveHeatmaps <- function(results, path = getwd(),
 #' @importFrom ggplot2 ggtitle theme_linedraw scale_x_log10 scale_y_log10
 qFeatureScatter <- function(
   feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj,
-  # ext = "png",
+  ext = "png",
   plot = TRUE,
   logX = FALSE, logY = FALSE,
   ...
