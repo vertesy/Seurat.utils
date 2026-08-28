@@ -8,7 +8,7 @@ Functionalities rely on basic function libraries listed below.
 
 ### !!! Installation NEWS 
 #### `qs` dependency
-- Until I update the code to [`qs2`]([url](https://github.com/qsbase/qs2)), you have to install `qs` [from github]([url](https://github.com/qsbase/qs)):
+- Until I update the code to [`qs2`](https://github.com/qsbase/qs2), you have to install `qs` [from GitHub](https://github.com/qsbase/qs):
 `remotes::install_cran("qs", type = "source", configure.args = "--with-simd=AVX2")`
 - Unfortunately as of R4.6.0 `qs` reportedly fails to install on R4.6.x on Windows.
 - Solution: **Use R4.5.x until I can upgrade the package**
