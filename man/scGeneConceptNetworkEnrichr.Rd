@@ -33,6 +33,36 @@ scGeneConceptNetworkEnrichr(
   h = 10,
   ...
 )
+
+scGeneConceptNetworkEnrichr(
+  df.enrichment,
+  showCategory = 10,
+  foldChange = NULL,
+  tag = NULL,
+  NULL_input = is.null(df.enrichment),
+  title = paste("Gene-Concept Network", tag),
+  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+  caption = paste0("Enriched terms: ", ifelse(NULL_input, 0, nrow(df.enrichment)),
+    " | Shown: ", ifelse(NULL_input, 0, min(showCategory, nrow(df.enrichment))), if
+    (!is.null(foldChange)) {
+     paste0(" | genes w/ foldChange: ", length(foldChange))
+
+    } else {
+     ""
+ }),
+  circular = FALSE,
+  colorEdge = TRUE,
+  cex_label_category = 1,
+  cex_label_gene = cex_label_category - 0.3,
+  node_label = "category",
+  title_size = 20,
+  save = TRUE,
+  also.pdf = FALSE,
+  save.obj = FALSE,
+  w = 10,
+  h = 10,
+  ...
+)
 }
 \arguments{
 \item{df.enrichment}{enrichResult or gseaResult object.}
@@ -75,6 +105,8 @@ or "category". Default: "category".}
 }
 \value{
 A ggplot object (invisibly if saved).
+
+A ggplot object (invisibly if saved).
 }
 \description{
 Wrapper around \code{enrichplot::cnetplot()} to visualize the gene-concept
@@ -82,8 +114,22 @@ Wrapper around \code{enrichplot::cnetplot()} to visualize the gene-concept
 drive which enriched terms, optionally colored by fold change (e.g. DE).
 Behavior mirrors \code{scBarplotEnrichr()} and \code{scEmapplotEnrichr()} with
 safety checks, informative fallbacks, and optional saving.
+
+Wrapper around \code{enrichplot::cnetplot()} to visualize the gene-concept
+(e.g. GO / KEGG) network for enrichment results. The plot shows which genes
+drive which enriched terms, optionally colored by fold change (e.g. DE).
+Behavior mirrors \code{scBarplotEnrichr()} and \code{scEmapplotEnrichr()} with
+safety checks, informative fallbacks, and optional saving.
 }
 \examples{
+\dontrun{
+edox <- setReadable(edo, "org.Hs.eg.db", "ENTREZID")
+scGeneConceptNetworkEnrichr(
+  df.enrichment = edox,
+  foldChange = geneList,
+  tag = "Cluster 3 neurons"
+)
+}
 \dontrun{
 edox <- setReadable(edo, "org.Hs.eg.db", "ENTREZID")
 scGeneConceptNetworkEnrichr(

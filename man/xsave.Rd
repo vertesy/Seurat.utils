@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{xsave}
 \alias{xsave}
-\title{Save an R Object Using 'qs' Package for Fast Compressed Saving}
+\title{Save an R Object Using 'qs2' Package for Fast Compressed Saving}
 \usage{
 xsave(
   obj,
@@ -29,7 +29,8 @@ xsave(
 
 \item{nthreads}{Number of threads to use when saving, defaults to 12.}
 
-\item{preset}{Compression preset, defaults to 'high'.}
+\item{preset}{Compression preset for backward compatibility; mapped to \code{compress_level}.
+One of "fast" (1), "balanced" (3), "high" (6), or "archive" (12). Defaults to "high".}
 
 \item{project}{The project name to be included in the filename, defaults to the result of \code{getProject()}.}
 
@@ -53,14 +54,14 @@ into misc slot.}
 Invisible; The function is called for its side effects (saving a file) and does not return anything.
 }
 \description{
-This function saves an R object to a file in a quick and efficient format using the 'qs' package.
+This function saves an R object to a file in a quick and efficient format using the 'qs2' package.
 It constructs the file name based on various inputs and stores additional metadata if the object is a Seurat object.
 The saving path can be adjusted by the presence of 'OutDir' in the global environment or defaults to the working directory.
 }
 \note{
-The function uses the 'qs' package for quick and efficient serialization of objects and
+The function uses the 'qs2' package for quick and efficient serialization of objects and
 includes a timing feature from the 'tictoc' package.
 }
 \seealso{
-\code{\link[qs]{qsave}} for the underlying save function used.
+\code{\link[qs2]{qs_save}} for the underlying save function used.
 }

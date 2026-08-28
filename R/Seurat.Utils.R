@@ -1160,7 +1160,8 @@ calc.q99.Expression.and.set.all.genes <- function(
       filtercol = TRUE,
       palette_use = "npg", w = 8, h = 6,
       save.meta.info = FALSE,
-      ...)
+      ...
+    )
     tictoc::toc()
     if (show) print(pobj)
   }
@@ -5061,10 +5062,17 @@ isave.RDS <- function(
   valid_presets <- c("fast", "balanced", "high", "archive")
   if (!preset %in% valid_presets) {
     warning("Unknown preset '", preset, "'; defaulting to 'balanced' (compress_level=3). Valid options: ",
-            paste(valid_presets, collapse = ", "), call. = FALSE)
+      paste(valid_presets, collapse = ", "),
+      call. = FALSE
+    )
     return(3L) # explicit early return to make the fallback unambiguous
   }
-  switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L)
+  switch(preset,
+    "fast" = 1L,
+    "balanced" = 3L,
+    "high" = 6L,
+    "archive" = 12L
+  )
 }
 
 # _________________________________________________________________________________________________

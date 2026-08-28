@@ -3905,7 +3905,6 @@ filterGoEnrichment <- function(df.enrichments,
 # print(descriptions)
 
 
-
 # ________________________________________________________________________
 #' @title Barplot GO Enrichment Results by enrichplot
 #'
@@ -3954,7 +3953,6 @@ scBarplotEnrichr <- function(df.enrichment,
                              save.obj = FALSE,
                              w = 10, h = 10,
                              ...) {
-
   stopifnot("Package 'enrichplot' must be installed to use this function." = require("enrichplot"))
 
   if (tag == "...") warning("Please provide a tag describing where are the enrichments.", immediate. = TRUE)
@@ -3965,10 +3963,8 @@ scBarplotEnrichr <- function(df.enrichment,
   pobj <-
     if (is.null(df.enrichment) || nr_terms < 1) {
       Seurat.utils:::.emptyAnnotatedPlot(label = "No enriched terms input!")
-
     } else if (nr_GOENR_input_genes < 5) {
       Seurat.utils:::.emptyAnnotatedPlot(label = "Too few input genes for GO enrichment (<5).")
-
     } else {
       enrichplot:::barplot.enrichResult(df.enrichment, showCategory = showCategory, label_format = label_format)
     }
@@ -3979,8 +3975,6 @@ scBarplotEnrichr <- function(df.enrichment,
 
   return(pobj)
 }
-
-
 
 
 # ________________________________________________________________________
@@ -4016,26 +4010,25 @@ scBarplotEnrichr <- function(df.enrichment,
 #' scDotplotEnrichr(df.enrichment)
 #' }
 scDotplotEnrichr <- function(
-    df.enrichment,
-    showCategory = 20,
-    label_format = 30,
-    tag = "...",
-    universe = df.enrichment@universe,
-    title = paste("GO Enriched Terms", tag),
-    subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
-    caption = paste0(
-      "Input genes: ", length(df.enrichment@"gene"),
-      " | Enriched terms: ", nrow(df.enrichment),
-      " | Shown: ", min(showCategory, nrow(df.enrichment)),
-      " | Background genes: ", length(universe)
-    ),
-    save = TRUE,
-    also.pdf = FALSE,
-    save.obj = FALSE,
-    w = 10, h = 10,
-    ...
+  df.enrichment,
+  showCategory = 20,
+  label_format = 30,
+  tag = "...",
+  universe = df.enrichment@universe,
+  title = paste("GO Enriched Terms", tag),
+  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+  caption = paste0(
+    "Input genes: ", length(df.enrichment@"gene"),
+    " | Enriched terms: ", nrow(df.enrichment),
+    " | Shown: ", min(showCategory, nrow(df.enrichment)),
+    " | Background genes: ", length(universe)
+  ),
+  save = TRUE,
+  also.pdf = FALSE,
+  save.obj = FALSE,
+  w = 10, h = 10,
+  ...
 ) {
-
   stopifnot(
     "Package 'enrichplot' must be installed." = require("enrichplot")
   )
@@ -4051,7 +4044,6 @@ scDotplotEnrichr <- function(
 
   pobj <-
     if (is.null(df.enrichment) || nrow(df.enrichment) < 1) {
-
       warning("No enriched terms input!", immediate. = TRUE)
       ggplot2::ggplot() +
         ggplot2::theme_void() +
@@ -4064,9 +4056,7 @@ scDotplotEnrichr <- function(
           hjust = 0.5,
           vjust = 0.5
         )
-
     } else if (nr_input_genes < 5) {
-
       warning("Very few inputs for GO enrichment (<5 genes).", immediate. = TRUE)
       ggplot2::ggplot() +
         ggplot2::theme_void() +
@@ -4079,9 +4069,7 @@ scDotplotEnrichr <- function(
           hjust = 0.5,
           vjust = 0.5
         )
-
     } else {
-
       enrichplot:::dotplot(
         object = df.enrichment,
         showCategory = showCategory,
@@ -4101,18 +4089,6 @@ scDotplotEnrichr <- function(
 
   return(pobj)
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # ________________________________________________________________________
@@ -4150,30 +4126,30 @@ scDotplotEnrichr <- function(
 #' scEmapplotEnrichr(df.enrichment, tag = "Cluster 3 neurons")
 #' }
 scEmapplotEnrichr <- function(
-    df.enrichment,
-    showCategory = 15,
-    min_edge = 0.2,
-    tag = "...",
-    universe = df.enrichment@universe,
-    title = paste("GO Enrichment Map", tag),
-    subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
-    caption = paste0( "Input genes: ", length(df.enrichment@"gene"),
-                      " | Enriched terms: ", nrow(df.enrichment),
-                      " | Shown: ", min(showCategory, nrow(df.enrichment)),
-                      " | background genes: ", length(universe),
-                      " | min edge overlap: ", min_edge),
-    label_format = NULL,
-    layout = "kk",
-    cex_label_category = 0.8,
-
-    save = TRUE,
-    also.pdf = FALSE,
-    save.obj = FALSE,
-    w = 10, h = 10,
-    ...
+  df.enrichment,
+  showCategory = 15,
+  min_edge = 0.2,
+  tag = "...",
+  universe = df.enrichment@universe,
+  title = paste("GO Enrichment Map", tag),
+  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+  caption = paste0(
+    "Input genes: ", length(df.enrichment@"gene"),
+    " | Enriched terms: ", nrow(df.enrichment),
+    " | Shown: ", min(showCategory, nrow(df.enrichment)),
+    " | background genes: ", length(universe),
+    " | min edge overlap: ", min_edge
+  ),
+  label_format = NULL,
+  layout = "kk",
+  cex_label_category = 0.8,
+  save = TRUE,
+  also.pdf = FALSE,
+  save.obj = FALSE,
+  w = 10, h = 10,
+  ...
 ) {
-
-  stopifnot("Package 'enrichplot' must be installed." = requireNamespace("enrichplot", quietly = TRUE) )
+  stopifnot("Package 'enrichplot' must be installed." = requireNamespace("enrichplot", quietly = TRUE))
 
   if (tag == "...") {
     warning(
@@ -4188,19 +4164,16 @@ scEmapplotEnrichr <- function(
   pobj <-
     if (is.null(df.enrichment) || nr_terms < 1) {
       Seurat.utils:::.emptyAnnotatedPlot(label = "No enriched terms input!")
-
     } else if (nr_GOENR_input_genes < 5) {
       Seurat.utils:::.emptyAnnotatedPlot(label = "Too few input genes for GO enrichment (<5).")
-
     } else {
-
       # similarity matrix is computed internally by emapplot()
       enrichplot::emapplot(
         x = df.enrichment,
         showCategory = showCategory,
-        layout.params  = list(layout = layout),
-        edge.params    = list(min = min_edge),
-        cex.params     = list(category_label = cex_label_category),
+        layout.params = list(layout = layout),
+        edge.params = list(min = min_edge),
+        cex.params = list(category_label = cex_label_category),
         cluster.params = list(label_format = label_format),
         ...
       )
@@ -4219,7 +4192,6 @@ scEmapplotEnrichr <- function(
 
   return(pobj)
 }
-
 
 
 # ________________________________________________________________________
@@ -4260,7 +4232,7 @@ scEmapplotEnrichr <- function(
 #'
 #' @examples
 #' \dontrun{
-#' edox <- setReadable(edo, 'org.Hs.eg.db', 'ENTREZID')
+#' edox <- setReadable(edo, "org.Hs.eg.db", "ENTREZID")
 #' scGeneConceptNetworkEnrichr(
 #'   df.enrichment = edox,
 #'   foldChange = geneList,
@@ -4268,34 +4240,34 @@ scEmapplotEnrichr <- function(
 #' )
 #' }
 scGeneConceptNetworkEnrichr <- function(
-    df.enrichment,
-    showCategory = 10,
-    foldChange = NULL,
-    tag = NULL,
-    NULL_input = is.null(df.enrichment),
-    title = paste("Gene-Concept Network", tag),
-    subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
-    caption = paste0(
-      "Enriched terms: ", ifelse(NULL_input, 0, nrow(df.enrichment)),
-      " | Shown: ", ifelse(NULL_input, 0, min(showCategory, nrow(df.enrichment))),
-      if (!is.null(foldChange))
-        paste0(" | genes w/ foldChange: ", length(foldChange))
-      else ""
-    ),
-    circular = FALSE,
-    colorEdge = TRUE,
-    cex_label_category = 1,
-    cex_label_gene   = cex_label_category-.3,
-    node_label = "category",
-    title_size = 20,
-
-    save = TRUE,
-    also.pdf = FALSE,
-    save.obj = FALSE,
-    w = 10, h = 10,
-    ...
+  df.enrichment,
+  showCategory = 10,
+  foldChange = NULL,
+  tag = NULL,
+  NULL_input = is.null(df.enrichment),
+  title = paste("Gene-Concept Network", tag),
+  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+  caption = paste0(
+    "Enriched terms: ", ifelse(NULL_input, 0, nrow(df.enrichment)),
+    " | Shown: ", ifelse(NULL_input, 0, min(showCategory, nrow(df.enrichment))),
+    if (!is.null(foldChange)) {
+      paste0(" | genes w/ foldChange: ", length(foldChange))
+    } else {
+      ""
+    }
+  ),
+  circular = FALSE,
+  colorEdge = TRUE,
+  cex_label_category = 1,
+  cex_label_gene = cex_label_category - .3,
+  node_label = "category",
+  title_size = 20,
+  save = TRUE,
+  also.pdf = FALSE,
+  save.obj = FALSE,
+  w = 10, h = 10,
+  ...
 ) {
-
   message(caption)
   message(node_label, " nodes will be labeled. Set it to 'all' or 'gene'.")
 
@@ -4304,7 +4276,7 @@ scGeneConceptNetworkEnrichr <- function(
       requireNamespace("enrichplot", quietly = TRUE)
   )
 
-  if(is.null(tag)) warning("Please provide a tag describing where the enrichments come from.",immediate. = TRUE)
+  if (is.null(tag)) warning("Please provide a tag describing where the enrichments come from.", immediate. = TRUE)
 
   nr_terms <- if (NULL_input) 0 else nrow(df.enrichment)
   nr_GOENR_input_genes <- if (NULL_input) 0 else length(df.enrichment@"gene")
@@ -4312,10 +4284,8 @@ scGeneConceptNetworkEnrichr <- function(
   pobj <-
     if (NULL_input || nr_terms < 1) {
       Seurat.utils:::.emptyAnnotatedPlot(label = "No enriched terms input!")
-
     } else if (nr_GOENR_input_genes < 5) {
       Seurat.utils:::.emptyAnnotatedPlot(label = "Too few input genes for GO enrichment (<5).")
-
     } else {
       enrichplot::cnetplot(
         x = df.enrichment,
@@ -4343,17 +4313,16 @@ scGeneConceptNetworkEnrichr <- function(
     ggplot2::theme(
       plot.title = ggplot2::element_text(
         size = title_size,
-        face = "bold")
-      ) +
+        face = "bold"
+      )
+    ) +
     ggplot2::guides(color = "none", edge_color = "none", fill = "none")
-
 
 
   bold <- T
   if (bold) {
     aesp <- pobj$layers[[3]]$aes_params
-    if(length(aesp$size) > 1) {
-
+    if (length(aesp$size) > 1) {
       # You cannot simply use `aesp$size == cex_label_category` because it is scaled by some parameter.
       # Current implementation assumes the default case that category labels are bigger than gene labels.
       # This is not a bulletproof implementation that works for now.
@@ -4362,7 +4331,6 @@ scGeneConceptNetworkEnrichr <- function(
       pobj$layers[[3]]$aes_params$fontface <- "bold"
     }
   }
-
 
 
   if (save) {
@@ -4377,9 +4345,6 @@ scGeneConceptNetworkEnrichr <- function(
 
   return(pobj)
 }
-
-
-
 
 
 # ________________________________________________________________________

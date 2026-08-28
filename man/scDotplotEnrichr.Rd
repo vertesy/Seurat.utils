@@ -22,6 +22,25 @@ scDotplotEnrichr(
   h = 10,
   ...
 )
+
+scDotplotEnrichr(
+  df.enrichment,
+  showCategory = 20,
+  label_format = 30,
+  tag = "...",
+  universe = df.enrichment@universe,
+  title = paste("GO Enriched Terms", tag),
+  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+  caption = paste0("Input genes: ", length(df.enrichment@gene), " | Enriched terms: ",
+    nrow(df.enrichment), " | Shown: ", min(showCategory, nrow(df.enrichment)),
+    " | Background genes: ", length(universe)),
+  save = TRUE,
+  also.pdf = FALSE,
+  save.obj = FALSE,
+  w = 10,
+  h = 10,
+  ...
+)
 }
 \arguments{
 \item{df.enrichment}{enrichResult object. Enrichment results from GO analysis.}
@@ -53,13 +72,22 @@ Default: \code{df.enrichment@universe}.}
 }
 \value{
 A ggplot object.
+
+A ggplot object.
 }
 \description{
 This function creates a dot plot of GO enrichment analysis results using
 \code{enrichplot::dotplot}. It mirrors \code{scBarplotEnrichr()} but visualizes
 enrichment significance and gene ratios as a dot plot.
+
+This function creates a dot plot of GO enrichment analysis results using
+\code{enrichplot::dotplot}. It mirrors \code{scBarplotEnrichr()} but visualizes
+enrichment significance and gene ratios as a dot plot.
 }
 \examples{
+\dontrun{
+scDotplotEnrichr(df.enrichment)
+}
 \dontrun{
 scDotplotEnrichr(df.enrichment)
 }

@@ -627,12 +627,12 @@ addGeneClassFractions <- function(obj,
   if (species == "mouse") {
     message("Using mouse gene patterns for: mito, ribo, Gm.predicted, and Malat1 genes.\n")
     gene_fractions <- list(
-      "percent.mito"        = "^(mt-|MT-)",
-      "percent.ribo"        = "^(Rpl|Rps)",
+      "percent.mito" = "^(mt-|MT-)",
+      "percent.ribo" = "^(Rpl|Rps)",
       # Mouse AC/AL loci do not exist in the same way as human GenBank/EMBL ACxxxxx / ALxxxxx loci.
       # The closest equivalents are "Gm" predicted and lincRNAs genes.
       "percent.Gm.predicted" = "^Gm[0-9]+",
-      "percent.Malat1"       = "^Malat1$"
+      "percent.Malat1" = "^Malat1$"
     )
   } else if (species == "human") {
     message("Using human gene patterns for: mito, ribo, AC/AL loci, LINC, and MALAT1 genes.")
@@ -1201,19 +1201,19 @@ writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(
 #' @importFrom pheatmap pheatmap
 #' @export
 plotMetadataCorHeatmap <- function(
-    columns = c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo"),
-    obj,
-    cormethod = c("pearson", "spearman")[1],
-    main = paste("Metadata", cormethod, "correlations"),
-    show_numbers = FALSE,
-    digits = 1,
-    suffix = NULL,
-    add_PCA = TRUE,
-    n_PCs = 4,
-    w = ceiling((length(columns) + n_PCs) / 2), h = w,
-    use_ggcorrplot = FALSE,
-    n_cutree = NA,
-    ...
+  columns = c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo"),
+  obj,
+  cormethod = c("pearson", "spearman")[1],
+  main = paste("Metadata", cormethod, "correlations"),
+  show_numbers = FALSE,
+  digits = 1,
+  suffix = NULL,
+  add_PCA = TRUE,
+  n_PCs = 4,
+  w = ceiling((length(columns) + n_PCs) / 2), h = w,
+  use_ggcorrplot = FALSE,
+  n_cutree = NA,
+  ...
 ) {
   META <- obj@meta.data
   columns.found <- intersect(colnames(META), columns)
@@ -1235,18 +1235,18 @@ plotMetadataCorHeatmap <- function(
   corX <- cor(META, method = cormethod, use = "pairwise.complete.obs")
   if (use_ggcorrplot) {
     pl <- ggcorrplot::ggcorrplot(corX,
-                                 title = main,
-                                 hc.order = TRUE,
-                                 digits = digits,
-                                 lab = show_numbers,
-                                 type = "full",
-                                 ...
+      title = main,
+      hc.order = TRUE,
+      digits = digits,
+      lab = show_numbers,
+      type = "full",
+      ...
     )
     ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, "png"), also.pdf = TRUE, w = w, h = h)
   } else {
     pl <- pheatmap::pheatmap(corX,
-                             main = main, treeheight_row = 2, treeheight_col = 2,
-                             cutree_rows = n_cutree, cutree_cols = n_cutree
+      main = main, treeheight_row = 2, treeheight_col = 2,
+      cutree_rows = n_cutree, cutree_cols = n_cutree
     )
     wplot_save_pheatmap(
       x = pl, width = w,

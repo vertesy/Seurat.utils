@@ -40,10 +40,12 @@ Finally, it merges all the metadata into one large data frame and prints its dim
 }
 \note{
 This function is intended for use with S4 objects that have a \verb{@meta.data} slot.
-The function currently contains a \code{browser()} call for debugging purposes, which should be removed in production.
 }
 \examples{
 # Assuming a list of Seurat objects with meta.data
-mergedMetaData <- writeMetadataToTsv(seuratObjectsList, cols.remove = c("column1", "column2"))
+mergedMetaData <- writeCombinedMetadataToTsvFromLsObj(
+  seuratObjectsList,
+  cols.remove = c("column1", "column2")
+)
 
 }

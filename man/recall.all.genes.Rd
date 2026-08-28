@@ -10,9 +10,8 @@ recall.all.genes(obj = combined.obj, overwrite = FALSE)
 \item{obj}{Seurat object, Default: \code{combined.obj}}
 }
 \description{
-Retrieve the \code{all.genes} vector stored by
-\code{calc.q99.Expression.and.set.all.genes()} from a Seurat object's \code{misc}
-slot and optionally overwrite the global variable.
+Recall \code{all.genes} from a Seurat object's \code{misc} slot,
+which is stored by \code{calc.q99.Expression.and.set.all.genes()}, and optionally reset the global variable.
 }
 \examples{
 \dontrun{
