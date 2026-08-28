@@ -3803,7 +3803,7 @@ scGOEnrichment <- function(genes, universe = NULL,
   }
 
   if (length(genes) < min.genes) {
-    warning("Too few apprived genes (", length(genes), ") for GO enrichment analysis. Minimum is ",
+    warning("Too few approved genes (", length(genes), ") for GO enrichment analysis. Minimum is ",
       min.genes, ".",
       immediate. = TRUE
     )
