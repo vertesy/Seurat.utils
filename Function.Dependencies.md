@@ -1,7 +1,7 @@
 # Function relationships
 
 > (of connected functions)
-
+As of January 31, 2025. Probably outdated by now. 
 
 
 ```mermaid

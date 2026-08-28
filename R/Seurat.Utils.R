@@ -477,11 +477,8 @@ runDGEA <- function(obj,
         min.diff.pct = param.list$"min.diff.pct",
         min.cells.group = param.list$"min.cells.group",
         max.cells.per.ident = param.list$"max.cells.per.ident",
-<<<<<<< HEAD
         only.pos = param.list$"only.pos",
-=======
         only.pos = param.list$"only.pos"
->>>>>>> origin/main
       )
       toc()
 
@@ -602,11 +599,7 @@ runDGEA <- function(obj,
         qbarplot(NrOfHighlySignLFC2_genes,
           label = NrOfHighlySignLFC2_genes,
           plotname = "Number of diff. genes per cluster",
-<<<<<<< HEAD
-          sub = "Genes with avg_log2FC > 1 and p_val_adj < 0.05",
-=======
           subtitle = "Genes with avg_log2FC > 1 and p_val_adj < 0.05",
->>>>>>> origin/main
           xlab = "Clusters", ylab = "Number of diff. genes"
         )
 
@@ -856,13 +849,7 @@ SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
 }
 
 
-<<<<<<< HEAD
 
-
-
-
-=======
->>>>>>> origin/main
 # _________________________________________________________________________________________________
 #' @title AreTheseCellNamesTheSame
 #'
@@ -1151,15 +1138,9 @@ calc.q99.Expression.and.set.all.genes <- function(
     dsampled <- sample(x = 1:ncol(data_mtx), size = max.cells)
     data_mtx <- data_mtx[, dsampled]
     message("Downsampled from ", ncol(obj), " to ", max.cells, " cells")
-<<<<<<< HEAD
-    dtag= "downsampled(!)"
-  } else {
-    dtag = "all cells"
-=======
     dtag <- "downsampled(!)"
   } else {
     dtag <- "all cells"
->>>>>>> origin/main
   }
 
   # Calculate the number of cells in the top quantile (e.g.: 99th quantile) that is
@@ -1198,12 +1179,7 @@ calc.q99.Expression.and.set.all.genes <- function(
       filtercol = TRUE,
       palette_use = "npg", w = 8, h = 6,
       save.meta.info = FALSE,
-<<<<<<< HEAD
       ...)
-=======
-      ...
-    )
->>>>>>> origin/main
     tictoc::toc()
     if (show) print(pobj)
   }
