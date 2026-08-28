@@ -6,18 +6,12 @@ Functionalities rely on basic function libraries listed below.
 
 # Installation
 
-<<<<<<< HEAD
-### Installation NEWS
-Until I update the code to [`qs2`]([url](https://github.com/qsbase/qs2)), you have to install `qs` [from github]([url](https://github.com/qsbase/qs)):
-`remotes::install_cran("qs", type = "source", configure.args = "--with-simd=AVX2")`
-=======
 ### !!! Installation NEWS 
 #### `qs` dependency
-- Until I update the code to [`qs2`]([url](https://github.com/qsbase/qs2)), you have to install `qs` [from github]([url](https://github.com/qsbase/qs)):
+- Until I update the code to [`qs2`](https://github.com/qsbase/qs2), you have to install `qs` [from GitHub](https://github.com/qsbase/qs):
 `remotes::install_cran("qs", type = "source", configure.args = "--with-simd=AVX2")`
-- Unfortunately as of R4.6.0 `qs` is reportedy fails to install on R4.6.x on Windows.
+- Unfortunately as of R4.6.0 `qs` reportedly fails to install on R4.6.x on Windows.
 - Solution: **Use R4.5.x until I can upgrade the package**
->>>>>>> origin/main
 
 Seurat.utils relies on:
 
@@ -113,7 +107,6 @@ It needs to be sourced, cannot be installed:
 source("https://raw.githubusercontent.com/vertesy/Rocinante/master/R/Rocinante.R")
 ```
 
-<<<<<<< HEAD
 ## List of Functions in Seurat.Utils.R (98) 
 
 Updated: 2025/12/03 10:19
@@ -931,8 +924,6 @@ Proportion of Cells Expressing Given Genes. Calculates the proportion of cells e
 Helper to calculate Cell Expression Proportion for Gene. Computes the proportion of cells expressing a specific gene within a Seurat object. 
 
 
-=======
->>>>>>> origin/main
 
 # Usage
 

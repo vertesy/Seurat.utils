@@ -15,12 +15,7 @@
 
   pkg_op <- list(
     # insert at top
-<<<<<<< HEAD
-
-    su.save.plot =  TRUE
-=======
     su.save.plot = TRUE
->>>>>>> origin/main
     # getOption("su.save.plot", TRUE)
   )
 
@@ -82,32 +77,6 @@
 #'
 #' @export
 PlotFilters <- function(
-<<<<<<< HEAD
-    ls.obj,
-    par.ls = p,
-    parentdir = OutDirOrig,
-    suffices = names(ls.obj),
-    filetype = ".jpg",
-    below.mito = par.ls$"thr.lp.mito",
-    above.mito = par.ls$"thr.hp.mito",
-    below.ribo = par.ls$"thr.lp.ribo",
-    above.ribo = par.ls$"thr.hp.ribo",
-    below.nFeature_RNA = if ("quantile.thr.lp.nFeature_RNA" %in% names(par.ls)) par.ls$"quantile.thr.lp.nFeature_RNA" else par.ls$"thr.lp.nFeature_RNA",
-    above.nFeature_RNA = par.ls$"thr.hp.nFeature_RNA",
-    subdir = FixPlotName(
-      "Filtering.plots",
-      "mito", par.ls$"thr.hp.mito", par.ls$"thr.lp.mito",
-      "ribo", par.ls$"thr.hp.ribo", par.ls$"thr.lp.ribo",
-      "nFeature", below.nFeature_RNA, above.nFeature_RNA
-    ),
-    transparency = 0.25,
-    cex = 0.75,
-    theme.used = theme_bw(base_size = 18)
-    # LabelDistFromTop = 200 # for barplot_label
-    ) {
-  message("Expects a list of Seurat objects, `ls.obj` with names, and a list of parameters, `par.ls` with a defined structure.")
-  if(inherits(ls.obj, "Seurat") && length(ls.obj) == 1) ls.obj <- list(ls.obj)
-=======
   ls.obj,
   par.ls = p,
   parentdir = OutDirOrig,
@@ -132,7 +101,6 @@ PlotFilters <- function(
 ) {
   message("Expects a list of Seurat objects, `ls.obj` with names, and a list of parameters, `par.ls` with a defined structure.")
   if (inherits(ls.obj, "Seurat") && length(ls.obj) == 1) ls.obj <- list(ls.obj)
->>>>>>> origin/main
 
   # Create names based on the Seurat objects, catenating "dataset" and numbers 1:n
   if (is.null(suffices)) {
@@ -319,11 +287,6 @@ PlotFilters <- function(
 }
 
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> origin/main
 # _________________________________________________________________________________________________
 #' @title Calculate the percent of variation explained by individual PC's
 #'
@@ -705,24 +668,6 @@ plotGeneExprHistAcrossCells <- function(
 #' @export
 
 PctCellsAboveX <- function(
-<<<<<<< HEAD
-    object,
-    feature,
-    ident,
-    threshold = 1,
-    box = FALSE,
-    ident.box = NULL,
-    subset_ident = NULL,
-    subset_values = NULL,
-    omit.na = TRUE,
-    assay = "RNA",
-    slot = "data",
-    plot = TRUE,
-    caption = NULL,
-    ylab = "% cells above threshold",
-    palette = "jco",
-    ...
-=======
   object,
   feature,
   ident,
@@ -739,7 +684,6 @@ PctCellsAboveX <- function(
   ylab = "% cells above threshold",
   palette = "jco",
   ...
->>>>>>> origin/main
 ) {
   # 1. Validate input ________________________________________
   stopifnot(
@@ -2046,20 +1990,12 @@ plotAndSaveHeatmaps <- function(results, path = getwd(),
 #' @importFrom Seurat FeatureScatter
 #' @importFrom ggplot2 ggtitle theme_linedraw scale_x_log10 scale_y_log10
 qFeatureScatter <- function(
-<<<<<<< HEAD
-    feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj,
-    # ext = "png",
-    plot = TRUE,
-    logX = FALSE, logY = FALSE,
-    ...) {
-=======
   feature1 = "TOP2A", feature2 = "ID2", obj = combined.obj,
-  # ext = "png",
+  ext = "png",
   plot = TRUE,
   logX = FALSE, logY = FALSE,
   ...
 ) {
->>>>>>> origin/main
   plotname <- kpp(feature1, "VS", feature2)
   p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2, ...) +
     ggtitle(paste("Correlation", plotname)) +
@@ -2198,17 +2134,10 @@ qSeuViolin <- function(
 
   if (!is.null(colors)) {
     col_is_vec <- is.vector(colors) && length(colors) >= length(unique(split_col))
-<<<<<<< HEAD
-    col_is_metacolname <- length(colors) ==1 && colors %in% colnames(obj@meta.data)
-    stopifnot(col_is_vec || col_is_metacolname)
-
-    if(col_is_metacolname) {
-=======
     col_is_metacolname <- length(colors) == 1 && colors %in% colnames(obj@meta.data)
     stopifnot(col_is_vec || col_is_metacolname)
 
     if (col_is_metacolname) {
->>>>>>> origin/main
       col_long <- as.factor(unlist(obj[[colors]]))
       colors <- as.factor.numeric(sapply(split(col_long, split_col), unique))
     }
@@ -2290,26 +2219,6 @@ qSeuViolin <- function(
 #' @importFrom ggplot2 ggtitle coord_fixed labs
 #'
 qUMAP <- function(
-<<<<<<< HEAD
-    feature = "TOP2A", obj = combined.obj,
-    title = feature, sub = NULL,
-    reduction = "umap", splitby = NULL,
-    prefix = NULL,
-    suffix = make.names(sub),
-    save.plot = getOption("su.save.plot", TRUE),
-      # MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
-    PNG = TRUE,
-    h = 7, w = NULL, nr.cols = NULL,
-    assay = c("RNA", "integrated")[1],
-    axes = FALSE,
-    aspect.ratio = c(FALSE, 0.6)[1],
-    HGNC.lookup = TRUE,
-    make.uppercase = FALSE,
-    check_for_2D = TRUE,
-    qlow = "q10", qhigh = "q90",
-    caption = .parseBasicObjStats(obj, simple = TRUE),
-    ...) {
-=======
   feature = "TOP2A", obj = combined.obj,
   title = feature, sub = NULL,
   reduction = "umap", splitby = NULL,
@@ -2329,7 +2238,6 @@ qUMAP <- function(
   caption = .parseBasicObjStats(obj, simple = TRUE),
   ...
 ) {
->>>>>>> origin/main
   #
   message("Feature: ", feature, " | Assay: ", assay)
   META <- obj@meta.data
@@ -2422,37 +2330,6 @@ qUMAP <- function(
 #'
 #' @export
 clUMAP <- function(
-<<<<<<< HEAD
-    ident = NULL,
-    obj = combined.obj,
-    title = ident,
-    sub = NULL,
-    prefix = NULL,
-    suffix = make.names(sub),
-    caption = .parseBasicObjStats(obj, simple = TRUE), # try(.parseKeyParams(obj = obj), silent = TRUE),
-    reduction = "umap", splitby = NULL,
-    label.cex = 7,
-    h = 7, w = NULL,
-    nr.cols = NULL,
-    plotname = ppp(toupper(reduction), ident),
-    cols = NULL,
-    palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[4],
-    max.cols.for.std.palette = 7,
-    highlight.clusters = NULL, cells.highlight = NULL,
-    cols.highlight = "red",
-    sizes.highlight = 1,
-    label = TRUE, repel = TRUE,
-    legend = !label,
-    legend.pos = NULL, # c("top", "bottom", "left", "right", "none")[2],
-    MaxCategThrHP = 200,
-    axes = NULL,
-    aspect.ratio = c(FALSE, 0.6)[2],
-    save.plot = getOption("su.save.plot", TRUE),
-      # MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
-    PNG = TRUE,
-    check_for_2D = TRUE,
-    ...) {
-=======
   ident = NULL,
   obj = combined.obj,
   title = ident,
@@ -2483,7 +2360,6 @@ clUMAP <- function(
   check_for_2D = TRUE,
   ...
 ) {
->>>>>>> origin/main
   #
   stopifnot(
     inherits(obj, "Seurat"),
@@ -3007,20 +2883,6 @@ multiSingleClusterHighlightPlots.A4 <- function(
 #' @importFrom Seurat NoAxes
 #' @importFrom ggExpress qA4_grid_plot
 qClusteringUMAPS <- function(
-<<<<<<< HEAD
-    obj = combined.obj,
-    idents = na.omit.strip(GetClusteringRuns(obj)[1:4]),
-    prefix = "Clustering.UMAP.Res",
-    suffix = "",
-    nrow = 2, ncol = 2,
-    w = 2 * 11.69, h = 2 * 8.27,
-    title = sppu(
-      prefix,
-      as.numeric(stringr::str_extract(idents, "\\d+\\.\\d+$")),
-      suffix
-    ),
-    ...) {
-=======
   obj = combined.obj,
   idents = na.omit.strip(GetClusteringRuns(obj)[1:4]),
   prefix = "Clustering.UMAP.Res",
@@ -3034,7 +2896,6 @@ qClusteringUMAPS <- function(
   ),
   ...
 ) {
->>>>>>> origin/main
   message(" > Running qClusteringUMAPS...")
 
   # Check that the QC markers are in the object
@@ -3533,10 +3394,6 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 # _________________________________________________________________________________________________
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
 # _________________________________________________________________________________________________
 # DGEA ______________________________ ----
 # _________________________________________________________________________________________________
@@ -3570,31 +3427,6 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
 #' @importFrom EnhancedVolcano EnhancedVolcano
 #' @export
 scEnhancedVolcano <- function(
-<<<<<<< HEAD
-    toptable,
-    x = "avg_log2FC",
-    y = "p_val_adj",
-    title = "DGEA",
-    lab = rownames(toptable),
-    selectLab = trail(filterCodingGenes(lab), 10),
-    min.p = 1e-50,
-    max.l2fc = Inf,
-    min.pct.cells = 0.1,
-    pCutoffCol = "p_val_adj",
-    pCutoff = 1e-3,
-    FCcutoff = 1,
-    suffix = NULL,
-    caption = paste("Min. Fold Change in Input:", .estMinimumFC(toptable)),
-    caption2 = paste("min p_adj:", min.p, "(Y-axis values clipped at)"),
-    count_stats = TRUE,
-    drawConnectors = TRUE,
-    max.overlaps = Inf,
-    also.pdf = FALSE,
-    h = 9, w = h,
-    ...
-) {
-
-=======
   toptable,
   x = "avg_log2FC",
   y = "p_val_adj",
@@ -3617,7 +3449,6 @@ scEnhancedVolcano <- function(
   h = 9, w = h,
   ...
 ) {
->>>>>>> origin/main
   # 1. Input Checks ------------------------------------------------------------
   stopifnot(
     "toptable must be a data.frame" = is.data.frame(toptable),
@@ -3633,11 +3464,7 @@ scEnhancedVolcano <- function(
   )
 
   # 2. Data Filtering & Label Synchronization ----------------------------------
-<<<<<<< HEAD
-  toptable[["..lab.."]] <- as.character(lab)                      # Preserve labels across filter
-=======
   toptable[["..lab.."]] <- as.character(lab) # Preserve labels across filter
->>>>>>> origin/main
 
   toptable <- toptable |>
     dplyr::filter(pct.1 > min.pct.cells | pct.2 > min.pct.cells)
@@ -3647,13 +3474,8 @@ scEnhancedVolcano <- function(
     "Filtered labels must match rows" = length(toptable[["..lab.."]]) == nrow(toptable)
   )
 
-<<<<<<< HEAD
-  filtered_lab <- as.character(toptable[["..lab.."]])             # Extract synced labels
-  filtered_lab[filtered_lab == ""] <- NA_character_               # Pass NA, not empty string
-=======
   filtered_lab <- as.character(toptable[["..lab.."]]) # Extract synced labels
   filtered_lab[filtered_lab == ""] <- NA_character_ # Pass NA, not empty string
->>>>>>> origin/main
 
   # Keep only valid, unique labels
   selectLab <- unique(intersect(as.character(selectLab), filtered_lab))
@@ -3679,12 +3501,8 @@ scEnhancedVolcano <- function(
 
   if (!identical(pCutoffCol, y)) {
     toptable[[pCutoffCol]] <- clip.at.fixed.value(
-<<<<<<< HEAD
-      toptable[[pCutoffCol]], thr = min.p, above = FALSE
-=======
       toptable[[pCutoffCol]],
       thr = min.p, above = FALSE
->>>>>>> origin/main
     )
   }
 
@@ -3735,14 +3553,6 @@ scEnhancedVolcano <- function(
 }
 
 
-<<<<<<< HEAD
-
-
-
-
-
-=======
->>>>>>> origin/main
 #
 # scEnhancedVolcano <- function(
 #     toptable,
@@ -3925,19 +3735,11 @@ countRelevantEnrichments <- function(df,
 }
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
 # _________________________________________________________________________________________________
 # GO-term enrichment ______________________________ ----
 # _________________________________________________________________________________________________
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
 # ________________________________________________________________________
 #' @title Perform GO Enrichment Analysis
 #'
@@ -3990,13 +3792,9 @@ scGOEnrichment <- function(genes, universe = NULL,
     is.character(ont)
   )
 
-<<<<<<< HEAD
-  if (is.null(genes) | length(genes) == 0) return(NULL) # If no input, do nothing.
-=======
   if (is.null(genes) | length(genes) == 0) {
     return(NULL)
   } # If no input, do nothing.
->>>>>>> origin/main
 
   # check.gene.symbols
   if (check.gene.symbols) {
@@ -4005,14 +3803,10 @@ scGOEnrichment <- function(genes, universe = NULL,
   }
 
   if (length(genes) < min.genes) {
-    warning("Too few apprived genes (", length(genes), ") for GO enrichment analysis. Minimum is ",
-<<<<<<< HEAD
-            min.genes, ".", immediate. = TRUE)
-=======
+    warning("Too few approved genes (", length(genes), ") for GO enrichment analysis. Minimum is ",
       min.genes, ".",
       immediate. = TRUE
     )
->>>>>>> origin/main
     return(NULL) # If too few genes, do nothing.
   }
 
@@ -5170,20 +4964,11 @@ countEnrichedDepletedGenes <- function(df, min_padj = 0.01, min_logFC = 0.5,
 #'
 #' @return An placeholder ggplot object with annotation.
 .emptyAnnotatedPlot <- function(
-<<<<<<< HEAD
-    label,
-    warning_msg = label,
-    color = "red",
-    size = 8
-) {
-
-=======
   label,
   warning_msg = label,
   color = "red",
   size = 8
 ) {
->>>>>>> origin/main
   stopifnot(
     is.character(label), is.character(color), is.numeric(size),
     is.null(warning_msg) || (is.character(warning_msg) && length(warning_msg) == 1)
@@ -5194,26 +4979,14 @@ countEnrichedDepletedGenes <- function(df, min_padj = 0.01, min_logFC = 0.5,
   ggplot2::ggplot() +
     ggplot2::theme_void() +
     ggplot2::annotate(
-<<<<<<< HEAD
-      geom  = "text",
-      x  = 1, y = 1,
-      label = label, color = color,size  = size,
-=======
       geom = "text",
       x = 1, y = 1,
       label = label, color = color, size = size,
->>>>>>> origin/main
       hjust = 0.5, vjust = 0.5
     )
 }
 
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> origin/main
 # _________________________________________________________________________________________________
 # Saving plots ______________________________ ----
 # _________________________________________________________________________________________________
@@ -5795,18 +5568,11 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
 #' }
 #' @export Plot3D.ListOfGenes
 Plot3D.ListOfGenes <- function(
-<<<<<<< HEAD
-    obj = combined.obj # Plot and save list of 3D UMAP or tSNE plots using plotly.
-    , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, cex = 1.25, default.assay = c("integrated", "RNA")[2],
-    ListOfGenes = c("BCL11B", "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4"),
-    SubFolderName = ppp("plot3D", substitute_deparse(ListOfGenes))) {
-=======
   obj = combined.obj # Plot and save list of 3D UMAP or tSNE plots using plotly.
   , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, cex = 1.25, default.assay = c("integrated", "RNA")[2],
   ListOfGenes = c("BCL11B", "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4"),
   SubFolderName = ppp("plot3D", substitute_deparse(ListOfGenes))
 ) {
->>>>>>> origin/main
   try(create_set_SubDir(SubFolderName))
   obj. <- obj
   rm("obj")
@@ -5850,18 +5616,11 @@ Plot3D.ListOfGenes <- function(
 #' }
 #' @export Plot3D.ListOfCategories
 Plot3D.ListOfCategories <- function(
-<<<<<<< HEAD
-    obj = combined.obj # Plot and save list of 3D UMAP or tSNE plots using plotly.
-    , annotate.by = "integrated_snn_res.0.7", cex = 1.25, default.assay = c("integrated", "RNA")[2],
-    ListOfCategories = c("v.project", "experiment", "Phase", "integrated_snn_res.0.7"),
-    SubFolderName = ppp("plot3D", substitute_deparse(ListOfCategories))) {
-=======
   obj = combined.obj # Plot and save list of 3D UMAP or tSNE plots using plotly.
   , annotate.by = "integrated_snn_res.0.7", cex = 1.25, default.assay = c("integrated", "RNA")[2],
   ListOfCategories = c("v.project", "experiment", "Phase", "integrated_snn_res.0.7"),
   SubFolderName = ppp("plot3D", substitute_deparse(ListOfCategories))
 ) {
->>>>>>> origin/main
   try(create_set_SubDir(SubFolderName))
   obj. <- obj
   rm("obj")
