@@ -7,11 +7,10 @@ Functionalities rely on basic function libraries listed below.
 # Installation
 
 ### !!! Installation NEWS 
-#### `qs` dependency
-- Until I update the code to [`qs2`](https://github.com/qsbase/qs2), you have to install `qs` [from GitHub](https://github.com/qsbase/qs):
-`remotes::install_cran("qs", type = "source", configure.args = "--with-simd=AVX2")`
-- Unfortunately as of R4.6.0 `qs` reportedly fails to install on R4.6.x on Windows.
-- Solution: **Use R4.5.x until I can upgrade the package**
+#### `qs2` dependency
+- Serialization helpers now use [`qs2`](https://github.com/qsbase/qs2), which currently declares `R (>= 3.6.0)`, so R 4.5.x is supported.
+- If `qs2` installation fails, update its compiled dependencies first (`RcppParallel` and `stringfish`), then reinstall `qs2`.
+- The old `qs` package is no longer needed by Seurat.utils.
 
 Seurat.utils relies on:
 

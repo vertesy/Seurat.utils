@@ -14,7 +14,7 @@ DESCRIPTION <- list(
     Matrix, matrixStats, princurve, pheatmap,
     R.utils, readr, reshape2, scales, SoupX, sparseMatrixStats, stringr, tibble, tictoc,
     ReadWriter, MarkdownHelpers, MarkdownReports,
-    plotly, qs, foreach, harmony, EnhancedVolcano, rstudioapi,
+    plotly, qs2, foreach, harmony, EnhancedVolcano, rstudioapi,
     RColorBrewer, SeuratObject, checkmate, fs, future,
     ggplot2, gplots, gtools", # , grDevices
   suggests = "clusterProfiler, enrichplot, DatabaseLinke.R, vroom",
