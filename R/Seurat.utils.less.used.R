@@ -297,8 +297,7 @@ multi_clUMAP.A4 <- function(
     # Customize plot appearance
     for (i in 1:length(plot.list)) {
       plot.list[[i]] <- plot.list[[i]] + NoAxes()
-      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]]
-      ggplot2::coord_fixed(ratio = aspect.ratio)
+      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + ggplot2::coord_fixed(ratio = aspect.ratio)
     }
 
     # Save plots

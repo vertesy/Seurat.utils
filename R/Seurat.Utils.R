@@ -477,7 +477,6 @@ runDGEA <- function(obj,
         min.diff.pct = param.list$"min.diff.pct",
         min.cells.group = param.list$"min.cells.group",
         max.cells.per.ident = param.list$"max.cells.per.ident",
-        only.pos = param.list$"only.pos",
         only.pos = param.list$"only.pos"
       )
       toc()
@@ -4657,6 +4656,7 @@ Convert10Xfolders <- function(
   ext = "qs",
   sort_alphanumeric = TRUE,
   save_empty_droplets = TRUE,
+  save = TRUE,
   ...
 ) {
   stopifnot(
@@ -5476,7 +5476,7 @@ qsave.image <- function(
   save.image(file = fname, compress = FALSE)
   iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname), wait = FALSE) # execute in the background
-  cat(tictoc::toc)
+  tictoc::toc()
 }
 
 
@@ -6356,7 +6356,7 @@ compareVarFeaturesAndRanks <- function(
 
   # Check the number of matches
   if (length(matches) == 0) {
-    stop("No matching commands found.")
+    return(NULL)
   } else {
     if (length(matches) > 1) {
       # Multiple matches found, print the number of hits and their names
