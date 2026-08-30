@@ -64,6 +64,9 @@ addTranslatedMetadata <- function(obj = combined.obj,
   )
   print(table(new, useNA = "ifany"))
 
+  # NOTE: BUG -- 'x' is only assigned when plot = TRUE, but print(x) below runs
+  # unconditionally; with the default plot = FALSE this errors with
+  # "object 'x' not found" on every call.
   if (plot) x <- clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...)
   print(x)
   return(obj)

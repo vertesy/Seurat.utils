@@ -1253,7 +1253,6 @@ scBarplot.CellsPerCluster <- function(
     is.numeric(ylab_adj), is.numeric(min.cells), ident %in% colnames(obj@meta.data)
   )
 
-  1
   cell.per.cl <- obj[[ident]][, 1]
   cell.per.cluster <- (table(cell.per.cl, useNA = "ifany"))
   if (sort) cell.per.cluster <- sort(cell.per.cluster)
@@ -4347,6 +4346,11 @@ scGeneConceptNetworkEnrichr <- function(
 }
 
 
+# NOTE: BUG -- the next four functions (scBarplotEnrichr, scDotplotEnrichr, scEmapplotEnrichr,
+# scGeneConceptNetworkEnrichr) are exact byte-for-byte duplicates of the definitions just above.
+# Harmless at runtime (the later definition simply overwrites the earlier one when the package
+# loads), but this is ~450 lines of dead, duplicated source -- likely an accidental copy-paste
+# or merge artifact. Safe to delete this whole duplicated block.
 # ________________________________________________________________________
 #' @title Barplot GO Enrichment Results by enrichplot
 #'
@@ -5727,6 +5731,9 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
 
   # if (save) ggplot2::ggsave(plot = labeledPlot, filename = filename, width = plotWidth, height = plotHeight)
   if (save) {
+    # NOTE: BUG -- `ext` is not a formal argument of this function and is never assigned
+    # locally, so with the default save = TRUE this errors ("object 'ext' not found")
+    # unless a global variable `ext` happens to exist in the caller's environment.
     qqSave(
       ggobj = labeledPlot,
       # title = plotname,
