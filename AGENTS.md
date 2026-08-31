@@ -41,7 +41,8 @@ Package rebuilds overwrite these files, so always update the upstream source fir
 
 - New arguments go at the end, just before `...`. Never insert in the middle.
 - Do not use tests.
-- Whenever you are implementing a larger change (a bug fix, a substantial code change), you shoud increase the version number in `Development/config.R` by 0.0.1.
+- Never update the package version unless the user explicitly requests a version change.
+- Do not raise code review findings that ask for a package version change.
 
 ## III: Seurat.utils specific
 
