@@ -299,8 +299,9 @@ multi_clUMAP.A4 <- function(
       plot.list[[i]] <- plot.list[[i]] + NoAxes()
       # NOTE: BUG -- missing `+`: this assigns plot.list[[i]] to itself (no-op), then
       # evaluates ggplot2::coord_fixed(...) as an unused, separate statement. aspect.ratio
-      # is silently never applied. Should be one expression:
-      # plot.list[[i]] <- plot.list[[i]] + ggplot2::coord_fixed(ratio = aspect.ratio)
+      # is silently never applied. Should keep the guard (aspect.ratio can be FALSE to
+      # disable the fixed ratio) and combine into one expression:
+      # if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + ggplot2::coord_fixed(ratio = aspect.ratio)
       if (aspect.ratio) plot.list[[i]] <- plot.list[[i]]
       ggplot2::coord_fixed(ratio = aspect.ratio)
     }
