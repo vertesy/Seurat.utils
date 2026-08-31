@@ -718,8 +718,6 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 # Archived ----
 # _________________________________________________________________________________________________
 
-".Deprecated"
-
 #' @title Regress Out and Recalculate Seurat
 #'
 #' @description The function performs a series of calculations and manipulations on a Seurat object,
@@ -968,7 +966,7 @@ plotClustSizeDistr <- function(
       )
     }
   } else {
-    "return vector"
+    # plot = FALSE: return the cluster size table instead of plotting
     clust.size.distr
   }
 }
