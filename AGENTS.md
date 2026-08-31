@@ -1,6 +1,6 @@
 # Guidance for Agents
 
-Version: 2026.08.27-00:00
+Version: 2026.08.31-00:00
 
 ## I: Generic (all @vertesy repos)
 
