@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat v5
-Version: 2.9.10
+Version: 2.9.11
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Description: Seurat.utils is a collection of utility functions for Seurat

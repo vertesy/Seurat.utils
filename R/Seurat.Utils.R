@@ -477,11 +477,6 @@ runDGEA <- function(obj,
         min.diff.pct = param.list$"min.diff.pct",
         min.cells.group = param.list$"min.cells.group",
         max.cells.per.ident = param.list$"max.cells.per.ident",
-        # NOTE: BUG -- 'only.pos' is passed twice. R errors immediately on a
-        # duplicated named argument ("formal argument matched by multiple
-        # actual arguments"), so this call -- and calculate.DGEA = TRUE,
-        # the default -- always crashes.
-        only.pos = param.list$"only.pos",
         only.pos = param.list$"only.pos"
       )
       toc()
@@ -4655,6 +4650,7 @@ Convert10Xfolders <- function(
   ext = "qs",
   sort_alphanumeric = TRUE,
   save_empty_droplets = TRUE,
+  save = TRUE,
   ...
 ) {
   # NOTE: BUG -- 'save' (checked below, and used later via `if (save) qs2::qs_save(...)`)
@@ -5479,10 +5475,7 @@ qsave.image <- function(
   save.image(file = fname, compress = FALSE)
   iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname), wait = FALSE) # execute in the background
-  # NOTE: BUG -- `cat()` cannot handle a closure; this passes the function itself
-  # (not its result), so this always errors ("argument 1 (type 'closure') cannot be
-  # handled by 'cat'") instead of printing the elapsed time. Likely meant `tictoc::toc()`.
-  cat(tictoc::toc)
+  tictoc::toc()
 }
 
 
@@ -6365,7 +6358,7 @@ compareVarFeaturesAndRanks <- function(
 
   # Check the number of matches
   if (length(matches) == 0) {
-    stop("No matching commands found.")
+    return(NULL)
   } else {
     if (length(matches) > 1) {
       # Multiple matches found, print the number of hits and their names
