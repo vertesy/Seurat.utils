@@ -477,7 +477,6 @@ runDGEA <- function(obj,
         min.diff.pct = param.list$"min.diff.pct",
         min.cells.group = param.list$"min.cells.group",
         max.cells.per.ident = param.list$"max.cells.per.ident",
-        only.pos = param.list$"only.pos",
         only.pos = param.list$"only.pos"
       )
       toc()
@@ -2525,7 +2524,8 @@ RelabelSmallCategories <- function(
 
   message("backup_col_name: ", backup_col_name)
 
-  # Extract the specified metadata column
+  # Chained assignment: back up the original column under backup_col_name,
+  # and also capture its value in `categories` for use below -- in one step.
   categories <- obj@meta.data[[backup_col_name]] <- obj@meta.data[[col_in]]
 
   # Count occurrences of each category
@@ -3172,7 +3172,7 @@ GetTopMarkersDF <- function(
     "^MIR[1-9]", "^SNHG[1-9]"
   )
 ) {
-  "Works on active Idents() -> thus we call cluster"
+  # Works on active Idents() -> thus we call it "cluster" below.
   combined_pattern <- paste(exclude, collapse = "|")
 
   TopMarkers <- dfDE |>
@@ -3398,13 +3398,6 @@ AutoLabel.KnownMarkers <- function(
 
   print("Best matches:")
   print(unique.matches)
-
-  "Error Here"
-  "Error Here"
-  "Error Here"
-  "Error Here"
-  "Error Here"
-  "Error Here"
 
   top.markers.df <- GetTopMarkersDF(dfDE = df_markers, order.by = lfcCOL, n = 1)
   top.markers <- top.markers.df |> col2named.vec.tbl()
@@ -4503,8 +4496,8 @@ RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 HGNC.EnforceUnique <- function(updatedSymbols) {
   NGL <- updatedSymbols[, 3]
   if (any.duplicated(NGL)) {
+    # Unique names are enforced by suffixing .1, .2, etc.
     updatedSymbols[, 3] <- make.unique(NGL)
-    "Unique names are enforced by suffixing .1, .2, etc."
   }
   return(updatedSymbols)
 }
@@ -4611,8 +4604,8 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 # source('~/GitHub/Packages/Seurat.utils/Functions/Read.Write.Save.Load.functions.R')
 # try (source("https://raw.githubusercontent.com/vertesy/Seurat.utils/master/Functions/Read.Write.Save.Load.functions.R"))
 
-"Multicore read / write (I/O) functions are https://github.com/vertesy/Seurat.multicore"
-"Single core read / write (I/O) functions are in https://github.com/vertesy/Seurat.utils/"
+# Multicore read / write (I/O) functions are https://github.com/vertesy/Seurat.multicore
+# Single core read / write (I/O) functions are in https://github.com/vertesy/Seurat.utils/
 
 
 # _________________________________________________________________________________________________
@@ -4657,8 +4650,14 @@ Convert10Xfolders <- function(
   ext = "qs",
   sort_alphanumeric = TRUE,
   save_empty_droplets = TRUE,
+  save = TRUE,
   ...
 ) {
+  # NOTE: BUG -- 'save' (checked below, and used later via `if (save) qs2::qs_save(...)`)
+  # is not a formal argument of this function. It resolves to base::save() (a function,
+  # so is.logical(save) is FALSE), which makes this stopifnot() always fail -- unless the
+  # caller happens to have a logical variable named `save` masking base::save() in scope.
+  # A `save = TRUE` argument passed by a caller is silently absorbed by `...` and ignored.
   stopifnot(
     is.character(InputDir), dir.exists(InputDir),
     is.logical(regex), is.character(folderPattern), is.character(suffix), is.numeric(depth),
@@ -5476,7 +5475,7 @@ qsave.image <- function(
   save.image(file = fname, compress = FALSE)
   iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname), wait = FALSE) # execute in the background
-  cat(tictoc::toc)
+  tictoc::toc()
 }
 
 
@@ -6259,6 +6258,9 @@ compareVarFeaturesAndRanks <- function(
   }
 
   # Find the ScaleData command using the helper function
+  # NOTE: BUG -- .FindCommandInObject() calls stop() (not return(NULL)) when there is no
+  # match, so this intended graceful fallback is unreachable: the function always errors
+  # out here instead of returning NULL when no ScaleData command is found in @commands.
   func_slot <- .FindCommandInObject(obj, pattern = paste0("^ScaleData.", assay))
 
   if (is.null(func_slot)) {
@@ -6356,7 +6358,7 @@ compareVarFeaturesAndRanks <- function(
 
   # Check the number of matches
   if (length(matches) == 0) {
-    stop("No matching commands found.")
+    return(NULL)
   } else {
     if (length(matches) > 1) {
       # Multiple matches found, print the number of hits and their names

@@ -297,8 +297,7 @@ multi_clUMAP.A4 <- function(
     # Customize plot appearance
     for (i in 1:length(plot.list)) {
       plot.list[[i]] <- plot.list[[i]] + NoAxes()
-      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]]
-      ggplot2::coord_fixed(ratio = aspect.ratio)
+      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + ggplot2::coord_fixed(ratio = aspect.ratio)
     }
 
     # Save plots
@@ -719,8 +718,6 @@ Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 # Archived ----
 # _________________________________________________________________________________________________
 
-".Deprecated"
-
 #' @title Regress Out and Recalculate Seurat
 #'
 #' @description The function performs a series of calculations and manipulations on a Seurat object,
@@ -969,7 +966,7 @@ plotClustSizeDistr <- function(
       )
     }
   } else {
-    "return vector"
+    # plot = FALSE: return the cluster size table instead of plotting
     clust.size.distr
   }
 }
