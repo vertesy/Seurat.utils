@@ -64,8 +64,10 @@ addTranslatedMetadata <- function(obj = combined.obj,
   )
   print(table(new, useNA = "ifany"))
 
-  if (plot) x <- clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...)
-  print(x)
+  if (plot) {
+    x <- clUMAP(ident = new_col_name, obj = obj, caption = "New metadata column", ...)
+    print(x)
+  }
   return(obj)
 }
 
@@ -436,11 +438,7 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
   }
 
   if (any(is.na(names(metadata)))) {
-<<<<<<< HEAD
-    warning("Metadata contains NA values.", immediate. = T)
-=======
     warning("Metadata contains NA values.", immediate. = TRUE)
->>>>>>> origin/main
     metadata_orig <- metadata
     metadata <- vec.fromNames(colnames(obj), fill = NA)
     cells_found <- na.omit.strip(names(metadata_orig))
@@ -631,23 +629,12 @@ addGeneClassFractions <- function(obj,
   if (species == "mouse") {
     message("Using mouse gene patterns for: mito, ribo, Gm.predicted, and Malat1 genes.\n")
     gene_fractions <- list(
-<<<<<<< HEAD
-      "percent.mito"        = "^(mt-|MT-)",
-      "percent.ribo"        = "^(Rpl|Rps)",
-=======
       "percent.mito" = "^(mt-|MT-)",
       "percent.ribo" = "^(Rpl|Rps)",
->>>>>>> origin/main
-
       # Mouse AC/AL loci do not exist in the same way as human GenBank/EMBL ACxxxxx / ALxxxxx loci.
       # The closest equivalents are "Gm" predicted and lincRNAs genes.
       "percent.Gm.predicted" = "^Gm[0-9]+",
-<<<<<<< HEAD
-
-      "percent.Malat1"       = "^Malat1$"
-=======
       "percent.Malat1" = "^Malat1$"
->>>>>>> origin/main
     )
   } else if (species == "human") {
     message("Using human gene patterns for: mito, ribo, AC/AL loci, LINC, and MALAT1 genes.")
@@ -1216,21 +1203,6 @@ writeCombinedMetadataToTsvFromLsObj <- function(ls.Obj, cols.remove = character(
 #' @importFrom pheatmap pheatmap
 #' @export
 plotMetadataCorHeatmap <- function(
-<<<<<<< HEAD
-    columns = c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo"),
-    obj,
-    cormethod = c("pearson", "spearman")[1],
-    main = paste("Metadata", cormethod, "correlations"),
-    show_numbers = FALSE,
-    digits = 1,
-    suffix = NULL,
-    add_PCA = TRUE,
-    n_PCs = 4,
-    w = ceiling((length(columns) + n_PCs) / 2), h = w,
-    use_ggcorrplot = FALSE,
-    n_cutree = NA,
-    ...
-=======
   columns = c("nCount_RNA", "nFeature_RNA", "percent.mito", "percent.ribo"),
   obj,
   cormethod = c("pearson", "spearman")[1],
@@ -1244,7 +1216,6 @@ plotMetadataCorHeatmap <- function(
   use_ggcorrplot = FALSE,
   n_cutree = NA,
   ...
->>>>>>> origin/main
 ) {
   META <- obj@meta.data
   columns.found <- intersect(colnames(META), columns)
@@ -1266,22 +1237,18 @@ plotMetadataCorHeatmap <- function(
   corX <- cor(META, method = cormethod, use = "pairwise.complete.obs")
   if (use_ggcorrplot) {
     pl <- ggcorrplot::ggcorrplot(corX,
-                                 title = main,
-                                 hc.order = TRUE,
-                                 digits = digits,
-                                 lab = show_numbers,
-                                 type = "full",
-                                 ...
+      title = main,
+      hc.order = TRUE,
+      digits = digits,
+      lab = show_numbers,
+      type = "full",
+      ...
     )
-<<<<<<< HEAD
-    ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, "png"), also.pdf = T, w = w, h = h)
-=======
     ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, "png"), also.pdf = TRUE, w = w, h = h)
->>>>>>> origin/main
   } else {
     pl <- pheatmap::pheatmap(corX,
-                             main = main, treeheight_row = 2, treeheight_col = 2,
-                             cutree_rows = n_cutree, cutree_cols = n_cutree
+      main = main, treeheight_row = 2, treeheight_col = 2,
+      cutree_rows = n_cutree, cutree_cols = n_cutree
     )
     wplot_save_pheatmap(
       x = pl, width = w,

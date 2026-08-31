@@ -2,7 +2,7 @@
 % Please edit documentation in R/Seurat.Utils.R
 \name{xread}
 \alias{xread}
-\title{Read an R Object Using 'qs' Package for Fast Decompression}
+\title{Read an R Object Using 'qs2' Package for Fast Decompression}
 \usage{
 xread(
   file,
@@ -29,20 +29,20 @@ are loaded from within it.}
 \item{set_m}{Logical; if TRUE, the variable 'm', a list of @meta.data colnames, is assigned to
 the global environment.}
 
-\item{...}{Further arguments passed on to the 'qs::qread' function.}
+\item{...}{Further arguments passed on to the 'qs2::qs_read' function.}
 }
 \value{
 The R object that was saved in the specified file.
 }
 \description{
-This function reads an R object from a file saved in a format specific to the 'qs' package,
+This function reads an R object from a file saved in a format specific to the 'qs2' package,
 which is designed for quick and efficient compression and decompression of R objects.
 It also times the read operation, providing feedback on the duration of the operation.
 }
 \note{
-The function uses the 'qs' package for fast and efficient deserialization of objects
+The function uses the 'qs2' package for fast and efficient deserialization of objects
 and includes a timing feature from the 'tictoc' package.
 }
 \seealso{
-\code{\link[qs]{qread}} for the underlying read function used.
+\code{\link[qs2]{qs_read}} for the underlying read function used.
 }

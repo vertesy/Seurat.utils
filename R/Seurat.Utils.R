@@ -477,11 +477,7 @@ runDGEA <- function(obj,
         min.diff.pct = param.list$"min.diff.pct",
         min.cells.group = param.list$"min.cells.group",
         max.cells.per.ident = param.list$"max.cells.per.ident",
-<<<<<<< HEAD
-        only.pos = param.list$"only.pos",
-=======
         only.pos = param.list$"only.pos"
->>>>>>> origin/main
       )
       toc()
 
@@ -602,11 +598,7 @@ runDGEA <- function(obj,
         qbarplot(NrOfHighlySignLFC2_genes,
           label = NrOfHighlySignLFC2_genes,
           plotname = "Number of diff. genes per cluster",
-<<<<<<< HEAD
-          sub = "Genes with avg_log2FC > 1 and p_val_adj < 0.05",
-=======
           subtitle = "Genes with avg_log2FC > 1 and p_val_adj < 0.05",
->>>>>>> origin/main
           xlab = "Clusters", ylab = "Number of diff. genes"
         )
 
@@ -856,13 +848,7 @@ SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
 }
 
 
-<<<<<<< HEAD
 
-
-
-
-=======
->>>>>>> origin/main
 # _________________________________________________________________________________________________
 #' @title AreTheseCellNamesTheSame
 #'
@@ -1064,24 +1050,6 @@ showMiscSlots <- function(obj = combined.obj, max.level = 1, subslot = NULL,
 #' @export
 
 calc.q99.Expression.and.set.all.genes <- function(
-<<<<<<< HEAD
-    obj = combined.obj,
-    quantileX = 0.99, max.cells = 1e5,
-    slot = "data",
-    assay = c("RNA", "integrated", "SCT")[1],
-    set.misc = TRUE,
-    assign_to_global_env = TRUE,
-    plot = TRUE,
-    suffix = substitute(obj),
-    show = TRUE,
-    obj.version = obj@version,
-    ...) {
-
-  top.quant <- (1 - quantileX)
-  message("\nCalculating the gene expression level at the the top ", percentage_formatter(top.quant), " of cells. | q: ", quantileX)
-  message("slot: ", slot, " assay: ", assay, ".\n")
-
-=======
   obj = combined.obj,
   quantileX = 0.99, max.cells = 1e5,
   slot = "data",
@@ -1098,7 +1066,6 @@ calc.q99.Expression.and.set.all.genes <- function(
   message("\nCalculating the gene expression level at the the top ", percentage_formatter(top.quant), " of cells. | q: ", quantileX)
   message("slot: ", slot, " assay: ", assay, ".\n")
 
->>>>>>> origin/main
   nr.total.cells <- ncol(obj)
   n.cells.in.top.quantile <- floor(nr.total.cells * top.quant) # number of cells in the top quantileX
 
@@ -1151,15 +1118,9 @@ calc.q99.Expression.and.set.all.genes <- function(
     dsampled <- sample(x = 1:ncol(data_mtx), size = max.cells)
     data_mtx <- data_mtx[, dsampled]
     message("Downsampled from ", ncol(obj), " to ", max.cells, " cells")
-<<<<<<< HEAD
-    dtag= "downsampled(!)"
-  } else {
-    dtag = "all cells"
-=======
     dtag <- "downsampled(!)"
   } else {
     dtag <- "all cells"
->>>>>>> origin/main
   }
 
   # Calculate the number of cells in the top quantile (e.g.: 99th quantile) that is
@@ -1198,12 +1159,8 @@ calc.q99.Expression.and.set.all.genes <- function(
       filtercol = TRUE,
       palette_use = "npg", w = 8, h = 6,
       save.meta.info = FALSE,
-<<<<<<< HEAD
-      ...)
-=======
       ...
     )
->>>>>>> origin/main
     tictoc::toc()
     if (show) print(pobj)
   }
@@ -1257,18 +1214,6 @@ calc.q99.Expression.and.set.all.genes <- function(
 #' @export
 #'
 filterCodingGenes <- function(
-<<<<<<< HEAD
-    genes, pattern_NC = c(
-      "^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
-      "^LINC0[0-9]{4}",
-      "^C[1-9]+orf[1-9]+", "^C[1-9][0-9]+orf[1-9]+", "^CXorf[1-9]+",
-      "[-|\\.]AS[1-9]*$", "[-|\\.]DT[1-9]*$",
-      "^MIR[1-9]", "^SNHG[1-9]",
-      "^CU[0-9]{6}", "^BX[0-9]{6}",
-      "^FP[0-9]{6}", "^AC[0-9]{6}"
-    ),
-    v = TRUE, unique = TRUE, ...) {
-=======
   genes, pattern_NC = c(
     "^A[CFLP][0-9]{6}", "^Z[0-9]{5}",
     "^LINC0[0-9]{4}",
@@ -1280,7 +1225,6 @@ filterCodingGenes <- function(
   ),
   v = TRUE, unique = TRUE, ...
 ) {
->>>>>>> origin/main
   # Input assertions
   stopifnot(
     is.character(genes), length(genes) > 0,
@@ -1290,11 +1234,7 @@ filterCodingGenes <- function(
   # Filter the genes
   combined_pattern <- paste(pattern_NC, collapse = "|")
   genes_discarded <- genes[stringr::str_detect(genes, combined_pattern)]
-<<<<<<< HEAD
-  if (v)  iprint("Examples of", length(genes_discarded) , "discarded symbols:", CodeAndRoll2::trail(genes_discarded, 5))
-=======
   if (v) iprint("Examples of", length(genes_discarded), "discarded symbols:", CodeAndRoll2::trail(genes_discarded, 5))
->>>>>>> origin/main
 
   genes_kept <- genes[stringr::str_detect(genes, combined_pattern, negate = TRUE)]
 
@@ -1343,15 +1283,9 @@ filterCodingGenes <- function(
 #'
 #' @export
 filterExpressedGenes <- function(
-<<<<<<< HEAD
-    genes, gene_list = all.genes,
-    sort_by_expr = TRUE, threshold = 0.1) {
-
-=======
   genes, gene_list = all.genes,
   sort_by_expr = TRUE, threshold = 0.1
 ) {
->>>>>>> origin/main
   message(" > Running filterExpressedGenes()...")
 
   # Assertions
@@ -1741,14 +1675,9 @@ calc.cluster.averages <- function(
           subtitle = paste(subtitle, "| median in blue/dashed"),
           ylab = ylab.text,
           xlab = xlb # Abused
-<<<<<<< HEAD
-          , xlab.angle = 45
-          , ...) +
-=======
           , xlab.angle = 45,
           ...
         ) +
->>>>>>> origin/main
           geom_vline(xintercept = cutoff.low, lty = 2)
 
         print(p)
@@ -1763,14 +1692,9 @@ calc.cluster.averages <- function(
           subtitle = subtitle,
           ylab = ylab.text,
           xlab = xlb # Abused
-<<<<<<< HEAD
-          , xlab.angle = 45
-          , ...) +
-=======
           , xlab.angle = 45,
           ...
         ) +
->>>>>>> origin/main
           geom_hline(yintercept = cutoff.low, lty = 2)
 
         print(p)
@@ -2398,15 +2322,6 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
     is.logical(verbose), length(verbose) == 1, is.logical(plot_stats), length(plot_stats) == 1
   )
   set.seed(seed)
-<<<<<<< HEAD
-  if (dsample.to.repl.thr) {
-    max.cells <- round(ncol(obj) * replacement.thr)
-    msg <- percentage_formatter(replacement.thr,
-      suffix = paste("of the data or", max.cells, "of cells."),
-      prefix = "Sampling with replacement to:"
-    )
-    message(msg)
-=======
 
   message("Downsampling by identity: ", ident)
   message("Fraction: ", fraction.downsampled)
@@ -2430,7 +2345,6 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
 
     target_cells[[category]] <- n_target
     sampledNames[[category]] <- sample(cells_now, n_target)
->>>>>>> origin/main
   }
 
   sampledCells <- unlist(sampledNames, use.names = FALSE)
@@ -2594,14 +2508,9 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
 #' )
 #'
 RelabelSmallCategories <- function(
-<<<<<<< HEAD
-    obj, col_in, backup_col_name = ppp(col_in, "orig"),
-    min_count = 100, small_label = "Other", v = TRUE) {
-=======
   obj, col_in, backup_col_name = ppp(col_in, "orig"),
   min_count = 100, small_label = "Other", v = TRUE
 ) {
->>>>>>> origin/main
   # Input assertions
   stopifnot(
     inherits(obj, "Seurat"), # Check if obj is a Seurat object
@@ -3060,17 +2969,10 @@ downsampleListSeuObjsPercent <- function(
 #' @export
 
 addCombinedScore2DGEAResults <- function(
-<<<<<<< HEAD
-    df = df.markers, p_val_min = 1e-25, pval_scaling = 0.001, colP = "p_val_adj",
-    colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = TRUE)
-    ) {
-  p_clipped <- clip.at.fixed.value(x = df[[colP]], thr = p_val_min, above = F)
-=======
   df = df.markers, p_val_min = 1e-25, pval_scaling = 0.001, colP = "p_val_adj",
   colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = TRUE)
 ) {
   p_clipped <- clip.at.fixed.value(x = df[[colP]], thr = p_val_min, above = FALSE)
->>>>>>> origin/main
   df$"combined.score" <- round(df[[colLFC]] * -log10(p_clipped / pval_scaling))
   return(df)
 }
@@ -3111,19 +3013,6 @@ addCombinedScore2DGEAResults <- function(
 #'
 #' @export
 roundDGEAResults <- function(
-<<<<<<< HEAD
-    res,
-    cols.p = c("p_val", "p_val_adj"),
-    cols.other = c(
-      "avg_log2FC",
-      "pct.1", "pct.2",
-      "av.expr.1", "av.expr.2"
-    ),
-    digits.p = 2,
-    digits.other = 2
-) {
-
-=======
   res,
   cols.p = c("p_val", "p_val_adj"),
   cols.other = c(
@@ -3134,7 +3023,6 @@ roundDGEAResults <- function(
   digits.p = 2,
   digits.other = 2
 ) {
->>>>>>> origin/main
   stopifnot(
     "res must be a data.frame" = is.data.frame(res),
     "cols.p must be character" = is.character(cols.p),
@@ -3169,14 +3057,6 @@ roundDGEAResults <- function(
       )
     )
 }
-<<<<<<< HEAD
-
-
-
-
-
-=======
->>>>>>> origin/main
 
 
 # _________________________________________________________________________________________________
@@ -3605,20 +3485,6 @@ sparse.cor <- function(smat) {
 #'
 #' @export
 Calc.Cor.Seurat <- function(
-<<<<<<< HEAD
-    assay.use = "RNA",
-    slot.use = "data",
-    quantileX = 0.95,
-    max.cells = 40000,
-    seed = p$"seed",
-    digits = 2, obj = combined.obj) {
-  stopifnot(
-    inherits(obj, "Seurat"),
-    is.numeric(max.cells), length(max.cells) == 1L, !is.na(max.cells), is.finite(max.cells), max.cells > 0,
-    is.numeric(quantileX), length(quantileX) == 1L, !is.na(quantileX), is.finite(quantileX), quantileX >= 0, quantileX <= 1,
-    is.numeric(digits), length(digits) == 1L, !is.na(digits), is.finite(digits)
-  )
-=======
   assay.use = "RNA",
   slot.use = "data",
   quantileX = 0.95,
@@ -3626,7 +3492,12 @@ Calc.Cor.Seurat <- function(
   seed = p$"seed",
   digits = 2, obj = combined.obj
 ) {
->>>>>>> origin/main
+  stopifnot(
+    inherits(obj, "Seurat"),
+    is.numeric(max.cells), length(max.cells) == 1L, !is.na(max.cells), is.finite(max.cells), max.cells > 0,
+    is.numeric(quantileX), length(quantileX) == 1L, !is.na(quantileX), is.finite(quantileX), quantileX >= 0, quantileX <= 1,
+    is.numeric(digits), length(digits) == 1L, !is.na(digits), is.finite(digits)
+  )
   expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
   if (ncol(expr.mat) > max.cells) {
     set.seed(seed = seed)
@@ -4054,10 +3925,6 @@ check.genes <- function(
 
   tictoc::toc()
   intersect(genes, all_genes)
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
 }
 
 
@@ -4124,16 +3991,10 @@ fixZeroIndexing.seurat <- function(ColName.metadata = "res.0.6", obj = org) {
 #' @export
 #'
 CalculateFractionInTrome <- function(
-<<<<<<< HEAD
-    geneset = c("MALAT1"),
-    obj = combined.obj,
-    data.slot = c("counts", "data")[2]) {
-=======
   geneset = c("MALAT1"),
   obj = combined.obj,
   data.slot = c("counts", "data")[2]
 ) {
->>>>>>> origin/main
   warning("    >>>> Use addMetaFraction() <<<<", immediate. = TRUE)
   geneset <- check.genes(genes = geneset)
   stopifnot(length(geneset) > 0)
@@ -4349,22 +4210,14 @@ FindCorrelatedGenes <- function(
 #' @importFrom HGNChelper checkGeneSymbols
 #'
 UpdateGenesSeurat <- function(obj = ls.Seurat[[i]], species_ = "human", # assay = "RNA",
-<<<<<<< HEAD
-                              EnforceUnique = TRUE, ShowStats = F) {
-=======
                               EnforceUnique = TRUE, ShowStats = FALSE) {
->>>>>>> origin/main
   assays.present <- Assays(obj)
   for (assay in assays.present) {
     message("Renaming in assay: ", assay, "...")
 
     all_genes <- Features(obj, assay = assay)
 
-<<<<<<< HEAD
-    if( species_ %in% c("human", "mouse") ) {
-=======
     if (species_ %in% c("human", "mouse")) {
->>>>>>> origin/main
       HGNC.updated <- HGNChelper::checkGeneSymbols(all_genes, unmapped.as.na = FALSE, map = NULL, species = species_)
     } else {
       message(species_)
@@ -4789,24 +4642,6 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' }
 #' @export
 Convert10Xfolders <- function(
-<<<<<<< HEAD
-    InputDir,
-    regex = FALSE,
-    folderPattern = c("filtered_feature", "raw_feature", "SoupX_decont")[1],
-    suffix = strsplit(folderPattern, "_")[[1]][1],
-    depth = 4,
-    min.cells = 5, min.features = 200,
-    normalize_data = TRUE,
-    updateHGNC = TRUE, ShowStats = TRUE,
-    writeCBCtable = TRUE,
-    nthreads = .getNrCores(),
-    preset = "high",
-    ext = "qs",
-    sort_alphanumeric = TRUE,
-    save_empty_droplets = TRUE,
-    save = TRUE,
-    ...) {
-=======
   InputDir,
   regex = FALSE,
   folderPattern = c("filtered_feature", "raw_feature", "SoupX_decont")[1],
@@ -4821,9 +4656,9 @@ Convert10Xfolders <- function(
   ext = "qs",
   sort_alphanumeric = TRUE,
   save_empty_droplets = TRUE,
+  save = TRUE,
   ...
 ) {
->>>>>>> origin/main
   stopifnot(
     is.character(InputDir), dir.exists(InputDir),
     is.logical(regex), is.character(folderPattern), is.character(suffix), is.numeric(depth),
@@ -5227,10 +5062,17 @@ isave.RDS <- function(
   valid_presets <- c("fast", "balanced", "high", "archive")
   if (!preset %in% valid_presets) {
     warning("Unknown preset '", preset, "'; defaulting to 'balanced' (compress_level=3). Valid options: ",
-            paste(valid_presets, collapse = ", "), call. = FALSE)
+      paste(valid_presets, collapse = ", "),
+      call. = FALSE
+    )
     return(3L) # explicit early return to make the fallback unambiguous
   }
-  switch(preset, "fast" = 1L, "balanced" = 3L, "high" = 6L, "archive" = 12L)
+  switch(preset,
+    "fast" = 1L,
+    "balanced" = 3L,
+    "high" = 6L,
+    "archive" = 12L
+  )
 }
 
 # _________________________________________________________________________________________________
@@ -5269,22 +5111,6 @@ isave.RDS <- function(
 #'
 #' @export
 xsave <- function(
-<<<<<<< HEAD
-    obj,
-    suffix = NULL,
-    prefix = NULL,
-    nthreads = if (object.size(obj) < 1e7) 1 else .getNrCores(12),
-    preset = "high",
-    project = getProject(),
-    dir = if (exists("OutDir")) OutDir else getwd(),
-    showMemObject = TRUE,
-    saveParams = if (exists("p")) TRUE else FALSE, # save allGenes and paramList
-    paramList = if (exists("p")) p else NULL,
-    allGenes = if (exists("all.genes")) all.genes else NULL,
-    saveLocation = TRUE,
-    # backgroundJob = FALSE,
-    v = TRUE) {
-=======
   obj,
   suffix = NULL,
   prefix = NULL,
@@ -5300,7 +5126,6 @@ xsave <- function(
   # backgroundJob = FALSE,
   v = TRUE
 ) {
->>>>>>> origin/main
   #
   if (v) message(nthreads, " threads.\n-----------")
   if (v) message("project: ", project)
@@ -5332,14 +5157,10 @@ xsave <- function(
   CMND <- paste0(substitute(obj), " <- xread('", FNN, "')")
   CMND2 <- paste0("setIfNotDefined(", substitute(obj), ", xread('", FNN, "'))")
 
-<<<<<<< HEAD
-  if (v) {message(CMND, "\n"); message(CMND2)}
-=======
   if (v) {
     message(CMND, "\n")
     message(CMND2)
   }
->>>>>>> origin/main
 
   if ("Seurat" %in% is(obj)) {
     if (saveParams) {
@@ -5436,10 +5257,6 @@ xread <- function(file,
   } # Seurat
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
   try(tictoc::toc(), silent = TRUE)
   invisible(obj)
 }
@@ -5659,7 +5476,7 @@ qsave.image <- function(
   save.image(file = fname, compress = FALSE)
   iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname), wait = FALSE) # execute in the background
-  cat(tictoc::toc)
+  tictoc::toc()
 }
 
 
@@ -6539,7 +6356,7 @@ compareVarFeaturesAndRanks <- function(
 
   # Check the number of matches
   if (length(matches) == 0) {
-    stop("No matching commands found.")
+    return(NULL)
   } else {
     if (length(matches) > 1) {
       # Multiple matches found, print the number of hits and their names

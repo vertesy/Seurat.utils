@@ -13,25 +13,25 @@ RemoveGenesSeurat(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 Default: \code{c("TOP2A")}.}
 }
 \value{
-A Seurat object with the specified genes removed from the mentioned slots.
+A Seurat object with the specified genes removed from the RNA assay.
 }
 \description{
-Removes specified genes from the metadata, counts, data, and scale.data slots of a Seurat object.
-This operation is typically performed prior to data integration to ensure that gene sets are consistent
-across multiple datasets. The function modifies the Seurat object in place.
+Removes specified genes from every layer of the RNA assay in a
+Seurat object. This operation is typically performed prior to data integration
+to ensure that gene sets are consistent across multiple datasets.
 }
 \details{
-This function directly modifies the \verb{@counts}, \verb{@data}, and \verb{@scale.data} slots within
-the RNA assay of the provided Seurat object, as well as the \verb{@meta.data} slot. It's important to run
-this function as one of the initial steps after creating the Seurat object and before proceeding
-with downstream analyses or integration processes.
+Feature subsetting is performed through Seurat's RNA assay interface,
+so both legacy assay slots and Seurat v5 assay layers are supported. Other
+assays and cell-level metadata are left unchanged. Requested genes absent from
+the RNA assay are reported, while genes that are present are still removed.
 }
 \examples{
 \dontrun{
 if (interactive()) {
   # Assuming `SeuratObj` is your Seurat object and you want to remove the gene "TOP2A"
   updatedSeuratObj <- RemoveGenesSeurat(obj = SeuratObj, symbols2remove = "TOP2A")
-  # Now `updatedSeuratObj` does not contain "TOP2A" in the specified slots
+  # Now `updatedSeuratObj` does not contain "TOP2A" in any RNA assay layer
 }
 }
 

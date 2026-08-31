@@ -19,7 +19,7 @@ xread2(
 \arguments{
 \item{path}{Path to the \code{.qs} file to load. Must exist. Default: none.}
 
-\item{nthreads}{Number of threads for \code{qs::qread()}. Uses 1 if file < 1e7 bytes, else 4.
+\item{nthreads}{Number of threads for \code{qs2::qs_read()}. Uses 1 if file < 1e7 bytes, else 4.
 Default: \code{if (file.size(path) < 1e7) 1 else 4}.}
 
 \item{loadParamsAndAllGenes}{Logical; if \code{TRUE}, recall stored parameters and gene lists
@@ -37,7 +37,7 @@ Default: \code{TRUE}.}
 \item{disk2mem_size_inflation}{Estimated expansion factor of \code{.qs} file once in memory.
 Default: \code{3}.}
 
-\item{...}{Additional arguments passed to \code{qs::qread()}. Default: none.}
+\item{...}{Additional arguments passed to \code{qs2::qs_read()}. Default: none.}
 }
 \value{
 Invisibly returns the loaded object.

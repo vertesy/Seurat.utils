@@ -28,24 +28,6 @@
 #' }
 #' @export
 Convert10Xfolders_v1 <- function(
-<<<<<<< HEAD
-    InputDir,
-    regex = FALSE,
-    folderPattern = c("filtered_feature", "raw_feature", "SoupX_decont")[1],
-    depth = 4,
-    min.cells = 5, min.features = 200,
-    updateHGNC = TRUE, ShowStats = TRUE,
-    writeCBCtable = TRUE,
-    sample.barcoding = FALSE,
-    nthreads = .getNrCores(),
-    preset = "high",
-    ext = "qs",
-    sort_alphanumeric = TRUE,
-    ...) {
-  warning("Since v2.9.0, the output is saved into qs format with qs2 package.", immediate. = TRUE)
-
-  compress_level <- .map_preset_to_compress_level(preset)
-=======
   InputDir,
   regex = FALSE,
   folderPattern = c("filtered_feature", "raw_feature", "SoupX_decont")[1],
@@ -60,8 +42,9 @@ Convert10Xfolders_v1 <- function(
   sort_alphanumeric = TRUE,
   ...
 ) {
-  warning("Since v2.5.0, the output is saved in the more efficient qs format! See qs package.", immediate. = TRUE)
->>>>>>> origin/main
+  warning("Since v2.9.0, the output is saved into qs format with qs2 package.", immediate. = TRUE)
+
+  compress_level <- .map_preset_to_compress_level(preset)
 
   finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
@@ -314,8 +297,7 @@ multi_clUMAP.A4 <- function(
     # Customize plot appearance
     for (i in 1:length(plot.list)) {
       plot.list[[i]] <- plot.list[[i]] + NoAxes()
-      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]]
-      ggplot2::coord_fixed(ratio = aspect.ratio)
+      if (aspect.ratio) plot.list[[i]] <- plot.list[[i]] + ggplot2::coord_fixed(ratio = aspect.ratio)
     }
 
     # Save plots
@@ -598,27 +580,13 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
 #' }
 #' @export
 Convert10Xfolders.old <- function(
-<<<<<<< HEAD
-    InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
-    , folderPattern = c("filtered", "SoupX_decont")[1],
-    min.cells = 10, min.features = 200, updateHGNC = TRUE, ShowStats = TRUE) {
-  .Deprecated("Convert10Xfolders")
-
-=======
   InputDir,
   folderPattern = c("filtered", "SoupX_decont")[1],
   min.cells = 10, min.features = 200,
   updateHGNC = TRUE, ShowStats = TRUE
 ) {
-  # ... function body ...
-}
+  .Deprecated("Convert10Xfolders")
 
-Convert10Xfolders.old <- function(
-  InputDir # Take a parent directory with a number of subfolders, each containing the standard output of 10X Cell Ranger. (1.) It loads the filtered data matrices; (2.) converts them to Seurat objects, and (3.) saves them as *.RDS files.
-  , folderPattern = c("filtered", "SoupX_decont")[1],
-  min.cells = 10, min.features = 200, updateHGNC = TRUE, ShowStats = TRUE
-) {
->>>>>>> origin/main
   fin <- list.dirs(InputDir, recursive = FALSE)
   fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = FALSE)
 

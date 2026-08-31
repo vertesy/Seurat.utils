@@ -1,2 +1,13 @@
 ^Seurat\.utils\.Rproj$
 ^\.Rproj\.user$
+^\.github$
+^Development$
+^AGENTS\.md$
+^CITATION\.cff$
+^CODE_OF_CONDUCT\.md$
+^CONTRIBUTING\.md$
+^Deprecated$
+^Example\.usage$
+^Function\.Dependencies\.md$
+^Vignettes$
+^_config\.yml$
