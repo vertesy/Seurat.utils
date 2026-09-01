@@ -44,6 +44,9 @@ scGeneConceptNetworkEnrichr(
 
 \item{tag}{Character. Tag added to the plot title. Default: "...".}
 
+\item{NULL_input}{Logical. Whether \code{df.enrichment} is \code{NULL}, used to build fallback captions.
+Default: \code{is.null(df.enrichment)}.}
+
 \item{title}{Character. Plot title. Default: "Gene-Concept Network" + tag.}
 
 \item{subtitle}{Character. Subtitle. Default: derived from input object.}
@@ -60,6 +63,8 @@ scGeneConceptNetworkEnrichr(
 
 \item{node_label}{Character. Which nodes to label: "all", "gene",
 or "category". Default: "category".}
+
+\item{title_size}{Numeric. Font size of the plot title. Default: 20.}
 
 \item{save}{Logical. Whether to save the plot. Default: TRUE.}
 

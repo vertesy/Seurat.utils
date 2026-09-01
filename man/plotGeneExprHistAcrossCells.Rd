@@ -39,6 +39,9 @@ plotGeneExprHistAcrossCells(
 
 \item{prefix}{Additional text to prepend to the plot title; Default: NULL.}
 
+\item{plotname}{The base string used for the plot title, depending on whether the input is a
+single gene or a gene set; Default: \code{c("Summed Gene-set Expression -", "Expression of")}.}
+
 \item{xlab}{Label for the x-axis; Default: "log10(Summed UMI count @data)".}
 
 \item{return_cells_passing}{If TRUE, returns count of cells exceeding the expression threshold; Default: \code{TRUE}.}

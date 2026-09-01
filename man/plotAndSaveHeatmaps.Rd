@@ -33,9 +33,13 @@ column direction, both ('row', 'column', 'none'). Defaults to "column".}
 
 \item{cluster_rows}{Logical indicating whether to cluster rows. Defaults to FALSE.}
 
+\item{display_numbers}{Logical indicating whether to display the numeric values in the heatmap cells. Defaults to TRUE.}
+
 \item{show_rownames}{Logical indicating whether to show row names. Defaults to TRUE.}
 
 \item{show_colnames}{Logical indicating whether to show column names. Defaults to TRUE.}
+
+\item{rowname_column}{Column index or name used as the row names of the heatmap matrix. Defaults to 1.}
 
 \item{...}{Additional arguments passed to \code{pheatmap::pheatmap}.}
 }

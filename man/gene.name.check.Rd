@@ -17,7 +17,7 @@ especially when preparing data for compatibility with other tools or databases.
 }
 \details{
 This function prints out examples of gene names that contain specific characters
-of interest (e.g., '-', '_', '.', '.AS\link{1-9}'). It is primarily used for data inspection
+of interest (e.g., \code{'-'}, \code{'_'}, \code{'.'}, \code{'.AS[1-9]'}). It is primarily used for data inspection
 and cleaning before further analysis or data export.
 }
 \examples{

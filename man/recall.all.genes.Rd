@@ -8,6 +8,8 @@ recall.all.genes(obj = combined.obj, overwrite = FALSE)
 }
 \arguments{
 \item{obj}{Seurat object, Default: \code{combined.obj}}
+
+\item{overwrite}{Overwrite the \code{all.genes} global variable if it already exists? Default: \code{FALSE}.}
 }
 \description{
 Recall \code{all.genes} from a Seurat object's \code{misc} slot,

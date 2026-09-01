@@ -22,6 +22,12 @@ IntersectGeneLsWithObject(
 
 \item{n_genes_shown}{Number of missing genes to be printed. Default: 10.}
 
+\item{species_}{Species of the gene names, currently unused. Default: \code{'human'}.}
+
+\item{EnforceUnique}{Enforce that gene names are unique before intersecting? Default: \code{TRUE}.}
+
+\item{ShowStats}{Print the number and percentage of genes found? Default: \code{TRUE}.}
+
 \item{strict}{All genes to be present in the Seurat object?  Default: \code{TRUE}.}
 
 \item{verbose}{verbose}

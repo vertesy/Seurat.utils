@@ -35,6 +35,10 @@ plot3D.umap.gene(
 
 \item{dotsize}{The size of the dots in the plot. Default: 1.25}
 
+\item{col.names}{Names of the 3D UMAP coordinate columns to use. Default: \code{c("umap_1", "umap_2", "umap_3")}.}
+
+\item{assay}{Assay used to check gene/feature presence in the object. Default: 'RNA'.}
+
 \item{...}{Pass any other parameter to the internally called \code{plotly::plot_ly}.}
 }
 \description{

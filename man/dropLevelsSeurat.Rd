@@ -17,6 +17,9 @@ dropLevelsSeurat(
 
 \item{verbose}{Logical. Whether to print a message indicating which levels are being dropped.}
 
+\item{also.character}{Logical. Whether to also convert character columns to factor and drop
+unused levels for them. Default: \code{FALSE}.}
+
 \item{only}{Character vector. Explicit list of columns to only in the operation.}
 
 \item{exclude}{Character vector. Names of columns to exclude from the operation.#'}

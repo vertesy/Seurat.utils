@@ -17,6 +17,8 @@
 \item{assay}{The name of the assay to search for scaled data. Default: \code{DefaultAssay()}.}
 
 \item{v}{Verbose? Default: \code{TRUE}.}
+
+\item{...}{Additional arguments, not used.}
 }
 \value{
 Integer representing the number of principal components

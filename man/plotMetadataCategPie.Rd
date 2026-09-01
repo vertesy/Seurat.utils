@@ -33,6 +33,8 @@ and the count of each category. If \code{FALSE}, only the percentage is shown.}
 
 \item{labels}{Optional labels for the pie chart.}
 
+\item{LegendSide}{Should the legend be shown on the side of the pie chart? Default: \code{FALSE}.}
+
 \item{...}{Additional arguments to pass to the pie chart plotting function.}
 }
 \value{

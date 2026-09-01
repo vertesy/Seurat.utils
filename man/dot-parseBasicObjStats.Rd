@@ -14,6 +14,14 @@
 }
 \arguments{
 \item{obj}{An object to extract information from.}
+
+\item{sep}{Character used as the big-mark separator in formatted numbers. Default: \code{' '}.}
+
+\item{assay}{Assay used to determine the feature count. Default: \code{DefaultAssay(obj)}.}
+
+\item{simple}{If \code{TRUE}, only report the cell count. Default: \code{FALSE}.}
+
+\item{suffix}{Optional character string appended to the summary. Default: \code{NULL}.}
 }
 \value{
 A character string summarizing the key parameters.

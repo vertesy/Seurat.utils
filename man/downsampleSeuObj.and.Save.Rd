@@ -26,6 +26,8 @@ downsampleSeuObj.and.Save(
 \item{min.features}{Minimum features}
 
 \item{suffix}{A suffix added to the filename, Default: ''}
+
+\item{nthreads}{Number of threads used when saving the downsampled object. Default: \code{.getNrCores()}.}
 }
 \description{
 Downsample a Seurat object to a target fraction and save it.

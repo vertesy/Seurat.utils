@@ -28,6 +28,9 @@ PlotFilters(
 \arguments{
 \item{ls.obj}{A list of Seurat objects to be analyzed. Default: \code{ls.Seurat}.}
 
+\item{par.ls}{A list of parameters used to source default thresholds (e.g. \code{thr.lp.mito},
+\code{thr.hp.mito}, \code{thr.lp.ribo}, \code{thr.hp.ribo}, \code{thr.lp.nFeature_RNA}, \code{thr.hp.nFeature_RNA}). Default: \code{p}.}
+
 \item{parentdir}{The parent directory where the plots will be stored. Default: \code{OutDirOrig}.}
 
 \item{suffices}{Suffixes used in the output plot file names. Default: Names of the Seurat objects in \code{ls.obj}.}

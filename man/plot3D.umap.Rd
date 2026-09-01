@@ -27,6 +27,8 @@ Default: First returned result from GetNamedClusteringRuns(obj) function.}
 
 \item{dotsize}{The size of the dots in the plot. Default: 1.25}
 
+\item{col.names}{Names of the 3D UMAP coordinate columns to use. Default: \code{c("umap_1", "umap_2", "umap_3")}.}
+
 \item{...}{Pass any other parameter to the internally called \code{plotly::plot_ly}.}
 }
 \description{

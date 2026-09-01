@@ -33,5 +33,5 @@ if (interactive()) {
 }
 }
 \seealso{
-\code{\link[wplot]{wplot}}, \code{\link[wcolorize]{wcolorize}}
+\code{MarkdownReports::wplot()}, \code{wcolorize()}
 }
