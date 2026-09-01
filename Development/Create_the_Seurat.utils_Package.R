@@ -108,10 +108,11 @@ file.edit(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".les
 
 file.edit(paste0(repository.dir, "/README.md"))
 
-file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".det.md"))
-file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".Visualization.det.md"))
-file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".Metadata.det.md"))
-file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".less.used.det.md"))
+# file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".det.md"))
+# file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".Visualization.det.md"))
+# file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".Metadata.det.md"))
+# file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".less.used.det.md"))
+file.remove(list.files(file.path(repository.dir, "R"), pattern = "^list\\.of\\.functions\\.in\\..+\\.det\\.md$", full.names = TRUE))
 
 r$PackageTools()
 PackageTools::copy_github_badge("active") # Add badge to readme via clipboard

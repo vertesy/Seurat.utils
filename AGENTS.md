@@ -1,6 +1,6 @@
 # Guidance for Agents
 
-Version: 2026.08.27-00:00
+Version: 2026.08.31-00:01
 
 ## I: Generic (all @vertesy repos)
 
@@ -31,7 +31,14 @@ For each finding, state:
 Keep only findings that can be explained clearly and concisely.
 Do not flag formatting, line length, or missing tests.
 
-### 3. Update the Source, Not Just the Documentation
+### 3. Pull Request Descriptions
+
+Open each PR with a few bullets per major change: what was wrong, how it was fixed, and whether it changes the function's output or behavior.
+
+- Scale the description to the change: a typo or comment-only fix needs one short line, not a paragraph.
+- Keep the whole description under 250 words; reserve that ceiling for genuinely complex PRs. If it doesn't fit, split the PR instead of writing more.
+
+### 4. Update the Source, Not Just the Documentation
 
 Documentation is generated from upstream sources: `.Rd` files from roxygen annotations and `DESCRIPTION` from `Development/Dependencies.R` via `config.R`.
 
@@ -41,7 +48,8 @@ Package rebuilds overwrite these files, so always update the upstream source fir
 
 - New arguments go at the end, just before `...`. Never insert in the middle.
 - Do not use tests.
-- Whenever you are implementing a larger change (a bug fix, a substantial code change), you shoud increase the version number in `Development/config.R` by 0.0.1.
+- Never update the package version unless the user explicitly requests a version change.
+- Do not raise code review findings that ask for a package version change.
 
 ## III: Seurat.utils specific
 
