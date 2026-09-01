@@ -2689,6 +2689,8 @@ dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE, also.character 
 
   if (also.character) {
     char_cols <- names(colclasses[colclasses %in% "character"])
+    if (!is.null(only)) char_cols <- intersect(char_cols, only)
+    if (!is.null(exclude)) char_cols <- setdiff(char_cols, exclude)
     for (colX in char_cols) META[[colX]] <- as.factor(META[[colX]])
     drop_in_these <- union(drop_in_these, char_cols)
   }
