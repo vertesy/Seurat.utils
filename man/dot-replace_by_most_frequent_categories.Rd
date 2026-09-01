@@ -28,6 +28,10 @@ second column of 'df' is used.}
 
 \item{suffix_barplot}{Suffix for barplot.}
 
+\item{ext}{File extension used when saving the barplot. Default: \code{'png'}.}
+
+\item{min.thr}{Minimum fraction threshold used to flag low-confidence assignments. Default: \code{0.5}.}
+
 \item{...}{Additional parameters passed to the qbarplot function.}
 }
 \value{

@@ -21,7 +21,11 @@
 #' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: `TRUE`.
 #' @param depth An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default: 2.
 #' @param sample.barcoding A logical value indicating whether Cell Ranger was run with sample barcoding. Default: `FALSE`.
+#' @param nthreads Number of threads used when saving the resulting object. Default: `.getNrCores()`.
+#' @param preset Compression preset used when saving the resulting object ("fast", "balanced", "high", or "max"). Default: 'high'.
+#' @param ext File extension used for the saved Seurat objects. Default: 'qs'.
 #' @param sort_alphanumeric Sort files alphanumerically? Default: `TRUE`.
+#' @param ... Additional arguments, not used.
 #' @examples
 #' \dontrun{
 #' if (interactive()) Convert10Xfolders(InputDir)
@@ -704,6 +708,7 @@ cellID_to_cellType <- function(cellIDs, ident_w_names) {
 #' @description Create a new slot in the 'misc' slot of a Seurat object.
 #' @param obj Seurat object
 #' @param NewSlotName Name of the new element inside obj@misc.
+#' @param SubSlotName Optional name of a sub-element inside `obj@misc[[NewSlotName]]`. Default: `NULL`.
 #' @export
 
 Create.MiscSlot <- function(obj, NewSlotName = "UVI.tables", SubSlotName = NULL) {

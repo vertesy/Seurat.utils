@@ -10,6 +10,8 @@
 \item{obj}{A Seurat object. \strong{Default:} None.}
 
 \item{pattern}{A character string representing the pattern to match command names. \strong{Default:} None.}
+
+\item{perl}{Should \code{pattern} be treated as a Perl-compatible regular expression? Default: \code{TRUE}.}
 }
 \value{
 If exactly one match is found, the function returns the content of the first match. If

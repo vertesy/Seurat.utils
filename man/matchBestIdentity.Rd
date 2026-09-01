@@ -45,6 +45,8 @@ Default: TRUE}
 \item{barplot_fractions}{Draw a barplot to show the \% of each category in the original and new
 identities, using \code{scBarplot.CellFractions()}. Default: TRUE}
 
+\item{rnd_colors}{Use randomly shuffled colors for the barplot of fractions? Default: \code{TRUE}.}
+
 \item{w}{Width for the saved image. Default: 9}
 
 \item{h}{Height for the saved image. Default: 12}
@@ -66,6 +68,5 @@ updated_obj <- matchBestIdentity(my_obj, "origin_identity", "target_identity")
 }
 }
 \seealso{
-\code{\link[clUMAP]{clUMAP}}, \code{\link[kpp]{kpp}}, \code{\link[FixPlotName]{FixPlotName}},
-\code{\link[.replace_by_most_frequent_categories]{.replace_by_most_frequent_categories}}
+\code{clUMAP()}, \code{Stringendo::kpp()}, \code{.replace_by_most_frequent_categories()}
 }

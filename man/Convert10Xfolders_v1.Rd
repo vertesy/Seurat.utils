@@ -43,7 +43,15 @@ Convert10Xfolders_v1(
 
 \item{sample.barcoding}{A logical value indicating whether Cell Ranger was run with sample barcoding. Default: \code{FALSE}.}
 
+\item{nthreads}{Number of threads used when saving the resulting object. Default: \code{.getNrCores()}.}
+
+\item{preset}{Compression preset used when saving the resulting object ("fast", "balanced", "high", or "max"). Default: 'high'.}
+
+\item{ext}{File extension used for the saved Seurat objects. Default: 'qs'.}
+
 \item{sort_alphanumeric}{Sort files alphanumerically? Default: \code{TRUE}.}
+
+\item{...}{Additional arguments, not used.}
 }
 \description{
 This function takes a parent directory with a number of subfolders, each

@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat v5
-Version: 2.9.11
+Version: 2.9.15
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Description: Seurat.utils is a collection of utility functions for Seurat
@@ -61,6 +61,6 @@ Suggests:
     enrichplot,
     vroom
 Encoding: UTF-8
-Packaged: 2026-08-28 17:20:05.947478
+Packaged: 2026-09-01 14:12:46.386722
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

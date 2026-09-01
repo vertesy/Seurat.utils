@@ -52,6 +52,8 @@ PctCellsAboveX(
 
 \item{ylab}{Character. Y-axis label.}
 
+\item{palette}{Character. Color palette passed to the plotting function, e.g. \code{ggpubr::ggboxplot()}. Default: 'jco'.}
+
 \item{...}{Additional arguments passed to plotting functions.}
 }
 \value{

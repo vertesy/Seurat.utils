@@ -74,6 +74,10 @@ calc.cluster.averages(
 
 \item{title}{Title for the plot. Default: "Cluster" followed by the statistical method and column name.}
 
+\item{prefix.cl.names}{Whether to prefix cluster names with the split_by column name. Default: \code{FALSE}.}
+
+\item{report}{Whether to print a message reporting the object and split_by column. Default: \code{TRUE}.}
+
 \item{subtitle}{The subtitle for the plot. Default: NULL.}
 
 \item{width}{The width of the plot. Default: 8.}

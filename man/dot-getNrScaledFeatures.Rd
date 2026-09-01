@@ -16,6 +16,8 @@
 
 \item{assay}{The name of the assay to search for scaled data. Default: \code{RNA}.}
 
+\item{obj.version}{Seurat object version, used to determine which layer/slot API to use. Default: \code{obj@version}.}
+
 \item{v}{Verbose? Default: \code{TRUE}.}
 }
 \value{

@@ -40,6 +40,10 @@ qSeuViolin(
 
 \item{ident}{A character vector specifying the identities to be used in the plot.}
 
+\item{assay}{Assay to fetch the feature from. Default: \code{'RNA'}.}
+
+\item{slot}{Slot/layer of the assay to fetch the feature from. Default: \code{'data'}.}
+
 \item{split.by}{A character string specifying the grouping variable for splitting the plot.}
 
 \item{colors}{A character vector specifying the colors to use for the plot.}

@@ -2,12 +2,11 @@
 # Create_the_Seurat.utils_Package.R
 ######################################################################################################
 # file.edit("~/GitHub/Packages/Seurat.utils/Development/Create_the_Seurat.utils_Package.R")
-# rm(list = ls(all.names = TRUE)); try(dev.off(), silent = TRUE)
+rm(list = ls(all.names = TRUE)); try(dev.off(), silent = TRUE)
 
 
 # Functions ------------------------
 require(PackageTools)
-r$PackageTools()
 # devtools::load_all("~/GitHub/Packages/PackageTools")
 
 # Setup ------------------------
@@ -19,11 +18,15 @@ config.path <- file.path(repository.dir, "Development/config.R")
 file.edit(config.path)
 source(config.path)
 
+# Check and Document your package ------------------------------------------------
+devtools::check_man(repository.dir)
+PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
+
 
 
 # Automated Codebase linting to tidyverse style ------------------------------------------------
 styler::style_pkg(repository.dir)
-styler::style_file("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
+# styler::style_file("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
 
 # Replaces T with TRUE and F with FALSE ------------------------------------------------
 (ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T, pattern = '.R$'))
@@ -117,7 +120,6 @@ file.remove(list.files(file.path(repository.dir, "R"), pattern = "^list\\.of\\.f
 r$PackageTools()
 PackageTools::copy_github_badge("active") # Add badge to readme via clipboard
 file.edit(paste0(repository.dir, "README.md"))
-
 
 
 

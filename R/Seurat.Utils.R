@@ -743,6 +743,10 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
 #' @param genes A vector of gene names to be intersected with the Seurat object.
 #' @param obj A Seurat object containing gene expression data.
 #' @param n_genes_shown Number of missing genes to be printed. Default: 10.
+#' @param species_ Species of the gene names, passed to `HGNChelper::checkGeneSymbols()`
+#' to control gene-symbol mapping when updating symbols. Default: `'human'`.
+#' @param EnforceUnique Enforce that gene names are unique before intersecting? Default: `TRUE`.
+#' @param ShowStats Print the number and percentage of genes found? Default: `TRUE`.
 #' @param strict All genes to be present in the Seurat object?  Default: `TRUE`.
 #' @param verbose verbose
 #' @return A vector of gene names that are found both in the input 'genes' vector and the
@@ -818,6 +822,8 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
 #' expressed. Default: 0.
 #' @param sort A logical flag indicating whether to sort the filtered genes by their expression
 #' levels in decreasing order. Default: `FALSE`.
+#' @param strict All genes to be present in the Seurat object? Passed on to
+#' `IntersectGeneLsWithObject()`. Default: `FALSE`.
 #' @return A vector of gene names that are found both in the input 'genes' vector and the Seurat
 #' object, and have expression levels above the specified 'above' threshold. If `sort` is TRUE,
 #' these genes are returned in decreasing order of their expression levels.
@@ -1021,13 +1027,15 @@ showMiscSlots <- function(obj = combined.obj, max.level = 1, subslot = NULL,
 #' @param quantileX Quantile level, Default: 0.9
 #' @param max.cells Max number of cells to do the calculation on. Downsample if excdeeded. Default: 1e+05
 #' @param slot slot in the Seurat object. Default: 'data'
-#' @param assay RNA or integrated assay, Default: c("RNA", "integrated")[1]
+#' @param assay RNA or integrated assay, Default: `c("RNA", "integrated")[1]`
 #' @param set.misc Create the "all.genes" variable in @misc? Default: `TRUE`.
 #' @param assign_to_global_env Create the "all.genes" variable in the global env?, Default: `TRUE`.
 #' @param plot Plot the expression distribution? Default: `TRUE`.
+#' @param suffix Suffix appended to the object name used e.g. in messages. Default: `substitute(obj)`.
 #' @param show Show the distribution plot? Default: `TRUE`.
 #' @param obj.version Manuallyoverride the Version of the Seurat object. Useful when you used the
 #' problematic `SeuratObject::UpdateSeuratObject()`.Default: no override `obj@version`.
+#' @param ... Additional arguments, not used.
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -1043,7 +1051,7 @@ showMiscSlots <- function(obj = combined.obj, max.level = 1, subslot = NULL,
 #' }
 #' }
 #' @seealso
-#'  \code{\link[sparseMatrixStats]{character(0)}}
+#'  \code{\link[sparseMatrixStats]{rowQuantiles}}
 #' @importFrom tictoc tic toc
 #' @importFrom sparseMatrixStats rowQuantiles
 #'
@@ -1198,7 +1206,7 @@ calc.q99.Expression.and.set.all.genes <- function(
 #'
 #' @param genes A character vector of gene symbols.
 #' @param pattern_NC A character vector of patterns to filter out non-coding gene symbols.
-#' Default: c("^AC.", "^AL.", "^c[1-9]orf", "\\.AS[1-9]$", ... etc.
+#' Default: `c("^AC.", "^AL.", "^c[1-9]orf", "\\.AS[1-9]$", ... etc.)`
 #' @param v "verbose" Whether to print the number of genes before and after filtering.
 #' @param unique Whether to return unique gene symbols. Default: `TRUE`.
 #' @param ... Additional arguments to pass to \code{\link[stringr]{str_detect}}.
@@ -1345,6 +1353,7 @@ filterExpressedGenes <- function(
 #' @param suffix.plot Suffix description (short string) to be added to the umap plots.
 #' @param ... Pass any other parameter to the internally called functions (most of them should work).
 #' @param obj Seurat object
+#' @param plot_umaps Plot UMAPs of the new and old clustering identities? Default: `TRUE`.
 #'
 #' @export
 
@@ -1490,9 +1499,9 @@ GetClusteringRuns <- function(obj = combined.obj,
 #' @description The `GetNamedClusteringRuns` function retrieves metadata column names associated with
 #'  non-numeric ("named") clustering runs, based on a pattern to match, `"Name|name"`, by default.
 #' @param obj Seurat object, Default: `combined.obj`
-#' @param res Clustering resolution to use, Default: c(FALSE, 0.5)[1]
+#' @param res Clustering resolution to use, Default: `c(FALSE, 0.5)[1]`
 #' @param topgene Match clustering named after top expressed gene (see vertesy/Seurat.pipeline/~Diff gene expr.), Default: `FALSE`.
-#' @param pat Pattern to match, Default: '^cl.names.Known.*[0,1]\.[0-9]$'
+#' @param pat Pattern to match, Default: `'^cl.names.Known.*[0,1]\.[0-9]$'`
 #' @param find.alternatives If TRUE, tries to find alternative clustering runs with
 #' the same resolution, Default: `TRUE`.
 #' @param v Verbose output, Default: `TRUE`.
@@ -1535,7 +1544,7 @@ GetNamedClusteringRuns <- function(
 #' @description Get Clustering Runs: metadata column names.
 #' @param obj Seurat object, Default: `combined.obj`.
 #' @param res Clustering resolution to use, Default: `FALSE`.
-#' @param pat Pattern to match, Default: '*snn_res.*[0,1]\.[0-9]\.ordered$'
+#' @param pat Pattern to match, Default: `'*snn_res.*[0,1]\.[0-9]\.ordered$'`
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -1596,6 +1605,8 @@ GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
 #' @param filter The filter mode: 'above', 'below', or FALSE. Default: `FALSE`.
 #' @param ylab.text Text for the y-axis label. Default: "Cluster" followed by the statistical method and "score".
 #' @param title Title for the plot. Default: "Cluster" followed by the statistical method and column name.
+#' @param prefix.cl.names Whether to prefix cluster names with the split_by column name. Default: `FALSE`.
+#' @param report Whether to print a message reporting the object and split_by column. Default: `TRUE`.
 #' @param subtitle The subtitle for the plot. Default: NULL.
 #' @param width The width of the plot. Default: 8.
 #' @param height The height of the plot. Default: 6.
@@ -1824,6 +1835,7 @@ ww.get.1st.Seur.element <- function(obj) {
 #' @description Recall \code{all.genes} from a Seurat object's \code{misc} slot,
 #'   which is stored by \code{calc.q99.Expression.and.set.all.genes()}, and optionally reset the global variable.
 #' @param obj Seurat object, Default: `combined.obj`
+#' @param overwrite Overwrite the `all.genes` global variable if it already exists? Default: `FALSE`.
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -2251,6 +2263,7 @@ downsampleSeuObj <- function(obj = ls.Seurat[[i]], fractionCells = 0.25, nCells 
 #' @param min.features Minimum features
 #' @param dir Directory to save to. Default: OutDir
 #' @param suffix A suffix added to the filename, Default: ''
+#' @param nthreads Number of threads used when saving the downsampled object. Default: `.getNrCores()`.
 #' @export
 downsampleSeuObj.and.Save <- function(
   obj = ORC, fraction = 0.25, seed = 1989, dir = OutDir,
@@ -2652,6 +2665,8 @@ removeResidualSmallClusters <- function(
 #' @description Drop unused levels from `factor` variables in a Seurat object's meta.data.
 #' @param obj A Seurat object.
 #' @param verbose Logical. Whether to print a message indicating which levels are being dropped.
+#' @param also.character Logical. Whether to also convert character columns to factor and drop
+#' unused levels for them. Default: `FALSE`.
 #' @param only Character vector. Explicit list of columns to only in the operation.
 #' @param exclude Character vector. Names of columns to exclude from the operation.#'
 #'
@@ -2671,6 +2686,12 @@ dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE, also.character 
 
   colclasses <- sapply(META, class)
   drop_in_these <- names(colclasses[colclasses %in% "factor"])
+
+  if (also.character) {
+    char_cols <- names(colclasses[colclasses %in% "character"])
+    for (colX in char_cols) META[[colX]] <- as.factor(META[[colX]])
+    drop_in_these <- union(drop_in_these, char_cols)
+  }
 
   if (!is.null(only)) drop_in_these <- only
   if (!is.null(exclude)) drop_in_these <- setdiff(drop_in_these, exclude)
@@ -2873,6 +2894,7 @@ downsampleListSeuObjsNCells <- function(
 #'
 #' @param ls.obj List of Seurat objects to be downsampled. Default: `ls.Seurat`.
 #' @param fraction Fraction of cells to retain in each Seurat object. Default: 0.1.
+#' @param seed Random seed used for reproducible downsampling. Default: 1989.
 #' @param save_object Logical indicating whether to save the downsampled Seurat objects using
 #' `isaveRDS` or return them. Default: `FALSE`.
 #'
@@ -3801,7 +3823,7 @@ GetMostVarGenes <- function(obj, nGenes = p$nVarGenes) {
 #' @param Seu.obj A Seurat object containing gene expression data.
 #'
 #' @details This function prints out examples of gene names that contain specific characters
-#' of interest (e.g., '-', '_', '.', '.AS[1-9]'). It is primarily used for data inspection
+#' of interest (e.g., `'-'`, `'_'`, `'.'`, `'.AS[1-9]'`). It is primarily used for data inspection
 #' and cleaning before further analysis or data export.
 #'
 #' @examples
@@ -3858,6 +3880,7 @@ gene.name.check <- function(Seu.obj) {
 #' @param obj The Seurat object against which the gene names will be checked.
 #' @param assay.slot Assay slot of the Seurat object to check for gene names. Default: `'RNA'`.
 #' @param data.slot Data slot of the assay to check for gene names. Default: `'data'`.
+#' @param ... Additional arguments, not used.
 #'
 #' @examples
 #' \dontrun{
@@ -4058,7 +4081,7 @@ AddNewAnnotation <- function(
 #' }
 #' }
 #' @seealso
-#' \code{\link[Seurat]{subset}}
+#' `Seurat::subset.Seurat()`
 #' @importFrom ReadWriter read.simple.tsv
 #'
 #' @export
@@ -4570,7 +4593,7 @@ GetUpdateStats <- function(genes = HGNC.updated[[i]]) {
 #' }
 #' }
 #' @seealso
-#' \code{\link[wplot]{wplot}}, \code{\link[wcolorize]{wcolorize}}
+#' `MarkdownReports::wplot()`, `wcolorize()`
 #' @importFrom MarkdownReports wplot wlegend
 #'
 #' @export
@@ -4626,9 +4649,13 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
 #' @param ShowStats A logical value indicating whether to show statistics. Default: `TRUE`.
 #' @param writeCBCtable A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: `TRUE`.
 #' @param depth An integer value specifying the depth of scan (i.e., how many levels below the InputDir). Default: 2.
+#' @param nthreads Number of threads used when saving the resulting object. Default: `.getNrCores()`.
+#' @param preset Compression preset used when saving the resulting object ("fast", "balanced", "high", or "max"). Default: 'high'.
+#' @param ext File extension used for the saved Seurat objects. Default: 'qs'.
 #' @param sort_alphanumeric sort files alphanumeric? Default: `TRUE`.
 #' @param save_empty_droplets save empty droplets? Default: `TRUE`.
 #' @param save Save .qs object? Default: `TRUE`.
+#' @param ... Additional arguments, not used.
 #'
 #' @examples
 #' \dontrun{
@@ -5459,7 +5486,7 @@ isave.image <- function(
 #' objects in the workspace. Default: `TRUE`.
 #' @param options Options passed on to gzip, via CLI. Default: `c("--force", NULL)[1]`
 #' @seealso
-#'  \code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
+#'  \code{\link[Stringendo]{kollapse}}, `Stringendo::iprint()`
 #' @export
 #' @importFrom Stringendo kollapse iprint
 #' @importFrom tictoc tic toc
@@ -6027,6 +6054,7 @@ jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) {
 #' @param plot_venn plot_venn
 #' @param suffix suffix
 #' @param save.plot save.plot
+#' @param ... Additional arguments, not used.
 #' @return A list containing the common genes and Spearman's rank correlation coefficient.
 #'   If cor.plot is TRUE, a scatterplot is also generated.
 #' @importFrom Seurat VariableFeatures
@@ -6192,6 +6220,7 @@ compareVarFeaturesAndRanks <- function(
 #'
 #' @param obj A Seurat object containing scaled data in  `obj@assays$RNA@scale.data`.
 #' @param assay The name of the assay to search for scaled data. Default: `RNA`.
+#' @param obj.version Seurat object version, used to determine which layer/slot API to use. Default: `obj@version`.
 #' @param v Verbose? Default: `TRUE`.
 #'
 #' @return Integer representing the number of scaled features
@@ -6224,6 +6253,7 @@ compareVarFeaturesAndRanks <- function(
 #'
 #' @param obj A Seurat object containing PCA cell embeddings in `reductions$pca@cell.embeddings`
 #' @param v Verbose? Default: `TRUE`.
+#' @param reduc Name of the dimensionality reduction to use. Default: `'pca'`.
 #' @return Integer representing the number of principal components
 #'
 .getNrPCs <- function(obj, v = TRUE, reduc = "pca") {
@@ -6243,6 +6273,7 @@ compareVarFeaturesAndRanks <- function(
 #' @param obj A Seurat object
 #' @param assay The name of the assay to search for scaled data. Default: `DefaultAssay()`.
 #' @param v Verbose? Default: `TRUE`.
+#' @param ... Additional arguments, not used.
 #'
 #' @return Integer representing the number of principal components
 .getRegressionVariablesForScaleData <- function(obj, assay = Seurat::DefaultAssay(obj), v = TRUE, ...) {
@@ -6340,6 +6371,7 @@ compareVarFeaturesAndRanks <- function(
 #'
 #' @param obj A Seurat object. **Default:** None.
 #' @param pattern A character string representing the pattern to match command names. **Default:** None.
+#' @param perl Should `pattern` be treated as a Perl-compatible regular expression? Default: `TRUE`.
 #'
 #' @return If exactly one match is found, the function returns the content of the first match. If
 #' multiple matches are found, it returns `NULL` after displaying the number of matches and their names.
@@ -6375,6 +6407,10 @@ compareVarFeaturesAndRanks <- function(
 #'
 #' @description Parse cell and feature count to a string.
 #' @param obj An object to extract information from.
+#' @param sep Character used as the big-mark separator in formatted numbers. Default: `' '`.
+#' @param assay Assay used to determine the feature count. Default: `DefaultAssay(obj)`.
+#' @param simple If `TRUE`, only report the cell count. Default: `FALSE`.
+#' @param suffix Optional character string appended to the summary. Default: `NULL`.
 #' @return A character string summarizing the key parameters.
 #'
 .parseBasicObjStats <- function(obj, sep = " ", assay = DefaultAssay(obj),

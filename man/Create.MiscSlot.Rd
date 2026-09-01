@@ -10,6 +10,8 @@ Create.MiscSlot(obj, NewSlotName = "UVI.tables", SubSlotName = NULL)
 \item{obj}{Seurat object}
 
 \item{NewSlotName}{Name of the new element inside obj@misc.}
+
+\item{SubSlotName}{Optional name of a sub-element inside \code{obj@misc[[NewSlotName]]}. Default: \code{NULL}.}
 }
 \description{
 Create a new slot in the 'misc' slot of a Seurat object.

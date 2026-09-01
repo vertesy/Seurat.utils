@@ -22,30 +22,13 @@ scBarplotEnrichr(
   h = 10,
   ...
 )
-
-scBarplotEnrichr(
-  df.enrichment,
-  showCategory = 20,
-  label_format = 30,
-  tag = "...",
-  universe = df.enrichment@universe,
-  title = paste("GO Enriched Terms", tag),
-  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
-  caption = paste0("Input genes: ", length(df.enrichment@gene), " | Enriched terms: ",
-    nrow(df.enrichment), " | Shown: ", min(showCategory, nrow(df.enrichment)),
-    " | background genes: ", length(universe)),
-  save = TRUE,
-  also.pdf = FALSE,
-  save.obj = FALSE,
-  w = 10,
-  h = 10,
-  ...
-)
 }
 \arguments{
 \item{df.enrichment}{Data frame. Enrichment results from GO analysis. Default: NULL.}
 
 \item{showCategory}{Integer. Number of categories (GO-terms as bars) to show in the plot. Default: 20.}
+
+\item{label_format}{Integer. Wrap length (in characters) for category labels. Default: 30.}
 
 \item{tag}{Character. Tag to be added to the title of the plot. Default: "in ...".}
 
@@ -71,21 +54,12 @@ scBarplotEnrichr(
 }
 \value{
 None. The function prints the plot and optionally saves it.
-
-None. The function prints the plot and optionally saves it.
 }
 \description{
 This function creates a bar plot of GO enrichment analysis results using the
 \code{enrichplot::barplot.enrichResult} function. It also allows saving the plot to a file.
-
-This function creates a bar plot of GO enrichment analysis results using the
-\code{enrichplot::barplot.enrichResult} function. It also allows saving the plot to a file.
 }
 \examples{
-\dontrun{
-df.enrichment <- data.frame() # Example enrichment results data frame
-plotGOEnrichment(df.enrichment)
-}
 \dontrun{
 df.enrichment <- data.frame() # Example enrichment results data frame
 plotGOEnrichment(df.enrichment)

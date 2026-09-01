@@ -16,6 +16,8 @@ downsampleListSeuObjsPercent(
 
 \item{fraction}{Fraction of cells to retain in each Seurat object. Default: 0.1.}
 
+\item{seed}{Random seed used for reproducible downsampling. Default: 1989.}
+
 \item{save_object}{Logical indicating whether to save the downsampled Seurat objects using
 \code{isaveRDS} or return them. Default: \code{FALSE}.}
 }
