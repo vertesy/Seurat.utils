@@ -15,6 +15,9 @@ qUMAP(
   suffix = make.names(sub),
   save.plot = getOption("su.save.plot", TRUE),
   PNG = TRUE,
+  also.pdf = FALSE,
+  save.obj = getOption("gg.save.obj", FALSE),
+  show_plot = TRUE,
   h = 7,
   w = NULL,
   nr.cols = NULL,
@@ -49,7 +52,14 @@ qUMAP(
 
 \item{save.plot}{If TRUE, the plot is saved into a file; Default: \code{TRUE}.}
 
-\item{PNG}{If TRUE, the file is saved as a .png; Default: \code{TRUE}.}
+\item{PNG}{Deprecated in favor of \code{also.pdf}. A .png is always saved; setting \code{PNG = FALSE}
+is equivalent to \code{also.pdf = TRUE} and additionally saves a .pdf; Default: \code{TRUE}.}
+
+\item{also.pdf}{If TRUE, the plot is also saved as a .pdf, in addition to the .png; Default: \code{FALSE}.}
+
+\item{save.obj}{If TRUE, the ggplot object is also saved as a \code{.qs} file; Default: \code{getOption("gg.save.obj", FALSE)}.}
+
+\item{show_plot}{If TRUE, the plot is displayed / returned visibly; Default: \code{TRUE}.}
 
 \item{h}{Height of the plot in inches; Default: 7.}
 
@@ -87,6 +97,7 @@ default options for custom titles, subtitles, saving, and more.
 if (interactive()) {
   qUMAP(feature = "nFeature_RNA", obj = yourSeuratObject)
   qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
+  qUMAP(feature = "TOP2A", obj = yourSeuratObject, also.pdf = TRUE, show_plot = FALSE)
 }
 }
 

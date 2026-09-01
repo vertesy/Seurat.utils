@@ -35,6 +35,9 @@ clUMAP(
   aspect.ratio = c(FALSE, 0.6)[2],
   save.plot = getOption("su.save.plot", TRUE),
   PNG = TRUE,
+  also.pdf = FALSE,
+  save.obj = getOption("gg.save.obj", FALSE),
+  show_plot = TRUE,
   check_for_2D = TRUE,
   ...
 )
@@ -96,7 +99,14 @@ clUMAP(
 
 \item{save.plot}{Save plot to file; Default: \code{TRUE}.}
 
-\item{PNG}{Save as PNG (TRUE) or PDF (FALSE); Default: \code{TRUE}.}
+\item{PNG}{Deprecated in favor of \code{also.pdf}. A .png is always saved; setting \code{PNG = FALSE}
+is equivalent to \code{also.pdf = TRUE} and additionally saves a .pdf; Default: \code{TRUE}.}
+
+\item{also.pdf}{If TRUE, the plot is also saved as a .pdf, in addition to the .png; Default: \code{FALSE}.}
+
+\item{save.obj}{If TRUE, the ggplot object is also saved as a \code{.qs} file; Default: \code{getOption("gg.save.obj", FALSE)}.}
+
+\item{show_plot}{If TRUE, the plot is displayed / returned visibly; Default: \code{TRUE}.}
 
 \item{check_for_2D}{Ensure UMAP is 2D; Default: \code{TRUE}.}
 
@@ -111,6 +121,7 @@ default options for custom titles, subtitles, saving, and more.
 \dontrun{
 clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj)
 clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj, cols = RColorBrewer::brewer.pal(8, "Dark2"))
+clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj, also.pdf = TRUE, show_plot = FALSE)
 }
 
 }
