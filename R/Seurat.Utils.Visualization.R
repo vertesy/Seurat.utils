@@ -2213,8 +2213,8 @@ qSeuViolin <- function(
 #' \dontrun{
 #' if (interactive()) {
 #'   qUMAP(feature = "nFeature_RNA", obj = yourSeuratObject)
-#'   qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
 #'   qUMAP(feature = "TOP2A", obj = yourSeuratObject, also.pdf = TRUE, show_plot = FALSE)
+#'   # Deprecated qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
 #' }
 #' }
 #'
