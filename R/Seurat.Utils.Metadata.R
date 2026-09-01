@@ -28,7 +28,7 @@
 # #' @param NA.as.character A logical indicating whether to convert NAs to character. Default: TRUE.
 #' @param suffix A character string appended to `new_col_name` to form the final metadata column name. Default: `NULL`.
 #' @param plot A logical indicating whether to plot the UMAP for the new metadata. Default: FALSE.
-#' @param ... Additional arguments, not used.
+#' @param ... Additional arguments passed to `clUMAP()` when `plot = TRUE`.
 #'
 #' @return An updated Seurat object.
 #'

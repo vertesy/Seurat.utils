@@ -22,7 +22,8 @@ IntersectGeneLsWithObject(
 
 \item{n_genes_shown}{Number of missing genes to be printed. Default: 10.}
 
-\item{species_}{Species of the gene names, currently unused. Default: \code{'human'}.}
+\item{species_}{Species of the gene names, passed to \code{HGNChelper::checkGeneSymbols()}
+to control gene-symbol mapping when updating symbols. Default: \code{'human'}.}
 
 \item{EnforceUnique}{Enforce that gene names are unique before intersecting? Default: \code{TRUE}.}
 

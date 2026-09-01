@@ -743,7 +743,8 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
 #' @param genes A vector of gene names to be intersected with the Seurat object.
 #' @param obj A Seurat object containing gene expression data.
 #' @param n_genes_shown Number of missing genes to be printed. Default: 10.
-#' @param species_ Species of the gene names, currently unused. Default: `'human'`.
+#' @param species_ Species of the gene names, passed to `HGNChelper::checkGeneSymbols()`
+#' to control gene-symbol mapping when updating symbols. Default: `'human'`.
 #' @param EnforceUnique Enforce that gene names are unique before intersecting? Default: `TRUE`.
 #' @param ShowStats Print the number and percentage of genes found? Default: `TRUE`.
 #' @param strict All genes to be present in the Seurat object?  Default: `TRUE`.
@@ -2685,6 +2686,12 @@ dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE, also.character 
 
   colclasses <- sapply(META, class)
   drop_in_these <- names(colclasses[colclasses %in% "factor"])
+
+  if (also.character) {
+    char_cols <- names(colclasses[colclasses %in% "character"])
+    for (colX in char_cols) META[[colX]] <- as.factor(META[[colX]])
+    drop_in_these <- union(drop_in_these, char_cols)
+  }
 
   if (!is.null(only)) drop_in_these <- only
   if (!is.null(exclude)) drop_in_these <- setdiff(drop_in_these, exclude)

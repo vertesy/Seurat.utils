@@ -27,7 +27,7 @@ addTranslatedMetadata(
 
 \item{plot}{A logical indicating whether to plot the UMAP for the new metadata. Default: FALSE.}
 
-\item{...}{Additional arguments, not used.}
+\item{...}{Additional arguments passed to \code{clUMAP()} when \code{plot = TRUE}.}
 }
 \value{
 An updated Seurat object.
