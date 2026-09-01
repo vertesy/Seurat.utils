@@ -25,28 +25,6 @@ scEmapplotEnrichr(
   h = 10,
   ...
 )
-
-scEmapplotEnrichr(
-  df.enrichment,
-  showCategory = 15,
-  min_edge = 0.2,
-  tag = "...",
-  universe = df.enrichment@universe,
-  title = paste("GO Enrichment Map", tag),
-  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
-  caption = paste0("Input genes: ", length(df.enrichment@gene), " | Enriched terms: ",
-    nrow(df.enrichment), " | Shown: ", min(showCategory, nrow(df.enrichment)),
-    " | background genes: ", length(universe), " | min edge overlap: ", min_edge),
-  label_format = NULL,
-  layout = "kk",
-  cex_label_category = 0.8,
-  save = TRUE,
-  also.pdf = FALSE,
-  save.obj = FALSE,
-  w = 10,
-  h = 10,
-  ...
-)
 }
 \arguments{
 \item{df.enrichment}{enrichResult object (e.g. from clusterProfiler::enrichGO).}
@@ -81,24 +59,14 @@ scEmapplotEnrichr(
 }
 \value{
 A ggplot object (invisibly if saved).
-
-A ggplot object (invisibly if saved).
 }
 \description{
 Wrapper around \code{enrichplot::emapplot()} to visualize GO enrichment results
 as a network. Nodes are enriched GO terms, edges represent gene overlap.
 Includes safety checks, informative fallback plots, and optional saving,
 mirroring the behavior of \code{scBarplotEnrichr()}.
-
-Wrapper around \code{enrichplot::emapplot()} to visualize GO enrichment results
-as a network. Nodes are enriched GO terms, edges represent gene overlap.
-Includes safety checks, informative fallback plots, and optional saving,
-mirroring the behavior of \code{scBarplotEnrichr()}.
 }
 \examples{
-\dontrun{
-scEmapplotEnrichr(df.enrichment, tag = "Cluster 3 neurons")
-}
 \dontrun{
 scEmapplotEnrichr(df.enrichment, tag = "Cluster 3 neurons")
 }
