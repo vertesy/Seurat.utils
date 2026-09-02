@@ -14,10 +14,10 @@ DESCRIPTION <- list(
     Matrix, matrixStats, princurve, pheatmap,
     R.utils, readr, reshape2, scales, SoupX, sparseMatrixStats, stringr, tibble, tictoc,
     ReadWriter, MarkdownHelpers, MarkdownReports,
-    plotly, qs2, foreach, harmony, EnhancedVolcano, rstudioapi,
+    plotly, foreach, harmony, EnhancedVolcano, rstudioapi,
     RColorBrewer, SeuratObject, checkmate, fs, future,
     ggplot2, gplots, gtools", # , grDevices
-  suggests = "clusterProfiler, enrichplot, DatabaseLinke.R, vroom",
+  suggests = "clusterProfiler, enrichplot, DatabaseLinke.R, qs, qs2, vroom",
   author.given = "Abel",
   author.family = "Vertesy",
   author.email = "av@imba.oeaw.ac.at",
