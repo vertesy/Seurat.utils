@@ -64,5 +64,5 @@ if (interactive()) {
 }
 }
 \seealso{
-\code{\link[sparseMatrixStats]{rowQuantiles}}
+\code{sparseMatrixStats::rowQuantiles()}
 }

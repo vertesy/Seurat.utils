@@ -59,8 +59,9 @@ It constructs the file name based on various inputs and stores additional metada
 The saving path can be adjusted by the presence of 'OutDir' in the global environment or defaults to the working directory.
 }
 \note{
-The function uses the 'qs2' package for quick and efficient serialization of objects and
-includes a timing feature from the 'tictoc' package.
+The function uses the 'qs2' package (falling back to 'qs' if 'qs2' is not installed)
+for quick and efficient serialization of objects, and includes a timing feature from the
+'tictoc' package.
 }
 \seealso{
 \code{\link[qs2]{qs_save}} for the underlying save function used.

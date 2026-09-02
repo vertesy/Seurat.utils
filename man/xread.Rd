@@ -40,8 +40,9 @@ which is designed for quick and efficient compression and decompression of R obj
 It also times the read operation, providing feedback on the duration of the operation.
 }
 \note{
-The function uses the 'qs2' package for fast and efficient deserialization of objects
-and includes a timing feature from the 'tictoc' package.
+The function uses the 'qs2' package (falling back to 'qs' if 'qs2' is not installed)
+for fast and efficient deserialization of objects, and includes a timing feature from the
+'tictoc' package.
 }
 \seealso{
 \code{\link[qs2]{qs_read}} for the underlying read function used.

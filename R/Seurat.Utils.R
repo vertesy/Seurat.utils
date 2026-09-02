@@ -1051,7 +1051,7 @@ showMiscSlots <- function(obj = combined.obj, max.level = 1, subslot = NULL,
 #' }
 #' }
 #' @seealso
-#'  \code{\link[sparseMatrixStats]{rowQuantiles}}
+#'  \code{sparseMatrixStats::rowQuantiles()}
 #' @importFrom tictoc tic toc
 #' @importFrom sparseMatrixStats rowQuantiles
 #'
@@ -4682,7 +4682,7 @@ Convert10Xfolders <- function(
   save = TRUE,
   ...
 ) {
-  # NOTE: BUG -- 'save' (checked below, and used later via `if (save) qs2::qs_save(...)`)
+  # NOTE: BUG -- 'save' (checked below, and used later via `if (save) .qsave_compat(...)`)
   # is not a formal argument of this function. It resolves to base::save() (a function,
   # so is.logical(save) is FALSE), which makes this stopifnot() always fail -- unless the
   # caller happens to have a logical variable named `save` masking base::save() in scope.
@@ -4744,7 +4744,7 @@ Convert10Xfolders <- function(
     if (normalize_data) seu <- NormalizeData(seu, normalization.method = "LogNormalize", scale.factor = 10000, verbose = TRUE)
 
     # write out --- --- ---
-    if (save) qs2::qs_save(object = seu, file = f.path.out, nthreads = nthreads, compress_level = compress_level)
+    if (save) .qsave_compat(object = seu, file = f.path.out, nthreads = nthreads, compress_level = compress_level, preset = preset)
 
     # write cellIDs ---  --- ---
     if (writeCBCtable) {
@@ -4777,12 +4777,12 @@ Convert10Xfolders <- function(
         obj_empty_drops <- subset(seu, cells = CBC_empty_drops)
 
         f_path_out_ED <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("obj.empty.droplets", fnameIN, nr.empty.droplets), extension = ext)
-        qs2::qs_save(object = obj_empty_drops, file = f_path_out_ED, nthreads = nthreads, compress_level = compress_level)
+        .qsave_compat(object = obj_empty_drops, file = f_path_out_ED, nthreads = nthreads, compress_level = compress_level, preset = preset)
 
         # save the bulk RNA counts of the empty droplets
         Soup.Bulk.RNA <- rowSums(count_matrix[, CBC_empty_drops])
         f_path_out_Bulk <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("Soup.Bulk.RNA", fnameIN), extension = "qs")
-        qs2::qs_save(object = Soup.Bulk.RNA, file = f_path_out_Bulk, nthreads = nthreads, compress_level = compress_level)
+        .qsave_compat(object = Soup.Bulk.RNA, file = f_path_out_Bulk, nthreads = nthreads, compress_level = compress_level, preset = preset)
         ReadWriter::write.simple.tsv(Soup.Bulk.RNA, suffix = fnameIN, manual_directory = SoupDir)
       }
     } else {
@@ -4933,7 +4933,7 @@ LoadAllSeurats <- function(
     if (use_rds) {
       ls.Seu[[i]] <- readRDS(FNP)
     } else if (!use_rds) {
-      ls.Seu[[i]] <- qs2::qs_read(file = FNP)
+      ls.Seu[[i]] <- .qread_compat(file = FNP)
     } else {
       warning("File pattern ambiguous. Use either qs or rds:", file.pattern, immediate. = TRUE)
     }
@@ -5103,6 +5103,55 @@ isave.RDS <- function(
   )
 }
 
+# Internal helper: pick the available fast-serialization backend.
+# 'qs2' is preferred, but its dependencies are not installable on every
+# R / Bioconductor combination (e.g. some HPC setups pinned to older
+# Bioconductor releases), so 'qs' (the predecessor package) is used as
+# a fallback when 'qs2' is not available. Neither package is a hard
+# dependency of Seurat.utils; both are Suggested and checked at runtime.
+.qs_backend <- function() {
+  if (requireNamespace("qs2", quietly = TRUE)) {
+    "qs2"
+  } else if (requireNamespace("qs", quietly = TRUE)) {
+    "qs"
+  } else {
+    stop("Neither 'qs2' nor 'qs' is installed. Please install one of them (qs2 preferred, qs as fallback).", call. = FALSE)
+  }
+}
+
+# Internal helper: save an object via qs2::qs_save() if available, else qs::qsave().
+# `preset` is re-validated here (independently of any upstream compress_level
+# computation) so an unknown value falls back to "balanced" for the qs branch too,
+# instead of being forwarded as-is and rejected by qs::qsave().
+.qsave_compat <- function(object, file, nthreads = 1, compress_level = 3L, preset = "high") {
+  stopifnot(
+    is.character(file), length(file) == 1L, nchar(file) > 0L,
+    is.numeric(nthreads), length(nthreads) == 1L, nthreads >= 1,
+    is.numeric(compress_level), length(compress_level) == 1L,
+    is.character(preset), length(preset) == 1L
+  )
+  if (.qs_backend() == "qs2") {
+    qs2::qs_save(object = object, file = file, nthreads = nthreads, compress_level = compress_level)
+  } else {
+    valid_presets <- c("fast", "balanced", "high", "archive")
+    preset_qs <- if (preset %in% valid_presets) preset else "balanced"
+    qs::qsave(x = object, file = file, nthreads = nthreads, preset = preset_qs)
+  }
+}
+
+# Internal helper: read an object via qs2::qs_read() if available, else qs::qread().
+.qread_compat <- function(file, nthreads = 1, ...) {
+  stopifnot(
+    is.character(file), length(file) == 1L, nchar(file) > 0L,
+    is.numeric(nthreads), length(nthreads) == 1L, nthreads >= 1
+  )
+  if (.qs_backend() == "qs2") {
+    qs2::qs_read(file = file, nthreads = nthreads, ...)
+  } else {
+    qs::qread(file = file, nthreads = nthreads, ...)
+  }
+}
+
 # _________________________________________________________________________________________________
 #' @title Save an R Object Using 'qs2' Package for Fast Compressed Saving
 #'
@@ -5130,10 +5179,10 @@ isave.RDS <- function(
 #'
 #' @return Invisible; The function is called for its side effects (saving a file) and does not return anything.
 #'
-#' @note The function uses the 'qs2' package for quick and efficient serialization of objects and
-#' includes a timing feature from the 'tictoc' package.
+#' @note The function uses the 'qs2' package (falling back to 'qs' if 'qs2' is not installed)
+#' for quick and efficient serialization of objects, and includes a timing feature from the
+#' 'tictoc' package.
 #' @seealso \code{\link[qs2]{qs_save}} for the underlying save function used.
-#' @importFrom qs2 qs_save
 #' @importFrom tictoc tic toc
 #' @importFrom rstudioapi isAvailable
 #'
@@ -5198,7 +5247,7 @@ xsave <- function(
     if (saveLocation) try(obj@misc$"file.location" <- CMND, silent = TRUE)
   }
 
-  qs2::qs_save(object = obj, file = FNN, nthreads = nthreads, compress_level = compress_level)
+  .qsave_compat(object = obj, file = FNN, nthreads = nthreads, compress_level = compress_level, preset = preset)
 
   try(tictoc::toc(), silent = TRUE)
 }
@@ -5221,11 +5270,11 @@ xsave <- function(
 #' @param ... Further arguments passed on to the 'qs2::qs_read' function.
 #'
 #' @return The R object that was saved in the specified file.
-#' @note The function uses the 'qs2' package for fast and efficient deserialization of objects
-#' and includes a timing feature from the 'tictoc' package.
+#' @note The function uses the 'qs2' package (falling back to 'qs' if 'qs2' is not installed)
+#' for fast and efficient deserialization of objects, and includes a timing feature from the
+#' 'tictoc' package.
 #'
 #' @seealso \code{\link[qs2]{qs_read}} for the underlying read function used.
-#' @importFrom qs2 qs_read
 #' @importFrom tictoc tic toc
 #' @importFrom rstudioapi isAvailable
 #'
@@ -5242,7 +5291,7 @@ xread <- function(file,
   message(nthreads, " threads.")
   try(tictoc::tic("xread"), silent = TRUE)
 
-  obj <- qs2::qs_read(file = file, nthreads = nthreads, ...)
+  obj <- .qread_compat(file = file, nthreads = nthreads, ...)
 
   report <- if (is(obj, "Seurat")) {
     kppws("Seurat object with", ncol(obj), "cells &", ncol(obj@meta.data), "meta columns.")
@@ -5314,7 +5363,8 @@ xread <- function(file,
 #' @param safe_load Logical; enable SLURM-based memory safety check. Default: `TRUE`.
 #' @param disk2mem_size_inflation Estimated expansion factor of `.qs` file once in memory.
 #'   Default: `3`.
-#' @param ... Additional arguments passed to `qs2::qs_read()`. Default: none.
+#' @param ... Additional arguments passed to `qs2::qs_read()` (or `qs::qread()` if 'qs2' is
+#'   not installed). Default: none.
 #'
 #' @return Invisibly returns the loaded object.
 #'
@@ -5323,7 +5373,6 @@ xread <- function(file,
 #' obj <- xread2("/path/to/object.qs")
 #' }
 #'
-#' @importFrom qs2 qs_read
 #' @importFrom tictoc tic toc
 #' @importFrom Stringendo ifExistsAndTrue
 #' @export
@@ -5397,7 +5446,7 @@ xread2 <- function(path,
   message(nthreads, " threads.")
   try(tictoc::tic("xread2"), silent = TRUE)
 
-  obj <- qs2::qs_read(file = path, nthreads = nthreads, ...)
+  obj <- .qread_compat(file = path, nthreads = nthreads, ...)
 
   report <- if (is(obj, "Seurat")) {
     kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "metadata columns.")
