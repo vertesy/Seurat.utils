@@ -5120,16 +5120,31 @@ isave.RDS <- function(
 }
 
 # Internal helper: save an object via qs2::qs_save() if available, else qs::qsave().
+# `preset` is re-validated here (independently of any upstream compress_level
+# computation) so an unknown value falls back to "balanced" for the qs branch too,
+# instead of being forwarded as-is and rejected by qs::qsave().
 .qsave_compat <- function(object, file, nthreads = 1, compress_level = 3L, preset = "high") {
+  stopifnot(
+    is.character(file), length(file) == 1L, nchar(file) > 0L,
+    is.numeric(nthreads), length(nthreads) == 1L, nthreads >= 1,
+    is.numeric(compress_level), length(compress_level) == 1L,
+    is.character(preset), length(preset) == 1L
+  )
   if (.qs_backend() == "qs2") {
     qs2::qs_save(object = object, file = file, nthreads = nthreads, compress_level = compress_level)
   } else {
-    qs::qsave(x = object, file = file, nthreads = nthreads, preset = preset)
+    valid_presets <- c("fast", "balanced", "high", "archive")
+    preset_qs <- if (preset %in% valid_presets) preset else "balanced"
+    qs::qsave(x = object, file = file, nthreads = nthreads, preset = preset_qs)
   }
 }
 
 # Internal helper: read an object via qs2::qs_read() if available, else qs::qread().
 .qread_compat <- function(file, nthreads = 1, ...) {
+  stopifnot(
+    is.character(file), length(file) == 1L, nchar(file) > 0L,
+    is.numeric(nthreads), length(nthreads) == 1L, nthreads >= 1
+  )
   if (.qs_backend() == "qs2") {
     qs2::qs_read(file = file, nthreads = nthreads, ...)
   } else {
