@@ -108,11 +108,11 @@ processSeuratObject <- function(obj, param.list = p, species_ = "human",
     stopifnot("variables.2.regress is not found in @meta" = variables.2.regress %in% colnames(obj@meta.data))
   }
 
-  iprint("nfeatures:", nfeatures)
-  iprint("n.PC:", n.PC)
-  iprint("snn_res:", resolutions)
-  iprint("variables.2.regress (ScaleData):", variables.2.regress)
-  if (use_harmony) iprint("variables.2.regress (Harmony):", harmony.covariates)
+  Stringendo::iprint("nfeatures:", nfeatures)
+  Stringendo::iprint("n.PC:", n.PC)
+  Stringendo::iprint("snn_res:", resolutions)
+  Stringendo::iprint("variables.2.regress (ScaleData):", variables.2.regress)
+  if (use_harmony) Stringendo::iprint("variables.2.regress (Harmony):", harmony.covariates)
 
   # Save parameters _________________________________________________
   param.list$"n.var.genes" <- nfeatures
@@ -156,7 +156,7 @@ processSeuratObject <- function(obj, param.list = p, species_ = "human",
     obj <- calc.q99.Expression.and.set.all.genes(obj = obj, quantileX = .99)
 
     message("------------------- ScaleData -------------------")
-    tic(kpipe("ScaleData", kppc(variables.2.regress)))
+    tic(Stringendo::kpipe("ScaleData", Stringendo::kppc(variables.2.regress)))
     obj <- ScaleData(obj, assay = "RNA", verbose = TRUE, vars.to.regress = variables.2.regress, ...)
     toc()
 
@@ -173,18 +173,18 @@ processSeuratObject <- function(obj, param.list = p, species_ = "human",
       message("------------------- Split layers -------------------")
 
       m.REGR <- obj@meta.data[, harmony.covariates, drop = FALSE]
-      stopif("Harmony cannot regress numeric variables" = any(sapply(m.REGR, is.numeric)))
+      Stringendo::stopif("Harmony cannot regress numeric variables" = any(sapply(m.REGR, is.numeric)))
 
       obj$"regress_out" <- xr <- apply(m.REGR, 1, kppu)
-      nr_new_layers <- nr.unique(xr)
+      nr_new_layers <- CodeAndRoll2::nr.unique(xr)
       cells_per_layer <- table(xr)
 
-      warnif(
+      Stringendo::warnif(
         "Too few (<5) cells in some regress_out categories:" = any(cells_per_layer < 5),
         "Too many (>25) regress_out categories" = nr_new_layers > 25
       )
       message("Number of regress_out categories:", nr_new_layers)
-      message("Cells per regress_out category:", kppc(head(sort(cells_per_layer))), "...")
+      message("Cells per regress_out category:", Stringendo::kppc(head(sort(cells_per_layer))), "...")
       if (T) hist(cells_per_layer)
 
       tic("Split layers by regress_out")
@@ -240,13 +240,13 @@ processSeuratObject <- function(obj, param.list = p, species_ = "human",
 
   if (save) {
     message("------------------- Saving -------------------")
-    create_set_OutDir(WorkingDir)
+    MarkdownReports::create_set_OutDir(WorkingDir)
     xsave(obj, suffix = "reprocessed", paramList = param.list)
   }
 
   if (plot) {
     message("------------------- Plotting -------------------")
-    try.dev.off()
+    MarkdownHelpers::try.dev.off()
 
     try(suPlotVariableFeatures(obj = obj, assay = "RNA"), silent = TRUE)
 
@@ -343,7 +343,7 @@ runDGEA <- function(obj,
                     # ordering = "ordered", # param.list$"cl.annotation"
                     directory,
                     # dir_suffix,
-                    subdirectory = ppp("DGEA_res", idate()),
+                    subdirectory = Stringendo::ppp("DGEA_res", Stringendo::idate()),
                     add.combined.score = TRUE,
                     save.obj = TRUE,
                     calculate.DGEA = TRUE,
@@ -369,7 +369,7 @@ runDGEA <- function(obj,
     dir.exists(directory)
   )
 
-  create_set_OutDir(directory, subdirectory, newName = "dir_DGEA")
+  MarkdownReports::create_set_OutDir(directory, subdirectory, newName = "dir_DGEA")
   dir_DGEA <- OutDir
 
   # Log utilized parameters from param.list
@@ -396,18 +396,18 @@ runDGEA <- function(obj,
 
   # Retrieve analyzed DE resolutions
   message("Resolutions analyzed:")
-  df.markers.all <- Idents.for.DEG <- list.fromNames(x = res.analyzed.DE)
+  df.markers.all <- Idents.for.DEG <- CodeAndRoll2::list.fromNames(x = res.analyzed.DE)
 
 
   if (clean.misc.slot) {
     message("Clearing the misc slot: df.markers and top.markers.resX")
-    topMslots <- grepv("top.markers.res", names(obj@misc))
+    topMslots <- CodeAndRoll2::grepv("top.markers.res", names(obj@misc))
     obj@misc[topMslots] <- NULL
   }
 
   if (clean.meta.data) {
     message("Clearing the meta.data clustering columns.")
-    topMslots <- grepv("top.markers.res", names(obj@meta.data))
+    topMslots <- CodeAndRoll2::grepv("top.markers.res", names(obj@meta.data))
     cl.ordered <- GetOrderedClusteringRuns(obj = obj)
     obj@meta.data[, cl.ordered] <- NULL
     # cl.names <- GetNamedClusteringRuns(obj = obj, pat = "^cl.names.*[0-1]\\.[0-9]",
@@ -420,7 +420,7 @@ runDGEA <- function(obj,
     message("Renumbering ----------------------------------------")
     for (i in 1:length(res.analyzed.DE)) {
       res <- res.analyzed.DE[i]
-      create_set_OutDir(paste0(dir_DGEA, ppp("res", res)))
+      MarkdownReports::create_set_OutDir(paste0(dir_DGEA, Stringendo::ppp("res", res)))
       message(i)
 
       # Reorder clusters based on average expression of markers
@@ -457,11 +457,11 @@ runDGEA <- function(obj,
     message("Calculating ----------------------------------------")
     for (i in 1:length(res.analyzed.DE)) {
       res <- res.analyzed.DE[i]
-      tag.res <- ppp("res", res)
+      tag.res <- Stringendo::ppp("res", res)
       df.slot <- if (!is.null(ident)) ident else tag.res
 
       message("Resolution: ", res, " -----------")
-      create_set_OutDir(paste0(dir_DGEA, tag.res))
+      MarkdownReports::create_set_OutDir(paste0(dir_DGEA, tag.res))
 
       message("Ident.for.DEG: ", Idents.for.DEG[[i]])
       Idents(obj) <- Idents.for.DEG[[i]]
@@ -492,24 +492,24 @@ runDGEA <- function(obj,
       obj@misc$"df.markers"[[df.slot]] <- df.markers
 
       # Save results to disk
-      fname <- ppp("df.markers", res)
+      fname <- Stringendo::ppp("df.markers", res)
       ReadWriter::write.simple.tsv(df.markers, filename = fname, v = FALSE)
       df.markers.all[[i]] <- df.markers
       xsave(df.markers, suffix = df.slot, v = FALSE)
     } # end for loop
 
     # Save final results to disk
-    create_set_OutDir(directory, subdirectory)
+    MarkdownReports::create_set_OutDir(directory, subdirectory)
 
     # Assign df.markers.all to global environment
-    ReadWriter::write.simple.xlsx(named_list = df.markers.all, filename = kpp("df.markers.all", kppd(res.analyzed.DE), idate()))
+    ReadWriter::write.simple.xlsx(named_list = df.markers.all, filename = Stringendo::kpp("df.markers.all", Stringendo::kppd(res.analyzed.DE), Stringendo::idate()))
     assign("df.markers.all", df.markers.all, envir = .GlobalEnv)
 
 
     if (save.obj) {
-      create_set_OutDir(WorkingDir)
-      tag <- if (is.null(ident)) kpp("res", res.analyzed.DE) else ident
-      xsave(obj, suffix = kpp("w.DGEA", tag))
+      MarkdownReports::create_set_OutDir(WorkingDir)
+      tag <- if (is.null(ident)) Stringendo::kpp("res", res.analyzed.DE) else ident
+      xsave(obj, suffix = Stringendo::kpp("w.DGEA", tag))
     }
   } # end if calculate.DGEA
 
@@ -520,10 +520,10 @@ runDGEA <- function(obj,
     for (i in 1:length(res.analyzed.DE)) {
       res <- res.analyzed.DE[i]
       message("Resolution: ", res)
-      tag.res <- ppp("res", res)
+      tag.res <- Stringendo::ppp("res", res)
       df.slot <- if (!is.null(ident)) ident else tag.res
 
-      create_set_OutDir(paste0(dir_DGEA, df.slot))
+      MarkdownReports::create_set_OutDir(paste0(dir_DGEA, df.slot))
 
       df.markers <- obj@misc$"df.markers"[[df.slot]]
       Stringendo::stopif(is.null(df.markers))
@@ -548,7 +548,7 @@ runDGEA <- function(obj,
 
         if (numeric.clusters) {
           obj <- AutoLabelTop.logFC(group.by = Idents.for.DEG[[i]], df_markers = df.markers, obj = obj, plot.top.genes = FALSE)
-          clUMAP(ident = ppp("cl.names.top.gene", Idents.for.DEG[[i]]), obj = obj, caption = umap_caption)
+          clUMAP(ident = Stringendo::ppp("cl.names.top.gene", Idents.for.DEG[[i]]), obj = obj, caption = umap_caption)
         }
       } # end if auto.cluster.naming
 
@@ -572,7 +572,7 @@ runDGEA <- function(obj,
           geom_vline(xintercept = 1) +
           theme_linedraw()
 
-        qqSave(ggobj = p.deg.hist, w = 10, h = 6, title = ppp("Enrichment log2FC per cluster", res))
+        ggExpress::qqSave(ggobj = p.deg.hist, w = 10, h = 6, title = Stringendo::ppp("Enrichment log2FC per cluster", res))
       }
 
       # Plot per-cluster enriched gene counts ________________________________________
@@ -593,9 +593,9 @@ runDGEA <- function(obj,
         (NrOfHighlySignLFC2_genes <- lfc2_hiSig_genes |>
           summarise(n = n()) |>
           deframe() |>
-          sortbyitsnames())
+          CodeAndRoll2::sortbyitsnames())
 
-        qbarplot(NrOfHighlySignLFC2_genes,
+        ggExpress::qbarplot(NrOfHighlySignLFC2_genes,
           label = NrOfHighlySignLFC2_genes,
           plotname = "Number of diff. genes per cluster",
           subtitle = "Genes with avg_log2FC > 1 and p_val_adj < 0.05",
@@ -612,13 +612,13 @@ runDGEA <- function(obj,
             deframe()
 
           names(genes_list) <- unique(lfc2_hiSig_genes$"cluster")
-          genes_list <- sortbyitsnames(genes_list)
-          names(genes_list) <- ppp("cl", names(genes_list), top_genes, "DGs")
+          genes_list <- CodeAndRoll2::sortbyitsnames(genes_list)
+          names(genes_list) <- Stringendo::ppp("cl", names(genes_list), top_genes, "DGs")
 
           # write out the gene list, each element to a txt file.
-          create_set_OutDir(paste0(dir_DGEA, ppp("res", res), "/top_genes"))
+          MarkdownReports::create_set_OutDir(paste0(dir_DGEA, Stringendo::ppp("res", res), "/top_genes"))
           for (g in 1:length(genes_list)) {
-            write.simple.vec(input_vec = genes_list[[g]], filename = names(genes_list)[g], v = FALSE)
+            ReadWriter::write.simple.vec(input_vec = genes_list[[g]], filename = names(genes_list)[g], v = FALSE)
           } # for cluster
         }
       } # end if plot.log.top.gene.stats
@@ -627,7 +627,7 @@ runDGEA <- function(obj,
   # create_set_OutDir(directory, subdirectory)
 
   # Return obj and df.markers.all to global environment
-  create_set_Original_OutDir()
+  MarkdownReports::create_set_Original_OutDir()
   return(obj)
 } # end runDGEA
 
@@ -724,7 +724,7 @@ parallel.computing.by.future <- function(cores = 4, maxMemSize = 4000 * 1024^2) 
   user_input <- readline(prompt = "Are you sure that memory should not be cleaned before parallelizing? (y/n)")
 
   if (user_input == "y") {
-    iprint("N. cores", cores)
+    Stringendo::iprint("N. cores", cores)
     library(future)
     # plan("multiprocess", workers = cores)
     plan("multisession", workers = cores)
@@ -771,7 +771,7 @@ IntersectGeneLsWithObject <- function(genes, obj = combined.obj, n_genes_shown =
   all.genes.found <- all(genes %in% rownames(obj))
   if (!all.genes.found) {
     symbols.missing <- setdiff(genes, rownames(obj))
-    iprint(length(symbols.missing), "symbols.missing:", symbols.missing)
+    Stringendo::iprint(length(symbols.missing), "symbols.missing:", symbols.missing)
     message(" > Running HGNChelper::checkGeneSymbols() to update symbols")
 
     HGNC.updated <- HGNChelper::checkGeneSymbols(genes, unmapped.as.na = FALSE, map = NULL, species = species_)
@@ -841,14 +841,14 @@ SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
   if (length(genes.expr) < length(genes)) message("Some genes not expressed. Recommend to IntersectGeneLsWithObject() first.")
 
   q99.expression <- obj@misc$expr.q99
-  print(pc_TRUE(q99.expression == 0, suffix = "of genes at q99.expression are zero"))
+  print(CodeAndRoll2::pc_TRUE(q99.expression == 0, suffix = "of genes at q99.expression are zero"))
   genes.expr.high <- q99.expression[genes.expr]
-  if (sort) genes.expr.high <- sort.decreasing(genes.expr.high)
+  if (sort) genes.expr.high <- CodeAndRoll2::sort.decreasing(genes.expr.high)
   print(genes.expr.high)
   genes.filt <- names(genes.expr.high)[genes.expr.high > above]
 
-  SFX <- kppws("of the genes are above min. q99 expression of:", above)
-  print(pc_TRUE(genes.expr %in% genes.filt, suffix = SFX))
+  SFX <- Stringendo::kppws("of the genes are above min. q99 expression of:", above)
+  print(CodeAndRoll2::pc_TRUE(genes.expr %in% genes.filt, suffix = SFX))
 
   return(genes.filt)
 }
@@ -874,19 +874,19 @@ AreTheseCellNamesTheSame <- function(
   min.overlap = 0.33
 ) {
   Cellname.Overlap <- list(vec1, vec2)
-  names(Cellname.Overlap) <- if (!isFALSE(names)) names else c(substitute_deparse(vec1), substitute_deparse(vec2))
+  names(Cellname.Overlap) <- if (!isFALSE(names)) names else c(Stringendo::substitute_deparse(vec1), Stringendo::substitute_deparse(vec2))
 
   cells.in.both <- intersect(vec1, vec2)
-  sbb <- percentage_formatter(length(cells.in.both) / length(vec2), suffix = "of cells (GEX) in have a UVI assigned")
+  sbb <- Stringendo::percentage_formatter(length(cells.in.both) / length(vec2), suffix = "of cells (GEX) in have a UVI assigned")
   ggExpress::qvenn(Cellname.Overlap, subt = sbb)
-  iprint("Venn diagram saved.")
-  iprint(sbb)
+  Stringendo::iprint("Venn diagram saved.")
+  Stringendo::iprint(sbb)
 
   Nr.overlapping <- length(intersect(vec1, vec2))
   Nr.total <- length(union(vec1, vec2))
   Percent_Overlapping <- Nr.overlapping / Nr.total
   print("")
-  report <- percentage_formatter(Percent_Overlapping,
+  report <- Stringendo::percentage_formatter(Percent_Overlapping,
     prefix = "In total,",
     suffix = paste("of the cellIDs overlap across", names(Cellname.Overlap)[1], "and", names(Cellname.Overlap)[2])
   )
@@ -914,9 +914,9 @@ AreTheseCellNamesTheSame <- function(
 #' @export
 addToMiscOrToolsSlot <- function(obj, pocket_name = "misc",
                                  slot_value = NULL,
-                                 slot_name = substitute_deparse(slot_value),
+                                 slot_name = Stringendo::substitute_deparse(slot_value),
                                  sub_slot_value = NULL,
-                                 sub_slot_name = substitute_deparse(sub_slot_value),
+                                 sub_slot_name = Stringendo::substitute_deparse(sub_slot_value),
                                  overwrite = FALSE) {
   message("Running addToMiscOrToolsSlot()...")
 
@@ -1013,8 +1013,8 @@ showMiscSlots <- function(obj = combined.obj, max.level = 1, subslot = NULL,
   str(slotX, max.level = max.level, ...)
 
   # Path to slot
-  msg <- paste0(substitute_deparse(obj), "@misc")
-  if (!is.null(subslot)) msg <- paste0(msg, "$", substitute_deparse(subslot))
+  msg <- paste0(Stringendo::substitute_deparse(obj), "@misc")
+  if (!is.null(subslot)) msg <- paste0(msg, "$", Stringendo::substitute_deparse(subslot))
   message(msg)
 }
 
@@ -1071,7 +1071,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   ...
 ) {
   top.quant <- (1 - quantileX)
-  message("\nCalculating the gene expression level at the the top ", percentage_formatter(top.quant), " of cells. | q: ", quantileX)
+  message("\nCalculating the gene expression level at the the top ", Stringendo::percentage_formatter(top.quant), " of cells. | q: ", quantileX)
   message("slot: ", slot, " assay: ", assay, ".\n")
 
   nr.total.cells <- ncol(obj)
@@ -1088,12 +1088,12 @@ calc.q99.Expression.and.set.all.genes <- function(
     is.character(suffix)
   )
 
-  warnifnot(
+  Stringendo::warnifnot(
     slot %in% c("data", "scale.data", "counts"),
     assay %in% c("RNA", "integrated")
   )
 
-  warnif(
+  Stringendo::warnif(
     ">1000 cells in the top the quantileX (with >0 expression). Increase quantileX not to miss genes expressed in small populations!" = n.cells.in.top.quantile > 1000,
     "<50 cells in the top the quantileX (with >0 expression). Decrease quantileX for robustness!" = n.cells.in.top.quantile < 50
   )
@@ -1140,18 +1140,18 @@ calc.q99.Expression.and.set.all.genes <- function(
 
   # Prepare for plotting ____________________________________________________________
   qname <- paste0("q", quantileX * 100)
-  slot_name <- kpp("expr", qname)
+  slot_name <- Stringendo::kpp("expr", qname)
 
   print("Calculating Gene Quantiles")
   expr.q99.raw <- sparseMatrixStats::rowQuantiles(data_mtx, probs = quantileX)
-  expr.q99 <- iround(expr.q99.raw)
+  expr.q99 <- CodeAndRoll2::iround(expr.q99.raw)
 
   log2.gene.expr.of.the.Xth.quantile <- as.numeric(log2(expr.q99 + 1)) # strip names
   qnameP <- paste0(100 * quantileX, "th quantile")
 
   # Plot the distribution of gene expression in the 99th quantile _________________________________
   if (plot) {
-    SBT <- kollapse(pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", n.cells.in.top.quantile, " cells).")
+    SBT <- Stringendo::kollapse(CodeAndRoll2::pc_TRUE(expr.q99 > 0, NumberAndPC = TRUE), " genes have ", qname, " expr. > 0 (in ", n.cells.in.top.quantile, " cells).")
     CPT <- paste(n.cells.in.top.quantile, "cells in", qnameP, "from", ncol(data_mtx), "cells in", dtag, "object.")
 
     pobj <- ggExpress::qhistogram(log2.gene.expr.of.the.Xth.quantile,
@@ -1188,7 +1188,7 @@ calc.q99.Expression.and.set.all.genes <- function(
   # if (set.all.genes) obj@misc$'all.genes' = all.genes
   if (set.misc) obj@misc[[slot_name]] <- expr.q99
 
-  iprint(
+  Stringendo::iprint(
     "Quantile", quantileX, "is now stored under obj@misc$", slot_name,
     "Please execute:\n",
     "`Seurat.utils::recall.all.genes(obj)` or `obj@misc$all.genes`\n\n"
@@ -1242,7 +1242,7 @@ filterCodingGenes <- function(
   # Filter the genes
   combined_pattern <- paste(pattern_NC, collapse = "|")
   genes_discarded <- genes[stringr::str_detect(genes, combined_pattern)]
-  if (v) iprint("Examples of", length(genes_discarded), "discarded symbols:", CodeAndRoll2::trail(genes_discarded, 5))
+  if (v) Stringendo::iprint("Examples of", length(genes_discarded), "discarded symbols:", CodeAndRoll2::trail(genes_discarded, 5))
 
   genes_kept <- genes[stringr::str_detect(genes, combined_pattern, negate = TRUE)]
 
@@ -1302,7 +1302,7 @@ filterExpressedGenes <- function(
     is.character(genes),
     is.numeric(threshold), length(threshold) == 1
   )
-  stopif(is.null(gene_list))
+  Stringendo::stopif(is.null(gene_list))
 
 
   # Step 1: Intersect the gene symbols with the names in the list and report statistics
@@ -1318,7 +1318,7 @@ filterExpressedGenes <- function(
   filtered_genes <- matching_genes[sapply(matching_genes, function(g) gene_list[[g]] >= threshold)]
   message("Number of genes above the threshold: ", length(filtered_genes), " from ", length(matching_genes))
 
-  print(as.numeric.wNames.character(gene_list[genes]))
+  print(CodeAndRoll2::as.numeric.wNames.character(gene_list[genes]))
 
   # Step 3: Conditionally sort genes according to their expression in descending order
   if (sort_by_expr) {
@@ -1361,7 +1361,7 @@ RenameClustering <- function(
   namedVector = ManualNames,
   orig.ident = "RNA_snn_res.0.3",
   suffix.new.ident = "ManualNames",
-  new.ident = ppp(orig.ident, suffix.new.ident),
+  new.ident = Stringendo::ppp(orig.ident, suffix.new.ident),
   obj = combined.obj,
   suffix.plot = "",
   plot_umaps = TRUE,
@@ -1375,7 +1375,7 @@ RenameClustering <- function(
 
   obj <- AddMetaData(object = obj, metadata = NewX, col.name = new.ident)
 
-  iprint("new.ident is", new.ident, "created from", orig.ident)
+  Stringendo::iprint("new.ident is", new.ident, "created from", orig.ident)
   print("")
 
   if (plot_umaps) {
@@ -1385,7 +1385,7 @@ RenameClustering <- function(
     print(clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, obj = obj, ...))
     clUMAP(new.ident, suffix = suffix.plot, sub = suffix.plot, label = FALSE, obj = obj, ...)
   } else {
-    iprint("New ident:", new.ident)
+    Stringendo::iprint("New ident:", new.ident)
   }
 
   return(obj)
@@ -1443,7 +1443,7 @@ shorten_clustering_names <- function(str) {
 #' @return Prints and returns the sorted unique cluster names as a character vector.
 #' @export
 getClusterNames <- function(obj = combined.obj, ident = GetClusteringRuns(obj)[2]) {
-  iprint("ident used:", ident)
+  Stringendo::iprint("ident used:", ident)
   clz <- as.character(sort(deframe(unique(obj[[ident]]))))
   cat(dput(clz))
 }
@@ -1579,7 +1579,7 @@ GetNumberOfClusters <- function(obj = combined.obj) { # Get Number Of Clusters
   print("## Number of clusters: ---------")
   for (cc in clustering.results) {
     NrCl <- length(unique(obj@meta.data[[cc]]))
-    iprint(cc, "   ", NrCl)
+    Stringendo::iprint(cc, "   ", NrCl)
   }
 }
 
@@ -1643,14 +1643,14 @@ calc.cluster.averages <- function(
     paste("Threshold at", absolute.thr)
   } else {
     paste(
-      "Black lines: ", kppd(Stringendo::percentage_formatter(c(1 - quantile.thr, quantile.thr))), "quantiles |",
+      "Black lines: ", Stringendo::kppd(Stringendo::percentage_formatter(c(1 - quantile.thr, quantile.thr))), "quantiles |",
       "Cl. >", Stringendo::percentage_formatter(quantile.thr), "are highlighted. |", split_by
     )
   },
-  fname = ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)
+  fname = Stringendo::ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)
 ) { # calc.cluster.averages of a m
-  iprint(substitute_deparse(obj), "split by", split_by)
-  if (absolute.thr) iprint("In case of the absolute threshold, only the returned values are correct, the plot annotations are not!")
+  Stringendo::iprint(Stringendo::substitute_deparse(obj), "split by", split_by)
+  if (absolute.thr) Stringendo::iprint("In case of the absolute threshold, only the returned values are correct, the plot annotations are not!")
 
   if (plot.UMAP.too) qUMAP(obj = obj, feature = col_name)
 
@@ -1661,27 +1661,27 @@ calc.cluster.averages <- function(
     summarize(
       "nr.cells" = n(),
       "mean" = mean(!!sym(col_name), na.rm = TRUE),
-      "SEM" = sem(!!sym(col_name), na.rm = TRUE),
+      "SEM" = CodeAndRoll2::sem(!!sym(col_name), na.rm = TRUE),
       "median" = median(!!sym(col_name), na.rm = TRUE),
-      "SE.median" = 1.2533 * sem(!!sym(col_name), na.rm = TRUE)
+      "SE.median" = 1.2533 * CodeAndRoll2::sem(!!sym(col_name), na.rm = TRUE)
     )
 
   if (simplify) {
     av.score <- df.summary[[stat]]
-    names(av.score) <- if (!isFALSE(prefix.cl.names)) ppp("cl", df.summary[[1]]) else df.summary[[1]]
-    av.score <- sortbyitsnames(av.score)
+    names(av.score) <- if (!isFALSE(prefix.cl.names)) Stringendo::ppp("cl", df.summary[[1]]) else df.summary[[1]]
+    av.score <- CodeAndRoll2::sortbyitsnames(av.score)
     if (scale.zscore) av.score <- (scale(av.score)[, 1])
 
     cutoff <- if (absolute.thr) absolute.thr else quantile(av.score, quantile.thr)
     cutoff.low <- if (absolute.thr) NULL else quantile(av.score, (1 - quantile.thr))
 
-    iprint("quantile.thr:", quantile.thr)
+    Stringendo::iprint("quantile.thr:", quantile.thr)
     if (plotit) {
       if (histogram) {
         p <- ggExpress::qhistogram(
           vec = as.numeric(av.score), save = FALSE,
           vline = cutoff,
-          plotname = ppp(title, quantile.thr),
+          plotname = Stringendo::ppp(title, quantile.thr),
           bins = nbins,
           subtitle = paste(subtitle, "| median in blue/dashed"),
           ylab = ylab.text,
@@ -1692,7 +1692,7 @@ calc.cluster.averages <- function(
           geom_vline(xintercept = cutoff.low, lty = 2)
 
         print(p)
-        title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
+        title_ <- Stringendo::ppp(title, suffix, Stringendo::flag.nameiftrue(scale.zscore))
         ggExpress::qqSave(ggobj = p, title = title_, w = width, h = height)
       } else {
         p <- ggExpress::qbarplot(
@@ -1709,16 +1709,16 @@ calc.cluster.averages <- function(
           geom_hline(yintercept = cutoff.low, lty = 2)
 
         print(p)
-        title_ <- ppp(title, suffix, flag.nameiftrue(scale.zscore))
-        qqSave(ggobj = p, title = title_, fname = ppp(title_, split_by, "png"), w = width, h = height)
+        title_ <- Stringendo::ppp(title, suffix, Stringendo::flag.nameiftrue(scale.zscore))
+        ggExpress::qqSave(ggobj = p, title = title_, fname = Stringendo::ppp(title_, split_by, "png"), w = width, h = height)
       }
     }
 
-    if (report) print(paste0(col_name, ": ", paste(iround(av.score), collapse = " vs. ")))
+    if (report) print(paste0(col_name, ": ", paste(CodeAndRoll2::iround(av.score), collapse = " vs. ")))
     if (filter == "below") {
-      return(filter_LP(av.score, threshold = cutoff, plot.hist = FALSE))
+      return(MarkdownHelpers::filter_LP(av.score, threshold = cutoff, plot.hist = FALSE))
     } else if (filter == "above") {
-      return(filter_HP(av.score, threshold = cutoff, plot.hist = FALSE))
+      return(MarkdownHelpers::filter_HP(av.score, threshold = cutoff, plot.hist = FALSE))
     } else {
       return(av.score)
     }
@@ -1754,9 +1754,9 @@ plot.expression.rank.q90 <- function(obj = combined.obj, gene = "ACTB", filterZe
   gene.found <- gene %in% names(expr.all)
   stopifnot(gene.found)
 
-  if (expr.GOI == 0) iprint(gene, "is not expressed. q90-av.exp:", expr.GOI) else if (expr.GOI < 0.05) iprint(gene, "is lowly expressed. q90-av.exp:", expr.GOI)
+  if (expr.GOI == 0) Stringendo::iprint(gene, "is not expressed. q90-av.exp:", expr.GOI) else if (expr.GOI < 0.05) Stringendo::iprint(gene, "is lowly expressed. q90-av.exp:", expr.GOI)
   if (filterZero) {
-    iprint("Zero 'q90 expression' genes (", pc_TRUE(expr.all == 0), ") are removed.")
+    Stringendo::iprint("Zero 'q90 expression' genes (", CodeAndRoll2::pc_TRUE(expr.all == 0), ") are removed.")
     expr.all <- expr.all[expr.all > 0]
   }
   counts <- sum(obj@assays$RNA@counts[gene, ])
@@ -1820,7 +1820,7 @@ set.mm <- function(obj = combined.obj) {
 #' @export
 ww.get.1st.Seur.element <- function(obj) {
   if (is(obj)[1] == "list") {
-    iprint("A list of objects is provided, taking the 1st from", length(obj), "elements.")
+    Stringendo::iprint("A list of objects is provided, taking the 1st from", length(obj), "elements.")
     obj <- obj[[1]]
   }
   stopifnot(is(obj) == "Seurat")
@@ -1860,7 +1860,7 @@ recall.all.genes <- function(obj = combined.obj, overwrite = FALSE) {
     }
   } else {
     message("  ->   Slot 'all.genes' does not exist in obj@misc.")
-    hits <- grepv(pattern = "expr.", names(obj@misc))
+    hits <- CodeAndRoll2::grepv(pattern = "expr.", names(obj@misc))
     if (!is.null(hits)) {
       message("Found instead (", hits, "). Returning 1st element: ", hits[1])
       all.genes <- obj@misc[[hits[1]]]
@@ -1907,7 +1907,7 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
       print(head(unlist(meta.tags)))
       MarkdownHelpers::ww.assign_to_global(name = "meta.tags", value = meta.tags)
     } else {
-      iprint("  ->   Variable 'meta.tags' already exists in the global namespace.")
+      Stringendo::iprint("  ->   Variable 'meta.tags' already exists in the global namespace.")
     }
   } else {
     print("  ->   Slot 'meta.tags' does not exist in obj@misc.")
@@ -2036,7 +2036,7 @@ save.parameters <- function(obj = combined.obj, params = p, overwrite = TRUE) {
 #'
 #' @examples
 #' sc_meta <- create_scCombinedMeta(experiment = "Experiment1")
-create_scCombinedMeta <- function(experiment, project_ = getProject()) {
+create_scCombinedMeta <- function(experiment, project_ = CodeAndRoll2::getProject()) {
   x <- list(
     experiment.corresponding = experiment,
     initialized = format(Sys.time(), format = "%Y.%m.%d | %H:%M:%S"),
@@ -2110,7 +2110,7 @@ copyMiscElements <- function(obj.from, obj.to, elements.needed, overwrite = TRUE
   for (element in existingElementsFrom) {
     obj.to@misc[[element]] <- obj.from@misc[[element]]
   }
-  iprint("@misc contains: ", names(obj.to@misc))
+  Stringendo::iprint("@misc contains: ", names(obj.to@misc))
 
   return(obj.to)
 }
@@ -2198,17 +2198,17 @@ subsetSeuObjByIdent <- function(
     identGroupKeep
   }
   message(
-    "ident: ", ident, " | ", length(identGroupKeep), " ID-groups selected: ", kppc(head(identGroupKeep)),
+    "ident: ", ident, " | ", length(identGroupKeep), " ID-groups selected: ", Stringendo::kppc(head(identGroupKeep)),
     "... | invert: ", invert, "\n"
   )
 
   idx.cells.pass <- obj@meta.data[[ident]] %in% identGroupKeep
   cellz <- colnames(obj)[idx.cells.pass]
 
-  PCT <- percentage_formatter(length(cellz) / ncol(obj))
+  PCT <- Stringendo::percentage_formatter(length(cellz) / ncol(obj))
   message(
     PCT, " or ", length(cellz), " cells are selected from ", ncol(obj),
-    ", using values (max 20): ", kppc(head(identGroupKeep, 20)), ", from ", ident, "."
+    ", using values (max 20): ", Stringendo::kppc(head(identGroupKeep, 20)), ", from ", ident, "."
   )
 
   x <- subset(x = obj, cells = cellz)
@@ -2234,7 +2234,7 @@ downsampleSeuObj <- function(obj = ls.Seurat[[i]], fractionCells = 0.25, nCells 
   set.seed(seed)
   if (isFALSE(nCells)) {
     cellIDs.keep <- sampleNpc(metaDF = obj@meta.data, pc = fractionCells)
-    iprint(
+    Stringendo::iprint(
       length(cellIDs.keep), "or", Stringendo::percentage_formatter(fractionCells),
       "of the cells are kept. Seed:", seed
     )
@@ -2243,7 +2243,7 @@ downsampleSeuObj <- function(obj = ls.Seurat[[i]], fractionCells = 0.25, nCells 
     # print(nKeep)
     cellIDs.keep <- sample(colnames(obj), size = nKeep, replace = FALSE)
     if (nKeep < nCells) {
-      iprint(
+      Stringendo::iprint(
         "Only", nCells,
         "cells were found in the object, so downsampling is not possible."
       )
@@ -2276,8 +2276,8 @@ downsampleSeuObj.and.Save <- function(
   # Seurat.utils:::.saveRDS.compress.in.BG(obj = obj_Xpc, fname = ppp(paste0(dir, substitute_deparse(obj),
   # suffix, nr.cells.kept, 'cells.with.min.features', min.features,"Rds" ) )
   xsave(obj_Xpc,
-    suffix = ppp(suffix, nr.cells.kept, "cells.with.min.features", min.features),
-    nthreads = nthreads, project = getProject(), showMemObject = TRUE, saveParams = FALSE
+    suffix = Stringendo::ppp(suffix, nr.cells.kept, "cells.with.min.features", min.features),
+    nthreads = nthreads, project = CodeAndRoll2::getProject(), showMemObject = TRUE, saveParams = FALSE
   )
 }
 
@@ -2364,11 +2364,11 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
   Idents(obj) <- ident
   obj_ds <- subset(x = obj, cells = sampledCells)
 
-  fr_remaining <- iround(target_cells / orig_cells)
+  fr_remaining <- CodeAndRoll2::iround(target_cells / orig_cells)
   subb <- paste0("From ", ncol(obj), " reduced to ", ncol(obj_ds), " cells.")
 
   message(subb)
-  message("Total retained fraction: ", iround(ncol(obj_ds) / ncol(obj)))
+  message("Total retained fraction: ", CodeAndRoll2::iround(ncol(obj_ds) / ncol(obj)))
 
   if (verbose) {
     sample_stats <- data.frame(
@@ -2383,7 +2383,7 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
   }
 
   if (plot_stats) {
-    qbarplot(vec = fr_remaining, subtitle = subb, label = fr_remaining, ylab = "fr. of cells", save = FALSE, plot = TRUE)
+    ggExpress::qbarplot(vec = fr_remaining, subtitle = subb, label = fr_remaining, ylab = "fr. of cells", save = FALSE, plot = TRUE)
   }
 
   return(obj_ds)
@@ -2521,7 +2521,7 @@ downsampleSeuObjByIdentAndMaxcells <- function(obj,
 #' )
 #'
 RelabelSmallCategories <- function(
-  obj, col_in, backup_col_name = ppp(col_in, "orig"),
+  obj, col_in, backup_col_name = Stringendo::ppp(col_in, "orig"),
   min_count = 100, small_label = "Other", v = TRUE
 ) {
   # Input assertions
@@ -2620,10 +2620,10 @@ removeResidualSmallClusters <- function(
     print(colX)
     tbl <- table(META[[colX]])
 
-    small.clusters[[i]] <- which_names(tbl <= max.cells)
+    small.clusters[[i]] <- CodeAndRoll2::which_names(tbl <= max.cells)
     cells.to.remove[[i]] <- all.cells[which(META[[colX]] %in% small.clusters[[i]])]
     if (length(cells.to.remove[[i]])) {
-      iprint(
+      Stringendo::iprint(
         length(cells.to.remove[[i]]), "cells in small clusters:", small.clusters[[i]],
         "| Cell counts:", tbl[small.clusters[[i]]]
       )
@@ -2642,12 +2642,12 @@ removeResidualSmallClusters <- function(
 
 
     if (length(all.cells.2.remove)) {
-      iprint(
+      Stringendo::iprint(
         ">>> a total of", length(all.cells.2.remove),
         "cells are removed which belonged to a small cluster in any of the identities."
       )
     } else {
-      iprint(">>> No cells are removed because belonging to small cluster.")
+      Stringendo::iprint(">>> No cells are removed because belonging to small cluster.")
     }
 
     cells.2.keep <- setdiff(all.cells, all.cells.2.remove)
@@ -2701,7 +2701,7 @@ dropLevelsSeurat <- function(obj = combined.obj, verbose = TRUE, also.character 
   if (verbose) {
     message(
       "Dropping levels in ", length(drop_in_these), " identities:\n",
-      kppc(drop_in_these)
+      Stringendo::kppc(drop_in_these)
     )
   }
 
@@ -2790,7 +2790,7 @@ removeCellsByUmap <- function(
     p <- p + geom_hline(yintercept = cutoff)
   }
   print(p)
-  qqSave(p, fname = kpp("UMAP.with.cutoff", umap_dim, sfx, cutoff, "png"), h = 7, w = 7)
+  ggExpress::qqSave(p, fname = Stringendo::kpp("UMAP.with.cutoff", umap_dim, sfx, cutoff, "png"), h = 7, w = 7)
 
   if (!only_plot_cutoff) {
     # Retrieve cell embeddings
@@ -2800,13 +2800,13 @@ removeCellsByUmap <- function(
     embedding_dim_x <- cell_embedding[, umap_dim]
 
     # Determine cells to remove based on cutoff
-    cells_to_remove <- if (cut_below) which_names(embedding_dim_x < cutoff) else which_names(embedding_dim_x >= cutoff)
+    cells_to_remove <- if (cut_below) CodeAndRoll2::which_names(embedding_dim_x < cutoff) else CodeAndRoll2::which_names(embedding_dim_x >= cutoff)
 
     # Report on cells removed
     if (length(cells_to_remove)) {
-      iprint(">>> A total of", length(cells_to_remove), "cells are removed which fell on UMAP aside cutoff:", cutoff)
+      Stringendo::iprint(">>> A total of", length(cells_to_remove), "cells are removed which fell on UMAP aside cutoff:", cutoff)
     } else {
-      iprint(">>> No cells are removed because of the UMAP dimension cutoff.")
+      Stringendo::iprint(">>> No cells are removed because of the UMAP dimension cutoff.")
     }
 
     # Subset object to include only cells not removed
@@ -2859,19 +2859,19 @@ downsampleListSeuObjsNCells <- function(
 
   names.ls <- names(ls.obj)
   n.datasets <- length(ls.obj)
-  iprint(NrCells, "cells")
+  Stringendo::iprint(NrCells, "cells")
 
   tictoc::tic("downsampleListSeuObjsNCells")
   if (foreach::getDoParRegistered()) {
     ls.obj.downsampled <- foreach::foreach(i = 1:n.datasets) %dopar% {
-      iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
+      Stringendo::iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
       downsampleSeuObj(obj = ls.obj[[i]], nCells = NrCells)
     }
     names(ls.obj.downsampled) <- names.ls
   } else {
-    ls.obj.downsampled <- list.fromNames(names.ls)
+    ls.obj.downsampled <- CodeAndRoll2::list.fromNames(names.ls)
     for (i in 1:n.datasets) {
-      iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
+      Stringendo::iprint(names(ls.obj)[i], Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
       ls.obj.downsampled[[i]] <- downsampleSeuObj(obj = ls.obj[[i]], nCells = NrCells)
     }
   } # else
@@ -2881,7 +2881,7 @@ downsampleListSeuObjsNCells <- function(
   print(head(sapply(ls.obj.downsampled, ncol)))
 
   if (save_object) {
-    isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = TRUE)
+    isave.RDS(obj = ls.obj.downsampled, suffix = Stringendo::ppp(NrCells, "cells"), inOutDir = TRUE)
   } else {
     return(ls.obj.downsampled)
   }
@@ -2924,7 +2924,7 @@ downsampleListSeuObjsPercent <- function(
 
   names.ls <- names(ls.obj)
   n.datasets <- length(ls.obj)
-  iprint(fraction, "fraction")
+  Stringendo::iprint(fraction, "fraction")
 
   tictoc::tic("downsampleListSeuObjsPercent")
   if (foreach::getDoParRegistered()) {
@@ -2933,10 +2933,10 @@ downsampleListSeuObjsPercent <- function(
     }
     names(ls.obj.downsampled) <- names.ls
   } else {
-    ls.obj.downsampled <- list.fromNames(names.ls)
+    ls.obj.downsampled <- CodeAndRoll2::list.fromNames(names.ls)
     for (i in 1:n.datasets) {
       cells <- round(ncol(ls.obj[[1]]) * fraction)
-      iprint(names(ls.obj)[i], cells, "cells=", Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
+      Stringendo::iprint(names(ls.obj)[i], cells, "cells=", Stringendo::percentage_formatter(i / n.datasets, digitz = 2))
       ls.obj.downsampled[[i]] <- downsampleSeuObj(obj = ls.obj[[i]], fractionCells = fraction, seed = seed)
     }
   }
@@ -2947,7 +2947,7 @@ downsampleListSeuObjsPercent <- function(
   print(head(sapply(ls.obj, ncol)))
   print(head(sapply(ls.obj.downsampled, ncol)))
   if (save_object) {
-    isave.RDS(obj = ls.obj.downsampled, suffix = ppp(NrCells, "cells"), inOutDir = TRUE)
+    isave.RDS(obj = ls.obj.downsampled, suffix = Stringendo::ppp(NrCells, "cells"), inOutDir = TRUE)
   } else {
     return(ls.obj.downsampled)
   }
@@ -2997,7 +2997,7 @@ addCombinedScore2DGEAResults <- function(
   df = df.markers, p_val_min = 1e-25, pval_scaling = 0.001, colP = "p_val_adj",
   colLFC = CodeAndRoll2::grepv(pattern = c("avg_logFC|avg_log2FC"), x = colnames(df), perl = TRUE)
 ) {
-  p_clipped <- clip.at.fixed.value(x = df[[colP]], thr = p_val_min, above = FALSE)
+  p_clipped <- CodeAndRoll2::clip.at.fixed.value(x = df[[colP]], thr = p_val_min, above = FALSE)
   df$"combined.score" <- round(df[[colLFC]] * -log10(p_clipped / pval_scaling))
   return(df)
 }
@@ -3118,10 +3118,10 @@ StoreTop25Markers <- function(
     group_by(cluster) |>
     top_n(n = 25, wt = avg_2logFC) |>
     dplyr::select(gene) |>
-    col2named.vec.tbl() |>
-    splitbyitsnames()
+    CodeAndRoll2::col2named.vec.tbl() |>
+    CodeAndRoll2::splitbyitsnames()
 
-  obj@misc$"top25.markers"[[ppp("res", res)]] <- top25.markers
+  obj@misc$"top25.markers"[[Stringendo::ppp("res", res)]] <- top25.markers
   return(obj)
 }
 
@@ -3152,8 +3152,8 @@ StoreAllMarkers <- function(
   df_markers = df.markers, res = 0.5, digit = c(0, 3)[2]
 ) {
   if (digit) df_markers[, 1:5] <- signif(df_markers[, 1:5], digits = digit)
-  obj@misc$"df.markers"[[ppp("res", res)]] <- df_markers
-  iprint("DF markers are stored under:", "obj@misc$df.markers$", ppp("res", res))
+  obj@misc$"df.markers"[[Stringendo::ppp("res", res)]] <- df_markers
+  Stringendo::iprint("DF markers are stored under:", "obj@misc$df.markers$", Stringendo::ppp("res", res))
   return(obj)
 }
 
@@ -3307,10 +3307,10 @@ AutoLabelTop.logFC <- function(
   # Enrichment plot ______________________________________________________________
   if (plotEnrichment) {
     top_log2FC <- df.top.markers$"avg_log2FC"
-    names(top_log2FC) <- ppp(df.top.markers$"cluster", df.top.markers$"gene")
+    names(top_log2FC) <- Stringendo::ppp(df.top.markers$"cluster", df.top.markers$"gene")
     ggExpress::qbarplot(top_log2FC,
       plotname = "The strongest fold change by cluster",
-      label = iround(top_log2FC),
+      label = CodeAndRoll2::iround(top_log2FC),
       subtitle = group.by,
       ylab = "avg_log2FC", xlab = "clusters",
       hline = 2,
@@ -3318,9 +3318,9 @@ AutoLabelTop.logFC <- function(
     )
   }
 
-  top.markers <- col2named.vec.tbl(df.top.markers[, 1:2])
+  top.markers <- CodeAndRoll2::col2named.vec.tbl(df.top.markers[, 1:2])
 
-  obj@misc[[ppp("top.markers.res", res)]] <- top.markers
+  obj@misc[[Stringendo::ppp("top.markers.res", res)]] <- top.markers
 
   ids_CBC <- deframe(obj[[group.by]])
   ids <- unique(ids_CBC)
@@ -3330,17 +3330,17 @@ AutoLabelTop.logFC <- function(
     warning("Not all clusters returned DE-genes!", immediate. = TRUE)
     missing <- setdiff(ids, names(top.markers))
     names(missing) <- missing
-    iprint("missing:", missing)
-    top.markers <- sortbyitsnames(c(top.markers, missing))
+    Stringendo::iprint("missing:", missing)
+    top.markers <- CodeAndRoll2::sortbyitsnames(c(top.markers, missing))
   }
 
-  top.markers.ID <- ppp(names(top.markers), top.markers)
+  top.markers.ID <- Stringendo::ppp(names(top.markers), top.markers)
   names(top.markers.ID) <- names(top.markers)
   named.group.by <- top.markers.ID[ids_CBC]
 
   # Check if the clustering was ordered _____________________________________________________
   sfx.ord <- ifelse(grepl("ordered", group.by), group.by, "")
-  namedIDslot <- sppp("cl.names.top.gene.", sfx.ord)
+  namedIDslot <- Stringendo::sppp("cl.names.top.gene.", sfx.ord)
 
   obj <- addMetaDataSafe(obj = obj, metadata = as.character(named.group.by), col.name = namedIDslot, overwrite = TRUE)
   if (plot.top.genes) multiFeaturePlot.A4(list.of.genes = top.markers, suffix = suffix, obj = obj)
@@ -3424,7 +3424,7 @@ AutoLabel.KnownMarkers <- function(
   print(unique.matches)
 
   top.markers.df <- GetTopMarkersDF(dfDE = df_markers, order.by = lfcCOL, n = 1)
-  top.markers <- top.markers.df |> col2named.vec.tbl()
+  top.markers <- top.markers.df |> CodeAndRoll2::col2named.vec.tbl()
 
   missing.annotations <-
     top.markers.df |>
@@ -3435,11 +3435,11 @@ AutoLabel.KnownMarkers <- function(
     arrange(cluster) |>
     CodeAndRoll2::col2named.vec.tbl()
 
-  (top.markers.ID <- ppp(names(named.annotations), named.annotations))
+  (top.markers.ID <- Stringendo::ppp(names(named.annotations), named.annotations))
   names(top.markers.ID) <- names(top.markers)
   named.ident <- top.markers.ID[Idents(object = obj)]
 
-  namedIDslot <- ppp("cl.names.KnownMarkers", res)
+  namedIDslot <- Stringendo::ppp("cl.names.KnownMarkers", res)
   obj[[namedIDslot]] <- named.ident
   return(obj)
 }
@@ -3527,25 +3527,25 @@ Calc.Cor.Seurat <- function(
   }
 
   qname <- paste0("q", quantileX * 100)
-  quantile_name <- kpp("expr", qname)
+  quantile_name <- Stringendo::kpp("expr", qname)
 
   if (is.null(obj@misc[[quantile_name]])) {
-    iprint(
+    Stringendo::iprint(
       "Call: combined.obj <- calc.q99.Expression.and.set.all.genes(combined.obj, quantileX =",
       quantileX, " first )"
     )
   }
-  genes.HE <- which_names(obj@misc[[quantile_name]] > 0)
-  iprint("Pearson correlation is calculated for", length(genes.HE), "HE genes with expr.", qname, ": > 0.")
+  genes.HE <- CodeAndRoll2::which_names(obj@misc[[quantile_name]] > 0)
+  Stringendo::iprint("Pearson correlation is calculated for", length(genes.HE), "HE genes with expr.", qname, ": > 0.")
   tictoc::tic("sparse.cor")
   ls.cor <- sparse.cor(smat = t(expr.mat[genes.HE, cells.use]))
   tictoc::toc()
   ls.cor <- lapply(ls.cor, round, digits = 2)
 
-  slot__name <- kpp(slot.use, assay.use, quantile_name)
-  obj@misc[[kpp("cor", slot__name)]] <- ls.cor$"cor"
-  obj@misc[[kpp("cov", slot__name)]] <- ls.cor$"cov"
-  iprint("Stored under obj@misc$", kpp("cor", slot.use, assay.use), "or cov... .")
+  slot__name <- Stringendo::kpp(slot.use, assay.use, quantile_name)
+  obj@misc[[Stringendo::kpp("cor", slot__name)]] <- ls.cor$"cor"
+  obj@misc[[Stringendo::kpp("cov", slot__name)]] <- ls.cor$"cov"
+  Stringendo::iprint("Stored under obj@misc$", Stringendo::kpp("cor", slot.use, assay.use), "or cov... .")
   return(obj)
 }
 
@@ -3597,12 +3597,12 @@ plot.Gene.Cor.Heatmap <- function(
   expr.mat <- GetAssayData(slot = slot.use, assay = assay.use, object = obj)
 
   qname <- paste0("expr.q", quantileX * 100)
-  slotname_cor.mat <- kpp("cor", slot.use, assay.use, qname)
+  slotname_cor.mat <- Stringendo::kpp("cor", slot.use, assay.use, qname)
   cor.mat <- obj@misc[[slotname_cor.mat]]
 
   if (is.null(cor.mat)) {
-    iprint(slotname_cor.mat, " not found in @misc.")
-    iprint("Correlation slots present in @misc:", CodeAndRoll2::grepv(names(obj@misc), pattern = "^cor"))
+    Stringendo::iprint(slotname_cor.mat, " not found in @misc.")
+    Stringendo::iprint("Correlation slots present in @misc:", CodeAndRoll2::grepv(names(obj@misc), pattern = "^cor"))
 
     # Calculate --- --- --- --- ---
     if (calc.COR) {
@@ -3610,7 +3610,7 @@ plot.Gene.Cor.Heatmap <- function(
       genes.found <- check.genes(genes = genes)
       message(length(genes.found), " genes are found in the object.")
 
-      if (length(genes.found) > 200) iprint("Too many genes found in data, cor will be slow: ", length(genes.found))
+      if (length(genes.found) > 200) Stringendo::iprint("Too many genes found in data, cor will be slow: ", length(genes.found))
       ls.cor <- sparse.cor(t(expr.mat[genes.found, ]))
       cor.mat <- ls.cor$cor
     } else {
@@ -3619,7 +3619,7 @@ plot.Gene.Cor.Heatmap <- function(
   } else {
     print("Correlation is pre-calculated")
     genes.found <- intersect(genes, rownames(cor.mat))
-    iprint(length(genes.found), "genes are found in the correlation matrix.")
+    Stringendo::iprint(length(genes.found), "genes are found in the correlation matrix.")
     cor.mat <- cor.mat[genes.found, genes.found]
   }
 
@@ -3627,17 +3627,17 @@ plot.Gene.Cor.Heatmap <- function(
   # Filter --- --- --- --- --- ---
   diag(cor.mat) <- NaN
   corgene.names <- union(
-    which_names(rowMax(cor.mat) >= min.g.cor),
-    which_names(rowMin(cor.mat) <= -min.g.cor)
+    CodeAndRoll2::which_names(CodeAndRoll2::rowMax(cor.mat) >= min.g.cor),
+    CodeAndRoll2::which_names(CodeAndRoll2::rowMin(cor.mat) <= -min.g.cor)
   )
-  iprint(length(corgene.names), "genes are more (anti-)correlated than +/-:", min.g.cor)
+  Stringendo::iprint(length(corgene.names), "genes are more (anti-)correlated than +/-:", min.g.cor)
 
-  pname <- paste0("Pearson correlations of ", substitute_deparse(genes), "\n min.cor:", min.g.cor, " | ", assay.use, ".", slot.use)
+  pname <- paste0("Pearson correlations of ", Stringendo::substitute_deparse(genes), "\n min.cor:", min.g.cor, " | ", assay.use, ".", slot.use)
   o.heatmap <- pheatmap::pheatmap(cor.mat[corgene.names, corgene.names], main = pname, cutree_rows = cutRows, cutree_cols = cutCols, ...)
   MarkdownReports::wplot_save_pheatmap(o.heatmap, plotname = make.names(pname))
 
   # return values
-  maxCorrz <- rowMax(cor.mat)[corgene.names]
+  maxCorrz <- CodeAndRoll2::rowMax(cor.mat)[corgene.names]
   names(maxCorrz) <- corgene.names
   dput(maxCorrz)
 }
@@ -3930,7 +3930,7 @@ check.genes <- function(
       message(
         "\n", length(missingGenes), " or ",
         Stringendo::percentage_formatter(length(missingGenes) / length(genes)),
-        " genes not found in the data, e.g: ", kppc(head(missingGenes, n = 10))
+        " genes not found in the data, e.g: ", Stringendo::kppc(head(missingGenes, n = 10))
       )
     }
 
@@ -4050,7 +4050,7 @@ AddNewAnnotation <- function(
   obj = obj,
   source = "RNA_snn_res.0.5", named.list.of.identities = ls.Subset.ClusterLists
 ) {
-  NewID <- df.col.2.named.vector(obj[[source]])
+  NewID <- CodeAndRoll2::df.col.2.named.vector(obj[[source]])
 
   for (i in 1:length(named.list.of.identities)) {
     lx <- as.character(named.list.of.identities[[i]])
@@ -4098,13 +4098,13 @@ whitelist.subset.ls.Seurat <- function(
   dsets <- table(df.cell.whitelist[, 1])
 
   ls.orig.idents <- lapply(lapply(ls.Seurat, getMetadataColumn, ColName.metadata = "orig.ident"), unique)
-  stopif(any(sapply(ls.orig.idents, l) == length(ls.Seurat)), message = "Some ls.Seurat objects have 1+ orig identity.")
+  Stringendo::stopif(any(sapply(ls.orig.idents, l) == length(ls.Seurat)), message = "Some ls.Seurat objects have 1+ orig identity.")
 
   dsets.in.lsSeu <- unlist(ls.orig.idents)
   isMathced <- all(dsets.in.lsSeu == names(dsets)) # Stop if either ls.Seurat OR the metadata has identities not found in the other, in the same order.
-  stopif(!isMathced, message = paste(
+  Stringendo::stopif(!isMathced, message = paste(
     "either ls.Seurat OR the metadata has identities not found in the other, or they are not in same order.",
-    kpps(dsets.in.lsSeu), "vs.", kpps(names(dsets))
+    Stringendo::kpps(dsets.in.lsSeu), "vs.", Stringendo::kpps(names(dsets))
   ))
 
   # identX <- ls.orig.idents[[1]]
@@ -4124,7 +4124,7 @@ whitelist.subset.ls.Seurat <- function(
     ls.obj[[i]] <- subset(x = ls.obj[[i]], cells = cell.whitelist)
   }
   cells.after <- sapply(ls.obj, ncol)
-  iprint("cells.before", cells.before, "cells.after", cells.after)
+  Stringendo::iprint("cells.before", cells.before, "cells.after", cells.after)
   return(ls.obj)
 }
 
@@ -4161,15 +4161,15 @@ FindCorrelatedGenes <- function(
 ) {
   tictoc::tic("FindCorrelatedGenes")
   AssayData <- GetAssayData(object = obj, assay = assay, slot = slot)
-  matrix_mod <- iround(as.matrix(AssayData))
+  matrix_mod <- CodeAndRoll2::iround(as.matrix(AssayData))
   if (HEonly) {
     idx.pass <- (matrixStats::rowSums2(matrix_mod > minExpr) > minCells)
-    pc_TRUE(idx.pass)
+    CodeAndRoll2::pc_TRUE(idx.pass)
     matrix_mod <- matrix_mod[which(idx.pass), ]
   }
   geneExpr <- as.numeric(matrix_mod[gene, ])
   correlations <- apply(matrix_mod, 1, cor, geneExpr)
-  topGenes <- trail(sort(correlations, decreasing = TRUE), N = trailingNgenes)
+  topGenes <- CodeAndRoll2::trail(sort(correlations, decreasing = TRUE), N = trailingNgenes)
   tictoc::toc()
   MarkdownReports::wbarplot(head(topGenes, n = 25))
   topGenes
@@ -4322,7 +4322,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
     layers <- Layers(obj@assays[[assay]])
     slots_found <- slots %in% layers
     stopifnot(any(slots_found))
-    warnifnot("Not all slots present in the object - all(slots_found)" = all(slots_found))
+    Stringendo::warnifnot("Not all slots present in the object - all(slots_found)" = all(slots_found))
     slots <- intersect(slots, layers)
   }
 
@@ -4336,10 +4336,10 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
   }
 
   LayersFound <- SeuratObject::Layers(obj@assays[[assay]])
-  iprint("Present: ", sort(LayersFound))
+  Stringendo::iprint("Present: ", sort(LayersFound))
 
   slots <- sort(intersect(slots, LayersFound))
-  iprint("Replaced: ", slots)
+  Stringendo::iprint("Replaced: ", slots)
 
   for (slotX in slots) {
     print(slotX)
@@ -4395,7 +4395,7 @@ RenameGenesSeurat <- function(obj = ls.Seurat[[i]],
     rownames(assayobj@features@.Data) <- newnames
     nrX <- length(rownames(assayobj@features@.Data))
   } else {
-    iprint("length feature.list", length(feature.list), "length newnames", length(newnames))
+    Stringendo::iprint("length feature.list", length(feature.list), "length newnames", length(newnames))
     stop()
   }
 
@@ -4520,7 +4520,7 @@ RemoveGenesSeurat <- function(obj = ls.Seurat[[i]], symbols2remove = c("TOP2A"))
 #' @export
 HGNC.EnforceUnique <- function(updatedSymbols) {
   NGL <- updatedSymbols[, 3]
-  if (any.duplicated(NGL)) {
+  if (CodeAndRoll2::any.duplicated(NGL)) {
     # Unique names are enforced by suffixing .1, .2, etc.
     updatedSymbols[, 3] <- make.unique(NGL)
   }
@@ -4605,7 +4605,7 @@ PlotUpdateStats <- function(mat = UpdateStatMat, column.names = c("Updated (%)",
   HGNC.UpdateStatistics <- mat[, column.names, drop = FALSE]
   HGNC.UpdateStatistics[, "Updated (%)"] <- 100 * HGNC.UpdateStatistics[, "Updated (%)"]
   colnames(HGNC.UpdateStatistics) <- c("Gene Symbols updated (% of Total Genes)", "Number of Gene Symbols updated")
-  lll <- wcolorize(vector = rownames(HGNC.UpdateStatistics))
+  lll <- MarkdownHelpers::wcolorize(vector = rownames(HGNC.UpdateStatistics))
   MarkdownReports::wplot(HGNC.UpdateStatistics,
     col = lll,
     xlim = c(0, max(HGNC.UpdateStatistics[, 1])),
@@ -4697,14 +4697,14 @@ Convert10Xfolders <- function(
 
   compress_level <- .map_preset_to_compress_level(preset)
 
-  finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
+  finOrig <- Stringendo::ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
 
   message(length(fin), " samples found.")
 
   samples <- basename(list.dirs(InputDir, recursive = FALSE))
   if (sort_alphanumeric) samples <- gtools::mixedsort(samples)
-  iprint("Samples:", samples)
+  Stringendo::iprint("Samples:", samples)
 
   if (!length(fin) > 0) {
     stop(paste("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3]))
@@ -4750,38 +4750,38 @@ Convert10Xfolders <- function(
     if (writeCBCtable) {
       CBCs <- t(t(colnames(seu)))
       colnames(CBCs) <- "CBC"
-      ReadWriter::write.simple.tsv(input_df = CBCs, manual_file_name = sppp(fnameIN, suffix, "CBC"), manual_directory = InputDir)
+      ReadWriter::write.simple.tsv(input_df = CBCs, manual_file_name = Stringendo::sppp(fnameIN, suffix, "CBC"), manual_directory = InputDir)
     }
 
     if (save_empty_droplets & suffix == "raw") {
       # Select and save empty droplets (the Soup)
 
       path_filtered <- gsub(x = pathIN, pattern = "/raw_feature_", replacement = "/filtered_feature_")
-      fnp_filtered <- spps(path_filtered, "barcodes.tsv.gz")
+      fnp_filtered <- Stringendo::spps(path_filtered, "barcodes.tsv.gz")
 
 
       if (file.exists(fnp_filtered)) {
-        SoupDir <- spps(InputDir, "Soup")
+        SoupDir <- Stringendo::spps(InputDir, "Soup")
         dir.create(SoupDir)
 
-        CBCs_HQ <- read.simple.vec(fnp_filtered)
+        CBCs_HQ <- ReadWriter::read.simple.vec(fnp_filtered)
 
         CBC_empty_drops <- setdiff(colnames(seu), CBCs_HQ)
         nr.empty.droplets <- length(CBC_empty_drops)
         umi_per_CBC <- colSums(seu@assays$RNA@layers$counts)
-        pct.empty.droplets.max10umis <- pc_TRUE(umi_per_CBC < 11)
+        pct.empty.droplets.max10umis <- CodeAndRoll2::pc_TRUE(umi_per_CBC < 11)
         message("We have ", nr.empty.droplets, " empty droplets, ", pct.empty.droplets.max10umis, " of which have max 10 umis.")
-        FNM <- sppp("nr.empty.droplets", fnameIN, nr.empty.droplets)
+        FNM <- Stringendo::sppp("nr.empty.droplets", fnameIN, nr.empty.droplets)
         ReadWriter::write.simple.vec(nr.empty.droplets, manual_file_name = FNM, manual_directory = SoupDir)
 
         obj_empty_drops <- subset(seu, cells = CBC_empty_drops)
 
-        f_path_out_ED <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("obj.empty.droplets", fnameIN, nr.empty.droplets), extension = ext)
+        f_path_out_ED <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = Stringendo::sppp("obj.empty.droplets", fnameIN, nr.empty.droplets), extension = ext)
         qs2::qs_save(object = obj_empty_drops, file = f_path_out_ED, nthreads = nthreads, compress_level = compress_level)
 
         # save the bulk RNA counts of the empty droplets
         Soup.Bulk.RNA <- rowSums(count_matrix[, CBC_empty_drops])
-        f_path_out_Bulk <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = sppp("Soup.Bulk.RNA", fnameIN), extension = "qs")
+        f_path_out_Bulk <- Stringendo::ParseFullFilePath(path = SoupDir, file_name = Stringendo::sppp("Soup.Bulk.RNA", fnameIN), extension = "qs")
         qs2::qs_save(object = Soup.Bulk.RNA, file = f_path_out_Bulk, nthreads = nthreads, compress_level = compress_level)
         ReadWriter::write.simple.tsv(Soup.Bulk.RNA, suffix = fnameIN, manual_directory = SoupDir)
       }
@@ -4827,23 +4827,23 @@ ConvertDropSeqfolders <- function(
   useVroom = TRUE, col_types.vroom = list("GENE" = "c", .default = "d"),
   min.cells = 10, min.features = 200, updateHGNC = TRUE, ShowStats = TRUE, minDimension = 10, overwrite = FALSE
 ) {
-  InputDir <- FixPath(InputDir)
+  InputDir <- Stringendo::FixPath(InputDir)
   fin <- list.dirs(InputDir, recursive = FALSE)
   fin <- CodeAndRoll2::grepv(x = fin, pattern = folderPattern, perl = FALSE)
 
   for (i in 1:length(fin)) {
     print(i)
-    pathIN <- FixPath(fin[i])
+    pathIN <- Stringendo::FixPath(fin[i])
     print(pathIN)
     fnameIN <- basename(fin[i])
     subdir <- paste0(InputDir, fnameIN)
-    fnameOUT <- ppp(subdir, "min.cells", min.cells, "min.features", min.features, "Rds")
+    fnameOUT <- Stringendo::ppp(subdir, "min.cells", min.cells, "min.features", min.features, "Rds")
     print(fnameOUT)
     if (!overwrite) {
       OutFile <- list.files(InputDir, pattern = basename(fnameOUT), recursive = TRUE)
       if (length(OutFile) > 0) {
         if (grepl(pattern = ".Rds$", OutFile, perl = TRUE)) {
-          iprint("      RDS OBJECT ALREADY EXISTS.")
+          Stringendo::iprint("      RDS OBJECT ALREADY EXISTS.")
           next
         }
       } # if length
@@ -4852,16 +4852,16 @@ ConvertDropSeqfolders <- function(
     stopifnot(length(CountTable) == 1)
     count_matrix <- if (useVroom) {
       stopifnot("Package 'vroom' must be installed to use this function." = require("vroom"))
-      vroom::vroom(file = kpps(subdir, CountTable), col_types = col_types.vroom)
+      vroom::vroom(file = Stringendo::kpps(subdir, CountTable), col_types = col_types.vroom)
     } else {
-      readr::read_tsv(file = kpps(subdir, CountTable))
+      readr::read_tsv(file = Stringendo::kpps(subdir, CountTable))
     }
 
     if (nrow(count_matrix) < minDimension | ncol(count_matrix) < minDimension) {
-      iprint("")
-      iprint("      EXPRESSION MATRIX TOO SMALL.", nrow(count_matrix), "x", ncol(count_matrix), ". Not processed.")
+      Stringendo::iprint("")
+      Stringendo::iprint("      EXPRESSION MATRIX TOO SMALL.", nrow(count_matrix), "x", ncol(count_matrix), ". Not processed.")
     } else {
-      count_matrix <- FirstCol2RowNames(count_matrix)[, -1] # remove 1st "Cell column" # https://github.com/vertesy/SEO/issues/63
+      count_matrix <- ReadWriter::FirstCol2RowNames(count_matrix)[, -1] # remove 1st "Cell column" # https://github.com/vertesy/SEO/issues/63
       seu <- CreateSeuratObject(
         counts = count_matrix, project = fnameIN,
         min.cells = min.cells, min.features = min.features
@@ -4909,7 +4909,7 @@ LoadAllSeurats <- function(
   sort_alphanumeric = TRUE
 ) {
   tictoc::tic("LoadAllSeurats")
-  InputDir <- FixPath(InputDir)
+  InputDir <- Stringendo::FixPath(InputDir)
 
   print(file.pattern)
   use_rds <- grepl(pattern = "Rds", x = file.pattern) && !grepl(pattern = "qs", x = file.pattern)
@@ -4924,7 +4924,7 @@ LoadAllSeurats <- function(
   if (sort_alphanumeric) fin <- gtools::mixedsort(fin)
 
 
-  ls.Seu <- list.fromNames(fin)
+  ls.Seu <- CodeAndRoll2::list.fromNames(fin)
   for (i in 1:length(fin)) {
     print(fin[i])
     FNP <- paste0(InputDir, fin.orig[i])
@@ -5050,7 +5050,7 @@ read10x <- function(dir) {
 #' @export
 isave.RDS <- function(
   obj, prefix = NULL, suffix = NULL, inOutDir = TRUE,
-  project = getProject(),
+  project = CodeAndRoll2::getProject(),
   alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/", basename(OutDir)),
   homepath = if (Sys.info()[1] == "Darwin") "~/" else "/users/abel.vertesy/",
   showMemObject = TRUE, saveParams = TRUE,
@@ -5068,7 +5068,7 @@ isave.RDS <- function(
     try(obj@misc$p <- p, silent = TRUE)
     try(obj@misc$all.genes <- all.genes, silent = TRUE)
   }
-  fnameBase <- kppu(prefix, substitute_deparse(obj), project, suffix, idate(Format = "%Y.%m.%d_%H.%M"))
+  fnameBase <- Stringendo::kppu(prefix, Stringendo::substitute_deparse(obj), project, suffix, Stringendo::idate(Format = "%Y.%m.%d_%H.%M"))
   fnameBase <- trimws(fnameBase, whitespace = "_")
   FNN <- paste0(path_rdata, fnameBase, ".Rds")
   FNN <- gsub(pattern = "~/", replacement = homepath, x = FNN)
@@ -5144,7 +5144,7 @@ xsave <- function(
   prefix = NULL,
   nthreads = if (object.size(obj) < 1e7) 1 else .getNrCores(12),
   preset = "high",
-  project = getProject(),
+  project = CodeAndRoll2::getProject(),
   dir = if (exists("OutDir")) OutDir else getwd(),
   showMemObject = TRUE,
   saveParams = if (exists("p")) TRUE else FALSE, # save allGenes and paramList
@@ -5164,21 +5164,21 @@ xsave <- function(
   # check if the object is a Seurat object
   obj_is_seurat <- inherits(obj, "Seurat")
   if (obj_is_seurat) {
-    annot.suffix <- kpp(ncol(obj), "cells")
+    annot.suffix <- Stringendo::kpp(ncol(obj), "cells")
   } else {
     saveParams <- FALSE
-    annot.suffix <- if (is.list(obj)) kppd("ls", length(obj)) else NULL
+    annot.suffix <- if (is.list(obj)) Stringendo::kppd("ls", length(obj)) else NULL
   }
 
-  if (!isFALSE(saveParams)) message("paramList: ", if (exists("paramList")) paste(substitute_deparse(paramList), length(paramList), " elements.") else " not provided.")
+  if (!isFALSE(saveParams)) message("paramList: ", if (exists("paramList")) paste(Stringendo::substitute_deparse(paramList), length(paramList), " elements.") else " not provided.")
   if (!isFALSE(saveParams)) message("allGenes: ", if (exists("allGenes")) " found as global variable." else " not provided.")
 
   try(tictoc::tic("xsave"), silent = TRUE)
   if (showMemObject & v) try(memory.biggest.objects(), silent = TRUE)
 
-  fnameBase <- trimws(kppu(
+  fnameBase <- trimws(Stringendo::kppu(
     prefix, as.character(substitute(obj)), annot.suffix, suffix, project,
-    idate(Format = "%Y.%m.%d_%H.%M")
+    Stringendo::idate(Format = "%Y.%m.%d_%H.%M")
   ), whitespace = "_")
 
   FNN <- paste0(dir, fnameBase, ".qs")
@@ -5245,11 +5245,11 @@ xread <- function(file,
   obj <- qs2::qs_read(file = file, nthreads = nthreads, ...)
 
   report <- if (is(obj, "Seurat")) {
-    kppws("Seurat object with", ncol(obj), "cells &", ncol(obj@meta.data), "meta columns.")
+    Stringendo::kppws("Seurat object with", ncol(obj), "cells &", ncol(obj@meta.data), "meta columns.")
   } else if (is.list(obj)) {
-    kppws("A list of:", length(obj))
+    Stringendo::kppws("A list of:", length(obj))
   } else {
-    kppws("Length of:", length(obj))
+    Stringendo::kppws("Length of:", length(obj))
   }
   message(report)
 
@@ -5400,11 +5400,11 @@ xread2 <- function(path,
   obj <- qs2::qs_read(file = path, nthreads = nthreads, ...)
 
   report <- if (is(obj, "Seurat")) {
-    kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "metadata columns.")
+    Stringendo::kppws("with", ncol(obj), "cells &", ncol(obj@meta.data), "metadata columns.")
   } else if (is.list(obj)) {
-    kppws("is a list of:", length(obj))
+    Stringendo::kppws("is a list of:", length(obj))
   } else {
-    kppws("of length:", length(obj))
+    Stringendo::kppws("of length:", length(obj))
   }
 
   if ("Seurat" %in% is(obj)) {
@@ -5432,7 +5432,7 @@ xread2 <- function(path,
     }
   }
 
-  iprint(is(obj)[1], report)
+  Stringendo::iprint(is(obj)[1], report)
   try(tictoc::toc(), silent = TRUE)
   invisible(obj)
 }
@@ -5470,11 +5470,11 @@ isave.image <- function(
   if (showMemObject) {
     try(memory.biggest.objects(), silent = TRUE)
   }
-  fname <- Stringendo::kollapse(path_rdata, "/", idate(), ..., ".Rdata")
+  fname <- Stringendo::kollapse(path_rdata, "/", Stringendo::idate(), ..., ".Rdata")
   print(fname)
   if (nchar(fname) > 2000) stop()
   save.image(file = fname, compress = FALSE)
-  iprint("Saved, being compressed", fname)
+  Stringendo::iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname), wait = FALSE) # execute in the background
 }
 
@@ -5498,11 +5498,11 @@ qsave.image <- function(
 ) {
   tictoc::tic("qsave.image")
 
-  fname <- Stringendo::kollapse(getwd(), "/", basename(OutDir), idate(), ..., ".Rdata")
+  fname <- Stringendo::kollapse(getwd(), "/", basename(OutDir), Stringendo::idate(), ..., ".Rdata")
   print(fname)
   if (nchar(fname) > 2000) stop()
   save.image(file = fname, compress = FALSE)
-  iprint("Saved, being compressed", fname)
+  Stringendo::iprint("Saved, being compressed", fname)
   system(paste("gzip", options, fname), wait = FALSE) # execute in the background
   tictoc::toc()
 }
@@ -5530,17 +5530,17 @@ find10XoutputFolders <- function(root_dir, subdir, recursive = TRUE) {
   outs_dirs <- c()
   for (i in seq_along(subdir)) {
     path <- file.path(root_dir, subdir[i])
-    printProgress(i, length(subdir), "Processing subdirectory")
+    CodeAndRoll2::printProgress(i, length(subdir), "Processing subdirectory")
 
-    iprint("Searching in:", path)
+    Stringendo::iprint("Searching in:", path)
     found_dirs <- fs::dir_ls(path, recurse = recursive, glob = "*/outs", type = "directory")
-    iprint(length(found_dirs), "output folders found.")
+    Stringendo::iprint(length(found_dirs), "output folders found.")
     outs_dirs <- c(outs_dirs, found_dirs)
   }
 
   # Replace root_dir in the paths with an empty string for printing
   outs_print <- gsub(paste0("^", root_dir, "/?"), "", outs_dirs)
-  iprint(length(outs_dirs), outs_print)
+  Stringendo::iprint(length(outs_dirs), outs_print)
 
   return(outs_dirs)
 }
@@ -5619,7 +5619,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
                         out_dir_prefix = "SoupStatistics",
                         add_custom_class = FALSE, pattern_custom = "\\.RabV$",
                         ls.Alpha = 1) {
-  iprint("library_name:", library_name)
+  Stringendo::iprint("library_name:", library_name)
 
   stopifnot( # Check input
     is.character(CellRanger_outs_Dir), dir.exists(CellRanger_outs_Dir),
@@ -5627,7 +5627,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
     is.numeric(ls.Alpha)
   )
 
-  if (add_custom_class) iprint("pattern_custom:", pattern_custom)
+  if (add_custom_class) Stringendo::iprint("pattern_custom:", pattern_custom)
 
   # The regular expression `[[:alnum:]_]+(?=/outs/)` matches one or more alphanumeric characters or
   # underscores that are followed by the `/outs/` portion in the string. It ensures that the desired
@@ -5647,11 +5647,11 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   # Identify raw and filtered files ___________________________________
   path.raw <- file.path(CellRanger_outs_Dir, grep(x = Subfolders_10X_outs, pattern = "^raw_*", value = TRUE))
   path.filt <- file.path(CellRanger_outs_Dir, grep(x = Subfolders_10X_outs, pattern = "^filt_*", value = TRUE))
-  CR.matrices <- list.fromNames(c("raw", "filt"))
+  CR.matrices <- CodeAndRoll2::list.fromNames(c("raw", "filt"))
 
   # Adapter for Markdownreports background variable "OutDir"
   OutDirBac <- if (exists("OutDir")) OutDir else getwd()
-  OutDir <- file.path(CellRanger_outs_Dir, paste0(kpp(out_dir_prefix, library_name)))
+  OutDir <- file.path(CellRanger_outs_Dir, paste0(Stringendo::kpp(out_dir_prefix, library_name)))
 
   MarkdownReports::create_set_OutDir(OutDir)
   MarkdownHelpers::ww.assign_to_global("OutDir", OutDir, 1)
@@ -5675,7 +5675,7 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   print("Profiling the soup")
   GEMs.all <- CR.matrices$"raw"@Dimnames[[2]]
   GEMs.cells <- CR.matrices$"filt"@Dimnames[[2]]
-  iprint("There are", length(GEMs.all), "GEMs sequenced, and", length(GEMs.cells), "are cells among those.")
+  Stringendo::iprint("There are", length(GEMs.all), "GEMs sequenced, and", length(GEMs.cells), "are cells among those.")
   EmptyDroplets.and.Cells <- c("EmptyDroplets" = length(GEMs.all) - length(GEMs.cells), "Cells" = length(GEMs.cells))
   ggExpress::qbarplot(EmptyDroplets.and.Cells, label = EmptyDroplets.and.Cells, palette_use = "npg", col = 1:2, ylab = "GEMs")
 
@@ -5694,9 +5694,9 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   )
   colnames(Soup.VS.Cells.Av.Exp)
   idx.HE <- rowSums(Soup.VS.Cells.Av.Exp) > 10
-  pc_TRUE(idx.HE)
+  CodeAndRoll2::pc_TRUE(idx.HE)
   Soup.VS.Cells.Av.Exp <- Soup.VS.Cells.Av.Exp[idx.HE, ]
-  idim(Soup.VS.Cells.Av.Exp)
+  CodeAndRoll2::idim(Soup.VS.Cells.Av.Exp)
   Soup.VS.Cells.Av.Exp.log10 <- log10(Soup.VS.Cells.Av.Exp + 1)
 
   # ggplot prepare ___________________________________
@@ -5715,14 +5715,14 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Class[grep("^LINC", HGNC)] <- "LINC"
   Class[grep("^AC", HGNC)] <- "AC"
   Class[grep("^AL", HGNC)] <- "AL"
-  if (add_custom_class) Class[grep(pattern_custom, HGNC)] <- ReplaceSpecialCharacters(pattern_custom, remove_dots = TRUE)
+  if (add_custom_class) Class[grep(pattern_custom, HGNC)] <- Stringendo::ReplaceSpecialCharacters(pattern_custom, remove_dots = TRUE)
   Nr.of.Genes.per.Class <- table(Class)
 
 
   ggExpress::qpie(Nr.of.Genes.per.Class)
   Soup.VS.Cells.Av.Exp.gg$Class <- Class
 
-  fname <- kpp("Soup.VS.Cells.Av.Exp.GeneClasses", library_name, "pdf")
+  fname <- Stringendo::kpp("Soup.VS.Cells.Av.Exp.GeneClasses", library_name, "pdf")
   pgg <-
     ggplot(
       Soup.VS.Cells.Av.Exp.gg |>
@@ -5746,15 +5746,15 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
     print(pr)
     HP.thr <- 200 * pr / quantiles[2]
     idx.HE2 <- rowSums(Soup.VS.Cells.Av.Exp) > HP.thr
-    pc_TRUE(idx.HE2)
+    CodeAndRoll2::pc_TRUE(idx.HE2)
 
-    fname <- kpp("Soup.VS.Cells.Av.Exp.quantile", pr, library_name, "pdf")
+    fname <- Stringendo::kpp("Soup.VS.Cells.Av.Exp.quantile", pr, library_name, "pdf")
 
     Outlier <- idx.HE2 &
       (cell.rate < quantile(cell.rate, probs = pr) |
         soup.rate < quantile(soup.rate, probs = pr))
 
-    pc_TRUE(Outlier)
+    CodeAndRoll2::pc_TRUE(Outlier)
     sum(Outlier)
     HP.thr.mod <- HP.thr
     while (sum(Outlier) > 40) {
@@ -5783,11 +5783,11 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   PC.mRNA.in.Soup <- sum(CR.matrices$"soup") / sum(CR.matrices$"raw")
   PC.mRNA.in.Cells <- 100 * sum(CR.matrices$"filt") / sum(CR.matrices$"raw")
   MarkdownReports::wbarplot(
-    variable = PC.mRNA.in.Cells, col = "seagreen", plotname = kppd("PC.mRNA.in.Cells", library_name),
+    variable = PC.mRNA.in.Cells, col = "seagreen", plotname = Stringendo::kppd("PC.mRNA.in.Cells", library_name),
     ylim = c(0, 100), ylab = "% mRNA in cells",
     sub = "% mRNA is more meaningful than % reads reported by CR"
   )
-  barplot_label(
+  MarkdownReports::barplot_label(
     barplotted_variable = PC.mRNA.in.Cells,
     labels = Stringendo::percentage_formatter(PC.mRNA.in.Cells / 100, digitz = 2),
     TopOffset = 10
@@ -5798,13 +5798,13 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes <- 100 * head(sort(CR.matrices$"soup.rel.RC", decreasing = TRUE), n = 20)
 
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes,
-    plotname = kppd("Soup.GEMs.top.Genes", library_name),
+    plotname = Stringendo::kppd("Soup.GEMs.top.Genes", library_name),
     ylab = "% mRNA in the Soup",
     sub = paste("Within the", library_name, "dataset"),
     tilted_text = TRUE,
     ylim = c(0, max(Soup.GEMs.top.Genes) * 1.5)
   )
-  barplot_label(
+  MarkdownReports::barplot_label(
     barplotted_variable = Soup.GEMs.top.Genes,
     labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes / 100, digitz = 2),
     TopOffset = -.5, srt = 90, cex = .75
@@ -5842,12 +5842,12 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes.summarized <- 100 * soupProfile.summarized[1:NrColumns2Show] / CR.matrices$"soup.total.sum"
   maxx <- max(Soup.GEMs.top.Genes.summarized)
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes.summarized,
-    plotname = kppd("Soup.GEMs.top.Genes.summarized", library_name),
+    plotname = Stringendo::kppd("Soup.GEMs.top.Genes.summarized", library_name),
     ylab = "% mRNA in the Soup", ylim = c(0, maxx + 3),
     sub = paste("Within the", library_name, "dataset"),
     tilted_text = TRUE, col = ccc
   )
-  barplot_label(
+  MarkdownReports::barplot_label(
     barplotted_variable = Soup.GEMs.top.Genes.summarized,
     srt = 45, labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.summarized / 100, digitz = 2),
     TopOffset = -1.5
@@ -5858,12 +5858,12 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
 
   maxx <- max(Absolute.fraction.soupProfile.summarized)
   MarkdownReports::wbarplot(Absolute.fraction.soupProfile.summarized,
-    plotname = kppd("Absolute.fraction.soupProfile.summarized", library_name),
+    plotname = Stringendo::kppd("Absolute.fraction.soupProfile.summarized", library_name),
     ylab = "% of mRNA in cells", ylim = c(0, maxx * 1.33),
     sub = paste(Stringendo::percentage_formatter(PC.mRNA.in.Soup), "of mRNA counts are in the Soup, in the dataset ", library_name),
     tilted_text = TRUE, col = ccc
   )
-  barplot_label(
+  MarkdownReports::barplot_label(
     barplotted_variable = Absolute.fraction.soupProfile.summarized,
     srt = 45, labels = Stringendo::percentage_formatter(Absolute.fraction.soupProfile.summarized / 100, digitz = 2)
     # formatC(Absolute.fraction.soupProfile.summarized, format="f", big.mark = " ", digits = 0)
@@ -5874,13 +5874,13 @@ plotTheSoup <- function(CellRanger_outs_Dir = "~/Data/114593/114593",
   Soup.GEMs.top.Genes.non.summarized <- 100 * sort(genes.non.Above, decreasing = TRUE)[1:20] / CR.matrices$"soup.total.sum"
   maxx <- max(Soup.GEMs.top.Genes.non.summarized)
   MarkdownReports::wbarplot(Soup.GEMs.top.Genes.non.summarized,
-    plotname = kppd("Soup.GEMs.top.Genes.non.summarized", library_name),
+    plotname = Stringendo::kppd("Soup.GEMs.top.Genes.non.summarized", library_name),
     ylab = "% mRNA in the Soup",
     sub = paste("Within the", library_name, "dataset"),
     tilted_text = TRUE, col = "#BF3100",
     ylim = c(0, maxx * 1.5)
   )
-  barplot_label(
+  MarkdownReports::barplot_label(
     barplotted_variable = Soup.GEMs.top.Genes.non.summarized,
     labels = Stringendo::percentage_formatter(Soup.GEMs.top.Genes.non.summarized / 100, digitz = 2),
     TopOffset = -maxx * 0.2, srt = 90, cex = .75
@@ -5927,11 +5927,11 @@ jJaccardIndexVec <- function(A = 1:3, B = 2:4) length(intersect(A, B)) / length(
 #' @importFrom Stringendo percentage_formatter
 jPairwiseJaccardIndexList <- function(lsG = ls_genes) {
   if (length(names(lsG)) < length(lsG)) {
-    iprint("Gene lists were not (all) named, now renamed as:")
-    names(lsG) <- ppp("dataset", 1:length(lsG))
+    Stringendo::iprint("Gene lists were not (all) named, now renamed as:")
+    names(lsG) <- Stringendo::ppp("dataset", 1:length(lsG))
     print(names(lsG))
   }
-  m <- matrix.fromNames(rowname_vec = names(lsG), colname_vec = names(lsG))
+  m <- CodeAndRoll2::matrix.fromNames(rowname_vec = names(lsG), colname_vec = names(lsG))
   n.sets <- length(lsG)
   for (r in 1:n.sets) {
     # print(Stringendo::percentage_formatter(r/n.sets))
@@ -5970,7 +5970,7 @@ jPresenceMatrix <- function(string_list = lst(a = 1:3, b = 2:5, c = 4:9, d = -1:
     unnest(cols = "value") |>
     count(name, value) |>
     spread(value, n, fill = 0)
-  df.presence2 <- FirstCol2RowNames(df.presence)
+  df.presence2 <- ReadWriter::FirstCol2RowNames(df.presence)
   return(t(df.presence2))
 }
 
@@ -6020,7 +6020,7 @@ jJaccardIndexBinary <- function(x, y) {
 #' @export
 #' @importFrom Stringendo percentage_formatter
 jPairwiseJaccardIndex <- function(binary.presence.matrix = df.presence) {
-  m <- matrix.fromNames(rowname_vec = colnames(binary.presence.matrix), colname_vec = colnames(binary.presence.matrix))
+  m <- CodeAndRoll2::matrix.fromNames(rowname_vec = colnames(binary.presence.matrix), colname_vec = colnames(binary.presence.matrix))
   n.sets <- ncol(binary.presence.matrix)
   for (r in 1:n.sets) {
     print(Stringendo::percentage_formatter(r / n.sets))
@@ -6075,8 +6075,8 @@ compareVarFeaturesAndRanks <- function(
   stopifnot(!is.null(obj1), !is.null(obj2))
   stopifnot(is(obj1, "Seurat"), is(obj2, "Seurat"))
 
-  name1 <- substitute_deparse(obj1)
-  name2 <- substitute_deparse(obj2)
+  name1 <- Stringendo::substitute_deparse(obj1)
+  name2 <- Stringendo::substitute_deparse(obj2)
 
   var.genes1 <- Seurat::VariableFeatures(obj1)
   var.genes2 <- Seurat::VariableFeatures(obj2)
@@ -6084,7 +6084,7 @@ compareVarFeaturesAndRanks <- function(
   if (plot_venn) {
     variable.genes.overlap <- list(var.genes1, var.genes2)
     names(variable.genes.overlap) <- c(name1, name2)
-    ggExpress::qvenn(list = variable.genes.overlap, suffix = sppp(suffix, c(name1, name2)))
+    ggExpress::qvenn(list = variable.genes.overlap, suffix = Stringendo::sppp(suffix, c(name1, name2)))
   }
 
   nr_genes1 <- length(var.genes1)
@@ -6350,11 +6350,11 @@ compareVarFeaturesAndRanks <- function(
   } # else use scaledFeatures
 
   pcs <- .getNrPCs(obj)
-  regressionInfo <- kppc(regressionVariables)
+  regressionInfo <- Stringendo::kppc(regressionVariables)
   reg <- if (!is.null(regressionVariables)) paste0(regressionInfo, " regressed out") else "no regression"
   if (return.as.name) {
-    reg <- ReplaceSpecialCharacters(RemoveWhitespaces(reg, replacement = "."))
-    tag <- kpp(scaledFeatures, "ScaledFeatures", pcs, "PCs", reg, suffix)
+    reg <- Stringendo::ReplaceSpecialCharacters(Stringendo::RemoveWhitespaces(reg, replacement = "."))
+    tag <- Stringendo::kpp(scaledFeatures, "ScaledFeatures", pcs, "PCs", reg, suffix)
   } else {
     tag <- paste0(scaledFeatures, " ScaledFeatures | ", pcs, " PCs | ", reg, " ", suffix)
   }
