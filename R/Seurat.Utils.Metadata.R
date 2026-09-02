@@ -1286,7 +1286,6 @@ plotMetadataCorHeatmap <- function(
 #' variable for a specific group. If 'return_matrix' is FALSE, it saves a heatmap plot and returns the plot object.
 #'
 #' @importFrom dplyr group_by summarize_at
-#' @importFrom ReadWriter FirstCol2RowNames
 #' @importFrom pheatmap pheatmap
 #' @import tidyverse
 #' @export
