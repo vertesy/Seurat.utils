@@ -10,7 +10,7 @@ qQC.plots.BrainOrg(
     "percent.HGA"),
   prefix = "QC.markers.4.UMAP",
   suffix = "",
-  title = sppu(prefix, QC.Features, suffix),
+  title = Stringendo::sppu(prefix, QC.Features, suffix),
   nrow = 2,
   ncol = 2,
   ...

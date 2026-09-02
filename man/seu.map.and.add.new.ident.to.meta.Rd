@@ -8,7 +8,7 @@ seu.map.and.add.new.ident.to.meta(
   obj = combined.obj,
   ident.table = clusterIDs.GO.process,
   orig.ident = Idents(obj),
-  metaD.colname = substitute_deparse(ident.table)
+  metaD.colname = Stringendo::substitute_deparse(ident.table)
 )
 }
 \arguments{

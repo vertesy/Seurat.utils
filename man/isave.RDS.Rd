@@ -9,7 +9,7 @@ isave.RDS(
   prefix = NULL,
   suffix = NULL,
   inOutDir = TRUE,
-  project = getProject(),
+  project = CodeAndRoll2::getProject(),
   alternative_path_rdata = paste0("~/Dropbox (VBC)/Abel.IMBA/AnalysisD/_RDS.files/",
     basename(OutDir)),
   homepath = if (Sys.info()[1] == "Darwin") "~/" else "/users/abel.vertesy/",

@@ -10,7 +10,8 @@ Plot3D.ListOfCategories(
   cex = 1.25,
   default.assay = c("integrated", "RNA")[2],
   ListOfCategories = c("v.project", "experiment", "Phase", "integrated_snn_res.0.7"),
-  SubFolderName = ppp("plot3D", substitute_deparse(ListOfCategories))
+  SubFolderName = Stringendo::ppp("plot3D",
+    Stringendo::substitute_deparse(ListOfCategories))
 )
 }
 \arguments{

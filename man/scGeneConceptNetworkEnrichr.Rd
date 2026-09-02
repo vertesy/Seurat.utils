@@ -11,7 +11,7 @@ scGeneConceptNetworkEnrichr(
   tag = NULL,
   NULL_input = is.null(df.enrichment),
   title = paste("Gene-Concept Network", tag),
-  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+  subtitle = Stringendo::kppws("Input: ", Stringendo::substitute_deparse(df.enrichment)),
   caption = paste0("Enriched terms: ", ifelse(NULL_input, 0, nrow(df.enrichment)),
     " | Shown: ", ifelse(NULL_input, 0, min(showCategory, nrow(df.enrichment))), if
     (!is.null(foldChange)) {

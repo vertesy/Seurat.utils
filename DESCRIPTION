@@ -1,6 +1,6 @@
 Package: Seurat.utils
 Title: Seurat.utils - utility functions for Seurat v5
-Version: 2.9.15
+Version: 2.9.18
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Description: Seurat.utils is a collection of utility functions for Seurat
@@ -54,7 +54,7 @@ Imports:
     stringr,
     tibble,
     tictoc
-Suggests:
+Suggests: 
     clusterProfiler,
     DatabaseLinke.R,
     enrichplot,
@@ -62,6 +62,6 @@ Suggests:
     qs2,
     vroom
 Encoding: UTF-8
-Packaged: 2026-09-01 14:19:18.767987
+Packaged: 2026-09-02 15:20:44.581461
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

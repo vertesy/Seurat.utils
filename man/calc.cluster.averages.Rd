@@ -32,11 +32,11 @@ calc.cluster.averages(
      paste("Threshold at", absolute.thr)
  } else {
     
-    paste("Black lines: ", kppd(Stringendo::percentage_formatter(c(1 - quantile.thr,
-    quantile.thr))), "quantiles |", "Cl. >",
+    paste("Black lines: ", Stringendo::kppd(Stringendo::percentage_formatter(c(1 -
+    quantile.thr, quantile.thr))), "quantiles |", "Cl. >",
     Stringendo::percentage_formatter(quantile.thr), "are highlighted. |", split_by)
  },
-  fname = ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)
+  fname = Stringendo::ppp(col_name, split_by, "cluster.average.barplot.pdf", ...)
 )
 }
 \arguments{
