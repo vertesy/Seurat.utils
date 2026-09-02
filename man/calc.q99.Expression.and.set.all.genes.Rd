@@ -28,7 +28,7 @@ calc.q99.Expression.and.set.all.genes(
 
 \item{slot}{slot in the Seurat object. Default: 'data'}
 
-\item{assay}{RNA or integrated assay, Default: c("RNA", "integrated")\link{1}}
+\item{assay}{RNA or integrated assay, Default: \code{c("RNA", "integrated")[1]}}
 
 \item{set.misc}{Create the "all.genes" variable in @misc? Default: \code{TRUE}.}
 
@@ -36,10 +36,14 @@ calc.q99.Expression.and.set.all.genes(
 
 \item{plot}{Plot the expression distribution? Default: \code{TRUE}.}
 
+\item{suffix}{Suffix appended to the object name used e.g. in messages. Default: \code{substitute(obj)}.}
+
 \item{show}{Show the distribution plot? Default: \code{TRUE}.}
 
 \item{obj.version}{Manuallyoverride the Version of the Seurat object. Useful when you used the
 problematic \code{SeuratObject::UpdateSeuratObject()}.Default: no override \code{obj@version}.}
+
+\item{...}{Additional arguments, not used.}
 }
 \description{
 Calculate the gene expression of the e.g.: 99th quantile (expression in the top 1\% cells).
@@ -60,5 +64,5 @@ if (interactive()) {
 }
 }
 \seealso{
-\code{\link[sparseMatrixStats]{character(0)}}
+\code{\link[sparseMatrixStats]{rowQuantiles}}
 }

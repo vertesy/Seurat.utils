@@ -19,7 +19,7 @@ filterCodingGenes(
 \item{genes}{A character vector of gene symbols.}
 
 \item{pattern_NC}{A character vector of patterns to filter out non-coding gene symbols.
-Default: c("^AC.", "^AL.", "^c\link{1-9}orf", "\\.AS\link{1-9}$", ... etc.}
+Default: \verb{c("^AC.", "^AL.", "^c[1-9]orf", "\\\\.AS[1-9]$", ... etc.)}}
 
 \item{v}{"verbose" Whether to print the number of genes before and after filtering.}
 

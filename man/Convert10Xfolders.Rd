@@ -48,11 +48,19 @@ Convert10Xfolders(
 
 \item{writeCBCtable}{A logical value indicating whether to write out a list of cell barcodes (CBC) as a tsv file. Default: \code{TRUE}.}
 
+\item{nthreads}{Number of threads used when saving the resulting object. Default: \code{.getNrCores()}.}
+
+\item{preset}{Compression preset used when saving the resulting object ("fast", "balanced", "high", or "max"). Default: 'high'.}
+
+\item{ext}{File extension used for the saved Seurat objects. Default: 'qs'.}
+
 \item{sort_alphanumeric}{sort files alphanumeric? Default: \code{TRUE}.}
 
 \item{save_empty_droplets}{save empty droplets? Default: \code{TRUE}.}
 
 \item{save}{Save .qs object? Default: \code{TRUE}.}
+
+\item{...}{Additional arguments, not used.}
 }
 \description{
 This function takes a parent directory with a number of subfolders, each

@@ -45,6 +45,8 @@ Default: \code{df.enrichment@universe}.}
 
 \item{also.pdf}{Logical. Save both PNG and PDF. Default: FALSE.}
 
+\item{save.obj}{Logical. Whether to save the ggplot object. Default: FALSE.}
+
 \item{w}{Numeric. Plot width. Default: 10.}
 
 \item{h}{Numeric. Plot height. Default: 10.}

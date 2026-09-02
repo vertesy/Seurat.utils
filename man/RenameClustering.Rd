@@ -28,6 +28,8 @@ RenameClustering(
 
 \item{suffix.plot}{Suffix description (short string) to be added to the umap plots.}
 
+\item{plot_umaps}{Plot UMAPs of the new and old clustering identities? Default: \code{TRUE}.}
+
 \item{...}{Pass any other parameter to the internally called functions (most of them should work).}
 }
 \description{

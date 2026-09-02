@@ -28,6 +28,7 @@
 # #' @param NA.as.character A logical indicating whether to convert NAs to character. Default: TRUE.
 #' @param suffix A character string appended to `new_col_name` to form the final metadata column name. Default: `NULL`.
 #' @param plot A logical indicating whether to plot the UMAP for the new metadata. Default: FALSE.
+#' @param ... Additional arguments passed to `clUMAP()` when `plot = TRUE`.
 #'
 #' @return An updated Seurat object.
 #'
@@ -520,9 +521,9 @@ create.metadata.vector <- function(vec, obj = combined.obj, fill = NA,
 #' @title addMetaFraction
 #'
 #' @description Add a new metadata column to a Seurat object, representing the fraction of a gene set in the transcriptome (expressed as a percentage).
-#' @param obj Seurat object to which the new metadata column will be added. Default: ls.Seurat[[1]]
+#' @param obj Seurat object to which the new metadata column will be added. Default: `ls.Seurat[[1]]`
 #' @param col.name Name of the new metadata column to be added. Default: 'percent.mito'
-#' @param gene.symbol.pattern Regular expression pattern to match gene symbols. Default: c("^MT\\.|^MT-", FALSE)[1]
+#' @param gene.symbol.pattern Regular expression pattern to match gene symbols. Default: `c("^MT\\.|^MT-", FALSE)[1]`
 #' @param assay Name of the assay to be used. Default: 'RNA'
 #' @param layer Name of the layer to be used. Default: 'data'
 #' @param gene.set A set of gene symbols. If specified, it will be used instead of gene.symbol.pattern. Default: `FALSE`.
@@ -682,7 +683,7 @@ addGeneClassFractions <- function(obj,
 #'
 #' @description Add metadata tags to a Seurat object dataset.
 #' @param list.of.tags A list of tags to be added as metadata. Default: tags
-#' @param obj A Seurat object to which the metadata tags are to be added. Default: ls.Seurat[[1]]
+#' @param obj A Seurat object to which the metadata tags are to be added. Default: `ls.Seurat[[1]]`
 #' @param n The index specifying the dataset for which the tags should be applied. Default: 1
 #' @examples
 #' \dontrun{
@@ -1450,6 +1451,7 @@ plotMetadataMedianFractionBarplot <- function(
 #' and the count of each category. If `FALSE`, only the percentage is shown.
 #' @param subtitle Optional subtitle for the pie chart.
 #' @param labels Optional labels for the pie chart.
+#' @param LegendSide Should the legend be shown on the side of the pie chart? Default: `FALSE`.
 #'
 #' @param ... Additional arguments to pass to the pie chart plotting function.
 #'
@@ -1762,6 +1764,8 @@ transferLabelsSeurat <- function(
 #'
 #' @param obj A dataframe from which to extract column names.
 #' @param pattern A regular expression pattern to match column names against.
+#' @param perl Should `pattern` be treated as a Perl-compatible regular expression? Default: `TRUE`.
+#' @param ... Additional arguments passed to `grep()`.
 #'
 #' @return A character vector of column names matching the pattern.
 #'
@@ -1797,6 +1801,7 @@ transferLabelsSeurat <- function(
 #' Default: TRUE
 #' @param barplot_fractions Draw a barplot to show the % of each category in the original and new
 #' identities, using `scBarplot.CellFractions()`. Default: TRUE
+#' @param rnd_colors Use randomly shuffled colors for the barplot of fractions? Default: `TRUE`.
 #' @param h Height for the saved image. Default: 12
 #' @param w Width for the saved image. Default: 9
 #' @param ... Additional parameters to be passed to `.replace_by_most_frequent_categories` function.
@@ -1804,8 +1809,7 @@ transferLabelsSeurat <- function(
 #' @return An updated version of `obj` with an additional column in `obj@meta.data` named as `new_ident_name`
 #'   representing the new identity. The function also generates a UMAP plot based on this new identity.
 #'
-#' @seealso \code{\link[clUMAP]{clUMAP}}, \code{\link[kpp]{kpp}}, \code{\link[FixPlotName]{FixPlotName}},
-#'   \code{\link[.replace_by_most_frequent_categories]{.replace_by_most_frequent_categories}}
+#' @seealso `clUMAP()`, `Stringendo::kpp()`, `.replace_by_most_frequent_categories()`
 #'
 #' @examples
 #' \dontrun{
@@ -1867,6 +1871,8 @@ matchBestIdentity <- function(
 #'   second column of 'df' is used.
 #' @param show_plot Logical, whether to plot assignment quality. Defaults to TRUE.
 #' @param suffix_barplot Suffix for barplot.
+#' @param ext File extension used when saving the barplot. Default: `'png'`.
+#' @param min.thr Minimum fraction threshold used to flag low-confidence assignments. Default: `0.5`.
 #' @param ... Additional parameters passed to the qbarplot function.
 #' @return A data frame with categories in 'query_col' replaced by the most frequent match from
 #'   'ref_col'.

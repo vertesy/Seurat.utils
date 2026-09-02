@@ -84,6 +84,8 @@ are aggregated into an "Other" category.}
 
 \item{color_scale}{Defines the color scale to use for the plot if a custom palette is selected.}
 
+\item{rnd_colors}{Shuffle the color palette randomly? Default: \code{FALSE}.}
+
 \item{show.total.cells}{Show total cells}
 
 \item{cex.total}{Label size for total cells}

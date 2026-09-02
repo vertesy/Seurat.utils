@@ -10,6 +10,10 @@
 \item{obj}{A dataframe from which to extract column names.}
 
 \item{pattern}{A regular expression pattern to match column names against.}
+
+\item{perl}{Should \code{pattern} be treated as a Perl-compatible regular expression? Default: \code{TRUE}.}
+
+\item{...}{Additional arguments passed to \code{grep()}.}
 }
 \value{
 A character vector of column names matching the pattern.

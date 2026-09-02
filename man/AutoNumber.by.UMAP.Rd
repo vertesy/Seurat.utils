@@ -30,6 +30,9 @@ Default: 1.}
 Default: 'integrated_snn_res.0.5'.}
 
 \item{plot}{If TRUE, plots the UMAP with new cluster names; Default: \code{TRUE}.}
+
+\item{obj.version}{Seurat object version, used to determine dimension name capitalization;
+Default: \code{obj@version}.}
 }
 \description{
 Automatically renumbers clusters based on their position along a specified dimension
