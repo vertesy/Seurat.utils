@@ -1842,8 +1842,6 @@ ww.get.1st.Seur.element <- function(obj) {
 #'   all.genes
 #' }
 #' }
-#' @importFrom MarkdownHelpers ww.assign_to_global
-#'
 #' @export
 recall.all.genes <- function(obj = combined.obj, overwrite = FALSE) {
   obj <- ww.get.1st.Seur.element(obj)
@@ -1881,8 +1879,6 @@ recall.all.genes <- function(obj = combined.obj, overwrite = FALSE) {
 #'   n.datasets
 #' }
 #' }
-#' @importFrom MarkdownHelpers ww.assign_to_global
-#'
 #' @export
 recall.meta.tags.n.datasets <- function(obj = combined.obj) {
   obj <- ww.get.1st.Seur.element(obj)
@@ -1927,8 +1923,6 @@ recall.meta.tags.n.datasets <- function(obj = combined.obj) {
 #'   p
 #' }
 #' }
-#' @importFrom MarkdownHelpers ww.assign_to_global
-#'
 #' @export
 recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
   obj <- ww.get.1st.Seur.element(obj)
@@ -1962,8 +1956,6 @@ recall.parameters <- function(obj = combined.obj, overwrite = FALSE) {
 #'   genes.ls
 #' }
 #' }
-#' @importFrom MarkdownHelpers ww.assign_to_global
-#'
 #' @export
 
 recall.genes.ls <- function(obj = combined.obj, overwrite = FALSE) { # genes.ls
@@ -3840,8 +3832,6 @@ GetMostVarGenes <- function(obj, nGenes = p$nVarGenes) {
 #'
 #' @importFrom Seurat GetAssayData
 #' @importFrom CodeAndRoll2 grepv
-#' @importFrom MarkdownHelpers llprint llogit
-#'
 #' @export
 gene.name.check <- function(Seu.obj) {
   rn <- rownames(GetAssayData(object = Seu.obj, slot = "counts"))
@@ -5693,7 +5683,6 @@ make10Xcellname <- function(cellnames, suffix = "_1") {
 #' @importFrom ggrepel geom_text_repel
 #' @importFrom Stringendo percentage_formatter
 #' @importFrom MarkdownReports wbarplot create_set_OutDir
-#' @importFrom MarkdownHelpers ww.assign_to_global
 #' @importFrom dplyr as_tibble
 #'
 #' @export
