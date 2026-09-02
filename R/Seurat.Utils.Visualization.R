@@ -2190,7 +2190,11 @@ qSeuViolin <- function(
 #' @param prefix Prefix added before the filename; Default: NULL.
 #' @param suffix Suffix added to the end of the filename; Default: `sub`.
 #' @param save.plot If TRUE, the plot is saved into a file; Default: `TRUE`.
-#' @param PNG If TRUE, the file is saved as a .png; Default: `TRUE`.
+#' @param PNG Deprecated in favor of `also.pdf`. A .png is always saved; setting `PNG = FALSE`
+#' is equivalent to `also.pdf = TRUE` and additionally saves a .pdf; Default: `TRUE`.
+#' @param also.pdf If TRUE, the plot is also saved as a .pdf, in addition to the .png; Default: `FALSE`.
+#' @param save.obj If TRUE, the ggplot object is also saved as a `.qs` file; Default: `getOption("gg.save.obj", FALSE)`.
+#' @param show_plot If TRUE, the plot is displayed / returned visibly; Default: `TRUE`.
 #' @param h Height of the plot in inches; Default: 7.
 #' @param w Width of the plot in inches; Default: NULL.
 #' @param nr.cols Number of columns to combine multiple feature plots, ignored if `split.by` is not NULL; Default: NULL.
@@ -2209,13 +2213,15 @@ qSeuViolin <- function(
 #' \dontrun{
 #' if (interactive()) {
 #'   qUMAP(feature = "nFeature_RNA", obj = yourSeuratObject)
-#'   qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
+#'   qUMAP(feature = "TOP2A", obj = yourSeuratObject, also.pdf = TRUE, show_plot = FALSE)
+#'   # Deprecated qUMAP(feature = "TOP2A", obj = yourSeuratObject, PNG = FALSE, save.plot = TRUE)
 #' }
 #' }
 #'
 #' @export
 #' @importFrom Seurat FeaturePlot NoLegend NoAxes
 #' @importFrom ggplot2 ggtitle coord_fixed labs
+#' @importFrom ggExpress qqSave
 #'
 qUMAP <- function(
   feature = "TOP2A", obj = combined.obj,
@@ -2226,6 +2232,9 @@ qUMAP <- function(
   save.plot = getOption("su.save.plot", TRUE),
   # MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
   PNG = TRUE,
+  also.pdf = FALSE,
+  save.obj = getOption("gg.save.obj", FALSE),
+  show_plot = TRUE,
   h = 7, w = NULL, nr.cols = NULL,
   assay = c("RNA", "integrated")[1],
   axes = FALSE,
@@ -2271,10 +2280,14 @@ qUMAP <- function(
   if (!isFALSE(caption)) gg.obj <- gg.obj + ggplot2::labs(caption = caption)
 
   if (save.plot) {
-    fname <- ww.FnP_parser(sppp(prefix, toupper(reduction), feature, assay, paste0(ncol(obj), "c"), suffix), if (PNG) "png" else "pdf")
-    try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
+    fname <- sppp(prefix, toupper(reduction), feature, assay, paste0(ncol(obj), "c"), suffix)
+    try(qqSave(
+      ggobj = gg.obj, title = fname,
+      also.pdf = also.pdf || !PNG, save.obj = save.obj,
+      w = if (is.null(w)) h else w, h = h
+    ))
   }
-  return(gg.obj)
+  if (show_plot) gg.obj else invisible(gg.obj)
 }
 
 
@@ -2313,7 +2326,11 @@ qUMAP <- function(
 #' @param aspect.ratio Fixed aspect ratio for the plot; Default: `TRUE`.
 #' @param MaxCategThrHP Maximum number of categories before simplification; Default: 200.
 #' @param save.plot Save plot to file; Default: `TRUE`.
-#' @param PNG Save as PNG (TRUE) or PDF (FALSE); Default: `TRUE`.
+#' @param PNG Deprecated in favor of `also.pdf`. A .png is always saved; setting `PNG = FALSE`
+#' is equivalent to `also.pdf = TRUE` and additionally saves a .pdf; Default: `TRUE`.
+#' @param also.pdf If TRUE, the plot is also saved as a .pdf, in addition to the .png; Default: `FALSE`.
+#' @param save.obj If TRUE, the ggplot object is also saved as a `.qs` file; Default: `getOption("gg.save.obj", FALSE)`.
+#' @param show_plot If TRUE, the plot is displayed / returned visibly; Default: `TRUE`.
 #' @param check_for_2D Ensure UMAP is 2D; Default: `TRUE`.
 #' @param ... Additional parameters for `DimPlot`.
 #'
@@ -2321,11 +2338,13 @@ qUMAP <- function(
 #' \dontrun{
 #' clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj)
 #' clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj, cols = RColorBrewer::brewer.pal(8, "Dark2"))
+#' clUMAP(ident = "integrated_snn_res.0.5", obj = yourSeuratObj, also.pdf = TRUE, show_plot = FALSE)
 #' }
 #'
 #' @importFrom ggplot2 ggtitle labs coord_fixed ggsave
 #' @importFrom Seurat DimPlot NoLegend NoAxes
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom ggExpress qqSave
 #'
 #' @export
 clUMAP <- function(
@@ -2356,6 +2375,9 @@ clUMAP <- function(
   save.plot = getOption("su.save.plot", TRUE),
   # MarkdownHelpers::TRUE.unless("b.save.wplots", v = FALSE),
   PNG = TRUE,
+  also.pdf = FALSE,
+  save.obj = getOption("gg.save.obj", FALSE),
+  show_plot = TRUE,
   check_for_2D = TRUE,
   ...
 ) {
@@ -2473,11 +2495,14 @@ clUMAP <- function(
     # Save plot ___________________________________________________________
     if (save.plot) {
       pname <- sppp(prefix, plotname, paste0(ncol(obj), "c"), suffix, sppp(highlight.clusters))
-      fname <- ww.FnP_parser(pname, if (PNG) "png" else "pdf")
-      try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w))
+      try(qqSave(
+        ggobj = gg.obj, title = pname,
+        also.pdf = also.pdf || !PNG, save.obj = save.obj,
+        w = if (is.null(w)) h else w, h = h
+      ))
     }
     tictoc::toc()
-    return(gg.obj)
+    if (show_plot) gg.obj else invisible(gg.obj)
   } # if not too many categories
 }
 
