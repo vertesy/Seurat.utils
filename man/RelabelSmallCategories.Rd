@@ -7,7 +7,7 @@
 RelabelSmallCategories(
   obj,
   col_in,
-  backup_col_name = ppp(col_in, "orig"),
+  backup_col_name = Stringendo::ppp(col_in, "orig"),
   min_count = 100,
   small_label = "Other",
   v = TRUE

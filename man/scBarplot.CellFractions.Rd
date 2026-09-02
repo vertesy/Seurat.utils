@@ -10,7 +10,7 @@ scBarplot.CellFractions(
   obj = combined.obj,
   downsample = FALSE,
   min.nr.sampled.cells = 200,
-  plotname = kppws("Cell proportions of", fill.by, "by", group.by),
+  plotname = Stringendo::kppws("Cell proportions of", fill.by, "by", group.by),
   suffix = NULL,
   prefix = NULL,
   sub_title = suffix,

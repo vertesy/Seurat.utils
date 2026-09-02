@@ -854,7 +854,6 @@ SelectHighlyExpressedGenesq99 <- function(genes, obj = combined.obj,
 }
 
 
-
 # _________________________________________________________________________________________________
 #' @title AreTheseCellNamesTheSame
 #'

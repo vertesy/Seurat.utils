@@ -11,7 +11,7 @@ scBarplotEnrichr(
   tag = "...",
   universe = df.enrichment@universe,
   title = paste("GO Enriched Terms", tag),
-  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+  subtitle = Stringendo::kppws("Input: ", Stringendo::substitute_deparse(df.enrichment)),
   caption = paste0("Input genes: ", length(df.enrichment@gene), " | Enriched terms: ",
     nrow(df.enrichment), " | Shown: ", min(showCategory, nrow(df.enrichment)),
     " | background genes: ", length(universe)),

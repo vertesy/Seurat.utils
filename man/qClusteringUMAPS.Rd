@@ -6,15 +6,15 @@
 \usage{
 qClusteringUMAPS(
   obj = combined.obj,
-  idents = na.omit.strip(GetClusteringRuns(obj)[1:4]),
+  idents = CodeAndRoll2::na.omit.strip(GetClusteringRuns(obj)[1:4]),
   prefix = "Clustering.UMAP.Res",
   suffix = "",
   nrow = 2,
   ncol = 2,
   w = 2 * 11.69,
   h = 2 * 8.27,
-  title = sppu(prefix, as.numeric(stringr::str_extract(idents, "\\\\d+\\\\.\\\\d+$")),
-    suffix),
+  title = Stringendo::sppu(prefix, as.numeric(stringr::str_extract(idents,
+    "\\\\d+\\\\.\\\\d+$")), suffix),
   ...
 )
 }

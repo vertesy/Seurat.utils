@@ -23,7 +23,6 @@ devtools::check_man(repository.dir)
 PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
 
 
-
 # Automated Codebase linting to tidyverse style ------------------------------------------------
 styler::style_pkg(repository.dir)
 # styler::style_file("~/GitHub/Packages/Seurat.utils/R/Seurat.Utils.Visualization.R")
@@ -37,7 +36,7 @@ for (scriptX in ls.scripts.full.path) {
 
 
 PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
-'git add commit push to remote'
+
 
 # Install your package ------------------------------------------------
 "disable rprofile by"

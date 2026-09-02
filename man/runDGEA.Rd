@@ -12,7 +12,7 @@ runDGEA(
   reorder.clusters = if (is.null(ident)) TRUE else FALSE,
   reorder.dimension = 1,
   directory,
-  subdirectory = ppp("DGEA_res", idate()),
+  subdirectory = Stringendo::ppp("DGEA_res", Stringendo::idate()),
   add.combined.score = TRUE,
   save.obj = TRUE,
   calculate.DGEA = TRUE,

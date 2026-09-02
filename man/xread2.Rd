@@ -37,8 +37,8 @@ Default: \code{TRUE}.}
 \item{disk2mem_size_inflation}{Estimated expansion factor of \code{.qs} file once in memory.
 Default: \code{3}.}
 
-\item{...}{Additional arguments passed to \code{qs2::qs_read()} (or \code{qs::qread()} if
-'qs2' is not installed). Default: none.}
+\item{...}{Additional arguments passed to \code{qs2::qs_read()} (or \code{qs::qread()} if 'qs2' is
+not installed). Default: none.}
 }
 \value{
 Invisibly returns the loaded object.

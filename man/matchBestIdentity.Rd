@@ -10,7 +10,7 @@ matchBestIdentity(
   reference_ident = GetOrderedClusteringRuns(obj)[1],
   prefix = reference_ident,
   suffix = gsub(prefix, "", x = reference_ident),
-  new_ident_name = kpp(prefix, ident_to_rename, "match.to", suffix),
+  new_ident_name = Stringendo::kpp(prefix, ident_to_rename, "match.to", suffix),
   plot_suffix = prefix,
   barplot_match = TRUE,
   barplot_fractions = TRUE,

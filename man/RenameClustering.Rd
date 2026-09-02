@@ -8,7 +8,7 @@ RenameClustering(
   namedVector = ManualNames,
   orig.ident = "RNA_snn_res.0.3",
   suffix.new.ident = "ManualNames",
-  new.ident = ppp(orig.ident, suffix.new.ident),
+  new.ident = Stringendo::ppp(orig.ident, suffix.new.ident),
   obj = combined.obj,
   suffix.plot = "",
   plot_umaps = TRUE,

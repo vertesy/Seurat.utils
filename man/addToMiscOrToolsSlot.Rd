@@ -8,9 +8,9 @@ addToMiscOrToolsSlot(
   obj,
   pocket_name = "misc",
   slot_value = NULL,
-  slot_name = substitute_deparse(slot_value),
+  slot_name = Stringendo::substitute_deparse(slot_value),
   sub_slot_value = NULL,
-  sub_slot_name = substitute_deparse(sub_slot_value),
+  sub_slot_name = Stringendo::substitute_deparse(sub_slot_value),
   overwrite = FALSE
 )
 }

@@ -10,7 +10,7 @@ xsave(
   prefix = NULL,
   nthreads = if (object.size(obj) < 1e+07) 1 else .getNrCores(12),
   preset = "high",
-  project = getProject(),
+  project = CodeAndRoll2::getProject(),
   dir = if (exists("OutDir")) OutDir else getwd(),
   showMemObject = TRUE,
   saveParams = if (exists("p")) TRUE else FALSE,
