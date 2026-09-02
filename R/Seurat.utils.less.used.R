@@ -46,7 +46,7 @@ Convert10Xfolders_v1 <- function(
   sort_alphanumeric = TRUE,
   ...
 ) {
-  warning("Since v2.9.0, the output is saved into qs format with qs2 package.", immediate. = TRUE)
+  warning("Since v2.9.0, the output is saved into qs format with the qs2 package (falling back to qs if qs2 is not installed).", immediate. = TRUE)
 
   compress_level <- .map_preset_to_compress_level(preset)
 
@@ -92,8 +92,8 @@ Convert10Xfolders_v1 <- function(
       # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
       LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
 
-      LSBnameOUT <- Stringendo::ppp(paste0(InputDir, "/LSB.", fnameIN), "qs")
-      qs2::qs_save(object = LSB, file = LSBnameOUT, compress_level = compress_level)
+      LSBnameOUT <- ppp(paste0(InputDir, "/LSB.", fnameIN), "qs")
+      .qsave_compat(object = LSB, file = LSBnameOUT, compress_level = compress_level, preset = preset)
     } else {
       print("More than 2 elements in the list of matrices")
     }
@@ -112,7 +112,7 @@ Convert10Xfolders_v1 <- function(
     if (updateHGNC) seu <- UpdateGenesSeurat(seu, EnforceUnique = TRUE, ShowStats = TRUE)
 
     # write out --- --- ---
-    qs2::qs_save(object = seu, file = f.path.out, nthreads = nthreads, compress_level = compress_level)
+    .qsave_compat(object = seu, file = f.path.out, nthreads = nthreads, compress_level = compress_level, preset = preset)
 
     # write cellIDs ---  --- ---
     if (writeCBCtable) {

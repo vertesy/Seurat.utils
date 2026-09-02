@@ -41,7 +41,6 @@ Imports:
     pheatmap,
     plotly,
     princurve,
-    qs,
     R.utils,
     RColorBrewer,
     readr,
@@ -55,10 +54,12 @@ Imports:
     stringr,
     tibble,
     tictoc
-Suggests: 
+Suggests:
     clusterProfiler,
     DatabaseLinke.R,
     enrichplot,
+    qs,
+    qs2,
     vroom
 Encoding: UTF-8
 Packaged: 2026-09-01 14:19:18.767987
