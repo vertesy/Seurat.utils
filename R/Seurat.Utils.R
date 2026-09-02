@@ -4084,7 +4084,6 @@ AddNewAnnotation <- function(
 #' }
 #' @seealso
 #' `Seurat::subset.Seurat()`
-#' @importFrom ReadWriter read.simple.tsv
 #'
 #' @export
 whitelist.subset.ls.Seurat <- function(
@@ -4861,7 +4860,7 @@ ConvertDropSeqfolders <- function(
       Stringendo::iprint("")
       Stringendo::iprint("      EXPRESSION MATRIX TOO SMALL.", nrow(count_matrix), "x", ncol(count_matrix), ". Not processed.")
     } else {
-      count_matrix <- ReadWriter::FirstCol2RowNames(count_matrix)[, -1] # remove 1st "Cell column" # https://github.com/vertesy/SEO/issues/63
+      count_matrix <- ReadWriter::column.2.row.names(count_matrix)[, -1] # remove 1st "Cell column" # https://github.com/vertesy/SEO/issues/63
       seu <- CreateSeuratObject(
         counts = count_matrix, project = fnameIN,
         min.cells = min.cells, min.features = min.features
@@ -6056,7 +6055,7 @@ jPresenceMatrix <- function(string_list = lst(a = 1:3, b = 2:5, c = 4:9, d = -1:
     unnest(cols = "value") |>
     count(name, value) |>
     spread(value, n, fill = 0)
-  df.presence2 <- ReadWriter::FirstCol2RowNames(df.presence)
+  df.presence2 <- ReadWriter::column.2.row.names(df.presence)
   return(t(df.presence2))
 }
 
