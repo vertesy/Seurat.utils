@@ -40,9 +40,7 @@ Open each PR with a few bullets per major change: what was wrong, how it was fix
 
 ### 4. Update the Source, Not Just the Documentation
 
-Documentation is generated from upstream sources: `.Rd` files from roxygen annotations and `DESCRIPTION` from `Development/Dependencies.R` via `config.R`.
-
-Package rebuilds overwrite these files, so always update the upstream source first, then regenerate the documentation.
+Documentations rebuilt and overwritten from upstream sources: `.Rd` files from roxygen annotations and DESCRIPTION and NAMESPACE from  `config.R` by `PackageTools::document_and_create_package()` relying on  `devtools::document()`  when I manually, regularly run `/Development/MYPACKAGE/Development/Create_the_MYPACKAGE_Package.R")`. Thus  always update the upstream sources first, then fix the downstream documentations correspondingly.
 
 ## II: Repos of R function libraries
 
