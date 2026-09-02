@@ -34,7 +34,6 @@ for (scriptX in ls.scripts.full.path) {
   PackageTools::replace_short_calls(scriptX)
 }
 
-
 PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
 
 

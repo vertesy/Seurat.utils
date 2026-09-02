@@ -62,6 +62,6 @@ Suggests:
     qs2,
     vroom
 Encoding: UTF-8
-Packaged: 2026-09-02 15:20:44.581461
+Packaged: 2026-09-02 17:05:30.739669
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
