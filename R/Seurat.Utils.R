@@ -6141,7 +6141,7 @@ compareVarFeaturesAndRanks <- function(
     print(plt)
   }
 
-  unique.genes <- symdiff(var.genes1, var.genes2)
+  unique.genes <- CodeAndRoll2::symdiff(var.genes1, var.genes2)
   names(unique.genes) <- paste0("Unique.", c(name1, name2))
   return(list(
     "common_genes" = common_genes,
