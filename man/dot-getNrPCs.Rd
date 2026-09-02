@@ -10,6 +10,8 @@
 \item{obj}{A Seurat object containing PCA cell embeddings in \code{reductions$pca@cell.embeddings}}
 
 \item{v}{Verbose? Default: \code{TRUE}.}
+
+\item{reduc}{Name of the dimensionality reduction to use. Default: \code{'pca'}.}
 }
 \value{
 Integer representing the number of principal components

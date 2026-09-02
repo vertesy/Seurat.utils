@@ -124,7 +124,6 @@ file.edit(paste0(repository.dir, "README.md"))
 
 
 
-
 PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
 devtools::install_local(repository.dir, upgrade = F)
 

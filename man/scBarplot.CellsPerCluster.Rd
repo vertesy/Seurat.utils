@@ -28,11 +28,15 @@ Default: First entry from ordered clustering runs.}
 
 \item{sort}{If TRUE, sorts clusters by size. Default: \code{FALSE}.}
 
+\item{plotname}{Title for the plot. Default: "Cells per Identity Group".}
+
 \item{sub}{Subtitle for the plot. Default: "identity".}
 
 \item{label}{If TRUE, shows cell count or percentage based on the label vector. Default: \code{TRUE}.}
 
 \item{suffix}{Optional suffix for file naming. Used in conjunction with \code{kpp}.}
+
+\item{col}{Custom color vector for the bars; optional. Default: \code{NULL}.}
 
 \item{palette}{Color palette for the barplot. Default: 'glasbey'.}
 
@@ -43,8 +47,6 @@ Default: First entry from ordered clustering runs.}
 \item{min.cells}{Minimum cell count threshold for categories. Adjusted by data size.}
 
 \item{...}{Additional parameters for internal function calls.}
-
-\item{title}{Title for the plot. Default: "Cells per Identity Group".}
 }
 \description{
 Visualizes the fraction of cells within each cluster through a barplot.

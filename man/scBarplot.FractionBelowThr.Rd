@@ -25,6 +25,12 @@ scBarplot.FractionBelowThr(
 \item{obj}{Seurat object with cell data. Default: \code{combined.obj}.}
 
 \item{return.df}{If TRUE, returns the data frame instead of the plot. Default: \code{FALSE}.}
+
+\item{subtitle}{Optional subtitle for the plot. Default: \code{id.col}.}
+
+\item{suffix}{Suffix for the output file name.}
+
+\item{...}{Additional parameters passed on to \code{scBarplot.FractionAboveThr}.}
 }
 \description{
 Generates a bar plot to visualize the percentage of cells within each cluster that

@@ -15,7 +15,7 @@ GetOrderedClusteringRuns(
 
 \item{res}{Clustering resolution to use, Default: \code{FALSE}.}
 
-\item{pat}{Pattern to match, Default: '\emph{snn_res.}\link{0,1}\.\link{0-9}\.ordered$'}
+\item{pat}{Pattern to match, Default: \code{'*snn_res.*[0,1]\\.[0-9]\\.ordered$'}}
 }
 \description{
 Get Clustering Runs: metadata column names.

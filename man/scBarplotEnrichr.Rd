@@ -28,6 +28,8 @@ scBarplotEnrichr(
 
 \item{showCategory}{Integer. Number of categories (GO-terms as bars) to show in the plot. Default: 20.}
 
+\item{label_format}{Integer. Wrap length (in characters) for category labels. Default: 30.}
+
 \item{tag}{Character. Tag to be added to the title of the plot. Default: "in ...".}
 
 \item{universe}{Character. Background gene list (universe). Default: \code{df.enrichment@universe}.}

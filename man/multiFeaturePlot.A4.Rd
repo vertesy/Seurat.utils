@@ -57,7 +57,11 @@ eg: \code{c("Astrocytes" = "AQP4")} ? Default: \code{TRUE}.}
 
 \item{nr.Row}{Number of rows in the plot grid. Default: 4}
 
+\item{raster}{Should the plots be rasterized? Default: \code{TRUE} if the object has more than 1e5 cells, else \code{FALSE}.}
+
 \item{cex}{Point size in the plot. Default: round(0.1/(nr.Col * nr.Row), digits = 2)}
+
+\item{cex.min}{Minimum point size used when \code{raster} is \code{TRUE}. Default: \code{TRUE} if \code{raster}, else \code{FALSE}.}
 
 \item{gene.min.exp}{Minimum gene expression level for plotting. Default: 'q01'}
 

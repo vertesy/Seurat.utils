@@ -43,7 +43,11 @@ scEmapplotEnrichr(
 
 \item{caption}{Character. Caption. Default: constructed from input parameters.}
 
+\item{label_format}{Integer. Wrap length (in characters) for node labels. Default: \code{NULL}.}
+
 \item{layout}{Character. igraph layout name passed to emapplot. Default: "kk".}
+
+\item{cex_label_category}{Numeric. Scaling factor for the category label size. Default: 0.8.}
 
 \item{save}{Logical. Whether to save the plot. Default: TRUE.}
 

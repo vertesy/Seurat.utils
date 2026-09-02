@@ -72,6 +72,9 @@ clUMAP(
 
 \item{palette}{Color palette for generating cluster colors; Default: 'glasbey'.}
 
+\item{max.cols.for.std.palette}{Maximum number of categories before switching from the standard
+\code{palette} to a large, auto-generated color palette; Default: 7.}
+
 \item{highlight.clusters}{Specific clusters to be highlighted; optional; Default: NULL.}
 
 \item{cells.highlight}{Specific cells to be highlighted; optional; Default: NULL.}

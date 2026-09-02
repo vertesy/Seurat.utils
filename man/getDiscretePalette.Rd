@@ -6,19 +6,10 @@
 \usage{
 getDiscretePalette()
 }
-\arguments{
-\item{ident.used}{The identity column used for determining the number of clusters, Default: GetClusteringRuns()\link{1}}
-
-\item{obj}{Seurat object, Default: combined.obj}
-
-\item{palette.used}{The name of the palette to use, Default: c("alphabet", "alphabet2",
-"glasbey", "polychrome", "stepped")\link{1}}
-
-\item{show.colors}{Whether to display the colors in the palette, Default: \code{FALSE}.}
-}
 \description{
 Safe wrapper around Seurat's DiscretePalette(), which returns NA's if too many
-categories are requested
+categories are requested. This function is deprecated; see \code{DiscretePaletteSafe} and
+\code{DiscretePaletteObj}.
 }
 \examples{
 \dontrun{

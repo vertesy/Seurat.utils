@@ -55,6 +55,8 @@
 #' @param transparency Point transparency on scatter plots. Default: 0.25.
 #' @param cex Size of points on scatter plots. Default: 0.75.
 #' @param theme.used A `ggplot2` theme for all plots. Default: `theme_bw(base_size = 18)`.
+#' @param par.ls A list of parameters used to source default thresholds (e.g. `thr.lp.mito`,
+#' `thr.hp.mito`, `thr.lp.ribo`, `thr.hp.ribo`, `thr.lp.nFeature_RNA`, `thr.hp.nFeature_RNA`). Default: `p`.
 # #' @param LabelDistFromTop Distance from top for label placement. Default: 200.
 #'
 #' @examples
@@ -394,10 +396,12 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
 #' the relative contribution of the most highly expressed genes to the overall transcriptome.
 #'
 #' @param obj A Seurat object containing gene expression data.
+#' @param assay Assay used to fetch gene expression data. Default: `DefaultAssay(obj)`.
 #' @param n.genes.barplot The number of top genes to be displayed in the final barplot, showing
 #' their expression as a percentage of the total UMIs. Default: 25.
 #' @param width.barplot The width of the barplot that visualizes the highest expressed genes.
 #' Default: a quarter of `n.genes.barplot`.
+#' @param ... Additional arguments, not used.
 #'
 #' @return The same Seurat object passed as input, but with an additional list in the `@misc` slot
 #' named `'TotalReadFraction'` that contains the relative total expression of each gene as a
@@ -525,6 +529,8 @@ plotGeneExpressionInBackgroundHist <- function(
 #' @param thr_expr Expression threshold for highlighting in the plot; Default: 10.
 #' @param suffix Additional text to append to the plot title; Default: NULL.
 #' @param prefix Additional text to prepend to the plot title; Default: NULL.
+#' @param plotname The base string used for the plot title, depending on whether the input is a
+#' single gene or a gene set; Default: `c("Summed Gene-set Expression -", "Expression of")`.
 #' @param xlab Label for the x-axis; Default: "log10(Summed UMI count @data)".
 #' @param return_cells_passing If TRUE, returns count of cells exceeding the expression threshold; Default: `TRUE`.
 #' @param clip_count_qtl_thr Quantile threshold for clipping if using count data; Default: 0.95.
@@ -659,6 +665,7 @@ plotGeneExprHistAcrossCells <- function(
 #' @param plot Logical. Whether to generate a plot.
 #' @param caption Character or NULL. Caption for the plot.
 #' @param ylab Character. Y-axis label.
+#' @param palette Character. Color palette passed to the plotting function, e.g. `ggpubr::ggboxplot()`. Default: 'jco'.
 #' @param ... Additional arguments passed to plotting functions.
 #'
 #' @return
@@ -950,6 +957,7 @@ PctCellsExpressingGenes <- function(genes, obj, assay = "RNA", min.expr = 1,
 #' are aggregated into an "Other" category.
 #' @param custom_col_palette Specifies whether to use a standard or custom color palette.
 #' @param color_scale Defines the color scale to use for the plot if a custom palette is selected.
+#' @param rnd_colors Shuffle the color palette randomly? Default: `FALSE`.
 #' @param show.total.cells Show total cells
 #' @param cex.total Label size for total cells
 #' @param xlab.angle Angle of x-axis labels.
@@ -1212,9 +1220,10 @@ scBarplot.CellFractions <- function(
 #' @param ident Cluster identity. Used to specify which clustering results to visualize.
 #' Default: First entry from ordered clustering runs.
 #' @param sort If TRUE, sorts clusters by size. Default: `FALSE`.
-#' @param title Title for the plot. Default: "Cells per Identity Group".
+#' @param plotname Title for the plot. Default: "Cells per Identity Group".
 #' @param sub Subtitle for the plot. Default: "identity".
 #' @param label If TRUE, shows cell count or percentage based on the label vector. Default: `TRUE`.
+#' @param col Custom color vector for the bars; optional. Default: `NULL`.
 #' @param palette Color palette for the barplot. Default: 'glasbey'.
 #' @param return_table If TRUE, returns the data used for plotting instead of the plot itself. Default: `FALSE`.
 #' @param min.cells Minimum cell count threshold for categories. Adjusted by data size.
@@ -1323,6 +1332,7 @@ scBarplot.CellsPerCluster <- function(
 #' @param ext File extension for saving the plot. Default: '.png'.
 #' @param suffix Suffix for the output file name.
 #' @param above Whether to calculate the fraction of cells above or below the threshold. Default: `TRUE`.
+#' @param ylim Limits for the y-axis. Default: `c(0, 100)`.
 #' @param ... Additional parameters for plotting functions.
 #'
 #' @examples
@@ -1426,6 +1436,9 @@ scBarplot.FractionAboveThr <- function(
 #' @param id.col Cluster identifier in metadata. Default: 'cl.names.top.gene.res.0.3'.
 #' @param obj Seurat object with cell data. Default: `combined.obj`.
 #' @param return.df If TRUE, returns the data frame instead of the plot. Default: `FALSE`.
+#' @param subtitle Optional subtitle for the plot. Default: `id.col`.
+#' @param suffix Suffix for the output file name.
+#' @param ... Additional parameters passed on to `scBarplot.FractionAboveThr`.
 #'
 #' @examples
 #' \dontrun{
@@ -1642,12 +1655,8 @@ gg_color_hue <- function(n) {
 #' @title Safely generate a discrete color palette (NA).
 #'
 #' @description Safe wrapper around Seurat's DiscretePalette(), which returns NA's if too many
-#' categories are requested
-#' @param ident.used The identity column used for determining the number of clusters, Default: GetClusteringRuns()[1]
-#' @param obj Seurat object, Default: combined.obj
-#' @param palette.used The name of the palette to use, Default: c("alphabet", "alphabet2",
-#' "glasbey", "polychrome", "stepped")[1]
-#' @param show.colors Whether to display the colors in the palette, Default: `FALSE`.
+#' categories are requested. This function is deprecated; see `DiscretePaletteSafe` and
+#' `DiscretePaletteObj`.
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
@@ -1893,8 +1902,10 @@ SeuratColorVector <- function(ident = NULL, obj = combined.obj, plot.colors = FA
 #' @param scale Character indicating if the values should be scaled in the row direction,
 #'   column direction, both ('row', 'column', 'none'). Defaults to "column".
 #' @param cluster_rows Logical indicating whether to cluster rows. Defaults to FALSE.
+#' @param display_numbers Logical indicating whether to display the numeric values in the heatmap cells. Defaults to TRUE.
 #' @param show_rownames Logical indicating whether to show row names. Defaults to TRUE.
 #' @param show_colnames Logical indicating whether to show column names. Defaults to TRUE.
+#' @param rowname_column Column index or name used as the row names of the heatmap matrix. Defaults to 1.
 #' @param ... Additional arguments passed to `pheatmap::pheatmap`.
 #'
 #' @details This function loops through each metric in the `results`, creates a heatmap
@@ -2019,6 +2030,8 @@ qFeatureScatter <- function(
 #' @param obj A Seurat object to be plotted.
 #' @param feature A character string specifying the name of the feature to plot.
 #' @param ident A character vector specifying the identities to be used in the plot.
+#' @param assay Assay to fetch the feature from. Default: `'RNA'`.
+#' @param slot Slot/layer of the assay to fetch the feature from. Default: `'data'`.
 #' @param split.by A character string specifying the grouping variable for splitting the plot.
 #' @param colors A character vector specifying the colors to use for the plot.
 #' @param clip.outliers A logical indicating whether to clip outliers.
@@ -2301,6 +2314,8 @@ qUMAP <- function(
 #' @param plotname Custom plot name for saving; Default: dynamically generated from `reduction` and `ident`.
 #' @param cols Custom color vector for clusters; optional; Default: NULL.
 #' @param palette Color palette for generating cluster colors; Default: 'glasbey'.
+#' @param max.cols.for.std.palette Maximum number of categories before switching from the standard
+#' `palette` to a large, auto-generated color palette; Default: 7.
 #' @param highlight.clusters Specific clusters to be highlighted; optional; Default: NULL.
 #' @param cells.highlight Specific cells to be highlighted; optional; Default: NULL.
 #' @param cols.highlight Color for highlighted cells; Default: 'red'.
@@ -2594,7 +2609,9 @@ DimPlot.ClusterNames <- function(
 #' @param colors Vector of colors to be used in the plot. Default: c("grey", "red")
 #' @param nr.Col Number of columns in the plot grid. Default: 2
 #' @param nr.Row Number of rows in the plot grid. Default: 4
+#' @param raster Should the plots be rasterized? Default: `TRUE` if the object has more than 1e5 cells, else `FALSE`.
 #' @param cex Point size in the plot. Default: round(0.1/(nr.Col * nr.Row), digits = 2)
+#' @param cex.min Minimum point size used when `raster` is `TRUE`. Default: `TRUE` if `raster`, else `FALSE`.
 #' @param gene.min.exp Minimum gene expression level for plotting. Default: 'q01'
 #' @param gene.max.exp Maximum gene expression level for plotting. Default: 'q99'
 #' @param prefix Prefix for the plot filenames. Default: NULL
@@ -3062,14 +3079,16 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj,
 #'
 #' @param obj Seurat object containing single-cell RNA-seq data and clustering information;
 #' Default: `combined.obj`.
-#' @param cl_res Cluster resolution used to identify distinct clusters for analysis; Default: `res`.
+#' @param cl_res Cluster resolution used to identify distinct clusters for analysis;
+#' Default: `GetClusteringRuns()[1]`.
 #' @param nrGenes Number of top DE genes to display for each cluster;
-#' Default: GetClusteringRuns()[1].
+#' Default: `p$"n.markers"`.
 #' @param order.by Criteria for ranking DE genes within clusters; Default: `"combined.score"`.
 #' @param df_markers Data frame or list of DE genes across clusters. If not provided,
 #' attempts to retrieve from `obj@misc$df.markers[[paste0("res.", cl_res)]]`;
 #' Default: calculated based on `cl_res`.
 #' @param filt_coding_genes Logical indicating whether to filter out non-coding genes; Default: `TRUE`.
+#' @param ... Additional arguments, not used.
 #'
 #' @examples
 #' \dontrun{
@@ -3337,6 +3356,8 @@ FlipReductionCoordinates <- function(
 #' @param ident Clustering resolution identifier used to fetch cluster labels from `obj` metadata;
 #' Default: 'integrated_snn_res.0.5'.
 #' @param plot If TRUE, plots the UMAP with new cluster names; Default: `TRUE`.
+#' @param obj.version Seurat object version, used to determine dimension name capitalization;
+#' Default: `obj@version`.
 #'
 #' @examples
 #' \dontrun{
@@ -3912,6 +3933,7 @@ filterGoEnrichment <- function(df.enrichments,
 #'
 #' @param df.enrichment Data frame. Enrichment results from GO analysis. Default: NULL.
 #' @param showCategory Integer. Number of categories (GO-terms as bars) to show in the plot. Default: 20.
+#' @param label_format Integer. Wrap length (in characters) for category labels. Default: 30.
 #' @param tag Character. Tag to be added to the title of the plot. Default: "in ...".
 #' @param universe Character. Background gene list (universe). Default: `df.enrichment@universe`.
 #' @param title Character. Title of the plot. Default: "GO Enrichment Analysis" followed by `tag`.
@@ -3997,6 +4019,7 @@ scBarplotEnrichr <- function(df.enrichment,
 #' @param w Numeric. Plot width. Default: 10.
 #' @param h Numeric. Plot height. Default: 10.
 #' @param also.pdf Logical. Save both PNG and PDF. Default: FALSE.
+#' @param save.obj Logical. Whether to save the ggplot object. Default: FALSE.
 #' @param ... Additional arguments passed to `enrichplot::dotplot`.
 #'
 #' @importFrom ggplot2 labs
@@ -4107,7 +4130,9 @@ scDotplotEnrichr <- function(
 #' @param title Character. Plot title. Default: "GO Enrichment Map" + tag.
 #' @param subtitle Character. Subtitle. Default: derived from input object.
 #' @param caption Character. Caption. Default: constructed from input parameters.
+#' @param label_format Integer. Wrap length (in characters) for node labels. Default: `NULL`.
 #' @param layout Character. igraph layout name passed to emapplot. Default: "kk".
+#' @param cex_label_category Numeric. Scaling factor for the category label size. Default: 0.8.
 #' @param save Logical. Whether to save the plot. Default: TRUE.
 #' @param also.pdf Logical. Save both png and pdf. Default: FALSE.
 #' @param save.obj Logical. Whether to save the ggplot object. Default: FALSE.
@@ -4208,6 +4233,8 @@ scEmapplotEnrichr <- function(
 #'   (e.g. logFC), names must match gene IDs in enrichment.
 #' @param showCategory Integer. Number of enriched terms to show. Default: 10.
 #' @param tag Character. Tag added to the plot title. Default: "...".
+#' @param NULL_input Logical. Whether `df.enrichment` is `NULL`, used to build fallback captions.
+#'   Default: `is.null(df.enrichment)`.
 #' @param title Character. Plot title. Default: "Gene-Concept Network" + tag.
 #' @param subtitle Character. Subtitle. Default: derived from input object.
 #' @param caption Character. Caption. Default: constructed from input parameters.
@@ -4217,6 +4244,7 @@ scEmapplotEnrichr <- function(
 #' @param cex_label_gene Numeric. Size of gene labels. Default: same as cex_label_category.
 #' @param node_label Character. Which nodes to label: "all", "gene",
 #'   or "category". Default: "category".
+#' @param title_size Numeric. Font size of the plot title. Default: 20.
 #' @param save Logical. Whether to save the plot. Default: TRUE.
 #' @param also.pdf Logical. Save both png and pdf. Default: FALSE.
 #' @param save.obj Logical. Whether to save the ggplot object. Default: FALSE.
@@ -4726,6 +4754,8 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
 #' @param annotate.by The cluster or grouping to be used for automatic annotation. Default: First returned result from GetNamedClusteringRuns(obj) function.
 #' @param alpha Opacity of the points in the plot. Default: 0.5
 #' @param dotsize The size of the dots in the plot. Default: 1.25
+#' @param col.names Names of the 3D UMAP coordinate columns to use. Default: `c("umap_1", "umap_2", "umap_3")`.
+#' @param assay Assay used to check gene/feature presence in the object. Default: 'RNA'.
 #' @param ... Pass any other parameter to the internally called `plotly::plot_ly`.
 #' @examples
 #' \dontrun{
@@ -4827,6 +4857,7 @@ plot3D.umap.gene <- function(
 #' @param annotate.by The cluster or grouping to be used for automatic annotation.
 #' Default: First returned result from GetNamedClusteringRuns(obj) function.
 #' @param dotsize The size of the dots in the plot. Default: 1.25
+#' @param col.names Names of the 3D UMAP coordinate columns to use. Default: `c("umap_1", "umap_2", "umap_3")`.
 #' @param ... Pass any other parameter to the internally called `plotly::plot_ly`.
 #' @examples
 #' \dontrun{
@@ -4904,9 +4935,8 @@ plot3D.umap <- function(
 #'
 #' @description Save a Plotly 3D scatterplot as an HTML file.
 #' @param plotly_obj The Plotly object to save.
-#' @param category The category of the plot.
-#' @param suffix A suffix to add to the filename.
-#' @param OutputDir The output directory.
+#' @param category. The category of the plot, used to name the output file. Default: `category`.
+#' @param suffix. A suffix to add to the filename. Default: `NULL`.
 #' @seealso
 #'  \code{\link[htmlwidgets]{saveWidget}}
 #' @examples \dontrun{

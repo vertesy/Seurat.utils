@@ -27,6 +27,8 @@ of common genes. Default: \code{FALSE}.}
 \item{plot_venn}{plot_venn}
 
 \item{suffix}{suffix}
+
+\item{...}{Additional arguments, not used.}
 }
 \value{
 A list containing the common genes and Spearman's rank correlation coefficient.

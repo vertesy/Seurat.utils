@@ -26,6 +26,8 @@ addTranslatedMetadata(
 \item{suffix}{A character string appended to \code{new_col_name} to form the final metadata column name. Default: \code{NULL}.}
 
 \item{plot}{A logical indicating whether to plot the UMAP for the new metadata. Default: FALSE.}
+
+\item{...}{Additional arguments passed to \code{clUMAP()} when \code{plot = TRUE}.}
 }
 \value{
 An updated Seurat object.

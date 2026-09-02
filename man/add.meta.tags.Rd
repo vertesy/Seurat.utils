@@ -9,7 +9,7 @@ add.meta.tags(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1)
 \arguments{
 \item{list.of.tags}{A list of tags to be added as metadata. Default: tags}
 
-\item{obj}{A Seurat object to which the metadata tags are to be added. Default: ls.Seurat[\link{1}]}
+\item{obj}{A Seurat object to which the metadata tags are to be added. Default: \code{ls.Seurat[[1]]}}
 
 \item{n}{The index specifying the dataset for which the tags should be applied. Default: 1}
 }

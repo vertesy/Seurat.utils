@@ -18,5 +18,5 @@ objects in the workspace. Default: \code{TRUE}.}
 Save the workspace with external gzip compression (CPU intensive).
 }
 \seealso{
-\code{\link[Stringendo]{kollapse}}, \code{\link[function]{iprint}}
+\code{\link[Stringendo]{kollapse}}, \code{Stringendo::iprint()}
 }

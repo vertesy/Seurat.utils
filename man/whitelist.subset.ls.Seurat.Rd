@@ -39,5 +39,5 @@ if (interactive()) {
 }
 }
 \seealso{
-\code{\link[Seurat]{subset}}
+\code{Seurat::subset.Seurat()}
 }

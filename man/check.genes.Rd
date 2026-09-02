@@ -30,6 +30,8 @@ verify their existence. Default: \code{FALSE}.}
 \item{data.slot}{Data slot of the assay to check for gene names. Default: \code{'data'}.}
 
 \item{verbose}{If \code{TRUE}, prints information about any missing genes. Default: \code{TRUE}.}
+
+\item{...}{Additional arguments, not used.}
 }
 \description{
 Verifies the presence of specified gene names within a Seurat object or

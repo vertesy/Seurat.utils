@@ -40,6 +40,8 @@ scBarplot.FractionAboveThr(
 
 \item{above}{Whether to calculate the fraction of cells above or below the threshold. Default: \code{TRUE}.}
 
+\item{ylim}{Limits for the y-axis. Default: \code{c(0, 100)}.}
+
 \item{...}{Additional parameters for plotting functions.}
 }
 \description{
