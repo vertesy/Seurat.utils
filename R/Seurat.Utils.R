@@ -5140,16 +5140,53 @@ isave.RDS <- function(
 }
 
 # Internal helper: read an object via qs2::qs_read() if available, else qs::qread().
+# 'qs' and 'qs2' use incompatible file formats. The preferred backend (from
+# .qs_backend()) is tried first; if it fails to parse the file (e.g. a 'qs2'
+# install trying to read a file written by the 'qs' fallback, or vice versa)
+# and the other package is also installed, a retry is made with that other
+# backend before giving up.
 .qread_compat <- function(file, nthreads = 1, ...) {
   stopifnot(
     is.character(file), length(file) == 1L, nchar(file) > 0L,
     is.numeric(nthreads), length(nthreads) == 1L, nthreads >= 1
   )
-  if (.qs_backend() == "qs2") {
-    qs2::qs_read(file = file, nthreads = nthreads, ...)
-  } else {
-    qs::qread(file = file, nthreads = nthreads, ...)
+  .read_with_backend <- function(pkg) {
+    if (pkg == "qs2") {
+      qs2::qs_read(file = file, nthreads = nthreads, ...)
+    } else {
+      qs::qread(file = file, nthreads = nthreads, ...)
+    }
   }
+
+  backend <- .qs_backend()
+  primary_error <- NULL
+  out <- tryCatch(
+    .read_with_backend(backend),
+    error = function(e) {
+      primary_error <<- e
+      NULL
+    }
+  )
+
+  if (!is.null(primary_error)) {
+    other <- if (backend == "qs2") "qs" else "qs2"
+    if (!requireNamespace(other, quietly = TRUE)) {
+      stop("Failed to read '", file, "' with '", backend, "': ", conditionMessage(primary_error), call. = FALSE)
+    }
+    out <- tryCatch(
+      .read_with_backend(other),
+      error = function(e) {
+        stop(
+          "Failed to read '", file, "': it does not appear to be readable by either backend.\n",
+          "  ", backend, " error: ", conditionMessage(primary_error), "\n",
+          "  ", other, " error: ", conditionMessage(e),
+          call. = FALSE
+        )
+      }
+    )
+  }
+
+  out
 }
 
 # _________________________________________________________________________________________________
