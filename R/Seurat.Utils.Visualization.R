@@ -74,7 +74,6 @@
 #'
 #' @importFrom ggplot2 ggplot ggtitle geom_point
 #' @importFrom Stringendo percentage_formatter
-#' @importFrom MarkdownHelpers llprint
 #' @importFrom cowplot plot_grid save_plot
 #'
 #' @export
