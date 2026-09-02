@@ -90,7 +90,7 @@ PlotFilters <- function(
   above.ribo = par.ls$"thr.hp.ribo",
   below.nFeature_RNA = if ("quantile.thr.lp.nFeature_RNA" %in% names(par.ls)) par.ls$"quantile.thr.lp.nFeature_RNA" else par.ls$"thr.lp.nFeature_RNA",
   above.nFeature_RNA = par.ls$"thr.hp.nFeature_RNA",
-  subdir = FixPlotName(
+  subdir = Stringendo::FixPlotName(
     "Filtering.plots",
     "mito", par.ls$"thr.hp.mito", par.ls$"thr.lp.mito",
     "ribo", par.ls$"thr.hp.ribo", par.ls$"thr.lp.ribo",
@@ -122,12 +122,12 @@ PlotFilters <- function(
 
   MarkdownHelpers::llprint(
     "We filtered for high quality cells based on the number of genes detected [", above.nFeature_RNA, ";", below.nFeature_RNA,
-    "] and the fraction of mitochondrial [", percentage_formatter(above.mito), ";", percentage_formatter(below.mito),
-    "] and ribosomal [", percentage_formatter(above.ribo), ";", percentage_formatter(below.ribo), "] reads."
+    "] and the fraction of mitochondrial [", Stringendo::percentage_formatter(above.mito), ";", Stringendo::percentage_formatter(below.mito),
+    "] and ribosomal [", Stringendo::percentage_formatter(above.ribo), ";", Stringendo::percentage_formatter(below.ribo), "] reads."
   )
 
   theme_set(theme.used)
-  OutDir <- FixPath(parentdir, subdir)
+  OutDir <- Stringendo::FixPath(parentdir, subdir)
 
   print(subdir)
 
@@ -146,7 +146,7 @@ PlotFilters <- function(
       nFtr_valid <- nFtr[nFtr > above.nFeature_RNA] # restrict to high-quality cells, otherwise the quantile may be Influenced by the amount of junk in the library.
 
       below.nFeature_RNA <- floor(quantile(nFtr_valid, probs = qval))
-      message(pc_TRUE(nFtr_valid < below.nFeature_RNA, NumberAndPC = TRUE, suffix = paste("cells below thr.", below.nFeature_RNA, "at quantile:", qval)))
+      message(CodeAndRoll2::pc_TRUE(nFtr_valid < below.nFeature_RNA, NumberAndPC = TRUE, suffix = paste("cells below thr.", below.nFeature_RNA, "at quantile:", qval)))
       stopifnot(below.nFeature_RNA > above.nFeature_RNA)
     }
 
@@ -177,14 +177,14 @@ PlotFilters <- function(
     )
 
     boolean_LC_cells <- metadata_df$"nFeature_RNA" <= above.nFeature_RNA
-    LQ <- pc_TRUE(boolean_LC_cells)
-    Doublets <- pc_TRUE(metadata_df$"nFeature_RNA"[!boolean_LC_cells] >= below.nFeature_RNA)
+    LQ <- CodeAndRoll2::pc_TRUE(boolean_LC_cells)
+    Doublets <- CodeAndRoll2::pc_TRUE(metadata_df$"nFeature_RNA"[!boolean_LC_cells] >= below.nFeature_RNA)
 
     A <- ggplot(data = metadata_df, aes(x = nFeature_RNA, fill = colour.thr.nFeature)) +
       geom_histogram(binwidth = 100) +
       ggtitle(paste(
         "Cells between", above.nFeature_RNA, "and", below.nFeature_RNA,
-        "UMIs are selected \n(", pc_TRUE(filt.nFeature_RNA), "), with",
+        "UMIs are selected \n(", CodeAndRoll2::pc_TRUE(filt.nFeature_RNA), "), with",
         LQ, "low-quality and", Doublets, "doublet cells excluded."
       )) +
       scale_y_log10() +
@@ -196,8 +196,8 @@ PlotFilters <- function(
 
     B <- ggplot2::ggplot(metadata_df, aes(x = nFeature_RNA, y = percent.mito)) +
       ggplot2::ggtitle(paste(
-        "Cells below", percentage_formatter(below.mito),
-        "mito reads are selected \n(with A:", pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")"
+        "Cells below", Stringendo::percentage_formatter(below.mito),
+        "mito reads are selected \n(with A:", CodeAndRoll2::pc_TRUE(filt.nFeature_RNA & filt.below.mito), ")"
       )) +
       ggplot2::geom_point(
         alpha = transparency, size = cex, show.legend = FALSE,
@@ -213,9 +213,9 @@ PlotFilters <- function(
 
     C <- ggplot(metadata_df, aes(x = nFeature_RNA, y = percent.ribo)) +
       ggtitle(paste(
-        "Cells below", percentage_formatter(below.ribo),
+        "Cells below", Stringendo::percentage_formatter(below.ribo),
         "ribo reads are selected \n(with A:",
-        pc_TRUE(filt.nFeature_RNA & filt.below.ribo), ")"
+        CodeAndRoll2::pc_TRUE(filt.nFeature_RNA & filt.below.ribo), ")"
       )) +
       geom_point(
         alpha = transparency, size = cex, show.legend = FALSE,
@@ -232,7 +232,7 @@ PlotFilters <- function(
     D <- ggplot(metadata_df, aes(x = percent.ribo, y = percent.mito)) +
       ggtitle(paste(
         "Final: All cells w/o extreme values are selected \n(with A,B,C:",
-        pc_TRUE(filt.nFeature_RNA & filt.below.mito & filt.below.ribo), ")"
+        CodeAndRoll2::pc_TRUE(filt.nFeature_RNA & filt.below.mito & filt.below.ribo), ")"
       )) +
       geom_point(
         alpha = transparency, size = cex, show.legend = FALSE,
@@ -280,12 +280,12 @@ PlotFilters <- function(
 
 
     # Save figure
-    fname <- kpps(OutDir, FixPlotName("Filtering.thresholds", suffices[i], filetype))
+    fname <- Stringendo::kpps(OutDir, Stringendo::FixPlotName("Filtering.thresholds", suffices[i], filetype))
     cowplot::save_plot(filename = fname, plot = px, base_height = 15)
     stopifnot(file.exists(fname))
   } # for
   # _________________________________________________________________________________________________
-  create_set_OutDir(parentdir)
+  MarkdownReports::create_set_OutDir(parentdir)
 }
 
 
@@ -372,7 +372,7 @@ scPlotPCAvarExplained <- function(obj = combined.obj,
   pct <- scCalcPCAVarExplained(obj)
   if (use.MarkdownReports) {
     MarkdownReports::wbarplot(pct, xlab = "Principal Components", ylab = "% of variation explained", ...)
-    barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5)
+    MarkdownReports::barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex = .5)
   } else {
     ggExpress::qbarplot(
       vec = pct, plotname = plotname, subtitle = sub,
@@ -433,11 +433,11 @@ PercentInTranscriptome <- function(
 
   total.Expr <- sort(rowSums(m.expr), decreasing = TRUE)
   relative.total.Expr <- total.Expr / sum(total.Expr)
-  print(head(iround(100 * relative.total.Expr), n = n.genes.barplot))
+  print(head(CodeAndRoll2::iround(100 * relative.total.Expr), n = n.genes.barplot))
 
   Relative.of.Total.Gene.Expression <- relative.total.Expr * 100
 
-  qhistogram(Relative.of.Total.Gene.Expression,
+  ggExpress::qhistogram(Relative.of.Total.Gene.Expression,
     logX = FALSE, logY = TRUE,
     plotname = "Gene expression as fraction of all transcripts *UMI's)",
     subtitle = "Percentage in RNA-counts",
@@ -448,8 +448,8 @@ PercentInTranscriptome <- function(
     ...
   )
 
-  Highest.Expressed.Genes <- head(iround(100 * relative.total.Expr), n = n.genes.barplot)
-  qbarplot(Highest.Expressed.Genes,
+  Highest.Expressed.Genes <- head(CodeAndRoll2::iround(100 * relative.total.Expr), n = n.genes.barplot)
+  ggExpress::qbarplot(Highest.Expressed.Genes,
     plotname = "Percentage of highest expressed genes",
     subtitle = "Total, in RNA-counts",
     xlab = "",
@@ -501,14 +501,14 @@ plotGeneExpressionInBackgroundHist <- function(
 
   GEX.Counts.total <- rowSums(GEX.Counts)
   genes.expression <- GEX.Counts.total[gene]
-  mean.expr <- iround(mean(GEX.Counts[gene, ]))
+  mean.expr <- CodeAndRoll2::iround(mean(GEX.Counts[gene, ]))
 
   suffx <- if (slot == "counts") "raw" else "normalised, logtransformed"
   (pname <- paste(gene, "and the", suffx, "transcript count distribution"))
 
   ggExpress::qhistogram(GEX.Counts.total,
     vline = genes.expression, logX = TRUE, w = w, h = h,
-    subtitle = paste("It belong to the top", pc_TRUE(GEX.Counts.total > genes.expression), "of genes (black line). Mean expr:", mean.expr),
+    subtitle = paste("It belong to the top", CodeAndRoll2::pc_TRUE(GEX.Counts.total > genes.expression), "of genes (black line). Mean expr:", mean.expr),
     plotname = pname, xlab = "Total Transcripts in Dataset", ylab = "Number of Genes",
     ...
   )
@@ -598,14 +598,14 @@ plotGeneExprHistAcrossCells <- function(
   }
 
   # Create annotation
-  CPT <- paste("layer:", layerX, "| assay:", assay, "| cutoff at", iround(thr_expr))
+  CPT <- paste("layer:", layerX, "| assay:", assay, "| cutoff at", CodeAndRoll2::iround(thr_expr))
 
   # Add a subtitle with the number of genes and the expression threshold
-  SUBT <- filter_HP(SummedExpressionPerCell, threshold = thr_expr, return_conclusion = TRUE, plot.hist = FALSE)
+  SUBT <- MarkdownHelpers::filter_HP(SummedExpressionPerCell, threshold = thr_expr, return_conclusion = TRUE, plot.hist = FALSE)
 
   if (aggregate) {
-    SUBT <- paste0(SUBT, "\n", length(genes), " genes summed up, e.g: ", kppc(head(genes)))
-    TTL <- kppd(prefix, plotname[1], suffix)
+    SUBT <- paste0(SUBT, "\n", length(genes), " genes summed up, e.g: ", Stringendo::kppc(head(genes)))
+    TTL <- Stringendo::kppd(prefix, plotname[1], suffix)
   } else {
     TTL <- trimws(paste(prefix, plotname[length(plotname)], paste(genes), suffix))
   }
@@ -629,7 +629,7 @@ plotGeneExprHistAcrossCells <- function(
     pobj <- pobj +
       ggplot2::geom_vline(xintercept = thr_expr[-1], col = 2, lty = 2, lwd = 1) +
       ggplot2::labs(caption = "Red line marks original estimate")
-    ggExpress::qqSave(ggobj = pobj, title = sppp(TTL, "w.orig")) # , ext = '.png'
+    ggExpress::qqSave(ggobj = pobj, title = Stringendo::sppp(TTL, "w.orig")) # , ext = '.png'
   }
 
 
@@ -733,7 +733,7 @@ PctCellsAboveX <- function(
   # 7. Re-group for box mode __________________________________
   if (box) {
     from_to <- split(df[[ident.box]], df[[ident]])
-    from_to <- list.2.replicated.name.vec(from_to)
+    from_to <- CodeAndRoll2::list.2.replicated.name.vec(from_to)
     pct_vec <- pct_vec[names(from_to)]
     pct_list <- split(pct_vec, f = from_to)
   }
@@ -741,17 +741,17 @@ PctCellsAboveX <- function(
   # 8. Plotting (your exact original code) ____________________
   if (plot) {
     if (is.null(caption)) {
-      caption <- pc_TRUE(is.na(pct_vec),
+      caption <- CodeAndRoll2::pc_TRUE(is.na(pct_vec),
         suffix = "of idents yielded NA/NaN & excluded from plot."
       )
     }
 
     TTL <- paste("Percentage of Cells Above Threshold for", feature)
     STL <- paste("Cells above threshold for", feature, "above", threshold)
-    SFX <- ppp(feature, "by", ident, "thr", threshold, "subset_ident", subset_ident)
+    SFX <- Stringendo::ppp(feature, "by", ident, "thr", threshold, "subset_ident", subset_ident)
 
     if (box) {
-      pobj <- qboxplot(
+      pobj <- ggExpress::qboxplot(
         pct_list,
         add = "dotplot",
         xlab.angle = 45,
@@ -765,9 +765,9 @@ PctCellsAboveX <- function(
         ...
       )
     } else {
-      pobj <- qbarplot(
+      pobj <- ggExpress::qbarplot(
         pct_vec,
-        label = percentage_formatter(pct_vec),
+        label = Stringendo::percentage_formatter(pct_vec),
         plotname = TTL,
         subtitle = STL,
         caption = caption,
@@ -987,7 +987,7 @@ scBarplot.CellFractions <- function(
   obj = combined.obj,
   downsample = FALSE,
   min.nr.sampled.cells = 200,
-  plotname = kppws("Cell proportions of", fill.by, "by", group.by),
+  plotname = Stringendo::kppws("Cell proportions of", fill.by, "by", group.by),
   suffix = NULL,
   prefix = NULL,
   sub_title = suffix,
@@ -1019,14 +1019,14 @@ scBarplot.CellFractions <- function(
     is.numeric(min_frequency) && length(min_frequency) == 1 && min_frequency >= 0 && min_frequency < 1, # min_frequency must be between 0 and 1
     group.by %in% colnames(obj@meta.data), # group.by must be a valid column in the meta.data slot of the Seurat object
     fill.by %in% colnames(obj@meta.data), # fill.by must be a valid column in the meta.data slot of the Seurat object
-    "To many categories for X axis (group.by)" = nr.unique(obj@meta.data[, group.by]) < 100
+    "To many categories for X axis (group.by)" = CodeAndRoll2::nr.unique(obj@meta.data[, group.by]) < 100
   )
 
   META <- obj@meta.data
 
   if (is.null(w)) {
-    categ_X <- nr.unique(META[, group.by])
-    categ_Y <- nr.unique(META[, fill.by])
+    categ_X <- CodeAndRoll2::nr.unique(META[, group.by])
+    categ_Y <- CodeAndRoll2::nr.unique(META[, fill.by])
     w <- ceiling(max(7, categ_Y / 4, categ_X / 1.5))
   }
 
@@ -1049,7 +1049,7 @@ scBarplot.CellFractions <- function(
     }
 
     # Update plot name and caption to reflect downsampling
-    plotname <- kpp(plotname, "downsampled")
+    plotname <- Stringendo::kpp(plotname, "downsampled")
     pname.suffix <- "(downsampled)"
 
     capt.suffix <- paste0(
@@ -1060,10 +1060,10 @@ scBarplot.CellFractions <- function(
 
 
   # Construct the caption based on downsampling and minimum frequency
-  PFX <- if (show_numbers) "Numbers denote # cells." else percentage_formatter(min.pct, prefix = "Labeled above")
+  PFX <- if (show_numbers) "Numbers denote # cells." else Stringendo::percentage_formatter(min.pct, prefix = "Labeled above")
   caption_ <- paste("Top: Total cells per bar. |", PFX, capt.suffix)
 
-  if (min_frequency > 0) caption_ <- paste(caption_, "\nCategories <", percentage_formatter(min_frequency), "are shown together as 'Other'")
+  if (min_frequency > 0) caption_ <- paste(caption_, "\nCategories <", Stringendo::percentage_formatter(min_frequency), "are shown together as 'Other'")
   pname_ <- paste(plotname, pname.suffix)
 
 
@@ -1095,12 +1095,12 @@ scBarplot.CellFractions <- function(
 
     categories <- unique(prop_table$"category")
     n.categories <- length(categories)
-    message(n.categories, " Y-categories present: ", kppc(sort(categories)))
+    message(n.categories, " Y-categories present: ", Stringendo::kppc(sort(categories)))
 
     # join the proportions back to the original data
     META <- left_join(META, prop_table, by = fill.by)
 
-    subtt <- kppws(group.by, "|", ncol(obj), "cells", sub_title)
+    subtt <- Stringendo::kppws(group.by, "|", ncol(obj), "cells", sub_title)
 
 
     if (downsample) {
@@ -1178,10 +1178,10 @@ scBarplot.CellFractions <- function(
     if (save_plot) {
       # sfx <- shorten_clustering_names(group.by)
       sfx <- if (!is.null(suffix)) suffix else NULL
-      if (min_frequency) sfx <- sppp(sfx, min_frequency)
-      qqSave(
-        ggobj = pl, title = FixPlotName(plotname), also.pdf = also.pdf, w = w, h = h,
-        suffix = sppp(sfx, "fr.barplot")
+      if (min_frequency) sfx <- Stringendo::sppp(sfx, min_frequency)
+      ggExpress::qqSave(
+        ggobj = pl, title = Stringendo::FixPlotName(plotname), also.pdf = also.pdf, w = w, h = h,
+        suffix = Stringendo::sppp(sfx, "fr.barplot")
         # , ...
       )
     } # save_plot
@@ -1195,7 +1195,7 @@ scBarplot.CellFractions <- function(
 
   if (save_table) {
     ReadWriter::write.simple.xlsx(CT_freq_sc,
-      filename = sppp(FixPlotName(plotname), suffix, "fr.barplot")
+      filename = Stringendo::sppp(Stringendo::FixPlotName(plotname), suffix, "fr.barplot")
       # suffix = sppp(FixPlotName(plotname), "fr.barplot")
     )
   }
@@ -1268,7 +1268,7 @@ scBarplot.CellsPerCluster <- function(
   lbl <- if (isFALSE(label)) {
     NULL
   } else if (label == "percent") {
-    percentage_formatter(cell.per.cluster / sum(cell.per.cluster), digitz = 2)
+    Stringendo::percentage_formatter(cell.per.cluster / sum(cell.per.cluster), digitz = 2)
   } else if (isTRUE(label)) {
     cell.per.cluster
   } else {
@@ -1276,14 +1276,14 @@ scBarplot.CellsPerCluster <- function(
   }
 
   min.PCT.cells <- min.cells / ncol(obj)
-  message("min cell thr: ", min.cells, " corresponding to min: ", percentage_formatter(min.PCT.cells))
+  message("min cell thr: ", min.cells, " corresponding to min: ", Stringendo::percentage_formatter(min.PCT.cells))
 
   n.clusters <- length(cell.per.cluster)
   nr.cells.per.cl <- table(obj[[ident]][, 1], useNA = "ifany")
 
-  SBT <- pc_TRUE(nr.cells.per.cl < min.cells,
+  SBT <- CodeAndRoll2::pc_TRUE(nr.cells.per.cl < min.cells,
     NumberAndPC = TRUE,
-    suffix = paste("of identities are below:", min.cells, "cells, or", percentage_formatter(min.PCT.cells), "of all cells.")
+    suffix = paste("of identities are below:", min.cells, "cells, or", Stringendo::percentage_formatter(min.PCT.cells), "of all cells.")
   )
 
   color <- if (is.null(col)) 1:n.clusters else col
@@ -1295,7 +1295,7 @@ scBarplot.CellsPerCluster <- function(
   pl <- ggExpress::qbarplot(cell.per.cluster,
     plotname = plotname,
     subtitle = paste0(sub, "\n", SBT),
-    suffix = kpp(ident, ncol(obj), "c", suffix),
+    suffix = Stringendo::kpp(ident, ncol(obj), "c", suffix),
     col = color,
     caption = .parseBasicObjStats(obj = obj),
     xlab.angle = 45,
@@ -1382,7 +1382,7 @@ scBarplot.FractionAboveThr <- function(
     } else {
       metacol[, value.col] < thrX
     }
-  total_average <- iround(100 * mean(pass))
+  total_average <- CodeAndRoll2::iround(100 * mean(pass))
 
   df_2vec <-
     if (above) {
@@ -1395,18 +1395,18 @@ scBarplot.FractionAboveThr <- function(
   (v.fr_n_cells_above <- 100 * deframe(df_2vec))
 
   tag <- if (above) "above" else "below"
-  if (is.null(label)) label <- percentage_formatter(deframe(df_2vec), digitz = 2)
+  if (is.null(label)) label <- Stringendo::percentage_formatter(deframe(df_2vec), digitz = 2)
 
   pname <- paste("Pc. cells", tag, value.col, "of", thrX)
   ggobj <- ggExpress::qbarplot(v.fr_n_cells_above,
     label = label,
     plotname = pname,
-    filename = FixPlotName(kpp(pname, id.col, ext)),
+    filename = Stringendo::FixPlotName(Stringendo::kpp(pname, id.col, ext)),
     suffix = suffix,
     subtitle = subtitle,
     caption = paste(
-      "Overall average (black line):", iround(total_average), "% |",
-      substitute_deparse(obj),
+      "Overall average (black line):", CodeAndRoll2::iround(total_average), "% |",
+      Stringendo::substitute_deparse(obj),
     ),
     xlab.angle = 45,
     xlab = "Clusters",
@@ -1509,7 +1509,7 @@ scPieClusterDistribution <- function(obj = combined.obj, ident = GetClusteringRu
   print(cluster_sizes)
 
   # Create pie chart
-  qpie(cluster_sizes, caption = .parseBasicObjStats(obj), subtitle = ident)
+  ggExpress::qpie(cluster_sizes, caption = .parseBasicObjStats(obj), subtitle = ident)
 }
 
 
@@ -2006,7 +2006,7 @@ qFeatureScatter <- function(
   logX = FALSE, logY = FALSE,
   ...
 ) {
-  plotname <- kpp(feature1, "VS", feature2)
+  plotname <- Stringendo::kpp(feature1, "VS", feature2)
   p <- FeatureScatter(object = obj, feature1 = feature1, feature2 = feature2, ...) +
     ggtitle(paste("Correlation", plotname)) +
     theme_linedraw()
@@ -2151,7 +2151,7 @@ qSeuViolin <- function(
 
     if (col_is_metacolname) {
       col_long <- as.factor(unlist(obj[[colors]]))
-      colors <- as.factor.numeric(sapply(split(col_long, split_col), unique))
+      colors <- CodeAndRoll2::as.factor.numeric(sapply(split(col_long, split_col), unique))
     }
   }
 
@@ -2177,8 +2177,8 @@ qSeuViolin <- function(
   if (!is.null(legend.pos)) p.obj <- p.obj + theme(legend.position = legend.pos)
 
   # Save the plot.
-  TTL <- ppp(as.character(feature), "by", ident, suffix)
-  qqSave(p.obj, title = TTL, suffix = ppp(flag.nameiftrue(logY), "violin"), w = w, h = h, limitsize = FALSE)
+  TTL <- Stringendo::ppp(as.character(feature), "by", ident, suffix)
+  ggExpress::qqSave(p.obj, title = TTL, suffix = Stringendo::ppp(Stringendo::flag.nameiftrue(logY), "violin"), w = w, h = h, limitsize = FALSE)
   if (show_plot) p.obj
 }
 
@@ -2284,7 +2284,7 @@ qUMAP <- function(
   if (!isFALSE(caption)) gg.obj <- gg.obj + ggplot2::labs(caption = caption)
 
   if (save.plot) {
-    fname <- ww.FnP_parser(sppp(prefix, toupper(reduction), feature, assay, paste0(ncol(obj), "c"), suffix), if (PNG) "png" else "pdf")
+    fname <- MarkdownHelpers::ww.FnP_parser(Stringendo::sppp(prefix, toupper(reduction), feature, assay, paste0(ncol(obj), "c"), suffix), if (PNG) "png" else "pdf")
     try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w)) # , ncol = 1, nrow = 1
   }
   return(gg.obj)
@@ -2355,7 +2355,7 @@ clUMAP <- function(
   label.cex = 7,
   h = 7, w = NULL,
   nr.cols = NULL,
-  plotname = ppp(toupper(reduction), ident),
+  plotname = Stringendo::ppp(toupper(reduction), ident),
   cols = NULL,
   palette = c("alphabet", "alphabet2", "glasbey", "polychrome", "stepped")[4],
   max.cols.for.std.palette = 7,
@@ -2400,7 +2400,7 @@ clUMAP <- function(
   IdentFound <- (ident %in% colnames(obj@meta.data))
   if (!IdentFound) {
     ident <- GetClusteringRuns(obj = obj, pat = "_res.*[0,1]\\.[0-9]$")[1]
-    iprint("Identity not found. Plotting", ident, "\n")
+    Stringendo::iprint("Identity not found. Plotting", ident, "\n")
   }
   identity <- obj[[ident]]
   Ident_categories <- unique(identity[, 1])
@@ -2412,8 +2412,8 @@ clUMAP <- function(
     if (!(all(highlight.clusters %in% identity[, 1]))) {
       MSG <- paste(
         "Some clusters not found in the object! Missing:",
-        kppc(setdiff(highlight.clusters, Ident_categories)), "\nFrom:\n",
-        kppc(sort(Ident_categories))
+        Stringendo::kppc(setdiff(highlight.clusters, Ident_categories)), "\nFrom:\n",
+        Stringendo::kppc(sort(Ident_categories))
       )
       warning(MSG, immediate. = TRUE)
     }
@@ -2422,12 +2422,12 @@ clUMAP <- function(
     stopifnot("minimum 10 cells are needed" = sum(idx.ok) > 10)
 
     highlight.these <- rownames(identity)[idx.ok]
-    PCT <- percentage_formatter(length(highlight.these) / ncol(obj), suffix = "or")
+    PCT <- Stringendo::percentage_formatter(length(highlight.these) / ncol(obj), suffix = "or")
 
     # Annotation to subtitle _________________________________________________________________
     sub2 <- paste(PCT, length(highlight.these), "cells in", ident, "are highlighted")
-    sub3 <- paste("Highlighted clusters:", kppc(highlight.clusters))
-    sub <- if (is.null(sub)) ppnl(sub2, sub3) else ppnl(sub, sub2, sub3)
+    sub3 <- paste("Highlighted clusters:", Stringendo::kppc(highlight.clusters))
+    sub <- if (is.null(sub)) Stringendo::ppnl(sub2, sub3) else Stringendo::ppnl(sub, sub2, sub3)
 
     # title <- kpipe(ident, )
   } else {
@@ -2459,7 +2459,7 @@ clUMAP <- function(
 
   # Plot _________________________________________________________________________________________
   if (NtCategs > MaxCategThrHP) {
-    iprint("Too many categories (", NtCategs, ") in ", ident, "- use qUMAP for continuous variables.")
+    Stringendo::iprint("Too many categories (", NtCategs, ") in ", ident, "- use qUMAP for continuous variables.")
   } else {
     if (length(unique(identity)) < MaxCategThrHP) {
       gg.obj <-
@@ -2487,8 +2487,8 @@ clUMAP <- function(
 
     # Save plot ___________________________________________________________
     if (save.plot) {
-      pname <- sppp(prefix, plotname, paste0(ncol(obj), "c"), suffix, sppp(highlight.clusters))
-      fname <- ww.FnP_parser(pname, if (PNG) "png" else "pdf")
+      pname <- Stringendo::sppp(prefix, plotname, paste0(ncol(obj), "c"), suffix, Stringendo::sppp(highlight.clusters))
+      fname <- MarkdownHelpers::ww.FnP_parser(pname, if (PNG) "png" else "pdf")
       try(save_plot(filename = fname, plot = gg.obj, base_height = h, base_width = w))
     }
     tictoc::toc()
@@ -2552,7 +2552,7 @@ umapHiLightSel <- function(obj = combined.obj,
   if (show_plot) print(pl)
 
   ggplot2::ggsave(
-    filename = extPNG(kollapse("cells", COI, collapseby = ".")),
+    filename = Stringendo::extPNG(Stringendo::kollapse("cells", COI, collapseby = ".")),
     height = h, width = w
   )
 }
@@ -2666,8 +2666,8 @@ multiFeaturePlot.A4 <- function(
 
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- "genes"
-  final.foldername <- FixPlotName(paste0(foldername, "-", plot.reduction, suffix))
-  if (subdir) create_set_SubDir(final.foldername, "/", verbose = FALSE)
+  final.foldername <- Stringendo::FixPlotName(paste0(foldername, "-", plot.reduction, suffix))
+  if (subdir) MarkdownReports::create_set_SubDir(final.foldername, "/", verbose = FALSE)
 
   if (is.null(names(list.of.genes))) subtitle.from.names <- FALSE
 
@@ -2675,7 +2675,7 @@ multiFeaturePlot.A4 <- function(
     genes = list.of.genes, obj = obj,
     assay.slot = intersectionAssay, makeuppercase = FALSE
   )
-  if (subtitle.from.names) names(list.of.genes.found) <- as.character(flip_value2name(list.of.genes)[list.of.genes.found])
+  if (subtitle.from.names) names(list.of.genes.found) <- as.character(CodeAndRoll2::flip_value2name(list.of.genes)[list.of.genes.found])
   DefaultAssay(obj) <- intersectionAssay
 
   if (!is.null(cex.min)) cex <- max(cex.min, cex)
@@ -2698,8 +2698,8 @@ multiFeaturePlot.A4 <- function(
   lsG <- CodeAndRoll2::split_vec_to_list_by_N(1:length(list.of.genes.found), by = nr.Row * nr.Col)
   for (i in 1:length(lsG)) {
     genes <- list.of.genes.found[lsG[[i]]]
-    iprint(i, genes)
-    plotname <- kpp(c(prefix, plot.reduction, i, genes, suffix, format))
+    Stringendo::iprint(i, genes)
+    plotname <- Stringendo::kpp(c(prefix, plot.reduction, i, genes, suffix, format))
 
     plot.list <- Seurat::FeaturePlot(
       object = obj, features = genes, reduction = plot.reduction, combine = FALSE,
@@ -2728,7 +2728,7 @@ multiFeaturePlot.A4 <- function(
   if (subdir) MarkdownReports::create_set_OutDir(ParentDir, verbose = FALSE)
   if (saveGeneList) {
     if (is.null(obj@misc$gene.lists)) obj@misc$gene.lists <- list()
-    obj@misc$gene.lists[[substitute_deparse(list.of.genes)]] <- list.of.genes.found
+    obj@misc$gene.lists[[Stringendo::substitute_deparse(list.of.genes)]] <- list.of.genes.found
     print("Genes saved under: obj@misc$gene.lists")
     return(obj)
   }
@@ -2837,8 +2837,8 @@ multiSingleClusterHighlightPlots.A4 <- function(
   for (i in 1:length(ls.Clust)) { # for each page
 
     clusters_on_this_page <- as.character(clusters[ls.Clust[[i]]])
-    iprint("page:", i, "| clusters", kppc(clusters_on_this_page))
-    (plotname <- kpp(c(prefix, plot.reduction, i, "clusters", ls.Clust[[i]], suffix, format)))
+    Stringendo::iprint("page:", i, "| clusters", Stringendo::kppc(clusters_on_this_page))
+    (plotname <- Stringendo::kpp(c(prefix, plot.reduction, i, "clusters", ls.Clust[[i]], suffix, format)))
 
     plot.list <- list()
     for (j in seq(clusters_on_this_page)) { # for each cluster
@@ -2900,12 +2900,12 @@ multiSingleClusterHighlightPlots.A4 <- function(
 #' @importFrom ggExpress qA4_grid_plot
 qClusteringUMAPS <- function(
   obj = combined.obj,
-  idents = na.omit.strip(GetClusteringRuns(obj)[1:4]),
+  idents = CodeAndRoll2::na.omit.strip(GetClusteringRuns(obj)[1:4]),
   prefix = "Clustering.UMAP.Res",
   suffix = "",
   nrow = 2, ncol = 2,
   w = 2 * 11.69, h = 2 * 8.27,
-  title = sppu(
+  title = Stringendo::sppu(
     prefix,
     as.numeric(stringr::str_extract(idents, "\\d+\\.\\d+$")),
     suffix
@@ -2918,7 +2918,7 @@ qClusteringUMAPS <- function(
   idents.found <- intersect(idents, colnames(obj@meta.data))
   n.found <- length(idents.found)
   stopifnot("None of the idents found" = n.found > 0)
-  message(kppws(n.found, " found of ", idents))
+  message(Stringendo::kppws(n.found, " found of ", idents))
 
   if (n.found > 5) {
     idents.found <- idents.found[1:4]
@@ -2986,7 +2986,7 @@ qGeneExpressionUMAPS <- function(
     "Only 4 features are allowed" = n.found < 5
   )
 
-  message(kppws(n.found, "found of", length(features), "features:", features))
+  message(Stringendo::kppws(n.found, "found of", length(features), "features:", features))
 
   px <- list(
     "A" = qUMAP(feature = features[1], save.plot = FALSE, obj = obj, caption = NULL, ...) + NoAxes(),
@@ -3046,7 +3046,7 @@ plotQUMAPsInAFolder <- function(genes, obj = combined.obj,
   )
 
   ParentDir <- OutDir
-  if (is.null(foldername)) foldername <- substitute_deparse(genes)
+  if (is.null(foldername)) foldername <- Stringendo::substitute_deparse(genes)
 
   MarkdownReports::create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
 
@@ -3119,11 +3119,11 @@ PlotTopGenesPerCluster <- function(
     order.by = order.by
   )
 
-  ls.topMarkers <- splitbyitsnames(topX.markers)
+  ls.topMarkers <- CodeAndRoll2::splitbyitsnames(topX.markers)
   for (i in 1:length(ls.topMarkers)) {
     multiFeaturePlot.A4(
-      list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = TRUE, foldername = ppp("TopGenes.umaps"),
-      prefix = ppp("DEG.markers.res", cl_res, "cluster", names(ls.topMarkers)[i]),
+      list.of.genes = ls.topMarkers[[i]], obj = obj, subdir = TRUE, foldername = Stringendo::ppp("TopGenes.umaps"),
+      prefix = Stringendo::ppp("DEG.markers.res", cl_res, "cluster", names(ls.topMarkers)[i]),
       ...
     )
   }
@@ -3158,7 +3158,7 @@ qQC.plots.BrainOrg <- function(
   QC.Features = c("nFeature_RNA", "percent.ribo", "percent.mito", "nuclear.fraction", "percent.HGA"),
   prefix = "QC.markers.4.UMAP",
   suffix = "",
-  title = sppu(prefix, QC.Features, suffix),
+  title = Stringendo::sppu(prefix, QC.Features, suffix),
   nrow = 2, ncol = 2,
   ...
 ) {
@@ -3168,7 +3168,7 @@ qQC.plots.BrainOrg <- function(
   QC.Features.Found <- intersect(QC.Features, union(colnames(obj@meta.data), rownames(obj)))
   QC.Features.Found.in.meta <- intersect(QC.Features, colnames(obj@meta.data))
   n.found <- length(QC.Features.Found)
-  message(kppws(n.found, " found: ", QC.Features.Found))
+  message(Stringendo::kppws(n.found, " found: ", QC.Features.Found))
   stopifnot(n.found > 1)
 
 
@@ -3248,7 +3248,7 @@ qMarkerCheck.BrainOrg <- function(obj = combined.obj, custom.genes = FALSE,
   print(CodeAndRoll2::as_tibble_from_namedVec(Signature.Genes.Top16))
   multiFeaturePlot.A4(
     obj = obj, list.of.genes = Signature.Genes.Top16, layout = "tall",
-    foldername = sppp("Signature.Genes.Top16", suffix)
+    foldername = Stringendo::sppp("Signature.Genes.Top16", suffix)
   )
 }
 
@@ -3333,7 +3333,7 @@ FlipReductionCoordinates <- function(
     bac.slot <- paste0(reduction, dim, "d")
     if (length(obj@misc$reductions.backup[[bac.slot]])) {
       obj@misc$reductions.backup[[bac.slot]]@cell.embeddings <- coordinates
-      iprint(dim, "dimensional", reduction, "backup flipped too.")
+      Stringendo::iprint(dim, "dimensional", reduction, "backup flipped too.")
     }
   }
   return(obj)
@@ -3378,7 +3378,7 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
                                ident = GetClusteringRuns(obj = obj)[1],
                                plot = TRUE,
                                obj.version = obj@version) {
-  dim_name <- kppu(reduction, dim)
+  dim_name <- Stringendo::kppu(reduction, dim)
   if (obj.version < "5") dim_name <- toupper(dim_name)
   message("Obj. version: ", obj.version, " \ndimension name: ", dim_name)
   message("Resolution: ", ident)
@@ -3397,8 +3397,8 @@ AutoNumber.by.UMAP <- function(obj = combined.obj,
   OldLabel <- names(sort(MedianClusterCoordinate, decreasing = swap))
   NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
   NewMeta <- CodeAndRoll2::translate(vec = identX, old = OldLabel, new = NewLabel)
-  NewMetaCol <- kpp(ident, "ordered")
-  iprint("NewMetaCol:", NewMetaCol)
+  NewMetaCol <- Stringendo::kpp(ident, "ordered")
+  Stringendo::iprint("NewMetaCol:", NewMetaCol)
 
   obj[[NewMetaCol]] <- NewMeta
   if (plot) {
@@ -3452,7 +3452,7 @@ scEnhancedVolcano <- function(
   y = "p_val_adj",
   title = "DGEA",
   lab = rownames(toptable),
-  selectLab = trail(filterCodingGenes(lab), 10),
+  selectLab = CodeAndRoll2::trail(filterCodingGenes(lab), 10),
   min.p = 1e-50,
   max.l2fc = Inf,
   min.pct.cells = 0.1,
@@ -3504,7 +3504,7 @@ scEnhancedVolcano <- function(
   min.pct.cells <- toptable |>
     dplyr::select(pct.1, pct.2) |>
     as.matrix() |>
-    rowMax() |>
+    CodeAndRoll2::rowMax() |>
     min()
 
   # 3. Value Clipping ----------------------------------------------------------
@@ -3517,18 +3517,18 @@ scEnhancedVolcano <- function(
     "y contains no finite values" = any(is.finite(toptable[[y]]))
   )
 
-  toptable[[y]] <- clip.at.fixed.value(toptable[[y]], thr = min.p, above = FALSE)
+  toptable[[y]] <- CodeAndRoll2::clip.at.fixed.value(toptable[[y]], thr = min.p, above = FALSE)
 
   if (!identical(pCutoffCol, y)) {
-    toptable[[pCutoffCol]] <- clip.at.fixed.value(
+    toptable[[pCutoffCol]] <- CodeAndRoll2::clip.at.fixed.value(
       toptable[[pCutoffCol]],
       thr = min.p, above = FALSE
     )
   }
 
   if (max.l2fc < Inf) {
-    toptable[[x]] <- clip.at.fixed.value(toptable[[x]], thr = -max.l2fc, above = FALSE)
-    toptable[[x]] <- clip.at.fixed.value(toptable[[x]], thr = max.l2fc, above = TRUE)
+    toptable[[x]] <- CodeAndRoll2::clip.at.fixed.value(toptable[[x]], thr = -max.l2fc, above = FALSE)
+    toptable[[x]] <- CodeAndRoll2::clip.at.fixed.value(toptable[[x]], thr = max.l2fc, above = TRUE)
   }
 
   # 4. Subtitle Stats Generation -----------------------------------------------
@@ -3537,7 +3537,7 @@ scEnhancedVolcano <- function(
     enr_stats <- unlist(countRelevantEnrichments(
       df = toptable, logfc_col = x, pval_col = y, logfc_cutoff = FCcutoff, pval_cutoff = pCutoff
     ))
-    stat_info <- kppws("Genes", intermingle2vec(names(enr_stats), enr_stats), "(red)")
+    stat_info <- Stringendo::kppws("Genes", CodeAndRoll2::intermingle2vec(names(enr_stats), enr_stats), "(red)")
     subtitle <- paste0(
       stat_info, "\nCutoffs: max.p_adj: ", pCutoff, " | min.log2FC: ", FCcutoff,
       " | min.pct.cells: ", min.pct.cells
@@ -3564,7 +3564,7 @@ scEnhancedVolcano <- function(
   stopifnot("EnhancedVolcano must return a ggplot object" = inherits(pobj, "ggplot"))
 
   # 6. Save Plot ---------------------------------------------------------------
-  qqSave(
+  ggExpress::qqSave(
     ggobj = pobj, title = paste0("Volcano.", make.names(title), suffix),
     also.pdf = also.pdf, h = h, w = w
   )
@@ -3701,7 +3701,7 @@ scEnhancedVolcano <- function(
   lfc_enr <- min(lfc[lfc > 0])
   lfc_depl <- abs(max(lfc[lfc < 0]))
   estim_min_l2fc <- min(lfc_enr, lfc_depl)
-  return(iround(2^estim_min_l2fc))
+  return(CodeAndRoll2::iround(2^estim_min_l2fc))
 }
 
 
@@ -3853,7 +3853,7 @@ scGOEnrichment <- function(genes, universe = NULL,
 
   if (save) {
     xsave(go_results,
-      suffix = kpp("enr", nr_of_enr_terms, suffix),
+      suffix = Stringendo::kpp("enr", nr_of_enr_terms, suffix),
       showMemObject = FALSE, saveParams = FALSE, allGenes = FALSE
     )
   }
@@ -3962,7 +3962,7 @@ scBarplotEnrichr <- function(df.enrichment,
                              tag = "...",
                              universe = df.enrichment@universe,
                              title = paste("GO Enriched Terms", tag),
-                             subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+                             subtitle = Stringendo::kppws("Input: ", Stringendo::substitute_deparse(df.enrichment)),
                              caption = paste0(
                                "Input genes: ", length(df.enrichment@"gene"),
                                " | Enriched terms: ", nrow(df.enrichment),
@@ -3992,7 +3992,7 @@ scBarplotEnrichr <- function(df.enrichment,
 
   pobj <- pobj + ggplot2::labs(title = title, subtitle = subtitle, caption = caption)
 
-  if (save) qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
+  if (save) ggExpress::qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
 
   return(pobj)
 }
@@ -4038,7 +4038,7 @@ scDotplotEnrichr <- function(
   tag = "...",
   universe = df.enrichment@universe,
   title = paste("GO Enriched Terms", tag),
-  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+  subtitle = Stringendo::kppws("Input: ", Stringendo::substitute_deparse(df.enrichment)),
   caption = paste0(
     "Input genes: ", length(df.enrichment@"gene"),
     " | Enriched terms: ", nrow(df.enrichment),
@@ -4107,7 +4107,7 @@ scDotplotEnrichr <- function(
       caption = caption
     )
 
-  if (save) qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
+  if (save) ggExpress::qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
 
   return(pobj)
 }
@@ -4156,7 +4156,7 @@ scEmapplotEnrichr <- function(
   tag = "...",
   universe = df.enrichment@universe,
   title = paste("GO Enrichment Map", tag),
-  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+  subtitle = Stringendo::kppws("Input: ", Stringendo::substitute_deparse(df.enrichment)),
   caption = paste0(
     "Input genes: ", length(df.enrichment@"gene"),
     " | Enriched terms: ", nrow(df.enrichment),
@@ -4211,7 +4211,7 @@ scEmapplotEnrichr <- function(
     )
 
   if (save) {
-    qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
+    ggExpress::qqSave(pobj, title = title, w = w, h = h, also.pdf = also.pdf, save.obj = save.obj)
   }
 
   return(pobj)
@@ -4273,7 +4273,7 @@ scGeneConceptNetworkEnrichr <- function(
   tag = NULL,
   NULL_input = is.null(df.enrichment),
   title = paste("Gene-Concept Network", tag),
-  subtitle = kppws("Input: ", substitute_deparse(df.enrichment)),
+  subtitle = Stringendo::kppws("Input: ", Stringendo::substitute_deparse(df.enrichment)),
   caption = paste0(
     "Enriched terms: ", ifelse(NULL_input, 0, nrow(df.enrichment)),
     " | Shown: ", ifelse(NULL_input, 0, min(showCategory, nrow(df.enrichment))),
@@ -4361,7 +4361,7 @@ scGeneConceptNetworkEnrichr <- function(
 
 
   if (save) {
-    qqSave(
+    ggExpress::qqSave(
       pobj,
       title = title,
       w = w, h = h,
@@ -4583,7 +4583,7 @@ save2plots.A4 <- function(
   nrow = 2, ncol = 1,
   h = 11.69 * scale, w = 8.27 * scale, ...
 ) {
-  if (pname == FALSE) pname <- sppp(substitute_deparse(plot_list), suffix)
+  if (pname == FALSE) pname <- Stringendo::sppp(Stringendo::substitute_deparse(plot_list), suffix)
   p1 <- cowplot::plot_grid(
     plotlist = plot_list, nrow = nrow, ncol = ncol,
     labels = LETTERS[1:length(plot_list)], ...
@@ -4592,9 +4592,9 @@ save2plots.A4 <- function(
     theme(plot.background = element_rect(fill = "white", color = NA))
 
   print("Saved as:")
-  MarkdownHelpers::ww.FnP_parser(extPNG(pname))
+  MarkdownHelpers::ww.FnP_parser(Stringendo::extPNG(pname))
 
-  save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
+  save_plot(plot = p1, filename = Stringendo::extPNG(pname), base_height = h, base_width = w)
 }
 
 # _________________________________________________________________________________________________
@@ -4635,7 +4635,7 @@ save4plots.A4 <- function(
   h = 8.27 * scale, w = 11.69 * scale,
   ...
 ) {
-  if (pname == FALSE) pname <- sppp(substitute_deparse(plot_list), suffix)
+  if (pname == FALSE) pname <- Stringendo::sppp(Stringendo::substitute_deparse(plot_list), suffix)
   p1 <- cowplot::plot_grid(
     plotlist = plot_list, nrow = nrow, ncol = ncol,
     labels = LETTERS[1:length(plot_list)], ...
@@ -4644,9 +4644,9 @@ save4plots.A4 <- function(
   p1 <- cowplot::ggdraw(p1) +
     theme(plot.background = element_rect(fill = "white", color = NA))
 
-  iprint("Saved as:", pname)
-  MarkdownHelpers::ww.FnP_parser(extPNG(pname))
-  save_plot(plot = p1, filename = extPNG(pname), base_height = h, base_width = w)
+  Stringendo::iprint("Saved as:", pname)
+  MarkdownHelpers::ww.FnP_parser(Stringendo::extPNG(pname))
+  save_plot(plot = p1, filename = Stringendo::extPNG(pname), base_height = h, base_width = w)
 }
 
 
@@ -4680,7 +4680,7 @@ qqSaveGridA4 <- function(
   fname = "Fractions.Organoid-to-organoid variation.png", ...
 ) {
   stopifnot(NrPlots %in% c(2, 4))
-  iprint(NrPlots, "plots found,", plots, "are saved.")
+  Stringendo::iprint(NrPlots, "plots found,", plots, "are saved.")
   pg.cf <- cowplot::plot_grid(plotlist = plotlist[plots], nrow = 2, ncol = NrPlots / 2, labels = LETTERS[1:NrPlots], ...)
   if (NrPlots == 4) list2env(list(height = width, width = height), envir = as.environment(environment()))
   MarkdownHelpers::ww.FnP_parser(fname)
@@ -4736,7 +4736,7 @@ ww.check.quantile.cutoff.and.clip.outliers <- function(expr.vec = plotting.data[
   if (sum(expr.vec.clipped > 0) > min.cells.expressing) {
     expr.vec <- expr.vec.clipped
   } else {
-    iprint("WARNING: quantile.cutoff too stringent, would leave <", min.cells.expressing, "cells. It is NOT applied.")
+    Stringendo::iprint("WARNING: quantile.cutoff too stringent, would leave <", min.cells.expressing, "cells. It is NOT applied.")
   }
   return(expr.vec)
 }
@@ -4798,10 +4798,10 @@ plot3D.umap.gene <- function(
   # browser()
 
   if (obj@version < "5") col.names <- toupper(col.names)
-  message("Obj. version: ", obj@version, " \ndim names: ", kppc(col.names))
+  message("Obj. version: ", obj@version, " \ndim names: ", Stringendo::kppc(col.names))
 
   DefaultAssay(object = obj) <- def.assay
-  iprint(DefaultAssay(object = obj), "assay")
+  Stringendo::iprint(DefaultAssay(object = obj), "assay")
 
   # Get and format 3D plotting data ____________________________________
   plotting.data <- obj@misc$reductions.backup$"umap3d"@cell.embeddings
@@ -4895,7 +4895,7 @@ plot3D.umap <- function(
   )
 
   if (obj@version < "5") col.names <- toupper(col.names)
-  message("Obj. version: ", obj@version, " \ndim names: ", kppc(col.names))
+  message("Obj. version: ", obj@version, " \ndim names: ", Stringendo::kppc(col.names))
 
   # Get and format 3D plotting data ____________________________________
   plotting.data <- obj@misc$reductions.backup$"umap3d"@cell.embeddings # plotting.data <- Seurat::FetchData(object = obj, vars = c(col.names, category))
@@ -4948,9 +4948,9 @@ plot3D.umap <- function(
 #' @importFrom htmlwidgets saveWidget
 SavePlotlyAsHtml <- function(plotly_obj, category. = category, suffix. = NULL) { # Save Plotly 3D scatterplot as an html file.
   OutputDir <- if (exists("OutDir")) OutDir else getwd()
-  name.trunk <- kpp("umap.3D", category., suffix., idate(), "html")
-  fname <- kpps(OutputDir, name.trunk)
-  iprint("Plot saved as:", fname)
+  name.trunk <- Stringendo::kpp("umap.3D", category., suffix., Stringendo::idate(), "html")
+  fname <- Stringendo::kpps(OutputDir, name.trunk)
+  Stringendo::iprint("Plot saved as:", fname)
   htmlwidgets::saveWidget(plotly_obj, file = fname, selfcontained = TRUE, title = category.)
 }
 
@@ -5014,7 +5014,7 @@ SetupReductionsNtoKdimensions <- function(obj = combined.obj, nPCs = p$"n.PC", d
   tictoc::tic()
 
   for (d in dimensions) {
-    iprint("Calculating", d, "dimensional", reduction_output)
+    Stringendo::iprint("Calculating", d, "dimensional", reduction_output)
 
     # Assign the reduction based on the output type
     obj <- switch(reduction_output,
@@ -5056,8 +5056,8 @@ RecallReduction <- function(obj = combined.obj, dim = 2, reduction = "umap") {
   dslot <- paste0(reduction, dim, "d")
   reduction.backup <- obj@misc$reductions.backup[[dslot]]
   msg <- paste(dim, "dimensional", reduction, "from obj@misc$reductions.backup")
-  stopif(is.null(reduction.backup), message = paste0(msg, " is NOT FOUND"))
-  iprint(msg, "is set active. ")
+  Stringendo::stopif(is.null(reduction.backup), message = paste0(msg, " is NOT FOUND"))
+  Stringendo::iprint(msg, "is set active. ")
   stopifnot(dim == ncol(reduction.backup))
   obj@reductions[[reduction]] <- reduction.backup
   return(obj)
@@ -5128,16 +5128,16 @@ Plot3D.ListOfGenes <- function(
   obj = combined.obj # Plot and save list of 3D UMAP or tSNE plots using plotly.
   , annotate.by = "integrated_snn_res.0.7", opacity = 0.5, cex = 1.25, default.assay = c("integrated", "RNA")[2],
   ListOfGenes = c("BCL11B", "FEZF2", "EOMES", "DLX6-AS1", "HOPX", "DDIT4"),
-  SubFolderName = ppp("plot3D", substitute_deparse(ListOfGenes))
+  SubFolderName = Stringendo::ppp("plot3D", Stringendo::substitute_deparse(ListOfGenes))
 ) {
-  try(create_set_SubDir(SubFolderName))
+  try(MarkdownReports::create_set_SubDir(SubFolderName))
   obj. <- obj
   rm("obj")
   stopifnot(annotate.by %in% c(colnames(obj.@meta.data), FALSE))
 
   DefaultAssay(object = obj.) <- default.assay
   MissingGenes <- setdiff(ListOfGenes, rownames(obj.))
-  if (length(MissingGenes)) iprint("These genes are not found, and omitted:", MissingGenes, ". Try to change default assay.")
+  if (length(MissingGenes)) Stringendo::iprint("These genes are not found, and omitted:", MissingGenes, ". Try to change default assay.")
   ListOfGenes <- intersect(ListOfGenes, rownames(obj.))
 
   for (i in 1:length(ListOfGenes)) {
@@ -5146,7 +5146,7 @@ Plot3D.ListOfGenes <- function(
     plot3D.umap.gene(obj = obj., gene = g, annotate.by = annotate.by, alpha = opacity, def.assay = default.assay, dotsize = cex)
   }
   try(oo())
-  try(create_set_Original_OutDir(NewOutDir = ParentDir))
+  try(MarkdownReports::create_set_Original_OutDir(NewOutDir = ParentDir))
 }
 
 
@@ -5176,16 +5176,16 @@ Plot3D.ListOfCategories <- function(
   obj = combined.obj # Plot and save list of 3D UMAP or tSNE plots using plotly.
   , annotate.by = "integrated_snn_res.0.7", cex = 1.25, default.assay = c("integrated", "RNA")[2],
   ListOfCategories = c("v.project", "experiment", "Phase", "integrated_snn_res.0.7"),
-  SubFolderName = ppp("plot3D", substitute_deparse(ListOfCategories))
+  SubFolderName = Stringendo::ppp("plot3D", Stringendo::substitute_deparse(ListOfCategories))
 ) {
-  try(create_set_SubDir(SubFolderName))
+  try(MarkdownReports::create_set_SubDir(SubFolderName))
   obj. <- obj
   rm("obj")
   stopifnot(annotate.by %in% colnames(obj.@meta.data))
   DefaultAssay(object = obj.) <- default.assay
 
   MissingCateg <- setdiff(ListOfCategories, colnames(obj.@meta.data))
-  if (length(MissingCateg)) iprint("These metadata categories are not found, and omitted:", MissingCateg, ". See colnames(obj@meta.data).")
+  if (length(MissingCateg)) Stringendo::iprint("These metadata categories are not found, and omitted:", MissingCateg, ". See colnames(obj@meta.data).")
   ListOfCategories <- intersect(ListOfCategories, colnames(obj.@meta.data))
 
   for (i in 1:length(ListOfCategories)) {
@@ -5194,7 +5194,7 @@ Plot3D.ListOfCategories <- function(
     plot3D.umap(obj = obj., category = categ, annotate.by = annotate.by, dotsize = cex)
   }
   try(oo())
-  try(create_set_Original_OutDir(NewOutDir = ParentDir))
+  try(MarkdownReports::create_set_Original_OutDir(NewOutDir = ParentDir))
 }
 
 
@@ -5296,14 +5296,14 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
     is.numeric(plotWidth), is.numeric(plotHeight)
   )
 
-  obj.name <- substitute_deparse(obj)
+  obj.name <- Stringendo::substitute_deparse(obj)
 
   plot1 <- Seurat::VariableFeaturePlot(obj, assay = assay, ...) +
     theme(panel.background = element_rect(fill = "white")) +
     labs(
       title = "Variable Genes",
-      subtitle = kppws(obj.name, suffix),
-      caption = paste("Assay:", assay, "|", idate())
+      subtitle = Stringendo::kppws(obj.name, suffix),
+      caption = paste("Assay:", assay, "|", Stringendo::idate())
     )
 
 
@@ -5315,14 +5315,14 @@ suPlotVariableFeatures <- function(obj = combined.obj, NrVarGenes = 15,
   )
 
   print(labeledPlot)
-  filename <- ppp("Var.genes", obj.name, suffix, idate(), "png")
+  filename <- Stringendo::ppp("Var.genes", obj.name, suffix, Stringendo::idate(), "png")
 
   # if (save) ggplot2::ggsave(plot = labeledPlot, filename = filename, width = plotWidth, height = plotHeight)
   if (save) {
     # NOTE: BUG -- `ext` is not a formal argument of this function and is never assigned
     # locally, so with the default save = TRUE this errors ("object 'ext' not found")
     # unless a global variable `ext` happens to exist in the caller's environment.
-    qqSave(
+    ggExpress::qqSave(
       ggobj = labeledPlot,
       # title = plotname,
       fname = filename,

@@ -38,7 +38,7 @@
 addTranslatedMetadata <- function(obj = combined.obj,
                                   orig.ident = "RNA_snn_res.0.4",
                                   translation_as_named_vec,
-                                  new_col_name = substitute_deparse(translation_as_named_vec),
+                                  new_col_name = Stringendo::substitute_deparse(translation_as_named_vec),
                                   # NA.as.character = TRUE,
                                   suffix = NULL,
                                   plot = FALSE,
@@ -149,7 +149,7 @@ getMetadataColumn <- function(col = "batch", obj = combined.obj, as_numeric = FA
   stopifnot(col %in% colnames(obj@meta.data))
   if (v) message(substitute(obj), ", ", ncol(obj), " cells.")
 
-  x <- df.col.2.named.vector(df = obj@meta.data, col = col)
+  x <- CodeAndRoll2::df.col.2.named.vector(df = obj@meta.data, col = col)
   if (as_numeric) {
     as.numeric.wNames(x)
   } else {
@@ -344,7 +344,7 @@ calculatePercentageMatch <- function(
 #' }
 #' @export
 getMedianMetric.lsObj <- function(ls.obj = ls.Seurat, n.datasets = length(ls.Seurat), mColname = "percent.mito") {
-  medMetric <- vec.fromNames(names(ls.obj))
+  medMetric <- CodeAndRoll2::vec.fromNames(names(ls.obj))
   for (i in 1:n.datasets) {
     medMetric[i] <- median(ls.obj[[i]]@meta.data[, mColname])
   }
@@ -391,7 +391,7 @@ getCellIDs.from.meta <- function(ident = GetClusteringRuns()[1], # metadata colu
 
   if (inverse) cells.pass <- !cells.pass # optionally invert selection
 
-  iprint(sum(cells.pass), "cells found.") # report how many matched
+  Stringendo::iprint(sum(cells.pass), "cells found.") # report how many matched
   rownames(obj@meta.data)[which(cells.pass)] # return matching cell IDs
 }
 
@@ -424,13 +424,13 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
     "Column already exists" = ((!col.name %in% colnames(obj@meta.data)) | overwrite)
   )
   equal_length <- length(metadata) == ncol(obj)
-  iprint("strict", strict)
+  Stringendo::iprint("strict", strict)
   if (strict) stopifnot("Metadata or object too short" = equal_length)
 
   if (!is.null(names(metadata))) {
     if (verbose) {
-      iprint("cells in metadata:", head(names(metadata)), "...")
-      iprint("cells in object:", head(colnames(obj)), "...")
+      Stringendo::iprint("cells in metadata:", head(names(metadata)), "...")
+      Stringendo::iprint("cells in object:", head(colnames(obj)), "...")
     }
     if (strict) stopifnot(names(metadata) == colnames(obj))
   } else {
@@ -441,13 +441,13 @@ addMetaDataSafe <- function(obj, metadata, col.name, overwrite = FALSE, verbose 
   if (any(is.na(names(metadata)))) {
     warning("Metadata contains NA values.", immediate. = TRUE)
     metadata_orig <- metadata
-    metadata <- vec.fromNames(colnames(obj), fill = NA)
-    cells_found <- na.omit.strip(names(metadata_orig))
+    metadata <- CodeAndRoll2::vec.fromNames(colnames(obj), fill = NA)
+    cells_found <- CodeAndRoll2::na.omit.strip(names(metadata_orig))
     metadata[cells_found] <- metadata_orig[cells_found]
   }
 
   # Perform the operation
-  stopif(any(is.na(names(metadata))))
+  Stringendo::stopif(any(is.na(names(metadata))))
   obj <- Seurat::AddMetaData(object = obj, metadata = metadata, col.name = col.name)
 
   prefix <- paste("New column", col.name)
@@ -492,8 +492,8 @@ create.metadata.vector <- function(vec, obj = combined.obj, fill = NA,
   cells_in_both <- length(intersect(cells_in_vec, cells_in_obj))
   if (cells_in_both < min.intersect) {
     message(
-      ncol(obj), " cells in obj: ", kppc(cells_in_obj[1:3]), "\n",
-      length(vec), " cells in vec: ", kppc(cells_in_vec[1:3]), "\n",
+      ncol(obj), " cells in obj: ", Stringendo::kppc(cells_in_obj[1:3]), "\n",
+      length(vec), " cells in vec: ", Stringendo::kppc(cells_in_vec[1:3]), "\n",
       cells_in_both, " cells in both.\n"
     )
     stop("Intersection between vec and obj is less than min.intersect.")
@@ -504,7 +504,7 @@ create.metadata.vector <- function(vec, obj = combined.obj, fill = NA,
   cells.obj <- colnames(obj)
   cells.in.both <- intersect(cells.vec, cells.obj)
 
-  iprint(
+  Stringendo::iprint(
     length(cells.in.both), "cells in both;",
     length(cells.vec), "cells in vec;",
     length(cells.obj), "cells in obj",
@@ -571,7 +571,7 @@ addMetaFraction <- function(
     assay %in% Assays(obj), layer %in% Layers(obj)
   )
 
-  stopif(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
+  Stringendo::stopif(condition = isFALSE(gene.set) && isFALSE(gene.symbol.pattern), "Either gene.set OR gene.symbol.pattern has to be defined (!= FALSE).")
   if (!isFALSE(gene.set) && !isFALSE(gene.symbol.pattern) && verbose) print("Both gene.set AND gene.symbol.pattern are defined. Only using gene.set.")
 
   # if (!isFALSE(gene.set)) geneset <- check.genes(genes = gene.set, obj = obj)
@@ -587,7 +587,7 @@ addMetaFraction <- function(
   genes.expr <- GetAssayData(object = obj, assay = assay, layer = layer)[genes.matching, ]
   target_expr <- if (length(genes.matching) > 1) Matrix::colSums(genes.expr) else genes.expr
 
-  iprint(length(genes.matching), "genes found, eg:", head(genes.matching, 10))
+  Stringendo::iprint(length(genes.matching), "genes found, eg:", head(genes.matching, 10))
 
   obj <- AddMetaData(object = obj, metadata = target_expr / total_expr, col.name = col.name)
   colnames(obj@meta.data)
@@ -665,7 +665,7 @@ addGeneClassFractions <- function(obj,
       "VEGFA", "PDK1", "PGAM1", "IER2", "FOS", "BTG1", "EPB41L4A-AS1", "NPAS4", "HK2", "BNIP3L",
       "JUN", "ENO2", "GAPDH", "ANKRD37", "ALDOA", "GADD45G", "TXNIP"
     )
-    if (species == "mouse") HGA_MarkerGenes <- toSentence(HGA_MarkerGenes)
+    if (species == "mouse") HGA_MarkerGenes <- Stringendo::toSentence(HGA_MarkerGenes)
 
     if (!metaColnameExists(col_name = "percent.HGA", obj = obj)) {
       obj <- addMetaFraction(col.name = "percent.HGA", gene.set = HGA_MarkerGenes, obj = obj)
@@ -721,13 +721,13 @@ add.meta.tags <- function(list.of.tags = tags, obj = ls.Seurat[[1]], n = 1) { # 
 seu.add.meta.from.table <- function(obj = combined.obj, meta, suffix = ".fromMeta") { # Add multiple new metadata columns to a Seurat object from a table.
   NotFound <- setdiff(colnames(obj), rownames(meta))
   Found <- intersect(colnames(obj), rownames(meta))
-  if (length(NotFound)) iprint(length(NotFound), "cells were not found in meta, e.g.: ", trail(NotFound, N = 10))
+  if (length(NotFound)) Stringendo::iprint(length(NotFound), "cells were not found in meta, e.g.: ", CodeAndRoll2::trail(NotFound, N = 10))
 
   mCols.new <- colnames(meta)
   mCols.old <- colnames(obj@meta.data)
   overlap <- intersect(mCols.new, mCols.old)
   if (length(overlap)) {
-    iprint(length(overlap), "metadata columns already exist in the seurat object: ", overlap, ". These are tagged as: *", suffix)
+    Stringendo::iprint(length(overlap), "metadata columns already exist in the seurat object: ", overlap, ". These are tagged as: *", suffix)
     colnames(meta)[overlap] <- paste0(overlap, suffix)
   }
   mCols.add <- colnames(meta)
@@ -759,38 +759,38 @@ seu.add.meta.from.table <- function(obj = combined.obj, meta, suffix = ".fromMet
 seu.map.and.add.new.ident.to.meta <- function(
   obj = combined.obj, ident.table = clusterIDs.GO.process,
   orig.ident = Idents(obj),
-  metaD.colname = substitute_deparse(ident.table)
+  metaD.colname = Stringendo::substitute_deparse(ident.table)
 ) {
   # identities should match
   {
     Idents(obj) <- orig.ident
-    ident.vec <- df.col.2.named.vector(ident.table)
+    ident.vec <- CodeAndRoll2::df.col.2.named.vector(ident.table)
     ident.X <- names(ident.vec)
     ident.Y <- as.character(ident.vec)
     ident.Seu <- gtools::mixedsort(levels(Idents(obj)))
-    iprint("ident.Seu: ", ident.Seu)
+    Stringendo::iprint("ident.Seu: ", ident.Seu)
 
     OnlyInIdentVec <- setdiff(ident.X, ident.Seu)
     OnlyInSeuratIdents <- setdiff(ident.Seu, ident.X)
 
-    msg.IdentVec <- kollapse("Rownames of 'ident.table' have entries not found in 'Idents(obj)':",
+    msg.IdentVec <- Stringendo::kollapse("Rownames of 'ident.table' have entries not found in 'Idents(obj)':",
       OnlyInIdentVec, " not found in ", ident.Seu,
       collapseby = " "
     )
 
-    msg.Seu <- kollapse("Rownames of 'Idents(obj)' have entries not found in 'ident.table':",
+    msg.Seu <- Stringendo::kollapse("Rownames of 'Idents(obj)' have entries not found in 'ident.table':",
       OnlyInSeuratIdents, " not found in ", ident.X,
       collapseby = " "
     )
 
-    stopif(length(OnlyInIdentVec), message = msg.IdentVec)
-    stopif(length(OnlyInSeuratIdents), message = msg.Seu)
+    Stringendo::stopif(length(OnlyInIdentVec), message = msg.IdentVec)
+    Stringendo::stopif(length(OnlyInSeuratIdents), message = msg.Seu)
   }
   # identity mapping
   {
     new.ident <- CodeAndRoll2::translate(vec = as.character(Idents(obj)), old = ident.X, new = ident.Y)
     obj@meta.data[[metaD.colname]] <- new.ident
-    iprint(metaD.colname, "contains the named identities. Use Idents(combined.obj) = '...'. The names are:")
+    Stringendo::iprint(metaD.colname, "contains the named identities. Use Idents(combined.obj) = '...'. The names are:")
     cat(paste0("\t", ident.Y, "\n"))
   }
 }
@@ -834,14 +834,14 @@ fix.orig.ident <- function(obj = merged.obj) {
 #' }
 seu.RemoveMetadata <- function(
   obj = combined.obj,
-  cols_remove = grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = TRUE)
+  cols_remove = CodeAndRoll2::grepv(colnames(obj@meta.data), pattern = "^integr|^cl.names", perl = TRUE)
 ) {
   CNN <- colnames(obj@meta.data)
-  iprint("cols_remove:", cols_remove)
+  Stringendo::iprint("cols_remove:", cols_remove)
   print("")
   (cols_keep <- setdiff(CNN, cols_remove))
   obj@meta.data <- obj@meta.data[, cols_keep]
-  iprint("meta.data colnames kept:", colnames(obj@meta.data))
+  Stringendo::iprint("meta.data colnames kept:", colnames(obj@meta.data))
 
   return(obj)
 }
@@ -995,7 +995,7 @@ transferMetadata <- function(from, to,
     if (plotUMAP) {
       metaX <- getMetadataColumn(col = colnames_to[i], obj = to)
 
-      if (is.numeric(metaX) && nr.unique(metaX) > 10) {
+      if (is.numeric(metaX) && CodeAndRoll2::nr.unique(metaX) > 10) {
         x <- qUMAP(obj = to, feature = colnames_to[i], suffix = "transferred.ident", ...)
       } else {
         x <- clUMAP(obj = to, ident = colnames_to[i], suffix = "transferred.ident", ...)
@@ -1080,7 +1080,7 @@ merge_seurat_metadata <- function(ls_obj, include_cols = NULL, exclude_cols = NU
   merged_metadata <- dplyr::bind_rows(metadata_list)
 
   # Message all column names to console
-  message("Columns: ", kppc(colnames(merged_metadata)), "\n")
+  message("Columns: ", Stringendo::kppc(colnames(merged_metadata)), "\n")
   message(length(merged_metadata), " merged columns and ", nrow(merged_metadata), " cells from ", length(ls_obj), " objects.")
 
   return(merged_metadata)
@@ -1221,14 +1221,14 @@ plotMetadataCorHeatmap <- function(
   META <- obj@meta.data
   columns.found <- intersect(colnames(META), columns)
   columns.not.found <- setdiff(columns, colnames(META))
-  if (length(columns.not.found)) iprint("columns.not.found:", columns.not.found)
+  if (length(columns.not.found)) Stringendo::iprint("columns.not.found:", columns.not.found)
 
   META <- META[, columns.found]
 
   if (add_PCA) {
-    stopif(is.null(obj@reductions$"pca"), "PCA not found in @reductions.")
+    Stringendo::stopif(is.null(obj@reductions$"pca"), "PCA not found in @reductions.")
     main <- paste("Metadata and PC", cormethod, "correlations")
-    suffix <- FixPlotName(suffix, "w.PCA")
+    suffix <- Stringendo::FixPlotName(suffix, "w.PCA")
 
     PCs <- obj@reductions$pca@cell.embeddings
     stopifnot(nrow(META) == nrow(PCs))
@@ -1245,15 +1245,15 @@ plotMetadataCorHeatmap <- function(
       type = "full",
       ...
     )
-    ggExpress::qqSave(pl, fname = FixPlotName(make.names(main), suffix, "png"), also.pdf = TRUE, w = w, h = h)
+    ggExpress::qqSave(pl, fname = Stringendo::FixPlotName(make.names(main), suffix, "png"), also.pdf = TRUE, w = w, h = h)
   } else {
     pl <- pheatmap::pheatmap(corX,
       main = main, treeheight_row = 2, treeheight_col = 2,
       cutree_rows = n_cutree, cutree_cols = n_cutree
     )
-    wplot_save_pheatmap(
+    MarkdownReports::wplot_save_pheatmap(
       x = pl, width = w,
-      plotname = FixPlotName(make.names(main), suffix, "pdf")
+      plotname = Stringendo::FixPlotName(make.names(main), suffix, "pdf")
     )
   }
   print(pl)
@@ -1318,28 +1318,28 @@ heatmap_calc_clust_median <- function(
 
   if (!isFALSE(subset_ident_levels)) {
     stopifnot(all(subset_ident_levels %in% rownames(df_cluster_medians)))
-    suffix <- FixPlotName(suffix, "subset")
+    suffix <- Stringendo::FixPlotName(suffix, "subset")
     df_cluster_medians <- df_cluster_medians[subset_ident_levels, ]
   }
 
   if (scale) {
     df_cluster_medians <- scale(df_cluster_medians)
-    suffix <- sppp(suffix, "scaled")
+    suffix <- Stringendo::sppp(suffix, "scaled")
   }
 
   if (return_matrix) {
     return(df_cluster_medians)
   } else {
-    plot_name <- FixPlotName(plotname, suffix)
+    plot_name <- Stringendo::FixPlotName(plotname, suffix)
     pl <- pheatmap::pheatmap(df_cluster_medians,
       main = plot_name,
       cutree_rows = n_cut_row,
       cutree_cols = n_cut_col,
       ...
     )
-    wplot_save_pheatmap(
+    MarkdownReports::wplot_save_pheatmap(
       x = pl, width = w,
-      plotname = FixPlotName(make.names(plot_name), suffix, "pdf")
+      plotname = Stringendo::FixPlotName(make.names(plot_name), suffix, "pdf")
     )
 
     # Now plot correlation heatmap between the identities
@@ -1351,9 +1351,9 @@ heatmap_calc_clust_median <- function(
       cutree_rows = n_cut_row, cutree_cols = n_cut_col
     )
 
-    wplot_save_pheatmap(
+    MarkdownReports::wplot_save_pheatmap(
       x = pl, width = w,
-      plotname = FixPlotName(make.names(plot_name), suffix, "correlation.pdf")
+      plotname = Stringendo::FixPlotName(make.names(plot_name), suffix, "correlation.pdf")
     )
   }
 }
@@ -1410,11 +1410,11 @@ plotMetadataMedianFractionBarplot <- function(
     dplyr::summarize_all(median)
   )
   if (min.thr > 0) {
-    pass.cols <- colMax(mat.cluster.medians1[, -1]) > (min.thr / 100)
-    cols.OK <- which_names(pass.cols)
-    cols.FAIL <- which_names(!pass.cols)
-    subt <- paste(length(cols.FAIL), "classed do not reach", min.thr, "% :", kpps(cols.FAIL))
-    iprint(subt)
+    pass.cols <- CodeAndRoll2::colMax(mat.cluster.medians1[, -1]) > (min.thr / 100)
+    cols.OK <- CodeAndRoll2::which_names(pass.cols)
+    cols.FAIL <- CodeAndRoll2::which_names(!pass.cols)
+    subt <- paste(length(cols.FAIL), "classed do not reach", min.thr, "% :", Stringendo::kpps(cols.FAIL))
+    Stringendo::iprint(subt)
     mat.cluster.medians1 <- mat.cluster.medians1[, c(group.by, cols.OK)]
   }
 
@@ -1430,7 +1430,7 @@ plotMetadataMedianFractionBarplot <- function(
     position = position,
     title = main, subtitle = subt, ylab = ylab
   )
-  ggExpress::qqSave(pl, fname = ppp(make.names(main), "pdf"), w = w, h = h)
+  ggExpress::qqSave(pl, fname = Stringendo::ppp(make.names(main), "pdf"), w = w, h = h)
   pl
   if (return.matrix) mat.cluster.medians1 else pl
 }
@@ -1483,8 +1483,8 @@ plotMetadataCategPie <- function(
   categ_pivot <- table(obj[[metacol]])
   stopifnot(length(categ_pivot) < max.categs)
 
-  qpie(categ_pivot,
-    plotname = FixPlotName(make.names(plot_name)),
+  ggExpress::qpie(categ_pivot,
+    plotname = Stringendo::FixPlotName(make.names(plot_name)),
     both_pc_and_value = both_pc_and_value,
     LegendSide = LegendSide, labels = labels,
     LegendTitle = "", subtitle = subtitle,
@@ -1531,7 +1531,7 @@ renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1],
   )
 
   ref <- sub(pattern = "ref", replacement = "", x = ref)
-  iprint(length(azim_cols), "azim_cols:", azim_cols)
+  Stringendo::iprint(length(azim_cols), "azim_cols:", azim_cols)
 
   # Extract the column names of meta.data
   meta_col_names <- colnames(obj@meta.data)
@@ -1540,13 +1540,13 @@ renameAzimuthColumns <- function(obj, ref = c("humancortexref", "fetusref")[1],
   for (azim_col in azim_cols) {
     if (azim_col %in% meta_col_names) {
       # Create the new column name by replacing "predicted." with the new prefix
-      new_col_name <- sub(pattern = "^predicted\\.", replacement = kpp(prefix, ref, ""), x = azim_col)
+      new_col_name <- sub(pattern = "^predicted\\.", replacement = Stringendo::kpp(prefix, ref, ""), x = azim_col)
       names(obj@meta.data)[names(obj@meta.data) == azim_col] <- new_col_name
     }
   }
 
   if ("mapping.score" %in% colnames(obj@meta.data)) {
-    names(obj@meta.data)[names(obj@meta.data) == "mapping.score"] <- kpp(prefix, ref, "mapping.score")
+    names(obj@meta.data)[names(obj@meta.data) == "mapping.score"] <- Stringendo::kpp(prefix, ref, "mapping.score")
   }
 
   print(tail(colnames(obj@meta.data), 10))
@@ -1674,7 +1674,7 @@ transferLabelsSeurat <- function(
     x = reference_ident
   ),
   predictions_col = "predicted.id",
-  predictions_score = sppp(new_ident, "score"),
+  predictions_score = Stringendo::sppp(new_ident, "score"),
   save_anchors = TRUE,
   reference_suffix = "REFERENCE.obj",
   plot_suffix = NULL,
@@ -1684,7 +1684,7 @@ transferLabelsSeurat <- function(
 ) {
   #
   if (is.null(reference_obj)) {
-    iprint("Loading reference object:", basename(reference_path))
+    Stringendo::iprint("Loading reference object:", basename(reference_path))
     stopifnot(file.exists(reference_path))
     reference_obj <- readr::read_rds(reference_path)
   } else {
@@ -1739,7 +1739,7 @@ transferLabelsSeurat <- function(
   )
 
   qSeuViolin(
-    feature = ppp(new_ident, "score"), ident = new_ident,
+    feature = Stringendo::ppp(new_ident, "score"), ident = new_ident,
     sub = Seurat.utils:::.parseBasicObjStats(query_obj),
     pt.size = 0.0, obj = query_obj
   )
@@ -1823,7 +1823,7 @@ matchBestIdentity <- function(
   suffix = gsub(prefix, "", x = reference_ident),
   # to_suffix = "matched",
   # to_suffix = FixPlotName(gsub(pattern = "[a-zA-Z_]", replacement = "", x = ident_to_rename)),
-  new_ident_name = kpp(prefix, ident_to_rename, "match.to", suffix),
+  new_ident_name = Stringendo::kpp(prefix, ident_to_rename, "match.to", suffix),
   plot_suffix = prefix,
   barplot_match = TRUE,
   barplot_fractions = TRUE,
@@ -1841,7 +1841,7 @@ matchBestIdentity <- function(
 
   obj@meta.data[, new_ident_name] <- translation[, 1]
 
-  imessage("new ident name:", new_ident_name)
+  Stringendo::imessage("new ident name:", new_ident_name)
   px <- clUMAP(ident = new_ident_name, obj = obj, suffix = plot_suffix, w = w, h = h, ...)
   print(px)
 
@@ -1912,10 +1912,10 @@ matchBestIdentity <- function(
   }
 
   cat_query <- unique(df[[query_col]])
-  imessage(length(cat_query), "categories to rename in", query_col, ":", head(cat_query), "...")
+  Stringendo::imessage(length(cat_query), "categories to rename in", query_col, ":", head(cat_query), "...")
 
   cat_ref <- unique(df[[ref_col]])
-  imessage(length(cat_ref), "reference categories in", ref_col, ":", head(cat_ref), "...")
+  Stringendo::imessage(length(cat_ref), "reference categories in", ref_col, ":", head(cat_ref), "...")
 
   # Create a table of the most frequent reference values for each query category
   replacement_table <- df |>
@@ -1938,14 +1938,14 @@ matchBestIdentity <- function(
   # Plot assignment quality
   if (show_plot) {
     px <- ggExpress::qbarplot(quality,
-      label = percentage_formatter(quality, digitz = 1),
+      label = Stringendo::percentage_formatter(quality, digitz = 1),
       ext = ext,
       suffix = suffix_barplot,
       plotname = "Assignment Quality",
-      filename = make.names(kpp("Assignment Quality", suffix_barplot, ext)),
+      filename = make.names(Stringendo::kpp("Assignment Quality", suffix_barplot, ext)),
       subtitle = paste(
         "From", colnames(df)[1], "->", colnames(df)[2], "| median",
-        percentage_formatter(median(quality)), "\n",
+        Stringendo::percentage_formatter(median(quality)), "\n",
         sum(quality > min.thr), "clusters above 50% match"
       ),
       hline = min.thr, filtercol = -1,

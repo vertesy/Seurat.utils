@@ -50,14 +50,14 @@ Convert10Xfolders_v1 <- function(
 
   compress_level <- .map_preset_to_compress_level(preset)
 
-  finOrig <- ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
+  finOrig <- Stringendo::ReplaceRepeatedSlashes(list.dirs.depth.n(InputDir, depth = depth))
   fin <- CodeAndRoll2::grepv(x = finOrig, pattern = folderPattern, perl = regex)
 
-  iprint(length(fin), "samples found.")
+  Stringendo::iprint(length(fin), "samples found.")
 
   samples <- basename(list.dirs(InputDir, recursive = FALSE))
   if (sort_alphanumeric) samples <- gtools::mixedsort(samples)
-  iprint("Samples:", samples)
+  Stringendo::iprint("Samples:", samples)
 
   if (!length(fin) > 0) {
     stop(paste("No subfolders found with pattern", folderPattern, "in dirs like: ", finOrig[1:3]))
@@ -118,7 +118,7 @@ Convert10Xfolders_v1 <- function(
     if (writeCBCtable) {
       CBCs <- t(t(colnames(seu)))
       colnames(CBCs) <- "CBC"
-      ReadWriter::write.simple.tsv(input_df = CBCs, manual_file_name = sppp(fnameIN, "CBC"), manual_directory = InputDir)
+      ReadWriter::write.simple.tsv(input_df = CBCs, manual_file_name = Stringendo::sppp(fnameIN, "CBC"), manual_directory = InputDir)
     }
   } # for
 }
@@ -180,7 +180,7 @@ plot.UMAP.tSNE.sidebyside <- function(obj = combined.obj, grouping = "res.0.6", 
   p2 <- p2 + Seurat::NoLegend()
 
   plots <- cowplot::plot_grid(p1, p2, labels = c("A", "B"), ncol = 2)
-  plotname <- kpp("UMAP.tSNE", grouping, name.suffix, filetype)
+  plotname <- Stringendo::kpp("UMAP.tSNE", grouping, name.suffix, filetype)
 
   cowplot::save_plot(
     filename = plotname, plot = plots,
@@ -264,7 +264,7 @@ multi_clUMAP.A4 <- function(
   tictoc::tic()
   ParentDir <- OutDir
   if (is.null(foldername)) foldername <- "clusters"
-  if (subdir) create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
+  if (subdir) MarkdownReports::create_set_SubDir(paste0(foldername, "-", plot.reduction), "/")
 
   DefaultAssay(obj) <- intersectionAssay
 
@@ -276,8 +276,8 @@ multi_clUMAP.A4 <- function(
   ls.idents <- CodeAndRoll2::split_vec_to_list_by_N(1:length(idents), by = nr.Row * nr.Col)
   for (i in 1:length(ls.idents)) {
     idents_on_this_page <- idents[ls.idents[[i]]]
-    iprint("page:", i, "| idents", kppc(idents_on_this_page))
-    (plotname <- kpp(c(prefix, plot.reduction, i, "idents", ls.idents[[i]], suffix, format)))
+    Stringendo::iprint("page:", i, "| idents", Stringendo::kppc(idents_on_this_page))
+    (plotname <- Stringendo::kpp(c(prefix, plot.reduction, i, "idents", ls.idents[[i]], suffix, format)))
 
     plot.list <- list()
     for (i in seq(idents_on_this_page)) {
@@ -291,7 +291,7 @@ multi_clUMAP.A4 <- function(
       }
 
       ident_X <- idents_on_this_page[i]
-      imessage("plotting:", ident_X)
+      Stringendo::imessage("plotting:", ident_X)
       plot.list[[i]] <- clUMAP(
         ident = ident_X, obj = obj, plotname = label_X,
         label = label_X, legend = legend_X, save.plot = FALSE, h = h, w = w, ...
@@ -342,7 +342,7 @@ umapNamedClusters <- function(obj = combined.obj,
                               metaD.colname = metaD.colname.labeled,
                               ext = "png", ...) {
   warning("This function is deprecated. No support.")
-  fname <- ppp("Named.clusters", metaD.colname, ext)
+  fname <- Stringendo::ppp("Named.clusters", metaD.colname, ext)
   p.named <-
     Seurat::DimPlot(obj, reduction = "umap", group.by = metaD.colname, label = TRUE, ...) +
     NoLegend() +
@@ -386,7 +386,7 @@ AutoNumber.by.PrinCurve <- function(
   reduction = "umap", res = "integrated_snn_res.0.5"
 ) {
   # require(princurve)
-  dim_name <- ppu(toupper(reduction), dim)
+  dim_name <- Stringendo::ppu(toupper(reduction), dim)
   coord.umap <- FetchData(object = obj, vars = dim_name)
   fit <- princurve::principal_curve(x = as.matrix(coord.umap))
   if (plotit) {
@@ -401,12 +401,12 @@ AutoNumber.by.PrinCurve <- function(
   }
 
   ls.perCl <- split(swap * fit$lambda, f = obj[[res]])
-  MedianClusterCoordinate <- unlapply(ls.perCl, median)
+  MedianClusterCoordinate <- CodeAndRoll2::unlapply(ls.perCl, median)
   OldLabel <- names(sort(MedianClusterCoordinate))
   NewLabel <- as.character(0:(length(MedianClusterCoordinate) - 1))
-  NewMeta <- translate(vec = obj[[res]], old = OldLabel, new = NewLabel)
-  NewMetaCol <- kpp(res, "prin.curve")
-  iprint("NewMetaCol:", NewMetaCol)
+  NewMeta <- CodeAndRoll2::translate(vec = obj[[res]], old = OldLabel, new = NewLabel)
+  NewMetaCol <- Stringendo::kpp(res, "prin.curve")
+  Stringendo::iprint("NewMetaCol:", NewMetaCol)
   obj[[NewMetaCol]] <- NewMeta
   return(obj)
 }
@@ -466,7 +466,7 @@ load10Xv3 <- function(dataDir, cellIDs = NULL, channelName = NULL, readArgs = li
   dirz <- list.dirs(dataDir, full.names = FALSE, recursive = FALSE)
   path.raw <- file.path(dataDir, grep(x = dirz, pattern = "^raw_*", value = TRUE))
   path.filt <- file.path(dataDir, grep(x = dirz, pattern = "^filt_*", value = TRUE))
-  CR.matrices <- list.fromNames(c("raw", "filt"))
+  CR.matrices <- CodeAndRoll2::list.fromNames(c("raw", "filt"))
 
 
   (isV3 <- any(grepl(x = dirz, pattern = "^raw_feature_bc*")))
@@ -598,7 +598,7 @@ Convert10Xfolders.old <- function(
     pathIN <- fin[i]
     print(pathIN)
     fnameIN <- basename(fin[i])
-    fnameOUT <- ppp(paste0(InputDir, "/", fnameIN), "min.cells", min.cells, "min.features", min.features, "Rds")
+    fnameOUT <- Stringendo::ppp(paste0(InputDir, "/", fnameIN), "min.cells", min.cells, "min.features", min.features, "Rds")
     count_matrix <- Read10X(pathIN)
 
     if (!is.list(count_matrix) | length(count_matrix) == 1) {
@@ -614,7 +614,7 @@ Convert10Xfolders.old <- function(
 
       # LSB, Lipid Sample barcode (Multi-seq) --- --- --- --- --- ---
       LSB <- CreateSeuratObject(counts = count_matrix[[2]], project = fnameIN)
-      LSBnameOUT <- ppp(paste0(InputDir, "/LSB.", fnameIN), "Rds")
+      LSBnameOUT <- Stringendo::ppp(paste0(InputDir, "/LSB.", fnameIN), "Rds")
       saveRDS(LSB, file = LSBnameOUT)
     } else {
       print("More than 2 elements in the list of matrices")
@@ -693,7 +693,7 @@ seu.add.meta.from.vector <- function(...) .Deprecated("addMetaDataSafe()")
 
 # will it be used?
 cellID_to_cellType_v1 <- function(cellIDs, ident, obj = aaa) {
-  celltypes <- as.named.vector.df(obj@meta.data[, ident], verbose = FALSE)
+  celltypes <- CodeAndRoll2::as.named.vector.df(obj@meta.data[, ident], verbose = FALSE)
   celltypes[cellIDs]
 }
 
@@ -952,7 +952,7 @@ plotClustSizeDistr <- function(
   psubtitle <- paste(
     "Nr.clusters:", length(clust.size.distr),
     "| median size:", median(clust.size.distr),
-    "| CV:", percentage_formatter(cv(clust.size.distr))
+    "| CV:", Stringendo::percentage_formatter(CodeAndRoll2::cv(clust.size.distr))
   )
   xlb <- "Cluster size (cells)"
   ylb <- "Nr of Clusters"
