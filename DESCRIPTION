@@ -41,7 +41,7 @@ Imports:
     pheatmap,
     plotly,
     princurve,
-    qs,
+    qs2,
     R.utils,
     RColorBrewer,
     readr,

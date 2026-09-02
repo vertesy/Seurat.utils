@@ -1051,7 +1051,7 @@ showMiscSlots <- function(obj = combined.obj, max.level = 1, subslot = NULL,
 #' }
 #' }
 #' @seealso
-#'  \code{\link[sparseMatrixStats]{rowQuantiles}}
+#'  \code{sparseMatrixStats::rowQuantiles()}
 #' @importFrom tictoc tic toc
 #' @importFrom sparseMatrixStats rowQuantiles
 #'
